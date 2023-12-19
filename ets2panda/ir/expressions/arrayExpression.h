@@ -18,6 +18,7 @@
 
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
+#include "checker/types/ets/etsArrayType.h"
 
 namespace panda::es2panda::checker {
 class ETSAnalyzer;
@@ -139,6 +140,9 @@ public:
     {
         v->Accept(this);
     }
+
+    void GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
+                                       checker::TypeRelationFlag flags);
 
 private:
     ArenaVector<Decorator *> decorators_;

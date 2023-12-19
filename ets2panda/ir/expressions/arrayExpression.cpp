@@ -377,4 +377,26 @@ checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
+                                                    checker::TypeRelationFlag flags)
+{
+    if (preferredType_ != nullptr) {
+        return;
+    }
+    auto paramType = param->Check(checker);
+    if (paramType->IsETSArrayType()) {
+        paramType = paramType->AsETSArrayType()->ElementType();
+    }
+    bool isAssignable = true;
+    for (auto elem : elements_) {
+        auto assignCtx = checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), paramType,
+                                                     elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
+        isAssignable &= assignCtx.IsAssignable();
+    }
+    if (isAssignable) {
+        preferredType_ = param->Check(checker);
+    }
+}
+
 }  // namespace panda::es2panda::ir

@@ -69,7 +69,7 @@ public:
 
         relation->SetNode(nullptr);
         relation->SetFlags(TypeRelationFlag::NONE);
-        assignable_ = true;
+        assignable_ = relation->IsTrue();
     }
 
     bool IsAssignable() const
