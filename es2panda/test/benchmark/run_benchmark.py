@@ -52,7 +52,7 @@ class Es2AbcBenchMarks:
     def __init__(self, args):
         self.args = args
         self.results = []
-        self.cmds = []
+        self.cmds = {}
         self.select_params = []
 
     def parse_args(self):
