@@ -57,68 +57,21 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 
 void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block)
 {
-    auto const checkInitializer = [](ArenaVector<ir::AstNode *> const &nodes) -> bool {
-        for (auto const *const node : nodes) {
-            if (node->IsMethodDefinition() && node->AsClassElement()->Key()->IsIdentifier()) {
-                if (node->AsClassElement()->Id()->Name() == compiler::Signatures::INIT_METHOD) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    };
-
     auto *scriptFunc = etsg->RootNode()->AsScriptFunction();
 
     if (scriptFunc->IsEnum()) {
         // NOTE: add enum methods
     } else if (scriptFunc->IsStaticBlock()) {
-        const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
-
-        // Check if it is the Global class static constructor and the special '_$init$_" method exists
-        bool const compileInitializer = classDef->IsGlobal() ? checkInitializer(classDef->Body()) : true;
-
-        for (const auto *prop : classDef->Body()) {
-            if (!prop->IsClassProperty() || !prop->IsStatic()) {
-                continue;
-            }
-
-            // Don't compile variable initializers if they present in '_$init$_" method
-            auto *const item = prop->AsClassProperty();
-            auto *const value = item->Value();
-            if (value != nullptr && (compileInitializer || item->IsConst() || value->IsArrowFunctionExpression())) {
-                item->Compile(etsg);
-            }
-        }
+        CompileAsStaticBlock(etsg);
     } else if (scriptFunc->IsConstructor()) {
-        if (scriptFunc->IsImplicitSuperCallNeeded()) {
-            CallImplicitCtor(etsg);
-        }
-
-        const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
-
-        for (const auto *prop : classDef->Body()) {
-            if (!prop->IsClassProperty() || prop->IsStatic()) {
-                continue;
-            }
-
-            prop->AsClassProperty()->Compile(etsg);
-        }
+        CompileAsConstructor(etsg, scriptFunc);
     }
 
     const auto &statements = block->Statements();
 
     if (statements.empty()) {
         etsg->SetFirstStmt(block);
-        if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock() || scriptFunc->IsEntryPoint()) {
-            ASSERT(etsg->ReturnType() != etsg->Checker()->GlobalBuiltinVoidType());
-            etsg->EmitReturnVoid(block);
-        } else {
-            ASSERT(!etsg->ReturnType()->IsETSVoidType());
-            etsg->LoadBuiltinVoid(block);
-            etsg->ReturnAcc(block);
-        }
-
+        ExtendWithDefaultReturn(etsg, block, scriptFunc);
         return;
     }
 
@@ -127,20 +80,69 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
     etsg->CompileStatements(statements);
 
     if (!statements.back()->IsReturnStatement()) {
-        if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock() || scriptFunc->IsEntryPoint()) {
-            ASSERT(etsg->ReturnType() != etsg->Checker()->GlobalBuiltinVoidType());
-            etsg->EmitReturnVoid(statements.back());
-            return;
+        ExtendWithDefaultReturn(etsg, statements.back(), scriptFunc);
+    }
+}
+
+void ETSFunction::ExtendWithDefaultReturn(ETSGen *etsg, const ir::AstNode *node, const ir::ScriptFunction *scriptFunc)
+{
+    if (etsg->ReturnType()->IsETSVoidType()) {
+        etsg->EmitReturnVoid(node);
+        return;
+    }
+
+    if (scriptFunc->ReturnTypeAnnotation() != nullptr && scriptFunc->ReturnTypeAnnotation()->TsType() != nullptr &&
+        scriptFunc->ReturnTypeAnnotation()->TsType()->IsETSAsyncFuncReturnType()) {
+        etsg->LoadDefaultValue(node, scriptFunc->ReturnTypeAnnotation()->TsType());
+    } else {
+        etsg->LoadDefaultValue(node, scriptFunc->Signature()->ReturnType());
+    }
+    etsg->ReturnAcc(node);
+}
+
+void ETSFunction::CompileAsStaticBlock(ETSGen *etsg)
+{
+    const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
+
+    auto const checkInitializer = [](ArenaVector<ir::AstNode *> const &nodes) -> bool {
+        for (auto const *const node : nodes) {
+            if (node->IsMethodDefinition() && node->AsClassElement()->Key()->IsIdentifier() &&
+                node->AsClassElement()->Id()->Name() == compiler::Signatures::INIT_METHOD) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // Check if it is the Global class static constructor and the special '_$init$_" method exists
+    bool const compileInitializer = classDef->IsGlobal() ? checkInitializer(classDef->Body()) : true;
+
+    for (const auto *prop : classDef->Body()) {
+        if (!prop->IsClassProperty() || !prop->IsStatic()) {
+            continue;
         }
 
-        ASSERT(!etsg->ReturnType()->IsETSVoidType());
-
-        if (scriptFunc->Signature()->ReturnType() == etsg->Checker()->GlobalBuiltinVoidType()) {
-            etsg->LoadBuiltinVoid(statements.back());
-        } else {
-            etsg->LoadDefaultValue(statements.back(), scriptFunc->Signature()->ReturnType());
+        // Don't compile variable initializers if they present in '_$init$_" method
+        auto *const item = prop->AsClassProperty();
+        if (item->Value() != nullptr &&
+            (compileInitializer || item->IsConst() || item->Value()->IsArrowFunctionExpression())) {
+            item->Compile(etsg);
         }
-        etsg->ReturnAcc(statements.back());
+    }
+}
+
+void ETSFunction::CompileAsConstructor(ETSGen *etsg, const ir::ScriptFunction *scriptFunc)
+{
+    if (scriptFunc->IsImplicitSuperCallNeeded()) {
+        CallImplicitCtor(etsg);
+    }
+
+    const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
+
+    for (const auto *prop : classDef->Body()) {
+        if (prop->IsClassProperty() && !prop->IsStatic()) {
+            prop->AsClassProperty()->Compile(etsg);
+        }
     }
 }
 

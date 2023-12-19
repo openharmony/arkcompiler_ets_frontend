@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -225,52 +225,7 @@ void ETSTryContext::EmitFinalizer(
     etsg->Branch(tryStmt_, finalizerTable->LabelSet().CatchEnd());
 
     for (std::pair<compiler::LabelPair, const ir::Statement *> insertion : finalizerInsertions) {
-        etsg->SetLabel(tryStmt_, insertion.first.Begin());
-
-        ASSERT(insertion.second != nullptr);
-        bool isReturn = insertion.second->IsReturnStatement();
-
-        compiler::RegScope rs(etsg);
-        compiler::VReg res = etsg->AllocReg();
-
-        if (isReturn) {
-            etsg->SetAccumulatorType(insertion.second->AsReturnStatement()->ReturnType());
-            etsg->StoreAccumulator(tryStmt_, res);
-            etsg->SetVRegType(res, insertion.second->AsReturnStatement()->ReturnType());
-        }
-
-        // Second compile of the finaly clause, executed if the statement executed normally, but abrupted by
-        // return, break, or continue statements.
-        tryStmt_->FinallyBlock()->Compile(etsg);
-
-        if (isReturn) {
-            etsg->SetAccumulatorType(insertion.second->AsReturnStatement()->ReturnType());
-            etsg->LoadAccumulator(tryStmt_, res);
-        }
-
-        if (insertion.first.End() != nullptr) {
-            etsg->Branch(tryStmt_, insertion.first.End());
-        } else if (isReturn) {
-            if (etsg->CheckControlFlowChange()) {
-                etsg->StoreAccumulator(tryStmt_, res);
-                etsg->ControlFlowChangeBreak();
-                etsg->LoadAccumulator(tryStmt_, res);
-            }
-
-            if (insertion.second->AsReturnStatement()->ReturnType()->IsETSVoidType()) {
-                etsg->EmitReturnVoid(tryStmt_);
-            } else {
-                etsg->ReturnAcc(tryStmt_);
-            }
-        } else if (insertion.second->IsBreakStatement()) {
-            compiler::Label *target = etsg->ControlFlowChangeBreak(insertion.second->AsBreakStatement()->Ident());
-            etsg->Branch(tryStmt_, target);
-        } else if (insertion.second->IsContinueStatement()) {
-            compiler::Label *target = etsg->ControlFlowChangeContinue(insertion.second->AsContinueStatement()->Ident());
-            etsg->Branch(tryStmt_, target);
-        } else {
-            UNREACHABLE();
-        }
+        EmitFinalizerInsertion(etsg, insertion.first, insertion.second);
     }
 
     etsg->SetLabel(tryStmt_, finalizerTable->LabelSet().CatchBegin());
@@ -283,6 +238,52 @@ void ETSTryContext::EmitFinalizer(
     etsg->EmitThrow(tryStmt_, exception);
 
     etsg->SetLabel(tryStmt_, finalizerTable->LabelSet().CatchEnd());
+}
+
+void ETSTryContext::EmitFinalizerInsertion(ETSGen *etsg, compiler::LabelPair labelPair, const ir::Statement *statement)
+{
+    etsg->SetLabel(tryStmt_, labelPair.Begin());
+
+    ASSERT(statement != nullptr);
+    bool isReturn = statement->IsReturnStatement();
+
+    compiler::RegScope rs(etsg);
+    compiler::VReg res = etsg->AllocReg();
+
+    if (isReturn) {
+        etsg->SetAccumulatorType(statement->AsReturnStatement()->ReturnType());
+        etsg->StoreAccumulator(tryStmt_, res);
+        etsg->SetVRegType(res, statement->AsReturnStatement()->ReturnType());
+    }
+
+    // Second compile of the finaly clause, executed if the statement executed normally, but abrupted by
+    // return, break, or continue statements.
+    tryStmt_->FinallyBlock()->Compile(etsg);
+
+    if (isReturn) {
+        etsg->SetAccumulatorType(statement->AsReturnStatement()->ReturnType());
+        etsg->LoadAccumulator(tryStmt_, res);
+    }
+
+    if (labelPair.End() != nullptr) {
+        etsg->Branch(tryStmt_, labelPair.End());
+    } else if (isReturn) {
+        if (etsg->CheckControlFlowChange()) {
+            etsg->StoreAccumulator(tryStmt_, res);
+            etsg->ControlFlowChangeBreak();
+            etsg->LoadAccumulator(tryStmt_, res);
+        }
+
+        etsg->ReturnAcc(tryStmt_);
+    } else if (statement->IsBreakStatement()) {
+        compiler::Label *target = etsg->ControlFlowChangeBreak(statement->AsBreakStatement()->Ident());
+        etsg->Branch(tryStmt_, target);
+    } else if (statement->IsContinueStatement()) {
+        compiler::Label *target = etsg->ControlFlowChangeContinue(statement->AsContinueStatement()->Ident());
+        etsg->Branch(tryStmt_, target);
+    } else {
+        UNREACHABLE();
+    }
 }
 
 }  // namespace ark::es2panda::compiler

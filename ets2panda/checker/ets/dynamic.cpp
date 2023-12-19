@@ -598,7 +598,7 @@ ir::MethodDefinition *ETSChecker::CreateDynamicModuleClassInitMethod(varbinder::
                                    [this]([[maybe_unused]] varbinder::FunctionScope *scope,
                                           [[maybe_unused]] ArenaVector<ir::Statement *> *statements,
                                           [[maybe_unused]] ArenaVector<ir::Expression *> *params,
-                                          Type **returnType) { *returnType = GlobalBuiltinVoidType(); });
+                                          Type **returnType) { *returnType = GlobalVoidType(); });
 }
 
 ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInvokeMethod(varbinder::ClassScope *classScope,

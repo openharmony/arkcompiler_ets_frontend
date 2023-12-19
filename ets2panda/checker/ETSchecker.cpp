@@ -91,7 +91,6 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
     const auto varMap = varbinder->TopScope()->Bindings();
 
     auto const objectName = InitBuiltin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
-    auto const voidName = InitBuiltin(this, compiler::Signatures::BUILTIN_VOID_CLASS);
 
     for (auto sig : BUILTINS_TO_INIT) {
         InitBuiltin(this, sig);
@@ -109,7 +108,7 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
     }
 
     for (const auto &[name, var] : varMap) {
-        if (name == objectName || name == voidName) {
+        if (name == objectName) {
             continue;
         }
 
@@ -354,11 +353,6 @@ ETSObjectType *ETSChecker::GlobalBuiltinJSRuntimeType() const
 ETSObjectType *ETSChecker::GlobalBuiltinJSValueType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSValueBuiltinType);
-}
-
-ETSObjectType *ETSChecker::GlobalBuiltinVoidType() const
-{
-    return AsETSObjectType(&GlobalTypesHolder::GlobalBuiltinVoidType);
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs) const

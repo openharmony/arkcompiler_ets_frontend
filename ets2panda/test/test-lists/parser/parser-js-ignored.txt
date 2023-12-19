@@ -98,3 +98,10 @@ parser/ets/optional_chaining_object_property.ets
 compiler/ets/etsObjectToString4.ets
 compiler/ets/etsObjectToString5.ets
 compiler/ets/generic_variance_1.ets
+
+# 14595
+compiler/ets/n_assignGenericWithNullableTypeParamToNonNullable.ets
+
+# Related to void revert
+compiler/ets/lambda_infer_type/lambda_cast_infer_type_void.ets
+compiler/ets/promiseVoid.ets

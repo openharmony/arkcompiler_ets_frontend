@@ -41,6 +41,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/boxingConverter.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
 
@@ -717,11 +718,18 @@ VReg ETSGen::GetThisReg() const
 
 void ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const checker::Type *type)
 {
+    if (type->IsETSAsyncFuncReturnType()) {
+        LoadDefaultValue(node, type->AsETSAsyncFuncReturnType()->GetPromiseTypeArg());
+        return;
+    }
+
     if (type->IsETSUnionType()) {
         type = Checker()->GetGlobalTypesHolder()->GlobalETSObjectType();
     }
-    if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter()) {
+    if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() || type->IsETSNullType()) {
         LoadAccumulatorNull(node, type);
+    } else if (type->IsETSUndefinedType()) {
+        LoadAccumulatorUndefined(node);
     } else if (type->IsETSBooleanType()) {
         LoadAccumulatorBoolean(node, type->AsETSBooleanType()->GetValue());
     } else {
@@ -733,12 +741,6 @@ void ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node, [[maybe_
 void ETSGen::EmitReturnVoid(const ir::AstNode *node)
 {
     Sa().Emit<ReturnVoid>(node);
-}
-
-void ETSGen::LoadBuiltinVoid(const ir::AstNode *node)
-{
-    LoadStaticProperty(node, Checker()->GlobalBuiltinVoidType(),
-                       FormClassPropReference(Checker()->GlobalBuiltinVoidType(), "void_instance"));
 }
 
 void ETSGen::ReturnAcc(const ir::AstNode *node)
@@ -931,6 +933,11 @@ void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const chec
 
 void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::Type *target)
 {
+    if (target->IsETSVoidType()) {
+        SetAccumulatorType(target);
+        return;
+    }
+
     target = Checker()->GetApparentType(target);
     ASSERT(target->IsETSReferenceType());
 

@@ -134,7 +134,6 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("LongBox", GlobalTypeId::ETS_LONG_BOX_BUILTIN);
     builtinNameMappings_.emplace("FloatBox", GlobalTypeId::ETS_FLOAT_BOX_BUILTIN);
     builtinNameMappings_.emplace("DoubleBox", GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN);
-    builtinNameMappings_.emplace("void", GlobalTypeId::ETS_VOID_BUILTIN);
     builtinNameMappings_.emplace("never", GlobalTypeId::ETS_NEVER_BUILTIN);
 
     // ETS escompat layer
@@ -331,11 +330,6 @@ Type *GlobalTypesHolder::GlobalETSStringLiteralType()
 Type *GlobalTypesHolder::GlobalETSVoidType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_VOID));
-}
-
-Type *GlobalTypesHolder::GlobalBuiltinVoidType()
-{
-    return globalTypes_.at(static_cast<std::size_t>(GlobalTypeId::ETS_VOID_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalETSObjectType()

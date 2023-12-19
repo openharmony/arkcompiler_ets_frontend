@@ -399,43 +399,15 @@
                   }
                 ],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 20,
-                          "column": 28
-                        },
-                        "end": {
-                          "line": 20,
-                          "column": 32
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 20,
-                        "column": 28
-                      },
-                      "end": {
-                        "line": 21,
-                        "column": 2
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 20,
                       "column": 28
                     },
                     "end": {
-                      "line": 21,
-                      "column": 2
+                      "line": 20,
+                      "column": 32
                     }
                   }
                 },

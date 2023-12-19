@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -274,13 +274,13 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
     AnalyzeStat(func->Body());
     ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
     const auto *returnType = methodDef->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
-    const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalBuiltinVoidType();
+    const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalVoidType();
 
     auto isPromiseVoid = false;
 
     if (returnType->IsETSAsyncFuncReturnType()) {
         const auto *asAsync = returnType->AsETSAsyncFuncReturnType();
-        isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalBuiltinVoidType();
+        isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalETSUndefinedType();
     }
 
     if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid) {

@@ -970,35 +970,7 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "ETSTypeReference",
-              "part": {
-                "type": "ETSTypeReferencePart",
-                "name": {
-                  "type": "Identifier",
-                  "name": "void",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 24,
-                      "column": 8
-                    },
-                    "end": {
-                      "line": 24,
-                      "column": 12
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 24,
-                    "column": 8
-                  },
-                  "end": {
-                    "line": 24,
-                    "column": 13
-                  }
-                }
-              },
+              "type": "ETSPrimitiveType",
               "loc": {
                 "start": {
                   "line": 24,
@@ -1006,7 +978,7 @@
                 },
                 "end": {
                   "line": 24,
-                  "column": 13
+                  "column": 12
                 }
               }
             },

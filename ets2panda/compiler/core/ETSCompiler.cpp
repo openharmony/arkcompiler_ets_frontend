@@ -1779,28 +1779,34 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     if (st->Argument() == nullptr) {
-        if (st->ReturnType() == nullptr || st->ReturnType()->IsETSVoidType()) {
-            if (etsg->ExtendWithFinalizer(st->parent_, st)) {
-                return;
-            }
-
-            if (etsg->CheckControlFlowChange()) {
-                etsg->ControlFlowChangeBreak();
-            }
-            etsg->EmitReturnVoid(st);
+        if (etsg->ExtendWithFinalizer(st->parent_, st)) {
             return;
         }
 
-        etsg->LoadBuiltinVoid(st);
-    } else {
-        auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
-
-        if (!etsg->TryLoadConstantExpression(st->Argument())) {
-            st->Argument()->Compile(etsg);
+        if (etsg->CheckControlFlowChange()) {
+            etsg->ControlFlowChangeBreak();
         }
-        etsg->ApplyConversion(st->Argument(), nullptr);
-        etsg->ApplyConversion(st->Argument(), st->ReturnType());
+
+        etsg->EmitReturnVoid(st);
+
+        return;
     }
+
+    if (st->Argument()->IsCallExpression() &&
+        st->Argument()->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
+        st->Argument()->Compile(etsg);
+        etsg->EmitReturnVoid(st);
+        return;
+    }
+
+    auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
+
+    if (!etsg->TryLoadConstantExpression(st->Argument())) {
+        st->Argument()->Compile(etsg);
+    }
+
+    etsg->ApplyConversion(st->Argument(), nullptr);
+    etsg->ApplyConversion(st->Argument(), st->ReturnType());
 
     if (etsg->ExtendWithFinalizer(st->parent_, st)) {
         return;

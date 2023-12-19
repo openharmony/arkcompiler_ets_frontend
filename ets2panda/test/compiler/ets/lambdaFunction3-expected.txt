@@ -162,35 +162,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 17
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 21
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 16,
-                        "column": 17
-                      },
-                      "end": {
-                        "line": 16,
-                        "column": 23
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 16,
@@ -198,7 +170,7 @@
                     },
                     "end": {
                       "line": 16,
-                      "column": 23
+                      "column": 21
                     }
                   }
                 },
@@ -345,35 +317,7 @@
                                 }
                               ],
                               "returnType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "void",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 18,
-                                        "column": 32
-                                      },
-                                      "end": {
-                                        "line": 18,
-                                        "column": 36
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 18,
-                                      "column": 32
-                                    },
-                                    "end": {
-                                      "line": 18,
-                                      "column": 38
-                                    }
-                                  }
-                                },
+                                "type": "ETSPrimitiveType",
                                 "loc": {
                                   "start": {
                                     "line": 18,
@@ -381,7 +325,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 38
+                                    "column": 36
                                   }
                                 }
                               },
@@ -392,7 +336,7 @@
                                 },
                                 "end": {
                                   "line": 18,
-                                  "column": 38
+                                  "column": 36
                                 }
                               }
                             },
@@ -460,35 +404,7 @@
                                 }
                               ],
                               "returnType": {
-                                "type": "ETSTypeReference",
-                                "part": {
-                                  "type": "ETSTypeReferencePart",
-                                  "name": {
-                                    "type": "Identifier",
-                                    "name": "void",
-                                    "decorators": [],
-                                    "loc": {
-                                      "start": {
-                                        "line": 18,
-                                        "column": 49
-                                      },
-                                      "end": {
-                                        "line": 18,
-                                        "column": 53
-                                      }
-                                    }
-                                  },
-                                  "loc": {
-                                    "start": {
-                                      "line": 18,
-                                      "column": 49
-                                    },
-                                    "end": {
-                                      "line": 18,
-                                      "column": 56
-                                    }
-                                  }
-                                },
+                                "type": "ETSPrimitiveType",
                                 "loc": {
                                   "start": {
                                     "line": 18,
@@ -496,7 +412,7 @@
                                   },
                                   "end": {
                                     "line": 18,
-                                    "column": 56
+                                    "column": 53
                                   }
                                 }
                               },

@@ -122,8 +122,10 @@ defines:
     ref: STATIC_INVOKE_METHOD
   - name: instantiate
     ref: STATIC_INSTANTIATE_METHOD
-  - name: Void
-    ref: VOID_OBJECT
+  - name: undefined
+    ref: UNDEFINED
+  - name: 'null'
+    ref: NULL_LITERAL
 
 packages:
   - name: 'std.core'
@@ -207,9 +209,6 @@ builtins:
   - name: Object
     package: PKG_STD_CORE
     ref: BUILTIN_OBJECT
-  - name: void
-    package: PKG_STD_CORE
-    ref: BUILTIN_VOID
   - name: String
     package: PKG_STD_CORE
     ref: BUILTIN_STRING
@@ -927,61 +926,61 @@ signatures:
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyBoolean
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_BOOLEAN]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_BOOLEAN
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyByte
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_BYTE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_BYTE
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyChar
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_CHAR]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_CHAR
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyShort
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_SHORT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_SHORT
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyInt
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_INT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_INT
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyLong
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_LONG]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_LONG
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyFloat
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_FLOAT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_FLOAT
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyDouble
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, PRIMITIVE_DOUBLE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_DOUBLE
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyString
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, BUILTIN_STRING]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_STRING
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setPropertyJSValue
     params: [BUILTIN_JSVALUE, BUILTIN_STRING, BUILTIN_JSVALUE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_PROPERTY_JSVALUE
 
   - callee: BUILTIN_PROMISE
@@ -1049,73 +1048,73 @@ signatures:
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementBoolean
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_BOOLEAN]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_BOOLEAN
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementByte
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_BYTE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_BYTE
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementChar
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_CHAR]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_CHAR
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementShort
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_SHORT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_SHORT
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementInt
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_INT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_INT
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementLong
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_LONG]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_LONG
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementFloat
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_FLOAT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_FLOAT
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementDouble
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, PRIMITIVE_DOUBLE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_DOUBLE
 
   - callee: BUILTIN_JSRUNTIME
     method_name: setElementJSValue
     params: [BUILTIN_JSVALUE, PRIMITIVE_INT, BUILTIN_JSVALUE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_SET_ELEMENT_JSVALUE
 
   - callee: BUILTIN_JSRUNTIME
     method_name: __initJSCallClass
     params: [BUILTIN_STRING]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_INIT_DYNAMIC_CALL_CLASS
 
   - callee: BUILTIN_JSRUNTIME
     method_name: __initJSNewClass
     params: [BUILTIN_STRING]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_INIT_DYNAMIC_NEW_CLASS
 
   - callee: BUILTIN_JSRUNTIME
     method_name: loadModule
     params: [BUILTIN_STRING]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_JSRUNTIME_LOAD_MODULE
 
   - callee: BUILTIN_JSRUNTIME
@@ -1151,7 +1150,7 @@ signatures:
   - callee: BUILTIN_BOX
     method_name: set
     params: [BUILTIN_OBJECT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_BOX_SET
 
   - callee: BUILTIN_BOOLEAN_BOX
@@ -1169,7 +1168,7 @@ signatures:
   - callee: BUILTIN_BOOLEAN_BOX
     method_name: set
     params: [PRIMITIVE_BOOLEAN]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_BOOLEAN_BOX_SET
 
   - callee: BUILTIN_BYTE_BOX
@@ -1187,7 +1186,7 @@ signatures:
   - callee: BUILTIN_BYTE_BOX
     method_name: set
     params: [PRIMITIVE_BYTE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_BYTE_BOX_SET
 
   - callee: BUILTIN_CHAR_BOX
@@ -1205,7 +1204,7 @@ signatures:
   - callee: BUILTIN_CHAR_BOX
     method_name: set
     params: [PRIMITIVE_CHAR]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_CHAR_BOX_SET
 
   - callee: BUILTIN_SHORT_BOX
@@ -1223,7 +1222,7 @@ signatures:
   - callee: BUILTIN_SHORT_BOX
     method_name: set
     params: [PRIMITIVE_SHORT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_SHORT_BOX_SET
 
   - callee: BUILTIN_INT_BOX
@@ -1241,7 +1240,7 @@ signatures:
   - callee: BUILTIN_INT_BOX
     method_name: set
     params: [PRIMITIVE_INT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_INT_BOX_SET
 
   - callee: BUILTIN_LONG_BOX
@@ -1259,7 +1258,7 @@ signatures:
   - callee: BUILTIN_LONG_BOX
     method_name: set
     params: [PRIMITIVE_LONG]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_LONG_BOX_SET
 
   - callee: BUILTIN_FLOAT_BOX
@@ -1277,7 +1276,7 @@ signatures:
   - callee: BUILTIN_FLOAT_BOX
     method_name: set
     params: [PRIMITIVE_FLOAT]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_FLOAT_BOX_SET
 
   - callee: BUILTIN_DOUBLE_BOX
@@ -1295,7 +1294,7 @@ signatures:
   - callee: BUILTIN_DOUBLE_BOX
     method_name: set
     params: [PRIMITIVE_DOUBLE]
-    return_type: BUILTIN_VOID
+    return_type: PRIMITIVE_VOID
     ref: BUILTIN_DOUBLE_BOX_SET
 
   - callee: BUILTIN_JSRUNTIME

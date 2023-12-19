@@ -45,8 +45,10 @@
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/expressions/sequenceExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/doWhileStatement.h"
@@ -796,28 +798,14 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
     return signature;
 }
 
-Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func, util::StringView funcName, bool isConstructSig)
+Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func)
 {
     auto *const returnTypeAnnotation = func->ReturnTypeAnnotation();
     checker::Type *returnType {};
 
     if (returnTypeAnnotation == nullptr) {
         // implicit void return type
-        returnType = isConstructSig || func->IsEntryPoint() || funcName.Is(compiler::Signatures::CCTOR)
-                         ? GlobalVoidType()
-                         : GlobalBuiltinVoidType();
-
-        if (returnType == nullptr) {
-            const auto varMap = VarBinder()->TopScope()->Bindings();
-
-            const auto builtinVoid = varMap.find(compiler::Signatures::BUILTIN_VOID_CLASS);
-            ASSERT(builtinVoid != varMap.end());
-
-            BuildBasicClassProperties(builtinVoid->second->Declaration()->Node()->AsClassDefinition());
-
-            ASSERT(GlobalBuiltinVoidType() != nullptr);
-            returnType = GlobalBuiltinVoidType();
-        }
+        returnType = GlobalVoidType();
 
         if (func->IsAsyncFunc()) {
             auto implicitPromiseVoid = [this]() {
@@ -826,13 +814,13 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func, util::StringView f
                     promiseGlobal->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
                 promiseType->AddTypeFlag(checker::TypeFlag::GENERIC);
                 promiseType->TypeArguments().clear();
-                promiseType->TypeArguments().emplace_back(GlobalBuiltinVoidType());
+                promiseType->TypeArguments().emplace_back(GlobalVoidType());
                 return promiseType;
             };
 
             returnType = implicitPromiseVoid();
         }
-    } else if (func->IsEntryPoint() && returnTypeAnnotation->GetType(this) == GlobalBuiltinVoidType()) {
+    } else if (func->IsEntryPoint() && returnTypeAnnotation->GetType(this) == GlobalVoidType()) {
         returnType = GlobalVoidType();
     } else {
         returnType = returnTypeAnnotation->GetType(this);
@@ -926,7 +914,7 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
         ValidateMainSignature(func);
     }
 
-    auto *returnType = ComposeReturnType(func, funcName, isConstructSig);
+    auto *returnType = ComposeReturnType(func);
     auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
     if (isConstructSig) {
         signature->AddSignatureFlag(SignatureFlags::CONSTRUCT);
@@ -1569,16 +1557,7 @@ void ETSChecker::ResolveLambdaObjectInvoke(ir::ClassDefinition *lambdaObject, ir
     }
 
     // Fill out the type information for the body of the invoke function
-    auto *resolvedLambdaInvokeFunctionBody =
-        ResolveLambdaObjectInvokeFuncBody(lambdaObject, lambda, proxyMethod, isStatic, ifaceOverride);
-    resolvedLambdaInvokeFunctionBody->SetParent(invokeFunc->Body());
-    invokeFunc->Body()->AsBlockStatement()->Statements().push_back(resolvedLambdaInvokeFunctionBody);
-
-    if (resolvedLambdaInvokeFunctionBody->IsExpressionStatement()) {
-        auto *const returnStatement = Allocator()->New<ir::ReturnStatement>(nullptr);
-        returnStatement->SetParent(invokeFunc->Body());
-        invokeFunc->Body()->AsBlockStatement()->Statements().push_back(returnStatement);
-    }
+    ResolveLambdaObjectInvokeFuncBody(lambdaObject, lambda, proxyMethod, isStatic, ifaceOverride);
 }
 
 /* Pulled out to appease the Chinese checker */
@@ -1673,10 +1652,9 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
     return callParams;
 }
 
-ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject,
-                                                             ir::ArrowFunctionExpression *lambda,
-                                                             ir::MethodDefinition *proxyMethod, bool isStatic,
-                                                             bool ifaceOverride)
+void ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject,
+                                                   ir::ArrowFunctionExpression *lambda,
+                                                   ir::MethodDefinition *proxyMethod, bool isStatic, bool ifaceOverride)
 {
     const auto &lambdaBody = lambdaObject->Body();
     auto *proxySignature = proxyMethod->Function()->Signature();
@@ -1688,7 +1666,6 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
         fieldIdent = AllocNode<ir::Identifier>(proxySignature->Owner()->Name(), Allocator());
         fieldPropType = proxySignature->Owner();
         fieldIdent->SetVariable(proxySignature->Owner()->Variable());
-        fieldIdent->SetTsType(fieldPropType);
     } else {
         // Otherwise, we call the proxy method through the saved 'this' field
         auto *savedThis = lambdaBody[lambdaBody.size() - 4]->AsClassProperty();
@@ -1696,8 +1673,8 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
         fieldPropType = fieldProp->TsType()->AsETSObjectType();
         fieldIdent = Allocator()->New<ir::Identifier>(savedThis->Key()->AsIdentifier()->Name(), Allocator());
         fieldIdent->SetVariable(fieldProp);
-        fieldIdent->SetTsType(fieldPropType);
     }
+    fieldIdent->SetTsType(fieldPropType);
 
     // Set the type information for the proxy function call
     auto *funcIdent = AllocNode<ir::Identifier>(proxyMethod->Function()->Id()->Name(), Allocator());
@@ -1717,15 +1694,25 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
     resolvedCall->SetTsType(proxySignature->ReturnType());
     resolvedCall->SetSignature(proxySignature);
 
+    ir::Expression *returnExpression = nullptr;
     if (proxySignature->ReturnType()->IsETSVoidType()) {
-        return AllocNode<ir::ExpressionStatement>(resolvedCall);
+        auto *expressionStatementNode = AllocNode<ir::ExpressionStatement>(resolvedCall);
+        expressionStatementNode->SetParent(invokeFunc->Body());
+        invokeFunc->Body()->AsBlockStatement()->Statements().push_back(expressionStatementNode);
+        if (ifaceOverride) {
+            returnExpression = Allocator()->New<ir::UndefinedLiteral>();
+            returnExpression->Check(this);
+        }
+    } else {
+        if (ifaceOverride && resolvedCall->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+            resolvedCall->AddBoxingUnboxingFlags(GetBoxingFlag(resolvedCall->TsType()));
+        }
+        returnExpression = resolvedCall;
     }
 
-    if (ifaceOverride && resolvedCall->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        resolvedCall->AddBoxingUnboxingFlags(GetBoxingFlag(resolvedCall->TsType()));
-    }
-
-    return AllocNode<ir::ReturnStatement>(resolvedCall);
+    auto *returnStatement = Allocator()->New<ir::ReturnStatement>(returnExpression);
+    returnStatement->SetParent(invokeFunc->Body());
+    invokeFunc->Body()->AsBlockStatement()->Statements().push_back(returnStatement);
 }
 
 void ETSChecker::ResolveLambdaObjectCtor(ir::ClassDefinition *lambdaObject)
@@ -2605,16 +2592,7 @@ void ETSChecker::ResolveLambdaObjectInvoke(ir::ClassDefinition *lambdaObject, Si
         invokeFunc->Id()->Variable()->AsLocalVariable());
 
     // Fill out the type information for the body of the invoke function
-    auto *resolvedLambdaInvokeFunctionBody =
-        ResolveLambdaObjectInvokeFuncBody(lambdaObject, signatureRef, ifaceOverride);
-    resolvedLambdaInvokeFunctionBody->SetParent(invokeFunc->Body());
-    invokeFunc->Body()->AsBlockStatement()->Statements().push_back(resolvedLambdaInvokeFunctionBody);
-
-    if (resolvedLambdaInvokeFunctionBody->IsExpressionStatement()) {
-        auto *const returnStatement = Allocator()->New<ir::ReturnStatement>(nullptr);
-        returnStatement->SetParent(invokeFunc->Body());
-        invokeFunc->Body()->AsBlockStatement()->Statements().push_back(returnStatement);
-    }
+    ResolveLambdaObjectInvokeFuncBody(lambdaObject, signatureRef, ifaceOverride);
 }
 
 static ir::Expression *BuildParamExpression(ETSChecker *checker, ir::Identifier *paramIdent, Type *type)
@@ -2689,8 +2667,8 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
     return callParams;
 }
 
-ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject, Signature *signatureRef,
-                                                             bool ifaceOverride)
+void ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject, Signature *signatureRef,
+                                                   bool ifaceOverride)
 {
     const auto &lambdaBody = lambdaObject->Body();
     bool isStaticReference = signatureRef->HasSignatureFlag(SignatureFlags::STATIC);
@@ -2703,7 +2681,6 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
         fieldIdent->SetReference();
         fieldPropType = signatureRef->Owner();
         fieldIdent->SetVariable(signatureRef->Owner()->Variable());
-        fieldIdent->SetTsType(fieldPropType);
     } else {
         // Otherwise, we should call the referenced function through the saved field, which hold the object instance
         // reference
@@ -2712,8 +2689,8 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
         fieldIdent = AllocNode<ir::Identifier>("field0", Allocator());
         fieldIdent->SetReference();
         fieldIdent->SetVariable(fieldProp);
-        fieldIdent->SetTsType(fieldPropType);
     }
+    fieldIdent->SetTsType(fieldPropType);
 
     // Set the type information for the function reference call
     auto *funcIdent = AllocNode<ir::Identifier>(signatureRef->Function()->Id()->Name(), Allocator());
@@ -2734,15 +2711,25 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
     resolvedCall->SetTsType(signatureRef->ReturnType());
     resolvedCall->SetSignature(signatureRef);
 
+    ir::Expression *returnExpression = nullptr;
     if (signatureRef->ReturnType()->IsETSVoidType()) {
-        return AllocNode<ir::ExpressionStatement>(resolvedCall);
+        auto *expressionStatementNode = AllocNode<ir::ExpressionStatement>(resolvedCall);
+        expressionStatementNode->SetParent(invokeFunc->Body());
+        invokeFunc->Body()->AsBlockStatement()->Statements().push_back(expressionStatementNode);
+        if (ifaceOverride) {
+            returnExpression = Allocator()->New<ir::UndefinedLiteral>();
+            returnExpression->Check(this);
+        }
+    } else {
+        if (ifaceOverride && resolvedCall->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+            resolvedCall->AddBoxingUnboxingFlags(GetBoxingFlag(resolvedCall->TsType()));
+        }
+        returnExpression = resolvedCall;
     }
 
-    if (ifaceOverride && resolvedCall->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        resolvedCall->AddBoxingUnboxingFlags(GetBoxingFlag(resolvedCall->TsType()));
-    }
-
-    return AllocNode<ir::ReturnStatement>(resolvedCall);
+    auto *returnStatement = Allocator()->New<ir::ReturnStatement>(returnExpression);
+    returnStatement->SetParent(invokeFunc->Body());
+    invokeFunc->Body()->AsBlockStatement()->Statements().push_back(returnStatement);
 }
 
 bool ETSChecker::AreOverrideEquivalent(Signature *const s1, Signature *const s2)
@@ -2765,7 +2752,8 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // type R2 if any of the following is true:
 
     // - If R1 is a primitive type then R2 is identical to R1.
-    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_ENUM | TypeFlag::ETS_STRING_ENUM)) {
+    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_ENUM | TypeFlag::ETS_STRING_ENUM |
+                        TypeFlag::ETS_VOID)) {
         return Relation()->IsIdenticalTo(r2, r1);
     }
 

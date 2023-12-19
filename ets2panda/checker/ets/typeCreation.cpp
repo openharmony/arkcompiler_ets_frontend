@@ -228,7 +228,6 @@ std::map<util::StringView, GlobalTypeId> &GetNameToTypeIdMap()
         {compiler::Signatures::BUILTIN_LONG_BOX_CLASS, GlobalTypeId::ETS_LONG_BOX_BUILTIN},
         {compiler::Signatures::BUILTIN_FLOAT_BOX_CLASS, GlobalTypeId::ETS_FLOAT_BOX_BUILTIN},
         {compiler::Signatures::BUILTIN_DOUBLE_BOX_CLASS, GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_VOID_CLASS, GlobalTypeId::ETS_VOID_BUILTIN},
     };
 
     return nameToTypeId;
@@ -244,7 +243,6 @@ std::map<util::StringView, std::function<ETSObjectType *(const ETSChecker *)>> &
         {compiler::Signatures::BUILTIN_ERROR_CLASS, &ETSChecker::GlobalBuiltinErrorType},
         {compiler::Signatures::BUILTIN_TYPE_CLASS, &ETSChecker::GlobalBuiltinTypeType},
         {compiler::Signatures::BUILTIN_PROMISE_CLASS, &ETSChecker::GlobalBuiltinPromiseType},
-        {compiler::Signatures::BUILTIN_VOID_CLASS, &ETSChecker::GlobalBuiltinVoidType},
     };
 
     return nameToGlobalType;

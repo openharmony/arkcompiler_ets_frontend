@@ -81,7 +81,7 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
         ThrowTypeError("Condition must be of possible condition type", expr->Start());
     }
 
-    if (unboxedType == GlobalBuiltinVoidType() || unboxedType->IsETSVoidType()) {
+    if (unboxedType->IsETSVoidType()) {
         ThrowTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
     }
 
@@ -1790,7 +1790,7 @@ Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *objectType)
         return objectType;
     }
 
-    if (!objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || objectType->IsETSVoidType()) {
+    if (!objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         return nullptr;
     }
 
@@ -1814,7 +1814,9 @@ void ETSChecker::AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnb
 
 Type *ETSChecker::MaybePromotedBuiltinType(Type *type) const
 {
-    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ? checker::BoxingConverter::ETSTypeFromSource(this, type) : type;
+    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && !type->IsETSVoidType()
+               ? checker::BoxingConverter::ETSTypeFromSource(this, type)
+               : type;
 }
 
 Type const *ETSChecker::MaybePromotedBuiltinType(Type const *type) const

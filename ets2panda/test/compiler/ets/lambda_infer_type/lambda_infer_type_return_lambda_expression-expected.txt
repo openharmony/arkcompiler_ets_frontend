@@ -461,35 +461,7 @@
                 "type": "ETSFunctionType",
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 23,
-                          "column": 28
-                        },
-                        "end": {
-                          "line": 23,
-                          "column": 32
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 23,
-                        "column": 28
-                      },
-                      "end": {
-                        "line": 23,
-                        "column": 34
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 23,
@@ -497,7 +469,7 @@
                     },
                     "end": {
                       "line": 23,
-                      "column": 34
+                      "column": 32
                     }
                   }
                 },
@@ -508,7 +480,7 @@
                   },
                   "end": {
                     "line": 23,
-                    "column": 34
+                    "column": 32
                   }
                 }
               },
@@ -519,7 +491,7 @@
                 },
                 "end": {
                   "line": 23,
-                  "column": 34
+                  "column": 32
                 }
               }
             },

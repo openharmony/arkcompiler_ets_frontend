@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -287,6 +287,7 @@ public:
 
     void EmitFinalizer(LabelPair trycatchLabelPair,
                        const ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> &finalizerInsertions);
+    void EmitFinalizerInsertion(ETSGen *etsg, compiler::LabelPair labelPair, const ir::Statement *statement);
 
 private:
     const ir::TryStatement *tryStmt_ {};

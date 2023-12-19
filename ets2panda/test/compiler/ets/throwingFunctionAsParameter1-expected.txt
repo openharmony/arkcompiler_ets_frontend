@@ -170,35 +170,7 @@
                         "type": "ETSFunctionType",
                         "params": [],
                         "returnType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "void",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 16,
-                                  "column": 37
-                                },
-                                "end": {
-                                  "line": 16,
-                                  "column": 41
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 37
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 48
-                              }
-                            }
-                          },
+                          "type": "ETSPrimitiveType",
                           "loc": {
                             "start": {
                               "line": 16,
@@ -206,7 +178,7 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 48
+                              "column": 41
                             }
                           }
                         }
@@ -218,7 +190,7 @@
                           },
                           "end": {
                             "line": 16,
-                            "column": 48
+                            "column": 41
                           }
                         }
                       },
@@ -230,7 +202,7 @@
                         },
                         "end": {
                           "line": 16,
-                          "column": 48
+                          "column": 41
                         }
                       }
                     },
@@ -241,41 +213,13 @@
                       },
                       "end": {
                         "line": 16,
-                        "column": 48
+                        "column": 41
                       }
                     }
                   }
                 ],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 51
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 55
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 16,
-                        "column": 51
-                      },
-                      "end": {
-                        "line": 16,
-                        "column": 64
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 16,
@@ -283,7 +227,7 @@
                     },
                     "end": {
                       "line": 16,
-                      "column": 64
+                      "column": 55
                     }
                   }
                 },
@@ -435,35 +379,7 @@
                         "type": "ETSFunctionType",
                         "params": [],
                         "returnType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "void",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 20,
-                                  "column": 38
-                                },
-                                "end": {
-                                  "line": 20,
-                                  "column": 42
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 20,
-                                "column": 38
-                              },
-                              "end": {
-                                "line": 20,
-                                "column": 49
-                              }
-                            }
-                          },
+                          "type": "ETSPrimitiveType",
                           "loc": {
                             "start": {
                               "line": 20,
@@ -471,7 +387,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 49
+                              "column": 42
                             }
                           }
                         }
@@ -483,7 +399,7 @@
                           },
                           "end": {
                             "line": 20,
-                            "column": 49
+                            "column": 42
                           }
                         }
                       },
@@ -495,7 +411,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 49
+                          "column": 42
                         }
                       }
                     },
@@ -506,41 +422,13 @@
                       },
                       "end": {
                         "line": 20,
-                        "column": 49
+                        "column": 42
                       }
                     }
                   }
                 ],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 20,
-                          "column": 52
-                        },
-                        "end": {
-                          "line": 20,
-                          "column": 56
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 20,
-                        "column": 52
-                      },
-                      "end": {
-                        "line": 20,
-                        "column": 58
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 20,
@@ -548,7 +436,7 @@
                     },
                     "end": {
                       "line": 20,
-                      "column": 58
+                      "column": 56
                     }
                   }
                 },

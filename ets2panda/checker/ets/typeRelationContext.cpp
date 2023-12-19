@@ -121,10 +121,15 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
 
             if (paramType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
                 checker_->Relation()->SetNode(it);
+
                 auto *const boxedTypeArg = checker_->PrimitiveTypeAsETSBuiltinType(paramType);
                 ASSERT(boxedTypeArg);
                 paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
                                                       checker_->GetGlobalTypesHolder());
+            }
+
+            if (paramType->IsETSVoidType()) {
+                paramType = checker_->GlobalETSUndefinedType();
             }
 
             typeArgTypes.push_back(paramType);

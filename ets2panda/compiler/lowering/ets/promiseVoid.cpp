@@ -41,7 +41,7 @@ static ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *ch
             const auto *arg = returnStmt->Argument();
             if (arg == nullptr) {
                 auto *voidId =
-                    checker->AllocNode<ir::Identifier>(compiler::Signatures::VOID_OBJECT, checker->Allocator());
+                    checker->AllocNode<ir::Identifier>(compiler::Signatures::UNDEFINED, checker->Allocator());
                 const auto &returnLoc = returnStmt->Range();
                 voidId->SetRange({returnLoc.end, returnLoc.end});
                 returnStmt->SetArgument(voidId);
@@ -65,8 +65,7 @@ static ir::TypeNode *CreatePromiseVoidType(checker::ETSChecker *checker, const l
 {
     auto *voidParam = [checker]() {
         auto paramsVector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
-        auto *voidId =
-            checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_VOID_CLASS, checker->Allocator());
+        auto *voidId = checker->AllocNode<ir::Identifier>(compiler::Signatures::UNDEFINED, checker->Allocator());
         voidId->SetReference();
         auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(voidId);
         paramsVector.push_back(checker->AllocNode<ir::ETSTypeReference>(part));
@@ -117,7 +116,7 @@ static bool CheckForPromiseVoid(const ir::TypeNode *type)
     }
 
     const auto isTypePromise = typePart->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_PROMISE_CLASS;
-    const auto isParamVoid = paramPart->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_VOID_CLASS;
+    const auto isParamVoid = paramPart->Name()->AsIdentifier()->Name() == compiler::Signatures::UNDEFINED;
 
     return isTypePromise && isParamVoid;
 }
@@ -206,9 +205,7 @@ bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const pa
         }
 
         const auto *id = arg->AsIdentifier();
-        return id->Name() == compiler::Signatures::VOID_OBJECT;
-
-        return true;
+        return id->Name() == compiler::Signatures::UNDEFINED;
     };
 
     auto isOk = true;

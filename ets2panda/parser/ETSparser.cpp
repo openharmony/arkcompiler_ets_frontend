@@ -1915,6 +1915,9 @@ ir::TypeNode *ETSParser::GetTypeAnnotationOfPrimitiveType([[maybe_unused]] lexer
         case lexer::TokenType::KEYW_LONG:
             typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::LONG);
             break;
+        case lexer::TokenType::KEYW_VOID:
+            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::VOID);
+            break;
         default:
             typeAnnotation = ParseTypeReference(options);
             break;
@@ -2058,6 +2061,10 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
                 (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
                 return std::make_pair(typeAnnotation, false);
             }
+            break;
+        }
+        case lexer::TokenType::KEYW_VOID: {
+            typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::VOID);
             break;
         }
         case lexer::TokenType::KEYW_BOOLEAN: {

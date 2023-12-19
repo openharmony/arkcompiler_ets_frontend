@@ -90,9 +90,18 @@ checker::Type *ETSTypeReferencePart::Check(checker::ETSChecker *checker)
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 {
     if (prev_ == nullptr) {
-        if ((name_->IsIdentifier()) && (name_->AsIdentifier()->Variable() != nullptr) &&
-            (name_->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl())) {
-            return checker->HandleTypeAlias(name_, typeParams_);
+        if (name_->IsIdentifier()) {
+            if ((name_->AsIdentifier()->Variable() != nullptr) &&
+                (name_->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl())) {
+                return checker->HandleTypeAlias(name_, typeParams_);
+            }
+            if (name_->AsIdentifier()->Name() == compiler::Signatures::UNDEFINED) {
+                return checker->GlobalETSUndefinedType();
+            }
+
+            if (name_->AsIdentifier()->Name() == compiler::Signatures::NULL_LITERAL) {
+                return checker->GlobalETSNullType();
+            }
         }
 
         checker::Type *baseType = checker->GetReferencedTypeBase(name_);
