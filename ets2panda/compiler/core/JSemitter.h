@@ -23,7 +23,7 @@ namespace panda::es2panda::compiler {
 class JSFunctionEmitter : public FunctionEmitter {
 public:
     JSFunctionEmitter(const CodeGen *cg, ProgramElement *programElement) : FunctionEmitter(cg, programElement) {}
-    ~JSFunctionEmitter() = default;
+    ~JSFunctionEmitter() override = default;
     NO_COPY_SEMANTIC(JSFunctionEmitter);
     NO_MOVE_SEMANTIC(JSFunctionEmitter);
 

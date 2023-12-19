@@ -52,7 +52,7 @@ public:
 
     NO_COPY_SEMANTIC(VarBinder);
     NO_MOVE_SEMANTIC(VarBinder);
-    ~VarBinder() = default;
+    virtual ~VarBinder() = default;
 
     void InitTopScope();
     virtual void IdentifierAnalysis();

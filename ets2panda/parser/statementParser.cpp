@@ -958,7 +958,7 @@ void ParserImpl::ThrowIfBodyEmptyError([[maybe_unused]] ir::Statement *consequen
 ir::IfStatement *ParserImpl::ParseIfStatement()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-    lexer::SourcePosition endLoc = lexer_->GetToken().End();
+    lexer::SourcePosition endLoc;
     lexer_->NextToken();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {

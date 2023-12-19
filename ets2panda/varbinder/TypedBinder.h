@@ -25,7 +25,7 @@ public:
 
     NO_COPY_SEMANTIC(TypedBinder);
     NO_MOVE_SEMANTIC(TypedBinder);
-    ~TypedBinder() = default;
+    ~TypedBinder() override = default;
 
 protected:
     void HandleCustomNodes(ir::AstNode *childNode) override;

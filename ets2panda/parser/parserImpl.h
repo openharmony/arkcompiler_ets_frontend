@@ -318,7 +318,7 @@ protected:
                                                                   ArrowFunctionDescriptor *desc,
                                                                   ir::TSTypeParameterDeclaration *typeParamDecl,
                                                                   ir::TypeNode *returnTypeAnnotation);
-    ir::Expression *ParseAssignmentExpression(ir::Expression *expression,
+    ir::Expression *ParseAssignmentExpression(ir::Expression *lhsExpression,
                                               ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::SequenceExpression *ParseSequenceExpression(ir::Expression *startExpr, bool acceptRest = false);
     ir::FunctionExpression *ParseFunctionExpression(ParserStatus newStatus = ParserStatus::NO_OPTS);
@@ -434,7 +434,7 @@ protected:
                                                                        const lexer::SourcePosition &startLoc);
     virtual bool ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
                                                    const lexer::SourcePosition &startLoc, bool ignoreCallExpression);
-    virtual ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr);
+    virtual ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpression);
     virtual bool IsNamedFunctionExpression();
     virtual ir::Identifier *ParsePrimaryExpressionIdent(ExpressionParseFlags flags);
     virtual void ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement);

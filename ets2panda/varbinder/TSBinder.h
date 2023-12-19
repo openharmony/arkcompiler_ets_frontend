@@ -25,7 +25,7 @@ public:
 
     NO_COPY_SEMANTIC(TSBinder);
     NO_MOVE_SEMANTIC(TSBinder);
-    ~TSBinder() = default;
+    ~TSBinder() override = default;
 
     ScriptExtension Extension() const override
     {

@@ -240,8 +240,8 @@ void ParserImpl::CheckAccessorPair(const ArenaVector<ir::AstNode *> &properties,
             continue;
         }
 
-        ir::ModifierFlags getAccess = ir::ModifierFlags::NONE;
-        ir::ModifierFlags setAccess = ir::ModifierFlags::NONE;
+        ir::ModifierFlags getAccess;
+        ir::ModifierFlags setAccess;
 
         if (methodKind == ir::MethodDefinitionKind::GET) {
             setAccess = access;
