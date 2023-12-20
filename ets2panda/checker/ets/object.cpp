@@ -1540,7 +1540,12 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         searchFlag |= PropertySearchFlags::SEARCH_ALL;
     }
 
-    auto *const prop = target->GetProperty(memberExpr->Property()->AsIdentifier()->Name(), searchFlag);
+    auto searchName = target->GetReExportAliasValue(memberExpr->Property()->AsIdentifier()->Name());
+    auto *const prop = target->GetProperty(searchName, searchFlag);
+
+    if (memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
+        globalFunctionVar = ResolveInstanceExtension(memberExpr);
+    }
 
     if (globalFunctionVar == nullptr ||
         (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE))) {
@@ -1570,6 +1575,15 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
     resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
 
+    ResolveMemberReferenceValidate(prop, searchFlag, memberExpr);
+
+    return resolveRes;
+}
+
+void ETSChecker::ResolveMemberReferenceValidate(varbinder::LocalVariable *const prop,
+                                                PropertySearchFlags const searchFlag,
+                                                const ir::MemberExpression *const memberExpr)
+{
     if (prop->HasFlag(varbinder::VariableFlags::METHOD) && !IsVariableGetterSetter(prop) &&
         (searchFlag & PropertySearchFlags::IS_FUNCTIONAL) == 0) {
         ThrowTypeError("Method used in wrong context", memberExpr->Property()->Start());
@@ -1585,8 +1599,6 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     if (memberExpr->Parent()->IsVariableDeclarator() || memberExpr->Parent()->IsClassProperty()) {
         ValidateVarDeclaratorOrClassProperty(memberExpr, prop);
     }
-
-    return resolveRes;
 }
 
 void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefinition *classDef)

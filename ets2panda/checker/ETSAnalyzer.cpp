@@ -1109,6 +1109,21 @@ checker::Type *ETSAnalyzer::SetAndAdjustType(ETSChecker *checker, ir::MemberExpr
     return expr->AdjustType(checker, resType);
 }
 
+std::pair<checker::Type *, util::StringView> SearchReExportsType(Type *baseType, ir::MemberExpression *expr,
+                                                                 util::StringView aliasName)
+{
+    for (auto item : baseType->AsETSObjectType()->ReExports()) {
+        auto name = item->AsETSObjectType()->GetReExportAliasValue(aliasName);
+        if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
+            return std::make_pair(item, name);
+        }
+        if (auto reExportType = SearchReExportsType(item, expr, name); reExportType.first != nullptr) {
+            return reExportType;
+        }
+    }
+    return std::make_pair(nullptr, util::StringView());
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     if (expr->TsType() != nullptr) {
@@ -1123,6 +1138,18 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (baseType->DefinitelyETSNullish() && expr->Object()->IsIdentifier()) {
         baseType = expr->Object()->AsIdentifier()->Variable()->TsType();
     }
+
+    if (baseType->IsETSObjectType() && !baseType->AsETSObjectType()->ReExports().empty() &&
+        baseType->AsETSObjectType()->GetProperty(expr->Property()->AsIdentifier()->Name(),
+                                                 PropertySearchFlags::SEARCH_ALL) == nullptr) {
+        if (auto reExportType = SearchReExportsType(baseType, expr, expr->Property()->AsIdentifier()->Name());
+            reExportType.first != nullptr) {
+            baseType = reExportType.first;
+            expr->object_->AsIdentifier()->SetTsType(baseType);
+            expr->property_->AsIdentifier()->SetName(reExportType.second);
+        }
+    }
+
     checker->CheckNonNullish(expr->Object());
 
     if (expr->IsComputed()) {
@@ -1639,7 +1666,6 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
     }
 
     auto *importDecl = st->Parent()->AsETSImportDeclaration();
-    auto importPath = importDecl->ResolvedSource()->Str();
 
     if (importDecl->IsPureDynamic()) {
         auto *type = checker->GlobalBuiltinDynamicType(importDecl->Language());
@@ -1647,39 +1673,7 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
         return type;
     }
 
-    auto [moduleName, isPackageModule] = checker->VarBinder()->AsETSBinder()->GetModuleInfo(importPath);
-
-    std::vector<util::StringView> syntheticNames = checker->GetNameForSynteticObjectType(moduleName);
-
-    ASSERT(!syntheticNames.empty());
-
-    auto assemblerName = syntheticNames[0];
-    if (!isPackageModule) {
-        assemblerName = util::UString(assemblerName.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL),
-                                      checker->Allocator())
-                            .View();
-    }
-
-    auto *moduleObjectType = checker->Allocator()->New<checker::ETSObjectType>(
-        checker->Allocator(), syntheticNames[0], assemblerName, st->Local()->AsIdentifier(),
-        checker::ETSObjectFlags::CLASS, checker->Relation());
-
-    auto *rootDecl = checker->Allocator()->New<varbinder::ClassDecl>(syntheticNames[0]);
-    varbinder::LocalVariable *rootVar =
-        checker->Allocator()->New<varbinder::LocalVariable>(rootDecl, varbinder::VariableFlags::NONE);
-    rootVar->SetTsType(moduleObjectType);
-
-    syntheticNames.erase(syntheticNames.begin());
-    checker::ETSObjectType *lastObjectType(moduleObjectType);
-
-    for (const auto &syntheticName : syntheticNames) {
-        lastObjectType = CreateSyntheticType(checker, syntheticName, lastObjectType, st->Local()->AsIdentifier());
-    }
-
-    checker->SetPropertiesForModuleObject(lastObjectType, importPath);
-    checker->SetrModuleObjectTsType(st->Local(), lastObjectType);
-
-    return moduleObjectType;
+    return checker->GetImportSpecifierObjectType(importDecl, st->Local()->AsIdentifier());
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) const

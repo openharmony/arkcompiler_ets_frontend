@@ -449,7 +449,11 @@ public:
     static std::string GetAsyncImplName(const util::StringView &name);
     static std::string GetAsyncImplName(ir::MethodDefinition *asyncMethod);
     std::vector<util::StringView> GetNameForSynteticObjectType(const util::StringView &source);
-    void SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath);
+    template <checker::PropertyType TYPE>
+    void BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType, ir::ETSImportDeclaration *importDecl,
+                                         const varbinder::Scope::VariableMap &bindings);
+    void SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
+                                      ir::ETSImportDeclaration *importDecl = nullptr);
     void SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType);
     Type *GetReferencedTypeFromBase(Type *baseType, ir::Expression *name);
     Type *GetReferencedTypeBase(ir::Expression *name);
@@ -578,6 +582,11 @@ public:
                                                              varbinder::ClassScope *scope, bool isSetter,
                                                              ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
+    ETSObjectType *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
+    void ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
+                                                  checker::ETSObjectType *lastObjectType, ir::Identifier *ident);
+    checker::ETSObjectType *CreateSyntheticType(util::StringView const &syntheticName,
+                                                checker::ETSObjectType *lastObjectType, ir::Identifier *id);
 
     // Smart cast support
     [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
@@ -683,6 +692,8 @@ private:
     void ValidateGetterSetter(const ir::MemberExpression *memberExpr, const varbinder::LocalVariable *prop,
                               PropertySearchFlags searchFlag);
     void ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *memberExpr, varbinder::LocalVariable *prop);
+    void ResolveMemberReferenceValidate(varbinder::LocalVariable *prop, PropertySearchFlags searchFlag,
+                                        const ir::MemberExpression *const memberExpr);
     std::tuple<bool, bool> IsResolvedAndValue(const ir::Expression *expr, Type *type) const;
     PropertySearchFlags GetSearchFlags(const ir::MemberExpression *memberExpr, const varbinder::Variable *targetRef);
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
