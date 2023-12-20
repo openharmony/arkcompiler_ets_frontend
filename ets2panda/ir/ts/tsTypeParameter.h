@@ -57,7 +57,7 @@ public:
         return constraint_;
     }
 
-    const TypeNode *DefaultType() const
+    TypeNode *DefaultType() const
     {
         return default_type_;
     }

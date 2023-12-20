@@ -2303,21 +2303,23 @@ void ETSChecker::CheckNumberOfTypeArguments(Type *const type, ir::TSTypeParamete
                                             ir::TSTypeParameterInstantiation *const type_args,
                                             const lexer::SourcePosition &pos)
 {
-    if (type_param_decl != nullptr && type_args == nullptr) {
+    if (type_param_decl == nullptr) {
+        if (type_args != nullptr) {
+            ThrowTypeError({"Type '", type, "' is not generic."}, pos);
+        } else {
+            return;
+        }
+    }
+
+    size_t minimum_type_args =
+        std::count_if(type_param_decl->Params().begin(), type_param_decl->Params().end(),
+                      [](ir::TSTypeParameter *param) { return param->DefaultType() == nullptr; });
+
+    if (type_args == nullptr && minimum_type_args > 0) {
         ThrowTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);
-    }
-
-    if (type_param_decl == nullptr && type_args != nullptr) {
-        ThrowTypeError({"Type '", type, "' is not generic."}, pos);
-    }
-
-    if (type_args == nullptr) {
-        return;
-    }
-
-    ASSERT(type_param_decl != nullptr && type_args != nullptr);
-    if (type_param_decl->Params().size() != type_args->Params().size()) {
-        ThrowTypeError({"Type '", type, "' has ", type_param_decl->Params().size(), " number of type parameters, but ",
+    } else if (type_args != nullptr && ((minimum_type_args > type_args->Params().size()) ||
+                                        (type_param_decl->Params().size() < type_args->Params().size()))) {
+        ThrowTypeError({"Type '", type, "' has ", minimum_type_args, " number of type parameters, but ",
                         type_args->Params().size(), " type arguments were provided."},
                        pos);
     }

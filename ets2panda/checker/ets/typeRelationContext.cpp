@@ -44,7 +44,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 {
     checker_->CheckNumberOfTypeArguments(type, type_param_decl, type_args, pos);
 
-    if (type_args == nullptr) {
+    if (type_param_decl == nullptr) {
         result_ = type;
         return true;
     }
@@ -63,23 +63,41 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
     In this case, we will check "Comparable<String>" with "Char", since "Char" doesn't
     extends "Comparable<String>", we will get an error here.
     */
+
+    ASSERT(type_param_decl != nullptr);
+
     for (size_t type_param_iter = 0; type_param_iter < type_param_decl->Params().size(); ++type_param_iter) {
-        auto *const type_arg_type = type_args->Params().at(type_param_iter)->GetType(checker_);
+        Type *type_arg_type;
+
+        if (type_args != nullptr && (type_param_iter < type_args->Params().size())) {
+            type_arg_type = type_args->Params().at(type_param_iter)->GetType(checker_);
+        } else {
+            type_arg_type =
+                type_param_decl->Params().at(type_param_iter)->DefaultType()->AsETSTypeReference()->GetType(checker_);
+        }
+
         checker_->CheckValidGenericTypeParameter(type_arg_type, pos);
         auto *const type_param_type = type->TypeArguments().at(type_param_iter);
         substitution->emplace(type_param_type, type_arg_type);
     }
 
     for (size_t type_param_iter = 0; type_param_iter < type_param_decl->Params().size(); ++type_param_iter) {
-        auto *const type_arg_type = type_args->Params().at(type_param_iter)->GetType(checker_);
-        auto *const type_param_constraint =
-            type_param_decl->Params().at(type_param_iter)->AsTSTypeParameter()->Constraint();
-        if (type_param_constraint == nullptr) {
+        ir::TSTypeParameter *type_param = type_param_decl->Params().at(type_param_iter)->AsTSTypeParameter();
+        Type *type_arg_type;
+
+        if (type_args != nullptr && (type_param_iter < type_args->Params().size())) {
+            type_arg_type = type_args->Params().at(type_param_iter)->GetType(checker_);
+        } else {
+            type_arg_type =
+                type_param_decl->Params().at(type_param_iter)->DefaultType()->AsETSTypeReference()->GetType(checker_);
+        }
+
+        if (type_param->Constraint() == nullptr) {
             continue;
         }
 
         bool assignable = false;
-        auto *constraint_type = type_param_constraint->GetType(checker_);
+        auto *constraint_type = type_param->Constraint()->GetType(checker_);
 
         if (!constraint_type->AsETSObjectType()->TypeArguments().empty()) {
             constraint_type = constraint_type->Substitute(checker_->Relation(), substitution);
@@ -96,7 +114,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
                 });
         }
 
-        if (!assignable && !checker_->Relation()->NoThrowGenericTypeAlias()) {
+        if (!assignable && type_args != nullptr && !checker_->Relation()->NoThrowGenericTypeAlias()) {
             checker_->ThrowTypeError({"Type '", type_arg_type->AsETSObjectType(),
                                       "' is not assignable to constraint type '", constraint_type, "'."},
                                      type_args->Params().at(type_param_iter)->Start());
@@ -128,25 +146,31 @@ bool InstantiationContext::ValidateTypeArg(ETSObjectType *constraint_type, ETSOb
 void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args)
 {
     ArenaVector<Type *> type_arg_types(checker_->Allocator()->Adapter());
-    type_arg_types.reserve(type_args->Params().size());
+    type_arg_types.reserve(type->TypeArguments().size());
 
     auto flags = ETSObjectFlags::NO_OPTS;
 
-    for (auto *const it : type_args->Params()) {
-        auto *param_type = checker_->GetTypeFromTypeAnnotation(it);
+    if (type_args != nullptr) {
+        for (auto *const it : type_args->Params()) {
+            auto *param_type = checker_->GetTypeFromTypeAnnotation(it);
 
-        if (param_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-            checker_->Relation()->SetNode(it);
-            auto *const boxed_type_arg = checker_->PrimitiveTypeAsETSBuiltinType(param_type);
-            ASSERT(boxed_type_arg);
-            param_type = boxed_type_arg->Instantiate(checker_->Allocator(), checker_->Relation(),
-                                                     checker_->GetGlobalTypesHolder());
+            if (param_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+                checker_->Relation()->SetNode(it);
+                auto *const boxed_type_arg = checker_->PrimitiveTypeAsETSBuiltinType(param_type);
+                ASSERT(boxed_type_arg);
+                param_type = boxed_type_arg->Instantiate(checker_->Allocator(), checker_->Relation(),
+                                                         checker_->GetGlobalTypesHolder());
+            }
+
+            type_arg_types.push_back(param_type);
         }
-
-        type_arg_types.push_back(param_type);
     }
 
-    InstantiateType(type, type_arg_types, type_args->Range().start);
+    while (type_arg_types.size() < type->TypeArguments().size()) {
+        type_arg_types.push_back(type->TypeArguments().at(type_arg_types.size()));
+    }
+
+    InstantiateType(type, type_arg_types, (type_args == nullptr) ? lexer::SourcePosition() : type_args->Range().start);
     result_->AddObjectFlag(flags);
 }
 
@@ -155,8 +179,9 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
 {
     util::StringView hash = checker_->GetHashFromTypeArguments(type_arg_types);
     auto type_params = type->TypeArguments();
-    if (type_params.size() != type_arg_types.size()) {
-        checker_->ThrowTypeError({"Wrong number of type arguments"}, pos);
+
+    while (type_arg_types.size() < type_params.size()) {
+        type_arg_types.push_back(type_params.at(type_arg_types.size()));
     }
 
     auto *substitution = checker_->NewSubstitution();

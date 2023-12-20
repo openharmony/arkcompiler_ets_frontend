@@ -4217,7 +4217,15 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
         constraint = ParseTypeAnnotation(&new_options);
     }
 
-    auto *type_param = AllocNode<ir::TSTypeParameter>(param_ident, constraint, nullptr, variance_modifier);
+    ir::TypeNode *default_type = nullptr;
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        Lexer()->NextToken();  // eat '='
+        default_type = ParseTypeAnnotation(options);
+    }
+
+    auto *type_param = AllocNode<ir::TSTypeParameter>(param_ident, constraint, default_type, variance_modifier);
+
     type_param->SetRange({start_loc, Lexer()->GetToken().End()});
     return type_param;
 }
