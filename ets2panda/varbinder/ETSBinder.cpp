@@ -143,6 +143,9 @@ void ETSBinder::ResolveReferenceForScope(ir::AstNode *const node, Scope *const s
     switch (node->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = node->AsIdentifier();
+            if (ident->Variable() != nullptr) {
+                break;
+            }
             if (auto const res = scope->Find(ident->Name(), ResolveBindingOptions::ALL); res.variable != nullptr) {
                 ident->SetVariable(res.variable);
             }
