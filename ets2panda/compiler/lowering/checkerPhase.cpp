@@ -16,6 +16,7 @@
 #include "checkerPhase.h"
 #include "checker/checker.h"
 #include "compiler/core/ASTVerifier.h"
+#include "varbinder/ETSBinder.h"
 #include "compiler/core/compilerContext.h"
 
 namespace ark::es2panda::compiler {

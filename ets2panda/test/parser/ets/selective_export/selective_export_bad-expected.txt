@@ -1,1 +1,1 @@
-SyntaxError: Cannot find name 'foo' to export. [selective_export_bad.ets:16:8]
+SyntaxError: Cannot find name 'foo' to export. [selective_export_bad.ets:16:10]

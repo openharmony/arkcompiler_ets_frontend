@@ -268,7 +268,7 @@ ir::ETSStructDeclaration *ParserImpl::ParseStructDeclaration(ir::ClassDefinition
 {
     const lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     modifiers |= ir::ClassDefinitionModifiers::DECLARATION;
-    if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {
+    if (IsExternal()) {
         modifiers |= ir::ClassDefinitionModifiers::FROM_EXTERNAL;
     }
 
@@ -292,7 +292,7 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModif
 {
     const lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     modifiers |= ir::ClassDefinitionModifiers::DECLARATION;
-    if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {
+    if (IsExternal()) {
         modifiers |= ir::ClassDefinitionModifiers::FROM_EXTERNAL;
     }
 

@@ -290,9 +290,6 @@ public:
     }
 
 private:
-    friend ark::es2panda::compiler::ScopesInitPhase;
-
-private:
     Identifier *id_ {};
     FunctionSignature irSignature_;
     AstNode *body_;

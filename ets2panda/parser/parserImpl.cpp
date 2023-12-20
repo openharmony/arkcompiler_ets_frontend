@@ -87,7 +87,6 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
     program_->SetKind(kind);
-    program_->VarBinder()->InitTopScope();
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
 
@@ -950,13 +949,13 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
     return spreadElementNode;
 }
 
-void ParserImpl::CheckRestrictedBinding()
+void ParserImpl::CheckRestrictedBinding() const
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     CheckRestrictedBinding(lexer_->GetToken().KeywordType());
 }
 
-void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType)
+void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType) const
 {
     if (keywordType == lexer::TokenType::KEYW_ARGUMENTS || keywordType == lexer::TokenType::KEYW_EVAL) {
         ThrowSyntaxError(
@@ -966,7 +965,7 @@ void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType)
     }
 }
 
-void ParserImpl::CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos)
+void ParserImpl::CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos) const
 {
     if (ident.Is("eval") || ident.Is("arguments")) {
         ThrowSyntaxError(

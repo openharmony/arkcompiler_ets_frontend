@@ -114,6 +114,26 @@ public:
     const Token &GetToken() const;
     size_t Line() const;
 
+    bool TryEatTokenType(lexer::TokenType type)
+    {
+        auto token = GetToken();
+        if (token.Type() == type) {
+            NextToken();
+            return true;
+        }
+        return false;
+    }
+
+    std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
+    {
+        auto token = GetToken();
+        if (token.KeywordType() == type) {
+            NextToken();
+            return token;
+        }
+        return std::nullopt;
+    }
+
     LexerPosition Save() const;
     void Rewind(const LexerPosition &pos);
     void BackwardToken(TokenType type, size_t offset);

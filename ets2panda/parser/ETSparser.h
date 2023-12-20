@@ -66,9 +66,6 @@ public:
     }
 
     //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
-    //  NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
-    //  and correct parent and, probably, variable set to the node(s) after obtaining
-
     ir::Expression *CreateExpression(std::string_view sourceCode,
                                      ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
                                      std::string_view fileName = DEFAULT_SOURCE_FILE);
@@ -112,56 +109,37 @@ public:
         return CreateFormattedStatements(sourceCode, insertingNodes, fileName);
     }
 
-private:
-    struct ImportData {
-        Language lang;
-        std::string module;
-        bool hasDecl;
-    };
+    ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc,
+                                                                const std::vector<std::string> &paths);
 
-    std::map<util::StringView, ir::AstNode *> fieldMap_;
-    std::map<util::StringView, lexer::SourcePosition> exportNameMap_;
+private:
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
-    void ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements);
-    ArenaVector<ir::AstNode *> ParseTopLevelStatements(ArenaVector<ir::Statement *> &statements);
-    void ParseTopLevelType(ArenaVector<ir::Statement *> &statements, bool &defaultExport, std::size_t currentPos,
-                           std::function<ir::Statement *(ETSParser *)> const &parserFunction);
-    void ParseTopLevelNextToken(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::AstNode *> &globalProperties,
-                                ir::ScriptFunction *initFunction);
-    void ParseTopLevelNextTokenDefault(ArenaVector<ir::Statement *> &statements, ir::ScriptFunction *initFunction,
-                                       size_t currentPos, lexer::TokenType tokenType, bool defaultExport);
-    ir::ModifierFlags ResolveMemberModifiers();
-    lexer::SourcePosition ParseTopLevelNextTokenResolution(ArenaVector<ir::Statement *> &statements,
-                                                           ArenaVector<ir::AstNode *> &globalProperties,
-                                                           ir::ScriptFunction *initFunction, size_t currentPos,
-                                                           bool defaultExport);
-    void ParseTokenOfNative(ark::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers);
-    void ParseTokenOfFunction(ir::ModifierFlags memberModifiers, lexer::SourcePosition startLoc,
-                              ArenaVector<ir::AstNode *> &globalProperties);
+    ir::ETSPackageDeclaration *ParsePackageDeclaration();
+    ArenaVector<ir::Statement *> ParseTopLevelStatements();
+
 #ifdef USE_FTW
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
-    void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
-    ImportData GetImportData(const std::string &path);
-    void ParseSources(bool isExternal = true);
     ir::ImportSource *ParseSourceFromClause(bool requireFrom);
-    void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isExport = false);
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
-    void ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
-    void ParseDefaultSources();
-    void ParseSource(const SourceFile &sourceFile);
-    void CreateGlobalClass();
-    ArenaVector<ir::Statement *> PrepareGlobalClass();
-    ArenaVector<ir::Statement *> PrepareExternalGlobalClass(const SourceFile &sourceFile);
-    void ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
+    ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
+    std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
+    std::vector<Program *> ParseSources(const ArenaVector<util::StringView> &paths);
+    std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
+    ArenaVector<ir::ImportSpecifier *> ParseNamedSpecifiers();
+    ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
+    parser::Program *ParseSource(const SourceFile &sourceFile);
+    void AddExternalSource(const std::vector<Program *> &programs);
+    ir::ETSScript *ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
 
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                        ir::ClassDefinitionModifiers modifiers,
                                                        ir::ModifierFlags memberModifiers);
     ir::MethodDefinition *ParseInterfaceGetterSetterMethod(ir::ModifierFlags modifiers);
+    ir::Statement *ParseIdentKeyword();
     ir::Statement *ParseTypeDeclaration(bool allowStatic = false);
     ir::Statement *ParseTypeDeclarationAbstractFinal(bool allowStatic, ir::ClassDefinitionModifiers modifiers);
     ir::ModifierFlags ParseClassModifiers();
@@ -187,11 +165,7 @@ private:
                                                      ir::MethodDefinitionKind methodKind);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                   ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *initFunction = nullptr,
-                                   lexer::SourcePosition *letLoc = nullptr);
-    lexer::SourcePosition InitializeGlobalVariable(ir::Identifier *fieldName, ir::Expression *&initializer,
-                                                   ir::ScriptFunction *initFunction, lexer::SourcePosition &startLoc,
-                                                   ir::TypeNode *typeAnnotation);
+                                   ArenaVector<ir::AstNode *> *declarations, lexer::SourcePosition *letLoc = nullptr);
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseTypeReferencePart(
         TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
@@ -227,7 +201,7 @@ private:
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Statement *ParseTryStatement() override;
     ir::DebuggerStatement *ParseDebuggerStatement() override;
-    void ParseExport(lexer::SourcePosition startLoc);
+    ir::Statement *ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers);
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
@@ -240,6 +214,8 @@ private:
     bool CheckModuleAsModifier();
     ir::Expression *ParseFunctionParameterExpression(ir::AnnotatedExpression *paramIdent,
                                                      ir::ETSUndefinedType *defaultUndef);
+    std::pair<ir::Expression *, std::string> TypeAnnotationValue(ir::TypeNode *typeAnnotation);
+    ir::ETSParameterExpression *ParseFunctionParameterTail(ir::AnnotatedExpression *paramIdent, bool defaultUndefined);
     ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
     ir::ETSUnionType *CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation, ir::ETSUndefinedType *defaultUndef);
@@ -304,6 +280,7 @@ private:
     ir::ThisExpression *ParseThisExpression() override;
     ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
+    ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers);
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement() override;
     ir::TypeNode *ParseInterfaceExtendsElement() override;
     // NOLINTNEXTLINE(google-default-arguments)
@@ -318,17 +295,14 @@ private:
 
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
-    // NOLINTNEXTLINE(google-default-arguments)
-    void CreateCCtor(ArenaVector<ir::AstNode *> &properties, const lexer::SourcePosition &loc,
-                     bool inGlobalClass = false) override;
     void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
                                    ir::ClassDefinitionModifiers modifiers,
                                    const lexer::SourcePosition &startLoc) override;
     bool ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
                                            const lexer::SourcePosition &startLoc, bool ignoreCallExpression) override;
     bool ParsePotentialNonNullExpression(ir::Expression **expression, lexer::SourcePosition startLoc) override;
-    void MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition startPos, bool defaultExport,
-                            std::size_t numOfElements = 1);
+
+    std::pair<ir::ModifierFlags, lexer::SourcePosition> ParseMemberModifiers();
 
     std::shared_ptr<ArkTsConfig> ArkTSConfig() const
     {
@@ -341,7 +315,11 @@ private:
     }
 
     bool IsStructKeyword() const;
-    bool IsTypeKeyword() const;
+
+    bool IsExternal() const override
+    {
+        return pathHandler_->IsStdLib(GetProgram());
+    }
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
@@ -350,16 +328,15 @@ private:
 
     ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *const options);
 
-    ir::ScriptFunction *AddInitMethod(ArenaVector<ir::AstNode *> &globalProperties);
-    ir::Statement *ParseTopLevelStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
+    ir::Statement *ParseTopLevelDeclStatement(StatementParsingFlags flags);
+    ir::Statement *ParseTopLevelStatement();
 
     void ParseTrailingBlock([[maybe_unused]] ir::CallExpression *callExpr) override;
 
     void CheckDeclare();
 
     // Methods to create AST node(s) from the specified string (part of valid ETS-code!)
-    // NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
-    // and correct parent and, probably, variable set to the node(s) after obtaining
+    // NOTE: ScopeInitPhase, SetParent should be called on created subtree after calling any of these methods,
     // NOLINTBEGIN(modernize-avoid-c-arrays)
     inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
     // NOLINTEND(modernize-avoid-c-arrays)

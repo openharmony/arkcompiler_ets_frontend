@@ -20,6 +20,14 @@
 
 namespace ark::es2panda::ir {
 
+void ClassElement::SetValue(Expression *value) noexcept
+{
+    if (value != nullptr) {
+        value->SetParent(this);
+    }
+    value_ = value;
+}
+
 Identifier *ClassElement::Id() noexcept
 {
     return key_ != nullptr && key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;

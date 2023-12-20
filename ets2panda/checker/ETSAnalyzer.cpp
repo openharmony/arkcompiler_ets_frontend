@@ -1232,6 +1232,11 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ClassExpression *expr) co
     UNREACHABLE();
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSReExportDeclaration *expr) const
+{
+    UNREACHABLE();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -2301,13 +2306,7 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
         }
 
         const auto name = containingFunc->Scope()->InternalName().Mutf8();
-        if (name.find(compiler::Signatures::ETS_MAIN_WITH_MANGLE_BEGIN) != std::string::npos) {
-            if (funcReturnType == checker->GlobalBuiltinVoidType()) {
-                funcReturnType = checker->GlobalVoidType();
-            } else if (!funcReturnType->IsETSVoidType() && !funcReturnType->IsIntType()) {
-                checker->ThrowTypeError("Bad return type, main enable only void or int type.", st->Start());
-            }
-        }
+        CheckArgumentVoidType(funcReturnType, checker, name, st);
 
         if (stArgument->IsObjectExpression()) {
             stArgument->AsObjectExpression()->SetPreferredType(funcReturnType);

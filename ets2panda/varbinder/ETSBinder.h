@@ -223,16 +223,6 @@ public:
     bool IsDynamicNamespaceVariable(const Variable *var) const;
     const DynamicImportData *DynamicImportDataForVar(const Variable *var) const;
 
-    static constexpr std::string_view DEFAULT_IMPORT_SOURCE_FILE = "<default_import>.ets";
-    static constexpr std::string_view DEFAULT_IMPORT_SOURCE = R"(
-import * from "std/core";
-import * from "std/math";
-import * from "std/containers";
-import * from "std/time";
-import * from "std/interop/js";
-import * from "escompat";
-)";
-
     void ResolveReferenceForScope(ir::AstNode *node, Scope *scope);
     void ResolveReferencesForScope(ir::AstNode const *parent, Scope *scope);
 

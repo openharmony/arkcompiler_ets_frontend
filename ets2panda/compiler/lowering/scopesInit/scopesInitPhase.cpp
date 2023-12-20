@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
+#include "util/errorHandler.h"
 #include "scopesInitPhase.h"
 
 namespace ark::es2panda::compiler {
 bool ScopesInitPhase::Perform(PhaseContext *ctx, parser::Program *program)
 {
     Prepare(ctx, program);
+    program->VarBinder()->InitTopScope();
     HandleBlockStmt(program->Ast(), GetScope());
     Finalize();
     return true;
@@ -320,10 +322,7 @@ void ScopesInitPhase::IterateNoTParams(ir::ClassDefinition *classDef)
 
 void ScopesInitPhase::ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
+    util::ErrorHandler::ThrowSyntaxError(Program(), errorMessage, pos);
 }
 
 void ScopesInitPhase::CreateFuncDecl(ir::ScriptFunction *func)
@@ -791,6 +790,14 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
         }
         method->ClearOverloads();
     }
+}
+
+void InitScopesPhaseETS::VisitETSReExportDeclaration(ir::ETSReExportDeclaration *reExport)
+{
+    if (reExport->GetETSImportDeclarations()->Language().IsDynamic()) {
+        VarBinder()->AsETSBinder()->AddDynamicImport(reExport->GetETSImportDeclarations());
+    }
+    VarBinder()->AsETSBinder()->AddReExportImport(reExport);
 }
 
 void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr)

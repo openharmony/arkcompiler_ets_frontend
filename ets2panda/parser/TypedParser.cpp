@@ -460,7 +460,7 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
     auto *body = AllocNode<ir::TSInterfaceBody>(std::move(members));
     body->SetRange({bodyStart, Lexer()->GetToken().End()});
 
-    const auto isExternal = (GetContext().Status() & ParserStatus::IN_EXTERNAL);
+    const auto isExternal = IsExternal();
     auto *interfaceDecl = AllocNode<ir::TSInterfaceDeclaration>(
         Allocator(), id, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguage());
     interfaceDecl->SetRange({interfaceStart, Lexer()->GetToken().End()});

@@ -64,6 +64,40 @@ enum class LogLevel : std::uint8_t {
     INVALID,
 };
 
+class NodeAllocator {
+public:
+    template <typename T, typename... Args>
+    static T *NoSetParent(ArenaAllocator *alloc, Args &&...args)
+    {
+        return alloc->New<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename T, typename... Args>
+    static T *ForceSetParent(ArenaAllocator *alloc, Args &&...args)
+    {
+        auto *ret = NoSetParent<T>(alloc, std::forward<Args>(args)...);
+        if (ret == nullptr) {
+            return nullptr;
+        }
+        ret->Iterate([ret](ir::AstNode *child) { child->SetParent(ret); });
+        return ret;
+    }
+
+    template <typename T, typename... Args>
+    static T *Alloc(ArenaAllocator *alloc, Args &&...args)
+    {
+        auto *ret = NoSetParent<T>(alloc, std::forward<Args>(args)...);
+        if (ret == nullptr) {
+            return nullptr;
+        }
+        ret->Iterate([ret](ir::AstNode *child) {
+            ASSERT(child->Parent() == nullptr);
+            child->SetParent(ret);
+        });
+        return ret;
+    }
+};
+
 class Helpers {
 public:
     Helpers() = delete;
@@ -127,10 +161,17 @@ public:
     static bool IsPattern(const ir::AstNode *node);
     static std::vector<ir::Identifier *> CollectBindingNames(ir::AstNode *node);
     static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
-    static void CheckImportedName(ArenaVector<ir::AstNode *> *specifiers, const ir::ImportSpecifier *specifier,
-                                  const std::string &fileName);
+    static void CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specifiers,
+                                  const ir::ImportSpecifier *specifier, const std::string &fileName);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
+
+    template <typename T, typename V>
+    static ArenaVector<T *> ConvertVector(const ArenaVector<V *> &src)
+    {
+        ArenaVector<T *> dst(src.begin(), src.end(), src.get_allocator());
+        return dst;
+    }
 
     template <typename Source, typename Target>
     static bool IsTargetFitInSourceRange(Target target)

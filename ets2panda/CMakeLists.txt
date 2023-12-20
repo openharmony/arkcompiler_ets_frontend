@@ -150,6 +150,10 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/phase.cpp
   compiler/lowering/plugin_phase.cpp
   compiler/lowering/util.cpp
+  compiler/lowering/ets/topLevelStmts/importExportDecls.cpp
+  compiler/lowering/ets/topLevelStmts/globalClassHandler.cpp
+  compiler/lowering/ets/topLevelStmts/globalDeclTransformer.cpp
+  compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
@@ -239,6 +243,7 @@ set(ES2PANDA_LIB_SRC
   ir/statements/breakStatement.cpp
   ir/statements/classDeclaration.cpp
   ir/ets/etsStructDeclaration.cpp
+  ir/ets/etsReExportDeclaration.cpp
   ir/statements/continueStatement.cpp
   ir/statements/debuggerStatement.cpp
   ir/statements/doWhileStatement.cpp
@@ -444,6 +449,7 @@ set(ES2PANDA_LIB_SRC
   util/arktsconfig.cpp
   util/bitset.cpp
   util/declgenEts2Ts.cpp
+  util/errorHandler.cpp
   util/helpers.cpp
   util/path.cpp
   util/pathHandler.cpp

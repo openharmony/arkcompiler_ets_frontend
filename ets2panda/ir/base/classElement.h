@@ -58,14 +58,11 @@ public:
         return value_;
     }
 
+    void SetValue(Expression *value) noexcept;
+
     [[nodiscard]] const Expression *Value() const noexcept
     {
         return value_;
-    }
-
-    void SetValue(Expression *value)
-    {
-        value_ = value;
     }
 
     [[nodiscard]] bool IsPrivateElement() const noexcept;

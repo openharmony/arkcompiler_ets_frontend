@@ -944,7 +944,7 @@ void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
         return;
     }
 
-    auto specifiers = decl->Specifiers();
+    const auto &specifiers = decl->Specifiers();
 
     for (auto specifier : specifiers) {
         AddSpecifiersToTopBindings(specifier, decl, decl->Source());

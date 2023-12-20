@@ -2,6 +2,91 @@
   "type": "Program",
   "statements": [
     {
+      "type": "ETSReExportDeclaration",
+      "ets_import_declarations": {
+        "type": "ImportDeclaration",
+        "source": {
+          "type": "StringLiteral",
+          "value": "../../module1/src/re_export_file",
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 19
+            },
+            "end": {
+              "line": 16,
+              "column": 53
+            }
+          }
+        },
+        "specifiers": [
+          {
+            "type": "ImportSpecifier",
+            "local": {
+              "type": "Identifier",
+              "name": "num",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 9
+                },
+                "end": {
+                  "line": 16,
+                  "column": 12
+                }
+              }
+            },
+            "imported": {
+              "type": "Identifier",
+              "name": "num",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 9
+                },
+                "end": {
+                  "line": 16,
+                  "column": 12
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9
+              },
+              "end": {
+                "line": 16,
+                "column": 12
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 8
+          },
+          "end": {
+            "line": 16,
+            "column": 53
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    {
       "type": "ClassDeclaration",
       "definition": {
         "id": {

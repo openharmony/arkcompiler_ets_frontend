@@ -339,11 +339,11 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 8
+                          "column": 12
                         },
                         "end": {
                           "line": 16,
-                          "column": 19
+                          "column": 18
                         }
                       }
                     }

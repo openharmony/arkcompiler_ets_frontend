@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,18 +33,6 @@ void Program::DumpSilent() const
 {
     [[maybe_unused]] ir::AstDumper dumper {ast_, SourceCode()};
     ASSERT(!dumper.Str().empty());
-}
-
-util::StringView Program::PackageClassName(util::StringView className)
-{
-    if (packageName_.Empty()) {
-        return className;
-    }
-
-    util::UString name(packageName_, allocator_);
-    name.Append('.');
-    name.Append(className);
-    return name.View();
 }
 
 varbinder::ClassScope *Program::GlobalClassScope()

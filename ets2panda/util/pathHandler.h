@@ -16,10 +16,14 @@
 #ifndef ES2PANDA_UTIL_PATH_HANDLER_H
 #define ES2PANDA_UTIL_PATH_HANDLER_H
 
-#include "util/arktsconfig.h"
-#include "util/ustring.h"
 #include <string>
 #include <vector>
+
+#include "es2panda.h"
+#include "parser/program/program.h"
+#include "util/arktsconfig.h"
+#include "util/ustring.h"
+#include <libpandabase/os/filesystem.h>
 
 namespace ark::es2panda::util {
 
@@ -74,11 +78,51 @@ private:
 
 class PathHandler {
 public:
+    struct ImportData {
+        Language lang;
+        std::string module;
+        bool hasDecl;
+    };
+
+    static std::vector<std::string> &StdLib();
+
+    ImportData GetImportData(util::StringView path, ScriptExtension extension)
+    {
+        const auto &dynamicPaths = arktsConfig_->DynamicPaths();
+        auto key = ark::os::NormalizePath(path.Mutf8());
+
+        auto it = dynamicPaths.find(key);
+        if (it == dynamicPaths.cend()) {
+            key = ark::os::RemoveExtension(key);
+        }
+
+        while (it == dynamicPaths.cend() && !key.empty()) {
+            it = dynamicPaths.find(key);
+            if (it != dynamicPaths.cend()) {
+                break;
+            }
+            key = ark::os::GetParentDir(key);
+        }
+
+        if (it != dynamicPaths.cend()) {
+            return {it->second.GetLanguage(), key, it->second.HasDecl()};
+        }
+        return {ToLanguage(extension), path.Mutf8(), true};
+    }
+
+    bool IsStdLib(const parser::Program *program) const
+    {
+        const auto &stdlib = StdLib();
+        auto fileFolder = program->GetPackageName().Mutf8();
+        std::replace(fileFolder.begin(), fileFolder.end(), '.', '/');
+        return std::count(stdlib.begin(), stdlib.end(), fileFolder) != 0;
+    }
+
     explicit PathHandler(ark::ArenaAllocator *allocator) : allocator_(allocator), pathes_(allocator->Adapter()) {}
 
     StringView AddPath(const StringView &callerPath, const StringView &path);
-    std::vector<std::string> GetParseList() const;
-    void CollectDefaultSources();
+    ArenaVector<util::StringView> GetParseList() const;
+    void CollectDefaultSources(const std::vector<std::string> &stdlib);
 
     void MarkAsParsed(const StringView &path)
     {

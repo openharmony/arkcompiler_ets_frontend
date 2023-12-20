@@ -144,13 +144,6 @@ protected:
     {
         return false;
     }
-
-    // NOLINTNEXTLINE(google-default-arguments)
-    virtual void CreateCCtor([[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
-                             [[maybe_unused]] const lexer::SourcePosition &loc,
-                             [[maybe_unused]] bool inGlobalClass = false)
-    {
-    }
 };
 }  // namespace ark::es2panda::parser
 

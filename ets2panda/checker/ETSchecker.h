@@ -611,9 +611,7 @@ public:
     template <typename T, typename... Args>
     T *AllocNode(Args &&...args)
     {
-        auto *ret = Allocator()->New<T>(std::forward<Args>(args)...);
-        ret->Iterate([ret](auto *child) { child->SetParent(ret); });
-        return ret;
+        return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 
     ETSObjectType *GetCachedFunctionlInterface(ir::ETSFunctionType *type);

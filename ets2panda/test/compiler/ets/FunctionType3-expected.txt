@@ -286,7 +286,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 36
+                "column": 9
               }
             }
           },

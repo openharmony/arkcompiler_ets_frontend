@@ -23,17 +23,11 @@
 
 namespace ark::es2panda::ir {
 
-class ETSReExportDeclaration {
+class ETSReExportDeclaration : public Statement {
 public:
-    explicit ETSReExportDeclaration(ETSImportDeclaration *const etsImportDeclarations,
-                                    std::vector<std::string> const &userPaths, util::StringView programPath,
-                                    ArenaAllocator *allocator)
-        : etsImportDeclarations_(etsImportDeclarations), userPaths_(allocator->Adapter()), programPath_(programPath)
-    {
-        for (const auto &path : userPaths) {
-            userPaths_.emplace_back(util::UString(path, allocator).View());
-        }
-    }
+    explicit ETSReExportDeclaration(ETSImportDeclaration *etsImportDeclarations,
+                                    const std::vector<std::string> &userPaths, util::StringView programPath,
+                                    ArenaAllocator *allocator);
 
     ETSImportDeclaration *GetETSImportDeclarations() const
     {
@@ -53,6 +47,32 @@ public:
     util::StringView const &GetProgramPath() const
     {
         return programPath_;
+    }
+
+    void TransformChildren(const NodeTransformer &cb) override;
+
+    void Iterate(const NodeTraverser &cb) const override;
+
+    void Dump(ir::AstDumper *dumper) const override;
+    void Dump([[maybe_unused]] ir::SrcDumper *dumper) const override {};
+
+    void Compile(compiler::PandaGen * /*pg*/) const override {}
+
+    void Compile(compiler::ETSGen * /*gen*/) const override {}
+
+    checker::Type *Check(checker::TSChecker * /*checker*/) override
+    {
+        return nullptr;
+    }
+
+    checker::Type *Check(checker::ETSChecker * /*checker*/) override
+    {
+        return nullptr;
+    }
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
     }
 
 private:

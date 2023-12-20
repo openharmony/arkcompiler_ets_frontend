@@ -701,11 +701,11 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 16,
-                          "column": 17
+                          "column": 16
                         }
                       }
                     }
@@ -801,7 +801,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 11
+                "column": 16
               }
             }
           }
