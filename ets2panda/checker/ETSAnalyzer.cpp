@@ -504,7 +504,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     ETSChecker *checker = GetETSChecker();
 
     auto *element_type = expr->type_reference_->GetType(checker);
-    checker->ValidateArrayIndex(expr->dimension_);
+    checker->ValidateArrayIndex(expr->dimension_, true);
 
     expr->SetTsType(checker->CreateETSArrayType(element_type));
     checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), 1);

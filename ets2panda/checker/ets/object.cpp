@@ -921,7 +921,7 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *class_type)
     }
 }
 
-void ETSChecker::ValidateArrayIndex(ir::Expression *const expr)
+void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
     auto *const expression_type = expr->Check(this);
     auto const *const unboxed_expression_type = ETSBuiltinTypeAsPrimitiveType(expression_type);
@@ -930,6 +930,21 @@ void ETSChecker::ValidateArrayIndex(ir::Expression *const expr)
 
     if (expression_type->IsETSObjectType() && (unboxed_expression_type != nullptr)) {
         expr->AddBoxingUnboxingFlag(GetUnboxingFlag(unboxed_expression_type));
+    }
+
+    if (relaxed && index_type != nullptr && index_type->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT)) {
+        if (!expr->IsNumberLiteral()) {
+            return;
+        }
+
+        auto num = expr->AsNumberLiteral()->Number();
+        ASSERT(num.IsReal());
+        double value = num.GetDouble();
+        double intpart;
+        if (std::modf(value, &intpart) != 0.0) {
+            ThrowTypeError("Index fracional part should not be different from 0.0", expr->Start());
+        }
+        return;
     }
 
     if (index_type == nullptr || !index_type->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {

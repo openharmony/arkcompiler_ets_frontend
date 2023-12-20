@@ -66,6 +66,11 @@ public:
         return dimension_;
     }
 
+    void SetDimension(ir::Expression *dimension)
+    {
+        dimension_ = dimension;
+    }
+
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] ETSNewArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
