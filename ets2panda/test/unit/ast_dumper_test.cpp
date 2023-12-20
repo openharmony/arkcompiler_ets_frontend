@@ -135,6 +135,7 @@ TEST_F(ASTDumperTest, DumpEtsSrcSimple)
 
     int argc = 1;
     const char *argv =
+        "../../../bin/es2panda "
         "--extension=ets "
         "--dump-ets-src-before-phases=\"plugins-after-parse:lambda-lowering:checker:plugins-after-check:generate-ts-"
         "declarations:op-assignment:tuple-lowering:union-property-access:plugins-after-lowering\"";

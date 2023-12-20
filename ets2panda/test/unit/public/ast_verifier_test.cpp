@@ -49,7 +49,7 @@ public:
     {
         impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
         // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-        char const *argv[] = {"test"};
+        char const *argv[] = {"../../../bin/es2panda test"};
         cfg_ = impl_->CreateConfig(1, argv);
         allocator_ = new panda::ArenaAllocator(panda::SpaceType::SPACE_TYPE_COMPILER);
     }
