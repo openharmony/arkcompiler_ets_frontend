@@ -851,7 +851,7 @@ export class TsUtils {
         return false;
       }
       const isValidComputedProperty = ts.isComputedPropertyName(prop.name) &&
-        this.isEnumStringLiteral(prop.name.expression);
+        this.isValidComputedPropertyName(prop.name, true);
       if (!ts.isStringLiteral(prop.name) && !ts.isNumericLiteral(prop.name) && !isValidComputedProperty) {
         return false;
       }
@@ -1390,5 +1390,17 @@ export class TsUtils {
     const type = this.tsTypeChecker.getTypeAtLocation(expr);
     const isStringEnumLiteral = TsUtils.isEnumType(type) && !!(type.flags & ts.TypeFlags.StringLiteral);
     return isEnumMember && isStringEnumLiteral;
+  }
+
+  isValidComputedPropertyName(computedProperty: ts.ComputedPropertyName, isRecordObjectInitializer = false): boolean {
+    const expr = computedProperty.expression;
+    if (!isRecordObjectInitializer) {
+      const symbol = this.trueSymbolAtLocation(expr);
+      if (!!symbol && this.isSymbolIterator(symbol)) {
+        return true;
+      }
+    }
+    // We allow computed property names if expression is string literal or string Enum member
+    return ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression);
   }
 }
