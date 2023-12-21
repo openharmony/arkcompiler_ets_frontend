@@ -862,6 +862,10 @@ void ETSChecker::CheckConstFieldInitialized(const ETSObjectType *class_type, var
 {
     const bool class_var_static = class_var->Declaration()->Node()->AsClassProperty()->IsStatic();
     for (const auto &prop : class_type->Methods()) {
+        if (!prop->TsType()->IsETSFunctionType()) {
+            continue;
+        }
+
         const auto &call_sigs = prop->TsType()->AsETSFunctionType()->CallSignatures();
         for (const auto *signature : call_sigs) {
             if ((signature->Function()->IsConstructor() && !class_var_static) ||
