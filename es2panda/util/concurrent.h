@@ -52,6 +52,7 @@ public:
     Concurrent() = delete;
 
     static void SetConcurrent(ir::ScriptFunction *func, const ir::AstNode *node, const lexer::LineIndex &lineIndex);
+    static void SetConcurrent(ir::ScriptFunction *func);
     static void ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
                                                ConcurrentInvalidFlag errFlag, util::StringView varName = "");
     static void CollectRelativeModule(const binder::ScopeFindResult &result, parser::Program *program);
