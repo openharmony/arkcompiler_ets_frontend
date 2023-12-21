@@ -54,6 +54,9 @@ Note:If the text contains special characters, please escape them according to th
     <oatconfig>
         <policy name="defaultPolicy" desc="" >
 		<policyitem type="compatibility" name="Apache" path="arkcompiler/ets_frontend" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc=""/>
+        <policyitem type="copyright" name="Shenzhen Kaihong Digital Industry Development Co., Ltd." path="es2panda/test/parser/js/test-hashbang-comment-3.js" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc=""/>
+        <policyitem type="copyright" name="Shenzhen Kaihong Digital Industry Development Co., Ltd." path="es2panda/test/parser/js/test-hashbang-comment-2.js" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc=""/>
+        <policyitem type="copyright" name="Shenzhen Kaihong Digital Industry Development Co., Ltd." path="es2panda/test/parser/js/test-hashbang-comment-1.js" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc=""/>
         </policy>
         <filefilterlist>
             <filefilter name="binaryFileTypePolicyFilter" desc="" >
@@ -62,8 +65,12 @@ Note:If the text contains special characters, please escape them according to th
                     <filteritem type="filepath" name="legacy_bin/api8/bin/win/js2abc.exe" desc="js2abc for win"/>
             </filefilter>
             <filefilter name="copyrightPolicyFilter" desc="" >
+                <filteritem type="filepath" name="legacy_bin/api8/src/index.js" desc="third-party"/>
+                <filteritem type="filepath" name="es2panda/test/compiler/js/cocos_worker_test.js" desc="third-party"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="" >
+                <filteritem type="filepath" name="legacy_bin/api8/src/index.js" desc="third-party"/>
+                <filteritem type="filepath" name="es2panda/test/compiler/js/cocos_worker_test.js" desc="third-party"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
