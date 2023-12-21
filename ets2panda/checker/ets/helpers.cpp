@@ -586,7 +586,8 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbi
         if (targetType->IsETSObjectType() && targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
             if (!type->IsETSFunctionType() &&
                 !(type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                ThrowError(ident);
+                ThrowTypeError({"Assigning a non-functional variable \"", ident->Name(), "\" to a functional type"},
+                               ident->Start());
             }
 
             return;
