@@ -1,1 +1,1 @@
-SyntaxError: Unexpected reserved word in strict mode. [function-declaration-arguments.js:3:10]
+SyntaxError: Unexpected reserved word in strict mode. [function-declaration-arguments.js:18:10]
