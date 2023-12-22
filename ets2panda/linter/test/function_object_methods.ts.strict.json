@@ -26,7 +26,7 @@
             "column": 35,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 30,
@@ -40,21 +40,21 @@
             "column": 45,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 37,
             "column": 37,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 38,
             "column": 40,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 68,
@@ -67,8 +67,7 @@
             "line": 68,
             "column": 44,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 70,
@@ -82,42 +81,39 @@
             "column": 35,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 75,
             "column": 48,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 78,
             "column": 48,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 81,
             "column": 31,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 82,
             "column": 31,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 87,
             "column": 32,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 94,
@@ -130,8 +126,7 @@
             "line": 94,
             "column": 37,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 96,
@@ -145,42 +140,39 @@
             "column": 30,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 101,
             "column": 42,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 104,
             "column": 42,
             "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 107,
             "column": 20,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 108,
             "column": 20,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 113,
             "column": 21,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 116,
@@ -256,36 +248,31 @@
             "line": 136,
             "column": 23,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 137,
             "column": 23,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 138,
             "column": 23,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 139,
             "column": 23,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         },
         {
             "line": 141,
             "column": 5,
             "problem": "FunctionApplyCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.apply\", \"Function.call\" are not supported (arkts-no-func-apply-call)"
         }
     ]
 }

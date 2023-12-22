@@ -1,15 +1,15 @@
-#  ``Function.bind`` is not supported
+#  ``Function.apply``, ``Function.call`` are not supported
 
-Rule ``arkts-no-func-bind``
+Rule ``arkts-no-func-apply-call``
 
-**Severity: warning**
+**Severity: error**
 
-ArkTS does not allow using standard library function ``Function.bind``.
-This API is needed in the standard library to explicitly set ``this``
-parameter for the called function.
+ArkTS does not allow using standard library functions ``Function.apply`` 
+and ``Function.call``. These APIs are needed in the standard library to
+explicitly set ``this`` parameter for the called function.
 In ArkTS the semantics of ``this`` is restricted to the conventional OOP
 style, and the usage of ``this`` in stand-alone functions is prohibited.
-Thus this function is excessive.
+Thus these functions are excessive.
 
 
 ## TypeScript
@@ -30,8 +30,7 @@ Thus this function is excessive.
     }
 
     // This will log "Mary":
-    const boundFullName = person.fullName.bind(person1)
-    console.log(boundFullName())
+    console.log(person.fullName.apply(person1))
 
 ```
 
