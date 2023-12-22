@@ -116,6 +116,7 @@ public:
     static const uint32_t MAX_INT8 = std::numeric_limits<int8_t>::max();
     static constexpr std::string_view SHOW_SOURCE = "show source";
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
+    static constexpr std::string_view USE_SENDABLE = "use sendable";
     static const uint64_t FNV_PRIME = 1099511628211U;
     static const uint64_t FNV_OFFSET = 14695981039346656037U;
 private:
