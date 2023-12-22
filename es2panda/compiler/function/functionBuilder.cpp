@@ -57,10 +57,10 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
         return;
     }
 
-    pg_->GetThis(rootNode);
+    pg_->GetThis(node);
     if (rootNode->AsScriptFunction()->IsConstructor() &&
         util::Helpers::GetClassDefiniton(rootNode->AsScriptFunction())->Super()) {
-            pg_->ThrowIfSuperNotCorrectCall(rootNode, 0);
+            pg_->ThrowIfSuperNotCorrectCall(node, 0);
     }
 
     pg_->NotifyConcurrentResult(node);
