@@ -20,6 +20,7 @@
 #include "mem/pool_manager.h"
 #include "os/filesystem.h"
 #include "util/ustring.h"
+#include "util/path.h"
 #include "varbinder/varbinder.h"
 
 #include "es2panda.h"
@@ -93,14 +94,14 @@ public:
         return source_code_;
     }
 
-    util::StringView SourceFile() const
-    {
-        return source_file_;
-    }
-
     util::StringView SourceFilePath() const
     {
-        return source_file_path_;
+        return source_file_path_.GetPath();
+    }
+
+    util::StringView SourceFileFolder() const
+    {
+        return source_file_folder_;
     }
 
     util::StringView FileName() const
@@ -158,21 +159,21 @@ public:
         return external_sources_;
     }
 
-    void SetSource(const util::StringView &source_code, const util::StringView &source_file,
-                   const util::StringView &source_file_path)
+    void SetSource(const util::StringView &source_code, const util::StringView &source_file_path,
+                   const util::StringView &source_file_folder)
     {
         source_code_ = source_code;
-        source_file_ = source_file;
-        source_file_path_ = source_file_path;
-        absolute_name_ = util::UString(os::GetAbsolutePath(source_file_.Utf8()), Allocator()).View();
+        source_file_path_ = util::Path(source_file_path, Allocator());
+        source_file_folder_ = source_file_folder;
+        absolute_name_ = util::UString(os::GetAbsolutePath(source_file_path.Utf8()), Allocator()).View();
     }
 
     void SetSource(const panda::es2panda::SourceFile &source_file)
     {
         source_code_ = util::UString(source_file.source, Allocator()).View();
-        source_file_ = util::UString(source_file.file_name, Allocator()).View();
-        source_file_path_ = util::UString(source_file.file_path, Allocator()).View();
-        absolute_name_ = util::UString(os::GetAbsolutePath(source_file_.Utf8()), Allocator()).View();
+        source_file_path_ = util::Path(source_file.file_path, Allocator());
+        source_file_folder_ = util::UString(source_file.file_folder, Allocator()).View();
+        absolute_name_ = source_file_path_.GetAbsolutePath();
         resolved_file_path_ = util::UString(source_file.resolved_path, Allocator()).View();
     }
 
@@ -224,8 +225,8 @@ private:
     ir::BlockStatement *ast_ {};
     ir::ClassDefinition *global_class_ {};
     util::StringView source_code_ {};
-    util::StringView source_file_ {};
-    util::StringView source_file_path_ {};
+    util::Path source_file_path_ {};
+    util::StringView source_file_folder_ {};
     util::StringView package_name_ {};
     util::StringView file_name_ {};
     util::StringView absolute_name_ {};

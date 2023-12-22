@@ -85,7 +85,7 @@ void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePositi
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::TYPE, program_->SourceFile().Utf8(), message, loc.line, loc.col};
+    throw Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col};
 }
 
 void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
@@ -94,7 +94,7 @@ void Checker::Warning(const std::string_view message, const lexer::SourcePositio
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     // NOTE: This should go to stderr but currently the test system does not handle stderr messages
-    auto file_name = program_->SourceFile().Utf8();
+    auto file_name = program_->SourceFilePath().Utf8();
     file_name = file_name.substr(file_name.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
     std::cout << "Warning: " << message << " [" << file_name << ":" << loc.line << ":" << loc.col << "]" << std::endl;
 }

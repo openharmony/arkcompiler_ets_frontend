@@ -1144,12 +1144,12 @@ void ParserImpl::ThrowSyntaxError(std::string_view error_message, const lexer::S
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::SYNTAX, program_->SourceFile().Utf8(), error_message, loc.line, loc.col};
+    throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), error_message, loc.line, loc.col};
 }
 
 void ParserImpl::ThrowAllocationError(std::string_view message) const
 {
-    throw Error(ErrorType::GENERIC, program_->SourceFile().Utf8(), message);
+    throw Error(ErrorType::GENERIC, program_->SourceFilePath().Utf8(), message);
 }
 
 ScriptExtension ParserImpl::Extension() const

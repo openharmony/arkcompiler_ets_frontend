@@ -447,6 +447,7 @@ set(ES2PANDA_LIB_SRC
   util/bitset.cpp
   util/declgenEts2Ts.cpp
   util/helpers.cpp
+  util/path.cpp
   util/ustring.cpp
 )
 

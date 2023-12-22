@@ -45,15 +45,15 @@ T DirName(T const &path, T const &delims = panda::os::file::File::GetPathDelim()
     return path.substr(0, pos);
 }
 
-SourceFile::SourceFile(std::string_view fn, std::string_view s) : file_name(fn), file_path(DirName(fn)), source(s) {}
+SourceFile::SourceFile(std::string_view fn, std::string_view s) : file_path(fn), file_folder(DirName(fn)), source(s) {}
 
 SourceFile::SourceFile(std::string_view fn, std::string_view s, bool m)
-    : file_name(fn), file_path(DirName(fn)), source(s), is_module(m)
+    : file_path(fn), file_folder(DirName(fn)), source(s), is_module(m)
 {
 }
 
 SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m)
-    : file_name(fn), file_path(DirName(fn)), source(s), resolved_path(DirName(rp)), is_module(m)
+    : file_path(fn), file_folder(DirName(fn)), source(s), resolved_path(DirName(rp)), is_module(m)
 {
 }
 
