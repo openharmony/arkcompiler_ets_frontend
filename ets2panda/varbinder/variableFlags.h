@@ -152,6 +152,7 @@ enum class VariableFlags : uint64_t {
     BUILTIN_TYPE = 1ULL << 32ULL,
 
     BOXED = 1ULL << 33ULL,
+    GETTER_SETTER = 1ULL << 34ULL,
 
     HOIST_VAR = HOIST | VAR,
     CLASS_OR_INTERFACE = CLASS | INTERFACE,

@@ -2633,6 +2633,95 @@ std::string GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiate
     return implicitInstantiateArgument;
 }
 
+void ETSChecker::GenerateGetterSetterBody(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
+                                          ArenaVector<ir::Expression *> &params, ir::ClassProperty *const field,
+                                          varbinder::FunctionParamScope *paramScope, bool isSetter)
+{
+    if (!isSetter) {
+        stmts.push_back(checker->Allocator()->New<ir::ReturnStatement>(field->Key()));
+        return;
+    }
+
+    auto *paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+    paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
+    paramIdent->TypeAnnotation()->SetParent(paramIdent);
+
+    auto *paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+    paramExpression->SetRange(paramIdent->Range());
+    auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
+
+    paramIdent->SetVariable(paramVar);
+    paramExpression->SetVariable(paramVar);
+
+    params.push_back(paramExpression);
+
+    auto *assignmentExpression = checker->AllocNode<ir::AssignmentExpression>(
+        field->Key(), paramExpression, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+
+    assignmentExpression->SetRange({field->Start(), field->End()});
+
+    stmts.push_back(checker->AllocNode<ir::ExpressionStatement>(assignmentExpression));
+    stmts.push_back(checker->Allocator()->New<ir::ReturnStatement>(nullptr));
+}
+
+ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const field,
+                                                              varbinder::ClassScope *classScope, bool isSetter,
+                                                              ETSChecker *checker)
+{
+    auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
+    auto *functionScope = checker->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), paramScope);
+
+    functionScope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(functionScope);
+
+    auto flags = ir::ModifierFlags::PUBLIC;
+
+    ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> stmts(checker->Allocator()->Adapter());
+    checker->GenerateGetterSetterBody(checker, stmts, params, field, paramScope, isSetter);
+
+    auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
+    auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
+    auto *const returnTypeAnn = isSetter ? nullptr : field->TypeAnnotation();
+    auto *func =
+        checker->AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn), body,
+                                               funcFlags, flags, true, Language(Language::Id::ETS));
+
+    func->SetRange(field->Range());
+    func->SetScope(functionScope);
+    body->SetScope(functionScope);
+
+    auto *methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+    auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(
+        checker->Allocator(), field->Key()->AsIdentifier()->Name(),
+        field->Key()->AsIdentifier()->Variable()->Declaration()->Node());
+    auto *var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+
+    methodIdent->SetVariable(var);
+
+    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    funcExpr->SetRange(func->Range());
+    func->AddFlag(ir::ScriptFunctionFlags::METHOD);
+
+    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
+                                                            flags, checker->Allocator(), false);
+
+    method->Id()->SetMutator();
+    method->SetRange(field->Range());
+    method->Function()->SetIdent(method->Id());
+    method->Function()->AddModifier(method->Modifiers());
+    method->SetVariable(var);
+
+    paramScope->BindNode(func);
+    functionScope->BindNode(func);
+
+    checker->VarBinder()->AsETSBinder()->ResolveMethodDefinition(method);
+    functionScope->BindName(classScope->Node()->AsClassDefinition()->InternalName());
+    method->Check(checker);
+
+    return method;
+}
+
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)
 {
     ASSERT(ident->Parent()->IsCallExpression());

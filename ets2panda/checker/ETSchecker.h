@@ -177,6 +177,7 @@ public:
     varbinder::Variable *ResolveInstanceExtension(const ir::MemberExpression *memberExpr);
     void CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig);
     void CheckValidInheritance(ETSObjectType *classType, ir::ClassDefinition *classDef);
+    void TransformProperties(ETSObjectType *classType);
     void CheckGetterSetterProperties(ETSObjectType *classType);
     void AddElementsToModuleObject(ETSObjectType *moduleObj, const util::StringView &str);
     Type *FindLeastUpperBound(Type *source, Type *target);
@@ -546,6 +547,12 @@ public:
     void ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
+
+    void GenerateGetterSetterBody(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
+                                  ArenaVector<ir::Expression *> &params, ir::ClassProperty *field,
+                                  varbinder::FunctionParamScope *paramScope, bool isSetter);
+    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *field, varbinder::ClassScope *scope,
+                                                             bool isSetter, ETSChecker *checker);
 
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);
