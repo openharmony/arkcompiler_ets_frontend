@@ -38,11 +38,6 @@ void Concurrent::SetConcurrent(ir::ScriptFunction *func, const ir::AstNode * nod
     func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
 }
 
-void Concurrent::SetConcurrent(ir::ScriptFunction *func)
-{
-    func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
-}
-
 void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
                                                 ConcurrentInvalidFlag errFlag, util::StringView varName)
 {
