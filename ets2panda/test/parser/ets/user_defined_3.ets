@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,15 +13,22 @@
  * limitations under the License.
  */
 
-/*---
-flags: [dynamic-ast]
----*/
+    let float : float;
+    let boolean : boolean;
+    let double : double;
+    let byte : byte;
+    let short : short;
+    let int : int;
+    let char : char;
+    let long : long;
 
-import { A } from "dynamic_js_import_tests"
-
-function foo(): int {
-    let a = new A();
-    let f: JSValue = (x: int, y: int): int => { return x * x + y * y }
-    let f1: (x: int, y: int) => int = f;
-    return 0;
+function main() {
+    let float : float;
+    let boolean : boolean;
+    let double : double;
+    let byte : byte;
+    let short : short;
+    let int : int;
+    let char : char;
+    let long : long;
 }

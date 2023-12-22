@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,10 @@
  * limitations under the License.
  */
 
-/*---
-flags: [dynamic-ast]
----*/
-
-import { A } from "dynamic_js_import_tests"
-
-class B {
-
+function foo(): int[] {
+    return []
 }
 
-function main(): int {
-    let a = new A();
-    let b = new B();
-    if (a === b) {
-        return 0;
-    }
-    return 1;
+function bar(): int[] {
+    return [] as int[]
 }

@@ -988,6 +988,14 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         init->AsObjectExpression()->SetPreferredType(annotation_type);
     }
 
+    if (type_annotation != nullptr && type_annotation->IsETSFunctionType() && init->IsArrowFunctionExpression()) {
+        auto *const arrow_func_expr = init->AsArrowFunctionExpression();
+        ir::ScriptFunction *const lambda = arrow_func_expr->Function();
+        if (lambda->Params().size() == type_annotation->AsETSFunctionType()->Params().size() &&
+            NeedTypeInference(lambda)) {
+            InferTypesForLambda(lambda, type_annotation->AsETSFunctionType());
+        }
+    }
     checker::Type *init_type = init->Check(this);
 
     if (init_type == nullptr) {

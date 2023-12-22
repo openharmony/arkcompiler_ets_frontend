@@ -2192,6 +2192,10 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
                                                                          func_return_type);
             }
 
+            if (st->argument_->IsArrayExpression()) {
+                st->argument_->AsArrayExpression()->SetPreferredType(func_return_type);
+            }
+
             checker::Type *argument_type = st->argument_->Check(checker);
 
             CheckReturnType(checker, func_return_type, argument_type, st->argument_);
@@ -2386,6 +2390,11 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     if (expr->Expr()->IsObjectExpression()) {
         expr->Expr()->AsObjectExpression()->SetPreferredType(target_type);
     }
+
+    if (expr->Expr()->IsArrayExpression()) {
+        expr->Expr()->AsArrayExpression()->SetPreferredType(target_type);
+    }
+
     auto *const source_type = expr->Expr()->Check(checker);
 
     const checker::CastingContext ctx(checker->Relation(), expr->Expr(), source_type, target_type,

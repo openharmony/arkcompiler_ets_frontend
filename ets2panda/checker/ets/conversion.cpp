@@ -240,6 +240,13 @@ void NarrowingReference(TypeRelation *const relation, ETSObjectType *const sourc
     NarrowingReferenceImpl(relation, source, target);
 }
 
+static inline void RollbackBoxingIfFailed(TypeRelation *const relation)
+{
+    if (!relation->IsTrue()) {
+        relation->GetNode()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
+    }
+}
+
 ETSObjectType *Boxing(TypeRelation *const relation, Type *const source)
 {
     auto *const ets_checker = relation->GetChecker()->AsETSChecker();
@@ -272,6 +279,7 @@ void UnboxingWideningPrimitive(TypeRelation *const relation, ETSObjectType *cons
     }
     ASSERT(unboxed_source != nullptr);
     WideningPrimitive(relation, target, unboxed_source);
+    RollbackBoxingIfFailed(relation);
 }
 
 void NarrowingReferenceUnboxing(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
@@ -296,6 +304,7 @@ void BoxingWideningReference(TypeRelation *const relation, Type *const source, E
     }
     ASSERT(boxed_source != nullptr);
     WideningReference(relation, boxed_source, target);
+    RollbackBoxingIfFailed(relation);
 }
 
 void String(TypeRelation *const relation, Type *const source)

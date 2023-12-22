@@ -377,7 +377,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqualDynamic(ir::Expre
     if (other_exp->TsType()->IsETSDynamicType()) {
         return {GlobalETSBooleanType(), GlobalBuiltinJSValueType()};
     }
-    if (dyn_exp->TsType()->AsETSDynamicType()->IsConvertibleTo(other_exp->TsType())) {
+    if (dyn_exp->TsType()->AsETSDynamicType()->IsConvertible(other_exp->TsType())) {
         // NOTE: vpukhov. boxing flags are not set in dynamic values
         return {GlobalETSBooleanType(), other_exp->TsType()};
     }

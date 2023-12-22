@@ -122,6 +122,7 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->ComparableResults(), RelationType::COMPARABLE);
 
+    // NOTE: vpukhov. reimplement dynamic comparison and remove this check
     if (source->IsETSDynamicType() || target->IsETSDynamicType()) {
         if (!(source->IsETSDynamicType() && target->IsETSDynamicType())) {
             return false;
@@ -151,6 +152,9 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
         flags_ |= TypeRelationFlag::UNCHECKED_CAST;
 
         source->Cast(this, target);
+        if (!IsTrue()) {
+            target->CastTarget(this, source);
+        }
 
         if (!IsTrue()) {
             return false;

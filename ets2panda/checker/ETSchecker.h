@@ -305,6 +305,11 @@ public:
     Signature *ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                           const lexer::SourcePosition &pos);
     void CheckObjectLiteralArguments(Signature *sig, ArenaVector<ir::Expression *> const &arguments);
+    Signature *ComposeSignature(ir::ScriptFunction *func, SignatureInfo *signature_info, Type *return_type,
+                                varbinder::Variable *name_var);
+    Type *ComposeReturnType(ir::ScriptFunction *func, util::StringView func_name, bool is_construct_sig);
+    SignatureInfo *ComposeSignatureInfo(ir::ScriptFunction *func);
+    void ValidateMainSignature(ir::ScriptFunction *func);
     checker::ETSFunctionType *BuildFunctionSignature(ir::ScriptFunction *func, bool is_construct_sig = false);
     checker::ETSFunctionType *BuildMethodSignature(ir::MethodDefinition *method);
     Signature *CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *target, ETSFunctionType *source);

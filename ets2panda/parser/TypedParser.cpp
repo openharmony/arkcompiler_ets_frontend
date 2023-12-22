@@ -647,7 +647,7 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
     lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     bool throw_error = ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0;
 
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT || Lexer()->GetToken().IsDefinableTypeName()) {
         if (!throw_error) {
             return nullptr;
         }

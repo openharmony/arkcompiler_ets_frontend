@@ -15,6 +15,7 @@
 
 #include "etsDynamicType.h"
 #include "checker/ETSchecker.h"
+#include "checker/ets/conversion.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
 
 namespace panda::es2panda::checker {
@@ -41,7 +42,14 @@ void ETSDynamicType::AssignmentTarget(TypeRelation *relation, Type *source)
         return ETSObjectType::AssignmentTarget(relation, source);
     }
 
-    relation->Result(true);
+    if (relation->ApplyBoxing() && !relation->IsTrue() && IsConvertible(source)) {
+        relation->Result(true);
+        return;
+    }
+
+    if (source->IsETSDynamicType()) {
+        relation->Result(true);
+    }
 }
 
 bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
@@ -50,7 +58,12 @@ bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
         return ETSObjectType::AssignmentSource(relation, target);
     }
 
-    if (target->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC) || target->IsETSStringType()) {
+    if (relation->ApplyUnboxing() && IsConvertible(target)) {
+        relation->Result(true);
+        return true;
+    }
+
+    if (target->IsETSDynamicType()) {
         relation->Result(true);
     }
     return relation->IsTrue();
@@ -62,19 +75,33 @@ void ETSDynamicType::Cast(TypeRelation *relation, Type *target)
         return ETSObjectType::Cast(relation, target);
     }
 
-    if (relation->InCastingContext()) {
+    if (relation->InCastingContext() || IsConvertible(target)) {
         relation->Result(true);
         return;
     }
 
-    if (IsConvertibleTo(target)) {
-        relation->Result(true);
-    }
+    conversion::Forbidden(relation);
 }
 
-bool ETSDynamicType::IsConvertibleTo(Type *target)
+void ETSDynamicType::CastTarget(TypeRelation *relation, Type *source)
 {
-    return target->IsETSStringType() || target->IsLambdaObject() || target->IsETSDynamicType() ||
+    if (has_decl_) {
+        ETSObjectType::CastTarget(relation, source);
+        return;
+    }
+
+    if (relation->InCastingContext() || IsConvertible(source)) {
+        relation->Result(true);
+        return;
+    }
+
+    conversion::Forbidden(relation);
+}
+
+bool ETSDynamicType::IsConvertible(Type const *target)
+{
+    return target->IsETSDynamicType() || (target->IsETSObjectType() && !target->IsETSNullLike()) ||
+           target->IsETSArrayType() ||
            target->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
 }
 

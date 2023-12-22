@@ -160,6 +160,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/lambdaLowering.cpp",
   "compiler/lowering/ets/objectIndexAccess.cpp",
   "compiler/lowering/ets/opAssignment.cpp",
+  "compiler/lowering/ets/promiseVoid.cpp",
   "compiler/lowering/ets/tupleLowering.cpp",
   "compiler/lowering/ets/unionLowering.cpp",
   "compiler/lowering/phase.cpp",
@@ -375,14 +376,10 @@ libes2panda_public_sources = [
   "util/options.cpp",
 ]
 
-build_gen_root = rebase_path(root_gen_dir)
-
 config("libes2panda_config") {
   cflags_cc = [
     "-fexceptions",
     "-Werror=shadow",
-
-    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/tools/es2panda/generated/arktsconfig.json\"",
   ]
 }
 

@@ -1536,6 +1536,10 @@ ETSObjectType *ETSChecker::GetTypeargumentedLUB(ETSObjectType *const source, ETS
 
     const util::StringView hash = GetHashFromTypeArguments(params);
 
+    if (!source->GetDeclNode()->IsClassDefinition()) {
+        return source;
+    }
+
     ETSObjectType *template_type = source->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType();
 
     auto *lub_type = template_type->GetInstantiatedType(hash);

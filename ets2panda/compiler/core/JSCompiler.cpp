@@ -2158,4 +2158,5 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSVoidKeyword *node) const
 {
     UNREACHABLE();
 }
+
 }  // namespace panda::es2panda::compiler

@@ -17,6 +17,8 @@
 
 #include "utils/pandargs.h"
 
+#include "arktsconfig.h"
+
 #include <utility>
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
@@ -183,7 +185,12 @@ bool Options::Parse(int argc, const char **argv)
                                                    "Generate program dump before running phases in the list");
     panda::PandArg<std::string> dump_after_phases("dump-after-phases", "",
                                                   "Generate program dump after running phases in the list");
-    panda::PandArg<std::string> arkts_config("arktsconfig", DEFAULT_ARKTSCONFIG, "Path to arkts configuration file");
+    panda::PandArg<std::string> arkts_config(
+        "arktsconfig",
+        panda::es2panda::JoinPaths(
+            panda::es2panda::ParentPath(argv[0]),  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+            "arktsconfig.json"),
+        "Path to arkts configuration file");
 
     // tail arguments
     panda::PandArg<std::string> input_file("input", "", "input file");

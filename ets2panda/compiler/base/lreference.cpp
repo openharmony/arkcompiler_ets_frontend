@@ -276,8 +276,7 @@ void ETSLReference::SetValueComputed(const ir::MemberExpression *member_expr) co
     const auto *const object_type = member_expr->Object()->TsType();
 
     if (object_type->IsETSDynamicType()) {
-        const auto lang = object_type->AsETSDynamicType()->Language();
-        etsg_->StoreElementDynamic(Node(), base_reg_, prop_reg_, lang);
+        etsg_->StoreElementDynamic(Node(), base_reg_, prop_reg_);
         return;
     }
 
@@ -341,8 +340,7 @@ void ETSLReference::SetValue() const
         const util::StringView full_name = etsg_->FormClassPropReference(static_obj_ref_->AsETSObjectType(), prop_name);
 
         if (static_obj_ref_->IsETSDynamicType()) {
-            const auto lang = static_obj_ref_->AsETSDynamicType()->Language();
-            etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name, lang);
+            etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name);
         } else {
             etsg_->StoreStaticProperty(Node(), member_expr_ts_type, full_name);
         }
@@ -350,13 +348,14 @@ void ETSLReference::SetValue() const
         return;
     }
 
-    if (static_obj_ref_->IsETSDynamicType()) {
-        const auto lang = static_obj_ref_->AsETSDynamicType()->Language();
-        etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name, lang);
+    auto const *object_type = member_expr->Object()->TsType();
+
+    if (object_type->IsETSDynamicType()) {
+        etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name);
         return;
     }
 
-    if (static_obj_ref_->IsETSUnionType()) {
+    if (object_type->IsETSUnionType()) {
         etsg_->StoreUnionProperty(Node(), base_reg_, prop_name);
         return;
     }

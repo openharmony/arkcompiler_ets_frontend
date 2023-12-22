@@ -35,6 +35,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void Cast(TypeRelation *relation, Type *target) override;
+    void CastTarget(TypeRelation *relation, Type *source) override;
 
     es2panda::Language Language() const
     {
@@ -50,7 +51,7 @@ public:
 
     void ToAssemblerType(std::stringstream &ss) const override;
 
-    static bool IsConvertibleTo(Type *target);
+    static bool IsConvertible(Type const *target);
 
 private:
     mutable PropertyMap properties_cache_;

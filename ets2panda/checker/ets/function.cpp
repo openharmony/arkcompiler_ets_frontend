@@ -692,12 +692,100 @@ void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
     }
 }
 
-checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool is_construct_sig)
+Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo *signature_info, Type *return_type,
+                                        varbinder::Variable *name_var)
 {
-    bool is_arrow = func->IsArrow();
-    auto *name_var = is_arrow ? nullptr : func->Id()->Variable();
-    auto func_name = name_var == nullptr ? util::StringView() : name_var->Name();
+    auto *signature = CreateSignature(signature_info, return_type, func);
+    signature->SetOwner(Context().ContainingClass());
+    signature->SetOwnerVar(name_var);
 
+    const auto *return_type_annotation = func->ReturnTypeAnnotation();
+    if (return_type_annotation == nullptr && ((func->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
+        signature->AddSignatureFlag(SignatureFlags::NEED_RETURN_TYPE);
+    }
+
+    if (func->IsAbstract()) {
+        signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
+        signature->AddSignatureFlag(SignatureFlags::VIRTUAL);
+    }
+
+    if (func->IsStatic()) {
+        signature->AddSignatureFlag(SignatureFlags::STATIC);
+    }
+
+    if (func->IsConstructor()) {
+        signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
+    }
+
+    if (signature->Owner()->GetDeclNode()->IsFinal() || func->IsFinal()) {
+        signature->AddSignatureFlag(SignatureFlags::FINAL);
+    }
+
+    if (func->IsPublic()) {
+        signature->AddSignatureFlag(SignatureFlags::PUBLIC);
+    } else if (func->IsInternal()) {
+        if (func->IsProtected()) {
+            signature->AddSignatureFlag(SignatureFlags::INTERNAL_PROTECTED);
+        } else {
+            signature->AddSignatureFlag(SignatureFlags::INTERNAL);
+        }
+    } else if (func->IsProtected()) {
+        signature->AddSignatureFlag(SignatureFlags::PROTECTED);
+    } else if (func->IsPrivate()) {
+        signature->AddSignatureFlag(SignatureFlags::PRIVATE);
+    }
+
+    return signature;
+}
+
+Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func, util::StringView func_name, bool is_construct_sig)
+{
+    auto *const return_type_annotation = func->ReturnTypeAnnotation();
+    checker::Type *return_type {};
+
+    if (return_type_annotation == nullptr) {
+        // implicit void return type
+        return_type = is_construct_sig || func->IsEntryPoint() || func_name.Is(compiler::Signatures::CCTOR)
+                          ? GlobalVoidType()
+                          : GlobalBuiltinVoidType();
+
+        if (return_type == nullptr) {
+            const auto var_map = VarBinder()->TopScope()->Bindings();
+
+            const auto builtin_void = var_map.find(compiler::Signatures::BUILTIN_VOID_CLASS);
+            ASSERT(builtin_void != var_map.end());
+
+            BuildClassProperties(builtin_void->second->Declaration()->Node()->AsClassDefinition());
+
+            ASSERT(GlobalBuiltinVoidType() != nullptr);
+            return_type = GlobalBuiltinVoidType();
+        }
+
+        if (func->IsAsyncFunc()) {
+            auto implicit_promise_void = [this]() {
+                const auto &promise_global = GlobalBuiltinPromiseType()->AsETSObjectType();
+                auto promise_type =
+                    promise_global->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
+                promise_type->AddTypeFlag(checker::TypeFlag::GENERIC);
+                promise_type->TypeArguments().clear();
+                promise_type->TypeArguments().emplace_back(GlobalBuiltinVoidType());
+                return promise_type;
+            };
+
+            return_type = implicit_promise_void();
+        }
+    } else if (func->IsEntryPoint() && return_type_annotation->GetType(this) == GlobalBuiltinVoidType()) {
+        return_type = GlobalVoidType();
+    } else {
+        return_type = GetTypeFromTypeAnnotation(return_type_annotation);
+        return_type_annotation->SetTsType(return_type);
+    }
+
+    return return_type;
+}
+
+SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
+{
     auto *signature_info = CreateSignatureInfo();
     signature_info->rest_var = nullptr;
     signature_info->min_arg_count = 0;
@@ -741,106 +829,57 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
         }
     }
 
+    return signature_info;
+}
+
+void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
+{
+    if (func->Params().size() >= 2U) {
+        ThrowTypeError("0 or 1 argument are allowed", func->Start());
+    }
+
+    if (func->Params().size() == 1) {
+        auto const *const param = func->Params()[0]->AsETSParameterExpression();
+
+        if (param->IsRestParameter()) {
+            ThrowTypeError("Rest parameter is not allowed in the 'main' function.", param->Start());
+        }
+
+        const auto param_type = param->Variable()->TsType();
+        if (!param_type->IsETSArrayType() || !param_type->AsETSArrayType()->ElementType()->IsETSStringType()) {
+            ThrowTypeError("Only 'string[]' type argument is allowed.", param->Start());
+        }
+    }
+}
+
+checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool is_construct_sig)
+{
+    bool is_arrow = func->IsArrow();
+    auto *name_var = is_arrow ? nullptr : func->Id()->Variable();
+    auto func_name = name_var == nullptr ? util::StringView() : name_var->Name();
+
+    auto *signature_info = ComposeSignatureInfo(func);
+
     if (func_name.Is(compiler::Signatures::MAIN) &&
         func->Scope()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) != std::string::npos) {
         func->AddFlag(ir::ScriptFunctionFlags::ENTRY_POINT);
     }
-
     if (func->IsEntryPoint()) {
-        if (func->Params().size() >= 2U) {
-            ThrowTypeError("0 or 1 argument are allowed", func->Start());
-        }
-
-        if (func->Params().size() == 1) {
-            auto const *const param = func->Params()[0]->AsETSParameterExpression();
-
-            if (param->IsRestParameter()) {
-                ThrowTypeError("Rest parameter is not allowed in the 'main' function.", param->Start());
-            }
-
-            const auto param_type = param->Variable()->TsType();
-            if (!param_type->IsETSArrayType() || !param_type->AsETSArrayType()->ElementType()->IsETSStringType()) {
-                ThrowTypeError("Only 'string[]' type argument is allowed.", param->Start());
-            }
-        }
+        ValidateMainSignature(func);
     }
 
-    auto *const return_type_annotation = func->ReturnTypeAnnotation();
-    checker::Type *return_type {};
-
-    if (return_type_annotation == nullptr) {
-        // implicit void return type
-        return_type = is_construct_sig || func->IsEntryPoint() || func_name.Is(compiler::Signatures::CCTOR)
-                          ? GlobalVoidType()
-                          : GlobalBuiltinVoidType();
-
-        if (return_type == nullptr) {
-            const auto var_map = VarBinder()->TopScope()->Bindings();
-
-            const auto builtin_void = var_map.find(compiler::Signatures::BUILTIN_VOID_CLASS);
-            ASSERT(builtin_void != var_map.end());
-
-            BuildClassProperties(builtin_void->second->Declaration()->Node()->AsClassDefinition());
-
-            ASSERT(GlobalBuiltinVoidType() != nullptr);
-            return_type = GlobalBuiltinVoidType();
-        }
-    } else if (func->IsEntryPoint() && return_type_annotation->GetType(this) == GlobalBuiltinVoidType()) {
-        return_type = GlobalVoidType();
-    } else {
-        return_type = GetTypeFromTypeAnnotation(return_type_annotation);
-        return_type_annotation->SetTsType(return_type);
-    }
-
-    auto *signature = CreateSignature(signature_info, return_type, func);
-    signature->SetOwner(Context().ContainingClass());
-    signature->SetOwnerVar(name_var);
-
+    auto *return_type = ComposeReturnType(func, func_name, is_construct_sig);
+    auto *signature = ComposeSignature(func, signature_info, return_type, name_var);
     if (is_construct_sig) {
         signature->AddSignatureFlag(SignatureFlags::CONSTRUCT);
     } else {
         signature->AddSignatureFlag(SignatureFlags::CALL);
     }
 
-    if (return_type_annotation == nullptr && ((func->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
-        signature->AddSignatureFlag(SignatureFlags::NEED_RETURN_TYPE);
-    }
-
     auto *func_type = CreateETSFunctionType(func, signature, func_name);
     func->SetSignature(signature);
     func_type->SetVariable(name_var);
     VarBinder()->AsETSBinder()->BuildFunctionName(func);
-
-    if (func->IsAbstract()) {
-        signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
-        signature->AddSignatureFlag(SignatureFlags::VIRTUAL);
-    }
-
-    if (func->IsStatic()) {
-        signature->AddSignatureFlag(SignatureFlags::STATIC);
-    }
-
-    if (func->IsConstructor()) {
-        signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
-    }
-
-    if (func->Signature()->Owner()->GetDeclNode()->IsFinal() || func->IsFinal()) {
-        signature->AddSignatureFlag(SignatureFlags::FINAL);
-    }
-
-    if (func->IsPublic()) {
-        signature->AddSignatureFlag(SignatureFlags::PUBLIC);
-    } else if (func->IsInternal()) {
-        if (func->IsProtected()) {
-            signature->AddSignatureFlag(SignatureFlags::INTERNAL_PROTECTED);
-        } else {
-            signature->AddSignatureFlag(SignatureFlags::INTERNAL);
-        }
-    } else if (func->IsProtected()) {
-        signature->AddSignatureFlag(SignatureFlags::PROTECTED);
-    } else if (func->IsPrivate()) {
-        signature->AddSignatureFlag(SignatureFlags::PRIVATE);
-    }
 
     if (!is_arrow) {
         name_var->SetTsType(func_type);
@@ -1143,16 +1182,26 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, Signature
     }
 }
 
-void ETSChecker::CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var)
+void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Variable *const var)
 {
     if (node->IsIdentifier()) {
-        auto *parent = node->Parent();
+        const auto *const parent = node->Parent();
+
         if (parent->IsUpdateExpression() ||
             (parent->IsAssignmentExpression() && parent->AsAssignmentExpression()->Left() == node)) {
-            auto *ident_node = node->AsIdentifier();
-            ResolveIdentifier(ident_node);
+            const auto *const ident_node = node->AsIdentifier();
 
-            if (ident_node->Variable() == var) {
+            const auto *resolved = ident_node->Variable();
+
+            if (resolved == nullptr) {
+                resolved = FindVariableInFunctionScope(ident_node->Name());
+            }
+
+            if (resolved == nullptr) {
+                resolved = FindVariableInGlobal(ident_node);
+            }
+
+            if (resolved == var) {
                 var->AddFlag(varbinder::VariableFlags::BOXED);
             }
         }
@@ -2455,8 +2504,15 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
         Allocator()->New<ir::ETSTypeReference>(Allocator()->New<ir::ETSTypeReferencePart>(object_id, nullptr, nullptr));
     object_id->SetParent(return_type_ann->Part());
     return_type_ann->Part()->SetParent(return_type_ann);
-    ETSObjectType *const promise_type =
-        GetTypeFromTypeAnnotation(async_func->ReturnTypeAnnotation())->AsETSObjectType();
+    auto *async_func_ret_type_ann = async_func->ReturnTypeAnnotation();
+    auto *promise_type = [this](ir::TypeNode *type) {
+        if (type != nullptr) {
+            return GetTypeFromTypeAnnotation(type)->AsETSObjectType();
+        }
+
+        return GlobalBuiltinPromiseType()->AsETSObjectType();
+    }(async_func_ret_type_ann);
+
     auto *ret_type = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), promise_type);
     return_type_ann->SetTsType(ret_type);
 

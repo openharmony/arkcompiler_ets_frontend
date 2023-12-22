@@ -62,12 +62,14 @@ public:
 
     void ToString(std::stringstream &ss) const override;
     void ToAssemblerType(std::stringstream &ss) const override;
+    void ToDebugInfoType(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
-    void CastToThis(TypeRelation *relation, Type *source);
+    void CastTarget(TypeRelation *relation, Type *source) override;
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
     Type *FindUnboxableType() const;
@@ -93,7 +95,9 @@ public:
 
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 
-    static Type *HandleUnionType(ETSUnionType *union_type);
+    static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
+
+    static Type *HandleUnionType(TypeRelation *relation, ETSUnionType *union_type);
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
@@ -108,6 +112,8 @@ public:
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);
+
+    static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
 
     ArenaVector<Type *> constituent_types_;
     Type *lub_type_ {nullptr};
