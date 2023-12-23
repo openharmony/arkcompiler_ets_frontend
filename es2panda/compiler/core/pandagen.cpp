@@ -64,6 +64,9 @@ void PandaGen::SetFunctionKind()
     }
 
     if (func->IsMethod()) {
+        if (func->IsAsync()) {
+            funcKind_ = panda::panda_file::FunctionKind::ASYNC_FUNCTION;
+        }
         return;
     }
 
