@@ -375,7 +375,7 @@ void ClassDefinition::CompileComputedKeys(compiler::PandaGen *pg) const
         if (stmt->IsClassProperty()) {
             const ir::ClassProperty *prop = stmt->AsClassProperty();
 
-            // Do not process public fields when not using define semantic.
+            // Do not process non-static public fields when not using define semantic.
             if (!prop->IsStatic() && !pg->Binder()->Program()->UseDefineSemantic()) {
                 continue;
             }
@@ -506,8 +506,8 @@ void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
         ASSERT(stmt->IsClassProperty());
         const auto *prop = stmt->AsClassProperty();
 
-        // Do not process public fields when not using define semantic.
-        if (!prop->IsPrivate() && !useDefineSemantic) {
+        // Do not process non-static public fields when not using define semantic.
+        if (!prop->IsPrivate() && !prop->IsStatic() && !useDefineSemantic) {
             continue;
         }
 
