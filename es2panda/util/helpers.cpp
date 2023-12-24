@@ -723,7 +723,7 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
         classDef->SetSendable();
         func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
         for (auto *stmt : classDef->Body()) {
-            if (stmt->IsMethodDefinition()){
+            if (stmt->IsMethodDefinition()) {
                 util::Concurrent::SetConcurrent(stmt->AsMethodDefinition()->Function(), strLit, lineIndex);
             }
         }

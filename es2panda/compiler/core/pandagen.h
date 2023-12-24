@@ -382,6 +382,7 @@ public:
 
     void NewObject(const ir::AstNode *node, VReg startReg, size_t argCount);
     void DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name);
+    void DefineSendableMethod(const ir::AstNode *node, const util::StringView &name, size_t formalParamCnt);
 
     void TypeOf(const ir::AstNode *node);
     void NewObjSpread(const ir::AstNode *node, VReg obj);
@@ -435,6 +436,8 @@ public:
     void ThrowObjectNonCoercible(const ir::AstNode *node);
     void CloseIterator(const ir::AstNode *node, VReg iter);
     void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg base);
+    void DefineSendableClass(const ir::AstNode *node, const util::StringView &ctorId,
+                             int32_t litIdx, VReg base);
 
     void LoadLocalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable);
     void LoadExternalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable);
@@ -453,6 +456,7 @@ public:
     void GenDebugger(const ir::AstNode *node);
     void CopyLexEnv(const ir::AstNode *node);
     void NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::VariableScope *scope);
+    void NewSendableLexEnv(const ir::AstNode *node, uint32_t num);
     void NewLexEnv(const ir::AstNode *node, uint32_t num);
     void NewLexEnvWithScopeInfo(const ir::AstNode *node, uint32_t num, int32_t scopeInfoIdx);
     void LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot);
@@ -492,6 +496,7 @@ public:
     void ReArrangeIc();
 
     void CreatePrivateProperty(const ir::AstNode *node, uint32_t num, int32_t bufIdx);
+    void CreateSendablePrivateProperty(const ir::AstNode *node, uint32_t num, int32_t bufIdx);
     void TestIn(const ir::AstNode *node, uint32_t level, uint32_t slot);
     void LoadPrivateProperty(const ir::AstNode *node, uint32_t level, uint32_t slot);
     void StorePrivateProperty(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj);

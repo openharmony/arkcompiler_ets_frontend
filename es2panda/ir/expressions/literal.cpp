@@ -46,8 +46,11 @@ const util::StringView &Literal::GetString() const
     if (IsStringLiteral()) {
         return AsStringLiteral()->Str();
     }
-    ASSERT(IsNumberLiteral());
-    return AsNumberLiteral()->Str();
+    if (IsNumberLiteral()) {
+        return AsNumberLiteral()->Str();
+    }
+    ASSERT(IsTaggedLiteral());
+    return AsTaggedLiteral()->Str();
 }
 
 const util::StringView &Literal::GetMethod() const

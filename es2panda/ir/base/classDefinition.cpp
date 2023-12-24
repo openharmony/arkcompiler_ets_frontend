@@ -37,6 +37,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
+#include "ir/ts/tsUnionType.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::ir {
@@ -130,7 +131,8 @@ void ClassDefinition::InitializeClassName(compiler::PandaGen *pg) const
 }
 
 // NOLINTNEXTLINE(google-runtime-references)
-int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::BitSet &compiled) const
+int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::BitSet &compiled,
+    int32_t fieldTypeBufIdx) const
 {
     auto *buf = pg->NewLiteralBuffer();
     compiler::LiteralBuffer staticBuf(pg->Allocator());
@@ -145,17 +147,18 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
             continue;
         }
         const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
+        /* If it's sendable, put the getters/setters into literal buffer.
+         * If not, break at getters/setters to be compatible with api10. */
+        if (prop->IsPrivate()) {
+            continue;
+        }
 
         if (prop->Computed()) {
             break;
         }
 
-        if (prop->IsAccessor()) {
+        if (prop->IsAccessor() && !isSendable_) {
             break;
-        }
-
-        if (prop->IsPrivate()) {
-            continue;
         }
 
         if (prop->IsAbstract()) {
@@ -174,7 +177,7 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
 
         size_t bufferPos = literalBuf->Literals().size();
         auto res = nameMap.insert({name, bufferPos});
-        if (res.second) {
+        if (res.second || isSendable_) {
             if (!prop->IsStatic()) {
                 instancePropertyCount++;
             }
@@ -186,32 +189,18 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
             bufferPos = res.first->second;
         }
 
-        Literal *value = nullptr;
+        const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
+        const util::StringView &internalName = func->Function()->Scope()->InternalName();
 
-        switch (prop->Kind()) {
-            case ir::MethodDefinitionKind::METHOD: {
-                const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
-                const util::StringView &internalName = func->Function()->Scope()->InternalName();
+        LiteralTag litTag = (prop->Kind() == MethodDefinitionKind::METHOD) ?  LiteralTag::METHOD :
+                            ((prop->Kind() == MethodDefinitionKind::SET) ? LiteralTag::SETTER : LiteralTag::GETTER);
 
-                value = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHOD, internalName);
-                literalBuf->ResetLiteral(bufferPos + 1, value);
-                Literal *methodAffiliate = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHODAFFILIATE,
-                                                                               func->Function()->FormalParamsLength());
-                literalBuf->ResetLiteral(bufferPos + 2, methodAffiliate); // bufferPos + 2 is saved for method affiliate
-                compiled.Set(i);
-                break;
-            }
-            // TODO refactor this part later
-            case ir::MethodDefinitionKind::GET:
-            case ir::MethodDefinitionKind::SET: {
-                value = pg->Allocator()->New<NullLiteral>();
-                literalBuf->ResetLiteral(bufferPos + 1, value);
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
+        Literal *value = pg->Allocator()->New<TaggedLiteral>(litTag, internalName);
+        literalBuf->ResetLiteral(bufferPos + 1, value);
+        Literal *methodAffiliate = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHODAFFILIATE,
+                                                                       func->Function()->FormalParamsLength());
+        literalBuf->ResetLiteral(bufferPos + 2, methodAffiliate); // bufferPos + 2 is saved for method affiliate
+        compiled.Set(i);
     }
 
     /* Static items are stored at the end of the buffer */
@@ -221,6 +210,12 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
      * is divided by 2 as key/value pairs count as one. */
     buf->Add(pg->Allocator()->New<NumberLiteral>(instancePropertyCount));
 
+    if (IsSendable()) {
+        std::string recordName = std::string(pg->Binder()->Program()->RecordName());
+        std::string fieldTypeIdxStr = recordName + "_" + std::to_string(fieldTypeBufIdx);
+        util::UString fieldTypeLitId(fieldTypeIdxStr, pg->Allocator());
+        buf->Add(pg->Allocator()->New<TaggedLiteral>(LiteralTag::LITERALARRAY, fieldTypeLitId.View()));
+    }
     return pg->AddLiteralBuffer(buf);
 }
 
@@ -394,6 +389,11 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
         return;
     }
 
+    if (isSendable_) {
+        CompileSendableClass(pg);
+        return;
+    }
+
     compiler::RegScope rs(pg);
     compiler::VReg classReg = pg->AllocReg();
 
@@ -525,6 +525,129 @@ void ClassDefinition::BuildClassEnvironment()
 
     if (NeedInstanceInitializer()) {
         scope_->AddClassVariable(instanceInitializer_->Key());
+    }
+}
+
+static void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation)
+{
+    switch (typeAnnotation->Type()) {
+        case AstNodeType::TS_NUMBER_KEYWORD: {
+            fieldType |= FieldType::NUMBER;
+            break;
+        }
+        case AstNodeType::TS_STRING_KEYWORD: {
+            fieldType |= FieldType::STRING;
+            break;
+        }
+        case AstNodeType::TS_BOOLEAN_KEYWORD: {
+            fieldType |= FieldType::BOOLEAN;
+            break;
+        }
+        case AstNodeType::TS_TYPE_REFERENCE: {
+            fieldType |= FieldType::TS_TYPE_REF;
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const
+{
+    ASSERT(IsSendable());
+    auto *instanceBuf = pg->NewLiteralBuffer();
+    compiler::LiteralBuffer staticBuf(pg->Allocator());
+    uint32_t instanceFieldCnt {0};
+
+    if (HasInstancePrivateMethod()) {
+        ++instanceFieldCnt;
+        instanceBuf->Add(pg->Allocator()->New<NumberLiteral>(scope_->instanceMethodValidation_));
+        instanceBuf->Add(pg->Allocator()->New<NumberLiteral>(0));
+    }
+    for (auto *prop : body_) {
+        if (!prop->IsClassProperty()) {
+            continue;
+        }
+
+        auto *classProp = prop->AsClassProperty();
+        auto *buf = classProp->IsStatic() ? &staticBuf : (++instanceFieldCnt, instanceBuf);
+        if (classProp->IsPrivate()) {
+            auto slot = scope_->GetPrivateProperty(classProp->Key()->AsPrivateIdentifier()->Name(), false).slot;
+            buf->Add(pg->Allocator()->New<NumberLiteral>(slot));
+        } else {
+            auto name = util::Helpers::LiteralToPropName(pg->Allocator(), classProp->Key());
+            buf->Add(pg->Allocator()->New<StringLiteral>(name));
+        }
+
+        FieldType fieldType = FieldType::NONE;
+        const auto *typeAnnotation = classProp->TypeAnnotation();
+        ASSERT(typeAnnotation != nullptr);
+        if (typeAnnotation->IsTSUnionType()) {
+            for (const auto *type : typeAnnotation->AsTSUnionType()->Types()) {
+                AddFieldType(fieldType, type);
+            }
+        } else {
+            AddFieldType(fieldType, typeAnnotation);
+        }
+        buf->Add(pg->Allocator()->New<NumberLiteral>(static_cast<uint8_t>(fieldType)));
+    }
+
+    instanceBuf->Insert(&staticBuf);
+    instanceBuf->Add(pg->Allocator()->New<NumberLiteral>(instanceFieldCnt));
+    return pg->AddLiteralBuffer(instanceBuf);
+}
+
+void ClassDefinition::CompileSendableClass(compiler::PandaGen *pg) const
+{
+    compiler::RegScope rs(pg);
+    compiler::VReg classReg = pg->AllocReg();
+
+    compiler::LocalRegScope lrs(pg, scope_);
+
+    compiler::VariableEnvScope envScope(pg, scope_);
+
+    // For sendable class, to put the instruction createprivateproperty ahead, the hole in env should be filled.
+    if (ident_ != nullptr) {
+        binder::ScopeFindResult res = scope_->Find(ident_->Name());
+        if (res.variable->LexicalBound()) {
+            pg->LoadConst(ident_, compiler::Constant::JS_UNDEFINED);
+            binder::LocalVariable *local = res.variable->AsLocalVariable();
+            pg->StoreLexicalVar(ident_, res.lexLevel, local->LexIdx(), local);
+        }
+    }
+
+    if (hasPrivateElement_) {
+        int32_t bufIdx = CreateClassPrivateBuffer(pg);
+        pg->CreateSendablePrivateProperty(this, scope_->privateFieldCnt_, bufIdx);
+    }
+
+    compiler::VReg baseReg = CompileHeritageClause(pg);
+    util::StringView ctorId = ctor_->Function()->Scope()->InternalName();
+    util::BitSet compiled(body_.size());
+
+    int32_t fieldTypeBufIdx = CreateFieldTypeBuffer(pg);
+    int32_t bufIdx = CreateClassPublicBuffer(pg, compiled, fieldTypeBufIdx);
+    pg->DefineSendableClass(this, ctorId, bufIdx, baseReg);
+
+    pg->StoreAccumulator(this, classReg);
+
+    if (HasStaticPrivateMethod()) {
+        pg->StoreLexicalVar(this, 0, scope_->staticMethodValidation_);
+    }
+
+    InitializeClassName(pg);
+
+    if (NeedInstanceInitializer()) {
+        auto *func = instanceInitializer_->Function();
+        pg->DefineSendableMethod(func, func->Scope()->InternalName(), func->FormalParamsLength());
+        pg->StoreLexicalVar(instanceInitializer_, 0, GetSlot(instanceInitializer_->Key()));
+    }
+
+    pg->LoadAccumulator(this, classReg);
+
+    if (NeedStaticInitializer()) {
+        StaticInitialize(pg, classReg);
     }
 }
 

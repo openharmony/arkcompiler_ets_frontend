@@ -1389,6 +1389,12 @@ void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction 
     strings_.insert(name);
 }
 
+void PandaGen::DefineSendableMethod(const ir::AstNode *node, const util::StringView &name, size_t formalParamCnt)
+{
+    ra_.Emit<CallruntimeDefinesendablemethod>(node, 0, name, static_cast<int64_t>(formalParamCnt));
+    strings_.insert(name);
+}
+
 void PandaGen::TypeOf(const ir::AstNode *node)
 {
     ra_.Emit<Typeof>(node, 0);
@@ -1739,6 +1745,15 @@ void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::String
     strings_.insert(ctorId);
 }
 
+void PandaGen::DefineSendableClass(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg base)
+{
+    auto formalParamCnt = node->AsClassDefinition()->Ctor()->Function()->FormalParamsLength();
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(litIdx);
+    util::UString litId(idxStr, allocator_);
+    ra_.Emit<CallruntimeDefinesendableclass>(node, 0, ctorId, litId.View(), static_cast<int64_t>(formalParamCnt), base);
+    strings_.insert(ctorId);
+}
+
 void PandaGen::LoadLocalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
@@ -1987,6 +2002,11 @@ void PandaGen::NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::Vari
     NewLexEnv(node, num);
 }
 
+void PandaGen::NewSendableLexEnv(const ir::AstNode *node, uint32_t num)
+{
+    ra_.Emit<CallruntimeNewsendablelexenv>(node, num);
+}
+
 void PandaGen::NewLexEnv(const ir::AstNode *node, uint32_t num)
 {
     num <= util::Helpers::MAX_INT8 ? ra_.Emit<Newlexenv>(node, num) : ra_.Emit<WideNewlexenv>(node, num);
@@ -2201,6 +2221,13 @@ void PandaGen::CreatePrivateProperty(const ir::AstNode *node, uint32_t num, int3
     std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(bufIdx);
     util::UString litId(idxStr, allocator_);
     ra_.Emit<CallruntimeCreateprivateproperty>(node, num, litId.View());
+}
+
+void PandaGen::CreateSendablePrivateProperty(const ir::AstNode *node, uint32_t num, int32_t bufIdx)
+{
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(bufIdx);
+    util::UString litId(idxStr, allocator_);
+    ra_.Emit<CallruntimeCreatesendableprivateproperty>(node, num, litId.View());
 }
 
 void PandaGen::TestIn(const ir::AstNode *node, uint32_t level, uint32_t slot)
