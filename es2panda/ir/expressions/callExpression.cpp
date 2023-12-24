@@ -124,16 +124,13 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
 
         const auto *classDef = util::Helpers::GetClassDefiniton(util::Helpers::GetContainingConstructor(this));
         if (classDef->NeedInstanceInitializer()) {
-            auto callee = pg->AllocReg();
             auto thisReg = pg->AllocReg();
+            pg->MoveVreg(this, thisReg, newThis);
 
             auto [level, slot] = pg->Scope()->Find(classDef->InstanceInitializer()->Key());
             pg->LoadLexicalVar(this, level, slot);
-            pg->StoreAccumulator(this, callee);
 
-            pg->MoveVreg(this, thisReg, newThis);
-
-            pg->CallThis(this, callee, 1);
+            pg->CallInit(this, thisReg);
         }
         return;
     }

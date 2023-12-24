@@ -37,6 +37,15 @@ class LocalScope;
 
 namespace panda::es2panda::ir {
 
+enum class FieldType {
+    NONE = 0,
+    NUMBER = (1 << 0),
+    STRING = (1 << 1),
+    BOOLEAN = (1 << 2),
+    TS_TYPE_REF = (1 << 3),
+};
+DEFINE_BITOPS(FieldType)
+
 class Identifier;
 class MethodDefinition;
 class TSTypeParameterDeclaration;
@@ -211,6 +220,11 @@ public:
         isSendable_ = true;
     }
 
+    bool IsSendable() const
+    {
+        return isSendable_;
+    }
+
     const FunctionExpression *Ctor() const;
 
     util::StringView GetName() const;
@@ -226,13 +240,14 @@ public:
 private:
     compiler::VReg CompileHeritageClause(compiler::PandaGen *pg) const;
     void InitializeClassName(compiler::PandaGen *pg) const;
-    int32_t CreateClassPublicBuffer(compiler::PandaGen *pg, util::BitSet &compiled) const;
+    int32_t CreateClassPublicBuffer(compiler::PandaGen *pg, util::BitSet &compiled, int32_t fieldTypeBufIdx = 0) const;
     int32_t CreateClassPrivateBuffer(compiler::PandaGen *pg) const;
     void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled, compiler::VReg classReg) const;
     void StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void InstanceInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void CompileComputedKeys(compiler::PandaGen *pg) const;
-
+    int32_t CreateFieldTypeBuffer(compiler::PandaGen *pg) const;
+    void CompileSendableClass(compiler::PandaGen *pg) const;
 
     binder::ClassScope *scope_;
     Identifier *ident_;
