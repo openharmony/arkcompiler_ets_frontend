@@ -129,6 +129,7 @@ private:
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
                                                        ir::ClassDefinitionModifiers modifiers,
                                                        ir::ModifierFlags member_modifiers);
+    ir::MethodDefinition *ParseInterfaceGetterSetterMethod(ir::ModifierFlags modifiers);
     ir::Statement *ParseTypeDeclaration(bool allow_static = false);
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
@@ -136,7 +137,7 @@ private:
     ir::Expression *ParseInitializer();
     ir::ArrayExpression *ParseArrayLiteral();
     ir::Expression *ParseCoercedNumberLiteral();
-    ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags);
+    ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind method_kind);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seen_static);
     ir::ModifierFlags ParseClassMethodModifiers(bool seen_static);
@@ -167,7 +168,6 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
-    void CreateClassFunctionDeclaration(ir::MethodDefinition *method);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
     ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *method,
                                                       ir::Identifier const *ident_node);

@@ -18,9 +18,9 @@ package com.huawei.migrationtool.teets.ets;
 //import ets.util.List;
 //import ets.io.*;
 interface test_interface {
-    i : int = 10;
-    pi : double = 3.1416;
-    foo(): void ;
+    i : int;
+    pi : double;
+    foo(): void;
     static foo(i : int): void {
     }
     private foo(b : boolean): void {

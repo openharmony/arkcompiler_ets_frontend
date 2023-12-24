@@ -641,9 +641,11 @@ void ETSChecker::ValidateOverriding(ETSObjectType *class_type, const lexer::Sour
     SavedTypeRelationFlagsContext saved_flags_ctx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
     for (auto it = abstracts_to_be_implemented.begin(); it != abstracts_to_be_implemented.end();) {
         bool function_overridden = false;
+        bool is_getter_setter = false;
         for (auto abstract_signature = (*it)->CallSignatures().begin();
              abstract_signature != (*it)->CallSignatures().end();) {
             bool found_signature = false;
+            is_getter_setter = (*abstract_signature)->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
             for (auto *const implemented : implemented_signatures) {
                 Signature *subst_implemented = AdjustForTypeParameters(*abstract_signature, implemented);
 
@@ -673,6 +675,16 @@ void ETSChecker::ValidateOverriding(ETSObjectType *class_type, const lexer::Sour
 
             if (!found_signature) {
                 abstract_signature++;
+            }
+        }
+
+        if (is_getter_setter && !function_overridden) {
+            for (auto *field : class_type->Fields()) {
+                if (field->Name() == (*it)->Name()) {
+                    it = abstracts_to_be_implemented.erase(it);
+                    function_overridden = true;
+                    break;
+                }
             }
         }
 

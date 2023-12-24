@@ -1614,6 +1614,27 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
     return method;
 }
 
+ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::ModifierFlags modifiers)
+{
+    auto method_kind = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET
+                                                                                       : ir::MethodDefinitionKind::SET;
+    Lexer()->NextToken();  // eat get/set
+    ir::MethodDefinition *method = ParseInterfaceMethod(modifiers, method_kind);
+    method->SetRange({Lexer()->GetToken().Start(), method->Id()->End()});
+    if (method_kind == ir::MethodDefinitionKind::GET) {
+        method->Id()->SetAccessor();
+        method->Function()->AddFlag(ir::ScriptFunctionFlags::GETTER);
+    } else {
+        method->Id()->SetMutator();
+        method->Function()->AddFlag(ir::ScriptFunctionFlags::SETTER);
+    }
+
+    method->Function()->SetIdent(method->Id());
+    method->Function()->AddModifier(method->Modifiers());
+
+    return method;
+}
+
 ir::Statement *ETSParser::ParseTypeDeclaration(bool allow_static)
 {
     auto saved_pos = Lexer()->Save();
@@ -1948,39 +1969,32 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     Lexer()->NextToken();
 
     ir::TypeNode *type_annotation = nullptr;
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        type_annotation = ParseTypeAnnotation(&options);
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        ThrowSyntaxError("Interface fields must have typeannotation.");
+    }
+    Lexer()->NextToken();  // eat ':'
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    type_annotation = ParseTypeAnnotation(&options);
+
+    name->SetTsTypeAnnotation(type_annotation);
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL) {
+        ThrowSyntaxError("Initializers are not allowed on interface propertys.");
     }
 
-    bool is_declare = InAmbientContext();
+    ir::ModifierFlags field_modifiers = ir::ModifierFlags::PUBLIC;
 
-    ir::Expression *initializer = nullptr;
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        Lexer()->NextToken();  // eat '='
-        initializer = ParseInitializer();
-    } else if (!is_declare) {
-        ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    }
-
-    if (is_declare && initializer != nullptr) {
-        ThrowSyntaxError("Initializers are not allowed in ambient contexts.");
-    }
-
-    ir::ModifierFlags field_modifiers =
-        ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC | ir::ModifierFlags::CONST;  // is it legal?
-
-    if (is_declare) {
+    if (InAmbientContext()) {
         field_modifiers |= ir::ModifierFlags::DECLARE;
     }
-    auto *field = AllocNode<ir::ClassProperty>(name, initializer, type_annotation, field_modifiers, Allocator(), false);
+
+    auto *field = AllocNode<ir::ClassProperty>(name, nullptr, type_annotation, field_modifiers, Allocator(), false);
     field->SetEnd(Lexer()->GetToken().End());
 
     return field;
 }
 
-ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
+ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind method_kind)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     auto *name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
@@ -2001,6 +2015,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        if (method_kind == ir::MethodDefinitionKind::SET || method_kind == ir::MethodDefinitionKind::GET) {
+            ThrowSyntaxError("Getter and setter methods must be abstracts in the interface body", start_loc);
+        }
         body = ParseBlockStatement();
     } else if ((flags & (ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC)) != 0 && !is_declare) {
         ThrowSyntaxError("Private or static interface methods must have body", start_loc);
@@ -2014,8 +2031,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
     if ((flags & ir::ModifierFlags::STATIC) == 0 && body == nullptr) {
         func->AddModifier(ir::ModifierFlags::ABSTRACT);
     }
-
-    func->SetRange({start_loc, body != nullptr ? body->End() : func->ReturnTypeAnnotation()->End()});
+    func->SetRange({start_loc, body != nullptr                           ? body->End()
+                               : func->ReturnTypeAnnotation() != nullptr ? func->ReturnTypeAnnotation()->End()
+                                                                         : (*func->Params().end())->End()});
 
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
     func_expr->SetRange(func->Range());
@@ -2282,16 +2300,30 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
             method_flags |= ir::ModifierFlags::PUBLIC;
         }
 
-        auto *method = ParseInterfaceMethod(method_flags);
+        auto *method = ParseInterfaceMethod(method_flags, ir::MethodDefinitionKind::METHOD);
         method->SetStart(start_loc);
         return method;
+    }
+
+    if (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN && Lexer()->Lookahead() != lexer::LEX_CHAR_LESS_THAN &&
+        (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
+         Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_SET)) {
+        return ParseInterfaceGetterSetterMethod(method_flags);
+    }
+
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
+        Lexer()->NextToken();  // eat 'readonly' keyword
+        auto *field = ParseInterfaceField();
+        field->SetStart(start_loc);
+        field->AddModifier(ir::ModifierFlags::READONLY);
+        return field;
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         char32_t next_cp = Lexer()->Lookahead();
 
         if (next_cp == lexer::LEX_CHAR_LEFT_PAREN || next_cp == lexer::LEX_CHAR_LESS_THAN) {
-            auto *method = ParseInterfaceMethod(ir::ModifierFlags::PUBLIC);
+            auto *method = ParseInterfaceMethod(ir::ModifierFlags::PUBLIC, ir::MethodDefinitionKind::METHOD);
             method->SetStart(start_loc);
             return method;
         }
