@@ -70,9 +70,14 @@ public:
         return typeReference_;
     }
 
-    [[nodiscard]] ArenaVector<ir::Expression *> GetArguments() const noexcept
+    [[nodiscard]] const ArenaVector<ir::Expression *> &GetArguments() const noexcept
     {
         return arguments_;
+    }
+
+    [[nodiscard]] checker::Signature *GetSignature() const noexcept
+    {
+        return signature_;
     }
 
     void SetSignature(checker::Signature *const signature) noexcept

@@ -290,6 +290,32 @@ static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg,
     etsg->CallDynamic(node, objReg, qnameReg, signature, arguments);
 }
 
+static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::ETSNewClassInstanceExpression *expr)
+{
+    if (expr->GetSignature()->RestVar() != nullptr) {
+        std::size_t const argumentCount = expr->GetArguments().size();
+        std::size_t const parameterCount = expr->GetSignature()->MinArgCount();
+        ASSERT(argumentCount >= parameterCount);
+
+        auto &arguments = const_cast<ArenaVector<ir::Expression *> &>(expr->GetArguments());
+        std::size_t i = parameterCount;
+
+        if (i < argumentCount && expr->GetArguments()[i]->IsSpreadElement()) {
+            arguments[i] = expr->GetArguments()[i]->AsSpreadElement()->Argument();
+        } else {
+            ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
+            for (; i < argumentCount; ++i) {
+                elements.emplace_back(expr->GetArguments()[i]);
+            }
+            auto *arrayExpression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+            arrayExpression->SetParent(const_cast<ir::ETSNewClassInstanceExpression *>(expr));
+            arrayExpression->SetTsType(expr->GetSignature()->RestVar()->TsType());
+            arguments.erase(expr->GetArguments().begin() + parameterCount, expr->GetArguments().end());
+            arguments.emplace_back(arrayExpression);
+        }
+    }
+}
+
 void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -298,6 +324,7 @@ void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
         auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
         CreateDynamicObject(expr, etsg, objReg, name, expr->signature_, expr->GetArguments());
     } else {
+        ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()), expr);
         etsg->InitObject(expr, expr->signature_, expr->GetArguments());
     }
 
