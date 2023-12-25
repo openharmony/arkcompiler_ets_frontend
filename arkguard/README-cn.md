@@ -101,7 +101,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
     }
     ```
 * 被[保留选项](#保留选项)指定的属性名不会被混淆。
-* 系统API列表中的属性名不会被混淆。系统API列表是构建时从SDK中自动提取出来的一个名称列表。
+* 系统API列表中的属性名不会被混淆。系统API列表是构建时从SDK中自动提取出来的一个名称列表，其缓存文件为systemApiCache.json，路径为工程目录下build/cache/{...}/release/obfuscation中
 * 在Native API场景中，在so的d.ts文件中声明的API不会被混淆。
 * 字符串字面量属性名不会被混淆。比如下面例子中的`"name"`和`"age"`不会被混淆。
     ```
@@ -113,7 +113,18 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
     -enable-property-obfuscation
     -enable-string-property-obfuscation
     ```
-    注意：如果你的代码里面有字符串属性名包含特殊字符(除了`a-z, A-Z, 0-9, _`之外的字符)，比如`let obj = {"\n": 123, "": 4, " ": 5}`，我们建议不要开启`-enable-string-property-obfuscation`选项，因为当你不想混淆这些名字时，可能无法通过[保留选项](#保留选项)来指定保留这些名字。
+    **注意**：  
+    **1.** 如果代码里面有字符串属性名包含特殊字符(除了`a-z, A-Z, 0-9, _`之外的字符)，比如`let obj = {"\n": 123, "": 4, " ": 5}`，建议不要开启`-enable-string-property-obfuscation`选项，因为当不想混淆这些名字时，可能无法通过[保留选项](#保留选项)来指定保留这些名字。  
+    **2.** 系统API的属性白名单中不包含声明文件中使用的字符串常量值，比如示例中的字符串'ohos.want.action.home'不被包含在属性白名单中
+    ```
+    // 系统API文件@ohos.app.ability.wantConstant片段：
+    export enum Params {
+      ACTION_HOME = 'ohos.want.action.home'
+    }
+    // 开发者源码示例：
+    let params = obj['ohos.want.action.home'];
+    ```
+    因此在开启了`-enable-string-property-obfuscation`选项时，如果想保留代码中使用的系统API字符串常量的属性不被混淆，比如obj['ohos.want.action.home'], 那么需要使用keep选项保留。
 
 `-enable-toplevel-obfuscation`
 
@@ -134,7 +145,8 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 
 `-compact`
 
-去除不必要的空格符和所有的换行符。如果你使用这个选项，那么所有代码会被压缩到一行。
+去除不必要的空格符和所有的换行符。如果使用这个选项，那么所有代码会被压缩到一行。  
+**注意**：release模式构建的应用栈信息仅包含代码行号，不包含列号，因此compact功能开启后无法依据报错栈中的行号定位到源码具体位置。
 
 `-remove-log`
 
@@ -142,16 +154,16 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 
 `-print-namecache` filepath
 
-将名称缓存保存到指定的文件路径。名称缓存包含名称混淆前后的映射。如果你使用了`-enable-property-obfuscation`或
-`-enable-toplevel-obfuscation`选项，并且你希望未来进行增量编译(比如热修复)，那么你应该使用这个选项，
-并且将缓存文件保管好。
+将名称缓存保存到指定的文件路径。名称缓存包含名称混淆前后的映射。  
+注意：每次全量构建工程时都会生成新的namecache.json文件，因此您每次发布新版本时都要注意保存一个该文件的副本。
 
 `-apply-namecache` filepath
 
 复用指定的名称缓存文件。名字将会被混淆成缓存映射对应的名字，如果没有对应，将会被混淆成新的随机段名字。
 该选项应该在增量编译场景中被使用。
 
-默认情况下，DevEco Studio会在临时的缓存目录中保存缓存文件，并且在增量编译场景中自动应用该缓存文件。
+默认情况下，DevEco Studio会在临时的缓存目录中保存缓存文件，并且在增量编译场景中自动应用该缓存文件。  
+缓存目录：build/cache/{...}/release/obfuscation
 
 ### 保留选项
 
