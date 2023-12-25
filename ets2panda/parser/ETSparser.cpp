@@ -3805,7 +3805,7 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             return ParseCharLiteral();
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-            return ParseCoverParenthesizedExpressionAndArrowParameterList();
+            return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
         }
         case lexer::TokenType::KEYW_THIS: {
             return ParseThisExpression();
@@ -3906,7 +3906,8 @@ ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
     return arrowFuncNode;
 }
 
-ir::Expression *ETSParser::ParseCoverParenthesizedExpressionAndArrowParameterList()
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *ETSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(ExpressionParseFlags flags)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     if (IsArrowFunctionExpressionStart()) {
@@ -3916,7 +3917,12 @@ ir::Expression *ETSParser::ParseCoverParenthesizedExpressionAndArrowParameterLis
     lexer::SourcePosition start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
 
-    ir::Expression *expr = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    ExpressionParseFlags newFlags = ExpressionParseFlags::ACCEPT_COMMA;
+    if ((flags & ExpressionParseFlags::INSTANCEOF) != 0) {
+        newFlags |= ExpressionParseFlags::INSTANCEOF;
+    };
+
+    ir::Expression *expr = ParseExpression(newFlags);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("Unexpected token, expected ')'");
@@ -4594,6 +4600,24 @@ bool ETSParser::IsStructKeyword() const
             Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT);
 }
 
+void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)
+{
+    ValidateGroupedExpression(expr);
+    lexer::TokenType tokenType = Lexer()->GetToken().Type();
+    if (tokenType == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        auto options = TypeAnnotationParsingOptions::NO_OPTS;
+
+        // Run checks to validate type declarations
+        // Should provide helpful messages with incorrect declarations like the following:
+        // instanceof A<String;
+        ParseTypeParameterDeclaration(&options);
+
+        // Display error message even when type declaration is correct
+        // instanceof A<String>;
+        ThrowSyntaxError("Invalid right-hand side in 'instanceof' expression");
+    }
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
 {
@@ -4605,6 +4629,10 @@ ir::Expression *ETSParser::ParseExpression(ExpressionParseFlags flags)
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
+    if ((flags & ExpressionParseFlags::INSTANCEOF) != 0) {
+        ValidateInstanceOfExpression(unaryExpressionNode);
+    }
+
     ir::Expression *assignmentExpression = ParseAssignmentExpression(unaryExpressionNode, flags);
 
     if (Lexer()->GetToken().NewLine()) {

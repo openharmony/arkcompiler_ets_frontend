@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_CORE_AS_PARSER_H
 
 #include "TypedParser.h"
+#include "parserFlags.h"
 
 namespace panda::es2panda::parser {
 class ASParser : public TypedParser {
@@ -72,7 +73,9 @@ private:
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     std::tuple<ir::Expression *, bool> ParseInterfacePropertyKey() override;
-    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
+        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Expression *ParsePrefixAssertionExpression() override;
     ir::Statement *ParseConstStatement(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;

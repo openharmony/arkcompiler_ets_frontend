@@ -15,6 +15,7 @@
 
 #include "ASparser.h"
 
+#include "parserFlags.h"
 #include "util/helpers.h"
 #include "varbinder/privateBinding.h"
 #include "varbinder/scope.h"
@@ -1350,7 +1351,9 @@ ir::AstNode *ASParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
     return nullptr;
 }
 
-ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList()
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
+    [[maybe_unused]] ExpressionParseFlags flags)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();

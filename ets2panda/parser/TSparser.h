@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_CORE_TS_PARSER_H
 
 #include "TypedParser.h"
+#include "parserFlags.h"
 
 namespace panda::es2panda::ir {
 class Decorator;
@@ -121,7 +122,9 @@ private:
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
-    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
+        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Statement *ParseConstStatement(StatementParsingFlags flags) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param) override;

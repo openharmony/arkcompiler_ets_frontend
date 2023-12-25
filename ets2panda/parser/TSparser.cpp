@@ -15,6 +15,7 @@
 
 #include "TSparser.h"
 
+#include "parserFlags.h"
 #include "util/helpers.h"
 #include "varbinder/privateBinding.h"
 #include "varbinder/scope.h"
@@ -2598,7 +2599,9 @@ ir::Statement *TSParser::ParseExportDeclaration(StatementParsingFlags flags)
     }
 }
 
-ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList()
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
+    [[maybe_unused]] ExpressionParseFlags flags)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer::SourcePosition start = Lexer()->GetToken().Start();

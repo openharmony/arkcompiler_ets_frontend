@@ -60,6 +60,7 @@ enum class ExpressionParseFlags : uint32_t {
     IMPORT = 1U << 10U,
     POTENTIAL_CLASS_LITERAL = 1U << 11U,
     IN_FOR = 1U << 12U,
+    INSTANCEOF = 1U << 13U,
 };
 
 DEFINE_BITOPS(ExpressionParseFlags)
