@@ -1222,7 +1222,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
                 builtinAlternateType = alternateType;
             }
 
-            expr->SetTsType(checker->FindLeastUpperBound(builtinConseqType, builtinAlternateType));
+            expr->SetTsType(checker->CreateETSUnionType(builtinConseqType, builtinAlternateType));
         }
     }
 

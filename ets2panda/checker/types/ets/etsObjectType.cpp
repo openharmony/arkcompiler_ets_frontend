@@ -609,6 +609,17 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
     relation->Result(false);
     auto *const etsChecker = relation->GetChecker()->AsETSChecker();
 
+    if (source->IsETSUnionType()) {
+        bool res = std::all_of(source->AsETSUnionType()->ConstituentTypes().begin(),
+                               source->AsETSUnionType()->ConstituentTypes().end(), [this, relation](Type *ct) {
+                                   relation->Result(false);
+                                   IsSupertypeOf(relation, ct);
+                                   return relation->IsTrue();
+                               });
+        relation->Result(res);
+        return;
+    }
+
     // 3.8.3 Subtyping among Array Types
     auto const *const base = GetConstOriginalBaseType();
     if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {

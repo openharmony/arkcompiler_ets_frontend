@@ -56,4 +56,17 @@ checker::Type *UndefinedLiteral::Check([[maybe_unused]] checker::ETSChecker *che
     SetTsType(checker->GlobalETSUndefinedType());
     return TsType();
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+UndefinedLiteral *UndefinedLiteral::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    if (auto *const clone = allocator->New<UndefinedLiteral>(); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

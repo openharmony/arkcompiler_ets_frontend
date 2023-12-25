@@ -161,12 +161,24 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
         }
     }
     constituentTypes = copiedConstituents;
+    // Removing subtypes should be in the next iteration, especially needed for proper literals removal
+    auto checkSubtyping = [relation](Type *lhs, Type *rhs) {
+        if (lhs == rhs) {
+            return false;
+        }
+        relation->Result(false);
+        lhs->IsSupertypeOf(relation, rhs);
+        bool inheritanceRelation = relation->IsTrue();
+        rhs->IsSupertypeOf(relation, lhs);
+        inheritanceRelation = inheritanceRelation || relation->IsTrue();
+        return inheritanceRelation;
+    };
     // Secondly, remove identical types
     auto cmpIt = constituentTypes.begin();
     while (cmpIt != constituentTypes.end()) {
         auto it = std::next(cmpIt);
         while (it != constituentTypes.end()) {
-            if (relation->IsIdenticalTo(*it, *cmpIt)) {
+            if (relation->IsIdenticalTo(*it, *cmpIt) && !checkSubtyping(*it, *cmpIt)) {
                 it = constituentTypes.erase(it);
             } else {
                 ++it;
@@ -196,13 +208,14 @@ void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &c
     while (cmpIt != constituentTypes.end()) {
         auto newEnd = std::remove_if(
             constituentTypes.begin(), constituentTypes.end(), [relation, checker, cmpIt, numberFound](Type *ct) {
+                bool bothConstants = (*cmpIt)->HasTypeFlag(TypeFlag::CONSTANT) && ct->HasTypeFlag(TypeFlag::CONSTANT);
                 relation->Result(false);
                 (*cmpIt)->IsSupertypeOf(relation, ct);
-                bool removeSubtype = ct != *cmpIt && relation->IsTrue();
+                bool removeSubtype = ct != *cmpIt && !bothConstants && relation->IsTrue();
                 bool removeNumeric = numberFound && ct->IsETSObjectType() &&
-                                     ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
-                                     !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
-                                     !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
+                                      ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
+                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
+                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
                 bool removeNever = ct == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
                 return removeSubtype || removeNumeric || removeNever;
             });
