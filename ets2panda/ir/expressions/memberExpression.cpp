@@ -221,7 +221,7 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
     if (PropVar() != nullptr) {
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     }
-    if (IsOptional() && Object()->TsType()->IsNullishOrNullLike()) {
+    if (IsOptional() && checker->MayHaveNulllikeValue(Object()->TsType())) {
         checker->Relation()->SetNode(this);
         type = checker->CreateOptionalResultType(type);
         checker->Relation()->SetNode(nullptr);

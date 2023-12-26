@@ -134,6 +134,11 @@ public:
         return uncheckedCastableResults_;
     }
 
+    RelationHolder &SupertypeResults()
+    {
+        return supertypeResults_;
+    }
+
     std::unordered_set<const void *> &TypeStack()
     {
         return typeStack_;
@@ -209,6 +214,7 @@ private:
     RelationHolder assignableResults_;
     RelationHolder comparableResults_;
     RelationHolder uncheckedCastableResults_;
+    RelationHolder supertypeResults_;
 
     std::unordered_set<const void *> typeStack_;
 };

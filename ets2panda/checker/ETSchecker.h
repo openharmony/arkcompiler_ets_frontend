@@ -182,6 +182,7 @@ public:
     Type *FindLeastUpperBound(Type *source, Type *target);
     static Type *GetApparentType(Type *type);
     static Type const *GetApparentType(Type const *type);
+    Type *MaybePromotedBuiltinType(Type *type) const;
     Type *GetCommonClass(Type *source, Type *target);
     ETSObjectType *GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target);
     ETSObjectType *GetTypeargumentedLUB(ETSObjectType *source, ETSObjectType *target);
@@ -298,6 +299,7 @@ public:
     {
         return Allocator()->New<ArenaUnorderedSet<ETSTypeParameter *>>(Allocator()->Adapter());
     }
+    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution,
                                                   ArenaUnorderedSet<ETSTypeParameter *> *instantiatedTypeParams);
@@ -653,8 +655,6 @@ private:
     {
         return isConstruct ? &dynamicNewIntrinsics_ : &dynamicCallIntrinsics_;
     }
-
-    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *typeParams);
 
     using Type2TypeMap = std::unordered_map<std::string_view, std::string_view>;
     void CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends);

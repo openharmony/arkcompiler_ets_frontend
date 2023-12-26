@@ -436,7 +436,7 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
         return;
     }
 
-    IsSupertypeOf(relation, source);
+    relation->IsSupertypeOf(this, source);
 }
 
 bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unboxFlags,
@@ -627,11 +627,6 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    if (source->IsETSTypeParameter()) {
-        source->AsETSTypeParameter()->ConstraintIsSubtypeOf(relation, this);
-        return;
-    }
-
     if (!source->IsETSObjectType() ||
         !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
                                                   ETSObjectFlags::NULL_TYPE)) {
@@ -642,7 +637,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
     // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType()) {
+    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
         relation->Result(true);
         return;
     }
@@ -654,16 +649,14 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 
     ETSObjectType *sourceObj = source->AsETSObjectType();
     if (auto *sourceSuper = sourceObj->SuperType(); sourceSuper != nullptr) {
-        IsSupertypeOf(relation, sourceSuper);
-        if (relation->IsTrue()) {
+        if (relation->IsSupertypeOf(this, sourceSuper)) {
             return;
         }
     }
 
     if (HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         for (auto *itf : sourceObj->Interfaces()) {
-            IsSupertypeOf(relation, itf);
-            if (relation->IsTrue()) {
+            if (relation->IsSupertypeOf(this, itf)) {
                 return;
             }
         }

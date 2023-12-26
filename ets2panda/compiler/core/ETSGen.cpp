@@ -841,6 +841,10 @@ void ETSGen::CheckedReferenceNarrowing(const ir::AstNode *node, const checker::T
 {
     ASSERT(target->HasTypeFlag(TYPE_FLAG_BYTECODE_REF) && !target->IsETSNullLike());
     // NOTE(vpukhov): implement for nulllike and union targets
+    if (target == Checker()->GlobalETSNullishObjectType()) {
+        SetAccumulatorType(target);
+        return;
+    }
 
     Sa().Emit<Checkcast>(node, ToAssemblerType(target));
     SetAccumulatorType(target);
@@ -1629,7 +1633,7 @@ void ETSGen::CastToArrayOrObject(const ir::AstNode *const node, const checker::T
         return;
     }
 
-    if (targetType->IsETSTypeParameter() && targetType->AsETSTypeParameter()->HasConstraint()) {
+    if (targetType->IsETSTypeParameter()) {
         CheckedReferenceNarrowing(node, targetType->AsETSTypeParameter()->GetConstraintType());
     } else if (targetType->IsETSObjectType()) {
         CheckedReferenceNarrowing(node, targetType->AsETSObjectType()->GetConstOriginalBaseType());

@@ -57,15 +57,9 @@ public:
 
     Type *GetConstraintType() const
     {
+        ASSERT(constraint_ != nullptr);
         return constraint_;
     }
-
-    bool HasConstraint() const
-    {
-        return GetConstraintType() != nullptr;
-    }
-
-    Type *EffectiveConstraint(ETSChecker const *checker) const;
 
     void ToString(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
@@ -74,18 +68,9 @@ public:
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
+    void IsSubtypeOf(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
-
-    bool ConstraintIsSubtypeOf(TypeRelation *relation, Type *target)
-    {
-        if (HasConstraint()) {
-            target->IsSupertypeOf(relation, GetConstraintType());
-        } else {
-            relation->Result(false);
-        }
-        return relation->IsTrue();
-    }
 
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;

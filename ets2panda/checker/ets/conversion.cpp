@@ -52,20 +52,17 @@ void WideningNarrowingPrimitive(TypeRelation *const relation, ByteType *const so
 
 void WideningReference(TypeRelation *const relation, ETSObjectType *const source, ETSObjectType *const target)
 {
-    relation->Result(false);
-    target->IsSupertypeOf(relation, source);
+    relation->IsSupertypeOf(target, source);
 }
 
 void WideningReference(TypeRelation *const relation, ETSArrayType *const source, ETSObjectType *const target)
 {
-    relation->Result(false);
-    target->IsSupertypeOf(relation, source);
+    relation->IsSupertypeOf(target, source);
 }
 
 void WideningReference(TypeRelation *const relation, ETSArrayType *const source, ETSArrayType *const target)
 {
-    relation->Result(false);
-    target->IsSupertypeOf(relation, source);
+    relation->IsSupertypeOf(target, source);
 }
 
 namespace {
@@ -80,7 +77,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
 
     // - S is not a subtype of T
     relation->Result(false);
-    if (target->IsSupertypeOf(relation, source), relation->IsTrue()) {
+    if (relation->IsSupertypeOf(target, source)) {
         return false;
     }
 
@@ -97,8 +94,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
         // 1. S and T are class types, and either |S| <: |T| or |T| <: |S|.
         // NOTE: use type erased S and T
         relation->Result(false);
-        if ((t->IsSupertypeOf(relation, s), relation->IsTrue()) ||
-            (s->IsSupertypeOf(relation, t), relation->IsTrue())) {
+        if (relation->IsSupertypeOf(t, s) || relation->IsSupertypeOf(s, t)) {
             return true;
         }
 
@@ -116,7 +112,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
         // 4. S is a class type, T is an interface type, and S names a class that is marked as final and that
         //    implements the interface named by T.
         if (s->HasObjectFlag(ETSObjectFlags::CLASS) && t->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-            s->GetDeclNode()->IsFinal() && (s->IsSupertypeOf(relation, t), relation->IsTrue())) {
+            s->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(s, t)) {
             return true;
         }
 
@@ -130,7 +126,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
         //    implements the interface named by S.
         relation->Result(false);
         if (s->HasObjectFlag(ETSObjectFlags::INTERFACE) && t->HasObjectFlag(ETSObjectFlags::CLASS) &&
-            t->GetDeclNode()->IsFinal() && (t->IsSupertypeOf(relation, s), relation->IsTrue())) {
+            t->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(t, s)) {
             return true;
         }
     }

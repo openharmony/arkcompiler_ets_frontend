@@ -209,8 +209,7 @@ void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &c
         auto newEnd = std::remove_if(
             constituentTypes.begin(), constituentTypes.end(), [relation, checker, cmpIt, numberFound](Type *ct) {
                 bool bothConstants = (*cmpIt)->HasTypeFlag(TypeFlag::CONSTANT) && ct->HasTypeFlag(TypeFlag::CONSTANT);
-                relation->Result(false);
-                (*cmpIt)->IsSupertypeOf(relation, ct);
+                relation->IsSupertypeOf((*cmpIt), ct);
                 bool removeSubtype = ct != *cmpIt && !bothConstants && relation->IsTrue();
                 bool removeNumeric = numberFound && ct->IsETSObjectType() &&
                                       ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
@@ -298,26 +297,19 @@ void ETSUnionType::Cast(TypeRelation *relation, Type *target)
 
 void ETSUnionType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
-    relation->Result(false);
-
-    if (source->IsETSUnionType()) {
-        for (auto const &sourceCtype : source->AsETSUnionType()->ConstituentTypes()) {
-            if (IsSupertypeOf(relation, sourceCtype), !relation->IsTrue()) {
-                return;
-            }
-        }
-        return;
-    }
-
     for (auto const &ctype : ConstituentTypes()) {
-        if (ctype->IsSupertypeOf(relation, source), relation->IsTrue()) {
+        if (relation->IsSupertypeOf(ctype, source)) {
             return;
         }
     }
+}
 
-    if (source->IsETSTypeParameter()) {
-        source->AsETSTypeParameter()->ConstraintIsSubtypeOf(relation, this);
-        return;
+void ETSUnionType::IsSubtypeOf(TypeRelation *relation, Type *target)
+{
+    for (auto const &ctype : ConstituentTypes()) {
+        if (!relation->IsSupertypeOf(target, ctype)) {
+            return;
+        }
     }
 }
 

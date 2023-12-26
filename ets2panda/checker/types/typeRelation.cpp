@@ -173,6 +173,29 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
     return result_ == RelationResult::TRUE;
 }
 
+bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
+{
+    result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);
+
+    if (result_ == RelationResult::CACHE_MISS) {
+        if (IsIdenticalTo(super, sub)) {
+            return true;
+        }
+
+        result_ = RelationResult::FALSE;
+
+        if (super->IsSupertypeOf(this, sub), !IsTrue()) {
+            sub->IsSubtypeOf(this, super);
+        }
+
+        if (flags_ == TypeRelationFlag::NONE) {
+            checker_->SupertypeResults().cached.insert({{super->Id(), sub->Id()}, {result_, RelationType::SUPERTYPE}});
+        }
+    }
+
+    return result_ == RelationResult::TRUE;
+}
+
 void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const
 {
     checker_->ThrowTypeError(errMsg, loc);

@@ -169,37 +169,43 @@ Type *ETSChecker::CreateOptionalResultType(Type *type)
     return CreateNullishType(type, checker::TypeFlag::UNDEFINED, Allocator(), Relation(), GetGlobalTypesHolder());
 }
 
-bool ETSChecker::MayHaveNullValue(const Type *type) const
+// NOTE(vpukhov): #14595 could be implemented with relation
+template <typename P>
+static bool MatchConstitutentOrConstraint(P const &pred, const Type *type)
 {
-    if (type->ContainsNull() || type->IsETSNullType()) {
+    if (pred(type)) {
         return true;
     }
+    if (type->IsETSUnionType()) {
+        for (auto const &ctype : type->AsETSUnionType()->ConstituentTypes()) {
+            if (MatchConstitutentOrConstraint(pred, ctype)) {
+                return true;
+            }
+        }
+        return false;
+    }
     if (type->IsETSTypeParameter()) {
-        return MayHaveNullValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
+        return MatchConstitutentOrConstraint(pred, type->AsETSTypeParameter()->GetConstraintType());
     }
     return false;
+}
+
+bool ETSChecker::MayHaveNullValue(const Type *type) const
+{
+    const auto pred = [](const Type *t) { return t->ContainsNull() || t->IsETSNullType(); };
+    return MatchConstitutentOrConstraint(pred, type);
 }
 
 bool ETSChecker::MayHaveUndefinedValue(const Type *type) const
 {
-    if (type->ContainsUndefined() || type->IsETSUndefinedType()) {
-        return true;
-    }
-    if (type->IsETSTypeParameter()) {
-        return MayHaveUndefinedValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
-    }
-    return false;
+    const auto pred = [](const Type *t) { return t->ContainsUndefined() || t->IsETSUndefinedType(); };
+    return MatchConstitutentOrConstraint(pred, type);
 }
 
 bool ETSChecker::MayHaveNulllikeValue(const Type *type) const
 {
-    if (type->IsNullishOrNullLike()) {
-        return true;
-    }
-    if (type->IsETSTypeParameter()) {
-        return MayHaveNulllikeValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
-    }
-    return false;
+    const auto pred = [](const Type *t) { return t->IsNullishOrNullLike(); };
+    return MatchConstitutentOrConstraint(pred, type);
 }
 
 bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
@@ -354,7 +360,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCast(Type *base, Type *substituted)
     if (!base->IsETSTypeParameter()) {
         return nullptr;
     }
-    auto *constr = base->AsETSTypeParameter()->EffectiveConstraint(this);
+    auto *constr = base->AsETSTypeParameter()->GetConstraintType();
     // Constraint is supertype of TypeArg AND TypeArg is supertype of Constraint
     return Relation()->IsIdenticalTo(substituted, constr) ? nullptr : constr;
 }

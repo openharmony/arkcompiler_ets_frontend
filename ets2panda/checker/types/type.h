@@ -251,6 +251,7 @@ public:
     virtual void Cast(TypeRelation *relation, Type *target);
     virtual void CastTarget(TypeRelation *relation, Type *source);
     virtual void IsSupertypeOf(TypeRelation *relation, Type *source);
+    virtual void IsSubtypeOf(TypeRelation *relation, Type *target);
     virtual Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar);
 
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);

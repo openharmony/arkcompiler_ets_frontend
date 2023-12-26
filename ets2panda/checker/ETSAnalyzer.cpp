@@ -1150,7 +1150,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         // NOTE(vpukhov): #14902 substituted signature is not updated
     }
     expr->SetOptionalType(returnType);
-    if (expr->IsOptional() && calleeType->IsNullishOrNullLike()) {
+    if (expr->IsOptional() && checker->MayHaveNulllikeValue(expr->Callee()->Check(checker))) {
         checker->Relation()->SetNode(expr);
         returnType = checker->CreateOptionalResultType(returnType);
         checker->Relation()->SetNode(nullptr);
@@ -2742,6 +2742,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
     if (st->TypeParams() != nullptr) {
+        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
         for (auto *const param : st->TypeParams()->Params()) {
             const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
                 if (!node->IsIdentifier()) {
@@ -2756,8 +2757,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
                     {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
                     param->Start());
             }
-
-            checker->SetUpParameterType(param);
         }
     }
 

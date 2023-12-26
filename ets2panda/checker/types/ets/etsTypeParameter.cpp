@@ -70,14 +70,13 @@ void ETSTypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation,
         return;
     }
 
-    IsSupertypeOf(relation, source);
+    relation->IsSupertypeOf(this, source);
 }
 
 void ETSTypeParameter::Cast(TypeRelation *relation, Type *target)
 {
-    if (target->IsSupertypeOf(relation, this), relation->IsTrue()) {
+    if (relation->IsSupertypeOf(target, this)) {
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
-        relation->Result(true);
         return;
     }
 
@@ -90,9 +89,8 @@ void ETSTypeParameter::Cast(TypeRelation *relation, Type *target)
 
 void ETSTypeParameter::CastTarget(TypeRelation *relation, Type *source)
 {
-    if (IsSupertypeOf(relation, source), relation->IsTrue()) {
+    if (relation->IsSupertypeOf(this, source)) {
         relation->RemoveFlags(TypeRelationFlag::UNCHECKED_CAST);
-        relation->Result(true);
         return;
     }
 
@@ -101,12 +99,12 @@ void ETSTypeParameter::CastTarget(TypeRelation *relation, Type *source)
 
 void ETSTypeParameter::IsSupertypeOf([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
-    if (Identical(relation, source), relation->IsTrue()) {
-        return;
-    }
+    relation->Result(false);
+}
 
-    if (source->IsETSTypeParameter()) {
-        source->AsETSTypeParameter()->ConstraintIsSubtypeOf(relation, this);
+void ETSTypeParameter::IsSubtypeOf([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
+{
+    if (relation->IsSupertypeOf(target, GetConstraintType())) {
         return;
     }
 
@@ -157,27 +155,14 @@ Type *ETSTypeParameter::Substitute(TypeRelation *relation, const Substitution *s
     return this;
 }
 
-Type *ETSTypeParameter::EffectiveConstraint(ETSChecker const *checker) const
-{
-    return HasConstraint() ? GetConstraintType() : checker->GlobalETSNullishObjectType();
-}
-
 void ETSTypeParameter::ToAssemblerType(std::stringstream &ss) const
 {
-    if (HasConstraint()) {
-        GetConstraintType()->ToAssemblerType(ss);
-    } else {
-        ss << compiler::Signatures::BUILTIN_OBJECT;
-    }
+    GetConstraintType()->ToAssemblerType(ss);
 }
 
 void ETSTypeParameter::ToDebugInfoType(std::stringstream &ss) const
 {
-    if (HasConstraint()) {
-        GetConstraintType()->ToDebugInfoType(ss);
-    } else {
-        ETSObjectType::DebugInfoTypeFromName(ss, compiler::Signatures::BUILTIN_OBJECT);
-    }
+    GetConstraintType()->ToDebugInfoType(ss);
 }
 
 ETSTypeParameter *ETSTypeParameter::GetOriginal() const

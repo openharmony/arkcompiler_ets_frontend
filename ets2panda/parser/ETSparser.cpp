@@ -1828,7 +1828,7 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
         auto options =
             TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_DECLARATION_SITE_VARIANCE;
         ir::TSTypeParameterDeclaration *params = ParseTypeParameterDeclaration(&options);
-        typeAliasDecl->AddTypeParameters(params);
+        typeAliasDecl->SetTypeParameters(params);
         params->SetParent(typeAliasDecl);
     }
 

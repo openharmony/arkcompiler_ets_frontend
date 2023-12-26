@@ -120,6 +120,11 @@ void Type::IsSupertypeOf(TypeRelation *const relation, [[maybe_unused]] Type *so
     relation->Result(false);
 }
 
+void Type::IsSubtypeOf(TypeRelation *const relation, [[maybe_unused]] Type *target)
+{
+    relation->Result(false);
+}
+
 Type *Type::AsSuper([[maybe_unused]] Checker *checker, [[maybe_unused]] varbinder::Variable *sourceVar)
 {
     return nullptr;

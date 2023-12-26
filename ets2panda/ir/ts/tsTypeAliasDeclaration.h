@@ -34,6 +34,7 @@ public:
           decorators_(allocator->Adapter()),
           id_(id),
           typeParams_(typeParams),
+          typeParamTypes_(allocator->Adapter()),
           declare_(declare)
     {
     }
@@ -43,6 +44,7 @@ public:
           decorators_(allocator->Adapter()),
           id_(id),
           typeParams_(nullptr),
+          typeParamTypes_(allocator->Adapter()),
           declare_(false)
     {
     }
@@ -57,7 +59,7 @@ public:
         return id_;
     }
 
-    const TSTypeParameterDeclaration *TypeParams() const
+    TSTypeParameterDeclaration *TypeParams() const
     {
         return typeParams_;
     }
@@ -77,7 +79,7 @@ public:
         return &Decorators();
     }
 
-    void AddTypeParameters(ir::TSTypeParameterDeclaration *typeParams)
+    void SetTypeParameters(ir::TSTypeParameterDeclaration *typeParams)
     {
         typeParams_ = typeParams;
     }
@@ -90,6 +92,16 @@ public:
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return !inTs;
+    }
+
+    void SetTypeParameterTypes(ArenaVector<checker::Type *> &&typeParamTypes)
+    {
+        typeParamTypes_ = std::move(typeParamTypes);
+    }
+
+    ArenaVector<checker::Type *> const &TypeParameterTypes() const
+    {
+        return typeParamTypes_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -110,6 +122,7 @@ private:
     ArenaVector<Decorator *> decorators_;
     Identifier *id_;
     TSTypeParameterDeclaration *typeParams_;
+    ArenaVector<checker::Type *> typeParamTypes_;
     bool declare_;
 };
 }  // namespace panda::es2panda::ir
