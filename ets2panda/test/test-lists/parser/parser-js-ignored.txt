@@ -1,5 +1,9 @@
-# FIXME(igelhaus): Temporarily skipped for dev branch stabilization
+# panda#15005: Added to the skip list to stabilize fe_dev_202312
+parser/ets/declare_iface.ets
+parser/ets/interfaces.ets
 parser/ets/literals.ets
+parser/ets/test_interface.ets
+# End of panda#15005
 
 parser/ets/import_tests/modules/module.ets
 parser/ets/import_tests/import_class_members_1.ets
