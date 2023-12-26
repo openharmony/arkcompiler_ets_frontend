@@ -102,7 +102,10 @@ if(PANDA_WITH_ETS)
     add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin)
     add_dependencies(es2panda_tests es2panda-plugin-test)
 
-    add_dependencies(es2panda_tests es2panda-regression-tests)
+    if(NOT CMAKE_CROSSCOMPILING OR NOT PANDA_TARGET_ARM64 OR PANDA_CI_TESTING_MODE STREQUAL "Nightly")
+        add_dependencies(es2panda_tests es2panda-regression-tests)
+    endif()
+
     if(TARGET ets_tests)
         add_dependencies(ets_tests es2panda_tests)
     endif()
