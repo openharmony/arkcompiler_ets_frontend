@@ -1285,55 +1285,45 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
                                                 Signature *signature, const lexer::SourcePosition &pos,
                                                 char const *error_message)
 {
-    if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
+    if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U ||
+        (!signature->HasSignatureFlag(SignatureFlags::PRIVATE) &&
+         !signature->HasSignatureFlag(SignatureFlags::PROTECTED))) {
         return;
     }
-    if (signature->HasSignatureFlag(SignatureFlags::PRIVATE) ||
-        signature->HasSignatureFlag(SignatureFlags::PROTECTED)) {
-        ASSERT(callee->GetDeclNode() &&
-               (callee->GetDeclNode()->IsClassDefinition() || callee->GetDeclNode()->IsTSInterfaceDeclaration()));
+    const auto *decl_node = callee->GetDeclNode();
+    auto *containing_class = Context().ContainingClass();
+    bool is_containing_signature_inherited = containing_class->IsSignatureInherited(signature);
+    ASSERT(decl_node && (decl_node->IsClassDefinition() || decl_node->IsTSInterfaceDeclaration()));
 
-        if (callee->GetDeclNode()->IsTSInterfaceDeclaration()) {
-            if (call_expr->Callee()->IsMemberExpression() &&
-                call_expr->Callee()->AsMemberExpression()->Object()->IsThisExpression()) {
-                const auto *enclosing_func =
-                    util::Helpers::FindAncestorGivenByType(call_expr, ir::AstNodeType::SCRIPT_FUNCTION)
-                        ->AsScriptFunction();
-                if (signature->Function()->IsPrivate() && !enclosing_func->IsPrivate()) {
-                    ThrowTypeError({"Cannot reference 'this' in this context."}, enclosing_func->Start());
-                }
-            }
-
-            if (Context().ContainingClass() == callee->GetDeclNode()->AsTSInterfaceDeclaration()->TsType() &&
-                callee->GetDeclNode()->AsTSInterfaceDeclaration()->TsType()->AsETSObjectType()->IsSignatureInherited(
-                    signature)) {
-                return;
-            }
+    if (decl_node->IsTSInterfaceDeclaration()) {
+        const auto *enclosing_func =
+            util::Helpers::FindAncestorGivenByType(call_expr, ir::AstNodeType::SCRIPT_FUNCTION)->AsScriptFunction();
+        if (call_expr->Callee()->IsMemberExpression() &&
+            call_expr->Callee()->AsMemberExpression()->Object()->IsThisExpression() &&
+            signature->Function()->IsPrivate() && !enclosing_func->IsPrivate()) {
+            ThrowTypeError({"Cannot reference 'this' in this context."}, enclosing_func->Start());
         }
-        if (Context().ContainingClass() == callee->GetDeclNode()->AsClassDefinition()->TsType() &&
-            callee->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType()->IsSignatureInherited(signature)) {
+
+        if (containing_class == decl_node->AsTSInterfaceDeclaration()->TsType() && is_containing_signature_inherited) {
             return;
         }
-
-        if (signature->HasSignatureFlag(SignatureFlags::PROTECTED) &&
-            Context().ContainingClass()->IsDescendantOf(callee) && callee->IsSignatureInherited(signature)) {
-            return;
-        }
-
-        auto *current_outermost = Context().ContainingClass()->OutermostClass();
-        auto *obj_outermost = callee->OutermostClass();
-
-        if (current_outermost != nullptr && obj_outermost != nullptr && current_outermost == obj_outermost &&
-            callee->IsSignatureInherited(signature)) {
-            return;
-        }
-
-        if (error_message == nullptr) {
-            ThrowTypeError({"Signature ", signature->Function()->Id()->Name(), signature, " is not visible here."},
-                           pos);
-        }
-        ThrowTypeError(error_message, pos);
     }
+    if (containing_class == decl_node->AsClassDefinition()->TsType() && is_containing_signature_inherited) {
+        return;
+    }
+
+    bool is_signature_inherited = callee->IsSignatureInherited(signature);
+    const auto *current_outermost = containing_class->OutermostClass();
+    if (((signature->HasSignatureFlag(SignatureFlags::PROTECTED) && containing_class->IsDescendantOf(callee)) ||
+         (current_outermost != nullptr && current_outermost == callee->OutermostClass())) &&
+        is_signature_inherited) {
+        return;
+    }
+
+    if (error_message == nullptr) {
+        ThrowTypeError({"Signature ", signature->Function()->Id()->Name(), signature, " is not visible here."}, pos);
+    }
+    ThrowTypeError(error_message, pos);
 }
 
 void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Variable *const var)

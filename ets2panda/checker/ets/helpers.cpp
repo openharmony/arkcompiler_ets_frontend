@@ -870,25 +870,25 @@ bool ETSChecker::IsNullLikeOrVoidExpression(const ir::Expression *expr) const
     return expr->TsType()->IsETSNullLike() || expr->TsType()->IsETSVoidType();
 }
 
+std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr, Type *type) const
+{
+    auto [is_resolve, is_value] =
+        IsNullLikeOrVoidExpression(expr) ? std::make_tuple(true, false) : type->ResolveConditionExpr();
+
+    const Type *ts_type = expr->TsType();
+    if (!ts_type->ContainsUndefined() && !ts_type->ContainsNull() && !ts_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        is_resolve = true;
+        is_value = true;
+    }
+    return std::make_tuple(is_resolve, is_value);
+}
+
 Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *left_type, Type *right_type, ir::BinaryExpression *expr)
 {
     ASSERT(left_type->IsConditionalExprType() && right_type->IsConditionalExprType());
 
-    auto [resolve_left, left_value] =
-        IsNullLikeOrVoidExpression(expr->Left()) ? std::make_tuple(true, false) : left_type->ResolveConditionExpr();
-    auto [resolve_right, right_value] =
-        IsNullLikeOrVoidExpression(expr->Right()) ? std::make_tuple(true, false) : right_type->ResolveConditionExpr();
-
-    if (!expr->Left()->TsType()->ContainsUndefined() && !expr->Left()->TsType()->ContainsNull() &&
-        !expr->Left()->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-        resolve_left = true;
-        left_value = true;
-    }
-    if (!expr->Right()->TsType()->ContainsUndefined() && !expr->Right()->TsType()->ContainsNull() &&
-        !expr->Right()->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-        resolve_right = true;
-        right_value = true;
-    }
+    auto [resolve_left, left_value] = IsResolvedAndValue(expr->Left(), left_type);
+    auto [resolve_right, right_value] = IsResolvedAndValue(expr->Right(), right_type);
 
     if (!resolve_left && !resolve_right) {
         if (IsTypeIdenticalTo(left_type, right_type)) {
@@ -2414,7 +2414,6 @@ void ETSChecker::CheckNumberOfTypeArguments(ETSObjectType *const type,
     size_t minimum_type_args = std::count_if(type_params.begin(), type_params.end(), [](Type *param) {
         return param->AsETSTypeParameter()->GetDefaultType() == nullptr;
     });
-
     if (type_args == nullptr && minimum_type_args > 0) {
         ThrowTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);
     }

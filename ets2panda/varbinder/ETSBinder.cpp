@@ -439,6 +439,47 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
     TopScope()->InsertDynamicBinding(name, var);
 }
 
+void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
+                                     const util::StringView &name, Variable *var)
+{
+    if (import->Language().IsDynamic()) {
+        dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
+    }
+
+    TopScope()->InsertForeignBinding(name, var);
+}
+
+void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
+                                         const varbinder::Scope::VariableMap &global_bindings,
+                                         const parser::Program *const import_program,
+                                         const varbinder::GlobalScope *const import_global_scope,
+                                         const ir::ETSImportDeclaration *const import)
+{
+    for (const auto [bindingName, var] : global_bindings) {
+        if (bindingName.Is(compiler::Signatures::ETS_GLOBAL)) {
+            const auto *const class_def = var->Declaration()->Node()->AsClassDeclaration()->Definition();
+            ImportGlobalProperties(class_def);
+            continue;
+        }
+
+        if (!import_global_scope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported()) {
+            InsertForeignBinding(specifier, import, bindingName, var);
+        }
+    }
+
+    for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticMethodScope()->Bindings()) {
+        if (!var->Declaration()->Node()->IsDefaultExported()) {
+            InsertForeignBinding(specifier, import, bindingName, var);
+        }
+    }
+
+    for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticFieldScope()->Bindings()) {
+        if (!var->Declaration()->Node()->IsDefaultExported()) {
+            InsertForeignBinding(specifier, import, bindingName, var);
+        }
+    }
+}
+
 bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                           const varbinder::Scope::VariableMap &global_bindings,
                                                           const parser::Program *const import_program,
@@ -449,39 +490,9 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
         return false;
     }
     const auto *const namespace_specifier = specifier->AsImportNamespaceSpecifier();
-    auto insert_foreign_binding = [this, specifier, import](const util::StringView &name, Variable *var) {
-        if (import->Language().IsDynamic()) {
-            dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
-        }
-
-        TopScope()->InsertForeignBinding(name, var);
-    };
 
     if (namespace_specifier->Local()->Name().Empty()) {
-        for (const auto [bindingName, var] : global_bindings) {
-            if (bindingName.Is(compiler::Signatures::ETS_GLOBAL)) {
-                const auto *const class_def = var->Declaration()->Node()->AsClassDeclaration()->Definition();
-                ImportGlobalProperties(class_def);
-                continue;
-            }
-
-            if (!import_global_scope->IsForeignBinding(bindingName) &&
-                !var->Declaration()->Node()->IsDefaultExported()) {
-                insert_foreign_binding(bindingName, var);
-            }
-        }
-
-        for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticMethodScope()->Bindings()) {
-            if (!var->Declaration()->Node()->IsDefaultExported()) {
-                insert_foreign_binding(bindingName, var);
-            }
-        }
-
-        for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticFieldScope()->Bindings()) {
-            if (!var->Declaration()->Node()->IsDefaultExported()) {
-                insert_foreign_binding(bindingName, var);
-            }
-        }
+        ImportAllForeignBindings(specifier, global_bindings, import_program, import_global_scope, import);
     }
 
     std::unordered_set<std::string> exported_names;
@@ -643,7 +654,6 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
     const auto &ext_records = global_record_table_.Program()->ExternalSources();
     auto record_res = [this, ext_records, source_name]() {
         auto res = ext_records.find(source_name);
-
         if (res != ext_records.end()) {
             return res;
         }
@@ -653,7 +663,6 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
         }
 
         res = ext_records.find(GetResolvedImportPath(source_name));
-
         if (res == ext_records.end()) {
             res = ext_records.find(GetResolvedImportPath({source_name.Mutf8() + "/index"}));
         }

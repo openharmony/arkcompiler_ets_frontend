@@ -246,6 +246,12 @@ private:
     void ImportGlobalProperties(const ir::ClassDefinition *class_def);
     bool ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable *var, const util::StringView &name,
                                                       const ir::ClassElement *class_element);
+    void InsertForeignBinding(ir::AstNode *specifier, const ir::ETSImportDeclaration *import,
+                              const util::StringView &name, Variable *var);
+    void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &global_bindings,
+                                  const parser::Program *import_program,
+                                  const varbinder::GlobalScope *import_global_scope,
+                                  const ir::ETSImportDeclaration *import);
 
     RecordTable global_record_table_;
     RecordTable *record_table_;

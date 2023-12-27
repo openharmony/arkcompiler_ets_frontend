@@ -599,6 +599,13 @@ private:
     void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
     void ValidateAssignmentIdentifier(ir::Identifier *ident, varbinder::Variable *resolved, Type *type);
     bool ValidateBinaryExpressionIdentifier(ir::Identifier *ident, Type *type);
+    void ValidateGetterSetter(const ir::MemberExpression *member_expr, const varbinder::LocalVariable *prop,
+                              PropertySearchFlags search_flag);
+    void ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *member_expr, varbinder::LocalVariable *prop);
+    std::tuple<bool, bool> IsResolvedAndValue(const ir::Expression *expr, Type *type) const;
+    PropertySearchFlags GetSearchFlags(const ir::MemberExpression *member_expr, const varbinder::Variable *target_ref);
+    PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *member_expr);
+    const varbinder::Variable *GetTargetRef(const ir::MemberExpression *member_expr);
     void BuildClass(util::StringView name, const ClassBuilder &builder);
     template <bool IS_STATIC>
     std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> CreateClassInitializer(

@@ -439,6 +439,24 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
     IsSupertypeOf(relation, source);
 }
 
+bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unbox_flags,
+                                          TypeFlag widening_flags, TypeFlag narrowing_flags)
+{
+    if (target->HasTypeFlag(unbox_flags)) {
+        conversion::Unboxing(relation, this);
+        return true;
+    }
+    if (target->HasTypeFlag(widening_flags)) {
+        conversion::UnboxingWideningPrimitive(relation, this, target);
+        return true;
+    }
+    if (target->HasTypeFlag(narrowing_flags)) {
+        conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        return true;
+    }
+    return false;
+}
+
 bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
 {
     if (this->IsNullish()) {
@@ -460,84 +478,55 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             return true;
         }
     }
+    TypeFlag unbox_flags = TypeFlag::NONE;
+    TypeFlag widening_flags = TypeFlag::NONE;
+    TypeFlag narrowing_flags = TypeFlag::NONE;
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
-        if (target->HasTypeFlag(TypeFlag::SHORT)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-            conversion::UnboxingWideningPrimitive(relation, this, target);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::CHAR)) {
-            conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        unbox_flags = TypeFlag::SHORT;
+        widening_flags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowing_flags = TypeFlag::BYTE | TypeFlag::CHAR;
+        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
-        if (target->HasTypeFlag(TypeFlag::CHAR)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-            conversion::UnboxingWideningPrimitive(relation, this, target);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT)) {
-            conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        unbox_flags = TypeFlag::CHAR;
+        widening_flags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT;
+        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
-        if (target->HasTypeFlag(TypeFlag::INT)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-            conversion::UnboxingWideningPrimitive(relation, this, target);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR)) {
-            conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        unbox_flags = TypeFlag::INT;
+        widening_flags = TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR;
+        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
-        if (target->HasTypeFlag(TypeFlag::LONG)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-            conversion::UnboxingWideningPrimitive(relation, this, target);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT)) {
-            conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        unbox_flags = TypeFlag::LONG;
+        widening_flags = TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT;
+        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
-        if (target->HasTypeFlag(TypeFlag::FLOAT)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
-            conversion::UnboxingWideningPrimitive(relation, this, target);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG)) {
-            conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        unbox_flags = TypeFlag::FLOAT;
+        widening_flags = TypeFlag::DOUBLE;
+        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG;
+        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
-        if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
-                                TypeFlag::FLOAT)) {
-            conversion::UnboxingNarrowingPrimitive(relation, this, target);
+        unbox_flags = TypeFlag::DOUBLE;
+        widening_flags = TypeFlag::NONE;
+        narrowing_flags =
+            TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT;
+        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
             return true;
         }
     }
@@ -837,7 +826,6 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
 
     ArenaVector<Type *> new_type_args {checker->Allocator()->Adapter()};
     const bool any_change = SubstituteTypeArgs(relation, new_type_args, substitution);
-
     // Lambda types can capture type params in their bodies, normal classes cannot.
     // NOTE: gogabr. determine precise conditions where we do not need to copy.
     // Perhaps keep track of captured type parameters for each type.

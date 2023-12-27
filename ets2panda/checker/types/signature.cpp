@@ -43,11 +43,9 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         for (auto *tparam : signature_info_->type_params) {
             auto *new_tparam = tparam->Substitute(relation, new_substitution_seed);
             new_sig_info->type_params.push_back(new_tparam);
-            if (new_tparam != tparam) {
-                any_change = true;
-                if (tparam->IsETSTypeParameter()) {
-                    new_substitution_seed->insert({tparam->AsETSTypeParameter(), new_tparam});
-                }
+            any_change |= (new_tparam != tparam);
+            if (new_tparam != tparam && tparam->IsETSTypeParameter()) {
+                new_substitution_seed->insert({tparam->AsETSTypeParameter(), new_tparam});
             }
         }
         new_substitution = new_substitution_seed;

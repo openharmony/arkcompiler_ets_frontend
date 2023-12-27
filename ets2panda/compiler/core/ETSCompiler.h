@@ -36,6 +36,8 @@ public:
 private:
     bool IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const;
     void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &callee_reg) const;
+    void CompileCastUnboxable(const ir::TSAsExpression *expr) const;
+    void CompileCast(const ir::TSAsExpression *expr) const;
     void EmitCall(const ir::CallExpression *expr, compiler::VReg &callee_reg, bool is_static) const;
 
     ETSGen *GetETSGen() const;

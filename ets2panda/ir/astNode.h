@@ -433,26 +433,26 @@ public:
 #define DECLARE_FLAG_OPERATIONS(flag_type, member_name)     \
     void Set##flag_type(flag_type flags) const noexcept     \
     {                                                       \
-        member_name = flags;                                \
+        (member_name) = flags;                              \
     }                                                       \
                                                             \
     void Add##flag_type(flag_type flag) const noexcept      \
     {                                                       \
-        member_name |= flag;                                \
+        (member_name) |= flag;                              \
     }                                                       \
                                                             \
     [[nodiscard]] flag_type Get##flag_type() const noexcept \
     {                                                       \
-        return member_name;                                 \
+        return (member_name);                               \
     }                                                       \
                                                             \
     bool Has##flag_type(flag_type flag) const noexcept      \
     {                                                       \
-        return (member_name & flag) != 0U;                  \
+        return ((member_name)&flag) != 0U;                  \
     }                                                       \
     void Remove##flag_type(flag_type flag) noexcept         \
     {                                                       \
-        member_name &= ~flag;                               \
+        (member_name) &= ~flag;                             \
     }
 
     DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxing_unboxing_flags_);

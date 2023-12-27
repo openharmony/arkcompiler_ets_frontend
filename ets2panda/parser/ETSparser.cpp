@@ -453,6 +453,52 @@ std::tuple<std::string, bool> ETSParser::GetSourceRegularPath(const std::string 
     return {path, false};
 }
 
+void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &path,
+                                            [[maybe_unused]] const std::string &resolved_path,
+                                            [[maybe_unused]] std::vector<std::string> &user_paths)
+{
+#ifdef USE_UNIX_SYSCALL
+    DIR *dir = opendir(resolved_path.c_str());
+    bool is_index = false;
+    std::vector<std::string> tmp_paths;
+
+    if (dir == nullptr) {
+        ThrowSyntaxError({"Cannot open folder: ", resolved_path});
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != nullptr) {
+        if (entry->d_type != DT_REG) {
+            continue;
+        }
+
+        std::string file_name = entry->d_name;
+        std::string::size_type pos = file_name.find_last_of('.');
+        if (pos == std::string::npos || !IsCompitableExtension(file_name.substr(pos))) {
+            continue;
+        }
+
+        std::string file_path = path + "/" + entry->d_name;
+
+        if (file_name == "index.ets" || file_name == "index.ts") {
+            user_paths.emplace_back(file_path);
+            is_index = true;
+            break;
+        } else if (file_name == "Object.ets") {
+            tmp_paths.emplace(user_paths.begin(), file_path);
+        } else {
+            tmp_paths.emplace_back(file_path);
+        }
+    }
+
+    closedir(dir);
+
+    if (!is_index) {
+        user_paths.insert(user_paths.end(), tmp_paths.begin(), tmp_paths.end());
+    }
+#endif
+}
+
 std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const std::string &path)
 {
     std::vector<std::string> user_paths;
@@ -474,47 +520,7 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
     }
 
 #ifdef USE_UNIX_SYSCALL
-    DIR *dir = opendir(resolved_path.c_str());
-    bool is_index = false;
-    std::vector<std::string> tmp_paths;
-
-    if (dir == nullptr) {
-        ThrowSyntaxError({"Cannot open folder: ", resolved_path});
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != nullptr) {
-        if (entry->d_type != DT_REG) {
-            continue;
-        }
-
-        std::string file_name = entry->d_name;
-        std::string::size_type pos = file_name.find_last_of('.');
-
-        if (pos == std::string::npos || !IsCompitableExtension(file_name.substr(pos))) {
-            continue;
-        }
-
-        std::string file_path = path + "/" + entry->d_name;
-
-        if (file_name == "index.ets" || file_name == "index.ts") {
-            user_paths.emplace_back(file_path);
-            is_index = true;
-            break;
-        } else if (file_name == "Object.ets") {
-            tmp_paths.emplace(user_paths.begin(), file_path);
-        } else {
-            tmp_paths.emplace_back(file_path);
-        }
-    }
-
-    closedir(dir);
-
-    if (is_index) {
-        return {user_paths, false};
-    }
-
-    user_paths.insert(user_paths.end(), tmp_paths.begin(), tmp_paths.end());
+    CollectUserSourcesFromIndex(path, resolved_path, user_paths);
 #else
     if (fs::exists(resolved_path + "/index.ets")) {
         user_paths.emplace_back(path + "/index.ets");
