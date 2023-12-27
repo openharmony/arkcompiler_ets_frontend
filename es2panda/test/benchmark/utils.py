@@ -89,12 +89,10 @@ def mkdir(path):
 
 def merge_files(file_list):
     base_file = file_list[0]
-    output_file = open(base_file, "a+")
-    for i in range(1, len(file_list)):
-        file = open(file_list[i], "r")
-        output_file.write(file.read())
-        file.close()
-    output_file.close()
+    with open(base_file, "a+") as output_file:
+        for i in range(1, len(file_list)):
+            with open(file_list[i], "r") as file:
+                output_file.write(file.read())
 
 
 def pull_build_hermes():
