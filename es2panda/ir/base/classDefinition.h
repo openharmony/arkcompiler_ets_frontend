@@ -229,7 +229,7 @@ public:
 
     util::StringView GetName() const;
 
-    void BuildClassEnvironment();
+    void BuildClassEnvironment(bool useDefineSemantic);
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

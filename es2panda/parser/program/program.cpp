@@ -46,7 +46,8 @@ Program::Program(Program &&other)
       isDtsFile_(other.isDtsFile_),
       hasTLA_(other.hasTLA_),
       isDebug_(other.isDebug_),
-      targetApiVersion_(other.targetApiVersion_)
+      targetApiVersion_(other.targetApiVersion_),
+      useDefineSemantic_(other.useDefineSemantic_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;

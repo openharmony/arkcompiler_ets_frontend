@@ -191,6 +191,12 @@ static void CompileClassInitializer(PandaGen *pg, const ir::ScriptFunction *decl
 
         if (stmt->IsClassProperty()) {
             const auto *prop = stmt->AsClassProperty();
+
+            // Do not process public fields when not using define semantic.
+            if (!prop->IsPrivate() && !pg->Binder()->Program()->UseDefineSemantic()) {
+                continue;
+            }
+
             if (prop->IsStatic() == isStatic) {
                 CompileField(pg, prop, thisReg, level);
             }

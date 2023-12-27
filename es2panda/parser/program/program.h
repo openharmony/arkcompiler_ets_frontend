@@ -185,6 +185,16 @@ public:
         targetApiVersion_ = targetApiVersion;
     }
 
+    bool UseDefineSemantic() const
+    {
+        return useDefineSemantic_;
+    }
+
+    void SetDefineSemantic(bool useDefineSemantic)
+    {
+        useDefineSemantic_ = useDefineSemantic;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -206,6 +216,7 @@ private:
     bool hasTLA_ {false};
     bool isDebug_ {false};
     int targetApiVersion_ {0};
+    bool useDefineSemantic_ {true};
 };
 
 }  // namespace panda::es2panda::parser

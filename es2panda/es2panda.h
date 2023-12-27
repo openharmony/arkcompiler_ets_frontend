@@ -82,6 +82,7 @@ struct CompilerOptions {
     bool dumpLiteralBuffer {false};
     bool isDebuggerEvaluateExpressionMode {false};
     bool mergeAbc {false};
+    bool useDefineSemantic {false};
     bool typeExtractor {false};
     bool typeDtsBuiltin {false};
     bool recordSource {false};

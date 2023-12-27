@@ -575,7 +575,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
     // new class features in ecma2022 are only supported for api11 and above
     if (Program()->TargetApiVersion() > 10 && !(bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM)) {
-        classDef->BuildClassEnvironment();
+        classDef->BuildClassEnvironment(program_->UseDefineSemantic());
     }
 
     if (classDef->Ident()) {

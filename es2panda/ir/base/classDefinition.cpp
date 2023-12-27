@@ -374,6 +374,12 @@ void ClassDefinition::CompileComputedKeys(compiler::PandaGen *pg) const
     for (const auto &stmt : body_) {
         if (stmt->IsClassProperty()) {
             const ir::ClassProperty *prop = stmt->AsClassProperty();
+
+            // Do not process public fields when not using define semantic.
+            if (!prop->IsStatic() && !pg->Binder()->Program()->UseDefineSemantic()) {
+                continue;
+            }
+
             if (prop->IsComputed() && prop->NeedCompileKey()) {
                 prop->Key()->Compile(pg);
                 pg->ToComputedPropertyKey(prop->Key());
@@ -476,7 +482,7 @@ void ClassDefinition::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 }
 
 
-void ClassDefinition::BuildClassEnvironment()
+void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
 {
     int instancePrivateMethodCnt = 0;
     int staticPrivateMethodCnt = 0;
@@ -499,6 +505,12 @@ void ClassDefinition::BuildClassEnvironment()
 
         ASSERT(stmt->IsClassProperty());
         const auto *prop = stmt->AsClassProperty();
+
+        // Do not process public fields when not using define semantic.
+        if (!prop->IsPrivate() && !useDefineSemantic) {
+            continue;
+        }
+
         if (prop->IsComputed() && prop->NeedCompileKey()) {
             hasComputedKey_ = true;
             scope_->AddClassVariable(prop->Key());
