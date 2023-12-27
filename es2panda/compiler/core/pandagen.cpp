@@ -59,8 +59,17 @@ void PandaGen::SetFunctionKind()
 
     auto *func = rootNode_->AsScriptFunction();
     if (func->IsConcurrent()) {
-        funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
-        return;
+        if (func->IsMethod() || func->IsConstructor()) {
+            const auto *classDef = util::Helpers::GetClassDefiniton(func);
+            // The method/constructor of the sendable class does not set function kind to concurrent
+            if (!classDef->IsSendable()) {
+                funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+                return;
+            }
+        } else {
+            funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+            return;
+        }
     }
 
     if (func->IsMethod()) {
