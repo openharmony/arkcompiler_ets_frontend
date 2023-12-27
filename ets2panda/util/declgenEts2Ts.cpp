@@ -103,7 +103,7 @@ void TSDeclGen::ThrowError(const std::string_view message, const lexer::SourcePo
     lexer::LineIndex index(program_->SourceCode());
     const lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::GENERIC, program_->SourceFilePath().Utf8(), "declgen ts2ets: " + std::string(message),
+    throw Error {ErrorType::GENERIC, program_->SourceFilePath().Utf8(), "declgen ets2ts: " + std::string(message),
                  loc.line, loc.col};
 }
 
@@ -149,46 +149,35 @@ void TSDeclGen::GenTypeNonNullish(const checker::Type *checker_type)
         checker_type->IsShortType() || checker_type->IsNumberType() || checker_type->IsLongType() ||
         checker_type->IsFloatType() || checker_type->IsDoubleType()) {
         Out("number");
-        return;
-    }
-    if (checker_type->IsETSBooleanType()) {
+    } else if (checker_type->IsETSBooleanType()) {
         Out("boolean");
-        return;
-    }
-    if (checker_type->IsETSVoidType()) {
+    } else if (checker_type->IsETSVoidType()) {
         Out("void");
-        return;
-    }
-    if (checker_type->IsETSStringType()) {
+    } else if (checker_type->IsETSStringType()) {
         Out("string");
-        return;
-    }
-    if (checker_type->IsETSArrayType()) {
+    } else if (checker_type->IsETSArrayType()) {
         GenType(checker_type->AsETSArrayType()->ElementType());
         Out("[]");
-        return;
-    }
-    if (checker_type->IsETSEnumType()) {
+    } else if (checker_type->IsETSEnumType()) {
         GenEnumType(checker_type->AsETSEnumType());
-        return;
-    }
-    if (checker_type->IsETSFunctionType()) {
+    } else if (checker_type->IsETSFunctionType()) {
         GenFunctionType(checker_type->AsETSFunctionType());
-        return;
-    }
-    if (checker_type->IsETSObjectType()) {
+    } else if (checker_type->IsETSObjectType()) {
+        if (checker_->IsTypeBuiltinType(checker_type)) {
+            Out("number");
+            return;
+        }
         GenObjectType(checker_type->AsETSObjectType());
-        return;
-    }
-
+    } else {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TYPE_CHECKS(typeFlag, typeName)              \
     if (checker_type->Is##typeName()) {              \
         ThrowError("Unsupported type: '" #typeName); \
     }
-    TYPE_MAPPING(TYPE_CHECKS)
+        TYPE_MAPPING(TYPE_CHECKS)
 #undef TYPE_CHECKS
-    UNREACHABLE();
+        UNREACHABLE();
+    }
 }
 
 void TSDeclGen::GenLiteral(const ir::Literal *literal)
@@ -249,16 +238,29 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *ets_function_typ
 
         const auto *sig_info = sig->GetSignatureInfo();
         if (sig_info->rest_var != nullptr) {
+            if (!sig->Params().empty()) {
+                Out(", ");
+            }
             Out("...", sig_info->rest_var->Name().Mutf8(), ": ");
             GenType(sig_info->rest_var->TsType());
-            Out("[]");
         }
 
         Out(")");
 
-        if (!is_constructor) {
+        if (is_constructor) {
+            if (state_.super != nullptr) {
+                Out("{ super(...{} as (ConstructorParameters<typeof ");
+                GenType(state_.super->TsType());
+                Out(">)); }");
+            } else {
+                Out(" {}");
+            }
+        } else {
             Out(method_def != nullptr ? ": " : " => ");
             GenType(sig->ReturnType());
+            if (method_def != nullptr && !state_.in_interface) {
+                Out(" { return {} as any; }");
+            }
         }
     }
 }
@@ -303,11 +305,16 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *object_type)
         return;
     }
 
-    Out(object_type->Name());
+    auto type_name = object_type->Name();
+    if (type_name.Empty()) {
+        Warning("Object type name is empty");
+        Out("any");
+    } else {
+        Out(type_name);
+    }
 
     const auto &type_args = object_type->TypeArguments();
     if (!type_args.empty()) {
-        Warning("Type arguments are not properly supported");
         Out("<");
         GenCommaSeparated(type_args, [this](checker::Type *arg) { GenType(arg); });
         Out(">");
@@ -453,11 +460,12 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *class_decl)
     }
 
     if (!state_.in_global_class) {
-        Out("export declare class ", class_name);
+        Out("class ", class_name);
 
         GenTypeParameters(class_def->TypeParams());
 
         const auto *super = class_def->Super();
+        state_.super = super;
         if (super != nullptr) {
             Out(" extends ");
             GenType(super->TsType());
@@ -485,7 +493,11 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *class_decl)
     if (!state_.in_global_class) {
         Out("};");
         OutEndl();
-        Out("exports.", class_name, " = (globalThis as any).Panda.getClass('", state_.current_class_descriptor, "');");
+        Out("(", class_name, " as any) = (globalThis as any).Panda.getClass('", state_.current_class_descriptor, "');");
+        OutEndl();
+        Out("export {", class_name, "};");
+        OutEndl();
+        Out("exports.", class_name, " = ", class_name, ";");
         OutEndl(2);
     }
 }
@@ -502,7 +514,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *method_def)
     }
 
     if (state_.in_global_class) {
-        Out("export declare function ");
+        Out("function ");
     } else {
         Out(INDENT);
         GenModifier(method_def);
@@ -523,11 +535,15 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *method_def)
     OutEndl();
 
     if (state_.in_global_class) {
-        Out("exports.", method_name, " = (globalThis as any).Panda.getFunction('", state_.current_class_descriptor,
+        Out("(", method_name, " as any) = (globalThis as any).Panda.getFunction('", state_.current_class_descriptor,
             "', '", method_name, "');");
+        OutEndl();
+        Out("export {", method_name, "};");
+        OutEndl();
+        Out("exports.", method_name, " = ", method_name, ";");
+        OutEndl();
         if (method_name == compiler::Signatures::INIT_METHOD) {
-            OutEndl();
-            Out("exports.", method_name, "();");
+            Out(method_name, "();");
         }
         OutEndl(2);
     }
@@ -548,6 +564,9 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *class_prop)
 
     Out(": ");
     GenType(class_prop->TsType());
+    if (!state_.in_interface) {
+        Out(" = {} as any");
+    }
     Out(";");
     OutEndl();
 }

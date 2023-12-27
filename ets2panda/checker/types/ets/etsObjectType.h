@@ -397,7 +397,7 @@ public:
         return invoke->TsType()->AsETSFunctionType();
     }
 
-    ETSObjectFlags BuiltInKind()
+    ETSObjectFlags BuiltInKind() const
     {
         return static_cast<checker::ETSObjectFlags>(flags_ & ETSObjectFlags::BUILTIN_TYPE);
     }

@@ -442,7 +442,7 @@ public:
     util::StringView GetContainingObjectNameFromSignature(Signature *signature);
     bool IsFunctionContainsSignature(ETSFunctionType *func_type, Signature *signature);
     void CheckFunctionContainsClashingSignature(const ETSFunctionType *func_type, Signature *signature);
-    bool IsTypeBuiltinType(Type *type);
+    bool IsTypeBuiltinType(const Type *type) const;
     bool IsReferenceType(const Type *type);
     const ir::AstNode *FindJumpTarget(ir::AstNodeType node_type, const ir::AstNode *node, const ir::Identifier *target);
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);

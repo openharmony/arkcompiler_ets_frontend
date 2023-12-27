@@ -87,6 +87,7 @@ private:
     }
 
     struct GenState {
+        const ir::Expression *super {nullptr};
         bool in_interface {false};
         bool in_global_class {false};
         std::string current_class_descriptor {};
