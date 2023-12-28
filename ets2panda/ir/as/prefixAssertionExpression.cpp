@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
@@ -37,6 +38,11 @@ void PrefixAssertionExpression::Iterate(const NodeTraverser &cb) const
 void PrefixAssertionExpression::Dump(AstDumper *dumper) const
 {
     dumper->Add({{"type", "PrefixAssertionExpression"}, {"expression", expr_}, {"type", type_}});
+}
+
+void PrefixAssertionExpression::Dump(SrcDumper *dumper) const
+{
+    dumper->Add("PrefixAssertionExpression");
 }
 
 void PrefixAssertionExpression::Compile(compiler::PandaGen *pg) const

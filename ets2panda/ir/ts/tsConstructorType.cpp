@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
@@ -42,6 +43,11 @@ void TSConstructorType::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
                  {"returnType", signature_.ReturnType()},
                  {"abstract", AstDumper::Optional(abstract_)}});
+}
+
+void TSConstructorType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSConstructorType");
 }
 
 void TSConstructorType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

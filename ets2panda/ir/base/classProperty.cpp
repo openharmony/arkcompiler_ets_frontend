@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/decorator.h"
 #include "ir/typeNode.h"
 #include "ir/expression.h"
@@ -76,6 +77,43 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"typeAnnotation", AstDumper::Optional(type_annotation_)},
                  {"definite", IsDefinite()},
                  {"decorators", decorators_}});
+}
+
+void ClassProperty::Dump(ir::SrcDumper *dumper) const
+{
+    if (IsPrivate()) {
+        dumper->Add("private ");
+    } else if (IsProtected()) {
+        dumper->Add("protected ");
+    } else if (IsInternal()) {
+        dumper->Add("internal ");
+    } else {
+        dumper->Add("public ");
+    }
+
+    if (IsStatic()) {
+        dumper->Add("static ");
+    }
+
+    if (IsReadonly()) {
+        dumper->Add("readonly ");
+    }
+
+    if (key_ != nullptr) {
+        key_->Dump(dumper);
+    }
+
+    if (type_annotation_ != nullptr) {
+        dumper->Add(": ");
+        type_annotation_->Dump(dumper);
+    }
+
+    if (value_ != nullptr) {
+        dumper->Add(" = ");
+        value_->Dump(dumper);
+    }
+
+    dumper->Add(";");
 }
 
 void ClassProperty::Compile(compiler::PandaGen *pg) const

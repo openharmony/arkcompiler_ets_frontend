@@ -15,6 +15,7 @@
 
 #include "tsInterfaceDeclaration.h"
 
+#include "macros.h"
 #include "varbinder/declaration.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
@@ -23,6 +24,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/decorator.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsInterfaceBody.h"
@@ -77,6 +79,41 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
                  {"id", id_},
                  {"extends", extends_},
                  {"typeParameters", AstDumper::Optional(type_params_)}});
+}
+
+void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(id_);
+
+    dumper->Add("interface ");
+    id_->Dump(dumper);
+
+    if (type_params_ != nullptr) {
+        dumper->Add("<");
+        type_params_->Dump(dumper);
+        dumper->Add(">");
+    }
+
+    if (!extends_.empty()) {
+        dumper->Add(" extends ");
+        for (auto ext : extends_) {
+            ext->Dump(dumper);
+            if (ext != extends_.back()) {
+                dumper->Add(", ");
+            }
+        }
+    }
+
+    dumper->Add(" {");
+    if (body_ != nullptr) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        body_->Dump(dumper);
+        dumper->DecrIndent();
+        dumper->Endl();
+    }
+    dumper->Add("}");
+    dumper->Endl();
 }
 
 void TSInterfaceDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -25,8 +25,6 @@ public:
     BoxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source)
         : TypeConverter(checker, relation, nullptr, source)
     {
-        ASSERT(relation->GetNode());
-
         if (!source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
             Relation()->Result(false);
             return;
@@ -39,8 +37,6 @@ public:
     BoxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source, Type *target)
         : TypeConverter(checker, relation, target, source)
     {
-        ASSERT(relation->GetNode());
-
         if (!target->IsETSObjectType() || relation->IsTrue()) {
             return;
         }

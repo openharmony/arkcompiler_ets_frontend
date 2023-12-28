@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSModuleBlock::TransformChildren(const NodeTransformer &cb)
@@ -39,6 +40,11 @@ void TSModuleBlock::Iterate(const NodeTraverser &cb) const
 void TSModuleBlock::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSModuleBlock"}, {"body", statements_}});
+}
+
+void TSModuleBlock::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSModuleBlock");
 }
 
 void TSModuleBlock::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -121,3 +121,30 @@ TEST_F(ASTDumperTest, DumpJsonUTF16Char)
 
     ASSERT_FALSE(dump_str.empty());
 }
+
+TEST_F(ASTDumperTest, DumpEtsSrcSimple)
+{
+    static constexpr std::string_view FILE_NAME = "dummy.ets";
+    static constexpr std::string_view SRC =
+        "\
+        function main(args: String[]): int {\
+            let a: int = 2;\
+            let b: int = 3;\
+            return a + b;\
+        }";
+
+    int argc = 1;
+    const char *argv =
+        "../../../bin/es2panda "
+        "--extension=ets "
+        "--dump-ets-src-before-phases=\"plugins-after-parse:lambda-lowering:checker:plugins-after-check:generate-ts-"
+        "declarations:op-assignment:tuple-lowering:union-property-access:plugins-after-lowering\"";
+
+    auto program = std::unique_ptr<panda::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
+
+    ASSERT_NE(program, nullptr);
+
+    auto dump_str = program->JsonDump();
+
+    ASSERT_FALSE(dump_str.empty());
+}

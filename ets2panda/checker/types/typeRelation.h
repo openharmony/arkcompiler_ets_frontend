@@ -61,6 +61,7 @@ enum class TypeRelationFlag : uint32_t {
     IGNORE_TYPE_PARAMETERS = 1U << 20U,
     CHECK_PROXY = 1U << 21U,
     NO_CHECK_TRAILING_LAMBDA = 1U << 23U,
+    NO_THROW_GENERIC_TYPEALIAS = 1U << 24U,
 
     ASSIGNMENT_CONTEXT = WIDENING | BOXING | UNBOXING,
     CASTING_CONTEXT = NARROWING | WIDENING | BOXING | UNBOXING | UNCHECKED_CAST,
@@ -201,6 +202,11 @@ public:
         return (flags_ & TypeRelationFlag::UNCHECKED_CAST) != 0;
     }
 
+    [[nodiscard]] bool NoThrowGenericTypeAlias() const noexcept
+    {
+        return (flags_ & TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS) != 0;
+    }
+
     const Checker *GetChecker() const
     {
         return checker_;
@@ -262,9 +268,10 @@ public:
     void RaiseError(const std::string &err_msg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
 
-    void Result(bool res)
+    bool Result(bool res)
     {
         result_ = res ? RelationResult::TRUE : RelationResult::FALSE;
+        return res;
     }
 
     void Result(RelationResult res)

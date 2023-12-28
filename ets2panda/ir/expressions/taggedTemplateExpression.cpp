@@ -22,6 +22,7 @@
 #include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
@@ -53,6 +54,11 @@ void TaggedTemplateExpression::Dump(ir::AstDumper *dumper) const
                  {"tag", tag_},
                  {"quasi", quasi_},
                  {"typeParameters", AstDumper::Optional(type_params_)}});
+}
+
+void TaggedTemplateExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TaggedTemplateExpression");
 }
 
 void TaggedTemplateExpression::Compile(compiler::PandaGen *pg) const

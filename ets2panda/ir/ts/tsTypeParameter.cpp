@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/expressions/identifier.h"
 
@@ -59,6 +60,11 @@ void TSTypeParameter::Dump(ir::AstDumper *dumper) const
         {"in", AstDumper::Optional(IsIn())},
         {"out", AstDumper::Optional(IsOut())},
     });
+}
+
+void TSTypeParameter::Dump(ir::SrcDumper *dumper) const
+{
+    name_->Dump(dumper);
 }
 
 void TSTypeParameter::Compile([[maybe_unused]] compiler::PandaGen *pg) const

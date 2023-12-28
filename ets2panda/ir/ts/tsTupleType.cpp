@@ -22,6 +22,7 @@
 #include "checker/TSchecker.h"
 #include "checker/types/ts/indexInfo.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsNamedTupleMember.h"
 
@@ -43,6 +44,11 @@ void TSTupleType::Iterate(const NodeTraverser &cb) const
 void TSTupleType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTupleType"}, {"elementTypes", element_types_}});
+}
+
+void TSTupleType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSTupleType");
 }
 
 void TSTupleType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

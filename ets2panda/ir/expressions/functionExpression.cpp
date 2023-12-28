@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void FunctionExpression::TransformChildren(const NodeTransformer &cb)
@@ -34,6 +35,11 @@ void FunctionExpression::Iterate(const NodeTraverser &cb) const
 void FunctionExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "FunctionExpression"}, {"function", func_}});
+}
+
+void FunctionExpression::Dump(ir::SrcDumper *dumper) const
+{
+    func_->Dump(dumper);
 }
 
 void FunctionExpression::Compile(compiler::PandaGen *pg) const

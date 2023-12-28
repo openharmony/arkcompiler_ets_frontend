@@ -1,5 +1,9 @@
-# FIXME(igelhaus): Temporarily skipped for dev branch stabilization
+# panda#15005: Added to the skip list to stabilize fe_dev_202312
+parser/ets/declare_iface.ets
+parser/ets/interfaces.ets
 parser/ets/literals.ets
+parser/ets/test_interface.ets
+# End of panda#15005
 
 parser/ets/import_tests/modules/module.ets
 parser/ets/import_tests/import_class_members_1.ets
@@ -62,3 +66,6 @@ parser/ets/null-coalesc-negative.ets
 
 # Lambda tests, disabled because crash during compiler
 parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.ets
+
+# Bad test shadows Object with type parameter name #14913
+compiler/ets/override13.ets

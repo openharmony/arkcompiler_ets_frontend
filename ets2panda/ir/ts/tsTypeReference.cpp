@@ -22,6 +22,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
@@ -52,6 +53,11 @@ void TSTypeReference::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
         {{"type", "TSTypeReference"}, {"typeName", type_name_}, {"typeParameters", AstDumper::Optional(type_params_)}});
+}
+
+void TSTypeReference::Dump(ir::SrcDumper *dumper) const
+{
+    BaseName()->Dump(dumper);
 }
 
 void TSTypeReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const

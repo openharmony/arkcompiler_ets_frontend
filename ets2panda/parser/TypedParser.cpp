@@ -1196,7 +1196,10 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
     Lexer()->NextToken();  // eat '<'
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
+        TypeAnnotationParsingOptions tmp = *options;
+        *options &= ~TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
         ir::TypeNode *current_param = ParseTypeAnnotation(options);
+        *options = tmp;
 
         if (current_param == nullptr) {
             return nullptr;

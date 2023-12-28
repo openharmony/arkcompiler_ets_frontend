@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
@@ -35,6 +36,11 @@ void TSTypeQuery::Iterate(const NodeTraverser &cb) const
 void TSTypeQuery::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeQuery"}, {"exprName", expr_name_}});
+}
+
+void TSTypeQuery::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSTypeQuery");
 }
 
 void TSTypeQuery::Compile([[maybe_unused]] compiler::PandaGen *pg) const

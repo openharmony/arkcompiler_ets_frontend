@@ -57,6 +57,7 @@ enum class GlobalTypeId {
     ETS_OBJECT_BUILTIN,
     ETS_NULL,
     ETS_UNDEFINED,
+    ETS_NULLISH_OBJECT,
     ETS_WILDCARD,
     ETS_BOOLEAN_BUILTIN,
     ETS_BYTE_BUILTIN,
@@ -159,6 +160,7 @@ public:
     Type *GlobalETSObjectType();
     Type *GlobalETSNullType();
     Type *GlobalETSUndefinedType();
+    Type *GlobalETSNullishObjectType();
     Type *GlobalWildcardType();
     Type *GlobalETSBooleanBuiltinType();
     Type *GlobalByteBuiltinType();

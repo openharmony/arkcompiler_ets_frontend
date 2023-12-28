@@ -99,6 +99,8 @@ private:
         bool has_decl;
     };
 
+    std::map<util::StringView, ir::AstNode *> field_map_;
+    std::map<util::StringView, lexer::SourcePosition> export_name_map_;
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file) override;
     void ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements);
@@ -108,6 +110,8 @@ private:
 #endif
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
     void CollectDefaultSources();
+    void CollectUserSourcesFromIndex(const std::string &path, const std::string &resolved_path,
+                                     std::vector<std::string> &user_paths);
     std::string ResolveImportPath(const std::string &path);
     std::string ResolveFullPathFromRelative(const std::string &path);
     ImportData GetImportData(const std::string &path);
@@ -115,7 +119,8 @@ private:
     std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolved_path);
     void ParseSources(const std::vector<std::string> &paths, bool is_external = true);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool require_from);
-    void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export = false);
+    void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_export = false);
+    void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool default_export);
     void ParseUserSources(std::vector<std::string> user_parths);
     std::vector<std::string> ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
     void ParseDefaultSources();
@@ -174,7 +179,8 @@ private:
     ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *method);
     void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
-    std::string GetNameForTypeNode(const ir::TypeNode *type_annotation) const;
+    std::string GetNameForTypeNode(const ir::TypeNode *type_annotation, bool adjust = true) const;
+    std::string GetNameForETSUnionType(const ir::TypeNode *type_annotation) const;
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
@@ -189,7 +195,7 @@ private:
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
     ir::Statement *ParseTryStatement() override;
     ir::DebuggerStatement *ParseDebuggerStatement() override;
-    void ParseReExport(lexer::SourcePosition start_loc);
+    void ParseExport(lexer::SourcePosition start_loc);
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
@@ -248,6 +254,7 @@ private:
 
     ir::Statement *ParseInterfaceDeclaration(bool is_static) override;
     ir::ThisExpression *ParseThisExpression() override;
+    ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement() override;
     ir::TypeNode *ParseInterfaceExtendsElement() override;
@@ -309,6 +316,7 @@ private:
     inline static constexpr char const DEFAULT_PROXY_FILE[] = "<default_method>.ets";
     // NOLINTEND(modernize-avoid-c-arrays)
 
+    // NOLINTBEGIN(google-default-arguments)
     ir::Statement *CreateStatement(std::string_view source_code, std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::Statement *CreateFormattedStatement(std::string_view source_code, std::vector<ir::AstNode *> &inserting_nodes,
                                             std::string_view file_name = DEFAULT_SOURCE_FILE);
@@ -323,6 +331,7 @@ private:
         return CreateFormattedStatement(source_code, inserting_nodes, file_name);
     }
 
+    // NOLINTBEGIN(google-default-arguments)
     ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view source_code,

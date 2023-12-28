@@ -14,7 +14,8 @@
  */
 
 #include "tsPropertySignature.h"
-
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -46,6 +47,11 @@ void TSPropertySignature::Dump(ir::AstDumper *dumper) const
                  {"readonly", readonly_},
                  {"key", key_},
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())}});
+}
+
+void TSPropertySignature::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSPropertySignature");
 }
 
 void TSPropertySignature::Compile(compiler::PandaGen *pg) const

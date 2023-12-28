@@ -21,6 +21,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void NamedType::TransformChildren(const NodeTransformer &cb)
@@ -56,6 +57,11 @@ void NamedType::Dump(AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(type_params_)},
                  {"next", AstDumper::Optional(next_)},
                  {"isNullable", nullable_}});
+}
+
+void NamedType::Dump(SrcDumper *dumper) const
+{
+    dumper->Add("NamedType");
 }
 
 void NamedType::Compile(compiler::PandaGen *pg) const

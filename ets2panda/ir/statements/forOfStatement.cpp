@@ -15,6 +15,7 @@
 
 #include "forOfStatement.h"
 
+#include "macros.h"
 #include "varbinder/scope.h"
 #include "compiler/base/iterators.h"
 #include "compiler/base/lreference.h"
@@ -22,6 +23,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ForOfStatement::TransformChildren(const NodeTransformer &cb)
@@ -42,6 +45,29 @@ void ForOfStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
         {{"type", "ForOfStatement"}, {"await", is_await_}, {"left", left_}, {"right", right_}, {"body", body_}});
+}
+
+void ForOfStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(left_ != nullptr);
+    ASSERT(right_ != nullptr);
+    dumper->Add("for ");
+    if (is_await_) {
+        dumper->Add("await ");
+    }
+    dumper->Add("(");
+    left_->Dump(dumper);
+    dumper->Add(" of ");
+    right_->Dump(dumper);
+    dumper->Add(") {");
+    if (body_ != nullptr) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        body_->Dump(dumper);
+        dumper->DecrIndent();
+        dumper->Endl();
+    }
+    dumper->Add("}");
 }
 
 void ForOfStatement::Compile(compiler::PandaGen *pg) const

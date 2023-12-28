@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSExternalModuleReference::TransformChildren(const NodeTransformer &cb)
@@ -33,6 +35,11 @@ void TSExternalModuleReference::Iterate(const NodeTraverser &cb) const
 void TSExternalModuleReference::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSExternalModuleReference"}, {"expression", expr_}});
+}
+
+void TSExternalModuleReference::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSExternalModuleReference");
 }
 
 void TSExternalModuleReference::Compile(compiler::PandaGen *pg) const

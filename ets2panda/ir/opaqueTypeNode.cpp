@@ -18,6 +18,8 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
+
 namespace panda::es2panda::ir {
 
 void OpaqueTypeNode::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +28,11 @@ void OpaqueTypeNode::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void OpaqueTypeNode::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "OpaqueType"}});
+}
+
+void OpaqueTypeNode::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("OpaqueTypeNode");
 }
 
 void OpaqueTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const

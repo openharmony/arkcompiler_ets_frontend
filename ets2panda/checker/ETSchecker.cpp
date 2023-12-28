@@ -55,18 +55,23 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
         }
 
         if (var->HasFlag(varbinder::VariableFlags::BUILTIN_TYPE)) {
-            Type *type {nullptr};
-            if (var->Declaration()->Node()->IsClassDefinition()) {
-                type = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
-            } else {
-                ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
-                type = BuildInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
-            }
-            GetGlobalTypesHolder()->InitializeBuiltin(name, type);
+            InitializeBuiltin(var, name);
         }
     }
 
     AddStatus(CheckerStatus::BUILTINS_INITIALIZED);
+}
+
+void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringView &name)
+{
+    Type *type {nullptr};
+    if (var->Declaration()->Node()->IsClassDefinition()) {
+        type = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
+    } else {
+        ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+        type = BuildInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+    }
+    GetGlobalTypesHolder()->InitializeBuiltin(name, type);
 }
 
 bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
@@ -229,6 +234,11 @@ Type *ETSChecker::GlobalWildcardType() const
 ETSObjectType *ETSChecker::GlobalETSObjectType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSObjectType);
+}
+
+ETSObjectType *ETSChecker::GlobalETSNullishObjectType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalETSNullishObjectType);
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinETSStringType() const

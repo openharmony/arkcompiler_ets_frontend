@@ -22,6 +22,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsTypeParameter.h"
@@ -45,6 +46,11 @@ void TSFunctionType::Dump(ir::AstDumper *dumper) const
                  {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
                  {"returnType", signature_.ReturnType()},
                  {"isNullable", AstDumper::Optional(nullable_)}});
+}
+
+void TSFunctionType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSFunctionType");
 }
 
 void TSFunctionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

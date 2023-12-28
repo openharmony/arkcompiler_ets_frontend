@@ -24,40 +24,12 @@ class GlobalTypesHolder;
 
 class ETSUnionType : public Type {
 public:
-    explicit ETSUnionType(ArenaAllocator *allocator)
-        : Type(TypeFlag::ETS_UNION), constituent_types_(allocator->Adapter())
-    {
-    }
-
-    explicit ETSUnionType(ArenaVector<Type *> &&constituent_types)
-        : Type(TypeFlag::ETS_UNION), constituent_types_(std::move(constituent_types))
-    {
-    }
-
-    explicit ETSUnionType(ArenaVector<Type *> &constituent_types)
-        : Type(TypeFlag::ETS_UNION), constituent_types_(constituent_types)
-    {
-    }
+    // constituent_types must be normalized
+    explicit ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituent_types);
 
     const ArenaVector<Type *> &ConstituentTypes() const
     {
         return constituent_types_;
-    }
-
-    ArenaVector<Type *> &ConstituentTypes()
-    {
-        return constituent_types_;
-    }
-
-    void AddConstituentType(Type *type, TypeRelation *relation)
-    {
-        for (auto *it : constituent_types_) {
-            if (relation->IsIdenticalTo(it, type)) {
-                return;
-            }
-        }
-
-        constituent_types_.push_back(type);
     }
 
     void ToString(std::stringstream &ss) const override;
@@ -70,20 +42,10 @@ public:
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
+    void IsSupertypeOf(TypeRelation *relation, Type *source) override;
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
     Type *FindUnboxableType() const;
-
-    void SetLeastUpperBoundType(ETSChecker *checker);
-
-    Type *GetLeastUpperBoundType(ETSChecker *checker)
-    {
-        if (lub_type_ == nullptr) {
-            SetLeastUpperBoundType(checker);
-        }
-        ASSERT(lub_type_ != nullptr);
-        return lub_type_;
-    }
 
     Type *GetLeastUpperBoundType() const
     {
@@ -97,11 +59,9 @@ public:
 
     static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
 
-    static Type *HandleUnionType(TypeRelation *relation, ETSUnionType *union_type);
-
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        for (auto tp : ConstituentTypes()) {
+        for (auto const &tp : ConstituentTypes()) {
             if (!tp->IsConditionalExprType()) {
                 return {true, false};
             }
@@ -115,7 +75,9 @@ private:
 
     static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
 
-    ArenaVector<Type *> constituent_types_;
+    Type *ComputeLUB(ETSChecker *checker) const;
+
+    ArenaVector<Type *> const constituent_types_;
     Type *lub_type_ {nullptr};
 };
 }  // namespace panda::es2panda::checker

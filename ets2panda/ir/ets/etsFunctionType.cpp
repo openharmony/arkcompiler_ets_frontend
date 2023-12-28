@@ -20,6 +20,8 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSFunctionType::TransformChildren(const NodeTransformer &cb)
@@ -41,6 +43,27 @@ void ETSFunctionType::Dump(ir::AstDumper *dumper) const
 
     if (IsThrowing()) {
         dumper->Add({"throwMarker", "throws"});
+    }
+}
+
+void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("(");
+    for (auto *param : Params()) {
+        param->Dump(dumper);
+        if (param != Params().back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add(")");
+
+    if (TypeParams() != nullptr) {
+        TypeParams()->Dump(dumper);
+    }
+
+    if (ReturnType() != nullptr) {
+        dumper->Add("=> ");
+        ReturnType()->Dump(dumper);
     }
 }
 
@@ -72,5 +95,43 @@ checker::Type *ETSFunctionType::Check(checker::ETSChecker *checker)
 checker::Type *ETSFunctionType::GetType(checker::ETSChecker *checker)
 {
     return Check(checker);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ArenaVector<Expression *> params_clone(allocator->Adapter());
+
+    for (auto *const param : signature_.Params()) {
+        params_clone.emplace_back(param->Clone(allocator)->AsExpression());
+    }
+
+    auto *const type_params_clone = signature_.TypeParams() != nullptr
+                                        ? signature_.TypeParams()->Clone(allocator)->AsTSTypeParameterDeclaration()
+                                        : nullptr;
+    auto *const return_type_clone =
+        signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator)->AsTypeNode() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSFunctionType>(
+            FunctionSignature(type_params_clone, std::move(params_clone), return_type_clone), func_flags_);
+        clone != nullptr) {
+        if (type_params_clone != nullptr) {
+            type_params_clone->SetParent(clone);
+        }
+
+        if (return_type_clone != nullptr) {
+            return_type_clone->SetParent(clone);
+        }
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        clone->SetScope(scope_);
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

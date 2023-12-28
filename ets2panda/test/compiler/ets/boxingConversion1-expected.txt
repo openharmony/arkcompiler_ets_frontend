@@ -541,4 +541,4 @@
     }
   }
 }
-TypeError: No matching construct signature [boxingConversion1.ets:18:19]
+TypeError: No matching construct signature for std.core.Byte(int) [boxingConversion1.ets:18:19]

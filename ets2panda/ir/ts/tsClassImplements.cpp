@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
@@ -42,6 +43,12 @@ void TSClassImplements::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSClassImplements"},
                  {"expression", expression_},
                  {"typeParameters", AstDumper::Optional(type_parameters_)}});
+}
+
+void TSClassImplements::Dump(ir::SrcDumper *dumper) const
+{
+    expression_->Dump(dumper);
+    ASSERT(type_parameters_ == nullptr);
 }
 
 void TSClassImplements::Compile([[maybe_unused]] compiler::PandaGen *pg) const

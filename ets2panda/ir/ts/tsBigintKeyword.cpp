@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
@@ -28,6 +29,11 @@ void TSBigintKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void TSBigintKeyword::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSBigIntKeyword"}});
+}
+
+void TSBigintKeyword::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSBigintKeyword");
 }
 
 void TSBigintKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const

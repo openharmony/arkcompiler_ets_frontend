@@ -18,6 +18,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
@@ -34,6 +35,11 @@ void TSLiteralType::Iterate(const NodeTraverser &cb) const
 void TSLiteralType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSLiteralType"}, {"literal", literal_}});
+}
+
+void TSLiteralType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSLiteralType");
 }
 
 void TSLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

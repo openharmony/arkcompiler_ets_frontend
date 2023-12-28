@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ClassExpression::TransformChildren(const NodeTransformer &cb)
@@ -34,6 +35,11 @@ void ClassExpression::Iterate(const NodeTraverser &cb) const
 void ClassExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ClassExpression"}, {"definition", def_}});
+}
+
+void ClassExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ClassExpression");
 }
 
 void ClassExpression::Compile(compiler::PandaGen *pg) const

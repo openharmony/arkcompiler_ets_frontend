@@ -117,7 +117,7 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *element_type)
 
     auto *array_type = Allocator()->New<ETSArrayType>(element_type);
     auto it = array_types_.insert({element_type, array_type});
-    if (it.second && !element_type->IsTypeParameter()) {
+    if (it.second && !element_type->IsETSTypeParameter()) {
         CreateBuiltinArraySignature(array_type, array_type->Rank());
     }
 
@@ -137,14 +137,11 @@ Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
             it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? BoxingConverter::ETSTypeFromSource(this, it) : it);
     }
 
+    ETSUnionType::NormalizeTypes(Relation(), new_constituent_types);
     if (new_constituent_types.size() == 1) {
         return new_constituent_types[0];
     }
-
-    auto *new_union_type = Allocator()->New<ETSUnionType>(std::move(new_constituent_types));
-    new_union_type->SetLeastUpperBoundType(this);
-
-    return ETSUnionType::HandleUnionType(Relation(), new_union_type);
+    return Allocator()->New<ETSUnionType>(this, std::move(new_constituent_types));
 }
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)
@@ -193,9 +190,9 @@ SignatureInfo *ETSChecker::CreateSignatureInfo()
     return Allocator()->New<SignatureInfo>(Allocator());
 }
 
-ETSTypeParameter *ETSChecker::CreateTypeParameter(Type *assembler_type)
+ETSTypeParameter *ETSChecker::CreateTypeParameter()
 {
-    return Allocator()->New<ETSTypeParameter>(assembler_type);
+    return Allocator()->New<ETSTypeParameter>();
 }
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(util::StringView name)
@@ -231,6 +228,9 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView nam
             return GlobalETSObjectType();
         }
         GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_OBJECT_BUILTIN)] = obj_type;
+        auto *nullish =
+            CreateNullishType(obj_type, checker::TypeFlag::NULLISH, Allocator(), Relation(), GetGlobalTypesHolder());
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
     } else if (name == compiler::Signatures::BUILTIN_EXCEPTION_CLASS) {
         if (GlobalBuiltinExceptionType() != nullptr) {
             return GlobalBuiltinExceptionType();

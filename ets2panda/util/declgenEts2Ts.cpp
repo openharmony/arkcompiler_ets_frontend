@@ -168,6 +168,8 @@ void TSDeclGen::GenTypeNonNullish(const checker::Type *checker_type)
             return;
         }
         GenObjectType(checker_type->AsETSObjectType());
+    } else if (checker_type->IsETSTypeParameter()) {
+        GenTypeParameterType(checker_type->AsETSTypeParameter());
     } else {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TYPE_CHECKS(typeFlag, typeName)              \
@@ -319,6 +321,11 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *object_type)
         GenCommaSeparated(type_args, [this](checker::Type *arg) { GenType(arg); });
         Out(">");
     }
+}
+
+void TSDeclGen::GenTypeParameterType(const checker::ETSTypeParameter *type_param)
+{
+    Out(type_param->GetDeclNode()->Name()->Name());
 }
 
 void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *type_params)

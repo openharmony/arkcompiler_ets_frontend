@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expression.h"
 #include "ir/typeNode.h"
 
@@ -64,6 +65,20 @@ void TSTypeParameterInstantiation::Iterate(const NodeTraverser &cb) const
 void TSTypeParameterInstantiation::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeParameterInstantiation"}, {"params", params_}});
+}
+
+void TSTypeParameterInstantiation::Dump(ir::SrcDumper *dumper) const
+{
+    if (!params_.empty()) {
+        dumper->Add("<");
+        for (auto param : params_) {
+            param->Dump(dumper);
+            if (param != params_.back()) {
+                dumper->Add(", ");
+            }
+        }
+        dumper->Add(">");
+    }
 }
 
 void TSTypeParameterInstantiation::Compile([[maybe_unused]] compiler::PandaGen *pg) const

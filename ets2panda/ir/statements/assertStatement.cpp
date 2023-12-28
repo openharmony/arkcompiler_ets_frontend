@@ -22,6 +22,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
@@ -46,6 +47,17 @@ void AssertStatement::Iterate(const NodeTraverser &cb) const
 void AssertStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "AssertStatement"}, {"test", test_}, {"second", AstDumper::Nullish(second_)}});
+}
+
+void AssertStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(test_);
+    dumper->Add("assert(");
+    test_->Dump(dumper);
+    dumper->Add(")");
+    if (parent_->IsStatement()) {
+        dumper->Add(";");
+    }
 }
 
 void AssertStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

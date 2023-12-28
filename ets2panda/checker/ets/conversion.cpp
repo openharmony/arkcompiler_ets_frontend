@@ -255,7 +255,7 @@ ETSObjectType *Boxing(TypeRelation *const relation, Type *const source)
         return nullptr;
     }
     auto *const boxed_type = boxed.Result()->AsETSObjectType();
-    relation->GetNode()->AddBoxingUnboxingFlag(ets_checker->GetBoxingFlag(boxed_type));
+    relation->GetNode()->AddBoxingUnboxingFlags(ets_checker->GetBoxingFlag(boxed_type));
     return boxed_type;
 }
 
@@ -267,7 +267,7 @@ Type *Unboxing(TypeRelation *const relation, ETSObjectType *const source)
         return nullptr;
     }
     auto *const unboxed_type = unboxed.Result();
-    relation->GetNode()->AddBoxingUnboxingFlag(ets_checker->GetUnboxingFlag(unboxed_type));
+    relation->GetNode()->AddBoxingUnboxingFlags(ets_checker->GetUnboxingFlag(unboxed_type));
     return unboxed_type;
 }
 
@@ -280,6 +280,26 @@ void UnboxingWideningPrimitive(TypeRelation *const relation, ETSObjectType *cons
     ASSERT(unboxed_source != nullptr);
     WideningPrimitive(relation, target, unboxed_source);
     RollbackBoxingIfFailed(relation);
+}
+
+void UnboxingNarrowingPrimitive(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
+{
+    auto *const unboxed_source = Unboxing(relation, source);
+    if (!relation->IsTrue()) {
+        return;
+    }
+    ASSERT(unboxed_source != nullptr);
+    NarrowingPrimitive(relation, target, unboxed_source);
+}
+
+void UnboxingWideningNarrowingPrimitive(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
+{
+    auto *const unboxed_source = Unboxing(relation, source);
+    if (!relation->IsTrue()) {
+        return;
+    }
+    ASSERT(unboxed_source != nullptr);
+    WideningNarrowingPrimitive(relation, unboxed_source->AsByteType(), target->AsCharType());
 }
 
 void NarrowingReferenceUnboxing(TypeRelation *const relation, ETSObjectType *const source, Type *const target)

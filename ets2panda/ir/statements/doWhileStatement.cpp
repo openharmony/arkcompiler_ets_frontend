@@ -14,6 +14,7 @@
  */
 
 #include "doWhileStatement.h"
+#include <cstddef>
 
 #include "varbinder/scope.h"
 #include "compiler/base/condition.h"
@@ -21,6 +22,8 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void DoWhileStatement::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +41,24 @@ void DoWhileStatement::Iterate(const NodeTraverser &cb) const
 void DoWhileStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "DoWhileStatement"}, {"body", body_}, {"test", test_}});
+}
+
+void DoWhileStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("do {");
+    if (body_ != nullptr) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        body_->Dump(dumper);
+        dumper->DecrIndent();
+        dumper->Endl();
+    }
+    dumper->Add("} while");
+    dumper->Add("(");
+    if (test_ != nullptr) {
+        test_->Dump(dumper);
+    }
+    dumper->Add(")");
 }
 
 void DoWhileStatement::Compile(compiler::PandaGen *pg) const

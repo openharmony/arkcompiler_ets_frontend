@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSUnionType::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +39,11 @@ void TSUnionType::Iterate(const NodeTraverser &cb) const
 void TSUnionType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSUnionType"}, {"types", types_}});
+}
+
+void TSUnionType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSUnionType");
 }
 
 void TSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

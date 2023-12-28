@@ -23,6 +23,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
+
 namespace panda::es2panda::compiler {
 
 ETSGen *ETSCompiler::GetETSGen() const
@@ -221,6 +222,31 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
     compiler::VReg dim = etsg->AllocReg();
     etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->dimension_->TsType());
     etsg->NewArray(expr, arr, dim, expr->TsType());
+
+    if (expr->default_constructor_signature_ != nullptr) {
+        compiler::VReg count_reg = etsg->AllocReg();
+        auto *start_label = etsg->AllocLabel();
+        auto *end_label = etsg->AllocLabel();
+        etsg->MoveImmediateToRegister(expr, count_reg, checker::TypeFlag::INT, static_cast<std::int32_t>(0));
+        const auto index_reg = etsg->AllocReg();
+
+        etsg->SetLabel(expr, start_label);
+        etsg->LoadAccumulator(expr, dim);
+        etsg->JumpCompareRegister<compiler::Jle>(expr, count_reg, end_label);
+
+        etsg->LoadAccumulator(expr, count_reg);
+        etsg->StoreAccumulator(expr, index_reg);
+        const compiler::TargetTypeContext ttctx2(etsg, expr->type_reference_->TsType());
+        ArenaVector<ir::Expression *> arguments(expr->allocator_->Adapter());
+        etsg->InitObject(expr, expr->default_constructor_signature_, arguments);
+        etsg->StoreArrayElement(expr, arr, index_reg, expr->type_reference_->TsType());
+
+        etsg->IncrementImmediateRegister(expr, count_reg, checker::TypeFlag::INT, static_cast<std::int32_t>(1));
+        etsg->JumpTo(expr, start_label);
+
+        etsg->SetLabel(expr, end_label);
+    }
+
     etsg->SetVRegType(arr, expr->TsType());
     etsg->LoadAccumulator(expr, arr);
 }
@@ -431,7 +457,7 @@ static void CompileNullishCoalescing(compiler::ETSGen *etsg, ir::BinaryExpressio
 
     compile_operand(node->Left());
 
-    if (!node->Left()->TsType()->IsNullishOrNullLike()) {
+    if (!etsg->Checker()->MayHaveNulllikeValue(node->Left()->TsType())) {
         // fallthrough
     } else if (node->Left()->TsType()->IsETSNullLike()) {
         compile_operand(node->Right());
@@ -682,7 +708,8 @@ void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calle
     } else {
         etsg->CallThisVirtual(expr, callee_reg, expr->Signature(), expr->Arguments());
     }
-    etsg->SetAccumulatorType(expr->TsType());
+
+    etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->OptionalType());
 }
 
 void ETSCompiler::Compile(const ir::CallExpression *expr) const
@@ -822,7 +849,7 @@ static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *
             }
 
             if (expr->Object()->TsType()->IsETSTupleType() && (expr->GetTupleConvertedType() != nullptr)) {
-                etsg->EmitCheckedNarrowingReferenceConversion(expr, expr->GetTupleConvertedType());
+                etsg->InternalCheckCast(expr, expr->GetTupleConvertedType());
             }
 
             etsg->ApplyConversion(expr);
@@ -846,7 +873,8 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 
     compiler::RegScope rs(etsg);
 
-    auto *const object_type = etsg->Checker()->GetNonNullishType(expr->Object()->TsType());
+    auto *const object_type =
+        checker::ETSChecker::GetApparentType(etsg->Checker()->GetNonNullishType(expr->Object()->TsType()));
 
     if (CompileComputed(etsg, expr)) {
         return;
@@ -913,15 +941,15 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
         if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
             checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
             etsg->CallThisVirtual0(expr, obj_reg, sig->InternalName());
-            etsg->SetAccumulatorType(expr->TsType());
         } else if (object_type->IsETSDynamicType()) {
             etsg->LoadPropertyDynamic(expr, expr->OptionalType(), obj_reg, prop_name);
         } else if (object_type->IsETSUnionType()) {
-            etsg->LoadUnionProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, prop_name);
+            etsg->LoadUnionProperty(expr, expr->OptionalType(), obj_reg, prop_name);
         } else {
             const auto full_name = etsg->FormClassPropReference(object_type->AsETSObjectType(), prop_name);
-            etsg->LoadProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, full_name);
+            etsg->LoadProperty(expr, expr->OptionalType(), obj_reg, full_name);
         }
+        etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->OptionalType());
     };
 
     etsg->EmitMaybeOptional(expr, load_property, expr->IsOptional());
@@ -1669,22 +1697,56 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
+void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-
-    auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
-    if (!etsg->TryLoadConstantExpression(expr->Expr())) {
-        expr->Expr()->Compile(etsg);
-    }
-
-    etsg->ApplyConversion(expr->Expr(), nullptr);
-
     auto *target_type = expr->TsType();
-    if (target_type->IsETSUnionType()) {
-        target_type = target_type->AsETSUnionType()->FindTypeIsCastableToThis(
-            expr->expression_, etsg->Checker()->Relation(), expr->expression_->TsType());
+    ASSERT(target_type->IsETSObjectType());
+
+    switch (target_type->AsETSObjectType()->BuiltInKind()) {
+        case checker::ETSObjectFlags::BUILTIN_BOOLEAN: {
+            etsg->CastToBoolean(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_BYTE: {
+            etsg->CastToChar(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_CHAR: {
+            etsg->CastToByte(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_SHORT: {
+            etsg->CastToShort(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_INT: {
+            etsg->CastToInt(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_LONG: {
+            etsg->CastToLong(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_FLOAT: {
+            etsg->CastToFloat(expr);
+            break;
+        }
+        case checker::ETSObjectFlags::BUILTIN_DOUBLE: {
+            etsg->CastToDouble(expr);
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
     }
+}
+
+void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+    auto *target_type = expr->TsType();
+
     switch (checker::ETSChecker::TypeKind(target_type)) {
         case checker::TypeFlag::ETS_BOOLEAN: {
             etsg->CastToBoolean(expr);
@@ -1719,7 +1781,8 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
             break;
         }
         case checker::TypeFlag::ETS_ARRAY:
-        case checker::TypeFlag::ETS_OBJECT: {
+        case checker::TypeFlag::ETS_OBJECT:
+        case checker::TypeFlag::ETS_TYPE_PARAMETER: {
             etsg->CastToArrayOrObject(expr, target_type, expr->is_unchecked_cast_);
             break;
         }
@@ -1743,6 +1806,41 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
             UNREACHABLE();
         }
     }
+}
+
+void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+
+    auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
+    if (!etsg->TryLoadConstantExpression(expr->Expr())) {
+        expr->Expr()->Compile(etsg);
+    }
+
+    auto *target_type = expr->TsType();
+
+    if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+        etsg->ApplyUnboxingConversion(expr->Expr());
+    }
+
+    if (target_type->IsETSObjectType() &&
+        ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U ||
+         (expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) &&
+        checker::ETSChecker::TypeKind(etsg->GetAccumulatorType()) != checker::TypeFlag::ETS_OBJECT) {
+        if (target_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+            CompileCastUnboxable(expr);
+        }
+    }
+
+    if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
+        etsg->ApplyBoxingConversion(expr->Expr());
+    }
+
+    if (target_type->IsETSUnionType()) {
+        target_type->AsETSUnionType()->FindTypeIsCastableToThis(expr->expression_, etsg->Checker()->Relation(),
+                                                                expr->expression_->TsType());
+    }
+    CompileCast(expr);
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSBigintKeyword *node) const
@@ -1867,7 +1965,7 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 
     expr->Expr()->Compile(etsg);
 
-    if (!etsg->GetAccumulatorType()->IsNullishOrNullLike()) {
+    if (!etsg->Checker()->MayHaveNulllikeValue(etsg->GetAccumulatorType())) {
         return;
     }
 

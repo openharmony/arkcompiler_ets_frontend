@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSNamedTupleMember::TransformChildren(const NodeTransformer &cb)
@@ -40,6 +41,11 @@ void TSNamedTupleMember::Dump(ir::AstDumper *dumper) const
                  {"elementType", element_type_},
                  {"label", label_},
                  {"optional", AstDumper::Optional(optional_)}});
+}
+
+void TSNamedTupleMember::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSNamedTupleMember");
 }
 
 void TSNamedTupleMember::Compile([[maybe_unused]] compiler::PandaGen *pg) const

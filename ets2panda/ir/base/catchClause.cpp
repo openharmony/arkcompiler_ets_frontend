@@ -19,6 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/statements/blockStatement.h"
 
@@ -44,6 +45,22 @@ void CatchClause::Iterate(const NodeTraverser &cb) const
 void CatchClause::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "CatchClause"}, {"body", body_}, {"param", AstDumper::Nullish(param_)}});
+}
+
+void CatchClause::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(body_ != nullptr);
+    dumper->Add("(");
+    if (param_ != nullptr) {
+        param_->Dump(dumper);
+    }
+    dumper->Add(") {");
+    dumper->IncrIndent();
+    dumper->Endl();
+    body_->Dump(dumper);
+    dumper->DecrIndent();
+    dumper->Endl();
+    dumper->Add("}");
 }
 
 bool CatchClause::IsDefaultCatchClause() const

@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void NullLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +28,11 @@ void NullLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void NullLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "NullLiteral"}, {"value", AstDumper::Property::Constant::PROP_NULL}});
+}
+
+void NullLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("null");
 }
 
 void NullLiteral::Compile(compiler::PandaGen *pg) const

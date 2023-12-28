@@ -75,6 +75,7 @@ DEFINE_BITOPS(BoxingUnboxingFlags)
 // Forward declarations
 class AstDumper;
 class Expression;
+class SrcDumper;
 class Statement;
 class ClassElement;
 
@@ -305,6 +306,11 @@ public:
         return (flags_ & ModifierFlags::OVERRIDE) != 0;
     }
 
+    void SetOverride() noexcept
+    {
+        flags_ |= ModifierFlags::OVERRIDE;
+    }
+
     [[nodiscard]] bool IsAsync() const noexcept
     {
         return (flags_ & ModifierFlags::ASYNC) != 0;
@@ -423,20 +429,35 @@ public:
         return flags_;
     }
 
-    void SetBoxingUnboxingFlags(BoxingUnboxingFlags const flags) const noexcept
-    {
-        boxing_unboxing_flags_ = flags;
+    // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define DECLARE_FLAG_OPERATIONS(flag_type, member_name)     \
+    void Set##flag_type(flag_type flags) const noexcept     \
+    {                                                       \
+        (member_name) = flags;                              \
+    }                                                       \
+                                                            \
+    void Add##flag_type(flag_type flag) const noexcept      \
+    {                                                       \
+        (member_name) |= flag;                              \
+    }                                                       \
+                                                            \
+    [[nodiscard]] flag_type Get##flag_type() const noexcept \
+    {                                                       \
+        return (member_name);                               \
+    }                                                       \
+                                                            \
+    bool Has##flag_type(flag_type flag) const noexcept      \
+    {                                                       \
+        return ((member_name)&flag) != 0U;                  \
+    }                                                       \
+    void Remove##flag_type(flag_type flag) noexcept         \
+    {                                                       \
+        (member_name) &= ~flag;                             \
     }
 
-    void AddBoxingUnboxingFlag(BoxingUnboxingFlags const flag) const noexcept
-    {
-        boxing_unboxing_flags_ |= flag;
-    }
-
-    [[nodiscard]] BoxingUnboxingFlags GetBoxingUnboxingFlags() const noexcept
-    {
-        return boxing_unboxing_flags_;
-    }
+    DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxing_unboxing_flags_);
+    DECLARE_FLAG_OPERATIONS(AstNodeFlags, ast_node_flags_);
+#undef DECLARE_FLAG_OPERATIONS
 
     ir::ClassElement *AsClassElement()
     {
@@ -478,8 +499,10 @@ public:
     AstNode *FindChild(const NodePredicate &cb) const;
 
     std::string DumpJSON() const;
+    std::string DumpEtsSrc() const;
 
     virtual void Dump(ir::AstDumper *dumper) const = 0;
+    virtual void Dump(ir::SrcDumper *dumper) const = 0;
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
     virtual void Compile([[maybe_unused]] compiler::ETSGen *etsg) const {};
     virtual checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) = 0;
@@ -509,6 +532,7 @@ protected:
     AstNodeType type_;
     varbinder::Variable *variable_ {};
     ModifierFlags flags_ {};
+    mutable AstNodeFlags ast_node_flags_ {};
     mutable BoxingUnboxingFlags boxing_unboxing_flags_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };

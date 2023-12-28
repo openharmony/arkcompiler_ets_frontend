@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/ts/tsTypeParameter.h"
 
@@ -50,6 +51,11 @@ void TSMappedType::Dump(ir::AstDumper *dumper) const
                  {"optional", optional_ == MappedOption::NO_OPTS ? AstDumper::Optional(false)
                               : optional_ == MappedOption::PLUS  ? AstDumper::Optional("+")
                                                                  : AstDumper::Optional("-")}});
+}
+
+void TSMappedType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSMappedType");
 }
 
 void TSMappedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

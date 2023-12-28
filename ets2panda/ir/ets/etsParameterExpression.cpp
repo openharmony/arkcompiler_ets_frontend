@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/base/spreadElement.h"
@@ -140,6 +141,30 @@ void ETSParameterExpression::Dump(ir::AstDumper *const dumper) const
             {{"type", "ETSParameterExpression"}, {"name", ident_}, {"initializer", AstDumper::Optional(initializer_)}});
     } else {
         dumper->Add({{"type", "ETSParameterExpression"}, {"rest parameter", spread_}});
+    }
+}
+
+void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
+{
+    if (IsRestParameter()) {
+        spread_->Dump(dumper);
+    } else {
+        if (ident_ != nullptr) {
+            ASSERT(ident_->IsAnnotatedExpression());
+            ident_->Dump(dumper);
+            auto type_annotation = ident_->AsAnnotatedExpression()->TypeAnnotation();
+            if (type_annotation != nullptr) {
+                dumper->Add(": ");
+                type_annotation->Dump(dumper);
+            }
+        }
+        if (initializer_ != nullptr) {
+            ASSERT(initializer_->IsNumberLiteral());
+            if (initializer_->AsNumberLiteral()->Str().Length() > 0) {
+                dumper->Add(" = ");
+                initializer_->Dump(dumper);
+            }
+        }
     }
 }
 

@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSClassLiteral::TransformChildren(const NodeTransformer &cb)
@@ -34,6 +35,11 @@ void ETSClassLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 void ETSClassLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSClassLiteral"}});
+}
+
+void ETSClassLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ETSClassLiteral");
 }
 
 void ETSClassLiteral::Compile(compiler::PandaGen *pg) const

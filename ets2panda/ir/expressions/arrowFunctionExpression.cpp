@@ -21,6 +21,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
@@ -42,6 +43,11 @@ void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const
 void ArrowFunctionExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ArrowFunctionExpression"}, {"function", func_}});
+}
+
+void ArrowFunctionExpression::Dump(ir::SrcDumper *dumper) const
+{
+    func_->Dump(dumper);
 }
 
 void ArrowFunctionExpression::Compile(compiler::PandaGen *pg) const
@@ -133,11 +139,10 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
         return_node = Function()->ReturnTypeAnnotation();
     }
 
-    auto *param_scope = checker->Scope()->AsFunctionScope()->ParamScope();
-    auto signature = ir::FunctionSignature(nullptr, std::move(Function()->Params()), return_node);
+    auto orig_params = Function()->Params();
+    auto signature = ir::FunctionSignature(nullptr, std::move(orig_params), return_node);
     auto *func_type =
         checker->Allocator()->New<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
-    func_type->SetScope(param_scope);
     return_node->SetParent(func_type);
     return func_type;
 }

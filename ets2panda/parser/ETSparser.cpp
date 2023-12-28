@@ -16,6 +16,7 @@
 #include "ETSparser.h"
 #include <utility>
 
+#include "macros.h"
 #include "parser/parserFlags.h"
 #include "util/arktsconfig.h"
 #include "util/helpers.h"
@@ -117,6 +118,7 @@
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsNonNullExpression.h"
+#include "ir/ts/tsThisType.h"
 #include "libpandabase/os/file.h"
 #include "generated/signatures.h"
 
@@ -451,6 +453,52 @@ std::tuple<std::string, bool> ETSParser::GetSourceRegularPath(const std::string 
     return {path, false};
 }
 
+void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &path,
+                                            [[maybe_unused]] const std::string &resolved_path,
+                                            [[maybe_unused]] std::vector<std::string> &user_paths)
+{
+#ifdef USE_UNIX_SYSCALL
+    DIR *dir = opendir(resolved_path.c_str());
+    bool is_index = false;
+    std::vector<std::string> tmp_paths;
+
+    if (dir == nullptr) {
+        ThrowSyntaxError({"Cannot open folder: ", resolved_path});
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != nullptr) {
+        if (entry->d_type != DT_REG) {
+            continue;
+        }
+
+        std::string file_name = entry->d_name;
+        std::string::size_type pos = file_name.find_last_of('.');
+        if (pos == std::string::npos || !IsCompitableExtension(file_name.substr(pos))) {
+            continue;
+        }
+
+        std::string file_path = path + "/" + entry->d_name;
+
+        if (file_name == "index.ets" || file_name == "index.ts") {
+            user_paths.emplace_back(file_path);
+            is_index = true;
+            break;
+        } else if (file_name == "Object.ets") {
+            tmp_paths.emplace(user_paths.begin(), file_path);
+        } else {
+            tmp_paths.emplace_back(file_path);
+        }
+    }
+
+    closedir(dir);
+
+    if (!is_index) {
+        user_paths.insert(user_paths.end(), tmp_paths.begin(), tmp_paths.end());
+    }
+#endif
+}
+
 std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const std::string &path)
 {
     std::vector<std::string> user_paths;
@@ -472,46 +520,24 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
     }
 
 #ifdef USE_UNIX_SYSCALL
-    DIR *dir = opendir(resolved_path.c_str());
-
-    if (dir == nullptr) {
-        ThrowSyntaxError({"Cannot open folder: ", resolved_path});
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != nullptr) {
-        if (entry->d_type != DT_REG) {
-            continue;
-        }
-
-        std::string file_name = entry->d_name;
-        std::string::size_type pos = file_name.find_last_of('.');
-
-        if (pos == std::string::npos || !IsCompitableExtension(file_name.substr(pos))) {
-            continue;
-        }
-
-        std::string file_path = path + "/" + entry->d_name;
-
-        if (file_name == "Object.ets") {
-            user_paths.emplace(user_paths.begin(), file_path);
-        } else {
-            user_paths.emplace_back(file_path);
-        }
-    }
-
-    closedir(dir);
+    CollectUserSourcesFromIndex(path, resolved_path, user_paths);
 #else
-    for (auto const &entry : fs::directory_iterator(resolved_path)) {
-        if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
-            continue;
+    if (fs::exists(resolved_path + "/index.ets")) {
+        user_paths.emplace_back(path + "/index.ets");
+    } else if (fs::exists(resolved_path + "/index.ts")) {
+        user_paths.emplace_back(path + "/index.ts");
+    } else {
+        for (auto const &entry : fs::directory_iterator(resolved_path)) {
+            if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
+                continue;
+            }
+
+            std::string base_name = path;
+            std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
+
+            base_name.append(entry.path().string().substr(pos, entry.path().string().size()));
+            user_paths.emplace_back(base_name);
         }
-
-        std::string base_name = path;
-        std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
-
-        base_name.append(entry.path().string().substr(pos, entry.path().string().size()));
-        user_paths.emplace_back(base_name);
     }
 #endif
     return {user_paths, false};
@@ -646,6 +672,8 @@ void ETSParser::MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition star
 ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::Statement *> &statements)
 {
     ArenaVector<ir::AstNode *> global_properties(Allocator()->Adapter());
+    field_map_.clear();
+    export_name_map_.clear();
     bool default_export = false;
 
     using ParserFunctionPtr = std::function<ir::Statement *(ETSParser *)>;
@@ -685,7 +713,7 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
                 Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-                ParseReExport(Lexer()->GetToken().Start());
+                ParseExport(Lexer()->GetToken().Start());
                 continue;
             }
 
@@ -797,7 +825,17 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
             current_pos++;
         }
     }
-
+    // Add export modifier flag to nodes exported in previous statements.
+    for (auto &iter : export_name_map_) {
+        util::StringView export_name = iter.first;
+        lexer::SourcePosition start_loc = export_name_map_[export_name];
+        if (field_map_.count(export_name) == 0) {
+            ThrowSyntaxError("Cannot find name '" + std::string {export_name.Utf8()} + "' to export.", start_loc);
+        }
+        auto field = field_map_[export_name];
+        // selective export does not support default
+        MarkNodeAsExported(field, start_loc, false);
+    }
     return global_properties;
 }
 
@@ -1288,6 +1326,7 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
     }
     field->SetRange({start_loc, end_loc});
 
+    field_map_.insert({field_name->Name(), field});
     declarations->push_back(field);
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -1317,6 +1356,10 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
         new_status |= ParserStatus::ASYNC_FUNCTION;
     }
 
+    if ((modifiers & ir::ModifierFlags::STATIC) == 0) {
+        new_status |= ParserStatus::ALLOW_THIS_TYPE;
+    }
+
     ir::ScriptFunction *func = ParseFunction(new_status, class_name);
     func->SetIdent(method_name);
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
@@ -1328,6 +1371,8 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     }
     auto *method = AllocNode<ir::MethodDefinition>(method_kind, method_name, func_expr, modifiers, Allocator(), false);
     method->SetRange(func_expr->Range());
+
+    field_map_.insert({method_name->Name(), method});
     AddProxyOverloadToMethodWithDefaultParams(method, ident_node);
 
     return method;
@@ -1426,8 +1471,9 @@ ir::TypeNode *ETSParser::ParseFunctionReturnType([[maybe_unused]] ParserStatus s
             ThrowSyntaxError("Type annotation isn't allowed for constructor.");
         }
         Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options =
-            TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR |
+                                               TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE |
+                                               TypeAnnotationParsingOptions::RETURN_TYPE;
         return ParseTypeAnnotation(&options);
     }
 
@@ -2226,20 +2272,42 @@ std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
             UNREACHABLE();
     }
 }
-
-std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation) const
+std::string ETSParser::GetNameForETSUnionType(const ir::TypeNode *type_annotation) const
 {
-    if ((type_annotation->IsNullAssignable() || type_annotation->IsUndefinedAssignable()) &&
-        type_annotation->IsETSUnionType()) {
-        type_annotation = type_annotation->AsETSUnionType()->Types().front();
+    ASSERT(type_annotation->IsETSUnionType());
+    std::string newstr;
+    for (size_t i = 0; i < type_annotation->AsETSUnionType()->Types().size(); i++) {
+        auto type = type_annotation->AsETSUnionType()->Types()[i];
+        if (type->IsNullAssignable() || type->IsUndefinedAssignable()) {
+            continue;
+        }
+        std::string str = GetNameForTypeNode(type, false);
+        newstr += str;
+        if (i != type_annotation->AsETSUnionType()->Types().size() - 1) {
+            newstr += "|";
+        }
+    }
+    if (type_annotation->IsNullAssignable()) {
+        newstr += "|null";
+    }
+    if (type_annotation->IsUndefinedAssignable()) {
+        newstr += "|undefined";
+    }
+    return newstr;
+}
+
+std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation, bool adjust) const
+{
+    if (type_annotation->IsETSUnionType()) {
+        return GetNameForETSUnionType(type_annotation);
     }
 
-    const auto adjust_nullish = [type_annotation](std::string const &s) {
+    const auto adjust_nullish = [type_annotation, adjust](std::string const &s) {
         std::string newstr = s;
-        if (type_annotation->IsNullAssignable()) {
+        if (type_annotation->IsNullAssignable() && adjust) {
             newstr += "|null";
         }
-        if (type_annotation->IsUndefinedAssignable()) {
+        if (type_annotation->IsUndefinedAssignable() && adjust) {
             newstr += "|undefined";
         }
         return newstr;
@@ -2764,12 +2832,39 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             type_annotation = ParseETSTupleType(options);
             break;
         }
+        case lexer::TokenType::KEYW_THIS: {
+            type_annotation = ParseThisType(options);
+            break;
+        }
         default: {
             break;
         }
     }
 
     return std::make_pair(type_annotation, true);
+}
+
+ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+
+    // A syntax error should be thrown if
+    // - the usage of 'this' as a type is not allowed in the current context, or
+    // - 'this' is not used as a return type, or
+    // - the current context is an arrow function (might be inside a method of a class where 'this' is allowed).
+    if (((*options & TypeAnnotationParsingOptions::THROW_ERROR) != 0) &&
+        (((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0) ||
+         ((*options & TypeAnnotationParsingOptions::RETURN_TYPE) == 0) ||
+         ((GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0))) {
+        ThrowSyntaxError("A 'this' type is available only as return type in a non-static method of a class or struct.");
+    }
+
+    auto *this_type = AllocNode<ir::TSThisType>();
+    this_type->SetRange(Lexer()->GetToken().Loc());
+
+    Lexer()->NextToken();  // eat 'this'
+
+    return this_type;
 }
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
@@ -2843,7 +2938,7 @@ ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
     ThrowUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
 }
 
-void ETSParser::ParseReExport(lexer::SourcePosition start_loc)
+void ETSParser::ParseExport(lexer::SourcePosition start_loc)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
@@ -2855,10 +2950,12 @@ void ETSParser::ParseReExport(lexer::SourcePosition start_loc)
         ParseNamedSpecifiers(&specifiers, true);
 
         if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
-            ThrowSyntaxError("Selective export directive is not implemented yet");
+            // selective export directive
+            return;
         }
     }
 
+    // re-export directive
     ir::ImportSource *re_export_source = nullptr;
     std::vector<std::string> user_paths;
 
@@ -3032,8 +3129,9 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
     return all_user_paths;
 }
 
-void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export)
+void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_export)
 {
+    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     // NOTE(user): handle qualifiedName in file bindings: qualifiedName '.' '*'
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
@@ -3041,6 +3139,7 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
     Lexer()->NextToken();  // eat '{'
 
     auto file_name = GetProgram()->SourceFilePath().Mutf8();
+    std::vector<util::StringView> exported_idents;
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
@@ -3056,7 +3155,7 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
         ir::Identifier *local = nullptr;
         imported->SetRange(Lexer()->GetToken().Loc());
 
-        Lexer()->NextToken();  // eat import name
+        Lexer()->NextToken();  // eat import/export name
 
         if (CheckModuleAsModifier() && Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS) {
             Lexer()->NextToken();  // eat `as` literal
@@ -3071,6 +3170,10 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
 
         util::Helpers::CheckImportedName(specifiers, specifier, file_name);
 
+        if (is_export) {
+            util::StringView member_name = local->Name();
+            exported_idents.push_back(member_name);
+        }
         specifiers->push_back(specifier);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -3080,8 +3183,11 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
 
     Lexer()->NextToken();  // eat '}'
 
-    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM && !is_re_export) {
-        ThrowSyntaxError("Unexpected token, expected 'from'");
+    if (is_export && Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
+        // update exported idents to export name map when it is not the case of re-export
+        for (auto member_name : exported_idents) {
+            export_name_map_.insert({member_name, start_loc});
+        }
     }
 }
 
@@ -3978,7 +4084,7 @@ ir::Expression *ETSParser::ParseNewExpression()
         ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-            auto *arr_instance = AllocNode<ir::ETSNewArrayInstanceExpression>(type_reference, dimension);
+            auto *arr_instance = AllocNode<ir::ETSNewArrayInstanceExpression>(Allocator(), type_reference, dimension);
             arr_instance->SetRange({start, end_loc});
             return arr_instance;
         }
@@ -4117,7 +4223,15 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
         constraint = ParseTypeAnnotation(&new_options);
     }
 
-    auto *type_param = AllocNode<ir::TSTypeParameter>(param_ident, constraint, nullptr, variance_modifier);
+    ir::TypeNode *default_type = nullptr;
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        Lexer()->NextToken();  // eat '='
+        default_type = ParseTypeAnnotation(options);
+    }
+
+    auto *type_param = AllocNode<ir::TSTypeParameter>(param_ident, constraint, default_type, variance_modifier);
+
     type_param->SetRange({start_loc, Lexer()->GetToken().End()});
     return type_param;
 }

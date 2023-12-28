@@ -19,7 +19,7 @@ class cls extends Object {
     }
 }
 
-function foo<T>(item : T) : String {
+function foo<T extends Object>(item : T) : String {
     let str = item.toString();
     return str;
 }

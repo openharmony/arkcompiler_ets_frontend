@@ -77,11 +77,15 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     checker::Type *type = expr->Check(this);
     auto *unboxed_type = ETSBuiltinTypeAsConditionalType(type);
 
+    if (unboxed_type == nullptr) {
+        ThrowTypeError("Condition must be of possible condition type", expr->Start());
+    }
+
     if (unboxed_type == GlobalBuiltinVoidType() || unboxed_type->IsETSVoidType()) {
         ThrowTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
     }
 
-    if (unboxed_type != nullptr && !unboxed_type->IsConditionalExprType()) {
+    if (!unboxed_type->IsConditionalExprType()) {
         ThrowTypeError("Condition must be of possible condition type", expr->Start());
     }
 
@@ -126,6 +130,9 @@ Type *ETSChecker::GetNonNullishType(Type *type) const
     if (type->IsETSArrayType()) {
         return type;  // give up
     }
+    if (type->IsETSTypeParameter()) {
+        return type->AsETSTypeParameter()->GetOriginal();
+    }
 
     while (type->IsNullish()) {
         type = type->AsETSObjectType()->GetBaseType();
@@ -140,6 +147,9 @@ const Type *ETSChecker::GetNonNullishType(const Type *type) const
     if (type->IsETSArrayType()) {
         return type;  // give up
     }
+    if (type->IsETSTypeParameter()) {
+        return type->AsETSTypeParameter()->GetOriginal();
+    }
 
     while (type->IsNullish()) {
         type = type->AsETSObjectType()->GetBaseType();
@@ -153,10 +163,43 @@ Type *ETSChecker::CreateOptionalResultType(Type *type)
     if (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         type = PrimitiveTypeAsETSBuiltinType(type);
         ASSERT(type->IsETSObjectType());
-        Relation()->GetNode()->AddBoxingUnboxingFlag(GetBoxingFlag(type));
+        Relation()->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(type));
     }
 
     return CreateNullishType(type, checker::TypeFlag::UNDEFINED, Allocator(), Relation(), GetGlobalTypesHolder());
+}
+
+bool ETSChecker::MayHaveNullValue(const Type *type) const
+{
+    if (type->ContainsNull() || type->IsETSNullType()) {
+        return true;
+    }
+    if (type->IsETSTypeParameter()) {
+        return MayHaveNullValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
+    }
+    return false;
+}
+
+bool ETSChecker::MayHaveUndefinedValue(const Type *type) const
+{
+    if (type->ContainsUndefined() || type->IsETSUndefinedType()) {
+        return true;
+    }
+    if (type->IsETSTypeParameter()) {
+        return MayHaveUndefinedValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
+    }
+    return false;
+}
+
+bool ETSChecker::MayHaveNulllikeValue(const Type *type) const
+{
+    if (type->IsNullishOrNullLike()) {
+        return true;
+    }
+    if (type->IsETSTypeParameter()) {
+        return MayHaveNulllikeValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
+    }
+    return false;
 }
 
 bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
@@ -305,6 +348,55 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
     return var->TsType();
 }
 
+// Determine if unchecked cast is needed and yield guaranteed source type
+Type *ETSChecker::GuaranteedTypeForUncheckedCast(Type *base, Type *substituted)
+{
+    if (!base->IsETSTypeParameter()) {
+        return nullptr;
+    }
+    auto *constr = base->AsETSTypeParameter()->EffectiveConstraint(this);
+    // Constraint is supertype of TypeArg AND TypeArg is supertype of Constraint
+    return Relation()->IsIdenticalTo(substituted, constr) ? nullptr : constr;
+}
+
+// Determine if substituted property access requires cast from erased type
+Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *const prop)
+{
+    if (IsVariableStatic(prop)) {
+        return nullptr;
+    }
+    if (IsVariableGetterSetter(prop)) {
+        auto *method = prop->TsType()->AsETSFunctionType();
+        if (!method->HasTypeFlag(checker::TypeFlag::GETTER)) {
+            return nullptr;
+        }
+        return GuaranteedTypeForUncheckedCallReturn(method->FindGetter());
+    }
+    // NOTE(vpukhov): mark ETSDynamicType properties
+    if (prop->Declaration() == nullptr || prop->Declaration()->Node() == nullptr) {
+        return nullptr;
+    }
+
+    auto *base_prop = prop->Declaration()->Node()->AsClassProperty()->Id()->Variable();
+    if (base_prop == prop) {
+        return nullptr;
+    }
+    return GuaranteedTypeForUncheckedCast(GetTypeOfVariable(base_prop), GetTypeOfVariable(prop));
+}
+
+// Determine if substituted method cast requires cast from erased type
+Type *ETSChecker::GuaranteedTypeForUncheckedCallReturn(Signature *sig)
+{
+    if (sig->HasSignatureFlag(checker::SignatureFlags::THIS_RETURN_TYPE)) {
+        return sig->ReturnType();
+    }
+    auto *base_sig = sig->Function()->Signature();
+    if (base_sig == sig) {
+        return nullptr;
+    }
+    return GuaranteedTypeForUncheckedCast(base_sig->ReturnType(), sig->ReturnType());
+}
+
 void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos)
 {
     if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
@@ -360,7 +452,7 @@ varbinder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *cons
     return Scope()->FindInGlobal(identifier->Name(), varbinder::ResolveBindingOptions::ALL).variable;
 }
 
-bool ETSChecker::IsVariableStatic(const varbinder::Variable *var) const
+bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 {
     if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
         return var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
@@ -368,7 +460,7 @@ bool ETSChecker::IsVariableStatic(const varbinder::Variable *var) const
     return var->HasFlag(varbinder::VariableFlags::STATIC);
 }
 
-bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var) const
+bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var)
 {
     return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
@@ -440,8 +532,8 @@ void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident, varbinder
         return;
     }
 
-    if (!type->IsETSObjectType() && !type->IsETSArrayType() && !type->IsETSEnumType() && !type->IsETSStringEnumType() &&
-        !type->IsETSUnionType() && !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!IsReferenceType(type) && !type->IsETSEnumType() && !type->IsETSStringEnumType() &&
+        !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         ThrowError(ident);
     }
 }
@@ -520,7 +612,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
         NotResolvedError(ident);
     }
 
-    auto *const resolved_type = GetTypeOfVariable(resolved);
+    auto *const resolved_type = ETSChecker::GetApparentType(GetTypeOfVariable(resolved));
 
     switch (ident->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION: {
@@ -628,7 +720,7 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
     SaveCapturedVariable(resolved, ident->Start());
 
     ident->SetVariable(resolved);
-    return resolved->TsType();
+    return GetTypeOfVariable(resolved);
 }
 
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
@@ -778,16 +870,27 @@ bool ETSChecker::IsNullLikeOrVoidExpression(const ir::Expression *expr) const
     return expr->TsType()->IsETSNullLike() || expr->TsType()->IsETSVoidType();
 }
 
+std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr, Type *type) const
+{
+    auto [is_resolve, is_value] =
+        IsNullLikeOrVoidExpression(expr) ? std::make_tuple(true, false) : type->ResolveConditionExpr();
+
+    const Type *ts_type = expr->TsType();
+    if (!ts_type->ContainsUndefined() && !ts_type->ContainsNull() && !ts_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        is_resolve = true;
+        is_value = true;
+    }
+    return std::make_tuple(is_resolve, is_value);
+}
+
 Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *left_type, Type *right_type, ir::BinaryExpression *expr)
 {
     ASSERT(left_type->IsConditionalExprType() && right_type->IsConditionalExprType());
 
-    auto [resolve_left, left_value] =
-        IsNullLikeOrVoidExpression(expr->Left()) ? std::make_tuple(true, false) : left_type->ResolveConditionExpr();
-    auto [resolve_right, right_value] =
-        IsNullLikeOrVoidExpression(expr->Right()) ? std::make_tuple(true, false) : right_type->ResolveConditionExpr();
+    auto [resolve_left, left_value] = IsResolvedAndValue(expr->Left(), left_type);
+    auto [resolve_right, right_value] = IsResolvedAndValue(expr->Right(), right_type);
 
-    if (!resolve_left) {
+    if (!resolve_left && !resolve_right) {
         if (IsTypeIdenticalTo(left_type, right_type)) {
             return left_type;
         }
@@ -874,7 +977,7 @@ void ETSChecker::ResolveReturnStatement(checker::Type *func_return_type, checker
             if (argument_type == nullptr) {
                 ThrowTypeError("Invalid return statement expression", st->Argument()->Start());
             }
-            st->Argument()->AddBoxingUnboxingFlag(GetBoxingFlag(argument_type));
+            st->Argument()->AddBoxingUnboxingFlags(GetBoxingFlag(argument_type));
         }
 
         if (!func_return_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
@@ -1092,6 +1195,7 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
 
     auto *const alias_type_node = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
     TypeStackElement tse(this, alias_type_node, "Circular type alias reference", alias_type_node->Start());
+    alias_type_node->Check(this);
     auto *const aliased_type = GetTypeFromTypeAnnotation(alias_type_node->TypeAnnotation());
 
     var->SetTsType(aliased_type);
@@ -1118,6 +1222,99 @@ Type *ETSChecker::GetTypeFromClassReference(varbinder::Variable *var)
     auto *class_type = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
     var->SetTsType(class_type);
     return class_type;
+}
+
+void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *const type_alias_node,
+                                                       const ir::TSTypeParameterInstantiation *const exact_type_params)
+{
+    auto *const cloned_node = type_alias_node->TypeAnnotation()->Clone(Allocator(), type_alias_node);
+
+    // Basic check, we really don't want to change the original type nodes, more precise checking should be made
+    ASSERT(cloned_node != type_alias_node->TypeAnnotation());
+
+    // Currently only reference types are checked. This should be extended for other types in a follow up patch, but for
+    // complete usability, if the type isn't a simple reference type, then doN't check type alias declaration at all.
+    bool check_typealias = true;
+
+    // Only transforming a temporary cloned node, so no modification is made in the AST
+    cloned_node->TransformChildrenRecursively(
+        [&check_typealias, &exact_type_params, type_alias_node](ir::AstNode *const node) -> ir::AstNode * {
+            if (!node->IsETSTypeReference()) {
+                return node;
+            }
+
+            const auto *const node_ident = node->AsETSTypeReference()->Part()->Name()->AsIdentifier();
+
+            size_t type_param_idx = 0;
+            for (const auto *const type_param : type_alias_node->TypeParams()->Params()) {
+                if (type_param->Name()->AsIdentifier()->Variable() == node_ident->Variable()) {
+                    break;
+                }
+                type_param_idx++;
+            }
+
+            if (type_param_idx == type_alias_node->TypeParams()->Params().size()) {
+                return node;
+            }
+
+            auto *const type_param_type = exact_type_params->Params().at(type_param_idx);
+
+            if (!type_param_type->IsETSTypeReference()) {
+                check_typealias = false;
+                return node;
+            }
+
+            return type_param_type;
+        });
+
+    if (check_typealias) {
+        cloned_node->Check(this);
+    }
+}
+
+Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const type_params)
+{
+    ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
+           name->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl());
+
+    auto *const type_alias_node =
+        name->AsIdentifier()->Variable()->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration();
+
+    // NOTE (mmartin): modify for default params
+    if ((type_params == nullptr) != (type_alias_node->TypeParams() == nullptr)) {
+        if (type_params == nullptr) {
+            ThrowTypeError("Type alias declaration is generic, but no type parameters were provided", name->Start());
+        }
+
+        ThrowTypeError("Type alias declaration is not generic, but type parameters were provided",
+                       type_params->Start());
+    }
+
+    if (type_params == nullptr) {
+        return GetReferencedTypeBase(name);
+    }
+
+    for (auto *const orig_type_param : type_params->Params()) {
+        orig_type_param->Check(this);
+    }
+
+    Type *const alias_type = GetReferencedTypeBase(name);
+    auto *const alias_sub = NewSubstitution();
+
+    if (type_alias_node->TypeParams()->Params().size() != type_params->Params().size()) {
+        ThrowTypeError("Wrong number of type parameters for generic type alias", type_params->Start());
+    }
+
+    for (std::size_t idx = 0; idx < type_alias_node->TypeParams()->Params().size(); ++idx) {
+        auto *type_alias_type = type_alias_node->TypeParams()->Params().at(idx)->Name()->Variable()->TsType();
+        if (type_alias_type->IsETSTypeParameter()) {
+            alias_sub->insert({type_alias_type->AsETSTypeParameter(), type_params->Params().at(idx)->TsType()});
+        }
+    }
+
+    ValidateGenericTypeAliasForClonedNode(type_alias_node->AsTSTypeAliasDeclaration(), type_params);
+
+    return alias_type->Substitute(Relation(), alias_sub);
 }
 
 Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable *var)
@@ -1177,6 +1374,10 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
         auto r = ext_records.find(import_path);
         return r != ext_records.end() ? r : ext_records.find(ets_binder->GetResolvedImportPath(import_path));
     }();
+
+    // Check imported properties before assigning them to module object
+    res->second.front()->Ast()->Check(this);
+
     for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings()) {
         (void)_;
         if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
@@ -1192,6 +1393,13 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
     }
 
     for (auto [_, var] : res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings()) {
+        (void)_;
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
+            module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
+        }
+    }
+
+    for (auto [_, var] : res->second.front()->GlobalClassScope()->TypeAliasScope()->Bindings()) {
         (void)_;
         if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
             module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
@@ -1457,7 +1665,7 @@ bool ETSChecker::IsTypeBuiltinType(const Type *type) const
 bool ETSChecker::IsReferenceType(const Type *type)
 {
     return type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || type->IsETSNullLike() ||
-           type->IsETSStringType();
+           type->IsETSStringType() || type->IsETSTypeParameter() || type->IsETSUnionType();
 }
 
 const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNodeType node_type, const ir::AstNode *node,
@@ -1583,18 +1791,22 @@ Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *object_type)
     auto saved_result = Relation()->IsTrue();
     Relation()->Result(false);
 
+    if (Checker::GetGlobalTypesHolder()->GlobalIntegerBuiltinType() == nullptr) {
+        InitializeBuiltin(VarBinder()->TopScope()->Bindings().find("Int")->second, "Int");
+    }
+
     BoxingConverter converter = BoxingConverter(AsETSChecker(), Relation(), object_type,
                                                 Checker::GetGlobalTypesHolder()->GlobalIntegerBuiltinType());
     Relation()->Result(saved_result);
     return converter.Result();
 }
 
-void ETSChecker::AddBoxingUnboxingFlagToNode(ir::AstNode *node, Type *boxing_unboxing_type)
+void ETSChecker::AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxing_unboxing_type)
 {
     if (boxing_unboxing_type->IsETSObjectType()) {
-        node->AddBoxingUnboxingFlag(GetBoxingFlag(boxing_unboxing_type));
+        node->AddBoxingUnboxingFlags(GetBoxingFlag(boxing_unboxing_type));
     } else {
-        node->AddBoxingUnboxingFlag(GetUnboxingFlag(boxing_unboxing_type));
+        node->AddBoxingUnboxingFlags(GetUnboxingFlag(boxing_unboxing_type));
     }
 }
 
@@ -1844,7 +2056,7 @@ void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *targ
 {
     auto boxing_result = PrimitiveTypeAsETSBuiltinType(target);
     if (boxing_result != nullptr) {
-        relation->GetNode()->AddBoxingUnboxingFlag(GetBoxingFlag(boxing_result));
+        relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxing_result));
         relation->Result(true);
     }
 }
@@ -1853,7 +2065,7 @@ void ETSChecker::AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *so
 {
     auto unboxing_result = UnboxingConverter(this, relation, source, self).Result();
     if ((unboxing_result != nullptr) && relation->IsTrue()) {
-        relation->GetNode()->AddBoxingUnboxingFlag(GetUnboxingFlag(unboxing_result));
+        relation->GetNode()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxing_result));
     }
 }
 
@@ -1882,7 +2094,7 @@ void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *sourc
     }
     relation->IsAssignableTo(unboxed_source_type, unboxed_target_type);
     if (relation->IsTrue()) {
-        relation->GetNode()->AddBoxingUnboxingFlag(
+        relation->GetNode()->AddBoxingUnboxingFlags(
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(unboxed_source_type));
     }
 }
@@ -1926,7 +2138,7 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
         relation->GetChecker()->AsETSChecker()->CheckUnboxedTypeWidenable(relation, target, unboxed_source_type);
     }
     if (!relation->OnlyCheckBoxingUnboxing()) {
-        relation->GetNode()->AddBoxingUnboxingFlag(
+        relation->GetNode()->AddBoxingUnboxingFlags(
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(unboxed_source_type));
     }
 }
@@ -2075,17 +2287,19 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
 
 static void TypeToString(std::stringstream &ss, Type *tp)
 {
-    if (tp->IsETSObjectType() && tp->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER)) {
-        ss << tp->AsETSObjectType()->GetDeclNode()->Start().index;
+    if (tp->IsETSTypeParameter()) {
+        ss << tp->AsETSTypeParameter()->GetDeclNode()->Start().index;
         ss << ".";
     }
-    if (tp->IsETSObjectType()) {
-        ss << tp->AsETSObjectType()->Name();
-    } else {
+    if (!tp->IsETSObjectType()) {
         tp->ToString(ss);
+        return;
     }
-    if (tp->IsETSObjectType() && !tp->AsETSObjectType()->TypeArguments().empty()) {
-        auto type_args = tp->AsETSObjectType()->TypeArguments();
+    auto *const obj_type = tp->AsETSObjectType();
+    ss << obj_type->Name();
+
+    if (!obj_type->TypeArguments().empty()) {
+        auto type_args = obj_type->TypeArguments();
         ss << "<";
         for (auto *ta : type_args) {
             TypeToString(ss, ta);
@@ -2093,6 +2307,19 @@ static void TypeToString(std::stringstream &ss, Type *tp)
         }
         ss << ">";
     }
+
+    if (tp->ContainsNull()) {
+        ss << "|null";
+    }
+
+    if (tp->ContainsUndefined()) {
+        ss << "|undefined";
+    }
+}
+
+void ETSChecker::EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *type_arg)
+{
+    substitution->emplace(tparam, type_arg);
 }
 
 util::StringView ETSChecker::GetHashFromTypeArguments(const ArenaVector<Type *> &type_arg_types)
@@ -2144,7 +2371,7 @@ Type *ETSChecker::GetTypeFromTypeAnnotation(ir::TypeNode *const type_annotation)
         return type;
     }
 
-    if (!type->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) && !type->HasTypeFlag(TypeFlag::ETS_UNION)) {
+    if (!IsReferenceType(type)) {
         ThrowTypeError("Non reference types cannot be nullish.", type_annotation->Start());
     }
 
@@ -2172,25 +2399,28 @@ void ETSChecker::CheckValidGenericTypeParameter(Type *const arg_type, const lexe
     ThrowTypeError("Type '" + ss.str() + "' is not valid for generic type arguments", pos);
 }
 
-void ETSChecker::CheckNumberOfTypeArguments(Type *const type, ir::TSTypeParameterDeclaration *const type_param_decl,
+void ETSChecker::CheckNumberOfTypeArguments(ETSObjectType *const type,
                                             ir::TSTypeParameterInstantiation *const type_args,
                                             const lexer::SourcePosition &pos)
 {
-    if (type_param_decl != nullptr && type_args == nullptr) {
-        ThrowTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);
-    }
-
-    if (type_param_decl == nullptr && type_args != nullptr) {
-        ThrowTypeError({"Type '", type, "' is not generic."}, pos);
-    }
-
-    if (type_args == nullptr) {
+    auto const &type_params = type->TypeArguments();
+    if (type_params.empty()) {
+        if (type_args != nullptr) {
+            ThrowTypeError({"Type '", type, "' is not generic."}, pos);
+        }
         return;
     }
 
-    ASSERT(type_param_decl != nullptr && type_args != nullptr);
-    if (type_param_decl->Params().size() != type_args->Params().size()) {
-        ThrowTypeError({"Type '", type, "' has ", type_param_decl->Params().size(), " number of type parameters, but ",
+    size_t minimum_type_args = std::count_if(type_params.begin(), type_params.end(), [](Type *param) {
+        return param->AsETSTypeParameter()->GetDefaultType() == nullptr;
+    });
+    if (type_args == nullptr && minimum_type_args > 0) {
+        ThrowTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);
+    }
+
+    if (type_args != nullptr &&
+        ((minimum_type_args > type_args->Params().size()) || (type_params.size() < type_args->Params().size()))) {
+        ThrowTypeError({"Type '", type, "' has ", minimum_type_args, " number of type parameters, but ",
                         type_args->Params().size(), " type arguments were provided."},
                        pos);
     }

@@ -45,9 +45,8 @@ enum class ETSObjectFlags : uint32_t {
     INNER = 1U << 15U,
     DYNAMIC = 1U << 16U,
     ASYNC_FUNC_RETURN_TYPE = 1U << 17U,
-    TYPE_PARAMETER = 1U << 18U,
-    CHECKED_INVOKE_LEGITIMACY = 1U << 19U,
-    UNDEFINED_TYPE = 1U << 20U,
+    CHECKED_INVOKE_LEGITIMACY = 1U << 18U,
+    UNDEFINED_TYPE = 1U << 19U,
 
     BUILTIN_STRING = 1U << 23U,
     BUILTIN_BOOLEAN = 1U << 24U,
@@ -477,6 +476,10 @@ public:
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &new_type_args,
+                            const Substitution *substitution);
+    void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copied_type, ArenaVector<Type *> &new_type_args,
+                                 const Substitution *substitution);
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     bool CastNumericObject(TypeRelation *relation, Type *target);
@@ -488,14 +491,11 @@ public:
         ss << assembler_name_;
     }
 
+    static void DebugInfoTypeFromName(std::stringstream &ss, util::StringView asm_name);
+
     void ToDebugInfoType(std::stringstream &ss) const override
     {
-        ss << compiler::Signatures::CLASS_REF_BEGIN;
-        auto name = assembler_name_.Mutf8();
-        std::replace(name.begin(), name.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
-                     *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
-        ss << name;
-        ss << compiler::Signatures::MANGLE_SEPARATOR;
+        DebugInfoTypeFromName(ss, assembler_name_);
     }
 
     void ToDebugInfoSignatureType(std::stringstream &ss) const
@@ -547,6 +547,8 @@ private:
     }
     std::unordered_map<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
     void IdenticalUptoNullability(TypeRelation *relation, Type *other);
+    bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unbox_flags, TypeFlag widening_flags,
+                               TypeFlag narrowing_flags);
 
     ArenaAllocator *allocator_;
     util::StringView name_;

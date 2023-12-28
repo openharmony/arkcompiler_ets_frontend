@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-class A<T> {
+class A<T extends Object> {
     public foo(e: T): void {
         this.data[2].equals(e);
     }

@@ -14,12 +14,15 @@
  */
 
 #include "tsTypeAliasDeclaration.h"
+#include <cstddef>
 
+#include "macros.h"
 #include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/base/decorator.h"
 #include "ir/expressions/identifier.h"
@@ -71,6 +74,26 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declare", AstDumper::Optional(declare_)}});
 }
 
+void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(id_);
+    dumper->Add("type ");
+    id_->Dump(dumper);
+    if (type_params_ != nullptr) {
+        dumper->Add("<");
+        type_params_->Dump(dumper);
+        dumper->Add(">");
+    }
+    dumper->Add(" = ");
+    if (id_->IsAnnotatedExpression()) {
+        auto type = TypeAnnotation();
+        ASSERT(type);
+        type->Dump(dumper);
+    }
+    dumper->Add(";");
+    dumper->Endl();
+}
+
 void TSTypeAliasDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);
@@ -90,4 +113,5 @@ checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecke
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
 }  // namespace panda::es2panda::ir

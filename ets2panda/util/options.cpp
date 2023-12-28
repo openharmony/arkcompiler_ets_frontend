@@ -183,6 +183,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> skip_phases("skip-phases", "", "Phases to skip");
     panda::PandArg<std::string> dump_before_phases("dump-before-phases", "",
                                                    "Generate program dump before running phases in the list");
+    panda::PandArg<std::string> dump_ets_src_before_phases(
+        "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
+    panda::PandArg<std::string> dump_ets_src_after_phases(
+        "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list");
     panda::PandArg<std::string> dump_after_phases("dump-after-phases", "",
                                                   "Generate program dump after running phases in the list");
     panda::PandArg<std::string> arkts_config(
@@ -219,7 +223,9 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&plugins);
     argparser_->Add(&skip_phases);
     argparser_->Add(&dump_before_phases);
+    argparser_->Add(&dump_ets_src_before_phases);
     argparser_->Add(&dump_after_phases);
+    argparser_->Add(&dump_ets_src_after_phases);
     argparser_->Add(&arkts_config);
     argparser_->Add(&op_ts_decl_out);
 
@@ -395,6 +401,12 @@ bool Options::Parse(int argc, const char **argv)
         }
     }
 
+    if ((dump_ets_src_before_phases.GetValue().size() + dump_ets_src_after_phases.GetValue().size() > 0) &&
+        extension_ != es2panda::ScriptExtension::ETS) {
+        error_msg_ = "--dump-ets-src-* option is valid only with ETS extension";
+        return false;
+    }
+
     compiler_options_.ts_decl_out = op_ts_decl_out.GetValue();
     compiler_options_.dump_asm = op_dump_assembly.GetValue();
     compiler_options_.dump_ast = op_dump_ast.GetValue();
@@ -409,7 +421,9 @@ bool Options::Parse(int argc, const char **argv)
     compiler_options_.plugins = SplitToStringVector(plugins.GetValue());
     compiler_options_.skip_phases = SplitToStringSet(skip_phases.GetValue());
     compiler_options_.dump_before_phases = SplitToStringSet(dump_before_phases.GetValue());
+    compiler_options_.dump_ets_src_before_phases = SplitToStringSet(dump_ets_src_before_phases.GetValue());
     compiler_options_.dump_after_phases = SplitToStringSet(dump_after_phases.GetValue());
+    compiler_options_.dump_ets_src_after_phases = SplitToStringSet(dump_ets_src_after_phases.GetValue());
 
     return true;
 }

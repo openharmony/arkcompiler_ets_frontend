@@ -21,6 +21,8 @@
 #include "compiler/core/pandagen.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ForInStatement::TransformChildren(const NodeTransformer &cb)
@@ -40,6 +42,11 @@ void ForInStatement::Iterate(const NodeTraverser &cb) const
 void ForInStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ForInStatement"}, {"left", left_}, {"right", right_}, {"body", body_}});
+}
+
+void ForInStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ForInStatement");
 }
 
 void ForInStatement::Compile(compiler::PandaGen *pg) const

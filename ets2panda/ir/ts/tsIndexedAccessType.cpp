@@ -18,6 +18,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 #include "checker/TSchecker.h"
 
@@ -37,6 +38,11 @@ void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const
 void TSIndexedAccessType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSIndexedAccessType"}, {"objectType", object_type_}, {"indexType", index_type_}});
+}
+
+void TSIndexedAccessType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSIndexedAccessType");
 }
 
 void TSIndexedAccessType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

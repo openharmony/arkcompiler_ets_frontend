@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void CallExpression::TransformChildren(const NodeTransformer &cb)
@@ -57,6 +59,20 @@ void CallExpression::Dump(ir::AstDumper *dumper) const
                  {"arguments", arguments_},
                  {"optional", IsOptional()},
                  {"typeParameters", AstDumper::Optional(type_params_)}});
+}
+
+void CallExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(callee_);
+    callee_->Dump(dumper);
+    dumper->Add("(");
+    for (auto arg : arguments_) {
+        arg->Dump(dumper);
+        if (arg != arguments_.back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add(")");
 }
 
 void CallExpression::Compile(compiler::PandaGen *pg) const

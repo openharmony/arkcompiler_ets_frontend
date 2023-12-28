@@ -23,6 +23,7 @@
 #include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
@@ -41,6 +42,23 @@ void WhileStatement::Iterate(const NodeTraverser &cb) const
 void WhileStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "WhileStatement"}, {"test", test_}, {"body", body_}});
+}
+
+void WhileStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("while (");
+    if (test_ != nullptr) {
+        test_->Dump(dumper);
+    }
+    dumper->Add(") {");
+    if (body_ != nullptr) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        body_->Dump(dumper);
+        dumper->DecrIndent();
+        dumper->Endl();
+    }
+    dumper->Add("}");
 }
 
 void WhileStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

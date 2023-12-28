@@ -19,6 +19,8 @@
 #include "checker/ets/castingContext.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
@@ -60,6 +62,29 @@ void MemberExpression::Dump(ir::AstDumper *dumper) const
                  {"property", property_},
                  {"computed", computed_},
                  {"optional", IsOptional()}});
+}
+
+void MemberExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(object_ != nullptr);
+    ASSERT(property_ != nullptr);
+
+    object_->Dump(dumper);
+    if (IsOptional()) {
+        dumper->Add("?");
+    }
+    if ((MemberExpressionKind::ELEMENT_ACCESS & kind_) != 0U) {
+        dumper->Add("[");
+        property_->Dump(dumper);
+        dumper->Add("]");
+    } else {
+        dumper->Add(".");
+        property_->Dump(dumper);
+    }
+    if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsBlockExpression())) {
+        dumper->Add(";");
+        dumper->Endl();
+    }
 }
 
 void MemberExpression::LoadRhs(compiler::PandaGen *pg) const
@@ -176,22 +201,26 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
         common_prop_type = member_type;
     };
     for (auto *const type : union_type->ConstituentTypes()) {
-        if (type->IsETSObjectType()) {
-            SetObjectType(type->AsETSObjectType());
+        auto *const apparent = checker->GetApparentType(type);
+        if (apparent->IsETSObjectType()) {
+            SetObjectType(apparent->AsETSObjectType());
             add_prop_type(ResolveObjectMember(checker).first);
-        } else if (type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
-            add_prop_type(ResolveEnumMember(checker, type).first);
+        } else if (apparent->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+            add_prop_type(ResolveEnumMember(checker, apparent).first);
         } else {
             UNREACHABLE();
         }
     }
-    SetObjectType(union_type->GetLeastUpperBoundType(checker)->AsETSObjectType());
+    SetObjectType(union_type->GetLeastUpperBoundType()->AsETSObjectType());
     return common_prop_type;
 }
 
-checker::Type *MemberExpression::AdjustOptional(checker::ETSChecker *checker, checker::Type *type)
+checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     SetOptionalType(type);
+    if (PropVar() != nullptr) {
+        unchecked_type_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
+    }
     if (IsOptional() && Object()->TsType()->IsNullishOrNullLike()) {
         checker->Relation()->SetNode(this);
         type = checker->CreateOptionalResultType(type);
@@ -205,7 +234,9 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 {
     std::size_t index;
 
-    if (auto const &number = property_->AsNumberLiteral()->Number(); number.IsInteger()) {
+    auto const &number = property_->AsNumberLiteral()->Number();
+
+    if (number.IsInteger()) {
         auto const value = number.GetLong();
         if (value < 0) {
             checker->ThrowTypeError("Index value cannot be less than zero.", property_->Start());
@@ -220,6 +251,10 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
         index = static_cast<std::size_t>(value);
     } else {
         UNREACHABLE();
+    }
+
+    if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {
+        checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.", property_->Start());
     }
 
     if (object_->IsIdentifier() &&
@@ -267,7 +302,8 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     if (signature == nullptr) {
         checker->ThrowTypeError("Cannot find index access method with the required signature.", Property()->Start());
     }
-    checker->ValidateSignatureAccessibility(obj_type_, signature, Start(), "Index access method is not visible here.");
+    checker->ValidateSignatureAccessibility(obj_type_, nullptr, signature, Start(),
+                                            "Index access method is not visible here.");
 
     ASSERT(signature->Function() != nullptr);
 
@@ -324,16 +360,15 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
             CheckArrayIndexValue(checker);
         }
 
-        if (property_->IsIdentifier()) {
-            SetPropVar(property_->AsIdentifier()->Variable()->AsLocalVariable());
-        } else if (auto var = property_->Variable(); (var != nullptr) && var->IsLocalVariable()) {
-            SetPropVar(var->AsLocalVariable());
-        }
-
         // NOTE: apply capture conversion on this type
         if (base_type->IsETSArrayType()) {
             if (base_type->IsETSTupleType()) {
                 return CheckTupleAccessMethod(checker, base_type);
+            }
+
+            if (object_->IsArrayExpression() && property_->IsNumberLiteral()) {
+                auto const number = property_->AsNumberLiteral()->Number().GetLong();
+                return object_->AsArrayExpression()->Elements()[number]->Check(checker);
             }
 
             return base_type->AsETSArrayType()->ElementType();
@@ -380,21 +415,4 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-bool MemberExpression::IsGenericField() const
-{
-    const auto obj_t = object_->TsType();
-    if (!obj_t->IsETSObjectType()) {
-        return false;
-    }
-    auto base_class_t = obj_t->AsETSObjectType()->GetBaseType();
-    if (base_class_t == nullptr) {
-        return false;
-    }
-    const auto &prop_name = property_->AsIdentifier()->Name();
-    auto base_prop = base_class_t->GetProperty(prop_name, checker::PropertySearchFlags::SEARCH_FIELD);
-    if (base_prop == nullptr || base_prop->TsType() == nullptr) {
-        return false;
-    }
-    return TsType()->ToAssemblerName().str() != base_prop->TsType()->ToAssemblerName().str();
-}
 }  // namespace panda::es2panda::ir

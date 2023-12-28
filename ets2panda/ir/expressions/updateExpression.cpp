@@ -15,6 +15,7 @@
 
 #include "updateExpression.h"
 
+#include "macros.h"
 #include "varbinder/variable.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
@@ -23,6 +24,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/unaryExpression.h"
 #include "ir/ts/tsAsExpression.h"
 #include "ir/expressions/identifier.h"
@@ -42,6 +44,18 @@ void UpdateExpression::Iterate(const NodeTraverser &cb) const
 void UpdateExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "UpdateExpression"}, {"operator", operator_}, {"prefix", prefix_}, {"argument", argument_}});
+}
+
+void UpdateExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(argument_);
+    if (prefix_) {
+        dumper->Add(TokenToString(operator_));
+        argument_->Dump(dumper);
+    } else {
+        argument_->Dump(dumper);
+        dumper->Add(TokenToString(operator_));
+    }
 }
 
 void UpdateExpression::Compile(compiler::PandaGen *pg) const

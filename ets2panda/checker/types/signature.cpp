@@ -37,19 +37,19 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     bool any_change = false;
     SignatureInfo *new_sig_info = allocator->New<SignatureInfo>(allocator);
     const Substitution *new_substitution = substitution;
+
     if (!signature_info_->type_params.empty()) {
         auto *new_substitution_seed = checker->CopySubstitution(substitution);
         for (auto *tparam : signature_info_->type_params) {
             auto *new_tparam = tparam->Substitute(relation, new_substitution_seed);
             new_sig_info->type_params.push_back(new_tparam);
-            if (new_tparam != tparam) {
-                any_change = true;
-                new_substitution_seed->insert({tparam, new_tparam});
+            any_change |= (new_tparam != tparam);
+            if (new_tparam != tparam && tparam->IsETSTypeParameter()) {
+                new_substitution_seed->insert({tparam->AsETSTypeParameter(), new_tparam});
             }
         }
         new_substitution = new_substitution_seed;
     }
-
     new_sig_info->min_arg_count = signature_info_->min_arg_count;
 
     for (auto *param : signature_info_->params) {
@@ -84,12 +84,13 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     if (!any_change) {
         return this;
     }
-    auto *result = allocator->New<Signature>(new_sig_info, new_return_type, this);
+    auto *result = allocator->New<Signature>(new_sig_info, new_return_type);
     result->func_ = func_;
     result->flags_ = flags_;
     result->internal_name_ = internal_name_;
     result->owner_obj_ = owner_obj_;
     result->owner_var_ = owner_var_;
+
     return result;
 }
 
@@ -341,13 +342,5 @@ void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
     if (relation->IsTrue() && signature_info_->rest_var != nullptr && source->RestVar() != nullptr) {
         relation->IsAssignableTo(source->RestVar()->TsType(), signature_info_->rest_var->TsType());
     }
-}
-
-bool Signature::IsBaseReturnDiff() const
-{
-    if (base_sig_ == nullptr) {
-        return false;
-    }
-    return ReturnType()->ToAssemblerName().str() != base_sig_->ReturnType()->ToAssemblerName().str();
 }
 }  // namespace panda::es2panda::checker

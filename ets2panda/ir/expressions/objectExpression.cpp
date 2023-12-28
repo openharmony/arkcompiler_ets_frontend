@@ -25,6 +25,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
@@ -227,6 +228,11 @@ void ObjectExpression::Dump(ir::AstDumper *dumper) const
                  {"properties", properties_},
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())},
                  {"optional", AstDumper::Optional(optional_)}});
+}
+
+void ObjectExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ObjectExpression");
 }
 
 void ObjectExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

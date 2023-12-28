@@ -14,7 +14,8 @@
  */
 
 #include "tsIndexSignature.h"
-
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -44,6 +45,11 @@ void TSIndexSignature::Dump(ir::AstDumper *dumper) const
                  {"parameters", param_},
                  {"typeAnnotation", type_annotation_},
                  {"readonly", readonly_}});
+}
+
+void TSIndexSignature::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSIndexSignature");
 }
 
 void TSIndexSignature::Compile(compiler::PandaGen *pg) const

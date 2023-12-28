@@ -19,6 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
@@ -35,6 +36,14 @@ void ThrowStatement::Iterate(const NodeTraverser &cb) const
 void ThrowStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ThrowStatement"}, {"argument", argument_}});
+}
+
+void ThrowStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(Argument() != nullptr);
+    dumper->Add("throw ");
+    Argument()->Dump(dumper);
+    dumper->Add(";");
 }
 
 void ThrowStatement::Compile(compiler::PandaGen *pg) const

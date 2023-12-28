@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSPrimitiveType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -28,6 +29,41 @@ void ETSPrimitiveType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {
 void ETSPrimitiveType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSPrimitiveType"}});
+}
+
+void ETSPrimitiveType::Dump(ir::SrcDumper *dumper) const
+{
+    switch (GetPrimitiveType()) {
+        case PrimitiveType::BYTE:
+            dumper->Add("byte");
+            break;
+        case PrimitiveType::INT:
+            dumper->Add("int");
+            break;
+        case PrimitiveType::LONG:
+            dumper->Add("long");
+            break;
+        case PrimitiveType::SHORT:
+            dumper->Add("short");
+            break;
+        case PrimitiveType::FLOAT:
+            dumper->Add("float");
+            break;
+        case PrimitiveType::DOUBLE:
+            dumper->Add("double");
+            break;
+        case PrimitiveType::BOOLEAN:
+            dumper->Add("boolean");
+            break;
+        case PrimitiveType::CHAR:
+            dumper->Add("char");
+            break;
+        case PrimitiveType::VOID:
+            dumper->Add("void");
+            break;
+        default:
+            UNREACHABLE();
+    }
 }
 
 void ETSPrimitiveType::Compile(compiler::PandaGen *pg) const
@@ -95,4 +131,19 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
         }
     }
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ETSPrimitiveType>(type_); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace panda::es2panda::ir

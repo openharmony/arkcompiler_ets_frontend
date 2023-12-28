@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
@@ -39,6 +40,11 @@ void TSIntersectionType::Iterate(const NodeTraverser &cb) const
 void TSIntersectionType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSIntersectionType"}, {"types", types_}});
+}
+
+void TSIntersectionType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSIntersectionType");
 }
 
 void TSIntersectionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

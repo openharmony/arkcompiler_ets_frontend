@@ -19,6 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 #include "checker/ETSchecker.h"
 
@@ -40,6 +41,16 @@ void BreakStatement::Iterate(const NodeTraverser &cb) const
 void BreakStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "BreakStatement"}, {"label", AstDumper::Nullish(ident_)}});
+}
+
+void BreakStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("break");
+    if (ident_ != nullptr) {
+        dumper->Add(" ");
+        ident_->Dump(dumper);
+    }
+    dumper->Add(";");
 }
 
 void BreakStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

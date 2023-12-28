@@ -18,6 +18,7 @@
 #include "es2panda.h"
 #include "ir/expression.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -37,6 +38,11 @@ void Decorator::Iterate(const NodeTraverser &cb) const
 void Decorator::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "Decorator"}, {"expression", expr_}});
+}
+
+void Decorator::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("Decorator");
 }
 
 void Decorator::Compile(compiler::PandaGen *pg) const

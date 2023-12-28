@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/decorator.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expression.h"
@@ -44,6 +45,11 @@ void ClassStaticBlock::Iterate(const NodeTraverser &cb) const
 void ClassStaticBlock::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ClassStaticBlock"}, {"value", value_}});
+}
+
+void ClassStaticBlock::Dump([[maybe_unused]] ir::SrcDumper *dumper) const
+{
+    // NOTE(nsizov): we don't want to show this node
 }
 
 void ClassStaticBlock::Compile(compiler::PandaGen *pg) const

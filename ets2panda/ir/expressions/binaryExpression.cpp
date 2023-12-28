@@ -18,6 +18,8 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void BinaryExpression::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +40,19 @@ void BinaryExpression::Dump(ir::AstDumper *dumper) const
                  {"operator", operator_},
                  {"left", left_},
                  {"right", right_}});
+}
+
+void BinaryExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(left_ != nullptr);
+    ASSERT(right_ != nullptr);
+    dumper->Add("(");
+    left_->Dump(dumper);
+    dumper->Add(" ");
+    dumper->Add(TokenToString(operator_));
+    dumper->Add(" ");
+    right_->Dump(dumper);
+    dumper->Add(")");
 }
 
 void BinaryExpression::Compile(compiler::PandaGen *pg) const

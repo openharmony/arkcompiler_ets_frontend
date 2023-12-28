@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ImportExpression::TransformChildren(const NodeTransformer &cb)
@@ -33,6 +35,11 @@ void ImportExpression::Iterate(const NodeTraverser &cb) const
 void ImportExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ImportExpression"}, {"source", source_}});
+}
+
+void ImportExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ImportExpression");
 }
 
 void ImportExpression::Compile(compiler::PandaGen *pg) const

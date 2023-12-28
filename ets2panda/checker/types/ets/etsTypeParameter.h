@@ -17,48 +17,83 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TYPE_PARAMETER_TYPE_H
 
 #include "checker/types/type.h"
+#include "ir/astNode.h"
 
 namespace panda::es2panda::checker {
 class ETSTypeParameter : public Type {
 public:
     explicit ETSTypeParameter() : Type(TypeFlag::ETS_TYPE_PARAMETER) {}
-    explicit ETSTypeParameter(Type *assembler_type)
-        : Type(TypeFlag::ETS_TYPE_PARAMETER), assembler_type_(assembler_type)
+    explicit ETSTypeParameter(Type *default_type, Type *constraint_type)
+        : Type(TypeFlag::ETS_TYPE_PARAMETER), default_(default_type), constraint_(constraint_type)
     {
     }
 
-    void SetType(Type *type)
+    void SetDeclNode(ir::TSTypeParameter *decl)
     {
-        type_ = type;
+        decl_node_ = decl;
     }
 
-    Type *GetType()
+    ir::TSTypeParameter *GetDeclNode() const
     {
-        return type_;
+        return decl_node_;
     }
 
-    Type *GetAssemblerType()
+    ETSTypeParameter *GetOriginal() const;
+
+    void SetDefaultType(Type *type)
     {
-        return assembler_type_;
+        default_ = type;
     }
 
-    Type **GetTypeRef()
+    Type *GetDefaultType() const
     {
-        return &type_;
+        return default_;
     }
 
-    Type **GetAssemblerTypeRef()
+    void SetConstraintType(Type *type)
     {
-        return &assembler_type_;
+        constraint_ = type;
     }
+
+    Type *GetConstraintType() const
+    {
+        return constraint_;
+    }
+
+    bool HasConstraint() const
+    {
+        return GetConstraintType() != nullptr;
+    }
+
+    Type *EffectiveConstraint(ETSChecker const *checker) const;
 
     void ToString(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
+    bool AssignmentSource(TypeRelation *relation, Type *target) override;
+    void Cast(TypeRelation *relation, Type *target) override;
+    void CastTarget(TypeRelation *relation, Type *source) override;
+    void IsSupertypeOf(TypeRelation *relation, Type *source) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+
+    bool ConstraintIsSubtypeOf(TypeRelation *relation, Type *target)
+    {
+        if (HasConstraint()) {
+            target->IsSupertypeOf(relation, GetConstraintType());
+        } else {
+            relation->Result(false);
+        }
+        return relation->IsTrue();
+    }
+
+    void ToAssemblerType(std::stringstream &ss) const override;
+    void ToDebugInfoType(std::stringstream &ss) const override;
 
 private:
-    Type *type_ {};
-    Type *assembler_type_ {};
+    ir::TSTypeParameter *decl_node_ {};
+    Type *default_ {};
+    Type *constraint_ {};
 };
 }  // namespace panda::es2panda::checker
 

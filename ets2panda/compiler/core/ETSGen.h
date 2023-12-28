@@ -69,7 +69,7 @@ public:
 
     void StoreProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                        const util::StringView &name);
-    void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
+    void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                       const util::StringView &full_name);
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                               const util::StringView &name);
@@ -80,7 +80,7 @@ public:
     void LoadElementDynamic(const ir::AstNode *node, VReg object_reg);
 
     void StoreUnionProperty(const ir::AstNode *node, VReg obj_reg, const util::StringView &name);
-    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
+    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                            const util::StringView &prop_name);
 
     void LoadUndefinedDynamic(const ir::AstNode *node, Language lang);
@@ -225,7 +225,7 @@ public:
         }
         Label *if_nullish {nullptr};
         Label *end {nullptr};
-        if (type->IsNullishOrNullLike()) {
+        if (Checker()->MayHaveNulllikeValue(type)) {
             if constexpr (USE_FALSE_LABEL) {
                 BranchIfNullish(node, if_false);
             } else {
@@ -307,7 +307,7 @@ public:
     {
         auto *const type = GetAccumulatorType();
 
-        if (!type->IsNullishOrNullLike()) {
+        if (!Checker()->MayHaveNulllikeValue(type)) {
             compile();
         } else if (type->IsETSNullLike()) {
             if (is_optional) {
@@ -412,6 +412,8 @@ public:
 
     void LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import);
 
+    void ApplyBoxingConversion(const ir::AstNode *node);
+    void ApplyUnboxingConversion(const ir::AstNode *node);
     void ApplyConversion(const ir::AstNode *node)
     {
         if (target_type_ != nullptr) {
@@ -539,8 +541,11 @@ public:
     void CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicType *type);
     void CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag type_flag);
     void CastToArrayOrObject(const ir::AstNode *node, const checker::Type *target_type, bool unchecked);
-    void EmitCheckedNarrowingReferenceConversion(const ir::AstNode *node, const checker::Type *target_type);
     void CastDynamicToObject(const ir::AstNode *node, const checker::Type *target_type);
+
+    void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
+    void CheckedReferenceNarrowing(const ir::AstNode *node, const checker::Type *target);
+    void GuardUncheckedType(const ir::AstNode *node, const checker::Type *unchecked, const checker::Type *target);
 
     // Call, Construct
     void NewArray(const ir::AstNode *node, VReg arr, VReg dim, const checker::Type *arr_type);
@@ -653,6 +658,8 @@ private:
     const VReg dummy_reg_ = VReg::RegStart();
 
     void EmitIsInstanceNonNullish(const ir::AstNode *node, VReg obj_reg, checker::ETSObjectType const *cls_type);
+    void EmitUnboxedCall(const ir::AstNode *node, std::string_view signature_flag, const checker::Type *target_type,
+                         const checker::Type *boxed_type);
 
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);
     void AppendString(const ir::Expression *bin_expr, VReg builder);
@@ -662,11 +669,7 @@ private:
     void UnaryTilde(const ir::AstNode *node);
     void UnaryDollarDollar(const ir::AstNode *node);
 
-    util::StringView ToCheckCastTypeView(const es2panda::checker::Type *type) const;
-    void EmitCheckCast(const ir::AstNode *node, const es2panda::checker::Type *type);
-
-    // To avoid verifier error checkcast is needed
-    void InsertNeededCheckCast(const checker::Signature *signature, const ir::AstNode *node);
+    util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
 
     template <typename T>
     void StoreValueIntoArray(const ir::AstNode *const node, const VReg arr, const VReg index)
@@ -757,6 +760,7 @@ private:
 
         switch (type_kind) {
             case checker::TypeFlag::ETS_OBJECT:
+            case checker::TypeFlag::ETS_TYPE_PARAMETER:
             case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
                 RegScope rs(this);
                 VReg arg0 = AllocReg();
@@ -967,8 +971,6 @@ private:
                 break;
             }
         }
-
-        InsertNeededCheckCast(signature, node);
     }
 
     template <typename Short, typename General, typename Range>
@@ -1023,8 +1025,6 @@ private:
                 break;
             }
         }
-
-        InsertNeededCheckCast(signature, node);
     }
 #undef COMPILE_ARG
 
@@ -1078,8 +1078,6 @@ private:
                 break;
             }
         }
-
-        InsertNeededCheckCast(signature, node);
     }
 
 #undef COMPILE_ARG

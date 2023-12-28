@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsQualifiedName.h"
 #include "ir/ets/etsTypeReferencePart.h"
 
@@ -34,7 +35,7 @@ void ETSTypeReference::Iterate(const NodeTraverser &cb) const
     cb(part_);
 }
 
-ir::Identifier *ETSTypeReference::BaseName()
+ir::Identifier *ETSTypeReference::BaseName() const
 {
     ir::ETSTypeReferencePart *part_iter = part_;
 
@@ -60,6 +61,12 @@ ir::Identifier *ETSTypeReference::BaseName()
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSTypeReference"}, {"part", part_}});
+}
+
+void ETSTypeReference::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(part_ != nullptr);
+    part_->Dump(dumper);
 }
 
 void ETSTypeReference::Compile(compiler::PandaGen *pg) const
@@ -98,5 +105,27 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 
     SetTsType(type);
     return type;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const part_clone = part_ != nullptr ? part_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSTypeReference>(part_clone); clone != nullptr) {
+        if (part_clone != nullptr) {
+            part_clone->SetParent(clone);
+        }
+
+        clone->flags_ = flags_;
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

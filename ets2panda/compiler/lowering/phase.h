@@ -39,6 +39,12 @@ public:
     {
         return true;
     }
+
+private:
+    void CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
+                                 const std::string &name) const;
+    void CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
+                                const std::string &name) const;
 };
 
 std::vector<Phase *> GetPhaseList(ScriptExtension ext);

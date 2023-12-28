@@ -21,6 +21,8 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void SwitchStatement::TransformChildren(const NodeTransformer &cb)
@@ -44,6 +46,26 @@ void SwitchStatement::Iterate(const NodeTraverser &cb) const
 void SwitchStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "SwitchStatement"}, {"discriminant", discriminant_}, {"cases", cases_}});
+}
+
+void SwitchStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(discriminant_);
+    dumper->Add("switch (");
+    discriminant_->Dump(dumper);
+    dumper->Add(") {");
+    if (!cases_.empty()) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        for (auto cs : cases_) {
+            cs->Dump(dumper);
+            if (cs == cases_.back()) {
+                dumper->DecrIndent();
+            }
+            dumper->Endl();
+        }
+    }
+    dumper->Add("}");
 }
 
 void SwitchStatement::Compile(compiler::PandaGen *pg) const

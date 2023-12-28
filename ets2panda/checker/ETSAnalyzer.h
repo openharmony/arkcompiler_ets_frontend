@@ -41,6 +41,7 @@ private:
     ETSChecker *GetETSChecker() const;
     void CheckMethodModifiers(ir::MethodDefinition *node) const;
     checker::Type *GetReturnType(ir::CallExpression *expr, checker::Type *callee_type) const;
+    checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containing_func) const;
 };
 
 }  // namespace panda::es2panda::checker

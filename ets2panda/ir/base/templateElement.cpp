@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TemplateElement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -29,6 +31,11 @@ void TemplateElement::Dump(ir::AstDumper *dumper) const
         {"type", "TemplateElement"},
         {"value", {{"raw", ""}, {"cooked", ""}}},
     });
+}
+
+void TemplateElement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TemplateElement");
 }
 
 void TemplateElement::Compile(compiler::PandaGen *pg) const

@@ -14,10 +14,13 @@
  */
 
 #include "ifStatement.h"
+#include <cstddef>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void IfStatement::TransformChildren(const NodeTransformer &cb)
@@ -46,6 +49,36 @@ void IfStatement::Dump(ir::AstDumper *dumper) const
                  {"test", test_},
                  {"consequent", consequent_},
                  {"alternate", AstDumper::Nullish(alternate_)}});
+}
+
+void IfStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(test_);
+    dumper->Add("if (");
+    test_->Dump(dumper);
+    dumper->Add(") {");
+    if (consequent_ != nullptr) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        dumper->DecrIndent();
+        consequent_->Dump(dumper);
+        dumper->Endl();
+    }
+    dumper->Add("}");
+    if (alternate_ != nullptr) {
+        dumper->Add(" else ");
+        if (alternate_->IsBlockStatement()) {
+            dumper->Add("{");
+            dumper->IncrIndent();
+            dumper->Endl();
+            dumper->DecrIndent();
+            alternate_->Dump(dumper);
+            dumper->Endl();
+            dumper->Add("}");
+        } else {
+            alternate_->Dump(dumper);
+        }
+    }
 }
 
 void IfStatement::Compile(compiler::PandaGen *pg) const

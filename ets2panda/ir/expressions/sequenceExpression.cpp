@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 SequenceExpression::SequenceExpression([[maybe_unused]] Tag const tag, SequenceExpression const &other,
@@ -59,6 +61,16 @@ void SequenceExpression::Iterate(const NodeTraverser &cb) const
 void SequenceExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "SequenceExpression"}, {"expressions", sequence_}});
+}
+
+void SequenceExpression::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto *expr : sequence_) {
+        expr->Dump(dumper);
+        if (expr != sequence_.back()) {
+            dumper->Add(", ");
+        }
+    }
 }
 
 void SequenceExpression::Compile(compiler::PandaGen *pg) const

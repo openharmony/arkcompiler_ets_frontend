@@ -20,6 +20,8 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "util/helpers.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void SuperExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -28,6 +30,11 @@ void SuperExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void SuperExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "Super"}});
+}
+
+void SuperExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("super");
 }
 
 void SuperExpression::Compile(compiler::PandaGen *pg) const

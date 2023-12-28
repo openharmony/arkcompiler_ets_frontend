@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ExpressionStatement::TransformChildren(const NodeTransformer &cb)
@@ -33,6 +35,18 @@ void ExpressionStatement::Iterate(const NodeTraverser &cb) const
 void ExpressionStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ExpressionStatement"}, {"expression", expression_}});
+}
+
+void ExpressionStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(expression_ != nullptr);
+    expression_->Dump(dumper);
+    if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsSwitchCaseStatement())) {
+        dumper->Add(";");
+        if (parent_->IsSwitchCaseStatement()) {
+            dumper->Endl();
+        }
+    }
 }
 
 void ExpressionStatement::Compile(compiler::PandaGen *pg) const

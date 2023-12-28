@@ -18,8 +18,10 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
+#include "macros.h"
 
 namespace panda::es2panda::ir {
 void TSArrayType::TransformChildren(const NodeTransformer &cb)
@@ -35,6 +37,13 @@ void TSArrayType::Iterate(const NodeTraverser &cb) const
 void TSArrayType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSArrayType"}, {"elementType", element_type_}});
+}
+
+void TSArrayType::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(element_type_);
+    element_type_->Dump(dumper);
+    dumper->Add("[]");
 }
 
 void TSArrayType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -67,6 +76,26 @@ checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
     auto *const element_type = checker->GetTypeFromTypeAnnotation(element_type_);
 
     return checker->CreateETSArrayType(element_type);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const element_type_clone = element_type_ != nullptr ? element_type_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<TSArrayType>(element_type_clone); clone != nullptr) {
+        if (element_type_clone != nullptr) {
+            element_type_clone->SetParent(clone);
+        }
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
 }  // namespace panda::es2panda::ir

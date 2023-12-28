@@ -20,6 +20,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSSignatureDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -40,6 +42,11 @@ void TSSignatureDeclaration::Dump(ir::AstDumper *dumper) const
                  {"params", Params()},
                  {"typeParameters", AstDumper::Optional(TypeParams())},
                  {"returnType", AstDumper::Optional(ReturnTypeAnnotation())}});
+}
+
+void TSSignatureDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSSignatureDeclaration");
 }
 
 void TSSignatureDeclaration::Compile(compiler::PandaGen *pg) const

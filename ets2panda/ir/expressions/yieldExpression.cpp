@@ -20,6 +20,8 @@
 #include "compiler/function/generatorFunctionBuilder.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
+
 namespace panda::es2panda::ir {
 void YieldExpression::TransformChildren(const NodeTransformer &cb)
 {
@@ -38,6 +40,11 @@ void YieldExpression::Iterate(const NodeTraverser &cb) const
 void YieldExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "YieldExpression"}, {"delegate", delegate_}, {"argument", AstDumper::Nullish(argument_)}});
+}
+
+void YieldExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("YieldExpression");
 }
 
 void YieldExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

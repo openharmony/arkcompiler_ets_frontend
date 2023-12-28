@@ -139,19 +139,9 @@ public:
                          const lexer::SourcePosition &pos)
         : checker_(checker)
     {
-        ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
-
-        if (type->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER)) {
-            type_param_decl = nullptr;
-        } else if (type->HasObjectFlag(ETSObjectFlags::CLASS)) {
-            type_param_decl = type->GetDeclNode()->AsClassDefinition()->TypeParams();
-        } else if (type->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-            type_param_decl = type->GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
-        }
-        if (ValidateTypeArguments(type, type_param_decl, type_args, pos)) {
+        if (ValidateTypeArguments(type, type_args, pos)) {
             return;
         }
-
         InstantiateType(type, type_args);
     }
 
@@ -171,10 +161,10 @@ public:
     }
 
 private:
-    bool ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterDeclaration *type_param_decl,
-                               ir::TSTypeParameterInstantiation *type_args, const lexer::SourcePosition &pos);
+    bool ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args,
+                               const lexer::SourcePosition &pos);
 
-    bool ValidateTypeArg(ETSObjectType *constraint_type, ETSObjectType *arg_ref_type);
+    bool ValidateTypeArg(Type *constraint_type, Type *type_arg);
 
     void InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args);
 
