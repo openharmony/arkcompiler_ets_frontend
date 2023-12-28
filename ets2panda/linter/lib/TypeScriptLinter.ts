@@ -1876,7 +1876,7 @@ export class TypeScriptLinter {
      * spread element is allowed only for arrays as rest parameter
      */
     if (ts.isSpreadElement(node)) {
-      const spreadExprType = this.tsTypeChecker.getTypeAtLocation(node.expression);
+      const spreadExprType = this.tsUtils.getTypeOrTypeConstraintAtLocation(node.expression);
       if (spreadExprType) {
         if (ts.isCallLikeExpression(node.parent) || ts.isArrayLiteralExpression(node.parent)) {
           if (this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
