@@ -169,6 +169,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/opAssignment.cpp",
   "compiler/lowering/ets/optionalLowering.cpp",
   "compiler/lowering/ets/promiseVoid.cpp",
+  "compiler/lowering/ets/recordLowering.cpp",
   "compiler/lowering/ets/structLowering.cpp",
   "compiler/lowering/ets/tupleLowering.cpp",
   "compiler/lowering/ets/unionLowering.cpp",

@@ -1386,6 +1386,15 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
                                 expr->Start());
     }
 
+    if (expr->PreferredType()->ToAssemblerName().str() == "escompat.Map") {
+        // 7.6.3 Object Literal of Record Type
+        // Record is an alias to Map
+        // Here we just set the type to pass the checker
+        // See Record Lowering for details
+        expr->SetTsType(objType);
+        return objType;
+    }
+
     bool haveEmptyConstructor = false;
     for (checker::Signature *sig : objType->ConstructSignatures()) {
         if (sig->Params().empty()) {

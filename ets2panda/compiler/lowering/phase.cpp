@@ -19,6 +19,7 @@
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
+#include "compiler/lowering/ets/recordLowering.h"
 #include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
@@ -61,6 +62,7 @@ static UnionLowering g_unionLowering;
 static OptionalLowering g_optionalLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
 static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
+static RecordLowering g_recordLowering;
 static StructLowering g_structLowering;
 static DefaultParameterLowering g_defaultParameterLowering;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
@@ -90,6 +92,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_pluginsAfterCheck,
         &g_generateTsDeclarationsPhase,
         &g_opAssignmentLowering,
+        &g_recordLowering,
         &g_objectIndexLowering,
         &g_objectIteratorLowering,
         &g_tupleLowering,
