@@ -2247,6 +2247,10 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
             ThrowSyntaxError("'abstract' modifier cannot be used with a private identifier.");
         }
     }
+    //  Check private properties in another method: ParsePrivateIdentifier()
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+        return;
+    }
 
     const util::StringView &propNameStr = lexer_->GetToken().Ident();
 
