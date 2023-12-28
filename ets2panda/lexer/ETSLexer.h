@@ -42,10 +42,10 @@ public:
     {
         const auto savedLexerPosition = Save();
 
-        bool allow_bigint = false;
+        bool allowBigint = false;
         if (Iterator().Peek() == LEX_CHAR_LOWERCASE_N) {
             // 0n is the only allowed bigint literal with leading 0
-            allow_bigint = true;
+            allowBigint = true;
         }
 
         try {
@@ -56,7 +56,7 @@ public:
         }
 
         if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
-            if (!allow_bigint) {
+            if (!allowBigint) {
                 ThrowError("Invalid BigInt number");
             }
         }
