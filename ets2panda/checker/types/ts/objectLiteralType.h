@@ -26,7 +26,7 @@ public:
 
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
 }  // namespace panda::es2panda::checker
 

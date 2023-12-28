@@ -37,16 +37,16 @@ class ETSBinder : public TypedBinder {
 public:
     explicit ETSBinder(ArenaAllocator *allocator)
         : TypedBinder(allocator),
-          global_record_table_(allocator, Program(), RecordTableFlags::NONE),
-          record_table_(&global_record_table_),
-          external_record_table_(Allocator()->Adapter()),
-          default_imports_(Allocator()->Adapter()),
-          dynamic_imports_(Allocator()->Adapter()),
-          re_export_imports_(Allocator()->Adapter()),
-          lambda_objects_(Allocator()->Adapter()),
-          dynamic_import_vars_(Allocator()->Adapter()),
-          import_specifiers_(Allocator()->Adapter()),
-          resolved_import_pathes_map_(Allocator()->Adapter())
+          globalRecordTable_(allocator, Program(), RecordTableFlags::NONE),
+          recordTable_(&globalRecordTable_),
+          externalRecordTable_(Allocator()->Adapter()),
+          defaultImports_(Allocator()->Adapter()),
+          dynamicImports_(Allocator()->Adapter()),
+          reExportImports_(Allocator()->Adapter()),
+          lambdaObjects_(Allocator()->Adapter()),
+          dynamicImportVars_(Allocator()->Adapter()),
+          importSpecifiers_(Allocator()->Adapter()),
+          resolvedImportPathesMap_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -67,158 +67,158 @@ public:
 
     RecordTable *GetRecordTable()
     {
-        return record_table_;
+        return recordTable_;
     }
 
     const RecordTable *GetRecordTable() const
     {
-        return record_table_;
+        return recordTable_;
     }
 
     RecordTable *GetGlobalRecordTable()
     {
-        return &global_record_table_;
+        return &globalRecordTable_;
     }
 
     const RecordTable *GetGlobalRecordTable() const
     {
-        return &global_record_table_;
+        return &globalRecordTable_;
     }
 
     ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable()
     {
-        return external_record_table_;
+        return externalRecordTable_;
     }
 
     const ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable() const
     {
-        return external_record_table_;
+        return externalRecordTable_;
     }
 
     const ComputedLambdaObjects &LambdaObjects() const
     {
-        return lambda_objects_;
+        return lambdaObjects_;
     }
 
     ComputedLambdaObjects &LambdaObjects()
     {
-        return lambda_objects_;
+        return lambdaObjects_;
     }
 
-    void HandleCustomNodes(ir::AstNode *child_node) override;
+    void HandleCustomNodes(ir::AstNode *childNode) override;
 
     void IdentifierAnalysis() override;
-    void BuildClassDefinition(ir::ClassDefinition *class_def) override;
+    void BuildClassDefinition(ir::ClassDefinition *classDef) override;
     void BuildClassProperty(const ir::ClassProperty *prop) override;
     void LookupIdentReference(ir::Identifier *ident) override;
-    bool BuildInternalName(ir::ScriptFunction *script_func) override;
+    bool BuildInternalName(ir::ScriptFunction *scriptFunc) override;
     void AddCompilableFunction(ir::ScriptFunction *func) override;
 
-    void LookupTypeReference(ir::Identifier *ident, bool allow_dynamic_namespaces);
-    void LookupTypeArgumentReferences(ir::ETSTypeReference *type_ref);
+    void LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces);
+    void LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef);
     void BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
-    void BuildMemberExpression(ir::MemberExpression *member_expr);
-    void BuildMethodDefinition(ir::MethodDefinition *method_def);
+    void BuildMemberExpression(ir::MemberExpression *memberExpr);
+    void BuildMethodDefinition(ir::MethodDefinition *methodDef);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
-    void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *class_instance);
+    void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
-    ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &source_name,
-                                                      const ir::StringLiteral *import_path);
+    ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &sourceName,
+                                                      const ir::StringLiteral *importPath);
     bool AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *specifier,
-                                                   const varbinder::Scope::VariableMap &global_bindings,
-                                                   const parser::Program *import_program,
-                                                   const varbinder::GlobalScope *import_global_scope,
+                                                   const varbinder::Scope::VariableMap &globalBindings,
+                                                   const parser::Program *importProgram,
+                                                   const varbinder::GlobalScope *importGlobalScope,
                                                    const ir::ETSImportDeclaration *import);
-    bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &global_bindings,
+    bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
                                           const ir::ETSImportDeclaration *import,
-                                          const ArenaVector<parser::Program *> &record_res,
-                                          std::vector<ir::ETSImportDeclaration *> viewed_re_export);
+                                          const ArenaVector<parser::Program *> &recordRes,
+                                          std::vector<ir::ETSImportDeclaration *> viewedReExport);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
-                                           const varbinder::Scope::VariableMap &global_bindings,
-                                           const ArenaVector<parser::Program *> &record_res);
-    Variable *FindStaticBinding(const ArenaVector<parser::Program *> &record_res, const ir::StringLiteral *import_path);
+                                           const varbinder::Scope::VariableMap &globalBindings,
+                                           const ArenaVector<parser::Program *> &recordRes);
+    Variable *FindStaticBinding(const ArenaVector<parser::Program *> &recordRes, const ir::StringLiteral *importPath);
     void AddSpecifiersToTopBindings(
         ir::AstNode *specifier, const ir::ETSImportDeclaration *import, ir::StringLiteral *path,
-        std::vector<ir::ETSImportDeclaration *> viewed_re_export = std::vector<ir::ETSImportDeclaration *>());
+        std::vector<ir::ETSImportDeclaration *> viewedReExport = std::vector<ir::ETSImportDeclaration *>());
     void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
-    void ResolveMethodDefinition(ir::MethodDefinition *method_def);
+    void ResolveMethodDefinition(ir::MethodDefinition *methodDef);
     LocalScope *ResolvePropertyReference(ir::ClassProperty *prop, ClassScope *scope);
-    void ResolveEnumDeclaration(ir::TSEnumDeclaration *enum_decl);
+    void ResolveEnumDeclaration(ir::TSEnumDeclaration *enumDecl);
     void InitializeInterfaceIdent(ir::TSInterfaceDeclaration *decl);
-    void BuildExternalProgram(parser::Program *ext_program);
+    void BuildExternalProgram(parser::Program *extProgram);
     void BuildProgram();
 
     void BuildFunctionName(const ir::ScriptFunction *func) const;
-    void BuildFunctionType(ir::ETSFunctionType *func_type);
-    void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containing_class_name, bool is_static);
-    void BuildLambdaObject(ir::AstNode *ref_node, ir::ClassDefinition *lambda_object, checker::Signature *signature);
+    void BuildFunctionType(ir::ETSFunctionType *funcType);
+    void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic);
+    void BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lambdaObject, checker::Signature *signature);
     void AddLambdaFunctionThisParam(ir::ScriptFunction *func);
     void AddInvokeFunctionThisParam(ir::ScriptFunction *func);
-    void BuildLambdaObjectName(const ir::AstNode *ref_node);
+    void BuildLambdaObjectName(const ir::AstNode *refNode);
     void FormLambdaName(util::UString &name, const util::StringView &signature);
     void FormFunctionalInterfaceName(util::UString &name, const util::StringView &signature);
-    void BuildFunctionalInterfaceName(ir::ETSFunctionType *func_type);
+    void BuildFunctionalInterfaceName(ir::ETSFunctionType *funcType);
 
-    void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> default_imports)
+    void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports)
     {
-        default_imports_ = std::move(default_imports);
+        defaultImports_ = std::move(defaultImports);
     }
 
     void AddDynamicImport(ir::ETSImportDeclaration *import)
     {
         ASSERT(import->Language().IsDynamic());
-        dynamic_imports_.push_back(import);
+        dynamicImports_.push_back(import);
     }
 
     const ArenaVector<ir::ETSImportDeclaration *> &DynamicImports() const
     {
-        return dynamic_imports_;
+        return dynamicImports_;
     }
 
-    void AddReExportImport(ir::ETSReExportDeclaration *re_export)
+    void AddReExportImport(ir::ETSReExportDeclaration *reExport)
     {
-        re_export_imports_.push_back(re_export);
+        reExportImports_.push_back(reExport);
     }
 
     const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const
     {
-        return re_export_imports_;
+        return reExportImports_;
     }
 
     const DynamicImportVariables &DynamicImportVars() const
     {
-        return dynamic_import_vars_;
+        return dynamicImportVars_;
     }
 
     const ir::AstNode *DefaultExport()
     {
-        return default_export_;
+        return defaultExport_;
     }
 
-    void SetDefaultExport(ir::AstNode *default_export)
+    void SetDefaultExport(ir::AstNode *defaultExport)
     {
-        default_export_ = default_export;
+        defaultExport_ = defaultExport;
     }
 
     const ArenaUnorderedMap<util::StringView, util::StringView> &ResolvedImportPathesMap() const
     {
-        return resolved_import_pathes_map_;
+        return resolvedImportPathesMap_;
     }
 
     const util::StringView &GetResolvedImportPath(const util::StringView &path) const
     {
-        ASSERT(resolved_import_pathes_map_.find(path) != resolved_import_pathes_map_.end());
+        ASSERT(resolvedImportPathesMap_.find(path) != resolvedImportPathesMap_.end());
 
-        return resolved_import_pathes_map_.find(path)->second;
+        return resolvedImportPathesMap_.find(path)->second;
     }
 
     void FillResolvedImportPathes(const std::unordered_map<std::string, std::string> &map, ArenaAllocator *allocator)
     {
         for (const auto &path : map) {
-            resolved_import_pathes_map_.emplace(util::UString(path.first, allocator).View(),
-                                                util::UString(path.second, allocator).View());
+            resolvedImportPathesMap_.emplace(util::UString(path.first, allocator).View(),
+                                             util::UString(path.second, allocator).View());
         }
     }
 
@@ -240,31 +240,30 @@ import * from "escompat";
     void ResolveReferencesForScope(ir::AstNode const *parent, Scope *scope);
 
 private:
-    void BuildClassDefinitionImpl(ir::ClassDefinition *class_def);
+    void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);
     void InitImplicitThisParam();
-    void HandleStarImport(ir::TSQualifiedName *import_name, util::StringView full_path);
-    void ImportGlobalProperties(const ir::ClassDefinition *class_def);
+    void HandleStarImport(ir::TSQualifiedName *importName, util::StringView fullPath);
+    void ImportGlobalProperties(const ir::ClassDefinition *classDef);
     bool ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable *var, const util::StringView &name,
-                                                      const ir::ClassElement *class_element);
+                                                      const ir::ClassElement *classElement);
     void InsertForeignBinding(ir::AstNode *specifier, const ir::ETSImportDeclaration *import,
                               const util::StringView &name, Variable *var);
-    void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &global_bindings,
-                                  const parser::Program *import_program,
-                                  const varbinder::GlobalScope *import_global_scope,
+    void ImportAllForeignBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
+                                  const parser::Program *importProgram, const varbinder::GlobalScope *importGlobalScope,
                                   const ir::ETSImportDeclaration *import);
 
-    RecordTable global_record_table_;
-    RecordTable *record_table_;
-    ArenaMap<parser::Program *, RecordTable *> external_record_table_;
-    ArenaVector<ir::ETSImportDeclaration *> default_imports_;
-    ArenaVector<ir::ETSImportDeclaration *> dynamic_imports_;
-    ArenaVector<ir::ETSReExportDeclaration *> re_export_imports_;
-    ComputedLambdaObjects lambda_objects_;
-    DynamicImportVariables dynamic_import_vars_;
-    ir::Identifier *this_param_ {};
-    ArenaVector<std::pair<util::StringView, util::StringView>> import_specifiers_;
-    ArenaUnorderedMap<util::StringView, util::StringView> resolved_import_pathes_map_;
-    ir::AstNode *default_export_ {};
+    RecordTable globalRecordTable_;
+    RecordTable *recordTable_;
+    ArenaMap<parser::Program *, RecordTable *> externalRecordTable_;
+    ArenaVector<ir::ETSImportDeclaration *> defaultImports_;
+    ArenaVector<ir::ETSImportDeclaration *> dynamicImports_;
+    ArenaVector<ir::ETSReExportDeclaration *> reExportImports_;
+    ComputedLambdaObjects lambdaObjects_;
+    DynamicImportVariables dynamicImportVars_;
+    ir::Identifier *thisParam_ {};
+    ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
+    ArenaUnorderedMap<util::StringView, util::StringView> resolvedImportPathesMap_;
+    ir::AstNode *defaultExport_ {};
 };
 
 }  // namespace panda::es2panda::varbinder

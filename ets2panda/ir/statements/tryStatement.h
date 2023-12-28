@@ -38,13 +38,13 @@ class CatchClause;
 
 class TryStatement : public Statement {
 public:
-    explicit TryStatement(BlockStatement *block, ArenaVector<CatchClause *> &&catch_clauses, BlockStatement *finalizer,
-                          ArenaVector<std::pair<compiler::LabelPair, const Statement *>> finalizer_insertions)
+    explicit TryStatement(BlockStatement *block, ArenaVector<CatchClause *> &&catchClauses, BlockStatement *finalizer,
+                          ArenaVector<std::pair<compiler::LabelPair, const Statement *>> finalizerInsertions)
         : Statement(AstNodeType::TRY_STATEMENT),
           block_(block),
-          catch_clauses_(std::move(catch_clauses)),
+          catchClauses_(std::move(catchClauses)),
           finalizer_(finalizer),
-          finalizer_insertions_(std::move(finalizer_insertions))
+          finalizerInsertions_(std::move(finalizerInsertions))
     {
     }
 
@@ -64,10 +64,10 @@ public:
     }
 
     std::pair<compiler::LabelPair, const Statement *> AddFinalizerInsertion(compiler::LabelPair insertion,
-                                                                            const Statement *insertion_stmt)
+                                                                            const Statement *insertionStmt)
     {
-        finalizer_insertions_.push_back(std::pair<compiler::LabelPair, const Statement *>(insertion, insertion_stmt));
-        return finalizer_insertions_.back();
+        finalizerInsertions_.push_back(std::pair<compiler::LabelPair, const Statement *>(insertion, insertionStmt));
+        return finalizerInsertions_.back();
     }
 
     bool HasFinalizer()
@@ -79,7 +79,7 @@ public:
 
     const ArenaVector<CatchClause *> &CatchClauses() const
     {
-        return catch_clauses_;
+        return catchClauses_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -100,9 +100,9 @@ public:
 
 private:
     BlockStatement *block_;
-    ArenaVector<CatchClause *> catch_clauses_;
+    ArenaVector<CatchClause *> catchClauses_;
     BlockStatement *finalizer_;
-    ArenaVector<std::pair<compiler::LabelPair, const Statement *>> finalizer_insertions_;
+    ArenaVector<std::pair<compiler::LabelPair, const Statement *>> finalizerInsertions_;
 };
 }  // namespace panda::es2panda::ir
 

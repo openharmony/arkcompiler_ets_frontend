@@ -22,59 +22,59 @@
 
 namespace panda::es2panda::varbinder {
 
-void TypedBinder::BuildSignatureDeclarationBaseParams(ir::AstNode *type_node)
+void TypedBinder::BuildSignatureDeclarationBaseParams(ir::AstNode *typeNode)
 {
-    if (type_node == nullptr) {
+    if (typeNode == nullptr) {
         return;
     }
 
     Scope *scope = nullptr;
 
-    switch (type_node->Type()) {
+    switch (typeNode->Type()) {
         case ir::AstNodeType::ETS_FUNCTION_TYPE: {
-            scope = type_node->AsETSFunctionType()->Scope();
+            scope = typeNode->AsETSFunctionType()->Scope();
             break;
         }
         case ir::AstNodeType::TS_FUNCTION_TYPE: {
-            scope = type_node->AsTSFunctionType()->Scope();
+            scope = typeNode->AsTSFunctionType()->Scope();
             break;
         }
         case ir::AstNodeType::TS_CONSTRUCTOR_TYPE: {
-            scope = type_node->AsTSConstructorType()->Scope();
+            scope = typeNode->AsTSConstructorType()->Scope();
             break;
         }
         case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
-            scope = type_node->AsTSSignatureDeclaration()->Scope();
+            scope = typeNode->AsTSSignatureDeclaration()->Scope();
             break;
         }
         case ir::AstNodeType::TS_METHOD_SIGNATURE: {
-            scope = type_node->AsTSMethodSignature()->Scope();
+            scope = typeNode->AsTSMethodSignature()->Scope();
             break;
         }
         default: {
-            ResolveReference(type_node);
+            ResolveReference(typeNode);
             return;
         }
     }
 
     ASSERT(scope && scope->IsFunctionParamScope());
 
-    auto scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, scope->AsFunctionParamScope(), false);
-    ResolveReferences(type_node);
+    auto scopeCtx = LexicalScope<FunctionParamScope>::Enter(this, scope->AsFunctionParamScope(), false);
+    ResolveReferences(typeNode);
 }
 
-void TypedBinder::HandleCustomNodes(ir::AstNode *child_node)
+void TypedBinder::HandleCustomNodes(ir::AstNode *childNode)
 {
-    switch (child_node->Type()) {
+    switch (childNode->Type()) {
         case ir::AstNodeType::TS_FUNCTION_TYPE:
         case ir::AstNodeType::TS_CONSTRUCTOR_TYPE:
         case ir::AstNodeType::TS_METHOD_SIGNATURE:
         case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
-            BuildSignatureDeclarationBaseParams(child_node);
+            BuildSignatureDeclarationBaseParams(childNode);
             break;
         }
         default: {
-            ResolveReferences(child_node);
+            ResolveReferences(childNode);
             break;
         }
     }

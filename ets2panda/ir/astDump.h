@@ -189,13 +189,13 @@ public:
         Val value_ {};
     };
 
-    explicit AstDumper(const ir::AstNode *node, util::StringView source_code = "");
+    explicit AstDumper(const ir::AstNode *node, util::StringView sourceCode = "");
 
     void Add(std::initializer_list<Property> props);
     void Add(const AstDumper::Property &prop);
 
     static const char *ModifierToString(ModifierFlags flags);
-    static const char *TypeOperatorToString(TSOperatorType operator_type);
+    static const char *TypeOperatorToString(TSOperatorType operatorType);
 
     std::string Str() const
     {
@@ -235,7 +235,7 @@ private:
     void SerializeToken(lexer::TokenType token);
     void SerializePropList(std::initializer_list<AstDumper::Property> props);
     void SerializeConstant(Property::Constant constant);
-    void Wrap(const WrapperCb &cb, char delim_start = '{', char delim_end = '}');
+    void Wrap(const WrapperCb &cb, char delimStart = '{', char delimEnd = '}');
 
     void SerializeLoc(const lexer::SourceRange &loc);
     void SerializeSourcePosition(const lexer::SourcePosition &pos);
@@ -245,7 +245,7 @@ private:
     const lexer::LineIndex index_;
     std::stringstream ss_;
     int32_t indent_ {};
-    bool is_src_empty_ = false;
+    bool isSrcEmpty_ = false;
 };
 }  // namespace panda::es2panda::ir
 

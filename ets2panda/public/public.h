@@ -39,26 +39,26 @@ struct ConfigImpl {
 
 struct Context {
     ConfigImpl *config = nullptr;
-    std::string source_file_name;
+    std::string sourceFileName;
     std::string input;
-    SourceFile const *source_file = nullptr;
+    SourceFile const *sourceFile = nullptr;
     ArenaAllocator *allocator = nullptr;
     compiler::CompileQueue *queue = nullptr;
     std::vector<util::Plugin> const *plugins = nullptr;
     std::vector<compiler::Phase *> phases;
-    size_t current_phase = 0;
+    size_t currentPhase = 0;
 
-    parser::Program *parser_program = nullptr;
+    parser::Program *parserProgram = nullptr;
     parser::ParserImpl *parser = nullptr;
     checker::Checker *checker = nullptr;
     checker::SemanticAnalyzer *analyzer = nullptr;
-    compiler::CompilerContext *compiler_context = nullptr;
+    compiler::CompilerContext *compilerContext = nullptr;
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;
 
     es2panda_ContextState state = ES2PANDA_STATE_NEW;
-    std::string error_message;
-    lexer::SourcePosition error_pos;
+    std::string errorMessage;
+    lexer::SourcePosition errorPos;
 };
 }  // namespace panda::es2panda::public_lib
 

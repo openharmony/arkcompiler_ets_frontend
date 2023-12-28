@@ -21,9 +21,9 @@
 namespace panda::es2panda::checker {
 void UnionType::ToString(std::stringstream &ss) const
 {
-    for (auto it = constituent_types_.begin(); it != constituent_types_.end(); it++) {
+    for (auto it = constituentTypes_.begin(); it != constituentTypes_.end(); it++) {
         (*it)->ToString(ss);
-        if (std::next(it) != constituent_types_.end()) {
+        if (std::next(it) != constituentTypes_.end()) {
             ss << " | ";
         }
     }
@@ -31,13 +31,13 @@ void UnionType::ToString(std::stringstream &ss) const
 
 bool UnionType::EachTypeRelatedToSomeType(TypeRelation *relation, UnionType *source, UnionType *target)
 {
-    return std::all_of(source->constituent_types_.begin(), source->constituent_types_.end(),
+    return std::all_of(source->constituentTypes_.begin(), source->constituentTypes_.end(),
                        [relation, target](auto *s) { return TypeRelatedToSomeType(relation, s, target); });
 }
 
 bool UnionType::TypeRelatedToSomeType(TypeRelation *relation, Type *source, UnionType *target)
 {
-    return std::any_of(target->constituent_types_.begin(), target->constituent_types_.end(),
+    return std::any_of(target->constituentTypes_.begin(), target->constituentTypes_.end(),
                        [relation, source](auto *t) { return relation->IsIdenticalTo(source, t); });
 }
 
@@ -56,7 +56,7 @@ void UnionType::Identical(TypeRelation *relation, Type *other)
 
 bool UnionType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    for (auto *it : constituent_types_) {
+    for (auto *it : constituentTypes_) {
         if (!relation->IsAssignableTo(it, target)) {
             return false;
         }
@@ -68,7 +68,7 @@ bool UnionType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void UnionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    for (auto *it : constituent_types_) {
+    for (auto *it : constituentTypes_) {
         if (relation->IsAssignableTo(source, it)) {
             return;
         }
@@ -79,27 +79,27 @@ TypeFacts UnionType::GetTypeFacts() const
 {
     TypeFacts facts = TypeFacts::NONE;
 
-    for (auto *it : constituent_types_) {
+    for (auto *it : constituentTypes_) {
         facts |= it->GetTypeFacts();
     }
 
     return facts;
 }
 
-void UnionType::RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types)
+void UnionType::RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *> &constituentTypes)
 {
-    auto compare = constituent_types.begin();
+    auto compare = constituentTypes.begin();
 
-    while (compare != constituent_types.end()) {
+    while (compare != constituentTypes.end()) {
         auto it = compare + 1;
 
-        while (it != constituent_types.end()) {
+        while (it != constituentTypes.end()) {
             relation->Result(false);
 
             (*compare)->Identical(relation, *it);
 
             if (relation->IsTrue()) {
-                it = constituent_types.erase(it);
+                it = constituentTypes.erase(it);
             } else {
                 it++;
             }
@@ -109,58 +109,58 @@ void UnionType::RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *
     }
 }
 
-Type *UnionType::HandleUnionType(UnionType *union_type, GlobalTypesHolder *global_types_holder)
+Type *UnionType::HandleUnionType(UnionType *unionType, GlobalTypesHolder *globalTypesHolder)
 {
-    if (union_type->HasConstituentFlag(TypeFlag::ANY)) {
-        return global_types_holder->GlobalAnyType();
+    if (unionType->HasConstituentFlag(TypeFlag::ANY)) {
+        return globalTypesHolder->GlobalAnyType();
     }
 
-    if (union_type->HasConstituentFlag(TypeFlag::UNKNOWN)) {
-        return global_types_holder->GlobalUnknownType();
+    if (unionType->HasConstituentFlag(TypeFlag::UNKNOWN)) {
+        return globalTypesHolder->GlobalUnknownType();
     }
 
-    RemoveRedundantLiteralTypesFromUnion(union_type);
+    RemoveRedundantLiteralTypesFromUnion(unionType);
 
-    if (union_type->ConstituentTypes().size() == 1) {
-        return union_type->ConstituentTypes()[0];
+    if (unionType->ConstituentTypes().size() == 1) {
+        return unionType->ConstituentTypes()[0];
     }
 
-    return union_type;
+    return unionType;
 }
 
 void UnionType::RemoveRedundantLiteralTypesFromUnion(UnionType *type)
 {
-    bool remove_number_literals = false;
-    bool remove_string_literals = false;
-    bool remove_bigint_literals = false;
-    bool remove_boolean_literals = false;
+    bool removeNumberLiterals = false;
+    bool removeStringLiterals = false;
+    bool removeBigintLiterals = false;
+    bool removeBooleanLiterals = false;
 
     if (type->HasConstituentFlag(TypeFlag::NUMBER) && type->HasConstituentFlag(TypeFlag::NUMBER_LITERAL)) {
-        remove_number_literals = true;
+        removeNumberLiterals = true;
     }
 
     if (type->HasConstituentFlag(TypeFlag::STRING) && type->HasConstituentFlag(TypeFlag::STRING_LITERAL)) {
-        remove_string_literals = true;
+        removeStringLiterals = true;
     }
 
     if (type->HasConstituentFlag(TypeFlag::BIGINT) && type->HasConstituentFlag(TypeFlag::BIGINT_LITERAL)) {
-        remove_bigint_literals = true;
+        removeBigintLiterals = true;
     }
 
     if (type->HasConstituentFlag(TypeFlag::BOOLEAN) && type->HasConstituentFlag(TypeFlag::BOOLEAN_LITERAL)) {
-        remove_boolean_literals = true;
+        removeBooleanLiterals = true;
     }
 
-    auto &constituent_types = type->ConstituentTypes();
+    auto &constituentTypes = type->ConstituentTypes();
     /* NOTE: dbatyai. use std::erase_if */
-    auto it = constituent_types.begin();
-    while (it != constituent_types.end()) {
-        if ((remove_number_literals && (*it)->IsNumberLiteralType()) ||
-            (remove_string_literals && (*it)->IsStringLiteralType()) ||
-            (remove_bigint_literals && (*it)->IsBigintLiteralType()) ||
-            (remove_boolean_literals && (*it)->IsBooleanLiteralType())) {
+    auto it = constituentTypes.begin();
+    while (it != constituentTypes.end()) {
+        if ((removeNumberLiterals && (*it)->IsNumberLiteralType()) ||
+            (removeStringLiterals && (*it)->IsStringLiteralType()) ||
+            (removeBigintLiterals && (*it)->IsBigintLiteralType()) ||
+            (removeBooleanLiterals && (*it)->IsBooleanLiteralType())) {
             type->RemoveConstituentFlag((*it)->TypeFlags());
-            it = constituent_types.erase(it);
+            it = constituentTypes.erase(it);
             continue;
         }
 
@@ -168,22 +168,22 @@ void UnionType::RemoveRedundantLiteralTypesFromUnion(UnionType *type)
     }
 }
 
-Type *UnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *UnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ArenaVector<Type *> copied_constituents(constituent_types_.size(), allocator->Adapter());
+    ArenaVector<Type *> copiedConstituents(constituentTypes_.size(), allocator->Adapter());
 
-    for (auto *it : constituent_types_) {
-        copied_constituents.push_back(it->Instantiate(allocator, relation, global_types));
+    for (auto *it : constituentTypes_) {
+        copiedConstituents.push_back(it->Instantiate(allocator, relation, globalTypes));
     }
 
-    RemoveDuplicatedTypes(relation, copied_constituents);
+    RemoveDuplicatedTypes(relation, copiedConstituents);
 
-    if (copied_constituents.size() == 1) {
-        return copied_constituents[0];
+    if (copiedConstituents.size() == 1) {
+        return copiedConstituents[0];
     }
 
-    Type *new_union_type = allocator->New<UnionType>(allocator, std::move(copied_constituents));
+    Type *newUnionType = allocator->New<UnionType>(allocator, std::move(copiedConstituents));
 
-    return HandleUnionType(new_union_type->AsUnionType(), global_types);
+    return HandleUnionType(newUnionType->AsUnionType(), globalTypes);
 }
 }  // namespace panda::es2panda::checker

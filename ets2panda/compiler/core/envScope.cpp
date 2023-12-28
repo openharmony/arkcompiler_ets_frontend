@@ -20,22 +20,22 @@
 #include "ir/statement.h"
 
 namespace panda::es2panda::compiler {
-ScopeContext::ScopeContext(CodeGen *cg, varbinder::Scope *new_scope) : cg_(cg), prev_scope_(cg_->scope_)
+ScopeContext::ScopeContext(CodeGen *cg, varbinder::Scope *newScope) : cg_(cg), prevScope_(cg_->scope_)
 {
-    cg->scope_ = new_scope;
+    cg->scope_ = newScope;
 }
 
 ScopeContext::~ScopeContext()
 {
-    cg_->scope_ = prev_scope_;
+    cg_->scope_ = prevScope_;
 }
 
-void EnvScope::Initialize(PandaGen *pg, VReg lex_env)
+void EnvScope::Initialize(PandaGen *pg, VReg lexEnv)
 {
     pg_ = pg;
-    prev_ = pg_->env_scope_;
-    lex_env_ = lex_env;
-    pg_->env_scope_ = this;
+    prev_ = pg_->envScope_;
+    lexEnv_ = lexEnv;
+    pg_->envScope_ = this;
 }
 
 EnvScope::~EnvScope()
@@ -44,7 +44,7 @@ EnvScope::~EnvScope()
         return;
     }
 
-    pg_->env_scope_ = prev_;
+    pg_->envScope_ = prev_;
 }
 
 void LoopEnvScope::CopyBindings(PandaGen *pg, varbinder::VariableScope *scope, varbinder::VariableFlags flag)
@@ -56,7 +56,7 @@ void LoopEnvScope::CopyBindings(PandaGen *pg, varbinder::VariableScope *scope, v
     Initialize(pg, pg->AllocReg());
 
     pg_->NewLexEnv(scope_->Node(), scope->LexicalSlots());
-    pg_->StoreAccumulator(scope_->Node(), lex_env_);
+    pg_->StoreAccumulator(scope_->Node(), lexEnv_);
 
     ASSERT(scope->NeedLexEnv());
 
@@ -78,6 +78,6 @@ void LoopEnvScope::CopyPetIterationCtx()
     }
 
     pg_->CopyLexEnv(scope_->Node());
-    pg_->StoreAccumulator(scope_->Node(), lex_env_);
+    pg_->StoreAccumulator(scope_->Node(), lexEnv_);
 }
 }  // namespace panda::es2panda::compiler

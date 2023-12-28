@@ -27,19 +27,19 @@ class TSTypeParameterInstantiation;
 
 class TSTypeReference : public TypeNode {
 public:
-    explicit TSTypeReference(Expression *type_name, TSTypeParameterInstantiation *type_params)
-        : TypeNode(AstNodeType::TS_TYPE_REFERENCE), type_name_(type_name), type_params_(type_params)
+    explicit TSTypeReference(Expression *typeName, TSTypeParameterInstantiation *typeParams)
+        : TypeNode(AstNodeType::TS_TYPE_REFERENCE), typeName_(typeName), typeParams_(typeParams)
     {
     }
 
     const TSTypeParameterInstantiation *TypeParams() const
     {
-        return type_params_;
+        return typeParams_;
     }
 
     const Expression *TypeName() const
     {
-        return type_name_;
+        return typeName_;
     }
 
     ir::Identifier *BaseName() const;
@@ -60,8 +60,8 @@ public:
     }
 
 private:
-    Expression *type_name_;
-    TSTypeParameterInstantiation *type_params_;
+    Expression *typeName_;
+    TSTypeParameterInstantiation *typeParams_;
 };
 }  // namespace panda::es2panda::ir
 

@@ -26,22 +26,22 @@
 namespace panda::es2panda::ir {
 void ETSWildcardType::TransformChildren(const NodeTransformer &cb)
 {
-    if (type_reference_ != nullptr) {
-        type_reference_ = cb(type_reference_)->AsETSTypeReference();
+    if (typeReference_ != nullptr) {
+        typeReference_ = cb(typeReference_)->AsETSTypeReference();
     }
 }
 
 void ETSWildcardType::Iterate(const NodeTraverser &cb) const
 {
-    if (type_reference_ != nullptr) {
-        cb(type_reference_);
+    if (typeReference_ != nullptr) {
+        cb(typeReference_);
     }
 }
 
 void ETSWildcardType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSWildcardType"},
-                 {"typeReference", AstDumper::Optional(type_reference_)},
+                 {"typeReference", AstDumper::Optional(typeReference_)},
                  {"in", AstDumper::Optional(IsIn())},
                  {"out", AstDumper::Optional(IsOut())}});
 }

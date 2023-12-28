@@ -26,104 +26,103 @@
 #include "ir/base/property.h"
 
 namespace panda::es2panda::checker {
-Type *ElaborationContext::GetBestMatchingType(Type *index_type, ir::Expression *source_node)
+Type *ElaborationContext::GetBestMatchingType(Type *indexType, ir::Expression *sourceNode)
 {
-    ArenaVector<Type *> best_matching_type(checker_->Allocator()->Adapter());
-    Type *source_type = source_node != nullptr ? checker_->CheckTypeCached(source_node) : checker_->GlobalAnyType();
+    ArenaVector<Type *> bestMatchingType(checker_->Allocator()->Adapter());
+    Type *sourceType = sourceNode != nullptr ? checker_->CheckTypeCached(sourceNode) : checker_->GlobalAnyType();
 
-    for (auto it = potential_types_.begin(); it != potential_types_.end();) {
-        Type *current_type = checker_->GetPropertyTypeForIndexType(*it, index_type);
+    for (auto it = potentialTypes_.begin(); it != potentialTypes_.end();) {
+        Type *currentType = checker_->GetPropertyTypeForIndexType(*it, indexType);
 
-        if (current_type == nullptr) {
-            it = potential_types_.erase(it);
+        if (currentType == nullptr) {
+            it = potentialTypes_.erase(it);
             continue;
         }
 
-        if (!checker_->IsTypeAssignableTo(source_type, current_type)) {
-            it = potential_types_.erase(it);
+        if (!checker_->IsTypeAssignableTo(sourceType, currentType)) {
+            it = potentialTypes_.erase(it);
         } else {
             it++;
         }
 
-        best_matching_type.push_back(current_type);
+        bestMatchingType.push_back(currentType);
     }
 
-    return checker_->CreateUnionType(std::move(best_matching_type));
+    return checker_->CreateUnionType(std::move(bestMatchingType));
 }
 
 void ArrayElaborationContext::Start()
 {
-    ASSERT(source_node_->IsArrayExpression());
+    ASSERT(sourceNode_->IsArrayExpression());
     RemoveUnnecessaryTypes();
 
-    for (auto *it : source_node_->AsArrayExpression()->Elements()) {
+    for (auto *it : sourceNode_->AsArrayExpression()->Elements()) {
         if (it->IsOmittedExpression()) {
             index_++;
             continue;
         }
 
-        util::StringView member_index = util::Helpers::ToStringView(checker_->Allocator(), index_);
+        util::StringView memberIndex = util::Helpers::ToStringView(checker_->Allocator(), index_);
 
-        Type *target_element_type = nullptr;
+        Type *targetElementType = nullptr;
 
-        if (target_type_->IsUnionType()) {
-            target_element_type = GetBestMatchingType(checker_->CreateStringLiteralType(member_index), it);
+        if (targetType_->IsUnionType()) {
+            targetElementType = GetBestMatchingType(checker_->CreateStringLiteralType(memberIndex), it);
         } else {
-            target_element_type =
-                checker_->GetPropertyTypeForIndexType(target_type_, checker_->CreateStringLiteralType(member_index));
+            targetElementType =
+                checker_->GetPropertyTypeForIndexType(targetType_, checker_->CreateStringLiteralType(memberIndex));
         }
 
-        if (target_element_type == nullptr) {
+        if (targetElementType == nullptr) {
             return;
         }
 
-        checker_->ElaborateElementwise(target_element_type, it, it->Start());
+        checker_->ElaborateElementwise(targetElementType, it, it->Start());
         index_++;
     }
 }
 
 void ArrayElaborationContext::RemoveUnnecessaryTypes()
 {
-    if (!target_type_->IsUnionType()) {
+    if (!targetType_->IsUnionType()) {
         return;
     }
 
-    for (auto *it : target_type_->AsUnionType()->ConstituentTypes()) {
+    for (auto *it : targetType_->AsUnionType()->ConstituentTypes()) {
         if (it->IsArrayType() || it->IsObjectType()) {
-            potential_types_.push_back(it);
+            potentialTypes_.push_back(it);
         }
     }
 }
 
 void ObjectElaborationContext::Start()
 {
-    ASSERT(source_node_->IsObjectExpression());
+    ASSERT(sourceNode_->IsObjectExpression());
     RemoveUnnecessaryTypes();
 
-    for (auto *it : source_node_->AsObjectExpression()->Properties()) {
+    for (auto *it : sourceNode_->AsObjectExpression()->Properties()) {
         if (it->IsSpreadElement()) {
             continue;
         }
 
         ir::Property *prop = it->AsProperty();
 
-        Type *prop_key_type = nullptr;
+        Type *propKeyType = nullptr;
         if (prop->IsComputed()) {
-            prop_key_type = checker_->CheckComputedPropertyName(prop->Key());
+            propKeyType = checker_->CheckComputedPropertyName(prop->Key());
         } else {
             switch (prop->Key()->Type()) {
                 case ir::AstNodeType::IDENTIFIER: {
-                    prop_key_type = checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsIdentifier()->Name());
+                    propKeyType = checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsIdentifier()->Name());
                     break;
                 }
                 case ir::AstNodeType::NUMBER_LITERAL: {
-                    prop_key_type = checker_->Allocator()->New<NumberLiteralType>(
+                    propKeyType = checker_->Allocator()->New<NumberLiteralType>(
                         prop->Key()->AsNumberLiteral()->Number().GetDouble());
                     break;
                 }
                 case ir::AstNodeType::STRING_LITERAL: {
-                    prop_key_type =
-                        checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsStringLiteral()->Str());
+                    propKeyType = checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsStringLiteral()->Str());
                     break;
                 }
                 default: {
@@ -133,18 +132,18 @@ void ObjectElaborationContext::Start()
             }
         }
 
-        Type *target_element_type = nullptr;
+        Type *targetElementType = nullptr;
 
-        if (target_type_->IsUnionType()) {
-            target_element_type = GetBestMatchingType(prop_key_type, prop->IsShorthand() ? nullptr : prop->Value());
+        if (targetType_->IsUnionType()) {
+            targetElementType = GetBestMatchingType(propKeyType, prop->IsShorthand() ? nullptr : prop->Value());
         } else {
-            target_element_type = checker_->GetPropertyTypeForIndexType(target_type_, prop_key_type);
+            targetElementType = checker_->GetPropertyTypeForIndexType(targetType_, propKeyType);
         }
 
-        if (target_element_type == nullptr) {
-            if (prop_key_type->HasTypeFlag(TypeFlag::LITERAL)) {
-                checker_->ThrowTypeError({"Object literal may only specify known properties, and ", prop_key_type,
-                                          " does not exist in type '", target_type_, "'."},
+        if (targetElementType == nullptr) {
+            if (propKeyType->HasTypeFlag(TypeFlag::LITERAL)) {
+                checker_->ThrowTypeError({"Object literal may only specify known properties, and ", propKeyType,
+                                          " does not exist in type '", targetType_, "'."},
                                          it->Start());
             }
 
@@ -155,19 +154,19 @@ void ObjectElaborationContext::Start()
             continue;
         }
 
-        checker_->ElaborateElementwise(target_element_type, prop->Value(), it->Start());
+        checker_->ElaborateElementwise(targetElementType, prop->Value(), it->Start());
     }
 }
 
 void ObjectElaborationContext::RemoveUnnecessaryTypes()
 {
-    if (!target_type_->IsUnionType()) {
+    if (!targetType_->IsUnionType()) {
         return;
     }
 
-    for (auto *it : target_type_->AsUnionType()->ConstituentTypes()) {
+    for (auto *it : targetType_->AsUnionType()->ConstituentTypes()) {
         if (it->IsObjectType()) {
-            potential_types_.push_back(it);
+            potentialTypes_.push_back(it);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace panda::es2panda::checker {
 
 void AliveAnalyzer::AnalyzeNodes(const ir::AstNode *node)
 {
-    node->Iterate([this](auto *child_node) { AnalyzeNode(child_node); });
+    node->Iterate([this](auto *childNode) { AnalyzeNode(childNode); });
 }
 
 void AliveAnalyzer::AnalyzeNode(const ir::AstNode *node)
@@ -208,63 +208,63 @@ static bool IsStaticMember(const ir::AstNode *node)
     }
 }
 
-void AliveAnalyzer::AnalyzeStructDecl(const ir::ETSStructDeclaration *struct_decl)
+void AliveAnalyzer::AnalyzeStructDecl(const ir::ETSStructDeclaration *structDecl)
 {
-    for (const auto *it : struct_decl->Definition()->Body()) {
+    for (const auto *it : structDecl->Definition()->Body()) {
         AnalyzeNode(it);
     }
 }
 
-void AliveAnalyzer::AnalyzeClassDecl(const ir::ClassDeclaration *class_decl)
+void AliveAnalyzer::AnalyzeClassDecl(const ir::ClassDeclaration *classDecl)
 {
-    for (const auto *it : class_decl->Definition()->Body()) {
+    for (const auto *it : classDecl->Definition()->Body()) {
         AnalyzeNode(it);
     }
 }
 
-void AliveAnalyzer::AnalyzeClassDef(const ir::ClassDefinition *class_def)
+void AliveAnalyzer::AnalyzeClassDef(const ir::ClassDefinition *classDef)
 {
-    if (class_def->Variable() == nullptr) {
+    if (classDef->Variable() == nullptr) {
         return;
     }
 
-    LivenessStatus prev_status = status_;
+    LivenessStatus prevStatus = status_;
     SetOldPendingExits(PendingExits());
 
-    for (const auto *it : class_def->Body()) {
+    for (const auto *it : classDef->Body()) {
         if (!it->IsMethodDefinition() && IsStaticMember(it)) {
             AnalyzeDef(it);
             ClearPendingExits();
         }
     }
 
-    for (const auto *it : class_def->Body()) {
+    for (const auto *it : classDef->Body()) {
         if (!it->IsMethodDefinition() && !IsStaticMember(it)) {
             AnalyzeDef(it);
             ClearPendingExits();
         }
     }
 
-    for (const auto *it : class_def->Body()) {
+    for (const auto *it : classDef->Body()) {
         if (it->IsClassStaticBlock()) {
             AnalyzeDef(it);
             break;
         }
     }
 
-    for (const auto *it : class_def->Body()) {
+    for (const auto *it : classDef->Body()) {
         if (it->IsMethodDefinition()) {
             AnalyzeNode(it);
         }
     }
 
     SetPendingExits(OldPendingExits());
-    status_ = prev_status;
+    status_ = prevStatus;
 }
 
-void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *method_def)
+void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
 {
-    auto *func = method_def->Function();
+    auto *func = methodDef->Function();
 
     if (func->Body() == nullptr || func->IsProxy()) {
         return;
@@ -272,27 +272,27 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *method_def)
 
     status_ = LivenessStatus::ALIVE;
     AnalyzeStat(func->Body());
-    ASSERT(method_def->TsType() && method_def->TsType()->IsETSFunctionType());
-    const auto *return_type = method_def->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
-    const auto is_void = return_type->IsETSVoidType() || return_type == checker_->GlobalBuiltinVoidType();
+    ASSERT(methodDef->TsType() && methodDef->TsType()->IsETSFunctionType());
+    const auto *returnType = methodDef->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
+    const auto isVoid = returnType->IsETSVoidType() || returnType == checker_->GlobalBuiltinVoidType();
 
-    auto is_promise_void = false;
+    auto isPromiseVoid = false;
 
-    if (return_type->IsETSAsyncFuncReturnType()) {
-        const auto *as_async = return_type->AsETSAsyncFuncReturnType();
-        is_promise_void = as_async->GetPromiseTypeArg() == checker_->GlobalBuiltinVoidType();
+    if (returnType->IsETSAsyncFuncReturnType()) {
+        const auto *asAsync = returnType->AsETSAsyncFuncReturnType();
+        isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalBuiltinVoidType();
     }
 
-    if (status_ == LivenessStatus::ALIVE && !is_void && !is_promise_void) {
+    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid) {
         checker_->ThrowTypeError("Function with a non void return type must return a value.", func->Id()->Start());
     }
 
     ClearPendingExits();
 }
 
-void AliveAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *var_def)
+void AliveAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *varDef)
 {
-    for (auto *it : var_def->Declarators()) {
+    for (auto *it : varDef->Declarators()) {
         if (it->Init() == nullptr) {
             continue;
         }
@@ -301,194 +301,194 @@ void AliveAnalyzer::AnalyzeVarDef(const ir::VariableDeclaration *var_def)
     }
 }
 
-void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *do_while)
+void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *doWhile)
 {
     SetOldPendingExits(PendingExits());
-    AnalyzeStat(do_while->Body());
-    status_ = Or(status_, ResolveContinues(do_while));
-    AnalyzeNode(do_while->Test());
-    ASSERT(do_while->Test()->TsType() && do_while->Test()->TsType()->IsConditionalExprType());
-    const auto expr_res = do_while->Test()->TsType()->ResolveConditionExpr();
-    status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(expr_res) || !std::get<1>(expr_res)));
-    status_ = Or(status_, ResolveBreaks(do_while));
+    AnalyzeStat(doWhile->Body());
+    status_ = Or(status_, ResolveContinues(doWhile));
+    AnalyzeNode(doWhile->Test());
+    ASSERT(doWhile->Test()->TsType() && doWhile->Test()->TsType()->IsConditionalExprType());
+    const auto exprRes = doWhile->Test()->TsType()->ResolveConditionExpr();
+    status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || !std::get<1>(exprRes)));
+    status_ = Or(status_, ResolveBreaks(doWhile));
 }
 
-void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *while_stmt)
+void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *whileStmt)
 {
     SetOldPendingExits(PendingExits());
-    AnalyzeNode(while_stmt->Test());
-    ASSERT(while_stmt->Test()->TsType() && while_stmt->Test()->TsType()->IsConditionalExprType());
-    const auto expr_res = while_stmt->Test()->TsType()->ResolveConditionExpr();
-    status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(expr_res) || std::get<1>(expr_res)));
-    AnalyzeStat(while_stmt->Body());
-    status_ = Or(status_, ResolveContinues(while_stmt));
-    status_ = Or(ResolveBreaks(while_stmt), From(!std::get<0>(expr_res) || !std::get<1>(expr_res)));
+    AnalyzeNode(whileStmt->Test());
+    ASSERT(whileStmt->Test()->TsType() && whileStmt->Test()->TsType()->IsConditionalExprType());
+    const auto exprRes = whileStmt->Test()->TsType()->ResolveConditionExpr();
+    status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(exprRes) || std::get<1>(exprRes)));
+    AnalyzeStat(whileStmt->Body());
+    status_ = Or(status_, ResolveContinues(whileStmt));
+    status_ = Or(ResolveBreaks(whileStmt), From(!std::get<0>(exprRes) || !std::get<1>(exprRes)));
 }
 
-void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *for_stmt)
+void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *forStmt)
 {
-    AnalyzeNode(for_stmt->Init());
+    AnalyzeNode(forStmt->Init());
     SetOldPendingExits(PendingExits());
-    const Type *cond_type {};
-    bool resolve_type = false;
+    const Type *condType {};
+    bool resolveType = false;
     bool res = false;
 
-    if (for_stmt->Test() != nullptr) {
-        AnalyzeNode(for_stmt->Test());
-        ASSERT(for_stmt->Test()->TsType() && for_stmt->Test()->TsType()->IsConditionalExprType());
-        cond_type = for_stmt->Test()->TsType();
-        std::tie(resolve_type, res) = for_stmt->Test()->TsType()->ResolveConditionExpr();
-        status_ = From(!resolve_type || res);
+    if (forStmt->Test() != nullptr) {
+        AnalyzeNode(forStmt->Test());
+        ASSERT(forStmt->Test()->TsType() && forStmt->Test()->TsType()->IsConditionalExprType());
+        condType = forStmt->Test()->TsType();
+        std::tie(resolveType, res) = forStmt->Test()->TsType()->ResolveConditionExpr();
+        status_ = From(!resolveType || res);
     } else {
         status_ = LivenessStatus::ALIVE;
     }
 
-    AnalyzeStat(for_stmt->Body());
-    status_ = Or(status_, ResolveContinues(for_stmt));
-    AnalyzeNode(for_stmt->Update());
-    status_ = Or(ResolveBreaks(for_stmt), From(cond_type != nullptr && (!resolve_type || !res)));
+    AnalyzeStat(forStmt->Body());
+    status_ = Or(status_, ResolveContinues(forStmt));
+    AnalyzeNode(forStmt->Update());
+    status_ = Or(ResolveBreaks(forStmt), From(condType != nullptr && (!resolveType || !res)));
 }
 
-void AliveAnalyzer::AnalyzeForOfLoop(const ir::ForOfStatement *for_of_stmt)
+void AliveAnalyzer::AnalyzeForOfLoop(const ir::ForOfStatement *forOfStmt)
 {
     //  Note: iterator definition can be a reference to variable defined in outer scope!
-    if (for_of_stmt->Left()->IsVariableDeclaration()) {
-        AnalyzeVarDef(for_of_stmt->Left()->AsVariableDeclaration());
+    if (forOfStmt->Left()->IsVariableDeclaration()) {
+        AnalyzeVarDef(forOfStmt->Left()->AsVariableDeclaration());
     } else {
-        AnalyzeNode(for_of_stmt->Left());
+        AnalyzeNode(forOfStmt->Left());
     }
-    AnalyzeNode(for_of_stmt->Right());
+    AnalyzeNode(forOfStmt->Right());
     SetOldPendingExits(PendingExits());
 
-    AnalyzeStat(for_of_stmt->Body());
-    status_ = Or(status_, ResolveContinues(for_of_stmt));
-    ResolveBreaks(for_of_stmt);
+    AnalyzeStat(forOfStmt->Body());
+    status_ = Or(status_, ResolveContinues(forOfStmt));
+    ResolveBreaks(forOfStmt);
     status_ = LivenessStatus::ALIVE;
 }
 
-void AliveAnalyzer::AnalyzeIf(const ir::IfStatement *if_stmt)
+void AliveAnalyzer::AnalyzeIf(const ir::IfStatement *ifStmt)
 {
-    AnalyzeNode(if_stmt->Test());
-    AnalyzeStat(if_stmt->Consequent());
-    if (if_stmt->Alternate() != nullptr) {
-        LivenessStatus prev_status = status_;
+    AnalyzeNode(ifStmt->Test());
+    AnalyzeStat(ifStmt->Consequent());
+    if (ifStmt->Alternate() != nullptr) {
+        LivenessStatus prevStatus = status_;
         status_ = LivenessStatus::ALIVE;
-        AnalyzeStat(if_stmt->Alternate());
-        status_ = Or(status_, prev_status);
+        AnalyzeStat(ifStmt->Alternate());
+        status_ = Or(status_, prevStatus);
     } else {
         status_ = LivenessStatus::ALIVE;
     }
 }
 
-void AliveAnalyzer::AnalyzeLabelled(const ir::LabelledStatement *labelled_stmt)
+void AliveAnalyzer::AnalyzeLabelled(const ir::LabelledStatement *labelledStmt)
 {
     SetOldPendingExits(PendingExits());
-    AnalyzeStat(labelled_stmt->Body());
-    status_ = Or(status_, ResolveBreaks(labelled_stmt));
+    AnalyzeStat(labelledStmt->Body());
+    status_ = Or(status_, ResolveBreaks(labelledStmt));
 }
 
-void AliveAnalyzer::AnalyzeNewClass(const ir::ETSNewClassInstanceExpression *new_class)
+void AliveAnalyzer::AnalyzeNewClass(const ir::ETSNewClassInstanceExpression *newClass)
 {
-    for (const auto *it : new_class->GetArguments()) {
+    for (const auto *it : newClass->GetArguments()) {
         AnalyzeNode(it);
     }
 
-    if (new_class->ClassDefinition() != nullptr) {
-        AnalyzeNode(new_class->ClassDefinition());
+    if (newClass->ClassDefinition() != nullptr) {
+        AnalyzeNode(newClass->ClassDefinition());
     }
 }
 
-void AliveAnalyzer::AnalyzeCall(const ir::CallExpression *call_expr)
+void AliveAnalyzer::AnalyzeCall(const ir::CallExpression *callExpr)
 {
-    AnalyzeNode(call_expr->Callee());
-    for (const auto *it : call_expr->Arguments()) {
+    AnalyzeNode(callExpr->Callee());
+    for (const auto *it : callExpr->Arguments()) {
         AnalyzeNode(it);
     }
-    if (call_expr->Signature()->ReturnType() == checker_->GetGlobalTypesHolder()->GlobalBuiltinNeverType()) {
+    if (callExpr->Signature()->ReturnType() == checker_->GetGlobalTypesHolder()->GlobalBuiltinNeverType()) {
         MarkDead();
     }
 }
 
-void AliveAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throw_stmt)
+void AliveAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throwStmt)
 {
-    AnalyzeNode(throw_stmt->Argument());
+    AnalyzeNode(throwStmt->Argument());
     MarkDead();
 }
 
-void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switch_stmt)
+void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switchStmt)
 {
     SetOldPendingExits(PendingExits());
 
-    AnalyzeNode(switch_stmt->Discriminant());
+    AnalyzeNode(switchStmt->Discriminant());
 
-    bool has_default = false;
-    for (std::size_t i = 0, size = switch_stmt->Cases().size(); i < size; i++) {
-        const auto *case_clause = switch_stmt->Cases()[i];
+    bool hasDefault = false;
+    for (std::size_t i = 0, size = switchStmt->Cases().size(); i < size; i++) {
+        const auto *caseClause = switchStmt->Cases()[i];
         status_ = LivenessStatus::ALIVE;
 
-        if (case_clause->Test() == nullptr) {
-            has_default = true;
+        if (caseClause->Test() == nullptr) {
+            hasDefault = true;
         } else {
-            AnalyzeNode(case_clause->Test());
+            AnalyzeNode(caseClause->Test());
         }
 
-        AnalyzeStats(case_clause->Consequent());
+        AnalyzeStats(caseClause->Consequent());
 
-        if (status_ == LivenessStatus::ALIVE && !case_clause->Consequent().empty() && i < size - 1) {
+        if (status_ == LivenessStatus::ALIVE && !caseClause->Consequent().empty() && i < size - 1) {
             // NOTE(user) Add lint categories and option to enable/disable compiler warnings
-            checker_->Warning("Possible fall-through into case", case_clause->Start());
+            checker_->Warning("Possible fall-through into case", caseClause->Start());
         }
     }
 
-    if (!has_default) {
+    if (!hasDefault) {
         status_ = LivenessStatus::ALIVE;
     }
 
-    status_ = Or(status_, ResolveBreaks(switch_stmt));
+    status_ = Or(status_, ResolveBreaks(switchStmt));
 }
 
-void AliveAnalyzer::AnalyzeBreak(const ir::BreakStatement *break_stmt)
+void AliveAnalyzer::AnalyzeBreak(const ir::BreakStatement *breakStmt)
 {
-    RecordExit(PendingExit(break_stmt));
+    RecordExit(PendingExit(breakStmt));
 }
 
-void AliveAnalyzer::AnalyzeContinue(const ir::ContinueStatement *cont_stmt)
+void AliveAnalyzer::AnalyzeContinue(const ir::ContinueStatement *contStmt)
 {
-    RecordExit(PendingExit(cont_stmt));
+    RecordExit(PendingExit(contStmt));
 }
 
-void AliveAnalyzer::AnalyzeReturn(const ir::ReturnStatement *ret_stmt)
+void AliveAnalyzer::AnalyzeReturn(const ir::ReturnStatement *retStmt)
 {
-    AnalyzeNode(ret_stmt->Argument());
-    RecordExit(PendingExit(ret_stmt));
+    AnalyzeNode(retStmt->Argument());
+    RecordExit(PendingExit(retStmt));
 }
 
-void AliveAnalyzer::AnalyzeTry(const ir::TryStatement *try_stmt)
+void AliveAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
 {
     status_ = LivenessStatus::ALIVE;
-    bool is_alive = false;
-    AnalyzeStats(try_stmt->Block()->Statements());
+    bool isAlive = false;
+    AnalyzeStats(tryStmt->Block()->Statements());
 
     if (status_ != LivenessStatus::DEAD) {
-        is_alive = true;
+        isAlive = true;
     }
 
-    for (const auto &it : try_stmt->CatchClauses()) {
+    for (const auto &it : tryStmt->CatchClauses()) {
         status_ = LivenessStatus::ALIVE;
         AnalyzeStats(it->Body()->Statements());
         if (status_ == LivenessStatus::ALIVE) {
-            is_alive = true;
+            isAlive = true;
         }
     }
 
-    if (try_stmt->FinallyBlock() != nullptr) {
+    if (tryStmt->FinallyBlock() != nullptr) {
         status_ = LivenessStatus::ALIVE;
-        AnalyzeStats(try_stmt->FinallyBlock()->Statements());
+        AnalyzeStats(tryStmt->FinallyBlock()->Statements());
         if (status_ == LivenessStatus::DEAD) {
-            is_alive = false;
+            isAlive = false;
         }
     }
 
-    status_ = is_alive ? LivenessStatus::ALIVE : LivenessStatus::DEAD;
+    status_ = isAlive ? LivenessStatus::ALIVE : LivenessStatus::DEAD;
 }
 }  // namespace panda::es2panda::checker

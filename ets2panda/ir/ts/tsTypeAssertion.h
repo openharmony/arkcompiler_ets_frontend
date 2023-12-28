@@ -21,8 +21,8 @@
 namespace panda::es2panda::ir {
 class TSTypeAssertion : public AnnotatedExpression {
 public:
-    explicit TSTypeAssertion(TypeNode *type_annotation, Expression *expression)
-        : AnnotatedExpression(AstNodeType::TS_TYPE_ASSERTION, type_annotation), expression_(expression)
+    explicit TSTypeAssertion(TypeNode *typeAnnotation, Expression *expression)
+        : AnnotatedExpression(AstNodeType::TS_TYPE_ASSERTION, typeAnnotation), expression_(expression)
     {
     }
 

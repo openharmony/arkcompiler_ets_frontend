@@ -31,34 +31,33 @@ class Type;
 
 class DestructuringContext {
 public:
-    DestructuringContext(TSChecker *checker, ir::Expression *id, bool in_assignment, bool convert_tuple_to_array,
-                         ir::TypeNode *type_annotation, ir::Expression *initializer)
-        : checker_(checker), id_(id), in_assignment_(in_assignment), convert_tuple_to_array_(convert_tuple_to_array)
+    DestructuringContext(TSChecker *checker, ir::Expression *id, bool inAssignment, bool convertTupleToArray,
+                         ir::TypeNode *typeAnnotation, ir::Expression *initializer)
+        : checker_(checker), id_(id), inAssignment_(inAssignment), convertTupleToArray_(convertTupleToArray)
     {
-        Prepare(type_annotation, initializer, id->Start());
+        Prepare(typeAnnotation, initializer, id->Start());
     }
 
     void SetInferredType(Type *type)
     {
-        inferred_type_ = type;
+        inferredType_ = type;
     }
 
     void SetSignatureInfo(SignatureInfo *info)
     {
-        signature_info_ = info;
+        signatureInfo_ = info;
     }
 
     Type *InferredType()
     {
-        return inferred_type_;
+        return inferredType_;
     }
 
-    void ValidateObjectLiteralType(ObjectType *obj_type, ir::ObjectExpression *obj_pattern);
-    void HandleDestructuringAssignment(ir::Identifier *ident, Type *inferred_type, Type *default_type);
-    void HandleAssignmentPattern(ir::AssignmentExpression *assignment_pattern, Type *inferred_type,
-                                 bool validate_default);
-    void SetInferredTypeForVariable(varbinder::Variable *var, Type *inferred_type, const lexer::SourcePosition &loc);
-    void Prepare(ir::TypeNode *type_annotation, ir::Expression *initializer, const lexer::SourcePosition &loc);
+    void ValidateObjectLiteralType(ObjectType *objType, ir::ObjectExpression *objPattern);
+    void HandleDestructuringAssignment(ir::Identifier *ident, Type *inferredType, Type *defaultType);
+    void HandleAssignmentPattern(ir::AssignmentExpression *assignmentPattern, Type *inferredType, bool validateDefault);
+    void SetInferredTypeForVariable(varbinder::Variable *var, Type *inferredType, const lexer::SourcePosition &loc);
+    void Prepare(ir::TypeNode *typeAnnotation, ir::Expression *initializer, const lexer::SourcePosition &loc);
 
     DEFAULT_COPY_SEMANTIC(DestructuringContext);
     DEFAULT_MOVE_SEMANTIC(DestructuringContext);
@@ -66,7 +65,7 @@ public:
 
     virtual void Start() = 0;
     virtual void ValidateInferredType() = 0;
-    virtual Type *NextInferredType([[maybe_unused]] const util::StringView &search_name, bool throw_error) = 0;
+    virtual Type *NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError) = 0;
     virtual void HandleRest(ir::SpreadElement *rest) = 0;
     virtual Type *GetRestType([[maybe_unused]] const lexer::SourcePosition &loc) = 0;
     virtual Type *ConvertTupleTypeToArrayTypeIfNecessary(ir::AstNode *node, Type *type) = 0;
@@ -75,31 +74,31 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     TSChecker *checker_;
     ir::Expression *id_;
-    bool in_assignment_;
-    bool convert_tuple_to_array_;
-    Type *inferred_type_ {};
-    SignatureInfo *signature_info_ {};
-    bool validate_object_pattern_initializer_ {true};
-    bool validate_type_annotation_ {};
+    bool inAssignment_;
+    bool convertTupleToArray_;
+    Type *inferredType_ {};
+    SignatureInfo *signatureInfo_ {};
+    bool validateObjectPatternInitializer_ {true};
+    bool validateTypeAnnotation_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class ArrayDestructuringContext : public DestructuringContext {
 public:
-    ArrayDestructuringContext(TSChecker *checker, ir::Expression *id, bool in_assignment, bool convert_tuple_to_array,
-                              ir::TypeNode *type_annotation, ir::Expression *initializer)
-        : DestructuringContext(checker, id, in_assignment, convert_tuple_to_array, type_annotation, initializer)
+    ArrayDestructuringContext(TSChecker *checker, ir::Expression *id, bool inAssignment, bool convertTupleToArray,
+                              ir::TypeNode *typeAnnotation, ir::Expression *initializer)
+        : DestructuringContext(checker, id, inAssignment, convertTupleToArray, typeAnnotation, initializer)
     {
     }
 
     Type *GetTypeFromTupleByIndex(TupleType *tuple);
-    Type *CreateArrayTypeForRest(UnionType *inferred_type);
+    Type *CreateArrayTypeForRest(UnionType *inferredType);
     Type *CreateTupleTypeForRest(TupleType *tuple);
     void SetRemainingParameterTypes();
 
     void Start() override;
     void ValidateInferredType() override;
-    Type *NextInferredType([[maybe_unused]] const util::StringView &search_name, bool throw_error) override;
+    Type *NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError) override;
     void HandleRest(ir::SpreadElement *rest) override;
     Type *GetRestType([[maybe_unused]] const lexer::SourcePosition &loc) override;
     Type *ConvertTupleTypeToArrayTypeIfNecessary(ir::AstNode *node, Type *type) override;
@@ -110,17 +109,17 @@ private:
 
 class ObjectDestructuringContext : public DestructuringContext {
 public:
-    ObjectDestructuringContext(TSChecker *checker, ir::Expression *id, bool in_assignment, bool convert_tuple_to_array,
-                               ir::TypeNode *type_annotation, ir::Expression *initializer)
-        : DestructuringContext(checker, id, in_assignment, convert_tuple_to_array, type_annotation, initializer)
+    ObjectDestructuringContext(TSChecker *checker, ir::Expression *id, bool inAssignment, bool convertTupleToArray,
+                               ir::TypeNode *typeAnnotation, ir::Expression *initializer)
+        : DestructuringContext(checker, id, inAssignment, convertTupleToArray, typeAnnotation, initializer)
     {
     }
 
-    Type *CreateObjectTypeForRest(ObjectType *obj_type);
+    Type *CreateObjectTypeForRest(ObjectType *objType);
 
     void Start() override;
     void ValidateInferredType() override;
-    Type *NextInferredType([[maybe_unused]] const util::StringView &search_name, bool throw_error) override;
+    Type *NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError) override;
     void HandleRest(ir::SpreadElement *rest) override;
     Type *GetRestType([[maybe_unused]] const lexer::SourcePosition &loc) override;
     Type *ConvertTupleTypeToArrayTypeIfNecessary(ir::AstNode *node, Type *type) override;

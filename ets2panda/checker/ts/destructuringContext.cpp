@@ -27,32 +27,32 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::checker {
-void DestructuringContext::Prepare(ir::TypeNode *type_annotation, ir::Expression *initializer,
+void DestructuringContext::Prepare(ir::TypeNode *typeAnnotation, ir::Expression *initializer,
                                    const lexer::SourcePosition &loc)
 {
-    if (type_annotation != nullptr) {
-        type_annotation->Check(checker_);
-        Type *annotation_type = type_annotation->GetType(checker_);
+    if (typeAnnotation != nullptr) {
+        typeAnnotation->Check(checker_);
+        Type *annotationType = typeAnnotation->GetType(checker_);
 
         if (initializer != nullptr) {
-            checker_->ElaborateElementwise(annotation_type, initializer, loc);
+            checker_->ElaborateElementwise(annotationType, initializer, loc);
         }
 
-        validate_type_annotation_ = true;
-        inferred_type_ = annotation_type;
+        validateTypeAnnotation_ = true;
+        inferredType_ = annotationType;
         return;
     }
 
     if (initializer != nullptr) {
         if (!initializer->IsObjectExpression()) {
-            validate_object_pattern_initializer_ = false;
+            validateObjectPatternInitializer_ = false;
         }
 
-        inferred_type_ = initializer->Check(checker_);
+        inferredType_ = initializer->Check(checker_);
     }
 }
 
-void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, Type *inferred_type, Type *default_type)
+void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, Type *inferredType, Type *defaultType)
 {
     if (ident->Variable() == nullptr) {
         checker_->ThrowTypeError({"Cannot find name '", ident->Name(), "'."}, ident->Start());
@@ -61,148 +61,148 @@ void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, 
     varbinder::Variable *variable = ident->Variable();
     ASSERT(variable->TsType());
 
-    if (default_type != nullptr && !checker_->IsTypeAssignableTo(default_type, variable->TsType())) {
-        checker_->ThrowAssignmentError(default_type, variable->TsType(), ident->Start());
+    if (defaultType != nullptr && !checker_->IsTypeAssignableTo(defaultType, variable->TsType())) {
+        checker_->ThrowAssignmentError(defaultType, variable->TsType(), ident->Start());
     }
 
-    if (inferred_type != nullptr && !checker_->IsTypeAssignableTo(inferred_type, variable->TsType())) {
-        checker_->ThrowAssignmentError(inferred_type, variable->TsType(), ident->Start());
+    if (inferredType != nullptr && !checker_->IsTypeAssignableTo(inferredType, variable->TsType())) {
+        checker_->ThrowAssignmentError(inferredType, variable->TsType(), ident->Start());
     }
 }
 
-void DestructuringContext::SetInferredTypeForVariable(varbinder::Variable *var, Type *inferred_type,
+void DestructuringContext::SetInferredTypeForVariable(varbinder::Variable *var, Type *inferredType,
                                                       const lexer::SourcePosition &loc)
 {
     ASSERT(var);
 
     if (!checker_->HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
-        inferred_type = checker_->GetBaseTypeOfLiteralType(inferred_type);
+        inferredType = checker_->GetBaseTypeOfLiteralType(inferredType);
     }
 
     if (var->TsType() != nullptr) {
-        checker_->IsTypeIdenticalTo(var->TsType(), inferred_type,
+        checker_->IsTypeIdenticalTo(var->TsType(), inferredType,
                                     {"Subsequent variable declaration must have the same type. Variable '", var->Name(),
-                                     "' must be of type '", var->TsType(), "', but here has type '", inferred_type,
+                                     "' must be of type '", var->TsType(), "', but here has type '", inferredType,
                                      "'."},
                                     loc);
         return;
     }
 
-    if (signature_info_ != nullptr) {
-        signature_info_->params.push_back(var->AsLocalVariable());
-        signature_info_->min_arg_count++;
+    if (signatureInfo_ != nullptr) {
+        signatureInfo_->params.push_back(var->AsLocalVariable());
+        signatureInfo_->minArgCount++;
     }
 
-    var->SetTsType(inferred_type);
+    var->SetTsType(inferredType);
 }
 
-void DestructuringContext::ValidateObjectLiteralType(ObjectType *obj_type, ir::ObjectExpression *obj_pattern)
+void DestructuringContext::ValidateObjectLiteralType(ObjectType *objType, ir::ObjectExpression *objPattern)
 {
-    for (const auto *source_prop : obj_type->Properties()) {
-        const util::StringView &source_name = source_prop->Name();
+    for (const auto *sourceProp : objType->Properties()) {
+        const util::StringView &sourceName = sourceProp->Name();
         bool found = false;
 
-        for (const auto *target_prop : obj_pattern->Properties()) {
-            if (target_prop->IsRestElement()) {
+        for (const auto *targetProp : objPattern->Properties()) {
+            if (targetProp->IsRestElement()) {
                 continue;
             }
 
-            ASSERT(target_prop->IsProperty());
-            const util::StringView &target_name = target_prop->AsProperty()->Key()->AsIdentifier()->Name();
+            ASSERT(targetProp->IsProperty());
+            const util::StringView &targetName = targetProp->AsProperty()->Key()->AsIdentifier()->Name();
 
-            if (source_name == target_name) {
+            if (sourceName == targetName) {
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            checker_->ThrowTypeError({"Object literal may only specify known properties, and property '", source_name,
+            checker_->ThrowTypeError({"Object literal may only specify known properties, and property '", sourceName,
                                       "' does not exist in the pattern."},
-                                     obj_pattern->Start());
+                                     objPattern->Start());
         }
     }
 }
 
-void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *assignment_pattern, Type *inferred_type,
-                                                   bool validate_default)
+void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *assignmentPattern, Type *inferredType,
+                                                   bool validateDefault)
 {
-    if (!assignment_pattern->Left()->IsArrayPattern()) {
+    if (!assignmentPattern->Left()->IsArrayPattern()) {
         checker_->RemoveStatus(CheckerStatus::FORCE_TUPLE);
     }
 
-    Type *default_type = assignment_pattern->Right()->Check(checker_);
+    Type *defaultType = assignmentPattern->Right()->Check(checker_);
 
     if (!checker_->HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
-        default_type = checker_->GetBaseTypeOfLiteralType(default_type);
+        defaultType = checker_->GetBaseTypeOfLiteralType(defaultType);
     }
 
-    if (validate_default && assignment_pattern->Right()->IsObjectExpression() &&
-        assignment_pattern->Left()->IsObjectPattern()) {
-        ValidateObjectLiteralType(default_type->AsObjectType(), assignment_pattern->Left()->AsObjectPattern());
+    if (validateDefault && assignmentPattern->Right()->IsObjectExpression() &&
+        assignmentPattern->Left()->IsObjectPattern()) {
+        ValidateObjectLiteralType(defaultType->AsObjectType(), assignmentPattern->Left()->AsObjectPattern());
     }
 
-    Type *init_type = inferred_type;
+    Type *initType = inferredType;
     checker_->AddStatus(CheckerStatus::FORCE_TUPLE);
 
-    if (validate_type_annotation_) {
-        if (inferred_type == nullptr) {
-            inferred_type = checker_->GlobalUndefinedType();
+    if (validateTypeAnnotation_) {
+        if (inferredType == nullptr) {
+            inferredType = checker_->GlobalUndefinedType();
         }
     } else {
-        if (inferred_type == nullptr) {
-            inferred_type = default_type;
-        } else if (inferred_type->IsUnionType()) {
-            inferred_type->AsUnionType()->AddConstituentType(default_type, checker_->Relation());
+        if (inferredType == nullptr) {
+            inferredType = defaultType;
+        } else if (inferredType->IsUnionType()) {
+            inferredType->AsUnionType()->AddConstituentType(defaultType, checker_->Relation());
         } else {
-            inferred_type = checker_->CreateUnionType({inferred_type, default_type});
+            inferredType = checker_->CreateUnionType({inferredType, defaultType});
         }
     }
 
-    if (assignment_pattern->Left()->IsIdentifier()) {
-        if (in_assignment_) {
-            HandleDestructuringAssignment(assignment_pattern->Left()->AsIdentifier(), init_type, default_type);
+    if (assignmentPattern->Left()->IsIdentifier()) {
+        if (inAssignment_) {
+            HandleDestructuringAssignment(assignmentPattern->Left()->AsIdentifier(), initType, defaultType);
             return;
         }
 
-        if (validate_type_annotation_ && !checker_->IsTypeAssignableTo(default_type, inferred_type)) {
-            checker_->ThrowAssignmentError(default_type, inferred_type, assignment_pattern->Left()->Start());
+        if (validateTypeAnnotation_ && !checker_->IsTypeAssignableTo(defaultType, inferredType)) {
+            checker_->ThrowAssignmentError(defaultType, inferredType, assignmentPattern->Left()->Start());
         }
 
-        SetInferredTypeForVariable(assignment_pattern->Left()->AsIdentifier()->Variable(), inferred_type,
-                                   assignment_pattern->Start());
+        SetInferredTypeForVariable(assignmentPattern->Left()->AsIdentifier()->Variable(), inferredType,
+                                   assignmentPattern->Start());
         return;
     }
 
-    if (assignment_pattern->Left()->IsArrayPattern()) {
-        ArrayDestructuringContext next_context = ArrayDestructuringContext(
-            checker_, assignment_pattern->Left(), in_assignment_, convert_tuple_to_array_, nullptr, nullptr);
-        next_context.SetInferredType(inferred_type);
-        next_context.Start();
+    if (assignmentPattern->Left()->IsArrayPattern()) {
+        ArrayDestructuringContext nextContext = ArrayDestructuringContext(
+            checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
+        nextContext.SetInferredType(inferredType);
+        nextContext.Start();
         return;
     }
 
-    ASSERT(assignment_pattern->Left()->IsObjectPattern());
-    ObjectDestructuringContext next_context = ObjectDestructuringContext(
-        checker_, assignment_pattern->Left(), in_assignment_, convert_tuple_to_array_, nullptr, nullptr);
-    next_context.SetInferredType(inferred_type);
-    next_context.Start();
+    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+    ObjectDestructuringContext nextContext = ObjectDestructuringContext(
+        checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
+    nextContext.SetInferredType(inferredType);
+    nextContext.Start();
 }
 
 void ArrayDestructuringContext::ValidateInferredType()
 {
-    if (!inferred_type_->IsArrayType() && !inferred_type_->IsUnionType() &&
-        (!inferred_type_->IsObjectType() || !inferred_type_->AsObjectType()->IsTupleType())) {
+    if (!inferredType_->IsArrayType() && !inferredType_->IsUnionType() &&
+        (!inferredType_->IsObjectType() || !inferredType_->AsObjectType()->IsTupleType())) {
         checker_->ThrowTypeError(
-            {"Type ", inferred_type_, " must have a '[Symbol.iterator]()' method that returns an iterator."},
+            {"Type ", inferredType_, " must have a '[Symbol.iterator]()' method that returns an iterator."},
             id_->Start());
     }
 
-    if (inferred_type_->IsUnionType()) {
-        for (auto *it : inferred_type_->AsUnionType()->ConstituentTypes()) {
+    if (inferredType_->IsUnionType()) {
+        for (auto *it : inferredType_->AsUnionType()->ConstituentTypes()) {
             if (!it->IsArrayType() && (!it->IsObjectType() || !it->AsObjectType()->IsTupleType())) {
                 checker_->ThrowTypeError(
-                    {"Type ", inferred_type_, " must have a '[Symbol.iterator]()' method that returns an iterator."},
+                    {"Type ", inferredType_, " must have a '[Symbol.iterator]()' method that returns an iterator."},
                     id_->Start());
             }
         }
@@ -211,196 +211,195 @@ void ArrayDestructuringContext::ValidateInferredType()
 
 Type *ArrayDestructuringContext::GetTypeFromTupleByIndex(TupleType *tuple)
 {
-    util::StringView member_index = util::Helpers::ToStringView(checker_->Allocator(), index_);
-    varbinder::Variable *member_var = tuple->GetProperty(member_index, false);
+    util::StringView memberIndex = util::Helpers::ToStringView(checker_->Allocator(), index_);
+    varbinder::Variable *memberVar = tuple->GetProperty(memberIndex, false);
 
-    if (member_var == nullptr) {
+    if (memberVar == nullptr) {
         return nullptr;
     }
 
-    return member_var->TsType();
+    return memberVar->TsType();
 }
 
-Type *ArrayDestructuringContext::NextInferredType([[maybe_unused]] const util::StringView &search_name,
-                                                  bool throw_error)
+Type *ArrayDestructuringContext::NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError)
 {
-    if (inferred_type_->IsArrayType()) {
-        return inferred_type_->AsArrayType()->ElementType();
+    if (inferredType_->IsArrayType()) {
+        return inferredType_->AsArrayType()->ElementType();
     }
 
-    if (inferred_type_->IsObjectType()) {
-        ASSERT(inferred_type_->AsObjectType()->IsTupleType());
-        Type *return_type = GetTypeFromTupleByIndex(inferred_type_->AsObjectType()->AsTupleType());
+    if (inferredType_->IsObjectType()) {
+        ASSERT(inferredType_->AsObjectType()->IsTupleType());
+        Type *returnType = GetTypeFromTupleByIndex(inferredType_->AsObjectType()->AsTupleType());
 
-        if (return_type == nullptr && throw_error) {
-            if (!validate_type_annotation_ && checker_->HasStatus(CheckerStatus::IN_PARAMETER)) {
-                return return_type;
+        if (returnType == nullptr && throwError) {
+            if (!validateTypeAnnotation_ && checker_->HasStatus(CheckerStatus::IN_PARAMETER)) {
+                return returnType;
             }
 
-            checker_->ThrowTypeError({"Tuple type ", inferred_type_, " of length ",
-                                      inferred_type_->AsObjectType()->AsTupleType()->FixedLength(),
+            checker_->ThrowTypeError({"Tuple type ", inferredType_, " of length ",
+                                      inferredType_->AsObjectType()->AsTupleType()->FixedLength(),
                                       " has no element at index ", index_, "."},
                                      id_->Start());
         }
 
-        return return_type;
+        return returnType;
     }
 
-    ASSERT(inferred_type_->IsUnionType());
+    ASSERT(inferredType_->IsUnionType());
 
-    ArenaVector<Type *> union_types(checker_->Allocator()->Adapter());
+    ArenaVector<Type *> unionTypes(checker_->Allocator()->Adapter());
 
-    for (auto *type : inferred_type_->AsUnionType()->ConstituentTypes()) {
+    for (auto *type : inferredType_->AsUnionType()->ConstituentTypes()) {
         if (type->IsArrayType()) {
-            union_types.push_back(type->AsArrayType()->ElementType());
+            unionTypes.push_back(type->AsArrayType()->ElementType());
             continue;
         }
 
         ASSERT(type->IsObjectType() && type->AsObjectType()->IsTupleType());
-        Type *element_type = GetTypeFromTupleByIndex(type->AsObjectType()->AsTupleType());
+        Type *elementType = GetTypeFromTupleByIndex(type->AsObjectType()->AsTupleType());
 
-        if (element_type == nullptr) {
+        if (elementType == nullptr) {
             continue;
         }
 
-        union_types.push_back(element_type);
+        unionTypes.push_back(elementType);
     }
 
-    if (union_types.empty()) {
-        if (throw_error) {
-            checker_->ThrowTypeError({"Property ", index_, " does not exist on type ", inferred_type_, "."},
+    if (unionTypes.empty()) {
+        if (throwError) {
+            checker_->ThrowTypeError({"Property ", index_, " does not exist on type ", inferredType_, "."},
                                      id_->Start());
         }
 
         return nullptr;
     }
 
-    return checker_->CreateUnionType(std::move(union_types));
+    return checker_->CreateUnionType(std::move(unionTypes));
 }
 
-Type *ArrayDestructuringContext::CreateArrayTypeForRest(UnionType *inferred_type)
+Type *ArrayDestructuringContext::CreateArrayTypeForRest(UnionType *inferredType)
 {
-    ArenaVector<Type *> union_types(checker_->Allocator()->Adapter());
-    uint32_t saved_idx = index_;
+    ArenaVector<Type *> unionTypes(checker_->Allocator()->Adapter());
+    uint32_t savedIdx = index_;
 
-    for (auto *it : inferred_type->ConstituentTypes()) {
+    for (auto *it : inferredType->ConstituentTypes()) {
         if (it->IsArrayType()) {
-            union_types.push_back(it->AsArrayType()->ElementType());
+            unionTypes.push_back(it->AsArrayType()->ElementType());
             continue;
         }
 
         ASSERT(it->IsObjectType() && it->AsObjectType()->IsTupleType());
-        Type *tuple_element_type = GetTypeFromTupleByIndex(it->AsObjectType()->AsTupleType());
+        Type *tupleElementType = GetTypeFromTupleByIndex(it->AsObjectType()->AsTupleType());
 
-        while (tuple_element_type != nullptr) {
-            union_types.push_back(tuple_element_type);
+        while (tupleElementType != nullptr) {
+            unionTypes.push_back(tupleElementType);
             index_++;
-            tuple_element_type = GetTypeFromTupleByIndex(it->AsObjectType()->AsTupleType());
+            tupleElementType = GetTypeFromTupleByIndex(it->AsObjectType()->AsTupleType());
         }
 
-        index_ = saved_idx;
+        index_ = savedIdx;
     }
 
-    Type *rest_array_element_type = checker_->CreateUnionType(std::move(union_types));
-    return checker_->Allocator()->New<ArrayType>(rest_array_element_type);
+    Type *restArrayElementType = checker_->CreateUnionType(std::move(unionTypes));
+    return checker_->Allocator()->New<ArrayType>(restArrayElementType);
 }
 
 Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
 {
     ObjectDescriptor *desc = checker_->Allocator()->New<ObjectDescriptor>(checker_->Allocator());
-    ArenaVector<ElementFlags> element_flags(checker_->Allocator()->Adapter());
-    uint32_t saved_idx = index_;
-    uint32_t iter_index = 0;
+    ArenaVector<ElementFlags> elementFlags(checker_->Allocator()->Adapter());
+    uint32_t savedIdx = index_;
+    uint32_t iterIndex = 0;
 
-    Type *tuple_element_type = GetTypeFromTupleByIndex(tuple);
+    Type *tupleElementType = GetTypeFromTupleByIndex(tuple);
 
-    while (tuple_element_type != nullptr) {
-        ElementFlags member_flag = ElementFlags::REQUIRED;
-        util::StringView member_index = util::Helpers::ToStringView(checker_->Allocator(), iter_index);
-        auto *member_var = varbinder::Scope::CreateVar(checker_->Allocator(), member_index,
-                                                       varbinder::VariableFlags::PROPERTY, nullptr);
-        member_var->SetTsType(tuple_element_type);
-        element_flags.push_back(member_flag);
-        desc->properties.push_back(member_var);
+    while (tupleElementType != nullptr) {
+        ElementFlags memberFlag = ElementFlags::REQUIRED;
+        util::StringView memberIndex = util::Helpers::ToStringView(checker_->Allocator(), iterIndex);
+        auto *memberVar = varbinder::Scope::CreateVar(checker_->Allocator(), memberIndex,
+                                                      varbinder::VariableFlags::PROPERTY, nullptr);
+        memberVar->SetTsType(tupleElementType);
+        elementFlags.push_back(memberFlag);
+        desc->properties.push_back(memberVar);
 
         index_++;
-        iter_index++;
+        iterIndex++;
 
-        tuple_element_type = GetTypeFromTupleByIndex(tuple);
+        tupleElementType = GetTypeFromTupleByIndex(tuple);
     }
 
-    index_ = saved_idx;
-    return checker_->CreateTupleType(desc, std::move(element_flags), ElementFlags::REQUIRED, iter_index, iter_index,
+    index_ = savedIdx;
+    return checker_->CreateTupleType(desc, std::move(elementFlags), ElementFlags::REQUIRED, iterIndex, iterIndex,
                                      false);
 }
 
 Type *ArrayDestructuringContext::GetRestType([[maybe_unused]] const lexer::SourcePosition &loc)
 {
-    if (inferred_type_->IsArrayType()) {
-        return inferred_type_;
+    if (inferredType_->IsArrayType()) {
+        return inferredType_;
     }
 
-    if (inferred_type_->IsObjectType() && inferred_type_->AsObjectType()->IsTupleType()) {
-        return CreateTupleTypeForRest(inferred_type_->AsObjectType()->AsTupleType());
+    if (inferredType_->IsObjectType() && inferredType_->AsObjectType()->IsTupleType()) {
+        return CreateTupleTypeForRest(inferredType_->AsObjectType()->AsTupleType());
     }
 
-    ASSERT(inferred_type_->IsUnionType());
-    bool create_array_type = false;
+    ASSERT(inferredType_->IsUnionType());
+    bool createArrayType = false;
 
-    for (auto *it : inferred_type_->AsUnionType()->ConstituentTypes()) {
+    for (auto *it : inferredType_->AsUnionType()->ConstituentTypes()) {
         if (it->IsArrayType()) {
-            create_array_type = true;
+            createArrayType = true;
             break;
         }
     }
 
-    if (create_array_type) {
-        return CreateArrayTypeForRest(inferred_type_->AsUnionType());
+    if (createArrayType) {
+        return CreateArrayTypeForRest(inferredType_->AsUnionType());
     }
 
-    ArenaVector<Type *> tuple_union(checker_->Allocator()->Adapter());
+    ArenaVector<Type *> tupleUnion(checker_->Allocator()->Adapter());
 
-    for (auto *it : inferred_type_->AsUnionType()->ConstituentTypes()) {
+    for (auto *it : inferredType_->AsUnionType()->ConstituentTypes()) {
         ASSERT(it->IsObjectType() && it->AsObjectType()->IsTupleType());
-        Type *new_tuple = CreateTupleTypeForRest(it->AsObjectType()->AsTupleType());
-        tuple_union.push_back(new_tuple);
+        Type *newTuple = CreateTupleTypeForRest(it->AsObjectType()->AsTupleType());
+        tupleUnion.push_back(newTuple);
     }
 
-    return checker_->CreateUnionType(std::move(tuple_union));
+    return checker_->CreateUnionType(std::move(tupleUnion));
 }
 
 void ArrayDestructuringContext::HandleRest(ir::SpreadElement *rest)
 {
-    Type *inferred_rest_type = GetRestType(rest->Start());
+    Type *inferredRestType = GetRestType(rest->Start());
 
     if (rest->Argument()->IsIdentifier()) {
-        if (in_assignment_) {
-            HandleDestructuringAssignment(rest->Argument()->AsIdentifier(), inferred_rest_type, nullptr);
+        if (inAssignment_) {
+            HandleDestructuringAssignment(rest->Argument()->AsIdentifier(), inferredRestType, nullptr);
             return;
         }
 
-        SetInferredTypeForVariable(rest->Argument()->AsIdentifier()->Variable(), inferred_rest_type, rest->Start());
+        SetInferredTypeForVariable(rest->Argument()->AsIdentifier()->Variable(), inferredRestType, rest->Start());
         return;
     }
 
     if (rest->Argument()->IsArrayPattern()) {
-        ArrayDestructuringContext next_context = ArrayDestructuringContext(checker_, rest->Argument(), in_assignment_,
-                                                                           convert_tuple_to_array_, nullptr, nullptr);
-        next_context.SetInferredType(inferred_rest_type);
-        next_context.Start();
+        ArrayDestructuringContext nextContext = ArrayDestructuringContext(checker_, rest->Argument(), inAssignment_,
+                                                                          convertTupleToArray_, nullptr, nullptr);
+        nextContext.SetInferredType(inferredRestType);
+        nextContext.Start();
         return;
     }
 
     ASSERT(rest->Argument()->IsObjectPattern());
-    ObjectDestructuringContext next_context = ObjectDestructuringContext(checker_, rest->Argument(), in_assignment_,
-                                                                         convert_tuple_to_array_, nullptr, nullptr);
-    next_context.SetInferredType(inferred_rest_type);
-    next_context.Start();
+    ObjectDestructuringContext nextContext =
+        ObjectDestructuringContext(checker_, rest->Argument(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
+    nextContext.SetInferredType(inferredRestType);
+    nextContext.Start();
 }
 
 Type *ArrayDestructuringContext::ConvertTupleTypeToArrayTypeIfNecessary(ir::AstNode *node, Type *type)
 {
-    if (!convert_tuple_to_array_) {
+    if (!convertTupleToArray_) {
         return type;
     }
 
@@ -422,13 +421,13 @@ Type *ArrayDestructuringContext::ConvertTupleTypeToArrayTypeIfNecessary(ir::AstN
 
 static void SetParameterType(ir::AstNode *parent, Type *type)
 {
-    parent->Iterate([type](ir::AstNode *child_node) -> void {
-        if (child_node->IsIdentifier() && child_node->AsIdentifier()->Variable() != nullptr) {
-            child_node->AsIdentifier()->Variable()->SetTsType(type);
+    parent->Iterate([type](ir::AstNode *childNode) -> void {
+        if (childNode->IsIdentifier() && childNode->AsIdentifier()->Variable() != nullptr) {
+            childNode->AsIdentifier()->Variable()->SetTsType(type);
             return;
         }
 
-        SetParameterType(child_node, type);
+        SetParameterType(childNode, type);
     });
 }
 
@@ -455,50 +454,50 @@ void ArrayDestructuringContext::Start()
             break;
         }
 
-        Type *next_inferred_type =
+        Type *nextInferredType =
             ConvertTupleTypeToArrayTypeIfNecessary(it, NextInferredType(name, !it->IsAssignmentPattern()));
 
-        if (next_inferred_type == nullptr && checker_->HasStatus(CheckerStatus::IN_PARAMETER)) {
+        if (nextInferredType == nullptr && checker_->HasStatus(CheckerStatus::IN_PARAMETER)) {
             SetRemainingParameterTypes();
             return;
         }
 
-        if (convert_tuple_to_array_ && next_inferred_type != nullptr && inferred_type_->IsObjectType()) {
-            ASSERT(inferred_type_->AsObjectType()->IsTupleType());
+        if (convertTupleToArray_ && nextInferredType != nullptr && inferredType_->IsObjectType()) {
+            ASSERT(inferredType_->AsObjectType()->IsTupleType());
 
-            varbinder::Variable *current_tuple_element = inferred_type_->AsObjectType()->Properties()[index_];
+            varbinder::Variable *currentTupleElement = inferredType_->AsObjectType()->Properties()[index_];
 
-            if (current_tuple_element != nullptr) {
-                current_tuple_element->SetTsType(next_inferred_type);
+            if (currentTupleElement != nullptr) {
+                currentTupleElement->SetTsType(nextInferredType);
             }
         }
 
         switch (it->Type()) {
             case ir::AstNodeType::IDENTIFIER: {
-                if (in_assignment_) {
-                    HandleDestructuringAssignment(it->AsIdentifier(), next_inferred_type, nullptr);
+                if (inAssignment_) {
+                    HandleDestructuringAssignment(it->AsIdentifier(), nextInferredType, nullptr);
                     break;
                 }
 
-                SetInferredTypeForVariable(it->AsIdentifier()->Variable(), next_inferred_type, it->Start());
+                SetInferredTypeForVariable(it->AsIdentifier()->Variable(), nextInferredType, it->Start());
                 break;
             }
             case ir::AstNodeType::ARRAY_PATTERN: {
-                ArrayDestructuringContext next_context =
-                    ArrayDestructuringContext(checker_, it, in_assignment_, convert_tuple_to_array_, nullptr, nullptr);
-                next_context.SetInferredType(next_inferred_type);
-                next_context.Start();
+                ArrayDestructuringContext nextContext =
+                    ArrayDestructuringContext(checker_, it, inAssignment_, convertTupleToArray_, nullptr, nullptr);
+                nextContext.SetInferredType(nextInferredType);
+                nextContext.Start();
                 break;
             }
             case ir::AstNodeType::OBJECT_PATTERN: {
-                ObjectDestructuringContext next_context =
-                    ObjectDestructuringContext(checker_, it, in_assignment_, convert_tuple_to_array_, nullptr, nullptr);
-                next_context.SetInferredType(next_inferred_type);
-                next_context.Start();
+                ObjectDestructuringContext nextContext =
+                    ObjectDestructuringContext(checker_, it, inAssignment_, convertTupleToArray_, nullptr, nullptr);
+                nextContext.SetInferredType(nextInferredType);
+                nextContext.Start();
                 break;
             }
             case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                HandleAssignmentPattern(it->AsAssignmentPattern(), next_inferred_type, false);
+                HandleAssignmentPattern(it->AsAssignmentPattern(), nextInferredType, false);
                 break;
             }
             case ir::AstNodeType::OMITTED_EXPRESSION: {
@@ -515,64 +514,64 @@ void ArrayDestructuringContext::Start()
 
 void ObjectDestructuringContext::ValidateInferredType()
 {
-    if (!inferred_type_->IsObjectType()) {
+    if (!inferredType_->IsObjectType()) {
         return;
     }
 
-    ValidateObjectLiteralType(inferred_type_->AsObjectType(), id_->AsObjectPattern());
+    ValidateObjectLiteralType(inferredType_->AsObjectType(), id_->AsObjectPattern());
 }
 
 void ObjectDestructuringContext::HandleRest(ir::SpreadElement *rest)
 {
-    Type *inferred_rest_type = GetRestType(rest->Start());
+    Type *inferredRestType = GetRestType(rest->Start());
     ASSERT(rest->Argument()->IsIdentifier());
 
-    if (in_assignment_) {
-        HandleDestructuringAssignment(rest->Argument()->AsIdentifier(), inferred_rest_type, nullptr);
+    if (inAssignment_) {
+        HandleDestructuringAssignment(rest->Argument()->AsIdentifier(), inferredRestType, nullptr);
         return;
     }
 
-    SetInferredTypeForVariable(rest->Argument()->AsIdentifier()->Variable(), inferred_rest_type, rest->Start());
+    SetInferredTypeForVariable(rest->Argument()->AsIdentifier()->Variable(), inferredRestType, rest->Start());
 }
 
-Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *obj_type)
+Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *objType)
 {
     ObjectDescriptor *desc = checker_->Allocator()->New<ObjectDescriptor>(checker_->Allocator());
 
-    for (auto *it : obj_type->AsObjectType()->Properties()) {
+    for (auto *it : objType->AsObjectType()->Properties()) {
         if (!it->HasFlag(varbinder::VariableFlags::INFERRED_IN_PATTERN)) {
-            auto *member_var =
+            auto *memberVar =
                 varbinder::Scope::CreateVar(checker_->Allocator(), it->Name(), varbinder::VariableFlags::NONE, nullptr);
-            member_var->SetTsType(it->TsType());
-            member_var->AddFlag(it->Flags());
-            desc->properties.push_back(member_var);
+            memberVar->SetTsType(it->TsType());
+            memberVar->AddFlag(it->Flags());
+            desc->properties.push_back(memberVar);
         }
     }
 
-    Type *return_type = checker_->Allocator()->New<ObjectLiteralType>(desc);
-    return_type->AsObjectType()->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
-    return return_type;
+    Type *returnType = checker_->Allocator()->New<ObjectLiteralType>(desc);
+    returnType->AsObjectType()->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
+    return returnType;
 }
 
 Type *ObjectDestructuringContext::GetRestType([[maybe_unused]] const lexer::SourcePosition &loc)
 {
-    if (inferred_type_->IsUnionType()) {
-        ArenaVector<Type *> union_types(checker_->Allocator()->Adapter());
+    if (inferredType_->IsUnionType()) {
+        ArenaVector<Type *> unionTypes(checker_->Allocator()->Adapter());
 
-        for (auto *it : inferred_type_->AsUnionType()->ConstituentTypes()) {
+        for (auto *it : inferredType_->AsUnionType()->ConstituentTypes()) {
             if (it->IsObjectType()) {
-                union_types.push_back(CreateObjectTypeForRest(it->AsObjectType()));
+                unionTypes.push_back(CreateObjectTypeForRest(it->AsObjectType()));
                 continue;
             }
 
             checker_->ThrowTypeError("Rest types may only be created from object types.", loc);
         }
 
-        return checker_->CreateUnionType(std::move(union_types));
+        return checker_->CreateUnionType(std::move(unionTypes));
     }
 
-    if (inferred_type_->IsObjectType()) {
-        return CreateObjectTypeForRest(inferred_type_->AsObjectType());
+    if (inferredType_->IsObjectType()) {
+        return CreateObjectTypeForRest(inferredType_->AsObjectType());
     }
 
     checker_->ThrowTypeError("Rest types may only be created from object types.", loc);
@@ -580,7 +579,7 @@ Type *ObjectDestructuringContext::GetRestType([[maybe_unused]] const lexer::Sour
 
 Type *ObjectDestructuringContext::ConvertTupleTypeToArrayTypeIfNecessary(ir::AstNode *node, Type *type)
 {
-    if (!convert_tuple_to_array_) {
+    if (!convertTupleToArray_) {
         return type;
     }
 
@@ -608,10 +607,9 @@ Type *ObjectDestructuringContext::ConvertTupleTypeToArrayTypeIfNecessary(ir::Ast
     return type;
 }
 
-Type *ObjectDestructuringContext::NextInferredType([[maybe_unused]] const util::StringView &search_name,
-                                                   bool throw_error)
+Type *ObjectDestructuringContext::NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError)
 {
-    varbinder::Variable *prop = checker_->GetPropertyOfType(inferred_type_, search_name, !throw_error,
+    varbinder::Variable *prop = checker_->GetPropertyOfType(inferredType_, searchName, !throwError,
                                                             varbinder::VariableFlags::INFERRED_IN_PATTERN);
 
     if (prop != nullptr) {
@@ -619,16 +617,16 @@ Type *ObjectDestructuringContext::NextInferredType([[maybe_unused]] const util::
         return prop->TsType();
     }
 
-    if (inferred_type_->IsObjectType()) {
-        checker::ObjectType *obj_type = inferred_type_->AsObjectType();
+    if (inferredType_->IsObjectType()) {
+        checker::ObjectType *objType = inferredType_->AsObjectType();
 
-        if (obj_type->StringIndexInfo() != nullptr) {
-            return obj_type->StringIndexInfo()->GetType();
+        if (objType->StringIndexInfo() != nullptr) {
+            return objType->StringIndexInfo()->GetType();
         }
     }
 
-    if (throw_error) {
-        checker_->ThrowTypeError({"Property ", search_name, " does not exist on type ", inferred_type_, "."},
+    if (throwError) {
+        checker_->ThrowTypeError({"Property ", searchName, " does not exist on type ", inferredType_, "."},
                                  id_->Start());
     }
 
@@ -639,7 +637,7 @@ void ObjectDestructuringContext::Start()
 {
     ASSERT(id_->IsObjectPattern());
 
-    if (!id_->AsObjectPattern()->Properties().back()->IsRestElement() && validate_object_pattern_initializer_) {
+    if (!id_->AsObjectPattern()->Properties().back()->IsRestElement() && validateObjectPatternInitializer_) {
         ValidateInferredType();
     }
 
@@ -653,42 +651,42 @@ void ObjectDestructuringContext::Start()
                     return;
                 }
 
-                Type *next_inferred_type = ConvertTupleTypeToArrayTypeIfNecessary(
+                Type *nextInferredType = ConvertTupleTypeToArrayTypeIfNecessary(
                     it->AsProperty(),
                     NextInferredType(property->Key()->AsIdentifier()->Name(),
-                                     (!property->Value()->IsAssignmentPattern() || validate_type_annotation_)));
+                                     (!property->Value()->IsAssignmentPattern() || validateTypeAnnotation_)));
 
                 if (property->Value()->IsIdentifier()) {
-                    if (in_assignment_) {
-                        HandleDestructuringAssignment(property->Value()->AsIdentifier(), next_inferred_type, nullptr);
+                    if (inAssignment_) {
+                        HandleDestructuringAssignment(property->Value()->AsIdentifier(), nextInferredType, nullptr);
                         break;
                     }
 
-                    SetInferredTypeForVariable(property->Value()->AsIdentifier()->Variable(), next_inferred_type,
+                    SetInferredTypeForVariable(property->Value()->AsIdentifier()->Variable(), nextInferredType,
                                                it->Start());
                     break;
                 }
 
                 if (property->Value()->IsArrayPattern()) {
-                    ArrayDestructuringContext next_context =
-                        ArrayDestructuringContext(checker_, property->Value()->AsArrayPattern(), in_assignment_,
-                                                  convert_tuple_to_array_, nullptr, nullptr);
-                    next_context.SetInferredType(next_inferred_type);
-                    next_context.Start();
+                    ArrayDestructuringContext nextContext =
+                        ArrayDestructuringContext(checker_, property->Value()->AsArrayPattern(), inAssignment_,
+                                                  convertTupleToArray_, nullptr, nullptr);
+                    nextContext.SetInferredType(nextInferredType);
+                    nextContext.Start();
                     break;
                 }
 
                 if (property->Value()->IsObjectPattern()) {
-                    ObjectDestructuringContext next_context =
-                        ObjectDestructuringContext(checker_, property->Value()->AsObjectPattern(), in_assignment_,
-                                                   convert_tuple_to_array_, nullptr, nullptr);
-                    next_context.SetInferredType(next_inferred_type);
-                    next_context.Start();
+                    ObjectDestructuringContext nextContext =
+                        ObjectDestructuringContext(checker_, property->Value()->AsObjectPattern(), inAssignment_,
+                                                   convertTupleToArray_, nullptr, nullptr);
+                    nextContext.SetInferredType(nextInferredType);
+                    nextContext.Start();
                     break;
                 }
 
                 ASSERT(property->Value()->IsAssignmentPattern());
-                HandleAssignmentPattern(property->Value()->AsAssignmentPattern(), next_inferred_type, true);
+                HandleAssignmentPattern(property->Value()->AsAssignmentPattern(), nextInferredType, true);
                 break;
             }
             case ir::AstNodeType::REST_ELEMENT: {

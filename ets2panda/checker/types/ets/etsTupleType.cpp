@@ -20,13 +20,13 @@ namespace panda::es2panda::checker {
 void ETSTupleType::ToString(std::stringstream &ss) const
 {
     ss << "[";
-    for (const auto *const type : type_list_) {
+    for (const auto *const type : typeList_) {
         type->ToString(ss);
     }
 
-    if (spread_type_ != nullptr) {
+    if (spreadType_ != nullptr) {
         ss << ", ...";
-        spread_type_->ToString(ss);
+        spreadType_->ToString(ss);
         ss << "[]";
     }
 
@@ -44,20 +44,20 @@ void ETSTupleType::Identical([[maybe_unused]] TypeRelation *const relation, Type
         return;
     }
 
-    const auto *const other_tuple = other->AsETSTupleType();
+    const auto *const otherTuple = other->AsETSTupleType();
 
-    if (GetMinTupleSize() != other_tuple->GetMinTupleSize()) {
+    if (GetMinTupleSize() != otherTuple->GetMinTupleSize()) {
         return;
     }
 
     for (TupleSizeType idx = 0; idx < GetMinTupleSize(); ++idx) {
-        if (!relation->IsIdenticalTo(GetTypeAtIndex(idx), other_tuple->GetTypeAtIndex(idx))) {
+        if (!relation->IsIdenticalTo(GetTypeAtIndex(idx), otherTuple->GetTypeAtIndex(idx))) {
             relation->Result(false);
             return;
         }
     }
 
-    if (HasSpreadType() != other_tuple->HasSpreadType()) {
+    if (HasSpreadType() != otherTuple->HasSpreadType()) {
         relation->Result(false);
         return;
     }
@@ -73,12 +73,12 @@ bool ETSTupleType::AssignmentSource(TypeRelation *const relation, Type *const ta
 
     if (!target->IsETSTupleType()) {
         ASSERT(target->IsETSArrayType());
-        auto *const array_target = target->AsETSArrayType();
+        auto *const arrayTarget = target->AsETSArrayType();
 
-        const SavedTypeRelationFlagsContext saved_flags_ctx(
+        const SavedTypeRelationFlagsContext savedFlagsCtx(
             relation, TypeRelationFlag::NO_BOXING | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_WIDENING);
 
-        relation->Result(relation->IsAssignableTo(ElementType(), array_target->ElementType()));
+        relation->Result(relation->IsAssignableTo(ElementType(), arrayTarget->ElementType()));
     }
 
     return relation->IsTrue();
@@ -92,18 +92,18 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
 
     if (!source->IsETSTupleType()) {
         ASSERT(source->IsETSArrayType());
-        auto *const array_source = source->AsETSArrayType();
+        auto *const arraySource = source->AsETSArrayType();
 
-        const SavedTypeRelationFlagsContext saved_flags_ctx(
+        const SavedTypeRelationFlagsContext savedFlagsCtx(
             relation, TypeRelationFlag::NO_BOXING | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_WIDENING);
 
-        relation->Result(relation->IsAssignableTo(array_source->ElementType(), ElementType()));
+        relation->Result(relation->IsAssignableTo(arraySource->ElementType(), ElementType()));
         return;
     }
 
-    const auto *const tuple_source = source->AsETSTupleType();
+    const auto *const tupleSource = source->AsETSTupleType();
 
-    if (tuple_source->GetMinTupleSize() != GetMinTupleSize()) {
+    if (tupleSource->GetMinTupleSize() != GetMinTupleSize()) {
         return;
     }
 
@@ -112,16 +112,16 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
         // make boxing/unboxing/widening for types. Only conversion allowed is reference widening, which won't generate
         // bytecode for the conversion, same as for arrays.
 
-        const SavedTypeRelationFlagsContext saved_flags_ctx(
+        const SavedTypeRelationFlagsContext savedFlagsCtx(
             relation, TypeRelationFlag::NO_BOXING | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_WIDENING);
 
-        if (!relation->IsAssignableTo(tuple_source->GetTypeAtIndex(idx), GetTypeAtIndex(idx))) {
+        if (!relation->IsAssignableTo(tupleSource->GetTypeAtIndex(idx), GetTypeAtIndex(idx))) {
             relation->Result(false);
             return;
         }
     }
 
-    if (!HasSpreadType() && tuple_source->HasSpreadType()) {
+    if (!HasSpreadType() && tupleSource->HasSpreadType()) {
         relation->Result(false);
         return;
     }
@@ -139,42 +139,42 @@ void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
     }
 
     if (target->IsETSArrayType() && (!target->IsETSTupleType())) {
-        auto *const array_target = target->AsETSArrayType();
+        auto *const arrayTarget = target->AsETSArrayType();
 
-        if (!array_target->ElementType()->IsETSObjectType()) {
+        if (!arrayTarget->ElementType()->IsETSObjectType()) {
             conversion::Forbidden(relation);
             return;
         }
 
-        const SavedTypeRelationFlagsContext saved_flags_ctx(
+        const SavedTypeRelationFlagsContext savedFlagsCtx(
             relation, TypeRelationFlag::NO_BOXING | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_WIDENING);
 
-        const bool elements_assignable =
+        const bool elementsAssignable =
             std::all_of(GetTupleTypesList().begin(), GetTupleTypesList().end(),
-                        [&relation, &array_target](auto *const tuple_type_at_idx) {
-                            return relation->IsAssignableTo(tuple_type_at_idx, array_target->ElementType());
+                        [&relation, &arrayTarget](auto *const tupleTypeAtIdx) {
+                            return relation->IsAssignableTo(tupleTypeAtIdx, arrayTarget->ElementType());
                         });
 
-        bool spread_assignable = true;
+        bool spreadAssignable = true;
         if (HasSpreadType()) {
-            spread_assignable = relation->IsAssignableTo(GetSpreadType(), array_target->ElementType());
+            spreadAssignable = relation->IsAssignableTo(GetSpreadType(), arrayTarget->ElementType());
         }
 
-        relation->Result(elements_assignable && spread_assignable);
+        relation->Result(elementsAssignable && spreadAssignable);
         return;
     }
 
-    const auto *const tuple_target = target->AsETSTupleType();
+    const auto *const tupleTarget = target->AsETSTupleType();
 
-    if (tuple_target->GetTupleSize() != GetTupleSize()) {
+    if (tupleTarget->GetTupleSize() != GetTupleSize()) {
         return;
     }
 
     for (int32_t idx = 0; idx < GetTupleSize(); ++idx) {
-        const SavedTypeRelationFlagsContext saved_flags_ctx(
+        const SavedTypeRelationFlagsContext savedFlagsCtx(
             relation, TypeRelationFlag::NO_BOXING | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_WIDENING);
 
-        if (!relation->IsAssignableTo(tuple_target->GetTypeAtIndex(idx), GetTypeAtIndex(idx))) {
+        if (!relation->IsAssignableTo(tupleTarget->GetTypeAtIndex(idx), GetTypeAtIndex(idx))) {
             return;
         }
     }
@@ -183,7 +183,7 @@ void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 }
 
 Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                                [[maybe_unused]] GlobalTypesHolder *global_types)
+                                [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
 }

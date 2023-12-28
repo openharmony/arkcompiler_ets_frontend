@@ -32,7 +32,7 @@ void OffsetEntry::AddCol(size_t offset)
 
     auto &range = ranges.back();
 
-    if (diff == range.byte_size) {
+    if (diff == range.byteSize) {
         range.cnt++;
     } else {
         ranges.emplace_back(Range {diff});
@@ -85,7 +85,7 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
     }
 
     const auto &entry = entries_[line];
-    size_t diff = pos.index - entry.line_start;
+    size_t diff = pos.index - entry.lineStart;
 
     for (const auto &range : entry.ranges) {
         if (diff < range.cnt) {
@@ -93,7 +93,7 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
             break;
         }
 
-        diff -= range.cnt * range.byte_size;
+        diff -= range.cnt * range.byteSize;
         col += range.cnt;
     }
 

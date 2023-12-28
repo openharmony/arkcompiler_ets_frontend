@@ -27,13 +27,13 @@
 namespace panda::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
 
-Lexer::Lexer(const parser::ParserContext *parser_context, bool start_lexer)
-    : allocator_(parser_context->GetProgram()->Allocator()),
-      parser_context_(parser_context),
-      source_(parser_context->GetProgram()->SourceCode()),
+Lexer::Lexer(const parser::ParserContext *parserContext, bool startLexer)
+    : allocator_(parserContext->GetProgram()->Allocator()),
+      parserContext_(parserContext),
+      source_(parserContext->GetProgram()->SourceCode()),
       pos_(source_)
 {
-    if (start_lexer) {
+    if (startLexer) {
         SkipWhiteSpaces();
     }
 }
@@ -50,7 +50,7 @@ char32_t Lexer::ScanUnicodeEscapeSequence()
         return ScanUnicodeCodePointEscape();
     }
 
-    if (parser_context_->GetProgram()->Extension() == ScriptExtension::AS) {
+    if (parserContext_->GetProgram()->Extension() == ScriptExtension::AS) {
         return ScanHexEscape<UNICODE_ESCAPE_SEQUENCE_LENGTH, true>();
     }
 
@@ -118,7 +118,7 @@ void Lexer::BackwardToken(TokenType type, size_t offset)
 {
     pos_.token_.type_ = type;
     pos_.iterator_.Reset(GetToken().End().index - offset);
-    pos_.next_token_line_ = 0;
+    pos_.nextTokenLine_ = 0;
 }
 
 void Lexer::ForwardToken(TokenType type, size_t offset)
@@ -160,7 +160,7 @@ void Lexer::SkipMultiLineComment()
             case LEX_CHAR_CR:
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
-                pos_.next_token_line_++;
+                pos_.nextTokenLine_++;
                 continue;
             }
             case LEX_CHAR_ASTERISK: {
@@ -194,7 +194,7 @@ void Lexer::SkipSingleLineComment()
             case LEX_CHAR_LF:
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
-                pos_.next_token_line_++;
+                pos_.nextTokenLine_++;
                 return;
             }
             default: {
@@ -204,10 +204,10 @@ void Lexer::SkipSingleLineComment()
     }
 }
 
-[[noreturn]] void Lexer::ThrowUnexpectedToken(lexer::TokenType token_type) const
+[[noreturn]] void Lexer::ThrowUnexpectedToken(lexer::TokenType tokenType) const
 {
     std::stringstream ss;
-    ss << "Unexpected token: '" << TokenToString(token_type) << "'.";
+    ss << "Unexpected token: '" << TokenToString(tokenType) << "'.";
     ThrowError(ss.str());
 }
 
@@ -216,7 +216,7 @@ void Lexer::SkipSingleLineComment()
     lexer::LineIndex index(source_);
     lexer::SourceLocation loc = index.GetLocation(SourcePosition(Iterator().Index(), pos_.line_));
 
-    throw Error(es2panda::ErrorType::SYNTAX, parser_context_->GetProgram()->SourceFilePath().Utf8(), message, loc.line,
+    throw Error(es2panda::ErrorType::SYNTAX, parserContext_->GetProgram()->SourceFilePath().Utf8(), message, loc.line,
                 loc.col);
 }
 
@@ -230,15 +230,15 @@ void Lexer::CheckNumberLiteralEnd()
         GetToken().src_ = SourceView(GetToken().Start().index, Iterator().Index());
     }
 
-    const auto next_cp = Iterator().PeekCp();
-    if (KeywordsUtil::IsIdentifierStart(next_cp) || IsDecimalDigit(next_cp)) {
+    const auto nextCp = Iterator().PeekCp();
+    if (KeywordsUtil::IsIdentifierStart(nextCp) || IsDecimalDigit(nextCp)) {
         ThrowError("Invalid numeric literal");
     }
 }
 
 void Lexer::ScanDecimalNumbers()
 {
-    bool allow_numeric_on_next = true;
+    bool allowNumericOnNext = true;
 
     while (true) {
         switch (Iterator().Peek()) {
@@ -253,24 +253,24 @@ void Lexer::ScanDecimalNumbers()
             case LEX_CHAR_8:
             case LEX_CHAR_9: {
                 Iterator().Forward(1);
-                allow_numeric_on_next = true;
+                allowNumericOnNext = true;
                 break;
             }
             case LEX_CHAR_UNDERSCORE: {
                 Iterator().Backward(1);
 
-                if (Iterator().Peek() == LEX_CHAR_DOT || !allow_numeric_on_next) {
+                if (Iterator().Peek() == LEX_CHAR_DOT || !allowNumericOnNext) {
                     Iterator().Forward(1);
                     ThrowError("Invalid numeric separator");
                 }
 
                 GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
                 Iterator().Forward(2U);
-                allow_numeric_on_next = false;
+                allowNumericOnNext = false;
                 break;
             }
             default: {
-                if (!allow_numeric_on_next) {
+                if (!allowNumericOnNext) {
                     ThrowError("Numeric separators are not allowed at the end of numeric literals");
                 }
                 return;
@@ -292,24 +292,24 @@ void Lexer::ConvertNumber(const std::string &utf8, [[maybe_unused]] NumberFlags 
     }
 }
 
-void Lexer::ScanNumber(bool allow_big_int)
+void Lexer::ScanNumber(bool allowBigInt)
 {
-    const bool is_period = GetToken().type_ == TokenType::PUNCTUATOR_PERIOD;
+    const bool isPeriod = GetToken().type_ == TokenType::PUNCTUATOR_PERIOD;
     GetToken().type_ = TokenType::LITERAL_NUMBER;
-    GetToken().keyword_type_ = TokenType::LITERAL_NUMBER;
+    GetToken().keywordType_ = TokenType::LITERAL_NUMBER;
 
-    if (!is_period) {
+    if (!isPeriod) {
         ScanDecimalNumbers();
     }
 
-    size_t exponent_sign_pos = std::numeric_limits<size_t>::max();
-    bool parse_exponent = true;
+    size_t exponentSignPos = std::numeric_limits<size_t>::max();
+    bool parseExponent = true;
     auto flags = NumberFlags::NONE;
 
-    if (Iterator().Peek() == LEX_CHAR_DOT || is_period) {
+    if (Iterator().Peek() == LEX_CHAR_DOT || isPeriod) {
         flags |= NumberFlags::DECIMAL_POINT;
-        allow_big_int = false;
-        if (!is_period) {
+        allowBigInt = false;
+        if (!isPeriod) {
             Iterator().Forward(1);
         }
 
@@ -317,16 +317,16 @@ void Lexer::ScanNumber(bool allow_big_int)
         if (IsDecimalDigit(cp) || cp == LEX_CHAR_LOWERCASE_E || cp == LEX_CHAR_UPPERCASE_E) {
             ScanDecimalNumbers();
         } else {
-            parse_exponent = false;
+            parseExponent = false;
         }
     }
 
     switch (Iterator().Peek()) {
         case LEX_CHAR_LOWERCASE_E:
         case LEX_CHAR_UPPERCASE_E: {
-            allow_big_int = false;
+            allowBigInt = false;
 
-            if (!parse_exponent) {
+            if (!parseExponent) {
                 break;
             }
 
@@ -344,7 +344,7 @@ void Lexer::ScanNumber(bool allow_big_int)
                     break;
                 }
                 default: {
-                    exponent_sign_pos = Iterator().Index() - GetToken().Start().index;
+                    exponentSignPos = Iterator().Index() - GetToken().Start().index;
                     break;
                 }
             }
@@ -363,7 +363,7 @@ void Lexer::ScanNumber(bool allow_big_int)
     CheckNumberLiteralEnd();
 
     if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
-        if (!allow_big_int) {
+        if (!allowBigInt) {
             ThrowError("Invalid BigInt number");
         }
 
@@ -372,19 +372,19 @@ void Lexer::ScanNumber(bool allow_big_int)
 
     util::StringView sv = SourceView(GetToken().Start().index, Iterator().Index());
     std::string utf8 = std::string {sv.Utf8()};
-    bool need_conversion = false;
+    bool needConversion = false;
 
-    if (exponent_sign_pos != std::numeric_limits<size_t>::max()) {
-        utf8.insert(exponent_sign_pos, 1, '+');
-        need_conversion = true;
+    if (exponentSignPos != std::numeric_limits<size_t>::max()) {
+        utf8.insert(exponentSignPos, 1, '+');
+        needConversion = true;
     }
 
     if ((GetToken().flags_ & TokenFlags::NUMBER_HAS_UNDERSCORE) != 0U) {
         utf8.erase(std::remove(utf8.begin(), utf8.end(), LEX_CHAR_UNDERSCORE), utf8.end());
-        need_conversion = true;
+        needConversion = true;
     }
 
-    if (need_conversion) {
+    if (needConversion) {
         util::UString converted(utf8, Allocator());
         GetToken().src_ = converted.View();
     } else {
@@ -396,7 +396,7 @@ void Lexer::ScanNumber(bool allow_big_int)
 
 void Lexer::PushTemplateContext(TemplateLiteralParserContext *ctx)
 {
-    tl_ctx_ = ctx;
+    tlCtx_ = ctx;
 }
 
 void Lexer::ScanTemplateStringEnd()
@@ -409,11 +409,11 @@ void Lexer::ScanTemplateStringEnd()
 
 LexerTemplateString Lexer::ScanTemplateString()
 {
-    LexerTemplateString template_str(Allocator());
-    size_t cp_size = 0U;
+    LexerTemplateString templateStr(Allocator());
+    size_t cpSize = 0U;
 
-    auto const check_octal_digit = [this](char32_t const next_cp) -> void {
-        if (IsOctalDigit(next_cp)) {
+    auto const checkOctalDigit = [this](char32_t const nextCp) -> void {
+        if (IsOctalDigit(nextCp)) {
             Iterator().Forward(1);
 
             if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
@@ -425,7 +425,7 @@ LexerTemplateString Lexer::ScanTemplateString()
     };
 
     while (true) {
-        char32_t cp = Iterator().PeekCp(&cp_size);
+        char32_t cp = Iterator().PeekCp(&cpSize);
 
         switch (cp) {
             case util::StringView::Iterator::INVALID_CP: {
@@ -433,8 +433,8 @@ LexerTemplateString Lexer::ScanTemplateString()
                 break;
             }
             case LEX_CHAR_BACK_TICK: {
-                template_str.end = Iterator().Index();
-                return template_str;
+                templateStr.end = Iterator().Index();
+                return templateStr;
             }
             case LEX_CHAR_CR: {
                 Iterator().Forward(1);
@@ -447,19 +447,19 @@ LexerTemplateString Lexer::ScanTemplateString()
             }
             case LEX_CHAR_LF: {
                 pos_.line_++;
-                template_str.str.Append(LEX_CHAR_LF);
+                templateStr.str.Append(LEX_CHAR_LF);
                 Iterator().Forward(1);
                 continue;
             }
             case LEX_CHAR_BACKSLASH: {
                 Iterator().Forward(1);
 
-                char32_t next_cp = Iterator().Peek();
-                check_octal_digit(next_cp);
+                char32_t nextCp = Iterator().Peek();
+                checkOctalDigit(nextCp);
 
-                if (next_cp == LEX_CHAR_BACK_TICK || next_cp == LEX_CHAR_BACKSLASH) {
-                    template_str.str.Append(cp);
-                    template_str.str.Append(next_cp);
+                if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH) {
+                    templateStr.str.Append(cp);
+                    templateStr.str.Append(nextCp);
                     Iterator().Forward(1);
                     continue;
                 }
@@ -468,17 +468,17 @@ LexerTemplateString Lexer::ScanTemplateString()
                 break;
             }
             case LEX_CHAR_DOLLAR_SIGN: {
-                template_str.end = Iterator().Index();
+                templateStr.end = Iterator().Index();
                 Iterator().Forward(1);
 
                 if (Iterator().Peek() == LEX_CHAR_LEFT_BRACE) {
                     Iterator().Forward(1);
-                    template_str.scan_expression = true;
+                    templateStr.scanExpression = true;
                     SkipWhiteSpaces();
-                    return template_str;
+                    return templateStr;
                 }
 
-                template_str.str.Append(cp);
+                templateStr.str.Append(cp);
                 continue;
             }
             default: {
@@ -486,12 +486,12 @@ LexerTemplateString Lexer::ScanTemplateString()
             }
         }
 
-        template_str.str.Append(cp);
-        Iterator().Forward(cp_size);
+        templateStr.str.Append(cp);
+        Iterator().Forward(cpSize);
     }
 
     UNREACHABLE();
-    return template_str;
+    return templateStr;
 }
 
 void Lexer::ResetTokenEnd()
@@ -499,7 +499,7 @@ void Lexer::ResetTokenEnd()
     SetTokenStart();
     pos_.iterator_.Reset(GetToken().End().index);
     pos_.line_ = GetToken().End().line;
-    pos_.next_token_line_ = 0;
+    pos_.nextTokenLine_ = 0;
 }
 
 void Lexer::ScanStringUnicodePart(util::UString *str)
@@ -511,8 +511,8 @@ void Lexer::ScanStringUnicodePart(util::UString *str)
 
 char32_t Lexer::ScanUnicodeCharacter()
 {
-    size_t cp_size {};
-    char32_t cp = Iterator().PeekCp(&cp_size);
+    size_t cpSize {};
+    char32_t cp = Iterator().PeekCp(&cpSize);
 
     switch (cp) {
         case util::StringView::Iterator::INVALID_CP: {
@@ -531,7 +531,7 @@ char32_t Lexer::ScanUnicodeCharacter()
         case LEX_CHAR_PS:
         case LEX_CHAR_LF: {
             pos_.line_++;
-            Iterator().Forward(cp_size);
+            Iterator().Forward(cpSize);
             return util::StringView::Iterator::INVALID_CP;
         }
         case LEX_CHAR_LOWERCASE_B: {
@@ -569,10 +569,10 @@ char32_t Lexer::ScanUnicodeCharacter()
         }
         case LEX_CHAR_0: {
             Iterator().Forward(1);
-            bool is_decimal = IsDecimalDigit(Iterator().Peek());
+            bool isDecimal = IsDecimalDigit(Iterator().Peek());
             Iterator().Backward(1);
 
-            if (!is_decimal) {
+            if (!isDecimal) {
                 cp = LEX_CHAR_NULL;
                 break;
             }
@@ -588,7 +588,7 @@ char32_t Lexer::ScanUnicodeCharacter()
         }
     }
 
-    Iterator().Forward(cp_size);
+    Iterator().Forward(cpSize);
     return cp;
 }
 
@@ -999,11 +999,11 @@ bool Lexer::IsLineTerminatorOrEos() const
 
 void Lexer::ScanRegExpPattern()
 {
-    bool is_char_class = false;
-    size_t cp_size {};
+    bool isCharClass = false;
+    size_t cpSize {};
 
     while (true) {
-        switch (Iterator().PeekCp(&cp_size)) {
+        switch (Iterator().PeekCp(&cpSize)) {
             case util::StringView::Iterator::INVALID_CP:
             case LEX_CHAR_LF:
             case LEX_CHAR_CR:
@@ -1013,18 +1013,18 @@ void Lexer::ScanRegExpPattern()
                 break;
             }
             case LEX_CHAR_SLASH: {
-                if (!is_char_class) {
+                if (!isCharClass) {
                     return;
                 }
 
                 break;
             }
             case LEX_CHAR_LEFT_SQUARE: {
-                is_char_class = true;
+                isCharClass = true;
                 break;
             }
             case LEX_CHAR_RIGHT_SQUARE: {
-                is_char_class = false;
+                isCharClass = false;
                 break;
             }
             case LEX_CHAR_BACKSLASH: {
@@ -1041,22 +1041,22 @@ void Lexer::ScanRegExpPattern()
             }
         }
 
-        Iterator().Forward(cp_size);
+        Iterator().Forward(cpSize);
     }
 }
 
 RegExpFlags Lexer::ScanRegExpFlags()
 {
-    RegExpFlags result_flags = RegExpFlags::EMPTY;
+    RegExpFlags resultFlags = RegExpFlags::EMPTY;
 
     while (true) {
-        size_t cp_size {};
-        auto cp = Iterator().PeekCp(&cp_size);
+        size_t cpSize {};
+        auto cp = Iterator().PeekCp(&cpSize);
         if (!KeywordsUtil::IsIdentifierPart(cp)) {
             break;
         }
 
-        Iterator().Forward(cp_size);
+        Iterator().Forward(cpSize);
 
         RegExpFlags flag = RegExpFlags::EMPTY;
 
@@ -1086,21 +1086,21 @@ RegExpFlags Lexer::ScanRegExpFlags()
                 break;
             }
             case LEX_CHAR_SP: {
-                return result_flags;
+                return resultFlags;
             }
             default: {
                 ThrowError("Invalid RegExp flag");
             }
         }
 
-        if (flag == RegExpFlags::EMPTY || (result_flags & flag) != 0) {
+        if (flag == RegExpFlags::EMPTY || (resultFlags & flag) != 0) {
             ThrowError("Invalid RegExp flag");
         }
 
-        result_flags = result_flags | flag;
+        resultFlags = resultFlags | flag;
     }
 
-    return result_flags;
+    return resultFlags;
 }
 
 RegExp Lexer::ScanRegExp()
@@ -1111,23 +1111,23 @@ RegExp Lexer::ScanRegExp()
     }
 
     GetToken().type_ = TokenType::LITERAL_REGEXP;
-    GetToken().keyword_type_ = TokenType::LITERAL_REGEXP;
+    GetToken().keywordType_ = TokenType::LITERAL_REGEXP;
 
-    const auto pattern_start = Iterator().Index();
+    const auto patternStart = Iterator().Index();
     ScanRegExpPattern();
-    const auto pattern = SourceView(pattern_start, Iterator().Index());
+    const auto pattern = SourceView(patternStart, Iterator().Index());
 
     ASSERT(Iterator().Peek() == LEX_CHAR_SLASH);
     Iterator().Forward(1);
 
-    const auto flags_start = Iterator().Index();
-    RegExpFlags result_flags = ScanRegExpFlags();
-    const auto flags = SourceView(flags_start, Iterator().Index());
+    const auto flagsStart = Iterator().Index();
+    RegExpFlags resultFlags = ScanRegExpFlags();
+    const auto flags = SourceView(flagsStart, Iterator().Index());
 
     SkipWhiteSpaces();
     SetTokenEnd();
 
-    return {pattern, flags, result_flags};
+    return {pattern, flags, resultFlags};
 }
 
 bool Lexer::CheckArrow()
@@ -1145,16 +1145,16 @@ bool Lexer::CheckArrow()
 
 void Lexer::SetTokenStart()
 {
-    if (pos_.next_token_line_ != 0) {
-        pos_.line_ += pos_.next_token_line_;
-        pos_.next_token_line_ = 0;
+    if (pos_.nextTokenLine_ != 0) {
+        pos_.line_ += pos_.nextTokenLine_;
+        pos_.nextTokenLine_ = 0;
         GetToken().flags_ = TokenFlags::NEW_LINE;
     } else {
         GetToken().flags_ = TokenFlags::NONE;
     }
 
     pos_.token_.loc_.start = SourcePosition {Iterator().Index(), pos_.line_};
-    GetToken().keyword_type_ = TokenType::EOS;
+    GetToken().keywordType_ = TokenType::EOS;
 }
 
 void Lexer::SetTokenEnd()
@@ -1179,7 +1179,7 @@ void Lexer::SkipWhiteSpaces()
             }
             case LEX_CHAR_LF: {
                 Iterator().Forward(1);
-                pos_.next_token_line_++;
+                pos_.nextTokenLine_++;
                 continue;
             }
             case LEX_CHAR_VT:
@@ -1211,18 +1211,18 @@ void Lexer::SkipWhiteSpaces()
                     return;
                 }
 
-                size_t cp_size {};
-                cp = Iterator().PeekCp(&cp_size);
+                size_t cpSize {};
+                cp = Iterator().PeekCp(&cpSize);
 
                 switch (cp) {
                     case LEX_CHAR_LS:
                     case LEX_CHAR_PS: {
-                        pos_.next_token_line_++;
+                        pos_.nextTokenLine_++;
                         [[fallthrough]];
                     }
                     case LEX_CHAR_NBSP:
                     case LEX_CHAR_ZWNBSP: {
-                        Iterator().Forward(cp_size);
+                        Iterator().Forward(cpSize);
                         continue;
                     }
                     default: {
@@ -1475,8 +1475,8 @@ void Lexer::NextToken(Keywords *kws)
         case LEX_CHAR_LEFT_BRACE: {
             GetToken().type_ = TokenType::PUNCTUATOR_LEFT_BRACE;
 
-            if (tl_ctx_ != nullptr) {
-                tl_ctx_->ConsumeLeftBrace();
+            if (tlCtx_ != nullptr) {
+                tlCtx_->ConsumeLeftBrace();
             }
 
             break;
@@ -1488,7 +1488,7 @@ void Lexer::NextToken(Keywords *kws)
         case LEX_CHAR_RIGHT_BRACE: {
             GetToken().type_ = TokenType::PUNCTUATOR_RIGHT_BRACE;
 
-            if (tl_ctx_ != nullptr && tl_ctx_->ConsumeRightBrace()) {
+            if (tlCtx_ != nullptr && tlCtx_->ConsumeRightBrace()) {
                 SetTokenEnd();
                 return;
             }

@@ -25,46 +25,44 @@ class UnionType : public Type {
 public:
     UnionType(ArenaAllocator *allocator, std::initializer_list<Type *> types)
         : Type(TypeFlag::UNION),
-          constituent_types_(allocator->Adapter()),
-          cached_synthetic_properties_(allocator->Adapter())
+          constituentTypes_(allocator->Adapter()),
+          cachedSyntheticProperties_(allocator->Adapter())
     {
         for (auto *it : types) {
-            constituent_types_.push_back(it);
+            constituentTypes_.push_back(it);
         }
 
-        for (auto *it : constituent_types_) {
+        for (auto *it : constituentTypes_) {
             AddConstituentFlag(it->TypeFlags());
         }
     }
 
-    explicit UnionType(ArenaAllocator *allocator, ArenaVector<Type *> &&constituent_types)
+    explicit UnionType(ArenaAllocator *allocator, ArenaVector<Type *> &&constituentTypes)
         : Type(TypeFlag::UNION),
-          constituent_types_(std::move(constituent_types)),
-          cached_synthetic_properties_(allocator->Adapter())
+          constituentTypes_(std::move(constituentTypes)),
+          cachedSyntheticProperties_(allocator->Adapter())
     {
-        for (auto *it : constituent_types_) {
+        for (auto *it : constituentTypes_) {
             AddConstituentFlag(it->TypeFlags());
         }
     }
 
-    explicit UnionType(ArenaAllocator *allocator, ArenaVector<Type *> &constituent_types)
-        : Type(TypeFlag::UNION),
-          constituent_types_(constituent_types),
-          cached_synthetic_properties_(allocator->Adapter())
+    explicit UnionType(ArenaAllocator *allocator, ArenaVector<Type *> &constituentTypes)
+        : Type(TypeFlag::UNION), constituentTypes_(constituentTypes), cachedSyntheticProperties_(allocator->Adapter())
     {
-        for (auto *it : constituent_types_) {
+        for (auto *it : constituentTypes_) {
             AddConstituentFlag(it->TypeFlags());
         }
     }
 
     const ArenaVector<Type *> &ConstituentTypes() const
     {
-        return constituent_types_;
+        return constituentTypes_;
     }
 
     ArenaVector<Type *> &ConstituentTypes()
     {
-        return constituent_types_;
+        return constituentTypes_;
     }
 
     void AddConstituentType(Type *type, TypeRelation *relation)
@@ -76,44 +74,44 @@ public:
             return;
         }
 
-        for (auto *it : constituent_types_) {
+        for (auto *it : constituentTypes_) {
             if (relation->IsIdenticalTo(it, type)) {
                 return;
             }
         }
 
         AddConstituentFlag(type->TypeFlags());
-        constituent_types_.push_back(type);
+        constituentTypes_.push_back(type);
     }
 
     void AddConstituentFlag(TypeFlag flag)
     {
-        constituent_flags_ |= flag;
+        constituentFlags_ |= flag;
     }
 
     void RemoveConstituentFlag(TypeFlag flag)
     {
-        constituent_flags_ &= ~flag;
+        constituentFlags_ &= ~flag;
     }
 
     bool HasConstituentFlag(TypeFlag flag) const
     {
-        return (constituent_flags_ & flag) != 0;
+        return (constituentFlags_ & flag) != 0;
     }
 
     ArenaUnorderedMap<util::StringView, varbinder::Variable *> &CachedSyntheticProperties()
     {
-        return cached_synthetic_properties_;
+        return cachedSyntheticProperties_;
     }
 
     ObjectType *MergedObjectType()
     {
-        return merged_object_type_;
+        return mergedObjectType_;
     }
 
     void SetMergedObjectType(ObjectType *type)
     {
-        merged_object_type_ = type;
+        mergedObjectType_ = type;
     }
 
     void ToString(std::stringstream &ss) const override;
@@ -121,20 +119,20 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     TypeFacts GetTypeFacts() const override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
-    static void RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
-    static Type *HandleUnionType(UnionType *union_type, GlobalTypesHolder *global_types_holder);
+    static void RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *> &constituentTypes);
+    static Type *HandleUnionType(UnionType *unionType, GlobalTypesHolder *globalTypesHolder);
     static void RemoveRedundantLiteralTypesFromUnion(UnionType *type);
 
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, UnionType *source, UnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, UnionType *target);
 
-    ArenaVector<Type *> constituent_types_;
-    TypeFlag constituent_flags_ {TypeFlag::NONE};
-    ArenaUnorderedMap<util::StringView, varbinder::Variable *> cached_synthetic_properties_;
-    ObjectType *merged_object_type_ {};
+    ArenaVector<Type *> constituentTypes_;
+    TypeFlag constituentFlags_ {TypeFlag::NONE};
+    ArenaUnorderedMap<util::StringView, varbinder::Variable *> cachedSyntheticProperties_;
+    ObjectType *mergedObjectType_ {};
 };
 }  // namespace panda::es2panda::checker
 

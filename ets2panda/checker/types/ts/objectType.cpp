@@ -22,22 +22,22 @@
 
 namespace panda::es2panda::checker {
 bool ObjectType::EachSignatureRelatedToSomeSignature(TypeRelation *relation,
-                                                     const ArenaVector<Signature *> &source_signatures,
-                                                     const ArenaVector<Signature *> &target_signatures)
+                                                     const ArenaVector<Signature *> &sourceSignatures,
+                                                     const ArenaVector<Signature *> &targetSignatures)
 {
-    ArenaVector<Signature *> target_copy = target_signatures;
+    ArenaVector<Signature *> targetCopy = targetSignatures;
 
-    return std::all_of(source_signatures.begin(), source_signatures.end(), [relation, &target_copy](Signature *source) {
-        return SignatureRelatedToSomeSignature(relation, source, &target_copy);
+    return std::all_of(sourceSignatures.begin(), sourceSignatures.end(), [relation, &targetCopy](Signature *source) {
+        return SignatureRelatedToSomeSignature(relation, source, &targetCopy);
     });
 }
 
-bool ObjectType::SignatureRelatedToSomeSignature(TypeRelation *relation, Signature *source_signature,
-                                                 ArenaVector<Signature *> *target_signatures)
+bool ObjectType::SignatureRelatedToSomeSignature(TypeRelation *relation, Signature *sourceSignature,
+                                                 ArenaVector<Signature *> *targetSignatures)
 {
-    for (auto it = target_signatures->begin(); it != target_signatures->end();) {
-        if (relation->IsIdenticalTo(source_signature, *it)) {
-            target_signatures->erase(it);
+    for (auto it = targetSignatures->begin(); it != targetSignatures->end();) {
+        if (relation->IsIdenticalTo(sourceSignature, *it)) {
+            targetSignatures->erase(it);
             return true;
         }
 
@@ -53,21 +53,21 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    ObjectType *other_obj = other->AsObjectType();
+    ObjectType *otherObj = other->AsObjectType();
 
-    if (desc_->properties.size() != other_obj->Properties().size() ||
-        CallSignatures().size() != other_obj->CallSignatures().size() ||
-        ConstructSignatures().size() != other_obj->ConstructSignatures().size() ||
-        (desc_->number_index_info != nullptr && other_obj->NumberIndexInfo() == nullptr) ||
-        (desc_->number_index_info == nullptr && other_obj->NumberIndexInfo() != nullptr) ||
-        (desc_->string_index_info != nullptr && other_obj->StringIndexInfo() == nullptr) ||
-        (desc_->string_index_info == nullptr && other_obj->StringIndexInfo() != nullptr)) {
+    if (desc_->properties.size() != otherObj->Properties().size() ||
+        CallSignatures().size() != otherObj->CallSignatures().size() ||
+        ConstructSignatures().size() != otherObj->ConstructSignatures().size() ||
+        (desc_->numberIndexInfo != nullptr && otherObj->NumberIndexInfo() == nullptr) ||
+        (desc_->numberIndexInfo == nullptr && otherObj->NumberIndexInfo() != nullptr) ||
+        (desc_->stringIndexInfo != nullptr && otherObj->StringIndexInfo() == nullptr) ||
+        (desc_->stringIndexInfo == nullptr && otherObj->StringIndexInfo() != nullptr)) {
         relation->Result(false);
         return;
     }
 
     for (auto *it : desc_->properties) {
-        varbinder::LocalVariable *found = other_obj->Desc()->FindProperty(it->Name());
+        varbinder::LocalVariable *found = otherObj->Desc()->FindProperty(it->Name());
         if (found == nullptr) {
             relation->Result(false);
             return;
@@ -85,25 +85,25 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
         }
     }
 
-    if (!EachSignatureRelatedToSomeSignature(relation, CallSignatures(), other_obj->CallSignatures()) ||
-        !EachSignatureRelatedToSomeSignature(relation, other_obj->CallSignatures(), CallSignatures())) {
+    if (!EachSignatureRelatedToSomeSignature(relation, CallSignatures(), otherObj->CallSignatures()) ||
+        !EachSignatureRelatedToSomeSignature(relation, otherObj->CallSignatures(), CallSignatures())) {
         return;
     }
 
-    if (!EachSignatureRelatedToSomeSignature(relation, ConstructSignatures(), other_obj->ConstructSignatures()) ||
-        !EachSignatureRelatedToSomeSignature(relation, other_obj->ConstructSignatures(), ConstructSignatures())) {
+    if (!EachSignatureRelatedToSomeSignature(relation, ConstructSignatures(), otherObj->ConstructSignatures()) ||
+        !EachSignatureRelatedToSomeSignature(relation, otherObj->ConstructSignatures(), ConstructSignatures())) {
         return;
     }
 
-    if (desc_->number_index_info != nullptr) {
-        relation->IsIdenticalTo(desc_->number_index_info, other_obj->NumberIndexInfo());
+    if (desc_->numberIndexInfo != nullptr) {
+        relation->IsIdenticalTo(desc_->numberIndexInfo, otherObj->NumberIndexInfo());
         if (!relation->IsTrue()) {
             return;
         }
     }
 
-    if (desc_->string_index_info != nullptr) {
-        relation->IsIdenticalTo(desc_->string_index_info, other_obj->StringIndexInfo());
+    if (desc_->stringIndexInfo != nullptr) {
+        relation->IsIdenticalTo(desc_->stringIndexInfo, otherObj->StringIndexInfo());
         if (!relation->IsTrue()) {
             return;
         }
@@ -112,18 +112,18 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
 
 void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
 {
-    const ArenaVector<varbinder::LocalVariable *> &target_properties = Properties();
-    IndexInfo *number_info = NumberIndexInfo();
-    IndexInfo *string_info = StringIndexInfo();
+    const ArenaVector<varbinder::LocalVariable *> &targetProperties = Properties();
+    IndexInfo *numberInfo = NumberIndexInfo();
+    IndexInfo *stringInfo = StringIndexInfo();
 
-    for (auto *it : target_properties) {
+    for (auto *it : targetProperties) {
         varbinder::LocalVariable *found = source->GetProperty(it->Name(), true);
-        Type *target_type = relation->GetChecker()->GetTypeOfVariable(it);
+        Type *targetType = relation->GetChecker()->GetTypeOfVariable(it);
 
         if (found != nullptr) {
-            Type *source_type = relation->GetChecker()->GetTypeOfVariable(found);
+            Type *sourceType = relation->GetChecker()->GetTypeOfVariable(found);
 
-            if (!relation->IsAssignableTo(source_type, target_type)) {
+            if (!relation->IsAssignableTo(sourceType, targetType)) {
                 return;
             }
 
@@ -136,12 +136,12 @@ void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
             continue;
         }
 
-        if (number_info != nullptr && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME) &&
-            !relation->IsAssignableTo(number_info->GetType(), target_type)) {
+        if (numberInfo != nullptr && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME) &&
+            !relation->IsAssignableTo(numberInfo->GetType(), targetType)) {
             return;
         }
 
-        if (string_info != nullptr && !relation->IsAssignableTo(string_info->GetType(), target_type)) {
+        if (stringInfo != nullptr && !relation->IsAssignableTo(stringInfo->GetType(), targetType)) {
             return;
         }
 
@@ -152,47 +152,47 @@ void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
     }
 }
 
-void ObjectType::AssignSignatures(TypeRelation *relation, ObjectType *source, bool assign_call_signatures)
+void ObjectType::AssignSignatures(TypeRelation *relation, ObjectType *source, bool assignCallSignatures)
 {
-    ArenaVector<Signature *> target_signatures = assign_call_signatures ? CallSignatures() : ConstructSignatures();
-    ArenaVector<Signature *> source_signatures =
-        assign_call_signatures ? source->CallSignatures() : source->ConstructSignatures();
+    ArenaVector<Signature *> targetSignatures = assignCallSignatures ? CallSignatures() : ConstructSignatures();
+    ArenaVector<Signature *> sourceSignatures =
+        assignCallSignatures ? source->CallSignatures() : source->ConstructSignatures();
 
-    for (auto *target_signature : target_signatures) {
-        bool found_compatible = false;
-        for (auto *source_signature : source_signatures) {
-            target_signature->AssignmentTarget(relation, source_signature);
+    for (auto *targetSignature : targetSignatures) {
+        bool foundCompatible = false;
+        for (auto *sourceSignature : sourceSignatures) {
+            targetSignature->AssignmentTarget(relation, sourceSignature);
 
             if (relation->IsTrue()) {
-                found_compatible = true;
+                foundCompatible = true;
                 break;
             }
         }
 
-        if (!found_compatible) {
+        if (!foundCompatible) {
             relation->Result(false);
             return;
         }
     }
 }
 
-void ObjectType::AssignIndexInfo([[maybe_unused]] TypeRelation *relation, ObjectType *source, bool assign_number_info)
+void ObjectType::AssignIndexInfo([[maybe_unused]] TypeRelation *relation, ObjectType *source, bool assignNumberInfo)
 {
-    IndexInfo *target_info = assign_number_info ? NumberIndexInfo() : StringIndexInfo();
-    IndexInfo *source_info = assign_number_info ? source->NumberIndexInfo() : source->StringIndexInfo();
+    IndexInfo *targetInfo = assignNumberInfo ? NumberIndexInfo() : StringIndexInfo();
+    IndexInfo *sourceInfo = assignNumberInfo ? source->NumberIndexInfo() : source->StringIndexInfo();
 
-    if (target_info != nullptr) {
-        if (source_info != nullptr) {
-            target_info->AssignmentTarget(relation, source_info);
+    if (targetInfo != nullptr) {
+        if (sourceInfo != nullptr) {
+            targetInfo->AssignmentTarget(relation, sourceInfo);
             return;
         }
 
         for (auto *it : source->Properties()) {
-            if (assign_number_info && !it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
+            if (assignNumberInfo && !it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
                 continue;
             }
 
-            if (!relation->IsAssignableTo(relation->GetChecker()->GetTypeOfVariable(it), target_info->GetType())) {
+            if (!relation->IsAssignableTo(relation->GetChecker()->GetTypeOfVariable(it), targetInfo->GetType())) {
                 return;
             }
         }
@@ -223,33 +223,33 @@ void ObjectType::AssignmentTarget(TypeRelation *relation, Type *source)
 
     relation->Result(true);
 
-    ObjectType *source_obj = source->AsObjectType();
+    ObjectType *sourceObj = source->AsObjectType();
 
-    if (source_obj->HasObjectFlag(ObjectFlags::CHECK_EXCESS_PROPS)) {
-        CheckExcessProperties(relation, source_obj);
+    if (sourceObj->HasObjectFlag(ObjectFlags::CHECK_EXCESS_PROPS)) {
+        CheckExcessProperties(relation, sourceObj);
     }
 
     // Just to avoid extra nesting level(s):
-    auto const assign_index_info = [this, relation, source_obj]() -> void {
+    auto const assignIndexInfo = [this, relation, sourceObj]() -> void {
         if (relation->IsTrue()) {
-            AssignIndexInfo(relation, source_obj);
+            AssignIndexInfo(relation, sourceObj);
 
             if (relation->IsTrue()) {
-                AssignIndexInfo(relation, source_obj, false);
+                AssignIndexInfo(relation, sourceObj, false);
             }
         }
     };
 
     if (relation->IsTrue()) {
-        AssignProperties(relation, source_obj);
+        AssignProperties(relation, sourceObj);
 
         if (relation->IsTrue()) {
-            AssignSignatures(relation, source_obj);
+            AssignSignatures(relation, sourceObj);
 
             if (relation->IsTrue()) {
-                AssignSignatures(relation, source_obj, false);
+                AssignSignatures(relation, sourceObj, false);
 
-                assign_index_info();
+                assignIndexInfo();
             }
         }
     }

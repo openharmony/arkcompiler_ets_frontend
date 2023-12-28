@@ -29,13 +29,13 @@ public:
     NO_COPY_SEMANTIC(ClassElement);
     NO_MOVE_SEMANTIC(ClassElement);
 
-    explicit ClassElement(AstNodeType const element_type, Expression *const key, Expression *const value,
-                          ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
-        : TypedStatement(element_type, modifiers),
+    explicit ClassElement(AstNodeType const elementType, Expression *const key, Expression *const value,
+                          ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
+        : TypedStatement(elementType, modifiers),
           key_(key),
           value_(value),
           decorators_(allocator->Adapter()),
-          is_computed_(is_computed)
+          isComputed_(isComputed)
     {
     }
 
@@ -77,7 +77,7 @@ public:
 
     [[nodiscard]] bool IsComputed() const noexcept
     {
-        return is_computed_;
+        return isComputed_;
     }
 
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
@@ -92,19 +92,19 @@ public:
         }
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }
 
-    [[nodiscard]] virtual PrivateFieldKind ToPrivateFieldKind(bool is_static) const = 0;
+    [[nodiscard]] virtual PrivateFieldKind ToPrivateFieldKind(bool isStatic) const = 0;
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *key_;
     Expression *value_;
     ArenaVector<Decorator *> decorators_;
-    bool is_computed_;
+    bool isComputed_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 }  // namespace panda::es2panda::ir

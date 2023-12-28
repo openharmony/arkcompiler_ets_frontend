@@ -53,33 +53,33 @@ using CapturedVarsMap = ArenaUnorderedMap<varbinder::Variable *, lexer::SourcePo
 
 class CheckerContext {
 public:
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus new_status)
-        : CheckerContext(allocator, new_status, nullptr)
+    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus)
+        : CheckerContext(allocator, newStatus, nullptr)
     {
     }
 
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus new_status, ETSObjectType *containing_class)
-        : CheckerContext(allocator, new_status, containing_class, nullptr)
+    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, ETSObjectType *containingClass)
+        : CheckerContext(allocator, newStatus, containingClass, nullptr)
     {
     }
 
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus new_status, ETSObjectType *containing_class,
-                            Signature *containing_signature)
-        : status_(new_status),
-          captured_vars_(allocator->Adapter()),
-          containing_class_(containing_class),
-          containing_signature_(containing_signature)
+    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, ETSObjectType *containingClass,
+                            Signature *containingSignature)
+        : status_(newStatus),
+          capturedVars_(allocator->Adapter()),
+          containingClass_(containingClass),
+          containingSignature_(containingSignature)
     {
     }
 
     const CapturedVarsMap &CapturedVars() const
     {
-        return captured_vars_;
+        return capturedVars_;
     }
 
     CapturedVarsMap &CapturedVars()
     {
-        return captured_vars_;
+        return capturedVars_;
     }
 
     const CheckerStatus &Status() const
@@ -89,12 +89,12 @@ public:
 
     ETSObjectType *ContainingClass() const
     {
-        return containing_class_;
+        return containingClass_;
     }
 
     Signature *ContainingSignature() const
     {
-        return containing_signature_;
+        return containingSignature_;
     }
 
     CheckerStatus &Status()
@@ -102,19 +102,19 @@ public:
         return status_;
     }
 
-    void SetContainingSignature(Signature *containing_signature)
+    void SetContainingSignature(Signature *containingSignature)
     {
-        containing_signature_ = containing_signature;
+        containingSignature_ = containingSignature;
     }
 
-    void SetContainingClass(ETSObjectType *containing_class)
+    void SetContainingClass(ETSObjectType *containingClass)
     {
-        containing_class_ = containing_class;
+        containingClass_ = containingClass;
     }
 
     void AddCapturedVar(varbinder::Variable *var, const lexer::SourcePosition &pos)
     {
-        captured_vars_.emplace(var, pos);
+        capturedVars_.emplace(var, pos);
     }
 
     DEFAULT_COPY_SEMANTIC(CheckerContext);
@@ -123,9 +123,9 @@ public:
 
 private:
     CheckerStatus status_;
-    CapturedVarsMap captured_vars_;
-    ETSObjectType *containing_class_ {nullptr};
-    Signature *containing_signature_ {nullptr};
+    CapturedVarsMap capturedVars_;
+    ETSObjectType *containingClass_ {nullptr};
+    Signature *containingSignature_ {nullptr};
 };
 }  // namespace panda::es2panda::checker
 

@@ -48,7 +48,7 @@ class ETSBinder;
 
 class VarBinder {
 public:
-    explicit VarBinder(ArenaAllocator *allocator) : allocator_(allocator), function_scopes_(allocator_->Adapter()) {}
+    explicit VarBinder(ArenaAllocator *allocator) : allocator_(allocator), functionScopes_(allocator_->Adapter()) {}
 
     NO_COPY_SEMANTIC(VarBinder);
     NO_MOVE_SEMANTIC(VarBinder);
@@ -84,26 +84,26 @@ public:
         return program_;
     }
 
-    void SetCompilerContext(compiler::CompilerContext *compiler_context)
+    void SetCompilerContext(compiler::CompilerContext *compilerContext)
     {
-        ASSERT(!compiler_ctx_);
-        compiler_ctx_ = compiler_context;
+        ASSERT(!compilerCtx_);
+        compilerCtx_ = compilerContext;
     }
 
     compiler::CompilerContext *GetCompilerContext() const
     {
-        ASSERT(compiler_ctx_);
-        return compiler_ctx_;
+        ASSERT(compilerCtx_);
+        return compilerCtx_;
     }
 
-    void SetGenStdLib(bool gen_std_lib)
+    void SetGenStdLib(bool genStdLib)
     {
-        gen_std_lib_ = gen_std_lib;
+        genStdLib_ = genStdLib;
     }
 
     bool IsGenStdLib()
     {
-        return gen_std_lib_;
+        return genStdLib_;
     }
 
     Scope *GetScope() const
@@ -111,22 +111,22 @@ public:
         return scope_;
     }
 
-    void ResetTopScope(GlobalScope *top_scope)
+    void ResetTopScope(GlobalScope *topScope)
     {
-        ASSERT(top_scope_ == scope_);
-        top_scope_ = top_scope;
-        var_scope_ = top_scope_;
-        scope_ = top_scope_;
+        ASSERT(topScope_ == scope_);
+        topScope_ = topScope;
+        varScope_ = topScope_;
+        scope_ = topScope_;
     }
 
     GlobalScope *TopScope() const
     {
-        return top_scope_;
+        return topScope_;
     }
 
     VariableScope *VarScope() const
     {
-        return var_scope_;
+        return varScope_;
     }
 
     ETSBinder *AsETSBinder()
@@ -155,12 +155,12 @@ public:
 
     const ArenaVector<FunctionScope *> &Functions() const
     {
-        return function_scopes_;
+        return functionScopes_;
     }
 
     ArenaVector<FunctionScope *> &Functions()
     {
-        return function_scopes_;
+        return functionScopes_;
     }
 
     virtual ScriptExtension Extension() const
@@ -206,7 +206,7 @@ protected:
     static constexpr MandatoryParams<MANDATORY_PARAMS_NUMBER> CTOR_ARROW_MANDATORY_PARAMS = {
         LEXICAL_MANDATORY_PARAM_FUNC, LEXICAL_MANDATORY_PARAM_NEW_TARGET, LEXICAL_MANDATORY_PARAM_THIS};
 
-    void LookUpMandatoryReferences(const FunctionScope *func_scope, bool need_lexical_func_obj);
+    void LookUpMandatoryReferences(const FunctionScope *funcScope, bool needLexicalFuncObj);
     LocalVariable *AddMandatoryParam(const std::string_view &name);
     template <size_t N>
     void AddMandatoryParams(const MandatoryParams<N> &params);
@@ -215,45 +215,45 @@ protected:
     void InstantiateArguments();
     bool InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::AstNode *node);
     void InstantiatePrivateContext(const ir::Identifier *ident) const;
-    void BuildVarDeclarator(ir::VariableDeclarator *var_decl);
-    void BuildVarDeclaratorId(ir::AstNode *child_node);
-    void BuildForUpdateLoop(ir::ForUpdateStatement *for_update_stmt);
-    void BuildForInOfLoop(varbinder::LoopScope *loop_scope, ir::AstNode *left, ir::Expression *right,
+    void BuildVarDeclarator(ir::VariableDeclarator *varDecl);
+    void BuildVarDeclaratorId(ir::AstNode *childNode);
+    void BuildForUpdateLoop(ir::ForUpdateStatement *forUpdateStmt);
+    void BuildForInOfLoop(varbinder::LoopScope *loopScope, ir::AstNode *left, ir::Expression *right,
                           ir::Statement *body);
-    void BuildCatchClause(ir::CatchClause *catch_clause_stmt);
-    void BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *type_alias_decl);
-    void ResolveReference(ir::AstNode *child_node);
+    void BuildCatchClause(ir::CatchClause *catchClauseStmt);
+    void BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl);
+    void ResolveReference(ir::AstNode *childNode);
     void ResolveReferences(const ir::AstNode *parent);
     void VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func);
     void VisitScriptFunction(ir::ScriptFunction *func);
     util::StringView BuildFunctionName(util::StringView name, uint32_t idx);
 
-    void AddCompilableFunctionScope(varbinder::FunctionScope *func_scope);
+    void AddCompilableFunctionScope(varbinder::FunctionScope *funcScope);
 
-    void InitializeClassBinding(ir::ClassDefinition *class_def);
-    void InitializeClassIdent(ir::ClassDefinition *class_def);
+    void InitializeClassBinding(ir::ClassDefinition *classDef);
+    void InitializeClassIdent(ir::ClassDefinition *classDef);
 
     virtual void LookupIdentReference(ir::Identifier *ident);
-    virtual void HandleCustomNodes(ir::AstNode *child_node)
+    virtual void HandleCustomNodes(ir::AstNode *childNode)
     {
-        ResolveReferences(child_node);
+        ResolveReferences(childNode);
     }
-    virtual void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *type_node) {};
-    virtual void BuildClassDefinition(ir::ClassDefinition *class_def);
+    virtual void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *typeNode) {};
+    virtual void BuildClassDefinition(ir::ClassDefinition *classDef);
     virtual void BuildClassProperty(const ir::ClassProperty *prop);
-    virtual bool BuildInternalName(ir::ScriptFunction *script_func);
+    virtual bool BuildInternalName(ir::ScriptFunction *scriptFunc);
     virtual void AddCompilableFunction(ir::ScriptFunction *func);
 
 private:
     parser::Program *program_ {};
     ArenaAllocator *allocator_ {};
-    compiler::CompilerContext *compiler_ctx_ {};
-    GlobalScope *top_scope_ {};
+    compiler::CompilerContext *compilerCtx_ {};
+    GlobalScope *topScope_ {};
     Scope *scope_ {};
-    VariableScope *var_scope_ {};
-    ArenaVector<FunctionScope *> function_scopes_;
-    ResolveBindingOptions binding_options_ {};
-    bool gen_std_lib_ {false};
+    VariableScope *varScope_ {};
+    ArenaVector<FunctionScope *> functionScopes_;
+    ResolveBindingOptions bindingOptions_ {};
+    bool genStdLib_ {false};
 };
 
 template <typename T>
@@ -275,40 +275,40 @@ public:
     ~LexicalScope()
     {
         ASSERT(varbinder_);
-        varbinder_->scope_ = prev_scope_;
-        varbinder_->var_scope_ = prev_var_scope_;
+        varbinder_->scope_ = prevScope_;
+        varbinder_->varScope_ = prevVarScope_;
     }
 
-    [[nodiscard]] static LexicalScope<T> Enter(VarBinder *varbinder, T *scope, bool check_eval = true)
+    [[nodiscard]] static LexicalScope<T> Enter(VarBinder *varbinder, T *scope, bool checkEval = true)
     {
-        LexicalScope<T> lex_scope(scope, varbinder);
-        if (!check_eval || varbinder->Extension() == ScriptExtension::TS) {
-            return lex_scope;
+        LexicalScope<T> lexScope(scope, varbinder);
+        if (!checkEval || varbinder->Extension() == ScriptExtension::TS) {
+            return lexScope;
         }
 
         // NOLINTNEXTLINE(readability-braces-around-statements)
         if constexpr (std::is_same_v<T, FunctionParamScope>) {
-            varbinder->var_scope_ = scope->GetFunctionScope();
-            varbinder->var_scope_->CheckDirectEval(varbinder->compiler_ctx_);
+            varbinder->varScope_ = scope->GetFunctionScope();
+            varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
             // NOLINTNEXTLINE(readability-braces-around-statements,readability-misleading-indentation)
         } else if constexpr (std::is_same_v<T, FunctionScope>) {
-            varbinder->var_scope_ = scope;
-            varbinder->var_scope_->CheckDirectEval(varbinder->compiler_ctx_);
+            varbinder->varScope_ = scope;
+            varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
             // NOLINTNEXTLINE(readability-braces-around-statements,readability-misleading-indentation)
         } else if constexpr (std::is_same_v<T, LoopScope>) {
             if (scope->IsLoopScope()) {
-                varbinder->var_scope_ = scope;
-                varbinder->var_scope_->CheckDirectEval(varbinder->compiler_ctx_);
+                varbinder->varScope_ = scope;
+                varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
             }
             // NOLINTNEXTLINE(readability-braces-around-statements,readability-misleading-indentation)
         } else if constexpr (std::is_same_v<T, LoopDeclarationScope>) {
             if (scope->IsLoopDeclarationScope()) {
-                varbinder->var_scope_ = scope;
-                varbinder->var_scope_->CheckDirectEval(varbinder->compiler_ctx_);
+                varbinder->varScope_ = scope;
+                varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
             }
         }
 
-        return lex_scope;
+        return lexScope;
     }
 
     DEFAULT_MOVE_SEMANTIC(LexicalScope);
@@ -317,15 +317,15 @@ private:
     NO_COPY_SEMANTIC(LexicalScope);
 
     explicit LexicalScope(T *scope, VarBinder *varbinder)
-        : varbinder_(varbinder), scope_(scope), prev_scope_(varbinder->scope_), prev_var_scope_(varbinder->var_scope_)
+        : varbinder_(varbinder), scope_(scope), prevScope_(varbinder->scope_), prevVarScope_(varbinder->varScope_)
     {
         varbinder_->scope_ = scope_;
     }
 
     VarBinder *varbinder_ {};
     T *scope_ {};
-    Scope *prev_scope_ {};
-    VariableScope *prev_var_scope_ {};
+    Scope *prevScope_ {};
+    VariableScope *prevVarScope_ {};
 };
 
 template <size_t N>
@@ -333,7 +333,7 @@ void VarBinder::AddMandatoryParams(const MandatoryParams<N> &params)
 {
     ASSERT(scope_->IsFunctionVariableScope());
 
-    auto scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, scope_->AsFunctionVariableScope()->ParamScope());
+    auto scopeCtx = LexicalScope<FunctionParamScope>::Enter(this, scope_->AsFunctionVariableScope()->ParamScope());
 
     for (auto iter = params.rbegin(); iter != params.rend(); iter++) {
         AddMandatoryParam(*iter);

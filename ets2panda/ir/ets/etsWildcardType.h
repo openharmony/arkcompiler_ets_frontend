@@ -22,16 +22,16 @@ namespace panda::es2panda::ir {
 
 class ETSWildcardType : public TypeNode {
 public:
-    explicit ETSWildcardType(ir::ETSTypeReference *type_reference, ModifierFlags flags)
-        : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags), type_reference_(type_reference)
+    explicit ETSWildcardType(ir::ETSTypeReference *typeReference, ModifierFlags flags)
+        : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags), typeReference_(typeReference)
     {
         ASSERT(flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
-        ASSERT(type_reference != nullptr || flags == ModifierFlags::OUT);
+        ASSERT(typeReference != nullptr || flags == ModifierFlags::OUT);
     }
 
     ir::ETSTypeReference *TypeReference()
     {
-        return type_reference_;
+        return typeReference_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -51,7 +51,7 @@ public:
     }
 
 private:
-    ir::ETSTypeReference *type_reference_ {};
+    ir::ETSTypeReference *typeReference_ {};
 };
 }  // namespace panda::es2panda::ir
 

@@ -68,8 +68,7 @@ public:
     NO_MOVE_SEMANTIC(AnnotatedStatement);
 
 protected:
-    explicit AnnotatedStatement(AstNodeType type, TypeNode *type_annotation)
-        : Annotated<Statement>(type, type_annotation)
+    explicit AnnotatedStatement(AstNodeType type, TypeNode *typeAnnotation) : Annotated<Statement>(type, typeAnnotation)
     {
     }
 

@@ -24,7 +24,7 @@ namespace panda::es2panda::checker {
 
 util::StringView Signature::InternalName() const
 {
-    return internal_name_.Empty() ? func_->Scope()->InternalName() : internal_name_;
+    return internalName_.Empty() ? func_->Scope()->InternalName() : internalName_;
 }
 
 Signature *Signature::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -34,98 +34,97 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     }
     auto *checker = relation->GetChecker()->AsETSChecker();
     auto *allocator = checker->Allocator();
-    bool any_change = false;
-    SignatureInfo *new_sig_info = allocator->New<SignatureInfo>(allocator);
-    const Substitution *new_substitution = substitution;
+    bool anyChange = false;
+    SignatureInfo *newSigInfo = allocator->New<SignatureInfo>(allocator);
+    const Substitution *newSubstitution = substitution;
 
-    if (!signature_info_->type_params.empty()) {
-        auto *new_substitution_seed = checker->CopySubstitution(substitution);
-        for (auto *tparam : signature_info_->type_params) {
-            auto *new_tparam = tparam->Substitute(relation, new_substitution_seed);
-            new_sig_info->type_params.push_back(new_tparam);
-            any_change |= (new_tparam != tparam);
-            if (new_tparam != tparam && tparam->IsETSTypeParameter()) {
-                new_substitution_seed->insert({tparam->AsETSTypeParameter(), new_tparam});
+    if (!signatureInfo_->typeParams.empty()) {
+        auto *newSubstitutionSeed = checker->CopySubstitution(substitution);
+        for (auto *tparam : signatureInfo_->typeParams) {
+            auto *newTparam = tparam->Substitute(relation, newSubstitutionSeed);
+            newSigInfo->typeParams.push_back(newTparam);
+            anyChange |= (newTparam != tparam);
+            if (newTparam != tparam && tparam->IsETSTypeParameter()) {
+                newSubstitutionSeed->insert({tparam->AsETSTypeParameter(), newTparam});
             }
         }
-        new_substitution = new_substitution_seed;
+        newSubstitution = newSubstitutionSeed;
     }
-    new_sig_info->min_arg_count = signature_info_->min_arg_count;
+    newSigInfo->minArgCount = signatureInfo_->minArgCount;
 
-    for (auto *param : signature_info_->params) {
-        auto *new_param = param;
-        auto *new_param_type = param->TsType()->Substitute(relation, new_substitution);
-        if (new_param_type != param->TsType()) {
-            any_change = true;
-            new_param = param->Copy(allocator, param->Declaration());
-            new_param->SetTsType(new_param_type);
+    for (auto *param : signatureInfo_->params) {
+        auto *newParam = param;
+        auto *newParamType = param->TsType()->Substitute(relation, newSubstitution);
+        if (newParamType != param->TsType()) {
+            anyChange = true;
+            newParam = param->Copy(allocator, param->Declaration());
+            newParam->SetTsType(newParamType);
         }
-        new_sig_info->params.push_back(new_param);
+        newSigInfo->params.push_back(newParam);
     }
 
-    if (signature_info_->rest_var != nullptr) {
-        auto *new_rest_type = signature_info_->rest_var->TsType()->Substitute(relation, new_substitution);
-        if (new_rest_type != signature_info_->rest_var->TsType()) {
-            any_change = true;
-            new_sig_info->rest_var =
-                signature_info_->rest_var->Copy(allocator, signature_info_->rest_var->Declaration());
-            new_sig_info->rest_var->SetTsType(new_rest_type);
+    if (signatureInfo_->restVar != nullptr) {
+        auto *newRestType = signatureInfo_->restVar->TsType()->Substitute(relation, newSubstitution);
+        if (newRestType != signatureInfo_->restVar->TsType()) {
+            anyChange = true;
+            newSigInfo->restVar = signatureInfo_->restVar->Copy(allocator, signatureInfo_->restVar->Declaration());
+            newSigInfo->restVar->SetTsType(newRestType);
         }
     }
 
-    if (!any_change) {
-        new_sig_info = signature_info_;
+    if (!anyChange) {
+        newSigInfo = signatureInfo_;
     }
 
-    auto *new_return_type = return_type_->Substitute(relation, new_substitution);
-    if (new_return_type != return_type_) {
-        any_change = true;
+    auto *newReturnType = returnType_->Substitute(relation, newSubstitution);
+    if (newReturnType != returnType_) {
+        anyChange = true;
     }
-    if (!any_change) {
+    if (!anyChange) {
         return this;
     }
-    auto *result = allocator->New<Signature>(new_sig_info, new_return_type);
+    auto *result = allocator->New<Signature>(newSigInfo, newReturnType);
     result->func_ = func_;
     result->flags_ = flags_;
-    result->internal_name_ = internal_name_;
-    result->owner_obj_ = owner_obj_;
-    result->owner_var_ = owner_var_;
+    result->internalName_ = internalName_;
+    result->ownerObj_ = ownerObj_;
+    result->ownerVar_ = ownerVar_;
 
     return result;
 }
 
-Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    SignatureInfo *copied_info = allocator->New<SignatureInfo>(signature_info_, allocator);
+    SignatureInfo *copiedInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
 
-    for (size_t idx = 0; idx < signature_info_->params.size(); idx++) {
-        auto *const param_type = signature_info_->params[idx]->TsType();
-        if (param_type->HasTypeFlag(TypeFlag::GENERIC) && param_type->IsETSObjectType()) {
-            copied_info->params[idx]->SetTsType(param_type->Instantiate(allocator, relation, global_types));
-            auto original_type_args = param_type->AsETSObjectType()->GetOriginalBaseType()->TypeArguments();
-            copied_info->params[idx]->TsType()->AsETSObjectType()->SetTypeArguments(std::move(original_type_args));
+    for (size_t idx = 0; idx < signatureInfo_->params.size(); idx++) {
+        auto *const paramType = signatureInfo_->params[idx]->TsType();
+        if (paramType->HasTypeFlag(TypeFlag::GENERIC) && paramType->IsETSObjectType()) {
+            copiedInfo->params[idx]->SetTsType(paramType->Instantiate(allocator, relation, globalTypes));
+            auto originalTypeArgs = paramType->AsETSObjectType()->GetOriginalBaseType()->TypeArguments();
+            copiedInfo->params[idx]->TsType()->AsETSObjectType()->SetTypeArguments(std::move(originalTypeArgs));
         } else {
-            copied_info->params[idx]->SetTsType(
-                ETSChecker::TryToInstantiate(param_type, allocator, relation, global_types));
+            copiedInfo->params[idx]->SetTsType(
+                ETSChecker::TryToInstantiate(paramType, allocator, relation, globalTypes));
         }
     }
 
-    auto *const copied_signature = allocator->New<Signature>(copied_info, return_type_, func_);
-    copied_signature->flags_ = flags_;
-    copied_signature->internal_name_ = internal_name_;
-    copied_signature->owner_obj_ = owner_obj_;
-    copied_signature->owner_var_ = owner_var_;
+    auto *const copiedSignature = allocator->New<Signature>(copiedInfo, returnType_, func_);
+    copiedSignature->flags_ = flags_;
+    copiedSignature->internalName_ = internalName_;
+    copiedSignature->ownerObj_ = ownerObj_;
+    copiedSignature->ownerVar_ = ownerVar_;
 
-    return copied_signature;
+    return copiedSignature;
 }
 
-void Signature::ToString(std::stringstream &ss, const varbinder::Variable *variable, bool print_as_method) const
+void Signature::ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod) const
 {
-    if (!signature_info_->type_params.empty()) {
+    if (!signatureInfo_->typeParams.empty()) {
         ss << "<";
-        for (auto it = signature_info_->type_params.begin(); it != signature_info_->type_params.end(); ++it) {
+        for (auto it = signatureInfo_->typeParams.begin(); it != signatureInfo_->typeParams.end(); ++it) {
             (*it)->ToString(ss);
-            if (std::next(it) != signature_info_->type_params.end()) {
+            if (std::next(it) != signatureInfo_->typeParams.end()) {
                 ss << ", ";
             }
         }
@@ -134,7 +133,7 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
 
     ss << "(";
 
-    for (auto it = signature_info_->params.begin(); it != signature_info_->params.end(); it++) {
+    for (auto it = signatureInfo_->params.begin(); it != signatureInfo_->params.end(); it++) {
         ss << (*it)->Name();
 
         if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
@@ -145,42 +144,42 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
 
         (*it)->TsType()->ToString(ss);
 
-        if (std::next(it) != signature_info_->params.end()) {
+        if (std::next(it) != signatureInfo_->params.end()) {
             ss << ", ";
         }
     }
 
-    if (signature_info_->rest_var != nullptr) {
-        if (!signature_info_->params.empty()) {
+    if (signatureInfo_->restVar != nullptr) {
+        if (!signatureInfo_->params.empty()) {
             ss << ", ";
         }
 
         ss << "...";
-        ss << signature_info_->rest_var->Name();
+        ss << signatureInfo_->restVar->Name();
         ss << ": ";
-        signature_info_->rest_var->TsType()->ToString(ss);
+        signatureInfo_->restVar->TsType()->ToString(ss);
         ss << "[]";
     }
 
     ss << ")";
 
-    if (print_as_method || (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::METHOD))) {
+    if (printAsMethod || (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::METHOD))) {
         ss << ": ";
     } else {
         ss << " => ";
     }
 
-    return_type_->ToString(ss);
+    returnType_->ToString(ss);
 }
 
 namespace {
-std::size_t GetToCheckParamCount(Signature *signature, bool is_ets)
+std::size_t GetToCheckParamCount(Signature *signature, bool isEts)
 {
-    auto param_number = static_cast<ssize_t>(signature->Params().size());
-    if (!is_ets || signature->Function() == nullptr) {
-        return param_number;
+    auto paramNumber = static_cast<ssize_t>(signature->Params().size());
+    if (!isEts || signature->Function() == nullptr) {
+        return paramNumber;
     }
-    for (auto i = param_number - 1; i >= 0; i--) {
+    for (auto i = paramNumber - 1; i >= 0; i--) {
         if (!signature->Function()->Params()[i]->AsETSParameterExpression()->IsDefault()) {
             return static_cast<std::size_t>(i + 1);
         }
@@ -199,15 +198,14 @@ bool Signature::IdenticalParameter(TypeRelation *relation, Type *type1, Type *ty
 
 void Signature::Identical(TypeRelation *relation, Signature *other)
 {
-    bool is_ets = relation->GetChecker()->IsETSChecker();
-    auto const this_to_check_parameters_number = GetToCheckParamCount(this, is_ets);
-    auto const other_to_check_parameters_number = GetToCheckParamCount(other, is_ets);
-    if ((this_to_check_parameters_number != other_to_check_parameters_number ||
-         this->MinArgCount() != other->MinArgCount()) &&
+    bool isEts = relation->GetChecker()->IsETSChecker();
+    auto const thisToCheckParametersNumber = GetToCheckParamCount(this, isEts);
+    auto const otherToCheckParametersNumber = GetToCheckParamCount(other, isEts);
+    if ((thisToCheckParametersNumber != otherToCheckParametersNumber || this->MinArgCount() != other->MinArgCount()) &&
         this->RestVar() == nullptr && other->RestVar() == nullptr) {
         // skip check for ets cases only when all parameters are mandatory
-        if (!is_ets || (this_to_check_parameters_number == this->Params().size() &&
-                        other_to_check_parameters_number == other->Params().size())) {
+        if (!isEts || (thisToCheckParametersNumber == this->Params().size() &&
+                       otherToCheckParametersNumber == other->Params().size())) {
             relation->Result(false);
             return;
         }
@@ -240,13 +238,12 @@ void Signature::Identical(TypeRelation *relation, Signature *other)
            "to_check_parameters_number" is the number of parameters that need to be checked to ensure identical.
            "parameters_number" is the number of parameters that can be checked in Signature::params().
         */
-        auto const to_check_parameters_number =
-            std::max(this_to_check_parameters_number, other_to_check_parameters_number);
-        auto const parameters_number =
-            std::min({this->Params().size(), other->Params().size(), to_check_parameters_number});
+        auto const toCheckParametersNumber = std::max(thisToCheckParametersNumber, otherToCheckParametersNumber);
+        auto const parametersNumber =
+            std::min({this->Params().size(), other->Params().size(), toCheckParametersNumber});
 
         std::size_t i = 0U;
-        for (; i < parameters_number; ++i) {
+        for (; i < parametersNumber; ++i) {
             if (!IdenticalParameter(relation, this->Params()[i]->TsType(), other->Params()[i]->TsType())) {
                 return;
             }
@@ -260,21 +257,21 @@ void Signature::Identical(TypeRelation *relation, Signature *other)
             3. == this->Params().size(), must be < other_to_check_parameters_number as described in 2, and
             we need to check the remaining mandatory parameters of "other" against the RestVar of "this".
         */
-        if (i == to_check_parameters_number) {
+        if (i == toCheckParametersNumber) {
             return;
         }
-        bool is_other_mandatory_params_matched = i < this_to_check_parameters_number;
+        bool isOtherMandatoryParamsMatched = i < thisToCheckParametersNumber;
         ArenaVector<varbinder::LocalVariable *> const &parameters =
-            is_other_mandatory_params_matched ? this->Params() : other->Params();
-        varbinder::LocalVariable const *rest_parameter =
-            is_other_mandatory_params_matched ? other->RestVar() : this->RestVar();
-        if (rest_parameter == nullptr) {
+            isOtherMandatoryParamsMatched ? this->Params() : other->Params();
+        varbinder::LocalVariable const *restParameter =
+            isOtherMandatoryParamsMatched ? other->RestVar() : this->RestVar();
+        if (restParameter == nullptr) {
             relation->Result(false);
             return;
         }
-        auto *const rest_parameter_type = rest_parameter->TsType()->AsETSArrayType()->ElementType();
-        for (; i < to_check_parameters_number; ++i) {
-            if (!IdenticalParameter(relation, parameters[i]->TsType(), rest_parameter_type)) {
+        auto *const restParameterType = restParameter->TsType()->AsETSArrayType()->ElementType();
+        for (; i < toCheckParametersNumber; ++i) {
+            if (!IdenticalParameter(relation, parameters[i]->TsType(), restParameterType)) {
                 return;
             }
         }
@@ -291,37 +288,37 @@ bool Signature::CheckFunctionalInterfaces(TypeRelation *relation, Type *source, 
         return false;
     }
 
-    auto source_invoke_func = source->AsETSObjectType()
-                                  ->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD)
-                                  ->TsType()
-                                  ->AsETSFunctionType()
-                                  ->CallSignatures()[0];
+    auto sourceInvokeFunc = source->AsETSObjectType()
+                                ->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD)
+                                ->TsType()
+                                ->AsETSFunctionType()
+                                ->CallSignatures()[0];
 
-    auto target_invoke_func = target->AsETSObjectType()
-                                  ->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD)
-                                  ->TsType()
-                                  ->AsETSFunctionType()
-                                  ->CallSignatures()[0];
+    auto targetInvokeFunc = target->AsETSObjectType()
+                                ->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD)
+                                ->TsType()
+                                ->AsETSFunctionType()
+                                ->CallSignatures()[0];
 
-    relation->IsIdenticalTo(source_invoke_func, target_invoke_func);
+    relation->IsIdenticalTo(sourceInvokeFunc, targetInvokeFunc);
     return true;
 }
 
 void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
 {
-    if (signature_info_->rest_var == nullptr &&
-        (source->Params().size() - source->OptionalArgCount()) > signature_info_->params.size()) {
+    if (signatureInfo_->restVar == nullptr &&
+        (source->Params().size() - source->OptionalArgCount()) > signatureInfo_->params.size()) {
         relation->Result(false);
         return;
     }
 
     for (size_t i = 0; i < source->Params().size(); i++) {
-        if (signature_info_->rest_var == nullptr && i >= Params().size()) {
+        if (signatureInfo_->restVar == nullptr && i >= Params().size()) {
             break;
         }
 
-        if (signature_info_->rest_var != nullptr) {
-            relation->IsAssignableTo(source->Params()[i]->TsType(), signature_info_->rest_var->TsType());
+        if (signatureInfo_->restVar != nullptr) {
+            relation->IsAssignableTo(source->Params()[i]->TsType(), signatureInfo_->restVar->TsType());
 
             if (!relation->IsTrue()) {
                 return;
@@ -337,10 +334,10 @@ void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
         }
     }
 
-    relation->IsAssignableTo(source->ReturnType(), return_type_);
+    relation->IsAssignableTo(source->ReturnType(), returnType_);
 
-    if (relation->IsTrue() && signature_info_->rest_var != nullptr && source->RestVar() != nullptr) {
-        relation->IsAssignableTo(source->RestVar()->TsType(), signature_info_->rest_var->TsType());
+    if (relation->IsTrue() && signatureInfo_->restVar != nullptr && source->RestVar() != nullptr) {
+        relation->IsAssignableTo(source->RestVar()->TsType(), signatureInfo_->restVar->TsType());
     }
 }
 }  // namespace panda::es2panda::checker

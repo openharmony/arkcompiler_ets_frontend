@@ -22,7 +22,7 @@
 namespace panda::es2panda::compiler {
 void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
-    pg_->AsyncFunctionResolve(node, func_obj_);
+    pg_->AsyncFunctionResolve(node, funcObj_);
     pg_->EmitReturn(node);
 }
 
@@ -35,18 +35,18 @@ void AsyncFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 void AsyncFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
 {
     pg_->AsyncFunctionEnter(node);
-    pg_->StoreAccumulator(node, func_obj_);
-    pg_->SetLabel(node, catch_table_->LabelSet().TryBegin());
+    pg_->StoreAccumulator(node, funcObj_);
+    pg_->SetLabel(node, catchTable_->LabelSet().TryBegin());
 }
 
 void AsyncFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
 {
-    const auto &label_set = catch_table_->LabelSet();
+    const auto &labelSet = catchTable_->LabelSet();
 
-    pg_->SetLabel(node, label_set.TryEnd());
-    pg_->SetLabel(node, label_set.CatchBegin());
-    pg_->AsyncFunctionReject(node, func_obj_);
+    pg_->SetLabel(node, labelSet.TryEnd());
+    pg_->SetLabel(node, labelSet.CatchBegin());
+    pg_->AsyncFunctionReject(node, funcObj_);
     pg_->EmitReturn(node);
-    pg_->SetLabel(node, label_set.CatchEnd());
+    pg_->SetLabel(node, labelSet.CatchEnd());
 }
 }  // namespace panda::es2panda::compiler

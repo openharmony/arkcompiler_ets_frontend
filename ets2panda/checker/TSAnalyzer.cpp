@@ -39,12 +39,12 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::PrefixAssertionExpression 
 checker::Type *TSAnalyzer::Check(ir::CatchClause *st) const
 {
     TSChecker *checker = GetTSChecker();
-    ir::Expression *type_annotation = st->Param()->AsAnnotatedExpression()->TypeAnnotation();
+    ir::Expression *typeAnnotation = st->Param()->AsAnnotatedExpression()->TypeAnnotation();
 
-    if (type_annotation != nullptr) {
-        checker::Type *catch_param_type = type_annotation->Check(checker);
+    if (typeAnnotation != nullptr) {
+        checker::Type *catchParamType = typeAnnotation->Check(checker);
 
-        if (!catch_param_type->HasTypeFlag(checker::TypeFlag::ANY_OR_UNKNOWN)) {
+        if (!catchParamType->HasTypeFlag(checker::TypeFlag::ANY_OR_UNKNOWN)) {
             checker->ThrowTypeError("Catch clause variable type annotation must be 'any' or 'unknown' if specified",
                                     st->Start());
         }
@@ -116,18 +116,18 @@ checker::Type *TSAnalyzer::Check(ir::TSIndexSignature *node) const
         return node->TsType();
     }
 
-    const util::StringView &param_name = node->Param()->AsIdentifier()->Name();
-    node->type_annotation_->Check(checker);
-    checker::Type *index_type = node->type_annotation_->GetType(checker);
+    const util::StringView &paramName = node->Param()->AsIdentifier()->Name();
+    node->typeAnnotation_->Check(checker);
+    checker::Type *indexType = node->typeAnnotation_->GetType(checker);
     checker::IndexInfo *info =
-        checker->Allocator()->New<checker::IndexInfo>(index_type, param_name, node->Readonly(), node->Start());
+        checker->Allocator()->New<checker::IndexInfo>(indexType, paramName, node->Readonly(), node->Start());
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
     checker::ObjectType *placeholder = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
 
     if (node->Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
-        placeholder->Desc()->number_index_info = info;
+        placeholder->Desc()->numberIndexInfo = info;
     } else {
-        placeholder->Desc()->string_index_info = info;
+        placeholder->Desc()->stringIndexInfo = info;
     }
 
     node->SetTsType(placeholder);
@@ -141,23 +141,23 @@ checker::Type *TSAnalyzer::Check(ir::TSMethodSignature *node) const
         checker->CheckComputedPropertyName(node->Key());
     }
 
-    checker::ScopeContext scope_ctx(checker, node->Scope());
+    checker::ScopeContext scopeCtx(checker, node->Scope());
 
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signatureInfo);
 
-    auto *call_signature = checker->Allocator()->New<checker::Signature>(signature_info, checker->GlobalAnyType());
-    node->Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(call_signature));
+    auto *callSignature = checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalAnyType());
+    node->Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(callSignature));
 
-    auto return_type = node->ReturnTypeAnnotation();
-    if (return_type == nullptr) {
+    auto returnType = node->ReturnTypeAnnotation();
+    if (returnType == nullptr) {
         checker->ThrowTypeError(
             "Method signature, which lacks return-type annotation, implicitly has an 'any' return type.",
             node->Start());
     }
 
-    return_type->Check(checker);
-    call_signature->SetReturnType(return_type->GetType(checker));
+    returnType->Check(checker);
+    callSignature->SetReturnType(returnType->GetType(checker));
 
     return nullptr;
 }
@@ -189,15 +189,15 @@ checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
         return node->TsType();
     }
 
-    checker::ScopeContext scope_ctx(checker, node->Scope());
+    checker::ScopeContext scopeCtx(checker, node->Scope());
 
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signatureInfo);
 
-    bool is_call_signature = (node->Kind() == ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE);
+    bool isCallSignature = (node->Kind() == ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE);
 
     if (node->ReturnTypeAnnotation() == nullptr) {
-        if (is_call_signature) {
+        if (isCallSignature) {
             checker->ThrowTypeError(
                 "Call signature, which lacks return-type annotation, implicitly has an 'any' return type.",
                 node->Start());
@@ -209,20 +209,20 @@ checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
     }
 
     node->ReturnTypeAnnotation()->Check(checker);
-    checker::Type *return_type = node->ReturnTypeAnnotation()->GetType(checker);
+    checker::Type *returnType = node->ReturnTypeAnnotation()->GetType(checker);
 
-    auto *signature = checker->Allocator()->New<checker::Signature>(signature_info, return_type);
+    auto *signature = checker->Allocator()->New<checker::Signature>(signatureInfo, returnType);
 
-    checker::Type *placeholder_obj = nullptr;
+    checker::Type *placeholderObj = nullptr;
 
-    if (is_call_signature) {
-        placeholder_obj = checker->CreateObjectTypeWithCallSignature(signature);
+    if (isCallSignature) {
+        placeholderObj = checker->CreateObjectTypeWithCallSignature(signature);
     } else {
-        placeholder_obj = checker->CreateObjectTypeWithConstructSignature(signature);
+        placeholderObj = checker->CreateObjectTypeWithConstructSignature(signature);
     }
 
-    node->SetTsType(placeholder_obj);
-    return placeholder_obj;
+    node->SetTsType(placeholderObj);
+    return placeholderObj;
 }
 // from ets folder
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSScript *expr) const
@@ -313,39 +313,39 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) con
 }
 // compile methods for EXPRESSIONS in alphabetical order
 
-static void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spread_type,
-                                 ArenaVector<checker::Type *> &element_types, const lexer::SourcePosition &loc)
+static void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spreadType,
+                                 ArenaVector<checker::Type *> &elementTypes, const lexer::SourcePosition &loc)
 {
-    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    bool inConstContext = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
 
-    if (spread_type->IsObjectType() && spread_type->AsObjectType()->IsTupleType()) {
-        ArenaVector<checker::Type *> tuple_element_types(checker->Allocator()->Adapter());
-        checker::TupleType *spread_tuple = spread_type->AsObjectType()->AsTupleType();
+    if (spreadType->IsObjectType() && spreadType->AsObjectType()->IsTupleType()) {
+        ArenaVector<checker::Type *> tupleElementTypes(checker->Allocator()->Adapter());
+        checker::TupleType *spreadTuple = spreadType->AsObjectType()->AsTupleType();
 
-        for (auto *it : spread_tuple->Properties()) {
-            if (in_const_context) {
-                element_types.push_back(it->TsType());
+        for (auto *it : spreadTuple->Properties()) {
+            if (inConstContext) {
+                elementTypes.push_back(it->TsType());
                 continue;
             }
 
-            tuple_element_types.push_back(it->TsType());
+            tupleElementTypes.push_back(it->TsType());
         }
 
-        if (in_const_context) {
+        if (inConstContext) {
             return;
         }
 
-        element_types.push_back(checker->CreateUnionType(std::move(tuple_element_types)));
+        elementTypes.push_back(checker->CreateUnionType(std::move(tupleElementTypes)));
         return;
     }
 
-    if (spread_type->IsUnionType()) {
-        ArenaVector<checker::Type *> spread_types(checker->Allocator()->Adapter());
-        bool throw_error = false;
+    if (spreadType->IsUnionType()) {
+        ArenaVector<checker::Type *> spreadTypes(checker->Allocator()->Adapter());
+        bool throwError = false;
 
-        for (auto *type : spread_type->AsUnionType()->ConstituentTypes()) {
+        for (auto *type : spreadType->AsUnionType()->ConstituentTypes()) {
             if (type->IsArrayType()) {
-                spread_types.push_back(type->AsArrayType()->ElementType());
+                spreadTypes.push_back(type->AsArrayType()->ElementType());
                 continue;
             }
 
@@ -353,112 +353,112 @@ static void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spr
                 checker::TupleType *tuple = type->AsObjectType()->AsTupleType();
 
                 for (auto *it : tuple->Properties()) {
-                    spread_types.push_back(it->TsType());
+                    spreadTypes.push_back(it->TsType());
                 }
 
                 continue;
             }
 
-            throw_error = true;
+            throwError = true;
             break;
         }
 
-        if (!throw_error) {
-            element_types.push_back(checker->CreateUnionType(std::move(spread_types)));
+        if (!throwError) {
+            elementTypes.push_back(checker->CreateUnionType(std::move(spreadTypes)));
             return;
         }
     }
 
     checker->ThrowTypeError(
-        {"Type '", spread_type, "' must have a '[Symbol.iterator]()' method that returns an iterator."}, loc);
+        {"Type '", spreadType, "' must have a '[Symbol.iterator]()' method that returns an iterator."}, loc);
 }
 
 checker::Type *TSAnalyzer::Check(ir::ArrayExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    ArenaVector<checker::Type *> element_types(checker->Allocator()->Adapter());
-    ArenaVector<checker::ElementFlags> element_flags(checker->Allocator()->Adapter());
-    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
-    bool create_tuple = checker->HasStatus(checker::CheckerStatus::FORCE_TUPLE);
+    ArenaVector<checker::Type *> elementTypes(checker->Allocator()->Adapter());
+    ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
+    bool inConstContext = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    bool createTuple = checker->HasStatus(checker::CheckerStatus::FORCE_TUPLE);
 
     for (auto *it : expr->Elements()) {
         if (it->IsSpreadElement()) {
-            checker::Type *spread_type = it->AsSpreadElement()->Argument()->Check(checker);
+            checker::Type *spreadType = it->AsSpreadElement()->Argument()->Check(checker);
 
-            if (spread_type->IsArrayType()) {
-                element_types.push_back(in_const_context ? spread_type : spread_type->AsArrayType()->ElementType());
-                element_flags.push_back(checker::ElementFlags::VARIADIC);
+            if (spreadType->IsArrayType()) {
+                elementTypes.push_back(inConstContext ? spreadType : spreadType->AsArrayType()->ElementType());
+                elementFlags.push_back(checker::ElementFlags::VARIADIC);
                 continue;
             }
 
-            GetSpreadElementType(checker, spread_type, element_types, it->Start());
-            element_flags.push_back(checker::ElementFlags::REST);
+            GetSpreadElementType(checker, spreadType, elementTypes, it->Start());
+            elementFlags.push_back(checker::ElementFlags::REST);
             continue;
         }
 
-        checker::Type *element_type = it->Check(checker);
+        checker::Type *elementType = it->Check(checker);
 
-        if (!in_const_context) {
-            element_type = checker->GetBaseTypeOfLiteralType(element_type);
+        if (!inConstContext) {
+            elementType = checker->GetBaseTypeOfLiteralType(elementType);
         }
 
-        element_flags.push_back(checker::ElementFlags::REQUIRED);
-        element_types.push_back(element_type);
+        elementFlags.push_back(checker::ElementFlags::REQUIRED);
+        elementTypes.push_back(elementType);
     }
 
-    if (in_const_context || create_tuple) {
+    if (inConstContext || createTuple) {
         checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
         uint32_t index = 0;
 
-        for (auto it = element_types.begin(); it != element_types.end(); it++, index++) {
-            util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index);
-            varbinder::LocalVariable *tuple_member = varbinder::Scope::CreateVar(
-                checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, nullptr);
+        for (auto it = elementTypes.begin(); it != elementTypes.end(); it++, index++) {
+            util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
+            varbinder::LocalVariable *tupleMember = varbinder::Scope::CreateVar(
+                checker->Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY, nullptr);
 
-            if (in_const_context) {
-                tuple_member->AddFlag(varbinder::VariableFlags::READONLY);
+            if (inConstContext) {
+                tupleMember->AddFlag(varbinder::VariableFlags::READONLY);
             }
 
-            tuple_member->SetTsType(*it);
-            desc->properties.push_back(tuple_member);
+            tupleMember->SetTsType(*it);
+            desc->properties.push_back(tupleMember);
         }
 
-        return checker->CreateTupleType(desc, std::move(element_flags), checker::ElementFlags::REQUIRED, index, index,
-                                        in_const_context);
+        return checker->CreateTupleType(desc, std::move(elementFlags), checker::ElementFlags::REQUIRED, index, index,
+                                        inConstContext);
     }
 
-    checker::Type *array_element_type = nullptr;
-    if (element_types.empty()) {
-        array_element_type = checker->GlobalAnyType();
+    checker::Type *arrayElementType = nullptr;
+    if (elementTypes.empty()) {
+        arrayElementType = checker->GlobalAnyType();
     } else {
-        array_element_type = checker->CreateUnionType(std::move(element_types));
+        arrayElementType = checker->CreateUnionType(std::move(elementTypes));
     }
 
-    return checker->Allocator()->New<checker::ArrayType>(array_element_type);
+    return checker->Allocator()->New<checker::ArrayType>(arrayElementType);
 }
 
 checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    varbinder::Variable *func_var = nullptr;
+    varbinder::Variable *funcVar = nullptr;
 
     if (expr->Function()->Parent()->Parent() != nullptr &&
         expr->Function()->Parent()->Parent()->IsVariableDeclarator() &&
         expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
-        func_var = expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
+        funcVar = expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     }
 
-    checker::ScopeContext scope_ctx(checker, expr->Function()->Scope());
+    checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(expr->Function()->Params(), signature_info);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(expr->Function()->Params(), signatureInfo);
 
-    auto *signature = checker->Allocator()->New<checker::Signature>(
-        signature_info, checker->GlobalResolvingReturnType(), expr->Function());
-    checker::Type *func_type = checker->CreateFunctionTypeWithSignature(signature);
+    auto *signature = checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalResolvingReturnType(),
+                                                                    expr->Function());
+    checker::Type *funcType = checker->CreateFunctionTypeWithSignature(signature);
 
-    if (func_var != nullptr && func_var->TsType() == nullptr) {
-        func_var->SetTsType(func_type);
+    if (funcVar != nullptr && funcVar->TsType() == nullptr) {
+        funcVar->SetTsType(funcType);
     }
 
     signature->SetReturnType(checker->HandleFunctionReturn(expr->Function()));
@@ -467,26 +467,26 @@ checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
         expr->Function()->Body()->Check(checker);
     }
 
-    return func_type;
+    return funcType;
 }
 
 checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
     if (expr->Left()->IsArrayPattern()) {
-        auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-        auto destructuring_context =
+        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        auto destructuringContext =
             checker::ArrayDestructuringContext(checker, expr->Left(), true, true, nullptr, expr->Right());
-        destructuring_context.Start();
-        return destructuring_context.InferredType();
+        destructuringContext.Start();
+        return destructuringContext.InferredType();
     }
 
     if (expr->Left()->IsObjectPattern()) {
-        auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-        auto destructuring_context =
+        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        auto destructuringContext =
             checker::ObjectDestructuringContext(checker, expr->Left(), true, true, nullptr, expr->Right());
-        destructuring_context.Start();
-        return destructuring_context.InferredType();
+        destructuringContext.Start();
+        return destructuringContext.InferredType();
     }
 
     if (expr->Left()->IsIdentifier() && expr->Left()->AsIdentifier()->Variable() != nullptr &&
@@ -496,18 +496,18 @@ checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
             expr->Left()->Start());
     }
 
-    auto *left_type = expr->Left()->Check(checker);
+    auto *leftType = expr->Left()->Check(checker);
 
-    if (left_type->HasTypeFlag(checker::TypeFlag::READONLY)) {
+    if (leftType->HasTypeFlag(checker::TypeFlag::READONLY)) {
         checker->ThrowTypeError("Cannot assign to this property because it is readonly.", expr->Left()->Start());
     }
 
     if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        checker->ElaborateElementwise(left_type, expr->Right(), expr->Left()->Start());
+        checker->ElaborateElementwise(leftType, expr->Right(), expr->Left()->Start());
         return checker->CheckTypeCached(expr->Right());
     }
 
-    auto *right_type = expr->Right()->Check(checker);
+    auto *rightType = expr->Right()->Check(checker);
 
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
@@ -521,16 +521,16 @@ checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            return checker->CheckBinaryOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+            return checker->CheckBinaryOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
                                                 expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            return checker->CheckPlusOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+            return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
                                               expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), left_type, right_type);
-            return right_type;
+            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
+            return rightType;
         }
         default: {
             UNREACHABLE();
@@ -551,8 +551,8 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AwaitExpression *expr) con
 checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    auto *left_type = expr->Left()->Check(checker);
-    auto *right_type = expr->Right()->Check(checker);
+    auto *leftType = expr->Left()->Check(checker);
+    auto *rightType = expr->Right()->Check(checker);
 
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY:
@@ -566,48 +566,48 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
-            return checker->CheckBinaryOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+            return checker->CheckBinaryOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
                                                 expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_PLUS: {
-            return checker->CheckPlusOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+            return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
                                               expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            return checker->CheckCompareOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+            return checker->CheckCompareOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
                                                  expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            if (checker->IsTypeEqualityComparableTo(left_type, right_type) ||
-                checker->IsTypeEqualityComparableTo(right_type, left_type)) {
+            if (checker->IsTypeEqualityComparableTo(leftType, rightType) ||
+                checker->IsTypeEqualityComparableTo(rightType, leftType)) {
                 return checker->GlobalBooleanType();
             }
 
-            checker->ThrowBinaryLikeError(expr->OperatorType(), left_type, right_type, expr->Start());
+            checker->ThrowBinaryLikeError(expr->OperatorType(), leftType, rightType, expr->Start());
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {
-            return checker->CheckInstanceofExpression(left_type, right_type, expr->Right(), expr);
+            return checker->CheckInstanceofExpression(leftType, rightType, expr->Right(), expr);
         }
         case lexer::TokenType::KEYW_IN: {
-            return checker->CheckInExpression(left_type, right_type, expr->Left(), expr->Right(), expr);
+            return checker->CheckInExpression(leftType, rightType, expr->Left(), expr->Right(), expr);
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            return checker->CheckAndOperator(left_type, right_type, expr->Left());
+            return checker->CheckAndOperator(leftType, rightType, expr->Left());
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            return checker->CheckOrOperator(left_type, right_type, expr->Left());
+            return checker->CheckOrOperator(leftType, rightType, expr->Left());
         }
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
             // NOTE: Csaba Repasi. Implement checker for nullish coalescing
             return checker->GlobalAnyType();
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), left_type, right_type);
-            return right_type;
+            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
+            return rightType;
         }
         default: {
             UNREACHABLE();
@@ -627,12 +627,12 @@ checker::Type *TSAnalyzer::Check(ir::BlockExpression *st) const
 checker::Type *TSAnalyzer::Check(ir::CallExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *callee_type = expr->callee_->Check(checker);
+    checker::Type *calleeType = expr->callee_->Check(checker);
 
     // NOTE: aszilagyi. handle optional chain
-    if (callee_type->IsObjectType()) {
-        checker::ObjectType *callee_obj = callee_type->AsObjectType();
-        return checker->ResolveCallOrNewExpression(callee_obj->CallSignatures(), expr->Arguments(), expr->Start());
+    if (calleeType->IsObjectType()) {
+        checker::ObjectType *calleeObj = calleeType->AsObjectType();
+        return checker->ResolveCallOrNewExpression(calleeObj->CallSignatures(), expr->Arguments(), expr->Start());
     }
 
     checker->ThrowTypeError("This expression is not callable.", expr->Start());
@@ -653,15 +653,15 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassExpression *expr) con
 checker::Type *TSAnalyzer::Check(ir::ConditionalExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *test_type = expr->Test()->Check(checker);
+    checker::Type *testType = expr->Test()->Check(checker);
 
-    checker->CheckTruthinessOfType(test_type, expr->Test()->Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(expr->Test(), test_type, expr->consequent_);
+    checker->CheckTruthinessOfType(testType, expr->Test()->Start());
+    checker->CheckTestingKnownTruthyCallableOrAwaitableType(expr->Test(), testType, expr->consequent_);
 
-    checker::Type *consequent_type = expr->consequent_->Check(checker);
-    checker::Type *alternate_type = expr->alternate_->Check(checker);
+    checker::Type *consequentType = expr->consequent_->Check(checker);
+    checker::Type *alternateType = expr->alternate_->Check(checker);
 
-    return checker->CreateUnionType({consequent_type, alternate_type});
+    return checker->CreateUnionType({consequentType, alternateType});
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DirectEvalExpression *expr) const
@@ -672,32 +672,32 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DirectEvalExpression *expr
 checker::Type *TSAnalyzer::Check(ir::FunctionExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    varbinder::Variable *func_var = nullptr;
+    varbinder::Variable *funcVar = nullptr;
 
     if (expr->Function()->Parent()->Parent() != nullptr &&
         expr->Function()->Parent()->Parent()->IsVariableDeclarator() &&
         expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
-        func_var = expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
+        funcVar = expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     }
 
-    checker::ScopeContext scope_ctx(checker, expr->Function()->Scope());
+    checker::ScopeContext scopeCtx(checker, expr->Function()->Scope());
 
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(expr->Function()->Params(), signature_info);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(expr->Function()->Params(), signatureInfo);
 
-    auto *signature = checker->Allocator()->New<checker::Signature>(
-        signature_info, checker->GlobalResolvingReturnType(), expr->Function());
-    checker::Type *func_type = checker->CreateFunctionTypeWithSignature(signature);
+    auto *signature = checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalResolvingReturnType(),
+                                                                    expr->Function());
+    checker::Type *funcType = checker->CreateFunctionTypeWithSignature(signature);
 
-    if (func_var != nullptr && func_var->TsType() == nullptr) {
-        func_var->SetTsType(func_type);
+    if (funcVar != nullptr && funcVar->TsType() == nullptr) {
+        funcVar->SetTsType(funcType);
     }
 
     signature->SetReturnType(checker->HandleFunctionReturn(expr->Function()));
 
     expr->Function()->Body()->Check(checker);
 
-    return func_type;
+    return funcType;
 }
 
 checker::Type *TSAnalyzer::Check(ir::Identifier *expr) const
@@ -730,26 +730,26 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) co
 checker::Type *TSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *base_type = checker->CheckNonNullType(expr->Object()->Check(checker), expr->Object()->Start());
+    checker::Type *baseType = checker->CheckNonNullType(expr->Object()->Check(checker), expr->Object()->Start());
 
     if (expr->IsComputed()) {
-        checker::Type *index_type = expr->Property()->Check(checker);
-        checker::Type *indexed_access_type = checker->GetPropertyTypeForIndexType(base_type, index_type);
+        checker::Type *indexType = expr->Property()->Check(checker);
+        checker::Type *indexedAccessType = checker->GetPropertyTypeForIndexType(baseType, indexType);
 
-        if (indexed_access_type != nullptr) {
-            return indexed_access_type;
+        if (indexedAccessType != nullptr) {
+            return indexedAccessType;
         }
 
-        if (!index_type->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
-            checker->ThrowTypeError({"Type ", index_type, " cannot be used as index type"}, expr->Property()->Start());
+        if (!indexType->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
+            checker->ThrowTypeError({"Type ", indexType, " cannot be used as index type"}, expr->Property()->Start());
         }
 
-        if (index_type->IsNumberType()) {
+        if (indexType->IsNumberType()) {
             checker->ThrowTypeError("No index signature with a parameter of type 'string' was found on type this type",
                                     expr->Start());
         }
 
-        if (index_type->IsStringType()) {
+        if (indexType->IsStringType()) {
             checker->ThrowTypeError("No index signature with a parameter of type 'number' was found on type this type",
                                     expr->Start());
         }
@@ -776,27 +776,27 @@ checker::Type *TSAnalyzer::Check(ir::MemberExpression *expr) const
         }
     }
 
-    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, expr->Property()->AsIdentifier()->Name());
+    varbinder::Variable *prop = checker->GetPropertyOfType(baseType, expr->Property()->AsIdentifier()->Name());
 
     if (prop != nullptr) {
-        checker::Type *prop_type = checker->GetTypeOfVariable(prop);
+        checker::Type *propType = checker->GetTypeOfVariable(prop);
         if (prop->HasFlag(varbinder::VariableFlags::READONLY)) {
-            prop_type->AddTypeFlag(checker::TypeFlag::READONLY);
+            propType->AddTypeFlag(checker::TypeFlag::READONLY);
         }
 
-        return prop_type;
+        return propType;
     }
 
-    if (base_type->IsObjectType()) {
-        checker::ObjectType *obj_type = base_type->AsObjectType();
+    if (baseType->IsObjectType()) {
+        checker::ObjectType *objType = baseType->AsObjectType();
 
-        if (obj_type->StringIndexInfo() != nullptr) {
-            checker::Type *index_type = obj_type->StringIndexInfo()->GetType();
-            if (obj_type->StringIndexInfo()->Readonly()) {
-                index_type->AddTypeFlag(checker::TypeFlag::READONLY);
+        if (objType->StringIndexInfo() != nullptr) {
+            checker::Type *indexType = objType->StringIndexInfo()->GetType();
+            if (objType->StringIndexInfo()->Readonly()) {
+                indexType->AddTypeFlag(checker::TypeFlag::READONLY);
             }
 
-            return index_type;
+            return indexType;
         }
     }
 
@@ -808,11 +808,11 @@ checker::Type *TSAnalyzer::Check(ir::MemberExpression *expr) const
 checker::Type *TSAnalyzer::Check(ir::NewExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *callee_type = expr->callee_->Check(checker);
+    checker::Type *calleeType = expr->callee_->Check(checker);
 
-    if (callee_type->IsObjectType()) {
-        checker::ObjectType *callee_obj = callee_type->AsObjectType();
-        return checker->ResolveCallOrNewExpression(callee_obj->ConstructSignatures(), expr->Arguments(), expr->Start());
+    if (calleeType->IsObjectType()) {
+        checker::ObjectType *calleeObj = calleeType->AsObjectType();
+        return checker->ResolveCallOrNewExpression(calleeObj->ConstructSignatures(), expr->Arguments(), expr->Start());
     }
 
     checker->ThrowTypeError("This expression is not callable.", expr->Start());
@@ -838,26 +838,26 @@ static varbinder::VariableFlags GetFlagsForProperty(const ir::Property *prop)
         return varbinder::VariableFlags::PROPERTY;
     }
 
-    varbinder::VariableFlags prop_flags = varbinder::VariableFlags::METHOD;
+    varbinder::VariableFlags propFlags = varbinder::VariableFlags::METHOD;
 
     if (prop->IsAccessor() && prop->Kind() == ir::PropertyKind::GET) {
-        prop_flags |= varbinder::VariableFlags::READONLY;
+        propFlags |= varbinder::VariableFlags::READONLY;
     }
 
-    return prop_flags;
+    return propFlags;
 }
 
 static checker::Type *GetTypeForProperty(ir::Property *prop, checker::TSChecker *checker)
 {
     if (prop->IsAccessor()) {
-        checker::Type *func_type = prop->Value()->Check(checker);
+        checker::Type *funcType = prop->Value()->Check(checker);
 
         if (prop->Kind() == ir::PropertyKind::SET) {
             return checker->GlobalAnyType();
         }
 
-        ASSERT(func_type->IsObjectType() && func_type->AsObjectType()->IsFunctionType());
-        return func_type->AsObjectType()->CallSignatures()[0]->ReturnType();
+        ASSERT(funcType->IsObjectType() && funcType->AsObjectType()->IsFunctionType());
+        return funcType->AsObjectType()->CallSignatures()[0]->ReturnType();
     }
 
     if (prop->IsShorthand()) {
@@ -872,116 +872,116 @@ checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
     TSChecker *checker = GetTSChecker();
 
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    std::unordered_map<util::StringView, lexer::SourcePosition> all_properties_map;
-    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
-    ArenaVector<checker::Type *> computed_number_prop_types(checker->Allocator()->Adapter());
-    ArenaVector<checker::Type *> computed_string_prop_types(checker->Allocator()->Adapter());
-    bool has_computed_number_property = false;
-    bool has_computed_string_property = false;
-    bool seen_spread = false;
+    std::unordered_map<util::StringView, lexer::SourcePosition> allPropertiesMap;
+    bool inConstContext = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    ArenaVector<checker::Type *> computedNumberPropTypes(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> computedStringPropTypes(checker->Allocator()->Adapter());
+    bool hasComputedNumberProperty = false;
+    bool hasComputedStringProperty = false;
+    bool seenSpread = false;
 
     for (auto *it : expr->Properties()) {
         if (it->IsProperty()) {
             auto *prop = it->AsProperty();
 
             if (prop->IsComputed()) {
-                checker::Type *computed_name_type = checker->CheckComputedPropertyName(prop->Key());
+                checker::Type *computedNameType = checker->CheckComputedPropertyName(prop->Key());
 
-                if (computed_name_type->IsNumberType()) {
-                    has_computed_number_property = true;
-                    computed_number_prop_types.push_back(prop->Value()->Check(checker));
+                if (computedNameType->IsNumberType()) {
+                    hasComputedNumberProperty = true;
+                    computedNumberPropTypes.push_back(prop->Value()->Check(checker));
                     continue;
                 }
 
-                if (computed_name_type->IsStringType()) {
-                    has_computed_string_property = true;
-                    computed_string_prop_types.push_back(prop->Value()->Check(checker));
+                if (computedNameType->IsStringType()) {
+                    hasComputedStringProperty = true;
+                    computedStringPropTypes.push_back(prop->Value()->Check(checker));
                     continue;
                 }
             }
 
-            checker::Type *prop_type = GetTypeForProperty(prop, checker);
+            checker::Type *propType = GetTypeForProperty(prop, checker);
             varbinder::VariableFlags flags = GetFlagsForProperty(prop);
-            const util::StringView &prop_name = GetPropertyName(prop->Key());
+            const util::StringView &propName = GetPropertyName(prop->Key());
 
-            auto *member_var = varbinder::Scope::CreateVar(checker->Allocator(), prop_name, flags, it);
+            auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
 
-            if (in_const_context) {
-                member_var->AddFlag(varbinder::VariableFlags::READONLY);
+            if (inConstContext) {
+                memberVar->AddFlag(varbinder::VariableFlags::READONLY);
             } else {
-                prop_type = checker->GetBaseTypeOfLiteralType(prop_type);
+                propType = checker->GetBaseTypeOfLiteralType(propType);
             }
 
-            member_var->SetTsType(prop_type);
+            memberVar->SetTsType(propType);
 
             if (prop->Key()->IsNumberLiteral()) {
-                member_var->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
+                memberVar->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
             }
 
-            varbinder::LocalVariable *found_member = desc->FindProperty(prop_name);
-            all_properties_map.insert({prop_name, it->Start()});
+            varbinder::LocalVariable *foundMember = desc->FindProperty(propName);
+            allPropertiesMap.insert({propName, it->Start()});
 
-            if (found_member != nullptr) {
-                found_member->SetTsType(prop_type);
+            if (foundMember != nullptr) {
+                foundMember->SetTsType(propType);
                 continue;
             }
 
-            desc->properties.push_back(member_var);
+            desc->properties.push_back(memberVar);
             continue;
         }
 
         ASSERT(it->IsSpreadElement());
 
-        checker::Type *const spread_type = it->AsSpreadElement()->Argument()->Check(checker);
-        seen_spread = true;
+        checker::Type *const spreadType = it->AsSpreadElement()->Argument()->Check(checker);
+        seenSpread = true;
 
         // NOTE: aszilagyi. handle union of object types
-        if (!spread_type->IsObjectType()) {
+        if (!spreadType->IsObjectType()) {
             checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
         }
 
-        for (auto *spread_prop : spread_type->AsObjectType()->Properties()) {
-            auto found = all_properties_map.find(spread_prop->Name());
-            if (found != all_properties_map.end()) {
+        for (auto *spreadProp : spreadType->AsObjectType()->Properties()) {
+            auto found = allPropertiesMap.find(spreadProp->Name());
+            if (found != allPropertiesMap.end()) {
                 checker->ThrowTypeError(
                     {found->first, " is specified more than once, so this usage will be overwritten."}, found->second);
             }
 
-            varbinder::LocalVariable *found_member = desc->FindProperty(spread_prop->Name());
+            varbinder::LocalVariable *foundMember = desc->FindProperty(spreadProp->Name());
 
-            if (found_member != nullptr) {
-                found_member->SetTsType(spread_prop->TsType());
+            if (foundMember != nullptr) {
+                foundMember->SetTsType(spreadProp->TsType());
                 continue;
             }
 
-            desc->properties.push_back(spread_prop);
+            desc->properties.push_back(spreadProp);
         }
     }
 
-    if (!seen_spread && (has_computed_number_property || has_computed_string_property)) {
+    if (!seenSpread && (hasComputedNumberProperty || hasComputedStringProperty)) {
         for (auto *it : desc->properties) {
-            computed_string_prop_types.push_back(it->TsType());
+            computedStringPropTypes.push_back(it->TsType());
 
-            if (has_computed_number_property && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
-                computed_number_prop_types.push_back(it->TsType());
+            if (hasComputedNumberProperty && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
+                computedNumberPropTypes.push_back(it->TsType());
             }
         }
 
-        if (has_computed_number_property) {
-            desc->number_index_info = checker->Allocator()->New<checker::IndexInfo>(
-                checker->CreateUnionType(std::move(computed_number_prop_types)), "x", in_const_context);
+        if (hasComputedNumberProperty) {
+            desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(
+                checker->CreateUnionType(std::move(computedNumberPropTypes)), "x", inConstContext);
         }
 
-        if (has_computed_string_property) {
-            desc->string_index_info = checker->Allocator()->New<checker::IndexInfo>(
-                checker->CreateUnionType(std::move(computed_string_prop_types)), "x", in_const_context);
+        if (hasComputedStringProperty) {
+            desc->stringIndexInfo = checker->Allocator()->New<checker::IndexInfo>(
+                checker->CreateUnionType(std::move(computedStringPropTypes)), "x", inConstContext);
         }
     }
 
-    checker::Type *return_type = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-    return_type->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS |
-                                               checker::ObjectFlags::CHECK_EXCESS_PROPS);
-    return return_type;
+    checker::Type *returnType = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+    returnType->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS |
+                                              checker::ObjectFlags::CHECK_EXCESS_PROPS);
+    return returnType;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) const
@@ -1033,16 +1033,16 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ThisExpression *expr) cons
 checker::Type *TSAnalyzer::CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker,
                                               ir::UnaryExpression *expr) const
 {
-    checker::Type *prop_type = expr->argument_->Check(checker);
+    checker::Type *propType = expr->argument_->Check(checker);
     if (!expr->Argument()->IsMemberExpression()) {
         checker->ThrowTypeError("The operand of a delete operator must be a property reference.",
                                 expr->Argument()->Start());
     }
-    if (prop_type->Variable()->HasFlag(varbinder::VariableFlags::READONLY)) {
+    if (propType->Variable()->HasFlag(varbinder::VariableFlags::READONLY)) {
         checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.",
                                 expr->Argument()->Start());
     }
-    if (!prop_type->Variable()->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+    if (!propType->Variable()->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
         checker->ThrowTypeError("The operand of a delete operator must be a optional.", expr->Argument()->Start());
     }
     return checker->GlobalBooleanType();
@@ -1056,12 +1056,12 @@ checker::Type *TSAnalyzer::CheckLiteral([[maybe_unused]] checker::TSChecker *che
 
     const ir::Literal *lit = expr->Argument()->AsLiteral();
     if (lit->IsNumberLiteral()) {
-        auto number_value = lit->AsNumberLiteral()->Number().GetDouble();
+        auto numberValue = lit->AsNumberLiteral()->Number().GetDouble();
         if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS) {
-            return checker->CreateNumberLiteralType(number_value);
+            return checker->CreateNumberLiteralType(numberValue);
         }
         if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
-            return checker->CreateNumberLiteralType(-number_value);
+            return checker->CreateNumberLiteralType(-numberValue);
         }
     } else if (lit->IsBigIntLiteral() && expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
         return checker->CreateBigintLiteralType(lit->AsBigIntLiteral()->Str(), true);
@@ -1073,10 +1073,10 @@ checker::Type *TSAnalyzer::CheckLiteral([[maybe_unused]] checker::TSChecker *che
 checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *operand_type = expr->argument_->Check(checker);
+    checker::Type *operandType = expr->argument_->Check(checker);
 
     if (expr->operator_ == lexer::TokenType::KEYW_TYPEOF) {
-        return operand_type;
+        return operandType;
     }
 
     if (expr->operator_ == lexer::TokenType::KEYW_DELETE) {
@@ -1092,23 +1092,23 @@ checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
         case lexer::TokenType::PUNCTUATOR_PLUS:
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE: {
-            checker->CheckNonNullType(operand_type, expr->Start());
+            checker->CheckNonNullType(operandType, expr->Start());
             // NOTE: aszilagyi. check Symbol like types
 
             if (expr->operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
-                if (checker::TSChecker::MaybeTypeOfKind(operand_type, checker::TypeFlag::BIGINT_LIKE)) {
-                    checker->ThrowTypeError({"Operator '+' cannot be applied to type '", operand_type, "'"},
+                if (checker::TSChecker::MaybeTypeOfKind(operandType, checker::TypeFlag::BIGINT_LIKE)) {
+                    checker->ThrowTypeError({"Operator '+' cannot be applied to type '", operandType, "'"},
                                             expr->Start());
                 }
 
                 return checker->GlobalNumberType();
             }
 
-            return checker->GetUnaryResultType(operand_type);
+            return checker->GetUnaryResultType(operandType);
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            checker->CheckTruthinessOfType(operand_type, expr->Start());
-            auto facts = operand_type->GetTypeFacts();
+            checker->CheckTruthinessOfType(operandType, expr->Start());
+            auto facts = operandType->GetTypeFacts();
             if ((facts & checker::TypeFacts::TRUTHY) != 0) {
                 return checker->GlobalFalseType();
             }
@@ -1130,10 +1130,10 @@ checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
 checker::Type *TSAnalyzer::Check(ir::UpdateExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *operand_type = expr->argument_->Check(checker);
-    checker->CheckNonNullType(operand_type, expr->Start());
+    checker::Type *operandType = expr->argument_->Check(checker);
+    checker->CheckNonNullType(operandType, expr->Start());
 
-    if (!operand_type->HasTypeFlag(checker::TypeFlag::VALID_ARITHMETIC_TYPE)) {
+    if (!operandType->HasTypeFlag(checker::TypeFlag::VALID_ARITHMETIC_TYPE)) {
         checker->ThrowTypeError("An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.",
                                 expr->Start());
     }
@@ -1142,7 +1142,7 @@ checker::Type *TSAnalyzer::Check(ir::UpdateExpression *expr) const
         expr->argument_, "The operand of an increment or decrement operator must be a variable or a property access",
         "The operand of an increment or decrement operator may not be an optional property access");
 
-    return checker->GetUnaryResultType(operand_type);
+    return checker->GetUnaryResultType(operandType);
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::YieldExpression *expr) const
@@ -1160,9 +1160,9 @@ checker::Type *TSAnalyzer::Check(ir::BigIntLiteral *expr) const
         return search->second;
     }
 
-    auto *new_bigint_literal_type = checker->Allocator()->New<checker::BigintLiteralType>(expr->Str(), false);
-    checker->BigintLiteralMap().insert({expr->Str(), new_bigint_literal_type});
-    return new_bigint_literal_type;
+    auto *newBigintLiteralType = checker->Allocator()->New<checker::BigintLiteralType>(expr->Str(), false);
+    checker->BigintLiteralMap().insert({expr->Str(), newBigintLiteralType});
+    return newBigintLiteralType;
 }
 
 checker::Type *TSAnalyzer::Check(ir::BooleanLiteral *expr) const
@@ -1190,9 +1190,9 @@ checker::Type *TSAnalyzer::Check(ir::NumberLiteral *expr) const
         return search->second;
     }
 
-    auto *new_num_literal_type = checker->Allocator()->New<checker::NumberLiteralType>(expr->Number().GetDouble());
-    checker->NumberLiteralMap().insert({expr->Number().GetDouble(), new_num_literal_type});
-    return new_num_literal_type;
+    auto *newNumLiteralType = checker->Allocator()->New<checker::NumberLiteralType>(expr->Number().GetDouble());
+    checker->NumberLiteralMap().insert({expr->Number().GetDouble(), newNumLiteralType});
+    return newNumLiteralType;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::RegExpLiteral *expr) const
@@ -1210,10 +1210,10 @@ checker::Type *TSAnalyzer::Check(ir::StringLiteral *expr) const
         return search->second;
     }
 
-    auto *new_str_literal_type = checker->Allocator()->New<checker::StringLiteralType>(expr->Str());
-    checker->StringLiteralMap().insert({expr->Str(), new_str_literal_type});
+    auto *newStrLiteralType = checker->Allocator()->New<checker::StringLiteralType>(expr->Str());
+    checker->StringLiteralMap().insert({expr->Str(), newStrLiteralType});
 
-    return new_str_literal_type;
+    return newStrLiteralType;
 }
 
 checker::Type *TSAnalyzer::Check(ir::UndefinedLiteral *expr) const
@@ -1271,7 +1271,7 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AssertStatement *st) const
 checker::Type *TSAnalyzer::Check(ir::BlockStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, st->Scope());
+    checker::ScopeContext scopeCtx(checker, st->Scope());
 
     for (auto *it : st->Statements()) {
         it->Check(checker);
@@ -1304,10 +1304,10 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DebuggerStatement *st) con
 checker::Type *TSAnalyzer::Check(ir::DoWhileStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, st->Scope());
+    checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    checker::Type *test_type = st->Test()->Check(checker);
-    checker->CheckTruthinessOfType(test_type, st->Test()->Start());
+    checker::Type *testType = st->Test()->Check(checker);
+    checker->CheckTruthinessOfType(testType, st->Test()->Start());
     st->Body()->Check(checker);
 
     return nullptr;
@@ -1337,15 +1337,15 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ForOfStatement *st) const
 checker::Type *TSAnalyzer::Check(ir::ForUpdateStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, st->Scope());
+    checker::ScopeContext scopeCtx(checker, st->Scope());
 
     if (st->Init() != nullptr) {
         st->Init()->Check(checker);
     }
 
     if (st->Test() != nullptr) {
-        checker::Type *test_type = st->Test()->Check(checker);
-        checker->CheckTruthinessOfType(test_type, st->Start());
+        checker::Type *testType = st->Test()->Check(checker);
+        checker->CheckTruthinessOfType(testType, st->Start());
     }
 
     if (st->Update() != nullptr) {
@@ -1364,11 +1364,11 @@ checker::Type *TSAnalyzer::Check(ir::FunctionDeclaration *st) const
         return nullptr;
     }
 
-    const util::StringView &func_name = st->Function()->Id()->Name();
-    auto result = checker->Scope()->Find(func_name);
+    const util::StringView &funcName = st->Function()->Id()->Name();
+    auto result = checker->Scope()->Find(funcName);
     ASSERT(result.variable);
 
-    checker::ScopeContext scope_ctx(checker, st->Function()->Scope());
+    checker::ScopeContext scopeCtx(checker, st->Function()->Scope());
 
     if (result.variable->TsType() == nullptr) {
         checker->InferFunctionDeclarationType(result.variable->Declaration()->AsFunctionDecl(), result.variable);
@@ -1382,9 +1382,9 @@ checker::Type *TSAnalyzer::Check(ir::FunctionDeclaration *st) const
 checker::Type *TSAnalyzer::Check(ir::IfStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *test_type = st->test_->Check(checker);
-    checker->CheckTruthinessOfType(test_type, st->Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(st->test_, test_type, st->consequent_);
+    checker::Type *testType = st->test_->Check(checker);
+    checker->CheckTruthinessOfType(testType, st->Start());
+    checker->CheckTestingKnownTruthyCallableOrAwaitableType(st->test_, testType, st->consequent_);
 
     st->consequent_->Check(checker);
 
@@ -1405,26 +1405,26 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
     TSChecker *checker = GetTSChecker();
     ir::AstNode *ancestor = util::Helpers::FindAncestorGivenByType(st, ir::AstNodeType::SCRIPT_FUNCTION);
     ASSERT(ancestor && ancestor->IsScriptFunction());
-    auto *containing_func = ancestor->AsScriptFunction();
+    auto *containingFunc = ancestor->AsScriptFunction();
 
-    if (containing_func->Parent()->Parent()->IsMethodDefinition()) {
-        const ir::MethodDefinition *containing_class_method = containing_func->Parent()->Parent()->AsMethodDefinition();
-        if (containing_class_method->Kind() == ir::MethodDefinitionKind::SET) {
+    if (containingFunc->Parent()->Parent()->IsMethodDefinition()) {
+        const ir::MethodDefinition *containingClassMethod = containingFunc->Parent()->Parent()->AsMethodDefinition();
+        if (containingClassMethod->Kind() == ir::MethodDefinitionKind::SET) {
             checker->ThrowTypeError("Setters cannot return a value", st->Start());
         }
     }
 
-    if (containing_func->ReturnTypeAnnotation() != nullptr) {
-        checker::Type *return_type = checker->GlobalUndefinedType();
-        checker::Type *func_return_type = containing_func->ReturnTypeAnnotation()->GetType(checker);
+    if (containingFunc->ReturnTypeAnnotation() != nullptr) {
+        checker::Type *returnType = checker->GlobalUndefinedType();
+        checker::Type *funcReturnType = containingFunc->ReturnTypeAnnotation()->GetType(checker);
 
         if (st->Argument() != nullptr) {
-            checker->ElaborateElementwise(func_return_type, st->Argument(), st->Start());
-            return_type = checker->CheckTypeCached(st->Argument());
+            checker->ElaborateElementwise(funcReturnType, st->Argument(), st->Start());
+            returnType = checker->CheckTypeCached(st->Argument());
         }
 
-        checker->IsTypeAssignableTo(return_type, func_return_type,
-                                    {"Type '", return_type, "' is not assignable to type '", func_return_type, "'."},
+        checker->IsTypeAssignableTo(returnType, funcReturnType,
+                                    {"Type '", returnType, "' is not assignable to type '", funcReturnType, "'."},
                                     st->Start());
     }
 
@@ -1439,31 +1439,31 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SwitchCaseStatement *st) c
 checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, st->Scope());
+    checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    checker::Type *expr_type = st->discriminant_->Check(checker);
-    bool expr_is_literal = checker::TSChecker::IsLiteralType(expr_type);
+    checker::Type *exprType = st->discriminant_->Check(checker);
+    bool exprIsLiteral = checker::TSChecker::IsLiteralType(exprType);
 
     for (auto *it : st->Cases()) {
         if (it->Test() != nullptr) {
-            checker::Type *case_type = it->Test()->Check(checker);
-            bool case_is_literal = checker::TSChecker::IsLiteralType(case_type);
-            checker::Type *compared_expr_type = expr_type;
+            checker::Type *caseType = it->Test()->Check(checker);
+            bool caseIsLiteral = checker::TSChecker::IsLiteralType(caseType);
+            checker::Type *comparedExprType = exprType;
 
-            if (!case_is_literal || !expr_is_literal) {
-                case_type = case_is_literal ? checker->GetBaseTypeOfLiteralType(case_type) : case_type;
-                compared_expr_type = checker->GetBaseTypeOfLiteralType(expr_type);
+            if (!caseIsLiteral || !exprIsLiteral) {
+                caseType = caseIsLiteral ? checker->GetBaseTypeOfLiteralType(caseType) : caseType;
+                comparedExprType = checker->GetBaseTypeOfLiteralType(exprType);
             }
 
-            if (!checker->IsTypeEqualityComparableTo(compared_expr_type, case_type) &&
-                !checker->IsTypeComparableTo(case_type, compared_expr_type)) {
-                checker->ThrowTypeError({"Type ", case_type, " is not comparable to type ", compared_expr_type},
+            if (!checker->IsTypeEqualityComparableTo(comparedExprType, caseType) &&
+                !checker->IsTypeComparableTo(caseType, comparedExprType)) {
+                checker->ThrowTypeError({"Type ", caseType, " is not comparable to type ", comparedExprType},
                                         it->Test()->Start());
             }
         }
 
-        for (auto *case_stmt : it->Consequent()) {
-            case_stmt->Check(checker);
+        for (auto *caseStmt : it->Consequent()) {
+            caseStmt->Check(checker);
         }
     }
 
@@ -1480,9 +1480,9 @@ checker::Type *TSAnalyzer::Check(ir::TryStatement *st) const
     TSChecker *checker = GetTSChecker();
     st->Block()->Check(checker);
 
-    for (auto *catch_clause : st->CatchClauses()) {
-        if (catch_clause != nullptr) {
-            catch_clause->Check(checker);
+    for (auto *catchClause : st->CatchClauses()) {
+        if (catchClause != nullptr) {
+            catchClause->Check(checker);
         }
     }
 
@@ -1495,51 +1495,51 @@ checker::Type *TSAnalyzer::Check(ir::TryStatement *st) const
 
 static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::VariableDeclarator *declarator)
 {
-    varbinder::Variable *const binding_var = declarator->Id()->AsIdentifier()->Variable();
-    checker::Type *previous_type = binding_var->TsType();
-    auto *const type_annotation = declarator->Id()->AsIdentifier()->TypeAnnotation();
+    varbinder::Variable *const bindingVar = declarator->Id()->AsIdentifier()->Variable();
+    checker::Type *previousType = bindingVar->TsType();
+    auto *const typeAnnotation = declarator->Id()->AsIdentifier()->TypeAnnotation();
     auto *const initializer = declarator->Init();
-    const bool is_const = declarator->Parent()->AsVariableDeclaration()->Kind() ==
-                          ir::VariableDeclaration::VariableDeclarationKind::CONST;
+    const bool isConst = declarator->Parent()->AsVariableDeclaration()->Kind() ==
+                         ir::VariableDeclaration::VariableDeclarationKind::CONST;
 
-    if (is_const) {
+    if (isConst) {
         checker->AddStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
     }
 
-    if (type_annotation != nullptr) {
-        type_annotation->Check(checker);
+    if (typeAnnotation != nullptr) {
+        typeAnnotation->Check(checker);
     }
 
-    if (type_annotation != nullptr && initializer != nullptr) {
-        checker::Type *const annotation_type = type_annotation->GetType(checker);
-        checker->ElaborateElementwise(annotation_type, initializer, declarator->Id()->Start());
-        binding_var->SetTsType(annotation_type);
-    } else if (type_annotation != nullptr) {
-        binding_var->SetTsType(type_annotation->GetType(checker));
+    if (typeAnnotation != nullptr && initializer != nullptr) {
+        checker::Type *const annotationType = typeAnnotation->GetType(checker);
+        checker->ElaborateElementwise(annotationType, initializer, declarator->Id()->Start());
+        bindingVar->SetTsType(annotationType);
+    } else if (typeAnnotation != nullptr) {
+        bindingVar->SetTsType(typeAnnotation->GetType(checker));
     } else if (initializer != nullptr) {
-        checker::Type *initializer_type = checker->CheckTypeCached(initializer);
+        checker::Type *initializerType = checker->CheckTypeCached(initializer);
 
-        if (!is_const) {
-            initializer_type = checker->GetBaseTypeOfLiteralType(initializer_type);
+        if (!isConst) {
+            initializerType = checker->GetBaseTypeOfLiteralType(initializerType);
         }
 
-        if (initializer_type->IsNullType()) {
+        if (initializerType->IsNullType()) {
             checker->ThrowTypeError(
                 {"Cannot infer type for variable '", declarator->Id()->AsIdentifier()->Name(), "'."},
                 declarator->Id()->Start());
         }
 
-        binding_var->SetTsType(initializer_type);
+        bindingVar->SetTsType(initializerType);
     } else {
         checker->ThrowTypeError({"Variable ", declarator->Id()->AsIdentifier()->Name(), " implicitly has an any type."},
                                 declarator->Id()->Start());
     }
 
-    if (previous_type != nullptr) {
-        checker->IsTypeIdenticalTo(binding_var->TsType(), previous_type,
+    if (previousType != nullptr) {
+        checker->IsTypeIdenticalTo(bindingVar->TsType(), previousType,
                                    {"Subsequent variable declaration must have the same type. Variable '",
-                                    binding_var->Name(), "' must be of type '", previous_type, "', but here has type '",
-                                    binding_var->TsType(), "'."},
+                                    bindingVar->Name(), "' must be of type '", previousType, "', but here has type '",
+                                    bindingVar->TsType(), "'."},
                                    declarator->Id()->Start());
     }
 
@@ -1595,10 +1595,10 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclaration *st) const
 checker::Type *TSAnalyzer::Check(ir::WhileStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, st->Scope());
+    checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    checker::Type *test_type = st->Test()->Check(checker);
-    checker->CheckTruthinessOfType(test_type, st->Test()->Start());
+    checker::Type *testType = st->Test()->Check(checker);
+    checker->CheckTruthinessOfType(testType, st->Test()->Start());
 
     st->Body()->Check(checker);
     return nullptr;
@@ -1612,7 +1612,7 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSAnyKeyword *node) const
 checker::Type *TSAnalyzer::Check(ir::TSArrayType *node) const
 {
     TSChecker *checker = GetTSChecker();
-    node->element_type_->Check(checker);
+    node->elementType_->Check(checker);
     return nullptr;
 }
 
@@ -1629,18 +1629,18 @@ static bool IsValidConstAssertionArgument(checker::Checker *checker, const ir::A
             return true;
         }
         case ir::AstNodeType::UNARY_EXPRESSION: {
-            const ir::UnaryExpression *unary_expr = arg->AsUnaryExpression();
-            lexer::TokenType op = unary_expr->OperatorType();
-            const ir::Expression *unary_arg = unary_expr->Argument();
-            return (op == lexer::TokenType::PUNCTUATOR_MINUS && unary_arg->IsLiteral() &&
-                    (unary_arg->AsLiteral()->IsNumberLiteral() || unary_arg->AsLiteral()->IsBigIntLiteral())) ||
-                   (op == lexer::TokenType::PUNCTUATOR_PLUS && unary_arg->IsLiteral() &&
-                    unary_arg->AsLiteral()->IsNumberLiteral());
+            const ir::UnaryExpression *unaryExpr = arg->AsUnaryExpression();
+            lexer::TokenType op = unaryExpr->OperatorType();
+            const ir::Expression *unaryArg = unaryExpr->Argument();
+            return (op == lexer::TokenType::PUNCTUATOR_MINUS && unaryArg->IsLiteral() &&
+                    (unaryArg->AsLiteral()->IsNumberLiteral() || unaryArg->AsLiteral()->IsBigIntLiteral())) ||
+                   (op == lexer::TokenType::PUNCTUATOR_PLUS && unaryArg->IsLiteral() &&
+                    unaryArg->AsLiteral()->IsNumberLiteral());
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
-            const ir::MemberExpression *member_expr = arg->AsMemberExpression();
-            if (member_expr->Object()->IsIdentifier()) {
-                auto result = checker->Scope()->Find(member_expr->Object()->AsIdentifier()->Name());
+            const ir::MemberExpression *memberExpr = arg->AsMemberExpression();
+            if (memberExpr->Object()->IsIdentifier()) {
+                auto result = checker->Scope()->Find(memberExpr->Object()->AsIdentifier()->Name());
                 constexpr auto ENUM_LITERAL_TYPE = checker::EnumLiteralType::EnumLiteralTypeKind::LITERAL;
                 if (result.variable != nullptr &&
                     result.variable->TsType()->HasTypeFlag(checker::TypeFlag::ENUM_LITERAL) &&
@@ -1660,7 +1660,7 @@ checker::Type *TSAnalyzer::Check(ir::TSAsExpression *expr) const
     TSChecker *checker = GetTSChecker();
     if (expr->IsConst()) {
         auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_CONST_CONTEXT);
-        checker::Type *expr_type = expr->Expr()->Check(checker);
+        checker::Type *exprType = expr->Expr()->Check(checker);
 
         if (!IsValidConstAssertionArgument(checker, expr->Expr())) {
             checker->ThrowTypeError(
@@ -1669,23 +1669,23 @@ checker::Type *TSAnalyzer::Check(ir::TSAsExpression *expr) const
                 expr->Expr()->Start());
         }
 
-        return expr_type;
+        return exprType;
     }
 
     auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::NO_OPTS);
 
     expr->TypeAnnotation()->Check(checker);
-    checker::Type *expr_type = checker->GetBaseTypeOfLiteralType(expr->Expr()->Check(checker));
-    checker::Type *target_type = expr->TypeAnnotation()->GetType(checker);
+    checker::Type *exprType = checker->GetBaseTypeOfLiteralType(expr->Expr()->Check(checker));
+    checker::Type *targetType = expr->TypeAnnotation()->GetType(checker);
 
     checker->IsTypeComparableTo(
-        target_type, expr_type,
-        {"Conversion of type '", expr_type, "' to type '", target_type,
+        targetType, exprType,
+        {"Conversion of type '", exprType, "' to type '", targetType,
          "' may be a mistake because neither type sufficiently overlaps with the other. If this was ",
          "intentional, convert the expression to 'unknown' first."},
         expr->Start());
 
-    return target_type;
+    return targetType;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSBigintKeyword *node) const
@@ -1711,18 +1711,18 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSConditionalType *node) c
 checker::Type *TSAnalyzer::Check(ir::TSConstructorType *node) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, node->Scope());
+    checker::ScopeContext scopeCtx(checker, node->Scope());
 
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signatureInfo);
     node->ReturnType()->Check(checker);
-    auto *construct_signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, node->ReturnType()->GetType(checker));
+    auto *constructSignature =
+        checker->Allocator()->New<checker::Signature>(signatureInfo, node->ReturnType()->GetType(checker));
 
-    return checker->CreateConstructorTypeWithSignature(construct_signature);
+    return checker->CreateConstructorTypeWithSignature(constructSignature);
 }
 
-static varbinder::EnumMemberResult EvaluateIdentifier(checker::TSChecker *checker, varbinder::EnumVariable *enum_var,
+static varbinder::EnumMemberResult EvaluateIdentifier(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
                                                       const ir::Identifier *expr)
 {
     if (expr->Name() == "NaN") {
@@ -1732,24 +1732,24 @@ static varbinder::EnumMemberResult EvaluateIdentifier(checker::TSChecker *checke
         return std::numeric_limits<double>::infinity();
     }
 
-    varbinder::Variable *enum_member = expr->AsIdentifier()->Variable();
+    varbinder::Variable *enumMember = expr->AsIdentifier()->Variable();
 
-    if (enum_member == nullptr) {
+    if (enumMember == nullptr) {
         checker->ThrowTypeError({"Cannot find name ", expr->AsIdentifier()->Name()},
-                                enum_var->Declaration()->Node()->Start());
+                                enumVar->Declaration()->Node()->Start());
     }
 
-    if (enum_member->IsEnumVariable()) {
-        varbinder::EnumVariable *expr_enum_var = enum_member->AsEnumVariable();
-        if (std::holds_alternative<bool>(expr_enum_var->Value())) {
+    if (enumMember->IsEnumVariable()) {
+        varbinder::EnumVariable *exprEnumVar = enumMember->AsEnumVariable();
+        if (std::holds_alternative<bool>(exprEnumVar->Value())) {
             checker->ThrowTypeError(
                 "A member initializer in a enum declaration cannot reference members declared after it, "
                 "including "
                 "members defined in other enums.",
-                enum_var->Declaration()->Node()->Start());
+                enumVar->Declaration()->Node()->Start());
         }
 
-        return expr_enum_var->Value();
+        return exprEnumVar->Value();
     }
 
     return false;
@@ -1824,11 +1824,11 @@ varbinder::EnumMemberResult GetOperationResulForDouble(lexer::TokenType type, va
 }
 
 varbinder::EnumMemberResult TSAnalyzer::EvaluateBinaryExpression(checker::TSChecker *checker,
-                                                                 varbinder::EnumVariable *enum_var,
+                                                                 varbinder::EnumVariable *enumVar,
                                                                  const ir::BinaryExpression *expr) const
 {
-    varbinder::EnumMemberResult left = EvaluateEnumMember(checker, enum_var, expr->AsBinaryExpression()->Left());
-    varbinder::EnumMemberResult right = EvaluateEnumMember(checker, enum_var, expr->AsBinaryExpression()->Right());
+    varbinder::EnumMemberResult left = EvaluateEnumMember(checker, enumVar, expr->AsBinaryExpression()->Left());
+    varbinder::EnumMemberResult right = EvaluateEnumMember(checker, enumVar, expr->AsBinaryExpression()->Right());
     if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
         GetOperationResulForDouble(expr->AsBinaryExpression()->OperatorType(), left, right);
     }
@@ -1846,10 +1846,10 @@ varbinder::EnumMemberResult TSAnalyzer::EvaluateBinaryExpression(checker::TSChec
 }
 
 varbinder::EnumMemberResult TSAnalyzer::EvaluateUnaryExpression(checker::TSChecker *checker,
-                                                                varbinder::EnumVariable *enum_var,
+                                                                varbinder::EnumVariable *enumVar,
                                                                 const ir::UnaryExpression *expr) const
 {
-    varbinder::EnumMemberResult value = EvaluateEnumMember(checker, enum_var, expr->Argument());
+    varbinder::EnumMemberResult value = EvaluateEnumMember(checker, enumVar, expr->Argument());
     if (!std::holds_alternative<double>(value)) {
         return false;
     }
@@ -1873,15 +1873,15 @@ varbinder::EnumMemberResult TSAnalyzer::EvaluateUnaryExpression(checker::TSCheck
 }
 
 varbinder::EnumMemberResult TSAnalyzer::EvaluateEnumMember(checker::TSChecker *checker,
-                                                           varbinder::EnumVariable *enum_var,
+                                                           varbinder::EnumVariable *enumVar,
                                                            const ir::AstNode *expr) const
 {
     switch (expr->Type()) {
         case ir::AstNodeType::UNARY_EXPRESSION: {
-            return EvaluateUnaryExpression(checker, enum_var, expr->AsUnaryExpression());
+            return EvaluateUnaryExpression(checker, enumVar, expr->AsUnaryExpression());
         }
         case ir::AstNodeType::BINARY_EXPRESSION: {
-            return EvaluateBinaryExpression(checker, enum_var, expr->AsBinaryExpression());
+            return EvaluateBinaryExpression(checker, enumVar, expr->AsBinaryExpression());
         }
         case ir::AstNodeType::NUMBER_LITERAL: {
             return expr->AsNumberLiteral()->Number().GetDouble();
@@ -1890,10 +1890,10 @@ varbinder::EnumMemberResult TSAnalyzer::EvaluateEnumMember(checker::TSChecker *c
             return expr->AsStringLiteral()->Str();
         }
         case ir::AstNodeType::IDENTIFIER: {
-            return EvaluateIdentifier(checker, enum_var, expr->AsIdentifier());
+            return EvaluateIdentifier(checker, enumVar, expr->AsIdentifier());
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
-            return EvaluateEnumMember(checker, enum_var, expr->AsMemberExpression());
+            return EvaluateEnumMember(checker, enumVar, expr->AsMemberExpression());
         }
         default:
             break;
@@ -1919,30 +1919,30 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
 {
     variable->SetTsType(checker->GlobalNumberType());
 
-    util::StringView member_str = util::Helpers::ToStringView(checker->Allocator(), number);
+    util::StringView memberStr = util::Helpers::ToStringView(checker->Allocator(), number);
 
-    varbinder::LocalScope *enum_scope = checker->Scope()->AsLocalScope();
-    varbinder::Variable *res = enum_scope->FindLocal(member_str, varbinder::ResolveBindingOptions::BINDINGS);
-    varbinder::EnumVariable *enum_var = nullptr;
+    varbinder::LocalScope *enumScope = checker->Scope()->AsLocalScope();
+    varbinder::Variable *res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);
+    varbinder::EnumVariable *enumVar = nullptr;
 
     if (res == nullptr) {
-        auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(member_str);
+        auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
         decl->BindNode(variable->Declaration()->Node());
-        enum_scope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
-        res = enum_scope->FindLocal(member_str, varbinder::ResolveBindingOptions::BINDINGS);
+        enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
+        res = enumScope->FindLocal(memberStr, varbinder::ResolveBindingOptions::BINDINGS);
         ASSERT(res && res->IsEnumVariable());
-        enum_var = res->AsEnumVariable();
-        enum_var->AsEnumVariable()->SetBackReference();
-        enum_var->SetTsType(checker->GlobalStringType());
+        enumVar = res->AsEnumVariable();
+        enumVar->AsEnumVariable()->SetBackReference();
+        enumVar->SetTsType(checker->GlobalStringType());
     } else {
         ASSERT(res->IsEnumVariable());
-        enum_var = res->AsEnumVariable();
-        auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(member_str);
+        enumVar = res->AsEnumVariable();
+        auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(memberStr);
         decl->BindNode(variable->Declaration()->Node());
-        enum_var->ResetDecl(decl);
+        enumVar->ResetDecl(decl);
     }
 
-    enum_var->SetValue(variable->Declaration()->Name());
+    enumVar->SetValue(variable->Declaration()->Name());
 }
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
@@ -1956,41 +1956,41 @@ static constexpr char const INVALID_CONST_INF[] =
     "'const' enum member initializer was evaluated to a non-finite value.";
 // NOLINTEND(modernize-avoid-c-arrays)
 
-void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double *value, bool *init_next,
-                                       bool *is_literal_enum, bool is_const_enum) const
+void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double *value, bool *initNext,
+                                       bool *isLiteralEnum, bool isConstEnum) const
 {
     TSChecker *checker = GetTSChecker();
     const ir::Expression *init = variable->Declaration()->Node()->AsTSEnumMember()->Init();
 
-    if (init == nullptr && *init_next) {
+    if (init == nullptr && *initNext) {
         checker->ThrowTypeError("Enum member must have initializer.", variable->Declaration()->Node()->Start());
     }
 
-    if (init == nullptr && !*init_next) {
+    if (init == nullptr && !*initNext) {
         variable->SetValue(++(*value));
         AddEnumValueDeclaration(checker, *value, variable);
         return;
     }
 
     ASSERT(init);
-    if (IsComputedEnumMember(init) && *is_literal_enum) {
+    if (IsComputedEnumMember(init) && *isLiteralEnum) {
         checker->ThrowTypeError(INVALID_COMPUTED_WITH_STRING, init->Start());
     }
 
     varbinder::EnumMemberResult res = EvaluateEnumMember(checker, variable, init);
     if (std::holds_alternative<util::StringView>(res)) {
-        *is_literal_enum = true;
+        *isLiteralEnum = true;
         variable->SetTsType(checker->GlobalStringType());
-        *init_next = true;
+        *initNext = true;
         return;
     }
 
     if (std::holds_alternative<bool>(res)) {
-        if (is_const_enum) {
+        if (isConstEnum) {
             checker->ThrowTypeError(INVALID_CONST_MEMBER, init->Start());
         }
 
-        *init_next = true;
+        *initNext = true;
         return;
     }
 
@@ -1998,55 +1998,54 @@ void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double
     variable->SetValue(res);
 
     *value = std::get<double>(res);
-    if (is_const_enum && std::isnan(*value)) {
+    if (isConstEnum && std::isnan(*value)) {
         checker->ThrowTypeError(INVALID_CONST_NAN, init->Start());
     }
 
-    if (is_const_enum && std::isinf(*value)) {
+    if (isConstEnum && std::isinf(*value)) {
         checker->ThrowTypeError(INVALID_CONST_INF, init->Start());
     }
 
-    *init_next = false;
+    *initNext = false;
     AddEnumValueDeclaration(checker, *value, variable);
 }
 
-checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool is_const, ir::TSEnumDeclaration *st) const
+checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool isConst, ir::TSEnumDeclaration *st) const
 {
     double value = -1.0;
 
-    varbinder::LocalScope *enum_scope = checker->Scope()->AsLocalScope();
+    varbinder::LocalScope *enumScope = checker->Scope()->AsLocalScope();
 
-    bool init_next = false;
-    bool is_literal_enum = false;
-    size_t locals_size = enum_scope->Decls().size();
+    bool initNext = false;
+    bool isLiteralEnum = false;
+    size_t localsSize = enumScope->Decls().size();
 
-    for (size_t i = 0; i < locals_size; i++) {
-        const util::StringView &current_name = enum_scope->Decls()[i]->Name();
-        varbinder::Variable *current_var =
-            enum_scope->FindLocal(current_name, varbinder::ResolveBindingOptions::BINDINGS);
-        ASSERT(current_var && current_var->IsEnumVariable());
-        InferEnumVariableType(current_var->AsEnumVariable(), &value, &init_next, &is_literal_enum, is_const);
+    for (size_t i = 0; i < localsSize; i++) {
+        const util::StringView &currentName = enumScope->Decls()[i]->Name();
+        varbinder::Variable *currentVar = enumScope->FindLocal(currentName, varbinder::ResolveBindingOptions::BINDINGS);
+        ASSERT(currentVar && currentVar->IsEnumVariable());
+        InferEnumVariableType(currentVar->AsEnumVariable(), &value, &initNext, &isLiteralEnum, isConst);
     }
 
-    checker::Type *enum_type = checker->Allocator()->New<checker::EnumLiteralType>(
+    checker::Type *enumType = checker->Allocator()->New<checker::EnumLiteralType>(
         st->Key()->Name(), checker->Scope(),
-        is_literal_enum ? checker::EnumLiteralType::EnumLiteralTypeKind::LITERAL
-                        : checker::EnumLiteralType::EnumLiteralTypeKind::NUMERIC);
+        isLiteralEnum ? checker::EnumLiteralType::EnumLiteralTypeKind::LITERAL
+                      : checker::EnumLiteralType::EnumLiteralTypeKind::NUMERIC);
 
-    return enum_type;
+    return enumType;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
     TSChecker *checker = GetTSChecker();
-    varbinder::Variable *enum_var = st->Key()->Variable();
-    ASSERT(enum_var);
+    varbinder::Variable *enumVar = st->Key()->Variable();
+    ASSERT(enumVar);
 
-    if (enum_var->TsType() == nullptr) {
-        checker::ScopeContext scope_ctx(checker, st->Scope());
-        checker::Type *enum_type = InferType(checker, st->IsConst(), st);
-        enum_type->SetVariable(enum_var);
-        enum_var->SetTsType(enum_type);
+    if (enumVar->TsType() == nullptr) {
+        checker::ScopeContext scopeCtx(checker, st->Scope());
+        checker::Type *enumType = InferType(checker, st->IsConst(), st);
+        enumType->SetVariable(enumVar);
+        enumVar->SetTsType(enumType);
     }
 
     return nullptr;
@@ -2065,15 +2064,15 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSExternalModuleReference 
 checker::Type *TSAnalyzer::Check(ir::TSFunctionType *node) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::ScopeContext scope_ctx(checker, node->Scope());
+    checker::ScopeContext scopeCtx(checker, node->Scope());
 
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signatureInfo);
     node->ReturnType()->Check(checker);
-    auto *call_signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, node->ReturnType()->GetType(checker));
+    auto *callSignature =
+        checker->Allocator()->New<checker::Signature>(signatureInfo, node->ReturnType()->GetType(checker));
 
-    return checker->CreateFunctionTypeWithSignature(call_signature);
+    return checker->CreateFunctionTypeWithSignature(callSignature);
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSImportEqualsDeclaration *st) const
@@ -2089,21 +2088,21 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSImportType *node) const
 checker::Type *TSAnalyzer::Check(ir::TSIndexedAccessType *node) const
 {
     TSChecker *checker = GetTSChecker();
-    node->object_type_->Check(checker);
-    node->index_type_->Check(checker);
+    node->objectType_->Check(checker);
+    node->indexType_->Check(checker);
     checker::Type *resolved = node->GetType(checker);
 
     if (resolved != nullptr) {
         return nullptr;
     }
 
-    checker::Type *index_type = checker->CheckTypeCached(node->index_type_);
+    checker::Type *indexType = checker->CheckTypeCached(node->indexType_);
 
-    if (!index_type->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
-        checker->ThrowTypeError({"Type ", index_type, " cannot be used as index type"}, node->IndexType()->Start());
+    if (!indexType->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
+        checker->ThrowTypeError({"Type ", indexType, " cannot be used as index type"}, node->IndexType()->Start());
     }
 
-    if (index_type->IsNumberType()) {
+    if (indexType->IsNumberType()) {
         checker->ThrowTypeError("Type has no matching signature for type 'number'", node->Start());
     }
 
@@ -2127,7 +2126,7 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceBody *expr) const
 }
 
 static void CheckInheritedPropertiesAreIdentical(checker::TSChecker *checker, checker::InterfaceType *type,
-                                                 const lexer::SourcePosition &loc_info)
+                                                 const lexer::SourcePosition &locInfo)
 {
     checker->GetBaseTypes(type);
 
@@ -2146,20 +2145,20 @@ static void CheckInheritedPropertiesAreIdentical(checker::TSChecker *checker, ch
 
     for (auto *base : type->Bases()) {
         checker->ResolveStructuredTypeMembers(base);
-        ArenaVector<varbinder::LocalVariable *> inherited_properties(checker->Allocator()->Adapter());
-        base->AsInterfaceType()->CollectProperties(&inherited_properties);
+        ArenaVector<varbinder::LocalVariable *> inheritedProperties(checker->Allocator()->Adapter());
+        base->AsInterfaceType()->CollectProperties(&inheritedProperties);
 
-        for (auto *inherited_prop : inherited_properties) {
-            auto res = properties.find(inherited_prop->Name());
+        for (auto *inheritedProp : inheritedProperties) {
+            auto res = properties.find(inheritedProp->Name());
             if (res == properties.end()) {
-                properties.insert({inherited_prop->Name(), {inherited_prop, base->AsInterfaceType()}});
+                properties.insert({inheritedProp->Name(), {inheritedProp, base->AsInterfaceType()}});
             } else if (res->second.second != type) {
-                checker::Type *source_type = checker->GetTypeOfVariable(inherited_prop);
-                checker::Type *target_type = checker->GetTypeOfVariable(res->second.first);
-                checker->IsTypeIdenticalTo(source_type, target_type,
+                checker::Type *sourceType = checker->GetTypeOfVariable(inheritedProp);
+                checker::Type *targetType = checker->GetTypeOfVariable(res->second.first);
+                checker->IsTypeIdenticalTo(sourceType, targetType,
                                            {"Interface '", type, "' cannot simultaneously extend types '",
                                             res->second.second, "' and '", base->AsInterfaceType(), "'."},
-                                           loc_info);
+                                           locInfo);
             }
         }
     }
@@ -2172,27 +2171,27 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
 
     if (st == var->Declaration()->Node()) {
-        checker::Type *resolved_type = var->TsType();
+        checker::Type *resolvedType = var->TsType();
 
-        if (resolved_type == nullptr) {
+        if (resolvedType == nullptr) {
             checker::ObjectDescriptor *desc =
                 checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-            resolved_type =
+            resolvedType =
                 checker->Allocator()->New<checker::InterfaceType>(checker->Allocator(), st->Id()->Name(), desc);
-            resolved_type->SetVariable(var);
-            var->SetTsType(resolved_type);
+            resolvedType->SetVariable(var);
+            var->SetTsType(resolvedType);
         }
 
-        checker::InterfaceType *resolved_interface = resolved_type->AsObjectType()->AsInterfaceType();
-        CheckInheritedPropertiesAreIdentical(checker, resolved_interface, st->Id()->Start());
+        checker::InterfaceType *resolvedInterface = resolvedType->AsObjectType()->AsInterfaceType();
+        CheckInheritedPropertiesAreIdentical(checker, resolvedInterface, st->Id()->Start());
 
-        for (auto *base : resolved_interface->Bases()) {
+        for (auto *base : resolvedInterface->Bases()) {
             checker->IsTypeAssignableTo(
-                resolved_interface, base,
+                resolvedInterface, base,
                 {"Interface '", st->Id()->Name(), "' incorrectly extends interface '", base, "'"}, st->Id()->Start());
         }
 
-        checker->CheckIndexConstraints(resolved_interface);
+        checker->CheckIndexConstraints(resolvedInterface);
     }
 
     st->Body()->Check(checker);
@@ -2279,18 +2278,18 @@ checker::Type *TSAnalyzer::Check(ir::TSParenthesizedType *node) const
 checker::Type *TSAnalyzer::Check(ir::TSQualifiedName *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *base_type = checker->CheckNonNullType(expr->Left()->Check(checker), expr->Left()->Start());
-    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, expr->Right()->Name());
+    checker::Type *baseType = checker->CheckNonNullType(expr->Left()->Check(checker), expr->Left()->Start());
+    varbinder::Variable *prop = checker->GetPropertyOfType(baseType, expr->Right()->Name());
 
     if (prop != nullptr) {
         return checker->GetTypeOfVariable(prop);
     }
 
-    if (base_type->IsObjectType()) {
-        checker::ObjectType *obj_type = base_type->AsObjectType();
+    if (baseType->IsObjectType()) {
+        checker::ObjectType *objType = baseType->AsObjectType();
 
-        if (obj_type->StringIndexInfo() != nullptr) {
-            return obj_type->StringIndexInfo()->GetType();
+        if (objType->StringIndexInfo() != nullptr) {
+            return objType->StringIndexInfo()->GetType();
         }
     }
 
@@ -2378,7 +2377,7 @@ checker::Type *TSAnalyzer::Check(ir::TSTypeQuery *node) const
         return node->TsType();
     }
 
-    node->SetTsType(node->expr_name_->Check(checker));
+    node->SetTsType(node->exprName_->Check(checker));
     return node->TsType();
 }
 

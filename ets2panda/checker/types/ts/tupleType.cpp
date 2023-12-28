@@ -20,14 +20,14 @@
 namespace panda::es2panda::checker {
 Type *TupleType::ConvertToArrayType(TSChecker *checker)
 {
-    ArenaVector<Type *> union_types(checker->Allocator()->Adapter());
+    ArenaVector<Type *> unionTypes(checker->Allocator()->Adapter());
 
     for (const auto *it : desc_->properties) {
-        union_types.push_back(it->TsType());
+        unionTypes.push_back(it->TsType());
     }
 
-    Type *array_type = checker->CreateUnionType(std::move(union_types));
-    return checker->Allocator()->New<ArrayType>(array_type);
+    Type *arrayType = checker->CreateUnionType(std::move(unionTypes));
+    return checker->Allocator()->New<ArrayType>(arrayType);
 }
 
 void TupleType::ToString(std::stringstream &ss) const
@@ -37,7 +37,7 @@ void TupleType::ToString(std::stringstream &ss) const
     }
     ss << "[";
 
-    if (named_members_.empty()) {
+    if (namedMembers_.empty()) {
         for (auto it = desc_->properties.begin(); it != desc_->properties.end(); it++) {
             (*it)->TsType()->ToString(ss);
             if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
@@ -50,8 +50,8 @@ void TupleType::ToString(std::stringstream &ss) const
         }
     } else {
         for (auto it = desc_->properties.begin(); it != desc_->properties.end(); it++) {
-            const util::StringView &member_name = FindNamedMemberName(*it);
-            ss << member_name;
+            const util::StringView &memberName = FindNamedMemberName(*it);
+            ss << memberName;
 
             if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
                 ss << "?";
@@ -74,18 +74,18 @@ void TupleType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    TupleType *other_tuple = other->AsObjectType()->AsTupleType();
-    if (kind_ == other_tuple->Kind() && desc_->properties.size() == other_tuple->Properties().size()) {
+    TupleType *otherTuple = other->AsObjectType()->AsTupleType();
+    if (kind_ == otherTuple->Kind() && desc_->properties.size() == otherTuple->Properties().size()) {
         for (size_t i = 0; i < desc_->properties.size(); i++) {
-            varbinder::LocalVariable *target_prop = desc_->properties[i];
-            varbinder::LocalVariable *source_prop = other_tuple->Properties()[i];
+            varbinder::LocalVariable *targetProp = desc_->properties[i];
+            varbinder::LocalVariable *sourceProp = otherTuple->Properties()[i];
 
-            if (target_prop->Flags() != source_prop->Flags()) {
+            if (targetProp->Flags() != sourceProp->Flags()) {
                 relation->Result(false);
                 return;
             }
 
-            relation->IsIdenticalTo(target_prop->TsType(), source_prop->TsType());
+            relation->IsIdenticalTo(targetProp->TsType(), sourceProp->TsType());
 
             if (!relation->IsTrue()) {
                 return;
@@ -102,42 +102,42 @@ void TupleType::AssignmentTarget(TypeRelation *relation, Type *source)
         return;
     }
 
-    TupleType *source_tuple = source->AsObjectType()->AsTupleType();
-    if (FixedLength() < source_tuple->MinLength()) {
+    TupleType *sourceTuple = source->AsObjectType()->AsTupleType();
+    if (FixedLength() < sourceTuple->MinLength()) {
         relation->Result(false);
         return;
     }
 
     relation->Result(true);
 
-    const auto &source_properties = source_tuple->Properties();
+    const auto &sourceProperties = sourceTuple->Properties();
     for (size_t i = 0; i < desc_->properties.size(); i++) {
-        auto *target_prop = desc_->properties[i];
+        auto *targetProp = desc_->properties[i];
 
-        if (i < source_properties.size()) {
-            if (!target_prop->HasFlag(varbinder::VariableFlags::OPTIONAL) &&
-                source_properties[i]->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+        if (i < sourceProperties.size()) {
+            if (!targetProp->HasFlag(varbinder::VariableFlags::OPTIONAL) &&
+                sourceProperties[i]->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
                 relation->Result(false);
                 return;
             }
 
-            Type *target_prop_type = target_prop->TsType();
-            Type *source_prop_type = source_properties[i]->TsType();
-            if (!relation->IsAssignableTo(source_prop_type, target_prop_type)) {
+            Type *targetPropType = targetProp->TsType();
+            Type *sourcePropType = sourceProperties[i]->TsType();
+            if (!relation->IsAssignableTo(sourcePropType, targetPropType)) {
                 return;
             }
 
             continue;
         }
 
-        if (!target_prop->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+        if (!targetProp->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             relation->Result(false);
             return;
         }
     }
 
     if (relation->IsTrue()) {
-        AssignIndexInfo(relation, source_tuple);
+        AssignIndexInfo(relation, sourceTuple);
     }
 }
 
@@ -150,20 +150,20 @@ TypeFacts TupleType::GetTypeFacts() const
     return TypeFacts::OBJECT_FACTS;
 }
 
-Type *TupleType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *TupleType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copied_desc = allocator->New<ObjectDescriptor>(allocator);
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
 
-    desc_->Copy(allocator, copied_desc, relation, global_types);
+    desc_->Copy(allocator, copiedDesc, relation, globalTypes);
 
-    NamedTupleMemberPool copied_named_member_pool = named_members_;
-    ArenaVector<ElementFlags> copied_element_flags(allocator->Adapter());
+    NamedTupleMemberPool copiedNamedMemberPool = namedMembers_;
+    ArenaVector<ElementFlags> copiedElementFlags(allocator->Adapter());
 
-    for (auto it : element_flags_) {
-        copied_element_flags.push_back(it);
+    for (auto it : elementFlags_) {
+        copiedElementFlags.push_back(it);
     }
 
-    return allocator->New<TupleType>(copied_desc, std::move(copied_element_flags), combined_flags_, min_length_,
-                                     fixed_length_, readonly_, std::move(copied_named_member_pool));
+    return allocator->New<TupleType>(copiedDesc, std::move(copiedElementFlags), combinedFlags_, minLength_,
+                                     fixedLength_, readonly_, std::move(copiedNamedMemberPool));
 }
 }  // namespace panda::es2panda::checker

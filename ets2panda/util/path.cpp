@@ -22,25 +22,25 @@ namespace panda::es2panda::util {
 
 Path::Path() = default;
 
-Path::Path(const util::StringView &absolute_path, ArenaAllocator *allocator)
+Path::Path(const util::StringView &absolutePath, ArenaAllocator *allocator)
 {
-    Initializer(absolute_path.Mutf8(), allocator);
+    Initializer(absolutePath.Mutf8(), allocator);
 }
 
 void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
 {
-    is_relative_ = false;
+    isRelative_ = false;
     allocator_ = allocator;
     path_ = util::UString(path, allocator).View();
 
     if (*(path_.Bytes()) == '.') {
-        is_relative_ = true;
+        isRelative_ = true;
     }
 
-    if (is_relative_) {
-        absolute_path_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
+    if (isRelative_) {
+        absolutePath_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
     } else {
-        absolute_path_ = path_;
+        absolutePath_ = path_;
     }
 
     InitializeFileExtension();
@@ -57,12 +57,12 @@ void Path::InitializeFileName()
 
     int position = path_.Mutf8().find_last_of(PATH_DELIMITER);
 
-    util::StringView file_name = path_.Substr(position + 1, path_.Length());
+    util::StringView fileName = path_.Substr(position + 1, path_.Length());
     if (GetExtension().Empty()) {
-        file_name_ = file_name;
+        fileName_ = fileName;
     } else {
-        int extension_position = file_name.Mutf8().find_last_of('.');
-        file_name_ = file_name.Substr(0, extension_position);
+        int extensionPosition = fileName.Mutf8().find_last_of('.');
+        fileName_ = fileName.Substr(0, extensionPosition);
     }
 }
 
@@ -74,7 +74,7 @@ void Path::InitializeFileExtension()
 
     size_t position = path_.Mutf8().find_last_of('.');
     if (position != std::string::npos && position + 1 <= path_.Length()) {
-        file_extension_ = path_.Substr(position + 1, path_.Length());
+        fileExtension_ = path_.Substr(position + 1, path_.Length());
     }
 }
 
@@ -84,10 +84,10 @@ void Path::InitializeAbsoluteParentFolder()
         return;
     }
 
-    int position = absolute_path_.Mutf8().find_last_of(PATH_DELIMITER);
+    int position = absolutePath_.Mutf8().find_last_of(PATH_DELIMITER);
 
-    if (!absolute_path_.Empty() && is_relative_) {
-        absolute_parent_folder_ = absolute_path_.Substr(0, position);
+    if (!absolutePath_.Empty() && isRelative_) {
+        absoluteParentFolder_ = absolutePath_.Substr(0, position);
     }
 }
 
@@ -99,45 +99,45 @@ void Path::InitializeParentFolder()
 
     int position = path_.Mutf8().find_last_of(PATH_DELIMITER);
 
-    parent_folder_ = path_.Substr(0, position);
+    parentFolder_ = path_.Substr(0, position);
 }
 
-void Path::InitializeBasePath(std::string base_path)
+void Path::InitializeBasePath(std::string basePath)
 {
-    if (!base_path.empty() && base_path.back() == PATH_DELIMITER) {
-        base_path_ = util::UString(base_path.substr(0, base_path.length() - 1), allocator_).View();
+    if (!basePath.empty() && basePath.back() == PATH_DELIMITER) {
+        basePath_ = util::UString(basePath.substr(0, basePath.length() - 1), allocator_).View();
     } else {
-        base_path_ = util::UString(base_path, allocator_).View();
+        basePath_ = util::UString(basePath, allocator_).View();
     }
 
-    is_relative_ = true;
+    isRelative_ = true;
 }
 
-Path::Path(const util::StringView &relative_path, const util::StringView &base_path, ArenaAllocator *allocator)
+Path::Path(const util::StringView &relativePath, const util::StringView &basePath, ArenaAllocator *allocator)
 {
-    Initializer(relative_path.Mutf8(), allocator);
-    InitializeBasePath(base_path.Mutf8());
+    Initializer(relativePath.Mutf8(), allocator);
+    InitializeBasePath(basePath.Mutf8());
 }
 
-Path::Path(const std::string &absolute_path, ArenaAllocator *allocator)
+Path::Path(const std::string &absolutePath, ArenaAllocator *allocator)
 {
-    Initializer(absolute_path, allocator);
+    Initializer(absolutePath, allocator);
 }
 
-Path::Path(const std::string &relative_path, const std::string &base_path, ArenaAllocator *allocator)
+Path::Path(const std::string &relativePath, const std::string &basePath, ArenaAllocator *allocator)
 {
-    Initializer(relative_path, allocator);
-    InitializeBasePath(base_path);
+    Initializer(relativePath, allocator);
+    InitializeBasePath(basePath);
 }
 
 bool Path::IsRelative()
 {
-    return is_relative_;
+    return isRelative_;
 }
 
 bool Path::IsAbsolute()
 {
-    return !is_relative_;
+    return !isRelative_;
 }
 
 const util::StringView &Path::GetPath() const
@@ -147,27 +147,27 @@ const util::StringView &Path::GetPath() const
 
 const util::StringView &Path::GetAbsolutePath() const
 {
-    return absolute_path_;
+    return absolutePath_;
 }
 
 const util::StringView &Path::GetExtension() const
 {
-    return file_extension_;
+    return fileExtension_;
 }
 
 const util::StringView &Path::GetFileName() const
 {
-    return file_name_;
+    return fileName_;
 }
 
 const util::StringView &Path::GetParentFolder() const
 {
-    return parent_folder_;
+    return parentFolder_;
 }
 
 const util::StringView &Path::GetAbsoluteParentFolder() const
 {
-    return absolute_parent_folder_;
+    return absoluteParentFolder_;
 }
 
 }  // namespace panda::es2panda::util

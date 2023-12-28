@@ -33,9 +33,9 @@ public:
 
 private:
     ir::Expression *ProcessIndexGetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                          ir::MemberExpression *member_expression) const;
+                                          ir::MemberExpression *memberExpression) const;
     ir::Expression *ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                          ir::AssignmentExpression *assignment_expression) const;
+                                          ir::AssignmentExpression *assignmentExpression) const;
 };
 
 }  // namespace panda::es2panda::compiler

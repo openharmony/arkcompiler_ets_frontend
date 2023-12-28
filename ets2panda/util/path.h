@@ -31,10 +31,10 @@ const char PATH_DELIMITER =
 class Path {
 public:
     Path();
-    Path(const std::string &absolute_path, ArenaAllocator *allocator);
-    Path(const std::string &relative_path, const std::string &base_path, ArenaAllocator *allocator);
-    Path(const util::StringView &absolute_path, ArenaAllocator *allocator);
-    Path(const util::StringView &relative_path, const util::StringView &base_path, ArenaAllocator *allocator);
+    Path(const std::string &absolutePath, ArenaAllocator *allocator);
+    Path(const std::string &relativePath, const std::string &basePath, ArenaAllocator *allocator);
+    Path(const util::StringView &absolutePath, ArenaAllocator *allocator);
+    Path(const util::StringView &relativePath, const util::StringView &basePath, ArenaAllocator *allocator);
     bool IsRelative();
     bool IsAbsolute();
     const util::StringView &GetPath() const;
@@ -50,17 +50,17 @@ public:
 
 private:
     ArenaAllocator *allocator_ {};
-    bool is_relative_ {};
+    bool isRelative_ {};
     util::StringView path_ {};
-    util::StringView base_path_ {};
-    util::StringView absolute_path_ {};
-    util::StringView file_name_ {};
-    util::StringView file_extension_ {};
-    util::StringView parent_folder_ {};
-    util::StringView absolute_parent_folder_ {};
+    util::StringView basePath_ {};
+    util::StringView absolutePath_ {};
+    util::StringView fileName_ {};
+    util::StringView fileExtension_ {};
+    util::StringView parentFolder_ {};
+    util::StringView absoluteParentFolder_ {};
 
-    void Initializer(const std::string &absolute_path, ArenaAllocator *allocator);
-    void InitializeBasePath(std::string base_path);
+    void Initializer(const std::string &absolutePath, ArenaAllocator *allocator);
+    void InitializeBasePath(std::string basePath);
     void InitializeAbsolutePath();
     void InitializeParentFolder();
     void InitializeAbsoluteParentFolder();

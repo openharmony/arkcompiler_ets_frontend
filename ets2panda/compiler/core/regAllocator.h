@@ -109,7 +109,7 @@ public:
     }
 
 private:
-    void Run(IRNode *ins, int32_t spill_max);
+    void Run(IRNode *ins, int32_t spillMax);
 };
 
 class RangeRegAllocator final : public RegAllocatorBase {
@@ -120,14 +120,14 @@ public:
     ~RangeRegAllocator() = default;
 
     template <typename T, typename... Args>
-    void Emit(const ir::AstNode *const node, const VReg range_start, const std::size_t arg_count, Args &&...args)
+    void Emit(const ir::AstNode *const node, const VReg rangeStart, const std::size_t argCount, Args &&...args)
     {
         auto *const ins = Alloc<T>(node, std::forward<Args>(args)...);
-        Run(ins, range_start, arg_count);
+        Run(ins, rangeStart, argCount);
     }
 
 private:
-    void Run(IRNode *ins, VReg range_start, size_t arg_count);
+    void Run(IRNode *ins, VReg rangeStart, size_t argCount);
 };
 }  // namespace panda::es2panda::compiler
 

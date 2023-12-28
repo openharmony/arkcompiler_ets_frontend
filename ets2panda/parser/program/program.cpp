@@ -35,26 +35,26 @@ void Program::DumpSilent() const
     ASSERT(!dumper.Str().empty());
 }
 
-util::StringView Program::PackageClassName(util::StringView class_name)
+util::StringView Program::PackageClassName(util::StringView className)
 {
-    if (package_name_.Empty()) {
-        return class_name;
+    if (packageName_.Empty()) {
+        return className;
     }
 
-    util::UString name(package_name_, allocator_);
+    util::UString name(packageName_, allocator_);
     name.Append('.');
-    name.Append(class_name);
+    name.Append(className);
     return name.View();
 }
 
 varbinder::ClassScope *Program::GlobalClassScope()
 {
-    return global_class_->Scope()->AsClassScope();
+    return globalClass_->Scope()->AsClassScope();
 }
 
 const varbinder::ClassScope *Program::GlobalClassScope() const
 {
-    return global_class_->Scope()->AsClassScope();
+    return globalClass_->Scope()->AsClassScope();
 }
 
 varbinder::GlobalScope *Program::GlobalScope()

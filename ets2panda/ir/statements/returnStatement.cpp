@@ -73,20 +73,20 @@ checker::Type *ReturnStatement::Check(checker::ETSChecker *checker)
 
 void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)
 {
-    return_type_ = type;
+    returnType_ = type;
     if (argument_ != nullptr) {
-        checker::Type *argument_type = argument_->Check(checker);
+        checker::Type *argumentType = argument_->Check(checker);
         if (type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-            !argument_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+            !argumentType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
             auto *const relation = checker->Relation();
             relation->SetNode(argument_);
             relation->SetFlags(checker::TypeRelationFlag::NONE);
 
-            argument_type = checker->PrimitiveTypeAsETSBuiltinType(argument_type);
-            if (argument_type == nullptr) {
+            argumentType = checker->PrimitiveTypeAsETSBuiltinType(argumentType);
+            if (argumentType == nullptr) {
                 checker->ThrowTypeError("Invalid return statement expression", argument_->Start());
             }
-            argument_->AddBoxingUnboxingFlags(checker->GetBoxingFlag(argument_type));
+            argument_->AddBoxingUnboxingFlags(checker->GetBoxingFlag(argumentType));
 
             relation->SetNode(nullptr);
         }

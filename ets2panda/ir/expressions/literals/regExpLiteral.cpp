@@ -29,7 +29,7 @@ void RegExpLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void RegExpLiteral::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "RegExpLiteral"}, {"source", pattern_}, {"flags", flags_str_}});
+    dumper->Add({{"type", "RegExpLiteral"}, {"source", pattern_}, {"flags", flagsStr_}});
 }
 
 void RegExpLiteral::Dump(ir::SrcDumper *dumper) const
@@ -60,7 +60,7 @@ checker::Type *RegExpLiteral::Check(checker::ETSChecker *checker)
 // NOLINTNEXTLINE(google-default-arguments)
 RegExpLiteral *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    if (auto *const clone = allocator->New<RegExpLiteral>(pattern_, flags_, flags_str_); clone != nullptr) {
+    if (auto *const clone = allocator->New<RegExpLiteral>(pattern_, flags_, flagsStr_); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }

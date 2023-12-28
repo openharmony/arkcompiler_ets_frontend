@@ -48,15 +48,15 @@ void ChainExpression::Compile(compiler::PandaGen *pg) const
     pg->GetAstCompiler()->Compile(this);
 }
 
-void ChainExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg &obj_reg) const
+void ChainExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg &objReg) const
 {
     compiler::OptionalChain chain(pg, this);
 
     if (expression_->IsMemberExpression()) {
-        obj_reg = pg->AllocReg();
-        expression_->AsMemberExpression()->CompileToReg(pg, obj_reg);
+        objReg = pg->AllocReg();
+        expression_->AsMemberExpression()->CompileToReg(pg, objReg);
     } else {
-        obj_reg = compiler::VReg::Invalid();
+        objReg = compiler::VReg::Invalid();
         expression_->Compile(pg);
     }
 }

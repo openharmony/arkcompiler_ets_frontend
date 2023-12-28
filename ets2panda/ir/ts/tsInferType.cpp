@@ -25,17 +25,17 @@
 namespace panda::es2panda::ir {
 void TSInferType::TransformChildren(const NodeTransformer &cb)
 {
-    type_param_ = cb(type_param_)->AsTSTypeParameter();
+    typeParam_ = cb(typeParam_)->AsTSTypeParameter();
 }
 
 void TSInferType::Iterate(const NodeTraverser &cb) const
 {
-    cb(type_param_);
+    cb(typeParam_);
 }
 
 void TSInferType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSInferType"}, {"typeParameter", type_param_}});
+    dumper->Add({{"type", "TSInferType"}, {"typeParameter", typeParam_}});
 }
 
 void TSInferType::Dump(ir::SrcDumper *dumper) const

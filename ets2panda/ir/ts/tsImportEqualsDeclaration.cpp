@@ -27,21 +27,21 @@ namespace panda::es2panda::ir {
 void TSImportEqualsDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     id_ = cb(id_)->AsIdentifier();
-    module_reference_ = cb(module_reference_)->AsExpression();
+    moduleReference_ = cb(moduleReference_)->AsExpression();
 }
 
 void TSImportEqualsDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(id_);
-    cb(module_reference_);
+    cb(moduleReference_);
 }
 
 void TSImportEqualsDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSImportEqualsDeclaration"},
                  {"id", id_},
-                 {"moduleReference", module_reference_},
-                 {"isExport", is_export_}});
+                 {"moduleReference", moduleReference_},
+                 {"isExport", isExport_}});
 }
 
 void TSImportEqualsDeclaration::Dump(ir::SrcDumper *dumper) const

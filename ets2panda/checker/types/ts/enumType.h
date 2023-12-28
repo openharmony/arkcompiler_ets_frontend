@@ -25,30 +25,30 @@ class EnumVariable;
 namespace panda::es2panda::checker {
 class EnumType : public Type {
 public:
-    EnumType(varbinder::Variable *enum_literal_var, varbinder::EnumVariable *enum_var)
-        : Type(TypeFlag::ENUM), enum_literal_var_(enum_literal_var), enum_var_(enum_var)
+    EnumType(varbinder::Variable *enumLiteralVar, varbinder::EnumVariable *enumVar)
+        : Type(TypeFlag::ENUM), enumLiteralVar_(enumLiteralVar), enumVar_(enumVar)
     {
     }
 
     const varbinder::Variable *EnumLiteralVar() const
     {
-        return enum_literal_var_;
+        return enumLiteralVar_;
     }
 
     const varbinder::EnumVariable *EnumVar() const
     {
-        return enum_var_;
+        return enumVar_;
     }
 
     void ToString(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
-    varbinder::Variable *enum_literal_var_;
-    varbinder::EnumVariable *enum_var_;
+    varbinder::Variable *enumLiteralVar_;
+    varbinder::EnumVariable *enumVar_;
 };
 }  // namespace panda::es2panda::checker
 

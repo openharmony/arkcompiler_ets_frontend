@@ -27,13 +27,13 @@ void InterfaceType::ToString(std::stringstream &ss) const
 {
     ss << name_;
 
-    if (!type_param_types_.empty()) {
+    if (!typeParamTypes_.empty()) {
         ss << "<";
 
-        for (auto it = type_param_types_.begin(); it != type_param_types_.end(); it++) {
+        for (auto it = typeParamTypes_.begin(); it != typeParamTypes_.end(); it++) {
             (*it)->ToString(ss);
 
-            if (std::next(it) != type_param_types_.end()) {
+            if (std::next(it) != typeParamTypes_.end()) {
                 ss << ", ";
             }
         }
@@ -48,193 +48,191 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    InterfaceType *other_interface = other->AsObjectType()->AsInterfaceType();
+    InterfaceType *otherInterface = other->AsObjectType()->AsInterfaceType();
 
-    const ArenaVector<varbinder::LocalVariable *> &target_properties = Properties();
-    const ArenaVector<varbinder::LocalVariable *> &source_properties = other_interface->Properties();
+    const ArenaVector<varbinder::LocalVariable *> &targetProperties = Properties();
+    const ArenaVector<varbinder::LocalVariable *> &sourceProperties = otherInterface->Properties();
 
-    if (target_properties.size() != source_properties.size()) {
+    if (targetProperties.size() != sourceProperties.size()) {
         relation->Result(false);
         return;
     }
 
-    for (auto *target_prop : target_properties) {
-        bool found_prop =
-            std::any_of(source_properties.begin(), source_properties.end(),
-                        [target_prop, relation](varbinder::LocalVariable *source_prop) {
-                            if (target_prop->Name() == source_prop->Name()) {
-                                Type *target_type = relation->GetChecker()->GetTypeOfVariable(target_prop);
-                                Type *source_type = relation->GetChecker()->GetTypeOfVariable(source_prop);
-                                return relation->IsIdenticalTo(target_type, source_type);
-                            }
+    for (auto *targetProp : targetProperties) {
+        bool foundProp = std::any_of(sourceProperties.begin(), sourceProperties.end(),
+                                     [targetProp, relation](varbinder::LocalVariable *sourceProp) {
+                                         if (targetProp->Name() == sourceProp->Name()) {
+                                             Type *targetType = relation->GetChecker()->GetTypeOfVariable(targetProp);
+                                             Type *sourceType = relation->GetChecker()->GetTypeOfVariable(sourceProp);
+                                             return relation->IsIdenticalTo(targetType, sourceType);
+                                         }
 
-                            return false;
-                        });
-        if (!found_prop) {
+                                         return false;
+                                     });
+        if (!foundProp) {
             relation->Result(false);
             return;
         }
     }
 
-    const ArenaVector<Signature *> &target_call_signatures = CallSignatures();
-    const ArenaVector<Signature *> &source_call_signatures = other_interface->CallSignatures();
-    if (target_call_signatures.size() != source_call_signatures.size()) {
+    const ArenaVector<Signature *> &targetCallSignatures = CallSignatures();
+    const ArenaVector<Signature *> &sourceCallSignatures = otherInterface->CallSignatures();
+    if (targetCallSignatures.size() != sourceCallSignatures.size()) {
         relation->Result(false);
         return;
     }
 
-    if (!EachSignatureRelatedToSomeSignature(relation, target_call_signatures, source_call_signatures) ||
-        !EachSignatureRelatedToSomeSignature(relation, source_call_signatures, target_call_signatures)) {
+    if (!EachSignatureRelatedToSomeSignature(relation, targetCallSignatures, sourceCallSignatures) ||
+        !EachSignatureRelatedToSomeSignature(relation, sourceCallSignatures, targetCallSignatures)) {
         return;
     }
 
-    const ArenaVector<Signature *> &target_construct_signatures = ConstructSignatures();
-    const ArenaVector<Signature *> &source_construct_signatures = other_interface->ConstructSignatures();
+    const ArenaVector<Signature *> &targetConstructSignatures = ConstructSignatures();
+    const ArenaVector<Signature *> &sourceConstructSignatures = otherInterface->ConstructSignatures();
 
-    if (target_construct_signatures.size() != source_construct_signatures.size()) {
+    if (targetConstructSignatures.size() != sourceConstructSignatures.size()) {
         relation->Result(false);
         return;
     }
 
-    if (!EachSignatureRelatedToSomeSignature(relation, target_construct_signatures, source_construct_signatures) ||
-        !EachSignatureRelatedToSomeSignature(relation, source_construct_signatures, target_construct_signatures)) {
+    if (!EachSignatureRelatedToSomeSignature(relation, targetConstructSignatures, sourceConstructSignatures) ||
+        !EachSignatureRelatedToSomeSignature(relation, sourceConstructSignatures, targetConstructSignatures)) {
         return;
     }
 
-    IndexInfo *target_number_info = NumberIndexInfo();
-    IndexInfo *source_number_info = other_interface->NumberIndexInfo();
+    IndexInfo *targetNumberInfo = NumberIndexInfo();
+    IndexInfo *sourceNumberInfo = otherInterface->NumberIndexInfo();
 
-    if ((target_number_info != nullptr && source_number_info == nullptr) ||
-        (target_number_info == nullptr && source_number_info != nullptr)) {
+    if ((targetNumberInfo != nullptr && sourceNumberInfo == nullptr) ||
+        (targetNumberInfo == nullptr && sourceNumberInfo != nullptr)) {
         relation->Result(false);
         return;
     }
 
-    relation->IsIdenticalTo(target_number_info, source_number_info);
+    relation->IsIdenticalTo(targetNumberInfo, sourceNumberInfo);
 
     if (relation->IsTrue()) {
-        IndexInfo *target_string_info = StringIndexInfo();
-        IndexInfo *source_string_info = other_interface->StringIndexInfo();
+        IndexInfo *targetStringInfo = StringIndexInfo();
+        IndexInfo *sourceStringInfo = otherInterface->StringIndexInfo();
 
-        if ((target_string_info != nullptr && source_string_info == nullptr) ||
-            (target_string_info == nullptr && source_string_info != nullptr)) {
+        if ((targetStringInfo != nullptr && sourceStringInfo == nullptr) ||
+            (targetStringInfo == nullptr && sourceStringInfo != nullptr)) {
             relation->Result(false);
             return;
         }
 
-        relation->IsIdenticalTo(target_string_info, source_string_info);
+        relation->IsIdenticalTo(targetStringInfo, sourceStringInfo);
     }
 }
 
-Type *InterfaceType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *InterfaceType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copied_desc = allocator->New<ObjectDescriptor>(allocator);
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
 
-    desc_->Copy(allocator, copied_desc, relation, global_types);
+    desc_->Copy(allocator, copiedDesc, relation, globalTypes);
 
-    Type *new_interface_type = allocator->New<InterfaceType>(allocator, name_, copied_desc);
+    Type *newInterfaceType = allocator->New<InterfaceType>(allocator, name_, copiedDesc);
 
     for (auto *it : bases_) {
-        new_interface_type->AsObjectType()->AsInterfaceType()->AddBase(
-            it->Instantiate(allocator, relation, global_types)->AsObjectType());
+        newInterfaceType->AsObjectType()->AsInterfaceType()->AddBase(
+            it->Instantiate(allocator, relation, globalTypes)->AsObjectType());
     }
 
-    return new_interface_type;
+    return newInterfaceType;
 }
 
-void InterfaceType::CollectSignatures(ArenaVector<Signature *> *collected_signatures,
-                                      bool collect_call_signatures) const
+void InterfaceType::CollectSignatures(ArenaVector<Signature *> *collectedSignatures, bool collectCallSignatures) const
 {
-    if (collect_call_signatures) {
-        for (auto *it : desc_->call_signatures) {
-            collected_signatures->push_back(it);
+    if (collectCallSignatures) {
+        for (auto *it : desc_->callSignatures) {
+            collectedSignatures->push_back(it);
         }
     } else {
-        for (auto *it : desc_->construct_signatures) {
-            collected_signatures->push_back(it);
+        for (auto *it : desc_->constructSignatures) {
+            collectedSignatures->push_back(it);
         }
     }
 
     for (auto *it : bases_) {
-        it->AsInterfaceType()->CollectSignatures(collected_signatures, collect_call_signatures);
+        it->AsInterfaceType()->CollectSignatures(collectedSignatures, collectCallSignatures);
     }
 }
 
-void InterfaceType::CollectProperties(ArenaVector<varbinder::LocalVariable *> *collected_properties) const
+void InterfaceType::CollectProperties(ArenaVector<varbinder::LocalVariable *> *collectedProperties) const
 {
-    for (auto *current_prop : desc_->properties) {
-        bool prop_already_collected = false;
-        for (auto *collected_prop : *collected_properties) {
-            if (current_prop->Name() == collected_prop->Name()) {
-                prop_already_collected = true;
+    for (auto *currentProp : desc_->properties) {
+        bool propAlreadyCollected = false;
+        for (auto *collectedProp : *collectedProperties) {
+            if (currentProp->Name() == collectedProp->Name()) {
+                propAlreadyCollected = true;
                 break;
             }
         }
 
-        if (prop_already_collected) {
+        if (propAlreadyCollected) {
             continue;
         }
 
-        collected_properties->push_back(current_prop);
+        collectedProperties->push_back(currentProp);
     }
 
     for (auto *it : bases_) {
-        it->AsInterfaceType()->CollectProperties(collected_properties);
+        it->AsInterfaceType()->CollectProperties(collectedProperties);
     }
 }
 
-const IndexInfo *InterfaceType::FindIndexInfo(bool find_number_info) const
+const IndexInfo *InterfaceType::FindIndexInfo(bool findNumberInfo) const
 {
-    const IndexInfo *found_info = nullptr;
+    const IndexInfo *foundInfo = nullptr;
 
-    if (find_number_info && desc_->number_index_info != nullptr) {
-        found_info = desc_->number_index_info;
-    } else if (!find_number_info && desc_->string_index_info != nullptr) {
-        found_info = desc_->string_index_info;
+    if (findNumberInfo && desc_->numberIndexInfo != nullptr) {
+        foundInfo = desc_->numberIndexInfo;
+    } else if (!findNumberInfo && desc_->stringIndexInfo != nullptr) {
+        foundInfo = desc_->stringIndexInfo;
     }
 
-    for (auto it = bases_.begin(); it != bases_.end() && found_info == nullptr; it++) {
-        found_info = (*it)->AsInterfaceType()->FindIndexInfo(find_number_info);
+    for (auto it = bases_.begin(); it != bases_.end() && foundInfo == nullptr; it++) {
+        foundInfo = (*it)->AsInterfaceType()->FindIndexInfo(findNumberInfo);
     }
 
-    return found_info;
+    return foundInfo;
 }
 
-IndexInfo *InterfaceType::FindIndexInfo(bool find_number_info)
+IndexInfo *InterfaceType::FindIndexInfo(bool findNumberInfo)
 {
-    IndexInfo *found_info = nullptr;
+    IndexInfo *foundInfo = nullptr;
 
-    if (find_number_info && desc_->number_index_info != nullptr) {
-        found_info = desc_->number_index_info;
-    } else if (!find_number_info && desc_->string_index_info != nullptr) {
-        found_info = desc_->string_index_info;
+    if (findNumberInfo && desc_->numberIndexInfo != nullptr) {
+        foundInfo = desc_->numberIndexInfo;
+    } else if (!findNumberInfo && desc_->stringIndexInfo != nullptr) {
+        foundInfo = desc_->stringIndexInfo;
     }
 
-    for (auto it = bases_.begin(); it != bases_.end() && found_info == nullptr; it++) {
-        found_info = (*it)->AsInterfaceType()->FindIndexInfo(find_number_info);
+    for (auto it = bases_.begin(); it != bases_.end() && foundInfo == nullptr; it++) {
+        foundInfo = (*it)->AsInterfaceType()->FindIndexInfo(findNumberInfo);
     }
 
-    return found_info;
+    return foundInfo;
 }
 
 TypeFacts InterfaceType::GetTypeFacts() const
 {
-    if (desc_->properties.empty() && desc_->call_signatures.empty() && desc_->construct_signatures.empty() &&
-        desc_->string_index_info == nullptr && desc_->number_index_info == nullptr) {
+    if (desc_->properties.empty() && desc_->callSignatures.empty() && desc_->constructSignatures.empty() &&
+        desc_->stringIndexInfo == nullptr && desc_->numberIndexInfo == nullptr) {
         if (bases_.empty()) {
             return TypeFacts::EMPTY_OBJECT_FACTS;
         }
 
-        bool is_empty = true;
-        for (auto it = bases_.begin(); is_empty && it != bases_.end(); it++) {
+        bool isEmpty = true;
+        for (auto it = bases_.begin(); isEmpty && it != bases_.end(); it++) {
             if (!(*it)->Properties().empty() || !(*it)->CallSignatures().empty() ||
                 !(*it)->ConstructSignatures().empty() || (*it)->StringIndexInfo() != nullptr ||
                 (*it)->NumberIndexInfo() != nullptr) {
-                is_empty = false;
+                isEmpty = false;
             }
         }
 
-        if (is_empty) {
+        if (isEmpty) {
             return TypeFacts::EMPTY_OBJECT_FACTS;
         }
     }

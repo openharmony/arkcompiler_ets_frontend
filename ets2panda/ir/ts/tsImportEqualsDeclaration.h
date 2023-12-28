@@ -23,11 +23,11 @@ class Expression;
 
 class TSImportEqualsDeclaration : public Statement {
 public:
-    explicit TSImportEqualsDeclaration(Identifier *id, Expression *module_reference, bool is_export)
+    explicit TSImportEqualsDeclaration(Identifier *id, Expression *moduleReference, bool isExport)
         : Statement(AstNodeType::TS_IMPORT_EQUALS_DECLARATION),
           id_(id),
-          module_reference_(module_reference),
-          is_export_(is_export)
+          moduleReference_(moduleReference),
+          isExport_(isExport)
     {
     }
 
@@ -38,12 +38,12 @@ public:
 
     const Expression *ModuleReference() const
     {
-        return module_reference_;
+        return moduleReference_;
     }
 
     bool IsExport() const
     {
-        return is_export_;
+        return isExport_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -62,8 +62,8 @@ public:
 
 private:
     Identifier *id_;
-    Expression *module_reference_;
-    bool is_export_;
+    Expression *moduleReference_;
+    bool isExport_;
 };
 }  // namespace panda::es2panda::ir
 

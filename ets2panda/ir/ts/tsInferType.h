@@ -23,11 +23,11 @@ class TSTypeParameter;
 
 class TSInferType : public TypeNode {
 public:
-    explicit TSInferType(TSTypeParameter *type_param) : TypeNode(AstNodeType::TS_INFER_TYPE), type_param_(type_param) {}
+    explicit TSInferType(TSTypeParameter *typeParam) : TypeNode(AstNodeType::TS_INFER_TYPE), typeParam_(typeParam) {}
 
     const TSTypeParameter *TypeParam() const
     {
-        return type_param_;
+        return typeParam_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -46,7 +46,7 @@ public:
     }
 
 private:
-    TSTypeParameter *type_param_;
+    TSTypeParameter *typeParam_;
 };
 }  // namespace panda::es2panda::ir
 

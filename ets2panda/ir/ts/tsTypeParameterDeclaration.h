@@ -24,10 +24,10 @@ namespace panda::es2panda::ir {
 
 class TSTypeParameterDeclaration : public Expression {
 public:
-    explicit TSTypeParameterDeclaration(ArenaVector<TSTypeParameter *> &&params, size_t required_params)
+    explicit TSTypeParameterDeclaration(ArenaVector<TSTypeParameter *> &&params, size_t requiredParams)
         : Expression(AstNodeType::TS_TYPE_PARAMETER_DECLARATION),
           params_(std::move(params)),
-          required_params_(required_params)
+          requiredParams_(requiredParams)
     {
     }
 
@@ -53,15 +53,15 @@ public:
 
     void AddParam(TSTypeParameter *param)
     {
-        if (required_params_ == params_.size() && param->DefaultType() == nullptr) {
-            required_params_++;
+        if (requiredParams_ == params_.size() && param->DefaultType() == nullptr) {
+            requiredParams_++;
         }
         params_.push_back(param);
     }
 
     size_t RequiredParams() const
     {
-        return required_params_;
+        return requiredParams_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -81,7 +81,7 @@ public:
 private:
     ArenaVector<TSTypeParameter *> params_;
     varbinder::LocalScope *scope_ {nullptr};
-    size_t required_params_;
+    size_t requiredParams_;
 };
 }  // namespace panda::es2panda::ir
 

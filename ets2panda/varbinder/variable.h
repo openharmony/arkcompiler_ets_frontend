@@ -83,7 +83,7 @@ public:
 
     checker::Type *TsType() const
     {
-        return ts_type_;
+        return tsType_;
     }
 
     Scope *GetScope() const
@@ -91,9 +91,9 @@ public:
         return scope_;
     }
 
-    void SetTsType(checker::Type *ts_type)
+    void SetTsType(checker::Type *tsType)
     {
-        ts_type_ = ts_type;
+        tsType_ = tsType;
     }
 
     void SetScope(varbinder::Scope *scope)
@@ -137,7 +137,7 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Decl *decl_ {};
     VariableFlags flags_ {};
-    checker::Type *ts_type_ {};
+    checker::Type *tsType_ {};
     Scope *scope_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
@@ -211,35 +211,35 @@ public:
 
     compiler::VReg &ModuleReg()
     {
-        return module_reg_;
+        return moduleReg_;
     }
 
     compiler::VReg ModuleReg() const
     {
-        return module_reg_;
+        return moduleReg_;
     }
 
     const util::StringView &ExoticName() const
     {
-        return exotic_name_;
+        return exoticName_;
     }
 
     util::StringView &ExoticName()
     {
-        return exotic_name_;
+        return exoticName_;
     }
 
     void SetLexical([[maybe_unused]] Scope *scope) override;
 
 private:
-    compiler::VReg module_reg_ {};
-    util::StringView exotic_name_ {};
+    compiler::VReg moduleReg_ {};
+    util::StringView exoticName_ {};
 };
 
 class EnumVariable : public Variable {
 public:
-    explicit EnumVariable(Decl *decl, bool back_reference = false)
-        : Variable(decl, VariableFlags::NONE), back_reference_(back_reference)
+    explicit EnumVariable(Decl *decl, bool backReference = false)
+        : Variable(decl, VariableFlags::NONE), backReference_(backReference)
     {
     }
 
@@ -260,12 +260,12 @@ public:
 
     bool BackReference() const
     {
-        return back_reference_;
+        return backReference_;
     }
 
     void SetBackReference()
     {
-        back_reference_ = true;
+        backReference_ = true;
     }
 
     void ResetDecl(Decl *decl);
@@ -274,7 +274,7 @@ public:
 
 private:
     EnumMemberResult value_ {};
-    bool back_reference_ {};
+    bool backReference_ {};
 };
 }  // namespace panda::es2panda::varbinder
 #endif

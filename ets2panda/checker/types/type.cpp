@@ -85,7 +85,7 @@ void Type::ToStringAsSrc(std::stringstream &ss) const
 
 void Type::Identical(TypeRelation *relation, Type *other)
 {
-    relation->Result(type_flags_ == other->TypeFlags());
+    relation->Result(typeFlags_ == other->TypeFlags());
 }
 
 bool Type::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
@@ -115,13 +115,13 @@ void Type::IsSupertypeOf(TypeRelation *const relation, [[maybe_unused]] Type *so
     relation->Result(false);
 }
 
-Type *Type::AsSuper([[maybe_unused]] Checker *checker, [[maybe_unused]] varbinder::Variable *source_var)
+Type *Type::AsSuper([[maybe_unused]] Checker *checker, [[maybe_unused]] varbinder::Variable *sourceVar)
 {
     return nullptr;
 }
 
 Type *Type::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                        [[maybe_unused]] GlobalTypesHolder *global_types)
+                        [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return nullptr;
 }

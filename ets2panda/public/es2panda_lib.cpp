@@ -283,102 +283,102 @@ extern "C" void DestroyConfig(es2panda_Config *config)
 }
 
 static void CompileJob(compiler::CompilerContext *context, varbinder::FunctionScope *scope,
-                       compiler::ProgramElement *program_element)
+                       compiler::ProgramElement *programElement)
 {
-    compiler::StaticRegSpiller reg_spiller;
+    compiler::StaticRegSpiller regSpiller;
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER, nullptr, true};
-    compiler::ETSCompiler ast_compiler {};
-    compiler::ETSGen cg {&allocator, &reg_spiller, context, scope, program_element, &ast_compiler};
-    compiler::ETSFunctionEmitter func_emitter {&cg, program_element};
-    func_emitter.Generate();
+    compiler::ETSCompiler astCompiler {};
+    compiler::ETSGen cg {&allocator, &regSpiller, context, scope, programElement, &astCompiler};
+    compiler::ETSFunctionEmitter funcEmitter {&cg, programElement};
+    funcEmitter.Generate();
 }
 
 static es2panda_Context *CreateContext(es2panda_Config *config, std::string const &&source,
-                                       std::string const &&file_name)
+                                       std::string const &&fileName)
 {
     auto *cfg = reinterpret_cast<ConfigImpl *>(config);
     auto *res = new Context;
     res->input = source;
-    res->source_file_name = file_name;
+    res->sourceFileName = fileName;
 
     try {
-        res->source_file = new SourceFile(res->source_file_name, res->input, cfg->options->ParseModule());
+        res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->ParseModule());
         res->allocator = new ArenaAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         res->queue = new compiler::CompileQueue(cfg->options->ThreadCount());
 
         auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator);
-        res->parser_program = new parser::Program(res->allocator, varbinder);
-        res->parser_program->MarkEntry();
+        res->parserProgram = new parser::Program(res->allocator, varbinder);
+        res->parserProgram->MarkEntry();
         res->parser =
-            new parser::ETSParser(res->parser_program, cfg->options->CompilerOptions(), parser::ParserStatus::NO_OPTS);
+            new parser::ETSParser(res->parserProgram, cfg->options->CompilerOptions(), parser::ParserStatus::NO_OPTS);
         res->checker = new checker::ETSChecker();
         res->analyzer = new checker::ETSAnalyzer(res->checker);
         res->checker->SetAnalyzer(res->analyzer);
 
-        varbinder->SetProgram(res->parser_program);
+        varbinder->SetProgram(res->parserProgram);
 
-        res->compiler_context =
+        res->compilerContext =
             new compiler::CompilerContext(varbinder, res->checker, cfg->options->CompilerOptions(), CompileJob);
-        varbinder->SetCompilerContext(res->compiler_context);
+        varbinder->SetCompilerContext(res->compilerContext);
         res->phases = compiler::GetPhaseList(ScriptExtension::ETS);
-        res->current_phase = 0;
-        res->emitter = new compiler::ETSEmitter(res->compiler_context);
-        res->compiler_context->SetEmitter(res->emitter);
-        res->compiler_context->SetParser(res->parser);
+        res->currentPhase = 0;
+        res->emitter = new compiler::ETSEmitter(res->compilerContext);
+        res->compilerContext->SetEmitter(res->emitter);
+        res->compilerContext->SetParser(res->parser);
         res->program = nullptr;
         res->state = ES2PANDA_STATE_NEW;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        res->error_message = ss.str();
+        res->errorMessage = ss.str();
         res->state = ES2PANDA_STATE_ERROR;
     }
     return reinterpret_cast<es2panda_Context *>(res);
 }
 
-extern "C" es2panda_Context *CreateContextFromFile(es2panda_Config *config, char const *source_file_name)
+extern "C" es2panda_Context *CreateContextFromFile(es2panda_Config *config, char const *sourceFileName)
 {
-    std::ifstream input_stream;
-    input_stream.open(source_file_name);
-    if (input_stream.fail()) {
+    std::ifstream inputStream;
+    inputStream.open(sourceFileName);
+    if (inputStream.fail()) {
         auto *res = new Context;
-        res->error_message = "Failed to open file: ";
-        res->error_message.append(source_file_name);
+        res->errorMessage = "Failed to open file: ";
+        res->errorMessage.append(sourceFileName);
         return reinterpret_cast<es2panda_Context *>(res);
     }
     std::stringstream ss;
-    ss << input_stream.rdbuf();
-    if (input_stream.fail()) {
+    ss << inputStream.rdbuf();
+    if (inputStream.fail()) {
         auto *res = new Context;
-        res->error_message = "Failed to read file: ";
-        res->error_message.append(source_file_name);
+        res->errorMessage = "Failed to read file: ";
+        res->errorMessage.append(sourceFileName);
         return reinterpret_cast<es2panda_Context *>(res);
     }
-    return CreateContext(config, ss.str(), source_file_name);
+    return CreateContext(config, ss.str(), sourceFileName);
 }
 
-extern "C" es2panda_Context *CreateContextFromString(es2panda_Config *config, char const *source, char const *file_name)
+extern "C" es2panda_Context *CreateContextFromString(es2panda_Config *config, char const *source, char const *fileName)
 {
     // NOTE: gogabr. avoid copying source.
-    return CreateContext(config, source, file_name);
+    return CreateContext(config, source, fileName);
 }
 
 static Context *Parse(Context *ctx)
 {
     if (ctx->state != ES2PANDA_STATE_NEW) {
         ctx->state = ES2PANDA_STATE_ERROR;
-        ctx->error_message = "Bad state at entry to Parse, needed NEW";
+        ctx->errorMessage = "Bad state at entry to Parse, needed NEW";
         return ctx;
     }
     try {
-        ctx->parser->ParseScript(*ctx->source_file,
-                                 ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB);
-        ctx->parser_program = ctx->compiler_context->VarBinder()->Program();
+        ctx->parser->ParseScript(*ctx->sourceFile,
+                                 ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB);
+        ctx->parserProgram = ctx->compilerContext->VarBinder()->Program();
         ctx->state = ES2PANDA_STATE_PARSED;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        ctx->error_message = ss.str();
+        ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
 
@@ -398,19 +398,19 @@ static Context *InitScopes(Context *ctx)
     ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
 
     try {
-        compiler::ScopesInitPhaseETS scopes_init;
-        scopes_init.Perform(ctx, ctx->parser_program);
+        compiler::ScopesInitPhaseETS scopesInit;
+        scopesInit.Perform(ctx, ctx->parserProgram);
         do {
-            if (ctx->current_phase >= ctx->phases.size()) {
+            if (ctx->currentPhase >= ctx->phases.size()) {
                 break;
             }
-            ctx->phases[ctx->current_phase]->Apply(ctx, ctx->parser_program);
-        } while (ctx->phases[ctx->current_phase++]->Name() != "scopes");
+            ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
+        } while (ctx->phases[ctx->currentPhase++]->Name() != "scopes");
         ctx->state = ES2PANDA_STATE_SCOPE_INITED;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        ctx->error_message = ss.str();
+        ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
     return ctx;
@@ -430,17 +430,17 @@ static Context *Check(Context *ctx)
 
     try {
         do {
-            if (ctx->current_phase >= ctx->phases.size()) {
+            if (ctx->currentPhase >= ctx->phases.size()) {
                 break;
             }
 
-            ctx->phases[ctx->current_phase]->Apply(ctx, ctx->parser_program);
-        } while (ctx->phases[ctx->current_phase++]->Name() != "checker");
+            ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
+        } while (ctx->phases[ctx->currentPhase++]->Name() != "checker");
         ctx->state = ES2PANDA_STATE_CHECKED;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        ctx->error_message = ss.str();
+        ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
     return ctx;
@@ -459,15 +459,15 @@ static Context *Lower(Context *ctx)
     ASSERT(ctx->state == ES2PANDA_STATE_CHECKED);
 
     try {
-        while (ctx->current_phase < ctx->phases.size()) {
-            ctx->phases[ctx->current_phase++]->Apply(ctx, ctx->parser_program);
+        while (ctx->currentPhase < ctx->phases.size()) {
+            ctx->phases[ctx->currentPhase++]->Apply(ctx, ctx->parserProgram);
         }
 
         ctx->state = ES2PANDA_STATE_LOWERED;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        ctx->error_message = ss.str();
+        ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
 
@@ -486,31 +486,31 @@ static Context *GenerateAsm(Context *ctx)
 
     ASSERT(ctx->state == ES2PANDA_STATE_LOWERED);
 
-    auto *emitter = ctx->compiler_context->GetEmitter();
+    auto *emitter = ctx->compilerContext->GetEmitter();
     try {
         emitter->GenAnnotation();
 
         // Handle context literals.
         uint32_t index = 0;
-        for (const auto &buff : ctx->compiler_context->ContextLiterals()) {
+        for (const auto &buff : ctx->compilerContext->ContextLiterals()) {
             emitter->AddLiteralBuffer(buff, index++);
         }
 
-        emitter->LiteralBufferIndex() += ctx->compiler_context->ContextLiterals().size();
+        emitter->LiteralBufferIndex() += ctx->compilerContext->ContextLiterals().size();
 
         /* Main thread can also be used instead of idling */
-        ctx->queue->Schedule(ctx->compiler_context);
+        ctx->queue->Schedule(ctx->compilerContext);
         ctx->queue->Consume();
         ctx->queue->Wait(
             [emitter](compiler::CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
         ASSERT(ctx->program == nullptr);
-        ctx->program = emitter->Finalize(ctx->compiler_context->DumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
+        ctx->program = emitter->Finalize(ctx->compilerContext->DumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
 
         ctx->state = ES2PANDA_STATE_ASM_GENERATED;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        ctx->error_message = ss.str();
+        ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
     return ctx;
@@ -531,13 +531,13 @@ Context *GenerateBin(Context *ctx)
     try {
         ASSERT(ctx->program != nullptr);
         util::GenerateProgram(ctx->program, ctx->config->options,
-                              [ctx](const std::string &str) { ctx->error_message = str; });
+                              [ctx](const std::string &str) { ctx->errorMessage = str; });
 
         ctx->state = ES2PANDA_STATE_BIN_GENERATED;
     } catch (Error &e) {
         std::stringstream ss;
         ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
-        ctx->error_message = ss.str();
+        ctx->errorMessage = ss.str();
         ctx->state = ES2PANDA_STATE_ERROR;
     }
     return ctx;
@@ -568,7 +568,7 @@ extern "C" es2panda_Context *ProceedToState(es2panda_Context *context, es2panda_
             ctx = GenerateBin(ctx);
             break;
         default:
-            ctx->error_message = "It does not make sense to request stage";
+            ctx->errorMessage = "It does not make sense to request stage";
             ctx->state = ES2PANDA_STATE_ERROR;
             break;
     }
@@ -580,14 +580,14 @@ extern "C" void DestroyContext(es2panda_Context *context)
     auto *ctx = reinterpret_cast<Context *>(context);
     delete ctx->program;
     delete ctx->emitter;
-    delete ctx->compiler_context;
+    delete ctx->compilerContext;
     delete ctx->analyzer;
     delete ctx->checker;
     delete ctx->parser;
-    delete ctx->parser_program;
+    delete ctx->parserProgram;
     delete ctx->queue;
     delete ctx->allocator;
-    delete ctx->source_file;
+    delete ctx->sourceFile;
     delete ctx;
 }
 
@@ -600,13 +600,13 @@ extern "C" es2panda_ContextState ContextState(es2panda_Context *context)
 extern "C" char const *ContextErrorMessage(es2panda_Context *context)
 {
     auto *s = reinterpret_cast<Context *>(context);
-    return s->error_message.c_str();
+    return s->errorMessage.c_str();
 }
 
 extern "C" es2panda_Program *ContextProgram(es2panda_Context *context)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
-    return reinterpret_cast<es2panda_Program *>(ctx->compiler_context->VarBinder()->Program());
+    return reinterpret_cast<es2panda_Program *>(ctx->compilerContext->VarBinder()->Program());
 }
 
 extern "C" es2panda_AstNode *ProgramAst(es2panda_Program *program)
@@ -617,7 +617,7 @@ extern "C" es2panda_AstNode *ProgramAst(es2panda_Program *program)
 
 using ExternalSourceEntry = std::pair<char const *, ArenaVector<parser::Program *> *>;
 
-extern "C" es2panda_ExternalSource **ProgramExternalSources(es2panda_Program *program, size_t *len_p)
+extern "C" es2panda_ExternalSource **ProgramExternalSources(es2panda_Program *program, size_t *lenP)
 {
     auto *pgm = reinterpret_cast<parser::Program *>(program);
     auto *allocator = pgm->VarBinder()->Allocator();
@@ -627,20 +627,20 @@ extern "C" es2panda_ExternalSource **ProgramExternalSources(es2panda_Program *pr
         vec->push_back(allocator->New<ExternalSourceEntry>(StringViewToCString(allocator, e_name), &e_programs));
     }
 
-    *len_p = vec->size();
+    *lenP = vec->size();
     return reinterpret_cast<es2panda_ExternalSource **>(vec->data());
 }
 
-extern "C" char const *ExternalSourceName(es2panda_ExternalSource *e_source)
+extern "C" char const *ExternalSourceName(es2panda_ExternalSource *eSource)
 {
-    auto *entry = reinterpret_cast<ExternalSourceEntry *>(e_source);
+    auto *entry = reinterpret_cast<ExternalSourceEntry *>(eSource);
     return entry->first;
 }
 
-extern "C" es2panda_Program **ExternalSourcePrograms(es2panda_ExternalSource *e_source, size_t *len_p)
+extern "C" es2panda_Program **ExternalSourcePrograms(es2panda_ExternalSource *eSource, size_t *lenP)
 {
-    auto *entry = reinterpret_cast<ExternalSourceEntry *>(e_source);
-    *len_p = entry->second->size();
+    auto *entry = reinterpret_cast<ExternalSourceEntry *>(eSource);
+    *lenP = entry->second->size();
     return reinterpret_cast<es2panda_Program **>(entry->second->data());
 }
 
@@ -654,15 +654,15 @@ extern "C" es2panda_Type *AstNodeType(es2panda_AstNode *ast)
     return nullptr;
 }
 
-extern "C" es2panda_AstNode *const *AstNodeDecorators(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *AstNodeDecorators(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast);
     if (node->CanHaveDecorator(false)) {
         auto *decorators = node->DecoratorsPtr();
-        *size_p = decorators->size();
+        *sizeP = decorators->size();
         return reinterpret_cast<es2panda_AstNode *const *>(decorators->data());
     }
-    *size_p = 0;
+    *sizeP = 0;
     return nullptr;
 }
 
@@ -673,18 +673,18 @@ extern "C" es2panda_ModifierFlags AstNodeModifierFlags(es2panda_AstNode *ast)
 }
 
 extern "C" void AstNodeSetDecorators(es2panda_Context *context, es2panda_AstNode *ast, es2panda_AstNode **decorators,
-                                     size_t n_decorators)
+                                     size_t nDecorators)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
     auto *node = reinterpret_cast<ir::AstNode *>(ast);
 
-    ArenaVector<ir::Decorator *> decorators_vector {allocator->Adapter()};
-    for (size_t i = 0; i < n_decorators; i++) {
+    ArenaVector<ir::Decorator *> decoratorsVector {allocator->Adapter()};
+    for (size_t i = 0; i < nDecorators; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        decorators_vector.push_back(reinterpret_cast<ir::AstNode *>(decorators[i])->AsDecorator());
+        decoratorsVector.push_back(reinterpret_cast<ir::AstNode *>(decorators[i])->AsDecorator());
     }
-    node->AddDecorators(std::move(decorators_vector));
+    node->AddDecorators(std::move(decoratorsVector));
 }
 
 extern "C" void AstNodeSetType(es2panda_AstNode *ast, es2panda_Type *type)
@@ -759,10 +759,10 @@ IS(VariableDeclarator, VariableDeclarator)
 
 #undef IS
 
-extern "C" es2panda_AstNode *CreateArrowFunctionExpression(es2panda_Context *context, es2panda_AstNode *script_function)
+extern "C" es2panda_AstNode *CreateArrowFunctionExpression(es2panda_Context *context, es2panda_AstNode *scriptFunction)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
-    auto *func = reinterpret_cast<ir::AstNode *>(script_function)->AsScriptFunction();
+    auto *func = reinterpret_cast<ir::AstNode *>(scriptFunction)->AsScriptFunction();
     auto *allocator = ctx->allocator;
 
     return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ArrowFunctionExpression>(allocator, func));
@@ -775,14 +775,14 @@ extern "C" es2panda_AstNode *ArrowFunctionExpressionScriptFunction(es2panda_AstN
 }
 
 extern "C" es2panda_AstNode *CreateAsExpression(es2panda_Context *context, es2panda_AstNode *expr,
-                                                es2panda_AstNode *type_annotation, bool is_const)
+                                                es2panda_AstNode *typeAnnotation, bool isConst)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
-    auto *left_expr = reinterpret_cast<ir::AstNode *>(expr)->AsExpression();
-    auto *tp = reinterpret_cast<ir::AstNode *>(type_annotation)->AsExpression()->AsTypeNode();
+    auto *leftExpr = reinterpret_cast<ir::AstNode *>(expr)->AsExpression();
+    auto *tp = reinterpret_cast<ir::AstNode *>(typeAnnotation)->AsExpression()->AsTypeNode();
     auto *allocator = ctx->allocator;
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSAsExpression>(left_expr, tp, is_const));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSAsExpression>(leftExpr, tp, isConst));
 }
 
 extern "C" es2panda_AstNode *AsExpressionExpr(es2panda_AstNode *ast)
@@ -806,14 +806,14 @@ extern "C" bool AsExpressionIsConst(es2panda_AstNode *ast)
 extern "C" void AsExpressionSetExpr(es2panda_AstNode *ast, es2panda_AstNode *expr)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsTSAsExpression();
-    auto *new_expr = reinterpret_cast<ir::AstNode *>(expr)->AsExpression();
-    node->SetExpr(new_expr);
+    auto *newExpr = reinterpret_cast<ir::AstNode *>(expr)->AsExpression();
+    node->SetExpr(newExpr);
 }
 
-extern "C" void AsExpressionSetTypeAnnotation(es2panda_AstNode *ast, es2panda_AstNode *type_annotation)
+extern "C" void AsExpressionSetTypeAnnotation(es2panda_AstNode *ast, es2panda_AstNode *typeAnnotation)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsTSAsExpression();
-    auto *tp = reinterpret_cast<ir::AstNode *>(type_annotation)->AsExpression()->AsTypeNode();
+    auto *tp = reinterpret_cast<ir::AstNode *>(typeAnnotation)->AsExpression()->AsTypeNode();
     node->SetTsTypeAnnotation(tp);
 }
 
@@ -837,14 +837,14 @@ static constexpr std::array<TokenTypeToStr, 18U> ASSIGNMENT_TOKEN_TYPES {
      {lexer::TokenType::EOS, nullptr}}};
 
 extern "C" es2panda_AstNode *CreateAssignmentExpression(es2panda_Context *context, es2panda_AstNode *left,
-                                                        es2panda_AstNode *right, char const *operator_type)
+                                                        es2panda_AstNode *right, char const *operatorType)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *left_node = reinterpret_cast<ir::AstNode *>(left)->AsExpression();
-    auto *right_node = reinterpret_cast<ir::AstNode *>(right)->AsExpression();
-    lexer::TokenType tok = StrToToken(ASSIGNMENT_TOKEN_TYPES.data(), operator_type);
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::AssignmentExpression>(left_node, right_node, tok));
+    auto *leftNode = reinterpret_cast<ir::AstNode *>(left)->AsExpression();
+    auto *rightNode = reinterpret_cast<ir::AstNode *>(right)->AsExpression();
+    lexer::TokenType tok = StrToToken(ASSIGNMENT_TOKEN_TYPES.data(), operatorType);
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::AssignmentExpression>(leftNode, rightNode, tok));
 }
 
 extern "C" es2panda_AstNode *AssignmentExpressionLeft(es2panda_AstNode *ast)
@@ -865,10 +865,10 @@ extern "C" char const *AssignmentExpressionOperatorType(es2panda_AstNode *ast)
     return TokenToStr(ASSIGNMENT_TOKEN_TYPES.data(), node->OperatorType());
 }
 
-extern "C" void AssignmentExpressionSetOperatorType(es2panda_AstNode *ast, char const *operator_type)
+extern "C" void AssignmentExpressionSetOperatorType(es2panda_AstNode *ast, char const *operatorType)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsAssignmentExpression();
-    auto tok = StrToToken(ASSIGNMENT_TOKEN_TYPES.data(), operator_type);
+    auto tok = StrToToken(ASSIGNMENT_TOKEN_TYPES.data(), operatorType);
     node->SetOperatorType(tok);
 }
 
@@ -901,15 +901,15 @@ static constexpr std::array<TokenTypeToStr, 26U> BINARY_OP_TOKEN_TYPES {
      {lexer::TokenType::EOS, nullptr}}};
 
 extern "C" es2panda_AstNode *CreateBinaryExpression(es2panda_Context *context, es2panda_AstNode *left,
-                                                    es2panda_AstNode *right, char const *operator_type)
+                                                    es2panda_AstNode *right, char const *operatorType)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *left_expr = reinterpret_cast<ir::AstNode *>(left)->AsExpression();
-    auto *right_expr = reinterpret_cast<ir::AstNode *>(right)->AsExpression();
-    auto tok = StrToToken(BINARY_OP_TOKEN_TYPES.data(), operator_type);
+    auto *leftExpr = reinterpret_cast<ir::AstNode *>(left)->AsExpression();
+    auto *rightExpr = reinterpret_cast<ir::AstNode *>(right)->AsExpression();
+    auto tok = StrToToken(BINARY_OP_TOKEN_TYPES.data(), operatorType);
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::BinaryExpression>(left_expr, right_expr, tok));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::BinaryExpression>(leftExpr, rightExpr, tok));
 }
 
 extern "C" es2panda_AstNode *BinaryExpressionLeft(es2panda_AstNode *ast)
@@ -930,10 +930,10 @@ extern "C" char const *BinaryExpressionOperator(es2panda_AstNode *ast)
     return TokenToStr(BINARY_OP_TOKEN_TYPES.data(), node->OperatorType());
 }
 
-extern "C" void BinaryExpressionSetOperator(es2panda_AstNode *ast, char const *operator_type)
+extern "C" void BinaryExpressionSetOperator(es2panda_AstNode *ast, char const *operatorType)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsBinaryExpression();
-    auto op = StrToToken(BINARY_OP_TOKEN_TYPES.data(), operator_type);
+    auto op = StrToToken(BINARY_OP_TOKEN_TYPES.data(), operatorType);
     node->SetOperator(op);
 }
 
@@ -947,10 +947,10 @@ extern "C" es2panda_AstNode *CreateBlockStatement(es2panda_Context *context)
     return reinterpret_cast<es2panda_AstNode *>(block);
 }
 
-extern "C" es2panda_AstNode **BlockStatementStatements(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode **BlockStatementStatements(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsBlockStatement();
-    *size_p = node->Statements().size();
+    *sizeP = node->Statements().size();
     return reinterpret_cast<es2panda_AstNode **>(node->Statements().data());
 }
 
@@ -962,25 +962,25 @@ extern "C" void BlockStatementAddStatement(es2panda_AstNode *ast, es2panda_AstNo
 }
 
 extern "C" es2panda_AstNode *CreateCallExpression(es2panda_Context *context, es2panda_AstNode *callee,
-                                                  es2panda_AstNode *type_arguments, es2panda_AstNode **arguments,
-                                                  size_t n_arguments, bool is_optional)
+                                                  es2panda_AstNode *typeArguments, es2panda_AstNode **arguments,
+                                                  size_t nArguments, bool isOptional)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *callee_node = reinterpret_cast<ir::AstNode *>(callee)->AsExpression();
+    auto *calleeNode = reinterpret_cast<ir::AstNode *>(callee)->AsExpression();
 
-    ir::TSTypeParameterInstantiation *type_args = nullptr;
-    if (type_arguments != nullptr) {
-        type_args = reinterpret_cast<ir::AstNode *>(type_arguments)->AsTSTypeParameterInstantiation();
+    ir::TSTypeParameterInstantiation *typeArgs = nullptr;
+    if (typeArguments != nullptr) {
+        typeArgs = reinterpret_cast<ir::AstNode *>(typeArguments)->AsTSTypeParameterInstantiation();
     }
 
     ArenaVector<ir::Expression *> args {allocator->Adapter()};
-    for (size_t i = 0; i < n_arguments; i++) {
+    for (size_t i = 0; i < nArguments; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         args.push_back(reinterpret_cast<ir::AstNode *>(arguments[i])->AsExpression());
     }
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::CallExpression>(callee_node, std::move(args), type_args, is_optional));
+        allocator->New<ir::CallExpression>(calleeNode, std::move(args), typeArgs, isOptional));
 }
 
 extern "C" es2panda_AstNode const *CallExpressionCallee(es2panda_AstNode *ast)
@@ -995,10 +995,10 @@ extern "C" es2panda_AstNode const *CallExpressionTypeArguments(es2panda_AstNode 
     return reinterpret_cast<es2panda_AstNode const *>(node->TypeParams());
 }
 
-extern "C" es2panda_AstNode **CallExpressionArguments(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode **CallExpressionArguments(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsCallExpression();
-    *size_p = node->Arguments().size();
+    *sizeP = node->Arguments().size();
     return reinterpret_cast<es2panda_AstNode **>(node->Arguments().data());
 }
 
@@ -1008,20 +1008,20 @@ extern "C" bool CallExpressionIsOptional(es2panda_AstNode *ast)
     return node->IsOptional();
 }
 
-extern "C" void CallExpressionSetTypeArguments(es2panda_AstNode *ast, es2panda_AstNode *type_arguments)
+extern "C" void CallExpressionSetTypeArguments(es2panda_AstNode *ast, es2panda_AstNode *typeArguments)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsCallExpression();
-    auto *type_args = reinterpret_cast<ir::AstNode *>(type_arguments)->AsTSTypeParameterInstantiation();
-    node->SetTypeParams(type_args);
+    auto *typeArgs = reinterpret_cast<ir::AstNode *>(typeArguments)->AsTSTypeParameterInstantiation();
+    node->SetTypeParams(typeArgs);
 }
 
 extern "C" es2panda_AstNode *CreateChainExpression(es2panda_Context *context, es2panda_AstNode *child)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *child_expr = reinterpret_cast<ir::AstNode *>(child)->AsExpression();
+    auto *childExpr = reinterpret_cast<ir::AstNode *>(child)->AsExpression();
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ChainExpression>(child_expr));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ChainExpression>(childExpr));
 }
 
 extern "C" es2panda_AstNode const *ChainExpressionChild(es2panda_AstNode *ast)
@@ -1052,10 +1052,10 @@ extern "C" es2panda_AstNode *CreateClassDefinition(es2panda_Context *context, es
     auto *allocator = ctx->allocator;
     auto *id = reinterpret_cast<ir::AstNode *>(identifier)->AsIdentifier();
 
-    auto class_def =
+    auto classDef =
         allocator->New<ir::ClassDefinition>(allocator, id, ir::ClassDefinitionModifiers::NONE,
                                             E2pToIrModifierFlags(flags), Language::FromString("ets").value());
-    return reinterpret_cast<es2panda_AstNode *>(class_def);
+    return reinterpret_cast<es2panda_AstNode *>(classDef);
 }
 
 extern "C" es2panda_AstNode *ClassDefinitionIdentifier(es2panda_AstNode *ast)
@@ -1076,12 +1076,12 @@ extern "C" es2panda_AstNode *ClassDefinitionSuperClass(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Super());
 }
 
-extern "C" es2panda_AstNode **ClassDefinitionImplements(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode **ClassDefinitionImplements(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto &impl_vec = node->Implements();
-    *size_p = impl_vec.size();
-    return reinterpret_cast<es2panda_AstNode **>(impl_vec.data());
+    auto &implVec = node->Implements();
+    *sizeP = implVec.size();
+    return reinterpret_cast<es2panda_AstNode **>(implVec.data());
 }
 
 extern "C" es2panda_AstNode *ClassDefinitionConstructor(es2panda_AstNode *ast)
@@ -1090,12 +1090,12 @@ extern "C" es2panda_AstNode *ClassDefinitionConstructor(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Ctor());
 }
 
-extern "C" es2panda_AstNode **ClassDefinitionBody(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode **ClassDefinitionBody(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto &body_vec = node->Body();
-    *size_p = body_vec.size();
-    return reinterpret_cast<es2panda_AstNode **>(body_vec.data());
+    auto &bodyVec = node->Body();
+    *sizeP = bodyVec.size();
+    return reinterpret_cast<es2panda_AstNode **>(bodyVec.data());
 }
 
 extern "C" void ClassDefinitionSetIdentifier(es2panda_AstNode *ast, es2panda_AstNode *identifier)
@@ -1105,36 +1105,36 @@ extern "C" void ClassDefinitionSetIdentifier(es2panda_AstNode *ast, es2panda_Ast
     node->SetIdent(id);
 }
 
-extern "C" void ClassDefinitionSetTypeParameters(es2panda_AstNode *ast, es2panda_AstNode *type_params)
+extern "C" void ClassDefinitionSetTypeParameters(es2panda_AstNode *ast, es2panda_AstNode *typeParams)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto *tpd = reinterpret_cast<ir::AstNode *>(type_params)->AsTSTypeParameterDeclaration();
+    auto *tpd = reinterpret_cast<ir::AstNode *>(typeParams)->AsTSTypeParameterDeclaration();
     node->SetTypeParams(tpd);
 }
 
-extern "C" void ClassDefinitionSetSuperClass(es2panda_AstNode *ast, es2panda_AstNode *super_class)
+extern "C" void ClassDefinitionSetSuperClass(es2panda_AstNode *ast, es2panda_AstNode *superClass)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto *super = reinterpret_cast<ir::AstNode *>(super_class)->AsExpression();
+    auto *super = reinterpret_cast<ir::AstNode *>(superClass)->AsExpression();
     node->SetSuper(super);
 }
 
-extern "C" void ClassDefinitionSetImplements(es2panda_AstNode *ast, es2panda_AstNode **implements, size_t n_implements)
+extern "C" void ClassDefinitionSetImplements(es2panda_AstNode *ast, es2panda_AstNode **implements, size_t nImplements)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto &impl_vec = node->Implements();
-    impl_vec.resize(0);
-    for (size_t i = 0; i < n_implements; i++) {
+    auto &implVec = node->Implements();
+    implVec.resize(0);
+    for (size_t i = 0; i < nImplements; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        impl_vec.push_back(reinterpret_cast<ir::AstNode *>(implements[i])->AsTSClassImplements());
+        implVec.push_back(reinterpret_cast<ir::AstNode *>(implements[i])->AsTSClassImplements());
     }
 }
 
 extern "C" void ClassDefinitionAddImplements(es2panda_AstNode *ast, es2panda_AstNode *implements)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto &impl_vec = node->Implements();
-    impl_vec.push_back(reinterpret_cast<ir::AstNode *>(implements)->AsTSClassImplements());
+    auto &implVec = node->Implements();
+    implVec.push_back(reinterpret_cast<ir::AstNode *>(implements)->AsTSClassImplements());
 }
 
 extern "C" void ClassDefinitionSetConstructor(es2panda_AstNode *ast, es2panda_AstNode *constructor)
@@ -1144,23 +1144,23 @@ extern "C" void ClassDefinitionSetConstructor(es2panda_AstNode *ast, es2panda_As
     node->SetCtor(ctor);
 }
 
-extern "C" void ClassDefinitionSetBody(es2panda_AstNode *ast, es2panda_AstNode **body, size_t n_elems)
+extern "C" void ClassDefinitionSetBody(es2panda_AstNode *ast, es2panda_AstNode **body, size_t nElems)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto &body_vec = node->Body();
-    body_vec.resize(0);
-    for (size_t i = 0; i < n_elems; i++) {
+    auto &bodyVec = node->Body();
+    bodyVec.resize(0);
+    for (size_t i = 0; i < nElems; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        body_vec.push_back(reinterpret_cast<ir::AstNode *>(body[i]));
+        bodyVec.push_back(reinterpret_cast<ir::AstNode *>(body[i]));
     }
 }
 
-extern "C" void ClassDefinitionAddToBody(es2panda_AstNode *ast, es2panda_AstNode *body_elem)
+extern "C" void ClassDefinitionAddToBody(es2panda_AstNode *ast, es2panda_AstNode *bodyElem)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsClassDefinition();
-    auto *elem = reinterpret_cast<ir::AstNode *>(body_elem);
-    auto &body_vec = node->Body();
-    body_vec.push_back(reinterpret_cast<ir::AstNode *>(elem));
+    auto *elem = reinterpret_cast<ir::AstNode *>(bodyElem);
+    auto &bodyVec = node->Body();
+    bodyVec.push_back(reinterpret_cast<ir::AstNode *>(elem));
 }
 
 extern "C" es2panda_AstNode *ClassElementKey(es2panda_AstNode *ast)
@@ -1176,14 +1176,14 @@ extern "C" es2panda_AstNode *ClassElementValue(es2panda_AstNode *ast)
 }
 
 extern "C" es2panda_AstNode *CreateClassImplementsClause(es2panda_Context *context, es2panda_AstNode *expression,
-                                                         es2panda_AstNode *type_arguments)
+                                                         es2panda_AstNode *typeArguments)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
     auto *expr = reinterpret_cast<ir::AstNode *>(expression)->AsExpression();
-    auto *targs = type_arguments == nullptr
+    auto *targs = typeArguments == nullptr
                       ? nullptr
-                      : reinterpret_cast<ir::AstNode *>(type_arguments)->AsTSTypeParameterInstantiation();
+                      : reinterpret_cast<ir::AstNode *>(typeArguments)->AsTSTypeParameterInstantiation();
 
     return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSClassImplements>(expr, targs));
 }
@@ -1201,20 +1201,20 @@ extern "C" es2panda_AstNode const *ClassImplementsClauseTypeArguments(es2panda_A
 }
 
 extern "C" es2panda_AstNode *CreateClassProperty(es2panda_Context *context, es2panda_AstNode *key,
-                                                 es2panda_AstNode *value, es2panda_AstNode *type_annotation,
-                                                 es2panda_ModifierFlags modifier_flags, bool is_computed)
+                                                 es2panda_AstNode *value, es2panda_AstNode *typeAnnotation,
+                                                 es2panda_ModifierFlags modifierFlags, bool isComputed)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
     auto *ekey = reinterpret_cast<ir::AstNode *>(key)->AsExpression();
     auto *evalue = value == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(value)->AsExpression();
-    auto *tp_ann = type_annotation == nullptr
-                       ? nullptr
-                       : reinterpret_cast<ir::AstNode *>(type_annotation)->AsExpression()->AsTypeNode();
-    auto modifiers = E2pToIrModifierFlags(modifier_flags);
+    auto *tpAnn = typeAnnotation == nullptr
+                      ? nullptr
+                      : reinterpret_cast<ir::AstNode *>(typeAnnotation)->AsExpression()->AsTypeNode();
+    auto modifiers = E2pToIrModifierFlags(modifierFlags);
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ClassProperty>(ekey, evalue, tp_ann, modifiers, allocator, is_computed));
+        allocator->New<ir::ClassProperty>(ekey, evalue, tpAnn, modifiers, allocator, isComputed));
 }
 
 extern "C" es2panda_AstNode *ClassPropertyTypeAnnotation(es2panda_AstNode *ast)
@@ -1268,21 +1268,21 @@ extern "C" es2panda_AstNode *FunctionExpressionFunction(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Function());
 }
 
-extern "C" es2panda_AstNode *CreateFunctionTypeNode(es2panda_Context *context, es2panda_AstNode *type_params,
-                                                    es2panda_AstNode **params, size_t n_params,
-                                                    es2panda_AstNode *return_type,
-                                                    es2panda_ScriptFunctionFlags func_flags)
+extern "C" es2panda_AstNode *CreateFunctionTypeNode(es2panda_Context *context, es2panda_AstNode *typeParams,
+                                                    es2panda_AstNode **params, size_t nParams,
+                                                    es2panda_AstNode *returnType,
+                                                    es2panda_ScriptFunctionFlags funcFlags)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
     auto *tpar =
-        type_params == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(type_params)->AsTSTypeParameterDeclaration();
+        typeParams == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(typeParams)->AsTSTypeParameterDeclaration();
     auto *tret =
-        return_type == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(return_type)->AsExpression()->AsTypeNode();
-    auto flags = E2pToIrScriptFunctionFlags(func_flags);
+        returnType == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(returnType)->AsExpression()->AsTypeNode();
+    auto flags = E2pToIrScriptFunctionFlags(funcFlags);
 
     ArenaVector<ir::Expression *> par {allocator->Adapter()};
-    for (size_t i = 0; i < n_params; i++) {
+    for (size_t i = 0; i < nParams; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         par.push_back(reinterpret_cast<ir::AstNode *>(params[i])->AsExpression());
     }
@@ -1298,11 +1298,11 @@ extern "C" es2panda_AstNode const *FunctionTypeNodeTypeParams(es2panda_AstNode *
     return reinterpret_cast<es2panda_AstNode const *>(node->TypeParams());
 }
 
-extern "C" es2panda_AstNode *const *FunctionTypeNodeParams(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *FunctionTypeNodeParams(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsETSFunctionType();
     auto &params = node->Params();
-    *size_p = params.size();
+    *sizeP = params.size();
     return reinterpret_cast<es2panda_AstNode *const *>(params.data());
 }
 
@@ -1319,16 +1319,16 @@ extern "C" es2panda_ScriptFunctionFlags FunctionTypeNodeFlags(es2panda_AstNode *
 }
 
 extern "C" es2panda_AstNode *CreateIdentifier(es2panda_Context *context, char const *name,
-                                              es2panda_AstNode *type_annotations)
+                                              es2panda_AstNode *typeAnnotations)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *name_copy = ArenaStrdup(ctx->allocator, name);
-    auto *tp_ann = type_annotations == nullptr
-                       ? nullptr
-                       : reinterpret_cast<ir::AstNode *>(type_annotations)->AsExpression()->AsTypeNode();
+    auto *nameCopy = ArenaStrdup(ctx->allocator, name);
+    auto *tpAnn = typeAnnotations == nullptr
+                      ? nullptr
+                      : reinterpret_cast<ir::AstNode *>(typeAnnotations)->AsExpression()->AsTypeNode();
 
-    auto *res = allocator->New<ir::Identifier>(util::StringView {name_copy}, tp_ann, allocator);
+    auto *res = allocator->New<ir::Identifier>(util::StringView {nameCopy}, tpAnn, allocator);
 
     return reinterpret_cast<es2panda_AstNode *>(res);
 }
@@ -1377,34 +1377,34 @@ extern "C" es2panda_AstNode *CreateIfStatement(es2panda_Context *context, es2pan
 
 extern "C" es2panda_AstNode const *IfStatementTest(es2panda_AstNode *identifier)
 {
-    auto *if_stat = reinterpret_cast<ir::AstNode *>(identifier)->AsIfStatement();
+    auto *ifStat = reinterpret_cast<ir::AstNode *>(identifier)->AsIfStatement();
 
-    return reinterpret_cast<es2panda_AstNode const *>(if_stat->Test());
+    return reinterpret_cast<es2panda_AstNode const *>(ifStat->Test());
 }
 
 extern "C" es2panda_AstNode const *IfStatementConsequent(es2panda_AstNode *identifier)
 {
-    auto *if_stat = reinterpret_cast<ir::AstNode *>(identifier)->AsIfStatement();
+    auto *ifStat = reinterpret_cast<ir::AstNode *>(identifier)->AsIfStatement();
 
-    return reinterpret_cast<es2panda_AstNode const *>(if_stat->Consequent());
+    return reinterpret_cast<es2panda_AstNode const *>(ifStat->Consequent());
 }
 
 extern "C" es2panda_AstNode const *IfStatementAlternate(es2panda_AstNode *identifier)
 {
-    auto *if_stat = reinterpret_cast<ir::AstNode *>(identifier)->AsIfStatement();
+    auto *ifStat = reinterpret_cast<ir::AstNode *>(identifier)->AsIfStatement();
 
-    return reinterpret_cast<es2panda_AstNode const *>(if_stat->Alternate());
+    return reinterpret_cast<es2panda_AstNode const *>(ifStat->Alternate());
 }
 
 extern "C" es2panda_AstNode *CreateImportDeclaration(es2panda_Context *context, es2panda_AstNode *source,
-                                                     es2panda_AstNode **specifiers, size_t n_specifiers)
+                                                     es2panda_AstNode **specifiers, size_t nSpecifiers)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
     auto *src = reinterpret_cast<ir::AstNode *>(source)->AsStringLiteral();
 
     ArenaVector<ir::AstNode *> specs {allocator->Adapter()};
-    for (size_t i = 0; i < n_specifiers; i++) {
+    for (size_t i = 0; i < nSpecifiers; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         specs.push_back(reinterpret_cast<ir::AstNode *>(specifiers[i]));
     }
@@ -1419,12 +1419,12 @@ extern "C" es2panda_AstNode const *ImportDeclarationSource(es2panda_AstNode *ast
     return reinterpret_cast<es2panda_AstNode const *>(decl->Source());
 }
 
-extern "C" es2panda_AstNode *const *ImportDeclarationSpecifiers(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *ImportDeclarationSpecifiers(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *decl = reinterpret_cast<ir::AstNode *>(ast)->AsImportDeclaration();
     auto &specs = decl->Specifiers();
 
-    *size_p = specs.size();
+    *sizeP = specs.size();
 
     return reinterpret_cast<es2panda_AstNode *const *>(specs.data());
 }
@@ -1449,10 +1449,10 @@ extern "C" es2panda_AstNode *CreateImportSpecifier(es2panda_Context *context, es
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_imported = reinterpret_cast<ir::AstNode *>(imported)->AsIdentifier();
-    auto *ir_local = reinterpret_cast<ir::AstNode *>(local)->AsIdentifier();
+    auto *irImported = reinterpret_cast<ir::AstNode *>(imported)->AsIdentifier();
+    auto *irLocal = reinterpret_cast<ir::AstNode *>(local)->AsIdentifier();
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ImportSpecifier>(ir_imported, ir_local));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ImportSpecifier>(irImported, irLocal));
 }
 
 extern "C" es2panda_AstNode *ImportSpecifierImported(es2panda_AstNode *ast)
@@ -1510,16 +1510,16 @@ static es2panda_MemberExpressionKind IrToE2pMemberExpressionKind(ir::MemberExpre
 
 extern "C" es2panda_AstNode *CreateMemberExpression(es2panda_Context *context, es2panda_AstNode *object,
                                                     es2panda_AstNode *property, es2panda_MemberExpressionKind kind,
-                                                    bool is_computed, bool is_optional)
+                                                    bool isComputed, bool isOptional)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto ir_object = reinterpret_cast<ir::AstNode *>(object)->AsExpression();
-    auto ir_property = reinterpret_cast<ir::AstNode *>(property)->AsExpression();
-    auto ir_kind = E2pToIrMemberExpressionKind(kind);
+    auto irObject = reinterpret_cast<ir::AstNode *>(object)->AsExpression();
+    auto irProperty = reinterpret_cast<ir::AstNode *>(property)->AsExpression();
+    auto irKind = E2pToIrMemberExpressionKind(kind);
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::MemberExpression>(ir_object, ir_property, ir_kind, is_computed, is_optional));
+        allocator->New<ir::MemberExpression>(irObject, irProperty, irKind, isComputed, isOptional));
 }
 
 extern "C" es2panda_AstNode *MemberExpressionObject(es2panda_AstNode *ast)
@@ -1587,17 +1587,17 @@ static char const *MethodDefinitionKindToStr(ir::MethodDefinitionKind kind)
 
 extern "C" es2panda_AstNode *CreateMethodDefinition(es2panda_Context *context, char const *kind, es2panda_AstNode *key,
                                                     es2panda_AstNode *value, es2panda_ModifierFlags modifiers,
-                                                    bool is_computed)
+                                                    bool isComputed)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto ir_kind = StrToMethodDefinitionKind(kind);
-    auto *ir_key = reinterpret_cast<ir::AstNode *>(key)->AsExpression();
-    auto *ir_value = reinterpret_cast<ir::AstNode *>(value)->AsExpression();
-    auto ir_flags = E2pToIrModifierFlags(modifiers);
+    auto irKind = StrToMethodDefinitionKind(kind);
+    auto *irKey = reinterpret_cast<ir::AstNode *>(key)->AsExpression();
+    auto *irValue = reinterpret_cast<ir::AstNode *>(value)->AsExpression();
+    auto irFlags = E2pToIrModifierFlags(modifiers);
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::MethodDefinition>(ir_kind, ir_key, ir_value, ir_flags, allocator, is_computed));
+        allocator->New<ir::MethodDefinition>(irKind, irKey, irValue, irFlags, allocator, isComputed));
 }
 
 extern "C" char const *MethodDefinitionKind(es2panda_AstNode *ast)
@@ -1630,53 +1630,53 @@ extern "C" bool MethodDefinitionIsComputed(es2panda_AstNode *ast)
     return node->IsComputed();
 }
 
-extern "C" es2panda_AstNode *const *MethodDefinitionOverloads(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *MethodDefinitionOverloads(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsMethodDefinition();
     auto const &overloads = node->Overloads();
-    *size_p = overloads.size();
+    *sizeP = overloads.size();
     return reinterpret_cast<es2panda_AstNode *const *>(overloads.data());
 }
 
-extern "C" void MethodDefinitionSetOverloads(es2panda_AstNode *ast, es2panda_AstNode **overloads, size_t n_overloads)
+extern "C" void MethodDefinitionSetOverloads(es2panda_AstNode *ast, es2panda_AstNode **overloads, size_t nOverloads)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsMethodDefinition();
-    ArenaVector<ir::MethodDefinition *> ir_overloads {node->Overloads().get_allocator()};
-    ir_overloads.reserve(n_overloads);
-    for (size_t i = 0; i < n_overloads; i++) {
+    ArenaVector<ir::MethodDefinition *> irOverloads {node->Overloads().get_allocator()};
+    irOverloads.reserve(nOverloads);
+    for (size_t i = 0; i < nOverloads; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        ir_overloads.push_back(reinterpret_cast<ir::AstNode *>(overloads[i])->AsMethodDefinition());
+        irOverloads.push_back(reinterpret_cast<ir::AstNode *>(overloads[i])->AsMethodDefinition());
     }
-    node->SetOverloads(std::move(ir_overloads));
+    node->SetOverloads(std::move(irOverloads));
 }
 
 extern "C" void MethodDefinitionAddOverload(es2panda_AstNode *ast, es2panda_AstNode *overload)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsMethodDefinition();
-    auto *ir_overload = reinterpret_cast<ir::AstNode *>(overload)->AsMethodDefinition();
-    node->AddOverload(ir_overload);
+    auto *irOverload = reinterpret_cast<ir::AstNode *>(overload)->AsMethodDefinition();
+    node->AddOverload(irOverload);
 }
 
 extern "C" es2panda_AstNode *CreateNewClassInstanceExpression(es2panda_Context *context,
-                                                              es2panda_AstNode *type_reference,
-                                                              es2panda_AstNode **arguments, size_t n_arguments,
-                                                              es2panda_AstNode *class_definition)
+                                                              es2panda_AstNode *typeReference,
+                                                              es2panda_AstNode **arguments, size_t nArguments,
+                                                              es2panda_AstNode *classDefinition)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_typeref = reinterpret_cast<ir::AstNode *>(type_reference)->AsExpression();
+    auto *irTyperef = reinterpret_cast<ir::AstNode *>(typeReference)->AsExpression();
 
     ArenaVector<ir::Expression *> args {allocator->Adapter()};
-    for (size_t i = 0; i < n_arguments; i++) {
+    for (size_t i = 0; i < nArguments; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         args.push_back(reinterpret_cast<ir::AstNode *>(arguments[i])->AsExpression());
     }
 
-    auto *ir_classdef =
-        class_definition == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(class_definition)->AsClassDefinition();
+    auto *irClassdef =
+        classDefinition == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(classDefinition)->AsClassDefinition();
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSNewClassInstanceExpression>(ir_typeref, std::move(args), ir_classdef));
+        allocator->New<ir::ETSNewClassInstanceExpression>(irTyperef, std::move(args), irClassdef));
 }
 
 extern "C" es2panda_AstNode *NewClassInstanceExpressionTypeReference(es2panda_AstNode *ast)
@@ -1685,12 +1685,12 @@ extern "C" es2panda_AstNode *NewClassInstanceExpressionTypeReference(es2panda_As
     return reinterpret_cast<es2panda_AstNode *>(node->GetTypeRef());
 }
 
-extern "C" es2panda_AstNode *const *NewClassInstanceExpressionArguments(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *NewClassInstanceExpressionArguments(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsETSNewClassInstanceExpression();
     auto const &args = node->GetArguments();
 
-    *size_p = args.size();
+    *sizeP = args.size();
     return reinterpret_cast<es2panda_AstNode *const *>(args.data());
 }
 
@@ -1701,16 +1701,16 @@ extern "C" es2panda_AstNode *NewClassInstanceExpressionClassDefinition(es2panda_
 }
 
 extern "C" es2panda_AstNode *CreateNewArrayInstanceExpression(es2panda_Context *context,
-                                                              es2panda_AstNode *type_reference,
+                                                              es2panda_AstNode *typeReference,
                                                               es2panda_AstNode *dimension)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_typeref = reinterpret_cast<ir::AstNode *>(type_reference)->AsExpression()->AsTypeNode();
-    auto *ir_dim = reinterpret_cast<ir::AstNode *>(dimension)->AsExpression();
+    auto *irTyperef = reinterpret_cast<ir::AstNode *>(typeReference)->AsExpression()->AsTypeNode();
+    auto *irDim = reinterpret_cast<ir::AstNode *>(dimension)->AsExpression();
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSNewArrayInstanceExpression>(allocator, ir_typeref, ir_dim));
+        allocator->New<ir::ETSNewArrayInstanceExpression>(allocator, irTyperef, irDim));
 }
 
 extern "C" es2panda_AstNode *NewArrayInstanceExpressionTypeReference(es2panda_AstNode *ast)
@@ -1726,22 +1726,21 @@ extern "C" es2panda_AstNode *NewArrayInstanceExpressionDimension(es2panda_AstNod
 }
 
 extern "C" es2panda_AstNode *CreateNewMultiDimArrayInstanceExpression(es2panda_Context *context,
-                                                                      es2panda_AstNode *type_reference,
-                                                                      es2panda_AstNode **dimensions,
-                                                                      size_t n_dimensions)
+                                                                      es2panda_AstNode *typeReference,
+                                                                      es2panda_AstNode **dimensions, size_t nDimensions)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_typeref = reinterpret_cast<ir::AstNode *>(type_reference)->AsExpression()->AsTypeNode();
+    auto *irTyperef = reinterpret_cast<ir::AstNode *>(typeReference)->AsExpression()->AsTypeNode();
 
-    ArenaVector<ir::Expression *> ir_dims {allocator->Adapter()};
-    for (size_t i = 0; i < n_dimensions; i++) {
+    ArenaVector<ir::Expression *> irDims {allocator->Adapter()};
+    for (size_t i = 0; i < nDimensions; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        ir_dims.push_back(reinterpret_cast<ir::AstNode *>(dimensions[i])->AsExpression());
+        irDims.push_back(reinterpret_cast<ir::AstNode *>(dimensions[i])->AsExpression());
     }
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSNewMultiDimArrayInstanceExpression>(ir_typeref, std::move(ir_dims)));
+        allocator->New<ir::ETSNewMultiDimArrayInstanceExpression>(irTyperef, std::move(irDims)));
 }
 
 extern "C" es2panda_AstNode *NewMultiDimArrayInstanceExpressionTypeReference(es2panda_AstNode *ast)
@@ -1750,37 +1749,36 @@ extern "C" es2panda_AstNode *NewMultiDimArrayInstanceExpressionTypeReference(es2
     return reinterpret_cast<es2panda_AstNode *>(node->TypeReference());
 }
 
-extern "C" es2panda_AstNode *const *NewMultiDimArrayInstanceExpressionDimensions(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *NewMultiDimArrayInstanceExpressionDimensions(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsETSNewMultiDimArrayInstanceExpression();
     auto const &dims = node->Dimensions();
 
-    *size_p = dims.size();
+    *sizeP = dims.size();
     return reinterpret_cast<es2panda_AstNode *const *>(dims.data());
 }
 
-extern "C" es2panda_AstNode *CreateParameterDeclaration(es2panda_Context *context,
-                                                        es2panda_AstNode *identifier_or_spread,
+extern "C" es2panda_AstNode *CreateParameterDeclaration(es2panda_Context *context, es2panda_AstNode *identifierOrSpread,
                                                         es2panda_AstNode *initializer)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
 
-    auto *ir_ident_or_spread_raw = reinterpret_cast<ir::AstNode *>(identifier_or_spread)->AsExpression();
-    ir::AnnotatedExpression *ir_ident_or_spread;
-    if (ir_ident_or_spread_raw->IsIdentifier()) {
-        ir_ident_or_spread = ir_ident_or_spread_raw->AsIdentifier();
-    } else if (ir_ident_or_spread_raw->IsSpreadElement()) {
-        ir_ident_or_spread = ir_ident_or_spread_raw->AsSpreadElement();
+    auto *irIdentOrSpreadRaw = reinterpret_cast<ir::AstNode *>(identifierOrSpread)->AsExpression();
+    ir::AnnotatedExpression *irIdentOrSpread;
+    if (irIdentOrSpreadRaw->IsIdentifier()) {
+        irIdentOrSpread = irIdentOrSpreadRaw->AsIdentifier();
+    } else if (irIdentOrSpreadRaw->IsSpreadElement()) {
+        irIdentOrSpread = irIdentOrSpreadRaw->AsSpreadElement();
     } else {
         UNREACHABLE();
     }
 
-    auto *ir_initializer =
+    auto *irInitializer =
         initializer == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(initializer)->AsExpression();
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSParameterExpression>(ir_ident_or_spread, ir_initializer));
+        allocator->New<ir::ETSParameterExpression>(irIdentOrSpread, irInitializer));
 }
 
 extern "C" es2panda_AstNode *ParameterDeclarationIdentifierOrSpread(es2panda_AstNode *ast)
@@ -1858,9 +1856,9 @@ extern "C" es2panda_AstNode *CreateReturnStatement(es2panda_Context *context, es
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_arg = argument == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(argument)->AsExpression();
+    auto *irArg = argument == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(argument)->AsExpression();
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ReturnStatement>(ir_arg));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ReturnStatement>(irArg));
 }
 
 extern "C" es2panda_AstNode *ReturnStatementArgument(es2panda_AstNode *ast)
@@ -1875,34 +1873,34 @@ extern "C" es2panda_Type *ReturnStatementReturnType(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_Type *>(node->ReturnType());
 }
 
-extern "C" es2panda_AstNode *CreateScriptFunction(es2panda_Context *context, es2panda_AstNode *type_params,
-                                                  es2panda_AstNode **params, size_t n_params,
-                                                  es2panda_AstNode *return_type_annotation,
-                                                  es2panda_ScriptFunctionFlags function_flags,
-                                                  es2panda_ModifierFlags modifier_flags, bool is_declare)
+extern "C" es2panda_AstNode *CreateScriptFunction(es2panda_Context *context, es2panda_AstNode *typeParams,
+                                                  es2panda_AstNode **params, size_t nParams,
+                                                  es2panda_AstNode *returnTypeAnnotation,
+                                                  es2panda_ScriptFunctionFlags functionFlags,
+                                                  es2panda_ModifierFlags modifierFlags, bool isDeclare)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_type_params =
-        type_params == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(type_params)->AsTSTypeParameterDeclaration();
+    auto *irTypeParams =
+        typeParams == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(typeParams)->AsTSTypeParameterDeclaration();
 
-    ArenaVector<ir::Expression *> ir_params {allocator->Adapter()};
-    for (size_t i = 0; i < n_params; i++) {
+    ArenaVector<ir::Expression *> irParams {allocator->Adapter()};
+    for (size_t i = 0; i < nParams; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        ir_params.push_back(reinterpret_cast<ir::AstNode *>(params[i])->AsExpression());
+        irParams.push_back(reinterpret_cast<ir::AstNode *>(params[i])->AsExpression());
     }
 
-    auto ir_return_type_annotation =
-        return_type_annotation == nullptr
+    auto irReturnTypeAnnotation =
+        returnTypeAnnotation == nullptr
             ? nullptr
-            : reinterpret_cast<ir::AstNode *>(return_type_annotation)->AsExpression()->AsTypeNode();
+            : reinterpret_cast<ir::AstNode *>(returnTypeAnnotation)->AsExpression()->AsTypeNode();
 
-    auto ir_function_flags = E2pToIrScriptFunctionFlags(function_flags);
-    auto ir_modifier_flags = E2pToIrModifierFlags(modifier_flags);
+    auto irFunctionFlags = E2pToIrScriptFunctionFlags(functionFlags);
+    auto irModifierFlags = E2pToIrModifierFlags(modifierFlags);
 
-    ir::FunctionSignature sig(ir_type_params, std::move(ir_params), ir_return_type_annotation);
-    auto func = allocator->New<ir::ScriptFunction>(std::move(sig), nullptr, ir_function_flags, ir_modifier_flags,
-                                                   is_declare, Language::FromString("ets").value());
+    ir::FunctionSignature sig(irTypeParams, std::move(irParams), irReturnTypeAnnotation);
+    auto func = allocator->New<ir::ScriptFunction>(std::move(sig), nullptr, irFunctionFlags, irModifierFlags, isDeclare,
+                                                   Language::FromString("ets").value());
     return reinterpret_cast<es2panda_AstNode *>(func);
 }
 
@@ -1912,12 +1910,12 @@ extern "C" es2panda_AstNode *ScriptFunctionTypeParams(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->TypeParams());
 }
 
-extern "C" es2panda_AstNode *const *ScriptFunctionParams(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *ScriptFunctionParams(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsScriptFunction();
     auto &params = node->Params();
 
-    *size_p = params.size();
+    *sizeP = params.size();
     return reinterpret_cast<es2panda_AstNode *const *>(params.data());
 }
 
@@ -1962,29 +1960,29 @@ extern "C" void ScriptFunctionSetIdentifier(es2panda_AstNode *ast, es2panda_AstN
 extern "C" void ScriptFunctionSetBody(es2panda_AstNode *ast, es2panda_AstNode *body)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsScriptFunction();
-    auto *ir_body = reinterpret_cast<ir::AstNode *>(body);
+    auto *irBody = reinterpret_cast<ir::AstNode *>(body);
 
-    node->SetBody(ir_body);
+    node->SetBody(irBody);
 }
 
-extern "C" void ScriptFunctionSetParams(es2panda_AstNode *ast, es2panda_AstNode **params, size_t n_params)
+extern "C" void ScriptFunctionSetParams(es2panda_AstNode *ast, es2panda_AstNode **params, size_t nParams)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsScriptFunction();
-    auto &ir_params = node->Params();
+    auto &irParams = node->Params();
 
-    ir_params.clear();
-    for (size_t i = 0; i < n_params; i++) {
+    irParams.clear();
+    for (size_t i = 0; i < nParams; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        ir_params.push_back(reinterpret_cast<ir::AstNode *>(params[i])->AsExpression());
+        irParams.push_back(reinterpret_cast<ir::AstNode *>(params[i])->AsExpression());
     }
 }
 
 extern "C" void ScripFunctionAddParam(es2panda_AstNode *ast, es2panda_AstNode *param)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsScriptFunction();
-    auto *ir_param = reinterpret_cast<ir::AstNode *>(param)->AsExpression();
+    auto *irParam = reinterpret_cast<ir::AstNode *>(param)->AsExpression();
 
-    node->Params().push_back(ir_param);
+    node->Params().push_back(irParam);
 }
 
 extern "C" es2panda_AstNode *CreateStringLiteral(es2panda_Context *context, char const *string)
@@ -2013,7 +2011,7 @@ extern "C" es2panda_AstNode *CreateThisExpression(es2panda_Context *context)
 }
 
 extern "C" es2panda_AstNode *CreateTypeParameter(es2panda_Context *context, es2panda_AstNode *name,
-                                                 es2panda_AstNode *constraint, es2panda_AstNode *default_type)
+                                                 es2panda_AstNode *constraint, es2panda_AstNode *defaultType)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
@@ -2021,7 +2019,7 @@ extern "C" es2panda_AstNode *CreateTypeParameter(es2panda_Context *context, es2p
     auto *constr =
         constraint == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(constraint)->AsExpression()->AsTypeNode();
     auto *dflt =
-        default_type == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(default_type)->AsExpression()->AsTypeNode();
+        defaultType == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(defaultType)->AsExpression()->AsTypeNode();
 
     return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSTypeParameter>(nm, constr, dflt));
 }
@@ -2050,45 +2048,45 @@ extern "C" es2panda_AstNode *CreateTypeParameterDeclaration(es2panda_Context *co
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::TSTypeParameter *> params {allocator->Adapter()};
-    auto type_params = allocator->New<ir::TSTypeParameterDeclaration>(std::move(params), 0);
-    return reinterpret_cast<es2panda_AstNode *>(type_params);
+    auto typeParams = allocator->New<ir::TSTypeParameterDeclaration>(std::move(params), 0);
+    return reinterpret_cast<es2panda_AstNode *>(typeParams);
 }
 
-extern "C" void TypeParameterDeclarationAddTypeParameter(es2panda_AstNode *ast, es2panda_AstNode *type_parameter)
+extern "C" void TypeParameterDeclarationAddTypeParameter(es2panda_AstNode *ast, es2panda_AstNode *typeParameter)
 {
     auto *tpd = reinterpret_cast<ir::AstNode *>(ast)->AsTSTypeParameterDeclaration();
-    auto *param = reinterpret_cast<ir::AstNode *>(type_parameter)->AsTSTypeParameter();
+    auto *param = reinterpret_cast<ir::AstNode *>(typeParameter)->AsTSTypeParameter();
 
     tpd->AddParam(param);
 }
 
-extern "C" es2panda_AstNode *const *TypeParameterDeclarationTypeParameters(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *TypeParameterDeclarationTypeParameters(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *tpd = reinterpret_cast<ir::AstNode const *>(ast)->AsTSTypeParameterDeclaration();
     auto const &params = tpd->Params();
-    *size_p = params.size();
+    *sizeP = params.size();
     return reinterpret_cast<es2panda_AstNode *const *>(params.data());
 }
 
 extern "C" es2panda_AstNode *CreateTypeParameterInstantiation(es2panda_Context *context,
-                                                              es2panda_AstNode **type_parameters, size_t n_params)
+                                                              es2panda_AstNode **typeParameters, size_t nParams)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
 
     ArenaVector<ir::TypeNode *> params {allocator->Adapter()};
-    for (size_t i = 0; i < n_params; i++) {
+    for (size_t i = 0; i < nParams; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        params.push_back(reinterpret_cast<ir::AstNode *>(type_parameters[i])->AsExpression()->AsTypeNode());
+        params.push_back(reinterpret_cast<ir::AstNode *>(typeParameters[i])->AsExpression()->AsTypeNode());
     }
     return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSTypeParameterInstantiation>(std::move(params)));
 }
 
-extern "C" es2panda_AstNode *const *TypeParameterInstantiationTypeParameters(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *TypeParameterInstantiationTypeParameters(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *tpi = reinterpret_cast<ir::AstNode const *>(ast)->AsTSTypeParameterInstantiation();
     auto const &params = tpi->Params();
-    *size_p = params.size();
+    *sizeP = params.size();
     return reinterpret_cast<es2panda_AstNode *const *>(params.data());
 }
 
@@ -2096,9 +2094,9 @@ extern "C" es2panda_AstNode *CreateTypeReferenceNode(es2panda_Context *context, 
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_part = reinterpret_cast<ir::AstNode *>(part)->AsETSTypeReferencePart();
+    auto *irPart = reinterpret_cast<ir::AstNode *>(part)->AsETSTypeReferencePart();
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ETSTypeReference>(ir_part));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ETSTypeReference>(irPart));
 }
 
 extern "C" es2panda_AstNode *TypeReferenceNodePart(es2panda_AstNode *ast)
@@ -2108,18 +2106,17 @@ extern "C" es2panda_AstNode *TypeReferenceNodePart(es2panda_AstNode *ast)
 }
 
 extern "C" es2panda_AstNode *CreateTypeReferencePart(es2panda_Context *context, es2panda_AstNode *name,
-                                                     es2panda_AstNode *type_arguments, es2panda_AstNode *previous)
+                                                     es2panda_AstNode *typeArguments, es2panda_AstNode *previous)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *ir_name = reinterpret_cast<ir::AstNode *>(name)->AsExpression();
-    auto *ir_type_args = type_arguments == nullptr
-                             ? nullptr
-                             : reinterpret_cast<ir::AstNode *>(type_arguments)->AsTSTypeParameterInstantiation();
-    auto *ir_prev = previous == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(previous)->AsETSTypeReferencePart();
+    auto *irName = reinterpret_cast<ir::AstNode *>(name)->AsExpression();
+    auto *irTypeArgs = typeArguments == nullptr
+                           ? nullptr
+                           : reinterpret_cast<ir::AstNode *>(typeArguments)->AsTSTypeParameterInstantiation();
+    auto *irPrev = previous == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(previous)->AsETSTypeReferencePart();
 
-    return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSTypeReferencePart>(ir_name, ir_type_args, ir_prev));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ETSTypeReferencePart>(irName, irTypeArgs, irPrev));
 }
 
 extern "C" es2panda_AstNode *TypeReferencePartName(es2panda_AstNode *ast)
@@ -2140,27 +2137,27 @@ extern "C" es2panda_AstNode *TypeReferencePartPrevious(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Previous());
 }
 
-extern "C" es2panda_AstNode *CreateUnionTypeNode(es2panda_Context *context, es2panda_AstNode **types, size_t n_types)
+extern "C" es2panda_AstNode *CreateUnionTypeNode(es2panda_Context *context, es2panda_AstNode **types, size_t nTypes)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
 
-    ArenaVector<ir::TypeNode *> ir_types {allocator->Adapter()};
-    for (size_t i = 0; i < n_types; i++) {
+    ArenaVector<ir::TypeNode *> irTypes {allocator->Adapter()};
+    for (size_t i = 0; i < nTypes; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        ir_types.push_back(reinterpret_cast<ir::AstNode *>(types[i])->AsExpression()->AsTypeNode());
+        irTypes.push_back(reinterpret_cast<ir::AstNode *>(types[i])->AsExpression()->AsTypeNode());
     }
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSUnionType>(std::move(ir_types)));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::TSUnionType>(std::move(irTypes)));
 }
 
-extern "C" es2panda_AstNode *const *UnionTypeNodeTypes(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *UnionTypeNodeTypes(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsTSUnionType();
-    auto &ir_types = node->Types();
+    auto &irTypes = node->Types();
 
-    *size_p = ir_types.size();
-    return reinterpret_cast<es2panda_AstNode *const *>(ir_types.data());
+    *sizeP = irTypes.size();
+    return reinterpret_cast<es2panda_AstNode *const *>(irTypes.data());
 }
 
 struct VariableDeclarationKindToStrStruct {
@@ -2197,21 +2194,21 @@ static char const *VariableDeclarationKindToStr(ir::VariableDeclaration::Variabl
 }
 
 extern "C" es2panda_AstNode *CreateVariableDeclaration(es2panda_Context *context, char const *kind,
-                                                       es2panda_AstNode **declarators, size_t n_declarators,
-                                                       bool is_declare)
+                                                       es2panda_AstNode **declarators, size_t nDeclarators,
+                                                       bool isDeclare)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto ir_kind = StrToVariableDeclarationKind(kind);
+    auto irKind = StrToVariableDeclarationKind(kind);
 
-    ArenaVector<ir::VariableDeclarator *> ir_declarators {allocator->Adapter()};
-    for (size_t i = 0; i < n_declarators; i++) {
+    ArenaVector<ir::VariableDeclarator *> irDeclarators {allocator->Adapter()};
+    for (size_t i = 0; i < nDeclarators; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        ir_declarators.push_back(reinterpret_cast<ir::AstNode *>(declarators[i])->AsVariableDeclarator());
+        irDeclarators.push_back(reinterpret_cast<ir::AstNode *>(declarators[i])->AsVariableDeclarator());
     }
 
     return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::VariableDeclaration>(ir_kind, allocator, std::move(ir_declarators), is_declare));
+        allocator->New<ir::VariableDeclaration>(irKind, allocator, std::move(irDeclarators), isDeclare));
 }
 
 extern "C" char const *VariableDeclarationKind(es2panda_AstNode *ast)
@@ -2220,11 +2217,11 @@ extern "C" char const *VariableDeclarationKind(es2panda_AstNode *ast)
     return VariableDeclarationKindToStr(node->Kind());
 }
 
-extern "C" es2panda_AstNode *const *VariableDeclarationDeclarators(es2panda_AstNode *ast, size_t *size_p)
+extern "C" es2panda_AstNode *const *VariableDeclarationDeclarators(es2panda_AstNode *ast, size_t *sizeP)
 {
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsVariableDeclaration();
     auto const &declarators = node->Declarators();
-    *size_p = declarators.size();
+    *sizeP = declarators.size();
     return reinterpret_cast<es2panda_AstNode *const *>(declarators.data());
 }
 
@@ -2242,8 +2239,8 @@ extern "C" es2panda_AstNode *CreateVariableDeclarator(es2panda_Context *context,
     auto *ident = reinterpret_cast<ir::AstNode *>(identifier)->AsExpression();
     auto *init = initializer == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(initializer)->AsExpression();
 
-    auto var_decl = allocator->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::UNKNOWN, ident, init);
-    return reinterpret_cast<es2panda_AstNode *>(var_decl);
+    auto varDecl = allocator->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::UNKNOWN, ident, init);
+    return reinterpret_cast<es2panda_AstNode *>(varDecl);
 }
 
 extern "C" es2panda_AstNode *VariableDeclaratorIdentifier(es2panda_AstNode *ast)
@@ -2258,7 +2255,7 @@ extern "C" es2panda_AstNode *VariableDeclaratorInitializer(es2panda_AstNode *ast
     return reinterpret_cast<es2panda_AstNode *>(node->Init());
 }
 
-es2panda_Impl IMPL = {
+es2panda_Impl g_impl = {
     ES2PANDA_LIB_VERSION,
 
     CreateConfig,
@@ -2532,5 +2529,5 @@ extern "C" es2panda_Impl const *es2panda_GetImpl(int version)
     if (version != ES2PANDA_LIB_VERSION) {
         return nullptr;
     }
-    return &panda::es2panda::public_lib::IMPL;
+    return &panda::es2panda::public_lib::g_impl;
 }

@@ -44,43 +44,43 @@ public:
         return name_;
     }
 
-    void SetMergedTypeParams(std::pair<std::vector<varbinder::Variable *>, size_t> &&merged_type_params)
+    void SetMergedTypeParams(std::pair<std::vector<varbinder::Variable *>, size_t> &&mergedTypeParams)
     {
-        merged_type_params_ = std::move(merged_type_params);
+        mergedTypeParams_ = std::move(mergedTypeParams);
     }
 
     const std::pair<std::vector<varbinder::Variable *>, size_t> &GetMergedTypeParams() const
     {
-        return merged_type_params_;
+        return mergedTypeParams_;
     }
 
-    void SetTypeParamTypes(std::vector<Type *> &&type_param_types)
+    void SetTypeParamTypes(std::vector<Type *> &&typeParamTypes)
     {
-        type_param_types_ = std::move(type_param_types);
+        typeParamTypes_ = std::move(typeParamTypes);
     }
 
     const std::vector<Type *> &GetTypeParamTypes() const
     {
-        return type_param_types_;
+        return typeParamTypes_;
     }
 
     varbinder::LocalVariable *GetProperty(const util::StringView &name,
-                                          [[maybe_unused]] bool search_in_base) const override
+                                          [[maybe_unused]] bool searchInBase) const override
     {
-        varbinder::LocalVariable *result_prop = ObjectType::GetProperty(name, false);
+        varbinder::LocalVariable *resultProp = ObjectType::GetProperty(name, false);
 
-        if (result_prop != nullptr) {
-            return result_prop;
+        if (resultProp != nullptr) {
+            return resultProp;
         }
 
-        if (!search_in_base) {
+        if (!searchInBase) {
             return nullptr;
         }
 
         for (auto *base : bases_) {
-            result_prop = base->GetProperty(name, true);
-            if (result_prop != nullptr) {
-                return result_prop;
+            resultProp = base->GetProperty(name, true);
+            if (resultProp != nullptr) {
+                return resultProp;
             }
         }
 
@@ -131,19 +131,19 @@ public:
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;
     void Identical(TypeRelation *relation, Type *other) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
-    void CollectSignatures(ArenaVector<Signature *> *collected_signatures, bool collect_call_signatures) const;
-    void CollectProperties(ArenaVector<varbinder::LocalVariable *> *collected_properties) const;
-    const IndexInfo *FindIndexInfo(bool find_number_info) const;
-    IndexInfo *FindIndexInfo(bool find_number_info);
+    void CollectSignatures(ArenaVector<Signature *> *collectedSignatures, bool collectCallSignatures) const;
+    void CollectProperties(ArenaVector<varbinder::LocalVariable *> *collectedProperties) const;
+    const IndexInfo *FindIndexInfo(bool findNumberInfo) const;
+    IndexInfo *FindIndexInfo(bool findNumberInfo);
 
 private:
     util::StringView name_;
     ArenaVector<ObjectType *> bases_;
     ArenaAllocator *allocator_;
-    std::pair<std::vector<varbinder::Variable *>, size_t> merged_type_params_ {};
-    std::vector<Type *> type_param_types_ {};
+    std::pair<std::vector<varbinder::Variable *>, size_t> mergedTypeParams_ {};
+    std::vector<Type *> typeParamTypes_ {};
 };
 }  // namespace panda::es2panda::checker
 

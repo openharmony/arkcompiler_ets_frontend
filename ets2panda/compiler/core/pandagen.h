@@ -50,7 +50,7 @@ class DynamicContext;
 class PandaGen final : public CodeGen {
 public:
     explicit PandaGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                      varbinder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler);
+                      varbinder::FunctionScope *scope, ProgramElement *programElement, AstCompiler *astcompiler);
 
     ~PandaGen() override = default;
     NO_COPY_SEMANTIC(PandaGen);
@@ -64,7 +64,7 @@ public:
     [[nodiscard]] VReg LexEnv() const noexcept;
 
     bool FunctionHasFinalizer() const;
-    void FunctionInit(CatchTable *catch_table);
+    void FunctionInit(CatchTable *catchTable);
     void FunctionEnter();
     void FunctionExit();
 
@@ -86,7 +86,7 @@ public:
     void GetThis(const ir::AstNode *node);
     void SetThis(const ir::AstNode *node);
     void LoadVar(const ir::Identifier *node, const varbinder::ConstScopeFindResult &result);
-    void StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool is_declaration);
+    void StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool isDeclaration);
 
     void LoadAccFromArgs(const ir::AstNode *node);
     void LoadObjProperty(const ir::AstNode *node, const Operand &prop);
@@ -106,11 +106,11 @@ public:
     void TryStoreGlobalByName(const ir::AstNode *node, const util::StringView &name);
 
     void LoadAccFromLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result);
-    void StoreAccToLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool is_declaration);
+    void StoreAccToLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool isDeclaration);
 
-    void LoadAccumulatorBigInt(const ir::AstNode *node, const util::StringView &big_int);
+    void LoadAccumulatorBigInt(const ir::AstNode *node, const util::StringView &bigInt);
 
-    void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, class Label *if_false);
+    void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, class Label *ifFalse);
     void Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand);
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
 
@@ -133,20 +133,19 @@ public:
     void EmitAwait(const ir::AstNode *node);
 
     static constexpr auto MAX_RANGE_CALL_ARG = 128;
-    void CallTagged(const ir::AstNode *node, VReg callee, VReg this_reg,
-                    const ArenaVector<ir::Expression *> &arguments);
-    void Call(const ir::AstNode *node, VReg callee, VReg this_reg, const ArenaVector<ir::Expression *> &arguments);
-    void Call0This(const ir::AstNode *node, VReg callee, VReg this_reg);
-    void Call1This(const ir::AstNode *node, VReg callee, VReg this_reg, VReg arg0);
+    void CallTagged(const ir::AstNode *node, VReg callee, VReg thisReg, const ArenaVector<ir::Expression *> &arguments);
+    void Call(const ir::AstNode *node, VReg callee, VReg thisReg, const ArenaVector<ir::Expression *> &arguments);
+    void Call0This(const ir::AstNode *node, VReg callee, VReg thisReg);
+    void Call1This(const ir::AstNode *node, VReg callee, VReg thisReg, VReg arg0);
 
-    void CallSpread(const ir::AstNode *node, VReg func, VReg this_reg, VReg args);
-    void SuperCall(const ir::AstNode *node, VReg start_reg, size_t arg_count);
+    void CallSpread(const ir::AstNode *node, VReg func, VReg thisReg, VReg args);
+    void SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount);
     void SuperCallSpread(const ir::AstNode *node, VReg vs);
 
     void LoadHomeObject(const ir::AstNode *node);
-    void NewObject(const ir::AstNode *node, VReg start_reg, size_t arg_count);
+    void NewObject(const ir::AstNode *node, VReg startReg, size_t argCount);
     void DefineMethod(const ir::AstNode *node, const util::StringView &name);
-    void DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *real_node, const util::StringView &name);
+    void DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name);
 
     void TypeOf(const ir::AstNode *node);
     void NewObjSpread(const ir::AstNode *node, VReg obj, VReg target);
@@ -156,25 +155,25 @@ public:
     void ToBoolean(const ir::AstNode *node);
     void ToNumber(const ir::AstNode *node, VReg arg);
 
-    void CreateGeneratorObj(const ir::AstNode *node, VReg func_obj);
-    void ResumeGenerator(const ir::AstNode *node, VReg gen_obj);
-    void GetResumeMode(const ir::AstNode *node, VReg gen_obj);
+    void CreateGeneratorObj(const ir::AstNode *node, VReg funcObj);
+    void ResumeGenerator(const ir::AstNode *node, VReg genObj);
+    void GetResumeMode(const ir::AstNode *node, VReg genObj);
 
     void AsyncFunctionEnter(const ir::AstNode *node);
-    void AsyncFunctionAwait(const ir::AstNode *node, VReg async_func_obj);
-    void AsyncFunctionResolve(const ir::AstNode *node, VReg async_func_obj);
-    void AsyncFunctionReject(const ir::AstNode *node, VReg async_func_obj);
+    void AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj);
+    void AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj);
+    void AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj);
 
     void GetMethod(const ir::AstNode *node, VReg obj, const util::StringView &name);
-    void GeneratorYield(const ir::AstNode *node, VReg gen_obj);
-    void GeneratorComplete(const ir::AstNode *node, VReg gen_obj);
-    void CreateAsyncGeneratorObj(const ir::AstNode *node, VReg func_obj);
+    void GeneratorYield(const ir::AstNode *node, VReg genObj);
+    void GeneratorComplete(const ir::AstNode *node, VReg genObj);
+    void CreateAsyncGeneratorObj(const ir::AstNode *node, VReg funcObj);
     void CreateIterResultObject(const ir::AstNode *node, bool done);
-    void SuspendGenerator(const ir::AstNode *node, VReg gen_obj);
-    void SuspendAsyncGenerator(const ir::AstNode *node, VReg async_gen_obj);
+    void SuspendGenerator(const ir::AstNode *node, VReg genObj);
+    void SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj);
 
-    void AsyncGeneratorResolve(const ir::AstNode *node, VReg async_gen_obj);
-    void AsyncGeneratorReject(const ir::AstNode *node, VReg async_gen_obj);
+    void AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj);
+    void AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj);
 
     void GetTemplateObject(const ir::AstNode *node, VReg value);
     void CopyRestArgs(const ir::AstNode *node, uint32_t index);
@@ -187,7 +186,7 @@ public:
     void SetObjectWithProto(const ir::AstNode *node, VReg proto, VReg obj);
     void CopyDataProperties(const ir::AstNode *node, VReg dst, VReg src);
     void DefineGetterSetterByValue(const ir::AstNode *node, VReg obj, VReg name, VReg getter, VReg setter,
-                                   bool set_name);
+                                   bool setName);
     void CreateEmptyArray(const ir::AstNode *node);
     void CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expression *> &elements, VReg obj);
     void CreateArrayWithBuffer(const ir::AstNode *node, uint32_t idx);
@@ -200,14 +199,14 @@ public:
     void GetIterator(const ir::AstNode *node);
     void GetAsyncIterator(const ir::AstNode *node);
 
-    void CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg arg_start, size_t arg_count);
+    void CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg argStart, size_t argCount);
     void ThrowObjectNonCoercible(const ir::AstNode *node);
     void CloseIterator(const ir::AstNode *node, VReg iter);
-    void SetClassComputedFields(const ir::AstNode *node, VReg class_reg, VReg computed_instance_field_array);
-    void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctor_id, int32_t lit_idx, VReg lexenv,
+    void SetClassComputedFields(const ir::AstNode *node, VReg classReg, VReg computedInstanceFieldArray);
+    void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg lexenv,
                                VReg base);
     void LoadClassComputedInstanceFields(const ir::AstNode *node, VReg ctor);
-    void DefineClassPrivateFields(const ir::AstNode *node, int32_t private_buf_idx);
+    void DefineClassPrivateFields(const ir::AstNode *node, int32_t privateBufIdx);
     void ClassFieldAdd(const ir::AstNode *node, VReg obj, VReg prop);
     void ClassPrivateFieldAdd(const ir::AstNode *node, VReg ctor, VReg obj, const util::StringView &prop);
     void ClassPrivateMethodOrAccessorAdd(const ir::AstNode *node, VReg ctor, VReg obj);
@@ -251,15 +250,15 @@ public:
     void StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop);
     void StOwnByIndex(const ir::AstNode *node, VReg obj, int64_t index);
 
-    static Operand ToNamedPropertyKey(const ir::Expression *prop, bool is_computed);
-    void LoadPropertyKeyAcc(const ir::Expression *prop, bool is_computed);
-    Operand ToPropertyKey(const ir::Expression *prop, bool is_computed, bool is_super_expression = false);
-    Operand ToOwnPropertyKey(const ir::Expression *prop, bool is_computed);
-    VReg LoadPropertyKey(const ir::Expression *prop, bool is_computed);
+    static Operand ToNamedPropertyKey(const ir::Expression *prop, bool isComputed);
+    void LoadPropertyKeyAcc(const ir::Expression *prop, bool isComputed);
+    Operand ToPropertyKey(const ir::Expression *prop, bool isComputed, bool isSuperExpression = false);
+    Operand ToOwnPropertyKey(const ir::Expression *prop, bool isComputed);
+    VReg LoadPropertyKey(const ir::Expression *prop, bool isComputed);
 
     void LoadEvalVariable(const ir::AstNode *node, const util::StringView &name);
     void StoreEvalVariable(const ir::AstNode *node, const util::StringView &name);
-    void DirectEval(const ir::AstNode *node, uint32_t parser_status);
+    void DirectEval(const ir::AstNode *node, uint32_t parserStatus);
     void LoadLexicalContext(const ir::AstNode *node);
     bool IsDirectEval() const;
     bool IsEval() const;
@@ -270,8 +269,8 @@ private:
     void LoadEvalBindings(const ir::AstNode *node);
 
     FunctionBuilder *builder_ {};
-    EnvScope *env_scope_ {};
-    OptionalChain *optional_chain_ {};
+    EnvScope *envScope_ {};
+    OptionalChain *optionalChain_ {};
 
     friend class EnvScope;
     friend class LoopEnvScope;

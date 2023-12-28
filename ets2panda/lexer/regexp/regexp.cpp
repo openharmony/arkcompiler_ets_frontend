@@ -23,13 +23,12 @@
 namespace panda::es2panda::lexer {
 RegExpError::RegExpError(std::string_view m) : message(m) {}
 
-RegExp::RegExp(util::StringView p, util::StringView f, RegExpFlags re_flags)
-    : pattern_str(p), flags_str(f), flags(re_flags)
+RegExp::RegExp(util::StringView p, util::StringView f, RegExpFlags reFlags) : patternStr(p), flagsStr(f), flags(reFlags)
 {
 }
 
 RegExpParser::RegExpParser(const RegExp &re, ArenaAllocator *allocator)
-    : re_(re), allocator_ {allocator}, iter_(re_.pattern_str)
+    : re_(re), allocator_ {allocator}, iter_(re_.patternStr)
 {
 }
 
@@ -97,10 +96,10 @@ void RegExpParser::ParsePattern()
         ThrowError("Invalid closing parenthesis");
     }
 
-    if (!back_references_.empty() && !group_names_.empty()) {
-        for (const auto it : back_references_) {
-            auto result = group_names_.find(it);
-            if (result == group_names_.end()) {
+    if (!backReferences_.empty() && !groupNames_.empty()) {
+        for (const auto it : backReferences_) {
+            auto result = groupNames_.find(it);
+            if (result == groupNames_.end()) {
                 ThrowError("Invalid capturing group");
             }
         }
@@ -237,7 +236,7 @@ void RegExpParser::ParseNamedCapturingGroup()
 {
     util::StringView name = ParseIdent();
 
-    auto result = group_names_.insert(name);
+    auto result = groupNames_.insert(name);
     if (!result.second) {
         ThrowError("Duplicate group name");
     }
@@ -247,7 +246,7 @@ void RegExpParser::ParseNamedCapturingGroup()
 
 void RegExpParser::ParseCapturingGroup()
 {
-    capturing_group_count_++;
+    capturingGroupCount_++;
 
     ParseDisjunction();
 
@@ -518,42 +517,42 @@ uint32_t RegExpParser::ParseDecimalEscape()
 {
     ASSERT(IsDecimalDigit(Peek()));
 
-    auto digit_start = iter_;
-    uint32_t decimal_value = DigitValue(Next());
-    if (decimal_value == 0) {
+    auto digitStart = iter_;
+    uint32_t decimalValue = DigitValue(Next());
+    if (decimalValue == 0) {
         if (!IsDecimalDigit(Peek())) {
             /* \0 */
-            return decimal_value;
+            return decimalValue;
         }
 
         if (Unicode()) {
             ThrowError("Invalid decimal escape");
         }
 
-        iter_ = digit_start;
+        iter_ = digitStart;
         return ParseLegacyOctalEscape();
     }
 
     constexpr auto MULTIPLIER = 10;
 
     while (IsDecimalDigit(Peek())) {
-        uint32_t new_value = decimal_value * MULTIPLIER + DigitValue(Next());
-        if (new_value < decimal_value) {
+        uint32_t newValue = decimalValue * MULTIPLIER + DigitValue(Next());
+        if (newValue < decimalValue) {
             ThrowError("Invalid decimal escape");
         }
 
-        decimal_value = new_value;
+        decimalValue = newValue;
     }
 
-    if (decimal_value <= capturing_group_count_) {
-        return decimal_value;
+    if (decimalValue <= capturingGroupCount_) {
+        return decimalValue;
     }
 
     if (Unicode()) {
         ThrowError("Invalid decimal escape");
     }
 
-    iter_ = digit_start;
+    iter_ = digitStart;
 
     if (!IsOctalDigit(Peek())) {
         /* \8 or \9 */
@@ -566,27 +565,27 @@ uint32_t RegExpParser::ParseDecimalEscape()
 uint32_t RegExpParser::ParseLegacyOctalEscape()
 {
     ASSERT(IsOctalDigit(Peek()));
-    uint32_t octal_value = DigitValue(Next());
+    uint32_t octalValue = DigitValue(Next());
 
     if (!IsOctalDigit(Peek())) {
-        return octal_value;
+        return octalValue;
     }
 
-    octal_value = octal_value * 8U + DigitValue(Next());
+    octalValue = octalValue * 8U + DigitValue(Next());
 
     if (!IsOctalDigit(Peek())) {
-        return octal_value;
+        return octalValue;
     }
 
-    uint32_t new_value = octal_value * 8 + DigitValue(Peek());
+    uint32_t newValue = octalValue * 8 + DigitValue(Peek());
     constexpr uint32_t MAX_OCTAL_VALUE = 0xFF;
 
-    if (new_value <= MAX_OCTAL_VALUE) {
-        octal_value = new_value;
+    if (newValue <= MAX_OCTAL_VALUE) {
+        octalValue = newValue;
         Next();
     }
 
-    return octal_value;
+    return octalValue;
 }
 
 uint32_t RegExpParser::ParseHexEscape()
@@ -597,15 +596,15 @@ uint32_t RegExpParser::ParseHexEscape()
     }
 
     constexpr auto MULTIPLIER = 16;
-    uint32_t cp_value = HexValue(digit) * MULTIPLIER;
+    uint32_t cpValue = HexValue(digit) * MULTIPLIER;
 
     digit = Next();
     if (!IsHexDigit(digit)) {
         ThrowError("Invalid hex escape");
     }
 
-    cp_value += HexValue(digit);
-    return cp_value;
+    cpValue += HexValue(digit);
+    return cpValue;
 }
 
 uint32_t RegExpParser::ParseUnicodeDigits()
@@ -699,7 +698,7 @@ void RegExpParser::ParseUnicodePropertyEscape()
 void RegExpParser::ParseNamedBackreference()
 {
     if (Next() != LEX_CHAR_LESS_THAN) {
-        if (!Unicode() && group_names_.empty()) {
+        if (!Unicode() && groupNames_.empty()) {
             return;
         }
 
@@ -711,20 +710,20 @@ void RegExpParser::ParseNamedBackreference()
     }
 
     util::StringView name = ParseIdent();
-    back_references_.insert(name);
+    backReferences_.insert(name);
 
     ValidateNamedBackreference(Unicode());
 }
 
-void RegExpParser::ValidateNamedBackreference(bool is_unicode)
+void RegExpParser::ValidateNamedBackreference(bool isUnicode)
 {
     if (Peek() != LEX_CHAR_LEFT_PAREN || Peek() != LEX_CHAR_BACKSLASH || Peek() != UNICODE_INVALID_CP) {
-        if (!is_unicode) {
+        if (!isUnicode) {
             /* Identity escape */
             return;
         }
 
-        if (group_names_.empty()) {
+        if (groupNames_.empty()) {
             ThrowError("Invalid named backreference");
         }
     }
@@ -732,10 +731,10 @@ void RegExpParser::ValidateNamedBackreference(bool is_unicode)
 
 void RegExpParser::ValidateGroupNameElement(char32_t cp)
 {
-    if (IsDecimalDigit(cp) && !back_references_.empty()) {
+    if (IsDecimalDigit(cp) && !backReferences_.empty()) {
         ThrowError("Invalid group name");
     }
-    if (cp == UNICODE_INVALID_CP && !group_names_.empty()) {
+    if (cp == UNICODE_INVALID_CP && !groupNames_.empty()) {
         ThrowError("Invalid group name");
     }
 }
@@ -772,25 +771,25 @@ bool RegExpParser::ParseBracedQuantifier()
         return false;
     }
 
-    auto start_pos = iter_;
+    auto startPos = iter_;
     Next();
 
     if (!IsDecimalDigit(Peek())) {
-        iter_ = start_pos;
+        iter_ = startPos;
         return false;
     }
 
-    uint32_t left_value = 0;
+    uint32_t leftValue = 0;
     constexpr auto MULTIPLIER = 10;
 
     while (IsDecimalDigit(Peek())) {
-        uint32_t new_value = left_value * MULTIPLIER + DigitValue(Next());
-        if (new_value < left_value) {
-            left_value = std::numeric_limits<uint32_t>::max();
+        uint32_t newValue = leftValue * MULTIPLIER + DigitValue(Next());
+        if (newValue < leftValue) {
+            leftValue = std::numeric_limits<uint32_t>::max();
             continue;
         }
 
-        left_value = new_value;
+        leftValue = newValue;
     }
 
     if (Peek() == LEX_CHAR_COMMA) {
@@ -803,19 +802,19 @@ bool RegExpParser::ParseBracedQuantifier()
     }
 
     if (IsDecimalDigit(Peek())) {
-        uint32_t right_value = 0;
+        uint32_t rightValue = 0;
         while (IsDecimalDigit(Peek())) {
-            uint32_t new_value = right_value * MULTIPLIER + DigitValue(Next());
-            if (new_value < right_value) {
-                right_value = std::numeric_limits<uint32_t>::max();
+            uint32_t newValue = rightValue * MULTIPLIER + DigitValue(Next());
+            if (newValue < rightValue) {
+                rightValue = std::numeric_limits<uint32_t>::max();
                 continue;
             }
 
-            right_value = new_value;
+            rightValue = newValue;
         }
 
         if (Peek() == LEX_CHAR_RIGHT_BRACE) {
-            if (right_value < left_value) {
+            if (rightValue < leftValue) {
                 ThrowError("Quantifier range out of order");
             }
 
@@ -824,7 +823,7 @@ bool RegExpParser::ParseBracedQuantifier()
         }
     }
 
-    iter_ = start_pos;
+    iter_ = startPos;
     return false;
 }
 
@@ -868,7 +867,7 @@ util::StringView RegExpParser::ParseIdent()
         cp = ParseUnicodeEscape();
     }
 
-    if (!IsIdStart(cp) && cp != UNICODE_INVALID_CP && back_references_.empty()) {
+    if (!IsIdStart(cp) && cp != UNICODE_INVALID_CP && backReferences_.empty()) {
         ThrowError("Invalid group name");
     }
 

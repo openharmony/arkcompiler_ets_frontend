@@ -28,18 +28,18 @@ using NamedTupleMemberPool = ArenaUnorderedMap<varbinder::LocalVariable *, util:
 class TupleType : public ObjectType {
 public:
     explicit TupleType(ArenaAllocator *allocator)
-        : ObjectType(ObjectTypeKind::TUPLE), element_flags_(allocator->Adapter()), named_members_(allocator->Adapter())
+        : ObjectType(ObjectTypeKind::TUPLE), elementFlags_(allocator->Adapter()), namedMembers_(allocator->Adapter())
     {
     }
 
-    TupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&element_flags, ElementFlags combined_flags,
-              uint32_t min_length, uint32_t fixed_length, bool readonly, NamedTupleMemberPool &&named_members)
+    TupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
+              uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers)
         : ObjectType(ObjectType::ObjectTypeKind::TUPLE, desc),
-          element_flags_(std::move(element_flags)),
-          combined_flags_(combined_flags),
-          min_length_(min_length),
-          fixed_length_(fixed_length),
-          named_members_(std::move(named_members)),
+          elementFlags_(std::move(elementFlags)),
+          combinedFlags_(combinedFlags),
+          minLength_(minLength),
+          fixedLength_(fixedLength),
+          namedMembers_(std::move(namedMembers)),
           readonly_(readonly)
     {
         if (readonly_) {
@@ -51,22 +51,22 @@ public:
 
     ElementFlags CombinedFlags() const
     {
-        return combined_flags_;
+        return combinedFlags_;
     }
 
     uint32_t MinLength() const
     {
-        return min_length_;
+        return minLength_;
     }
 
     uint32_t FixedLength() const
     {
-        return fixed_length_;
+        return fixedLength_;
     }
 
-    bool HasCombinedFlag(ElementFlags combined_flag) const
+    bool HasCombinedFlag(ElementFlags combinedFlag) const
     {
-        return (combined_flags_ & combined_flag) != 0;
+        return (combinedFlags_ & combinedFlag) != 0;
     }
 
     bool IsReadOnly() const
@@ -76,12 +76,12 @@ public:
 
     const NamedTupleMemberPool &NamedMembers() const
     {
-        return named_members_;
+        return namedMembers_;
     }
 
     const util::StringView &FindNamedMemberName(varbinder::LocalVariable *member) const
     {
-        auto res = named_members_.find(member);
+        auto res = namedMembers_.find(member);
         return res->second;
     }
 
@@ -91,14 +91,14 @@ public:
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
-    ArenaVector<ElementFlags> element_flags_;
-    ElementFlags combined_flags_ {};
-    uint32_t min_length_ {};
-    uint32_t fixed_length_ {};
-    NamedTupleMemberPool named_members_;
+    ArenaVector<ElementFlags> elementFlags_;
+    ElementFlags combinedFlags_ {};
+    uint32_t minLength_ {};
+    uint32_t fixedLength_ {};
+    NamedTupleMemberPool namedMembers_;
     bool readonly_ {};
 };
 }  // namespace panda::es2panda::checker

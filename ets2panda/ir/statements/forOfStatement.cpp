@@ -43,8 +43,7 @@ void ForOfStatement::Iterate(const NodeTraverser &cb) const
 
 void ForOfStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add(
-        {{"type", "ForOfStatement"}, {"await", is_await_}, {"left", left_}, {"right", right_}, {"body", body_}});
+    dumper->Add({{"type", "ForOfStatement"}, {"await", isAwait_}, {"left", left_}, {"right", right_}, {"body", body_}});
 }
 
 void ForOfStatement::Dump(ir::SrcDumper *dumper) const
@@ -52,7 +51,7 @@ void ForOfStatement::Dump(ir::SrcDumper *dumper) const
     ASSERT(left_ != nullptr);
     ASSERT(right_ != nullptr);
     dumper->Add("for ");
-    if (is_await_) {
+    if (isAwait_) {
         dumper->Add("await ");
     }
     dumper->Add("(");

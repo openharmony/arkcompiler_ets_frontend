@@ -67,18 +67,18 @@ void ETSBinder::IdentifierAnalysis()
     ASSERT(GetScope() == TopScope());
     ASSERT(VarScope() == TopScope());
 
-    record_table_->SetProgram(Program());
-    global_record_table_.SetClassDefinition(Program()->GlobalClass());
-    external_record_table_.insert({Program(), &global_record_table_});
+    recordTable_->SetProgram(Program());
+    globalRecordTable_.SetClassDefinition(Program()->GlobalClass());
+    externalRecordTable_.insert({Program(), &globalRecordTable_});
 
     BuildProgram();
 
-    ASSERT(global_record_table_.ClassDefinition() == Program()->GlobalClass());
+    ASSERT(globalRecordTable_.ClassDefinition() == Program()->GlobalClass());
 }
 
-void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *type_ref)
+void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef)
 {
-    auto *iter = type_ref->Part();
+    auto *iter = typeRef->Part();
 
     while (iter != nullptr) {
         if (iter->TypeParams() == nullptr) {
@@ -91,7 +91,7 @@ void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *type_ref)
     }
 }
 
-void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allow_dynamic_namespaces)
+void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
 {
     const auto &name = ident->Name();
     auto *iter = GetScope();
@@ -107,7 +107,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allow_dynamic_na
             return;
         }
 
-        if (allow_dynamic_namespaces && IsDynamicNamespaceVariable(res.variable)) {
+        if (allowDynamicNamespaces && IsDynamicNamespaceVariable(res.variable)) {
             ident->SetVariable(res.variable);
             return;
         }
@@ -152,7 +152,7 @@ void ETSBinder::ResolveReferenceForScope(ir::AstNode *const node, Scope *const s
             break;
         }
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
-            auto scope_ctx = LexicalScope<Scope>::Enter(this, scope);
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, scope);
             BuildVarDeclarator(node->AsVariableDeclarator());
             break;
         }
@@ -177,9 +177,9 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
     if (res.level != 0) {
         ASSERT(res.variable != nullptr);
 
-        auto *outer_function = GetScope()->EnclosingVariableScope()->Node();
+        auto *outerFunction = GetScope()->EnclosingVariableScope()->Node();
 
-        if ((!outer_function->IsScriptFunction() || !outer_function->AsScriptFunction()->IsArrow()) &&
+        if ((!outerFunction->IsScriptFunction() || !outerFunction->AsScriptFunction()->IsArrow()) &&
             !res.variable->IsGlobalVariable() && res.level > 1) {
             ThrowInvalidCapture(ident->Start(), name);
         }
@@ -209,24 +209,24 @@ void ETSBinder::InitializeInterfaceIdent(ir::TSInterfaceDeclaration *decl)
     decl->Id()->SetVariable(res.variable);
 }
 
-void ETSBinder::ResolveEnumDeclaration(ir::TSEnumDeclaration *enum_decl)
+void ETSBinder::ResolveEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 {
-    auto enum_scope_ctx = LexicalScope<LocalScope>::Enter(this, enum_decl->Scope());
+    auto enumScopeCtx = LexicalScope<LocalScope>::Enter(this, enumDecl->Scope());
 
-    for (auto *member : enum_decl->Members()) {
+    for (auto *member : enumDecl->Members()) {
         ResolveReference(member);
     }
 }
 
 void ETSBinder::ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
 {
-    auto bound_ctx = BoundContext(record_table_, decl);
+    auto boundCtx = BoundContext(recordTable_, decl);
 
     for (auto *extend : decl->Extends()) {
         ResolveReference(extend);
     }
 
-    auto scope_ctx = LexicalScope<ClassScope>::Enter(this, decl->Scope()->AsClassScope());
+    auto scopeCtx = LexicalScope<ClassScope>::Enter(this, decl->Scope()->AsClassScope());
 
     for (auto *stmt : decl->Body()->Body()) {
         if (!stmt->IsClassProperty()) {
@@ -235,10 +235,10 @@ void ETSBinder::ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
 
         ResolveReference(stmt);
 
-        auto field_var =
+        auto fieldVar =
             ResolvePropertyReference(stmt->AsClassProperty(), decl->Scope()->AsClassScope())
                 ->FindLocal(stmt->AsClassProperty()->Id()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
-        field_var->AddFlag(VariableFlags::INITIALIZED);
+        fieldVar->AddFlag(VariableFlags::INITIALIZED);
     }
 
     for (auto *stmt : decl->Body()->Body()) {
@@ -252,7 +252,7 @@ void ETSBinder::ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
 void ETSBinder::BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
 {
     if (decl->TypeParams() != nullptr) {
-        auto type_param_scope_ctx = LexicalScope<LocalScope>::Enter(this, decl->TypeParams()->Scope());
+        auto typeParamScopeCtx = LexicalScope<LocalScope>::Enter(this, decl->TypeParams()->Scope());
         ResolveReferences(decl->TypeParams());
         ResolveInterfaceDeclaration(decl);
         return;
@@ -261,59 +261,59 @@ void ETSBinder::BuildInterfaceDeclaration(ir::TSInterfaceDeclaration *decl)
     ResolveInterfaceDeclaration(decl);
 }
 
-void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *method_def)
+void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
 {
-    if (method_def->Function()->TypeParams() != nullptr) {
-        auto scope_ctx = LexicalScope<LocalScope>::Enter(this, method_def->Function()->TypeParams()->Scope());
-        ResolveReferences(method_def->Function()->TypeParams());
-        ResolveMethodDefinition(method_def);
+    if (methodDef->Function()->TypeParams() != nullptr) {
+        auto scopeCtx = LexicalScope<LocalScope>::Enter(this, methodDef->Function()->TypeParams()->Scope());
+        ResolveReferences(methodDef->Function()->TypeParams());
+        ResolveMethodDefinition(methodDef);
         return;
     }
 
-    ResolveMethodDefinition(method_def);
+    ResolveMethodDefinition(methodDef);
 }
 
-void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *method_def)
+void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
 {
-    auto *func = method_def->Function();
-    ResolveReferences(method_def);
+    auto *func = methodDef->Function();
+    ResolveReferences(methodDef);
 
-    if (method_def->IsStatic() || func->IsStaticBlock()) {
+    if (methodDef->IsStatic() || func->IsStaticBlock()) {
         return;
     }
 
-    auto param_scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
+    auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
 
     auto params = func->Scope()->ParamScope()->Params();
     if (!params.empty() && params.front()->Name() == MANDATORY_PARAM_THIS) {
         return;  // Implicit this parameter is already inserted by ResolveReferences(), don't insert it twice.
     }
 
-    auto *this_param = AddMandatoryParam(MANDATORY_PARAM_THIS);
-    this_param->Declaration()->BindNode(this_param_);
+    auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    thisParam->Declaration()->BindNode(thisParam_);
 }
 
-void ETSBinder::BuildMemberExpression(ir::MemberExpression *member_expr)
+void ETSBinder::BuildMemberExpression(ir::MemberExpression *memberExpr)
 {
-    ResolveReference(member_expr->Object());
+    ResolveReference(memberExpr->Object());
 
-    if (member_expr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-        ResolveReference(member_expr->Property());
+    if (memberExpr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
+        ResolveReference(memberExpr->Property());
     }
 }
 
-void ETSBinder::BuildClassDefinition(ir::ClassDefinition *class_def)
+void ETSBinder::BuildClassDefinition(ir::ClassDefinition *classDef)
 {
-    auto bound_ctx = BoundContext(record_table_, class_def);
+    auto boundCtx = BoundContext(recordTable_, classDef);
 
-    if (class_def->TypeParams() != nullptr) {
-        auto scope_ctx = LexicalScope<LocalScope>::Enter(this, class_def->TypeParams()->Scope());
-        ResolveReferences(class_def->TypeParams());
-        BuildClassDefinitionImpl(class_def);
+    if (classDef->TypeParams() != nullptr) {
+        auto scopeCtx = LexicalScope<LocalScope>::Enter(this, classDef->TypeParams()->Scope());
+        ResolveReferences(classDef->TypeParams());
+        BuildClassDefinitionImpl(classDef);
         return;
     }
 
-    BuildClassDefinitionImpl(class_def);
+    BuildClassDefinitionImpl(classDef);
 }
 
 LocalScope *ETSBinder::ResolvePropertyReference(ir::ClassProperty *prop, ClassScope *scope)
@@ -327,33 +327,33 @@ LocalScope *ETSBinder::ResolvePropertyReference(ir::ClassProperty *prop, ClassSc
     return scope->InstanceFieldScope();
 }
 
-void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *class_def)
+void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
 {
-    auto class_ctx = LexicalScope<ClassScope>::Enter(this, class_def->Scope()->AsClassScope());
+    auto classCtx = LexicalScope<ClassScope>::Enter(this, classDef->Scope()->AsClassScope());
 
-    if (class_def->Super() != nullptr) {
-        ResolveReference(class_def->Super());
+    if (classDef->Super() != nullptr) {
+        ResolveReference(classDef->Super());
     }
 
-    for (auto *impl : class_def->Implements()) {
+    for (auto *impl : classDef->Implements()) {
         ResolveReference(impl);
     }
 
-    for (auto *stmt : class_def->Body()) {
+    for (auto *stmt : classDef->Body()) {
         if (!stmt->IsClassProperty()) {
             continue;
         }
 
-        auto field_scope = ResolvePropertyReference(stmt->AsClassProperty(), class_def->Scope()->AsClassScope());
-        auto field_name = stmt->AsClassProperty()->Id()->Name();
-        auto field_var = field_scope->FindLocal(field_name, varbinder::ResolveBindingOptions::BINDINGS);
-        field_var->AddFlag(VariableFlags::INITIALIZED);
-        if (field_var->Declaration()->IsConstDecl() && stmt->AsClassProperty()->Value() == nullptr) {
-            field_var->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
+        auto fieldScope = ResolvePropertyReference(stmt->AsClassProperty(), classDef->Scope()->AsClassScope());
+        auto fieldName = stmt->AsClassProperty()->Id()->Name();
+        auto fieldVar = fieldScope->FindLocal(fieldName, varbinder::ResolveBindingOptions::BINDINGS);
+        fieldVar->AddFlag(VariableFlags::INITIALIZED);
+        if (fieldVar->Declaration()->IsConstDecl() && stmt->AsClassProperty()->Value() == nullptr) {
+            fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
         }
     }
 
-    for (auto *stmt : class_def->Body()) {
+    for (auto *stmt : classDef->Body()) {
         if (stmt->IsClassProperty()) {
             continue;
         }
@@ -363,9 +363,9 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *class_def)
 
 void ETSBinder::AddLambdaFunctionThisParam(ir::ScriptFunction *func)
 {
-    auto param_scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-    auto *this_param = AddMandatoryParam(MANDATORY_PARAM_THIS);
-    this_param->Declaration()->BindNode(this_param_);
+    auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
+    auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    thisParam->Declaration()->BindNode(thisParam_);
     if (!func->IsAsyncFunc()) {
         Functions().push_back(func->Scope());
     }
@@ -373,21 +373,20 @@ void ETSBinder::AddLambdaFunctionThisParam(ir::ScriptFunction *func)
 
 void ETSBinder::AddInvokeFunctionThisParam(ir::ScriptFunction *func)
 {
-    auto param_scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-    auto *this_param = AddMandatoryParam(MANDATORY_PARAM_THIS);
-    this_param->Declaration()->BindNode(this_param_);
+    auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
+    auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    thisParam->Declaration()->BindNode(thisParam_);
 }
 
-void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containing_class_name,
-                                 bool is_static)
+void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic)
 {
-    ASSERT(!containing_class_name.Empty());
-    func->Scope()->BindName(containing_class_name);
+    ASSERT(!containingClassName.Empty());
+    func->Scope()->BindName(containingClassName);
 
-    if (!is_static) {
-        auto param_scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-        auto *this_param = AddMandatoryParam(MANDATORY_PARAM_THIS);
-        this_param->Declaration()->BindNode(this_param_);
+    if (!isStatic) {
+        auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
+        auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+        thisParam->Declaration()->BindNode(thisParam_);
     }
 
     if (!func->IsAsyncFunc()) {
@@ -395,28 +394,28 @@ void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringVie
     }
 }
 
-void ETSBinder::BuildLambdaObject(ir::AstNode *ref_node, ir::ClassDefinition *lambda_object,
+void ETSBinder::BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lambdaObject,
                                   checker::Signature *signature)
 {
-    auto bound_ctx = BoundContext(GetGlobalRecordTable(), lambda_object);
-    const auto &lambda_body = lambda_object->Body();
+    auto boundCtx = BoundContext(GetGlobalRecordTable(), lambdaObject);
+    const auto &lambdaBody = lambdaObject->Body();
 
-    AddLambdaFunctionThisParam(lambda_body[lambda_body.size() - 2U]->AsMethodDefinition()->Function());
-    AddLambdaFunctionThisParam(lambda_body[lambda_body.size() - 1]->AsMethodDefinition()->Function());
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function());
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 1]->AsMethodDefinition()->Function());
 
-    LambdaObjects().insert({ref_node, {lambda_object, signature}});
+    LambdaObjects().insert({refNode, {lambdaObject, signature}});
 }
 
-void ETSBinder::BuildFunctionType(ir::ETSFunctionType *func_type)
+void ETSBinder::BuildFunctionType(ir::ETSFunctionType *funcType)
 {
-    auto bound_ctx = BoundContext(GetGlobalRecordTable(), func_type->FunctionalInterface());
+    auto boundCtx = BoundContext(GetGlobalRecordTable(), funcType->FunctionalInterface());
 
-    auto *invoke_func = func_type->FunctionalInterface()->Body()->Body()[0]->AsMethodDefinition()->Function();
-    auto *func_scope = invoke_func->Scope();
-    func_scope->BindName(record_table_->RecordName());
-    AddInvokeFunctionThisParam(invoke_func);
+    auto *invokeFunc = funcType->FunctionalInterface()->Body()->Body()[0]->AsMethodDefinition()->Function();
+    auto *funcScope = invokeFunc->Scope();
+    funcScope->BindName(recordTable_->RecordName());
+    AddInvokeFunctionThisParam(invokeFunc);
 
-    GetGlobalRecordTable()->Signatures().push_back(func_scope);
+    GetGlobalRecordTable()->Signatures().push_back(funcScope);
 }
 
 void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
@@ -434,7 +433,7 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
     auto *const var = Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::STATIC);
     var->AddFlag(VariableFlags::INITIALIZED);
 
-    dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
+    dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
 
     TopScope()->InsertDynamicBinding(name, var);
 }
@@ -443,37 +442,37 @@ void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETS
                                      const util::StringView &name, Variable *var)
 {
     if (import->Language().IsDynamic()) {
-        dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
+        dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
     }
 
     TopScope()->InsertForeignBinding(name, var);
 }
 
 void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
-                                         const varbinder::Scope::VariableMap &global_bindings,
-                                         const parser::Program *const import_program,
-                                         const varbinder::GlobalScope *const import_global_scope,
+                                         const varbinder::Scope::VariableMap &globalBindings,
+                                         const parser::Program *const importProgram,
+                                         const varbinder::GlobalScope *const importGlobalScope,
                                          const ir::ETSImportDeclaration *const import)
 {
-    for (const auto [bindingName, var] : global_bindings) {
+    for (const auto [bindingName, var] : globalBindings) {
         if (bindingName.Is(compiler::Signatures::ETS_GLOBAL)) {
-            const auto *const class_def = var->Declaration()->Node()->AsClassDeclaration()->Definition();
-            ImportGlobalProperties(class_def);
+            const auto *const classDef = var->Declaration()->Node()->AsClassDeclaration()->Definition();
+            ImportGlobalProperties(classDef);
             continue;
         }
 
-        if (!import_global_scope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported()) {
+        if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported()) {
             InsertForeignBinding(specifier, import, bindingName, var);
         }
     }
 
-    for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticMethodScope()->Bindings()) {
+    for (const auto [bindingName, var] : importProgram->GlobalClassScope()->StaticMethodScope()->Bindings()) {
         if (!var->Declaration()->Node()->IsDefaultExported()) {
             InsertForeignBinding(specifier, import, bindingName, var);
         }
     }
 
-    for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticFieldScope()->Bindings()) {
+    for (const auto [bindingName, var] : importProgram->GlobalClassScope()->StaticFieldScope()->Bindings()) {
         if (!var->Declaration()->Node()->IsDefaultExported()) {
             InsertForeignBinding(specifier, import, bindingName, var);
         }
@@ -481,30 +480,30 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
 }
 
 bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const specifier,
-                                                          const varbinder::Scope::VariableMap &global_bindings,
-                                                          const parser::Program *const import_program,
-                                                          const varbinder::GlobalScope *const import_global_scope,
+                                                          const varbinder::Scope::VariableMap &globalBindings,
+                                                          const parser::Program *const importProgram,
+                                                          const varbinder::GlobalScope *const importGlobalScope,
                                                           const ir::ETSImportDeclaration *const import)
 {
     if (!specifier->IsImportNamespaceSpecifier()) {
         return false;
     }
-    const auto *const namespace_specifier = specifier->AsImportNamespaceSpecifier();
+    const auto *const namespaceSpecifier = specifier->AsImportNamespaceSpecifier();
 
-    if (namespace_specifier->Local()->Name().Empty()) {
-        ImportAllForeignBindings(specifier, global_bindings, import_program, import_global_scope, import);
+    if (namespaceSpecifier->Local()->Name().Empty()) {
+        ImportAllForeignBindings(specifier, globalBindings, importProgram, importGlobalScope, import);
     }
 
-    std::unordered_set<std::string> exported_names;
+    std::unordered_set<std::string> exportedNames;
     for (auto item : ReExportImports()) {
         if (auto source = import->ResolvedSource()->Str().Mutf8(),
             program = item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.'));
             source == program || (source + "/index") == program) {
-            ir::StringLiteral dir_name(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
-                                                         0, item->GetProgramPath().Mutf8().find_last_of('/'))),
-                                                     Allocator())
-                                           .View());
-            dir_name.SetStart(item->GetETSImportDeclarations()->Source()->Start());
+            ir::StringLiteral dirName(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
+                                                        0, item->GetProgramPath().Mutf8().find_last_of('/'))),
+                                                    Allocator())
+                                          .View());
+            dirName.SetStart(item->GetETSImportDeclarations()->Source()->Start());
 
             for (auto it : item->GetETSImportDeclarations()->Specifiers()) {
                 if (it->IsImportNamespaceSpecifier() &&
@@ -514,10 +513,10 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
                 }
 
                 AddSpecifiersToTopBindings(it, item->GetETSImportDeclarations(),
-                                           dir_name.Str().Is(".") ? item->GetETSImportDeclarations()->Source()
-                                                                  : &dir_name);
+                                           dirName.Str().Is(".") ? item->GetETSImportDeclarations()->Source()
+                                                                 : &dirName);
                 if (it->IsImportSpecifier() &&
-                    !exported_names.insert(it->AsImportSpecifier()->Local()->Name().Mutf8()).second) {
+                    !exportedNames.insert(it->AsImportSpecifier()->Local()->Name().Mutf8()).second) {
                     ThrowError(import->Start(), "Ambiguous import \"" +
                                                     it->AsImportSpecifier()->Local()->Name().Mutf8() +
                                                     "\" has multiple matching exports");
@@ -530,23 +529,23 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
 }
 
 Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &imported,
-                                                  const varbinder::Scope::VariableMap &global_bindings,
-                                                  const ArenaVector<parser::Program *> &record_res)
+                                                  const varbinder::Scope::VariableMap &globalBindings,
+                                                  const ArenaVector<parser::Program *> &recordRes)
 {
-    auto found_var = global_bindings.find(imported);
-    if (found_var == global_bindings.end()) {
-        const auto &static_method_bindings = record_res.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
-        found_var = static_method_bindings.find(imported);
-        if (found_var != static_method_bindings.end()) {
-            return found_var->second;
+    auto foundVar = globalBindings.find(imported);
+    if (foundVar == globalBindings.end()) {
+        const auto &staticMethodBindings = recordRes.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
+        foundVar = staticMethodBindings.find(imported);
+        if (foundVar != staticMethodBindings.end()) {
+            return foundVar->second;
         }
         bool found = false;
-        for (auto res : record_res) {
-            const auto &static_field_bindings = res->GlobalClassScope()->StaticFieldScope()->Bindings();
-            found_var = static_field_bindings.find(imported);
-            if (found_var != static_field_bindings.end()) {
+        for (auto res : recordRes) {
+            const auto &staticFieldBindings = res->GlobalClassScope()->StaticFieldScope()->Bindings();
+            foundVar = staticFieldBindings.find(imported);
+            if (foundVar != staticFieldBindings.end()) {
                 found = true;
-                found_var->second->AsLocalVariable()->AddFlag(VariableFlags::INITIALIZED);
+                foundVar->second->AsLocalVariable()->AddFlag(VariableFlags::INITIALIZED);
                 break;
             }
         }
@@ -555,49 +554,49 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
         }
     }
 
-    return found_var->second;
+    return foundVar->second;
 }
 
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
-                                                 const varbinder::Scope::VariableMap &global_bindings,
+                                                 const varbinder::Scope::VariableMap &globalBindings,
                                                  const ir::ETSImportDeclaration *const import,
-                                                 const ArenaVector<parser::Program *> &record_res,
-                                                 std::vector<ir::ETSImportDeclaration *> viewed_re_export)
+                                                 const ArenaVector<parser::Program *> &recordRes,
+                                                 std::vector<ir::ETSImportDeclaration *> viewedReExport)
 {
     if (!specifier->IsImportSpecifier()) {
         return false;
     }
-    const ir::StringLiteral *const import_path = import->Source();
-    auto insert_foreign_binding = [this, specifier, import](const util::StringView &name, Variable *var) {
+    const ir::StringLiteral *const importPath = import->Source();
+    auto insertForeignBinding = [this, specifier, import](const util::StringView &name, Variable *var) {
         if (import->Language().IsDynamic()) {
-            dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
+            dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
         }
 
         TopScope()->InsertForeignBinding(name, var);
     };
 
-    const auto *const import_specifier = specifier->AsImportSpecifier();
+    const auto *const importSpecifier = specifier->AsImportSpecifier();
 
-    if (!import_specifier->Imported()->IsIdentifier()) {
+    if (!importSpecifier->Imported()->IsIdentifier()) {
         return true;
     }
 
-    const auto &imported = import_specifier->Imported()->AsIdentifier()->Name();
+    const auto &imported = importSpecifier->Imported()->AsIdentifier()->Name();
 
-    auto *const var = FindImportSpecifiersVariable(imported, global_bindings, record_res);
+    auto *const var = FindImportSpecifiersVariable(imported, globalBindings, recordRes);
 
-    const auto &local_name = [this, import_specifier, &imported, &import_path]() {
-        if (import_specifier->Local() != nullptr) {
-            auto fnc = [&import_path, &imported](const auto &saved_specifier) {
-                return import_path->Str() != saved_specifier.first && imported == saved_specifier.second;
+    const auto &localName = [this, importSpecifier, &imported, &importPath]() {
+        if (importSpecifier->Local() != nullptr) {
+            auto fnc = [&importPath, &imported](const auto &savedSpecifier) {
+                return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
             };
-            if (!std::any_of(import_specifiers_.begin(), import_specifiers_.end(), fnc)) {
+            if (!std::any_of(importSpecifiers_.begin(), importSpecifiers_.end(), fnc)) {
                 TopScope()->EraseBinding(imported);
             }
 
-            import_specifiers_.push_back(std::make_pair(import_path->Str(), imported));
+            importSpecifiers_.push_back(std::make_pair(importPath->Str(), imported));
 
-            return import_specifier->Local()->Name();
+            return importSpecifier->Local()->Name();
         }
 
         return imported;
@@ -608,217 +607,217 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
             if (auto source = import->ResolvedSource()->Str().Mutf8(),
                 program = item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.'));
                 source == program || (source + "/index") == program) {
-                ir::StringLiteral dir_name(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
-                                                             0, item->GetProgramPath().Mutf8().find_last_of('/'))),
-                                                         Allocator())
-                                               .View());
-                dir_name.SetStart(item->GetETSImportDeclarations()->Source()->Start());
+                ir::StringLiteral dirName(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
+                                                            0, item->GetProgramPath().Mutf8().find_last_of('/'))),
+                                                        Allocator())
+                                              .View());
+                dirName.SetStart(item->GetETSImportDeclarations()->Source()->Start());
 
-                viewed_re_export.push_back(item->GetETSImportDeclarations());
+                viewedReExport.push_back(item->GetETSImportDeclarations());
                 AddSpecifiersToTopBindings(
                     specifier, item->GetETSImportDeclarations(),
-                    dir_name.Str().Is(".") ? item->GetETSImportDeclarations()->Source() : &dir_name, viewed_re_export);
+                    dirName.Str().Is(".") ? item->GetETSImportDeclarations()->Source() : &dirName, viewedReExport);
                 return true;
             }
         }
-        ThrowError(import_path->Start(), "Cannot find imported element " + imported.Mutf8());
+        ThrowError(importPath->Start(), "Cannot find imported element " + imported.Mutf8());
     }
 
     if (var->Declaration()->Node()->IsDefaultExported()) {
-        ThrowError(import_path->Start(), "Use the default import syntax to import a default exported element");
+        ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
     }
 
-    insert_foreign_binding(local_name, var);
+    insertForeignBinding(localName, var);
     return true;
 }
 
-varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Program *> &record_res,
-                                                  const ir::StringLiteral *const import_path)
+varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Program *> &recordRes,
+                                                  const ir::StringLiteral *const importPath)
 {
-    auto predicate_func = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
-    const auto &static_method_bindings = record_res.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
-    auto result = std::find_if(static_method_bindings.begin(), static_method_bindings.end(), predicate_func);
-    if (result == static_method_bindings.end()) {
-        const auto &static_field_bindings = record_res.front()->GlobalClassScope()->StaticFieldScope()->Bindings();
-        result = std::find_if(static_field_bindings.begin(), static_field_bindings.end(), predicate_func);
-        if (result == static_field_bindings.end()) {
-            ThrowError(import_path->Start(), "Cannot find default imported element in the target");
+    auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
+    const auto &staticMethodBindings = recordRes.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
+    auto result = std::find_if(staticMethodBindings.begin(), staticMethodBindings.end(), predicateFunc);
+    if (result == staticMethodBindings.end()) {
+        const auto &staticFieldBindings = recordRes.front()->GlobalClassScope()->StaticFieldScope()->Bindings();
+        result = std::find_if(staticFieldBindings.begin(), staticFieldBindings.end(), predicateFunc);
+        if (result == staticFieldBindings.end()) {
+            ThrowError(importPath->Start(), "Cannot find default imported element in the target");
         }
     }
     return result->second;
 }
 
-ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringView &source_name,
-                                                             const ir::StringLiteral *import_path)
+ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringView &sourceName,
+                                                             const ir::StringLiteral *importPath)
 {
-    const auto &ext_records = global_record_table_.Program()->ExternalSources();
-    auto record_res = [this, ext_records, source_name]() {
-        auto res = ext_records.find(source_name);
-        if (res != ext_records.end()) {
+    const auto &extRecords = globalRecordTable_.Program()->ExternalSources();
+    auto recordRes = [this, extRecords, sourceName]() {
+        auto res = extRecords.find(sourceName);
+        if (res != extRecords.end()) {
             return res;
         }
 
-        if (res = ext_records.find({source_name.Mutf8() + "/index"}); res != ext_records.end()) {
+        if (res = extRecords.find({sourceName.Mutf8() + "/index"}); res != extRecords.end()) {
             return res;
         }
 
-        res = ext_records.find(GetResolvedImportPath(source_name));
-        if (res == ext_records.end()) {
-            res = ext_records.find(GetResolvedImportPath({source_name.Mutf8() + "/index"}));
+        res = extRecords.find(GetResolvedImportPath(sourceName));
+        if (res == extRecords.end()) {
+            res = extRecords.find(GetResolvedImportPath({sourceName.Mutf8() + "/index"}));
         }
 
         return res;
     }();
-    if (record_res == ext_records.end()) {
-        ThrowError(import_path->Start(), "Cannot find import: " + std::string(source_name));
+    if (recordRes == extRecords.end()) {
+        ThrowError(importPath->Start(), "Cannot find import: " + std::string(sourceName));
     }
 
-    ASSERT(!record_res->second.empty());
+    ASSERT(!recordRes->second.empty());
 
-    return record_res->second;
+    return recordRes->second;
 }
 
 void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
                                            ir::StringLiteral *path,
-                                           std::vector<ir::ETSImportDeclaration *> viewed_re_export)
+                                           std::vector<ir::ETSImportDeclaration *> viewedReExport)
 {
-    const ir::StringLiteral *const import_path = path;
+    const ir::StringLiteral *const importPath = path;
 
     if (import->IsPureDynamic()) {
         AddDynamicSpecifiersToTopBindings(specifier, import);
         return;
     }
 
-    const util::StringView source_name = [import, import_path, this, &path]() {
+    const util::StringView sourceName = [import, importPath, this, &path]() {
         if (import->Module() == nullptr) {
-            return import_path->Str();
+            return importPath->Str();
         }
-        char path_delimiter = panda::os::file::File::GetPathDelim().at(0);
-        auto str_import_path = import_path->Str().Mutf8();
-        if (str_import_path.find(path_delimiter) == (str_import_path.size() - 1)) {
-            return util::UString(str_import_path + import->Module()->Str().Mutf8(), Allocator()).View();
+        char pathDelimiter = panda::os::file::File::GetPathDelim().at(0);
+        auto strImportPath = importPath->Str().Mutf8();
+        if (strImportPath.find(pathDelimiter) == (strImportPath.size() - 1)) {
+            return util::UString(strImportPath + import->Module()->Str().Mutf8(), Allocator()).View();
         }
 
-        std::string import_file_path;
+        std::string importFilePath;
         if (!import->Source()->Str().Is(path->Str().Mutf8()) && !import->Source()->Str().Empty() &&
             import->Source()->Str().Mutf8().substr(0, 1) == ".") {
-            import_file_path =
+            importFilePath =
                 import->Source()->Str().Mutf8().substr(import->Source()->Str().Mutf8().find_first_not_of('.'));
-            if (import_file_path.size() == 1) {
-                import_file_path = "";
+            if (importFilePath.size() == 1) {
+                importFilePath = "";
             }
         }
 
-        return util::UString(str_import_path + import_file_path + path_delimiter + import->Module()->Str().Mutf8(),
+        return util::UString(strImportPath + importFilePath + pathDelimiter + import->Module()->Str().Mutf8(),
                              Allocator())
             .View();
     }();
 
-    auto record = GetExternalProgram(source_name, import_path);
-    const auto *const import_program = record.front();
-    const auto *const import_global_scope = import_program->GlobalScope();
-    const auto &global_bindings = import_global_scope->Bindings();
+    auto record = GetExternalProgram(sourceName, importPath);
+    const auto *const importProgram = record.front();
+    const auto *const importGlobalScope = importProgram->GlobalScope();
+    const auto &globalBindings = importGlobalScope->Bindings();
 
-    auto insert_foreign_binding = [this, specifier, import](const util::StringView &name, Variable *var) {
+    auto insertForeignBinding = [this, specifier, import](const util::StringView &name, Variable *var) {
         if (import->Language().IsDynamic()) {
-            dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
+            dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
         }
 
         TopScope()->InsertForeignBinding(name, var);
     };
 
-    if (AddImportNamespaceSpecifiersToTopBindings(specifier, global_bindings, import_program, import_global_scope,
+    if (AddImportNamespaceSpecifiersToTopBindings(specifier, globalBindings, importProgram, importGlobalScope,
                                                   import)) {
         return;
     }
 
-    if (AddImportSpecifiersToTopBindings(specifier, global_bindings, import, record, std::move(viewed_re_export))) {
+    if (AddImportSpecifiersToTopBindings(specifier, globalBindings, import, record, std::move(viewedReExport))) {
         return;
     }
 
     ASSERT(specifier->IsImportDefaultSpecifier());
-    auto predicate_func = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
+    auto predicateFunc = [](const auto &item) { return item.second->Declaration()->Node()->IsDefaultExported(); };
 
-    auto item = std::find_if(global_bindings.begin(), global_bindings.end(), predicate_func);
-    if (item == global_bindings.end()) {
-        insert_foreign_binding(specifier->AsImportDefaultSpecifier()->Local()->Name(),
-                               FindStaticBinding(record, import_path));
+    auto item = std::find_if(globalBindings.begin(), globalBindings.end(), predicateFunc);
+    if (item == globalBindings.end()) {
+        insertForeignBinding(specifier->AsImportDefaultSpecifier()->Local()->Name(),
+                             FindStaticBinding(record, importPath));
         return;
     }
 
-    insert_foreign_binding(specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
+    insertForeignBinding(specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
 }
 
-void ETSBinder::HandleCustomNodes(ir::AstNode *child_node)
+void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
 {
-    switch (child_node->Type()) {
+    switch (childNode->Type()) {
         case ir::AstNodeType::ETS_TYPE_REFERENCE: {
-            auto *type_ref = child_node->AsETSTypeReference();
-            auto *base_name = type_ref->BaseName();
-            ASSERT(base_name->IsReference());
+            auto *typeRef = childNode->AsETSTypeReference();
+            auto *baseName = typeRef->BaseName();
+            ASSERT(baseName->IsReference());
             // We allow to resolve following types in pure dynamic mode:
             // import * as I from "@dynamic"
             // let x : I.X.Y
-            bool allow_dynamic_namespaces = type_ref->Part()->Name() != base_name;
-            LookupTypeReference(base_name, allow_dynamic_namespaces);
-            LookupTypeArgumentReferences(type_ref);
+            bool allowDynamicNamespaces = typeRef->Part()->Name() != baseName;
+            LookupTypeReference(baseName, allowDynamicNamespaces);
+            LookupTypeArgumentReferences(typeRef);
             break;
         }
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
-            BuildInterfaceDeclaration(child_node->AsTSInterfaceDeclaration());
+            BuildInterfaceDeclaration(childNode->AsTSInterfaceDeclaration());
             break;
         }
         case ir::AstNodeType::TS_ENUM_DECLARATION: {
-            ResolveEnumDeclaration(child_node->AsTSEnumDeclaration());
+            ResolveEnumDeclaration(childNode->AsTSEnumDeclaration());
             break;
         }
         case ir::AstNodeType::EXPORT_NAMED_DECLARATION: {
             break;
         }
         case ir::AstNodeType::ETS_IMPORT_DECLARATION: {
-            BuildImportDeclaration(child_node->AsETSImportDeclaration());
+            BuildImportDeclaration(childNode->AsETSImportDeclaration());
             break;
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
-            BuildMemberExpression(child_node->AsMemberExpression());
+            BuildMemberExpression(childNode->AsMemberExpression());
             break;
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
-            BuildMethodDefinition(child_node->AsMethodDefinition());
+            BuildMethodDefinition(childNode->AsMethodDefinition());
             break;
         }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
-            BuildETSNewClassInstanceExpression(child_node->AsETSNewClassInstanceExpression());
+            BuildETSNewClassInstanceExpression(childNode->AsETSNewClassInstanceExpression());
             break;
         }
         case ir::AstNodeType::ETS_FUNCTION_TYPE: {
-            BuildSignatureDeclarationBaseParams(child_node);
+            BuildSignatureDeclarationBaseParams(childNode);
             break;
         }
         default: {
-            ResolveReferences(child_node);
+            ResolveReferences(childNode);
             break;
         }
     }
 }
 
-bool ETSBinder::BuildInternalName(ir::ScriptFunction *script_func)
+bool ETSBinder::BuildInternalName(ir::ScriptFunction *scriptFunc)
 {
-    if (script_func->IsArrow()) {
+    if (scriptFunc->IsArrow()) {
         return true;
     }
 
-    auto *func_scope = script_func->Scope();
-    func_scope->BindName(record_table_->RecordName());
-    bool is_external = record_table_->IsExternal();
+    auto *funcScope = scriptFunc->Scope();
+    funcScope->BindName(recordTable_->RecordName());
+    bool isExternal = recordTable_->IsExternal();
 
-    bool compilable = script_func->Body() != nullptr && !is_external;
+    bool compilable = scriptFunc->Body() != nullptr && !isExternal;
     if (!compilable) {
-        record_table_->Signatures().push_back(func_scope);
+        recordTable_->Signatures().push_back(funcScope);
     }
 
-    if (is_external) {
-        script_func->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    if (isExternal) {
+        scriptFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
     }
 
     return compilable;
@@ -835,11 +834,11 @@ void ETSBinder::AddCompilableFunction(ir::ScriptFunction *func)
 
 void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 {
-    auto *func_scope = func->Scope();
+    auto *funcScope = func->Scope();
 
     std::stringstream ss;
-    ASSERT(func->IsArrow() || !func_scope->Name().Empty());
-    ss << func_scope->Name() << compiler::Signatures::METHOD_SEPARATOR;
+    ASSERT(func->IsArrow() || !funcScope->Name().Empty());
+    ss << funcScope->Name() << compiler::Signatures::METHOD_SEPARATOR;
 
     const auto *signature = func->Signature();
 
@@ -858,8 +857,8 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     signature->ToAssemblerType(GetCompilerContext(), ss);
 
-    util::UString internal_name(ss.str(), Allocator());
-    func_scope->BindInternalName(internal_name.View());
+    util::UString internalName(ss.str(), Allocator());
+    funcScope->BindInternalName(internalName.View());
 }
 
 void ETSBinder::FormLambdaName(util::UString &name, const util::StringView &signature)
@@ -883,109 +882,109 @@ void ETSBinder::FormFunctionalInterfaceName(util::UString &name, const util::Str
     name.Append(replaced);
 }
 
-void ETSBinder::BuildLambdaObjectName(const ir::AstNode *ref_node)
+void ETSBinder::BuildLambdaObjectName(const ir::AstNode *refNode)
 {
-    auto found = lambda_objects_.find(ref_node);
-    ASSERT(found != lambda_objects_.end());
-    auto *lambda_class = found->second.first;
-    auto *signature_ref = found->second.second;
+    auto found = lambdaObjects_.find(refNode);
+    ASSERT(found != lambdaObjects_.end());
+    auto *lambdaClass = found->second.first;
+    auto *signatureRef = found->second.second;
 
-    util::UString lambda_object_name(lambda_class->Ident()->Name(), Allocator());
-    FormLambdaName(lambda_object_name, signature_ref->InternalName());
-    lambda_class->Ident()->SetName(lambda_object_name.View());
-    lambda_class->SetInternalName(lambda_class->Ident()->Name());
+    util::UString lambdaObjectName(lambdaClass->Ident()->Name(), Allocator());
+    FormLambdaName(lambdaObjectName, signatureRef->InternalName());
+    lambdaClass->Ident()->SetName(lambdaObjectName.View());
+    lambdaClass->SetInternalName(lambdaClass->Ident()->Name());
 
-    util::StringView assembler_name(lambda_class->Ident()->Name());
-    auto *program = static_cast<const ir::ETSScript *>(ref_node->GetTopStatement())->Program();
+    util::StringView assemblerName(lambdaClass->Ident()->Name());
+    auto *program = static_cast<const ir::ETSScript *>(refNode->GetTopStatement())->Program();
     util::StringView prefix = program->GetPackageName();
     if (!prefix.Empty()) {
-        util::UString full_path(prefix, Allocator());
-        full_path.Append('.');
-        full_path.Append(assembler_name);
-        assembler_name = full_path.View();
+        util::UString fullPath(prefix, Allocator());
+        fullPath.Append('.');
+        fullPath.Append(assemblerName);
+        assemblerName = fullPath.View();
     }
 
-    checker::ETSObjectType *lambda_object = lambda_class->TsType()->AsETSObjectType();
-    lambda_object->SetName(lambda_class->Ident()->Name());
-    lambda_object->SetAssemblerName(lambda_class->Ident()->Name());
+    checker::ETSObjectType *lambdaObject = lambdaClass->TsType()->AsETSObjectType();
+    lambdaObject->SetName(lambdaClass->Ident()->Name());
+    lambdaObject->SetAssemblerName(lambdaClass->Ident()->Name());
 
-    const auto &lambda_body = lambda_class->Body();
-    auto *ctor_func = lambda_body[lambda_body.size() - 2]->AsMethodDefinition()->Function();
-    auto *ctor_func_scope = ctor_func->Scope();
-    ctor_func_scope->BindName(lambda_class->Ident()->Name());
+    const auto &lambdaBody = lambdaClass->Body();
+    auto *ctorFunc = lambdaBody[lambdaBody.size() - 2]->AsMethodDefinition()->Function();
+    auto *ctorFuncScope = ctorFunc->Scope();
+    ctorFuncScope->BindName(lambdaClass->Ident()->Name());
 
-    auto *invoke_func = lambda_body[lambda_body.size() - 1]->AsMethodDefinition()->Function();
-    auto *invoke_func_scope = invoke_func->Scope();
-    invoke_func_scope->BindName(lambda_class->Ident()->Name());
+    auto *invokeFunc = lambdaBody[lambdaBody.size() - 1]->AsMethodDefinition()->Function();
+    auto *invokeFuncScope = invokeFunc->Scope();
+    invokeFuncScope->BindName(lambdaClass->Ident()->Name());
 }
 
-void ETSBinder::BuildFunctionalInterfaceName(ir::ETSFunctionType *func_type)
+void ETSBinder::BuildFunctionalInterfaceName(ir::ETSFunctionType *funcType)
 {
-    auto *functional_interface = func_type->FunctionalInterface();
-    auto *invoke_func = functional_interface->Body()->Body()[0]->AsMethodDefinition()->Function();
-    util::UString functional_interface_name(functional_interface->Id()->Name(), Allocator());
+    auto *functionalInterface = funcType->FunctionalInterface();
+    auto *invokeFunc = functionalInterface->Body()->Body()[0]->AsMethodDefinition()->Function();
+    util::UString functionalInterfaceName(functionalInterface->Id()->Name(), Allocator());
     std::stringstream ss;
-    invoke_func->Signature()->ToAssemblerType(GetCompilerContext(), ss);
-    std::string signature_string = ss.str();
-    util::StringView signature_name(signature_string);
-    FormFunctionalInterfaceName(functional_interface_name, signature_name);
-    functional_interface->Id()->SetName(functional_interface_name.View());
-    util::UString internal_name(Program()->GetPackageName(), Allocator());
-    if (!(internal_name.View().Empty())) {
-        internal_name.Append(compiler::Signatures::METHOD_SEPARATOR);
+    invokeFunc->Signature()->ToAssemblerType(GetCompilerContext(), ss);
+    std::string signatureString = ss.str();
+    util::StringView signatureName(signatureString);
+    FormFunctionalInterfaceName(functionalInterfaceName, signatureName);
+    functionalInterface->Id()->SetName(functionalInterfaceName.View());
+    util::UString internalName(Program()->GetPackageName(), Allocator());
+    if (!(internalName.View().Empty())) {
+        internalName.Append(compiler::Signatures::METHOD_SEPARATOR);
     }
-    internal_name.Append(functional_interface->Id()->Name());
-    functional_interface->SetInternalName(internal_name.View());
+    internalName.Append(functionalInterface->Id()->Name());
+    functionalInterface->SetInternalName(internalName.View());
 
-    checker::ETSObjectType *functional_interface_type = functional_interface->TsType()->AsETSObjectType();
-    functional_interface_type->SetName(functional_interface->Id()->Name());
-    functional_interface_type->SetAssemblerName(internal_name.View());
+    checker::ETSObjectType *functionalInterfaceType = functionalInterface->TsType()->AsETSObjectType();
+    functionalInterfaceType->SetName(functionalInterface->Id()->Name());
+    functionalInterfaceType->SetAssemblerName(internalName.View());
 
-    auto *invoke_func_scope = invoke_func->Scope();
-    invoke_func_scope->BindName(functional_interface->Id()->Name());
+    auto *invokeFuncScope = invokeFunc->Scope();
+    invokeFuncScope->BindName(functionalInterface->Id()->Name());
 
-    util::UString invoke_internal_name(Program()->GetPackageName(), Allocator());
-    if (!(invoke_internal_name.View().Empty())) {
-        invoke_internal_name.Append(compiler::Signatures::METHOD_SEPARATOR);
+    util::UString invokeInternalName(Program()->GetPackageName(), Allocator());
+    if (!(invokeInternalName.View().Empty())) {
+        invokeInternalName.Append(compiler::Signatures::METHOD_SEPARATOR);
     }
-    invoke_internal_name.Append(invoke_func_scope->Name());
-    invoke_internal_name.Append(compiler::Signatures::METHOD_SEPARATOR);
-    invoke_internal_name.Append(invoke_func->Id()->Name());
-    std::stringstream invoke_signature_ss;
-    invoke_func->Signature()->ToAssemblerType(GetCompilerContext(), invoke_signature_ss);
-    invoke_internal_name.Append(invoke_signature_ss.str());
-    invoke_func_scope->BindInternalName(invoke_internal_name.View());
+    invokeInternalName.Append(invokeFuncScope->Name());
+    invokeInternalName.Append(compiler::Signatures::METHOD_SEPARATOR);
+    invokeInternalName.Append(invokeFunc->Id()->Name());
+    std::stringstream invokeSignatureSs;
+    invokeFunc->Signature()->ToAssemblerType(GetCompilerContext(), invokeSignatureSs);
+    invokeInternalName.Append(invokeSignatureSs.str());
+    invokeFuncScope->BindInternalName(invokeInternalName.View());
 }
 
 void ETSBinder::InitImplicitThisParam()
 {
-    this_param_ = Allocator()->New<ir::Identifier>("this", Allocator());
+    thisParam_ = Allocator()->New<ir::Identifier>("this", Allocator());
 }
 
 void ETSBinder::BuildProgram()
 {
     for (auto &[_, extPrograms] : Program()->ExternalSources()) {
         (void)_;
-        for (auto *ext_prog : extPrograms) {
-            BuildExternalProgram(ext_prog);
+        for (auto *extProg : extPrograms) {
+            BuildExternalProgram(extProg);
         }
     }
 
-    for (auto *default_import : default_imports_) {
-        BuildImportDeclaration(default_import);
+    for (auto *defaultImport : defaultImports_) {
+        BuildImportDeclaration(defaultImport);
     }
 
     auto &stmts = Program()->Ast()->Statements();
-    const auto ets_global = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
+    const auto etsGlobal = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         return stmt->IsClassDeclaration() &&
                stmt->AsClassDeclaration()->Definition()->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL);
     });
-    if (ets_global != stmts.end()) {
+    if (etsGlobal != stmts.end()) {
         const auto begin = std::find_if(stmts.rbegin(), stmts.rend(), [](const ir::Statement *stmt) {
                                return stmt->IsETSImportDeclaration() || stmt->IsETSPackageDeclaration();
                            }).base();
 
-        const size_t index = std::distance(begin, ets_global);
+        const size_t index = std::distance(begin, etsGlobal);
         std::rotate(begin, begin + index, begin + index + 1);
     }
 
@@ -994,41 +993,41 @@ void ETSBinder::BuildProgram()
     }
 }
 
-void ETSBinder::BuildExternalProgram(parser::Program *ext_program)
+void ETSBinder::BuildExternalProgram(parser::Program *extProgram)
 {
-    auto *saved_program = Program();
-    auto *saved_record_table = record_table_;
-    auto *saved_top_scope = TopScope();
+    auto *savedProgram = Program();
+    auto *savedRecordTable = recordTable_;
+    auto *savedTopScope = TopScope();
 
     auto flags = Program()->VarBinder()->IsGenStdLib() ? RecordTableFlags::NONE : RecordTableFlags::EXTERNAL;
-    auto *ext_record_table = Allocator()->New<RecordTable>(Allocator(), ext_program, flags);
-    external_record_table_.insert({ext_program, ext_record_table});
+    auto *extRecordTable = Allocator()->New<RecordTable>(Allocator(), extProgram, flags);
+    externalRecordTable_.insert({extProgram, extRecordTable});
 
-    ResetTopScope(ext_program->GlobalScope());
-    record_table_ = ext_record_table;
-    SetProgram(ext_program);
+    ResetTopScope(extProgram->GlobalScope());
+    recordTable_ = extRecordTable;
+    SetProgram(extProgram);
 
     BuildProgram();
 
-    SetProgram(saved_program);
-    record_table_ = saved_record_table;
-    ResetTopScope(saved_top_scope);
+    SetProgram(savedProgram);
+    recordTable_ = savedRecordTable;
+    ResetTopScope(savedTopScope);
 }
 
-void ETSBinder::BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *class_instance)
+void ETSBinder::BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *classInstance)
 {
-    BoundContext bound_ctx(record_table_, class_instance->ClassDefinition());
-    ResolveReference(class_instance->GetTypeRef());
+    BoundContext boundCtx(recordTable_, classInstance->ClassDefinition());
+    ResolveReference(classInstance->GetTypeRef());
 
-    for (auto *arg : class_instance->GetArguments()) {
+    for (auto *arg : classInstance->GetArguments()) {
         ResolveReference(arg);
     }
 
-    if (class_instance->ClassDefinition() == nullptr) {
+    if (classInstance->ClassDefinition() == nullptr) {
         return;
     }
 
-    ResolveReference(class_instance->ClassDefinition());
+    ResolveReference(classInstance->ClassDefinition());
 }
 
 void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
@@ -1045,53 +1044,53 @@ void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
 }
 
 bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable *var, const util::StringView &name,
-                                                             const ir::ClassElement *class_element)
+                                                             const ir::ClassElement *classElement)
 {
     if (var->Declaration()->Node()->IsDefaultExported()) {
         return false;
     }
 
-    const auto ins_res = TopScope()->InsertForeignBinding(name, var);
-    if (!(!ins_res.second && ins_res.first != TopScope()->Bindings().end()) || !(ins_res.first->second != var)) {
+    const auto insRes = TopScope()->InsertForeignBinding(name, var);
+    if (!(!insRes.second && insRes.first != TopScope()->Bindings().end()) || !(insRes.first->second != var)) {
         return true;
     }
-    if (ins_res.first->second->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-        auto *const current_node = ins_res.first->second->Declaration()->Node();
+    if (insRes.first->second->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
+        auto *const currentNode = insRes.first->second->Declaration()->Node();
         auto *const method = var->Declaration()->Node()->AsMethodDefinition();
-        if (!current_node->AsMethodDefinition()->HasOverload(method)) {
-            current_node->AsMethodDefinition()->AddOverload(method);
-            method->Function()->Id()->SetVariable(ins_res.first->second);
+        if (!currentNode->AsMethodDefinition()->HasOverload(method)) {
+            currentNode->AsMethodDefinition()->AddOverload(method);
+            method->Function()->Id()->SetVariable(insRes.first->second);
             method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
         }
         return true;
     }
 
     auto str = util::Helpers::AppendAll("Variable '", name.Utf8(), "'");
-    if (ins_res.first->second->Declaration()->Type() == var->Declaration()->Type()) {
+    if (insRes.first->second->Declaration()->Type() == var->Declaration()->Type()) {
         str += " is already defined.";
     } else {
         str += " is already defined with different type.";
     }
-    ThrowError(class_element->Id()->Start(), str);
+    ThrowError(classElement->Id()->Start(), str);
 }
 
-void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const class_def)
+void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef)
 {
-    const auto scope_ctx = LexicalScope<ClassScope>::Enter(this, class_def->Scope()->AsClassScope());
+    const auto scopeCtx = LexicalScope<ClassScope>::Enter(this, classDef->Scope()->AsClassScope());
 
-    for (const auto *const prop : class_def->Body()) {
-        const auto *const class_element = prop->AsClassElement();
+    for (const auto *const prop : classDef->Body()) {
+        const auto *const classElement = prop->AsClassElement();
 
-        if (class_element->IsClassStaticBlock()) {
+        if (classElement->IsClassStaticBlock()) {
             continue;
         }
 
-        ASSERT(class_element->IsStatic());
-        const auto &name = class_element->Id()->Name();
-        auto *const var = scope_ctx.GetScope()->FindLocal(name, ResolveBindingOptions::ALL);
+        ASSERT(classElement->IsStatic());
+        const auto &name = classElement->Id()->Name();
+        auto *const var = scopeCtx.GetScope()->FindLocal(name, ResolveBindingOptions::ALL);
         ASSERT(var != nullptr);
 
-        if (ImportGlobalPropertiesForNotDefaultedExports(var, name, class_element)) {
+        if (ImportGlobalPropertiesForNotDefaultedExports(var, name, classElement)) {
             return;
         }
     }
@@ -1099,8 +1098,8 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const class_de
 
 const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var) const
 {
-    auto it = dynamic_import_vars_.find(var);
-    if (it == dynamic_import_vars_.cend()) {
+    auto it = dynamicImportVars_.find(var);
+    if (it == dynamicImportVars_.cend()) {
         return nullptr;
     }
 

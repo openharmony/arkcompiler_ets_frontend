@@ -23,8 +23,8 @@ class TSTypeParameterInstantiation;
 
 class TSClassImplements : public Expression {
 public:
-    explicit TSClassImplements(Expression *expression, TSTypeParameterInstantiation *type_parameters)
-        : Expression(AstNodeType::TS_CLASS_IMPLEMENTS), expression_(expression), type_parameters_(type_parameters)
+    explicit TSClassImplements(Expression *expression, TSTypeParameterInstantiation *typeParameters)
+        : Expression(AstNodeType::TS_CLASS_IMPLEMENTS), expression_(expression), typeParameters_(typeParameters)
     {
     }
 
@@ -45,7 +45,7 @@ public:
 
     const TSTypeParameterInstantiation *TypeParameters() const
     {
-        return type_parameters_;
+        return typeParameters_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -64,7 +64,7 @@ public:
 
 private:
     Expression *expression_;
-    TSTypeParameterInstantiation *type_parameters_ {};
+    TSTypeParameterInstantiation *typeParameters_ {};
 };
 }  // namespace panda::es2panda::ir
 

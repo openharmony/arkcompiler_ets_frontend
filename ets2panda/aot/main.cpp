@@ -75,25 +75,25 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
 
 static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options)
 {
-    auto compilation_list = FindProjectSources(options->CompilerOptions().arkts_config);
-    if (compilation_list.empty()) {
+    auto compilationList = FindProjectSources(options->CompilerOptions().arktsConfig);
+    if (compilationList.empty()) {
         std::cerr << "Error: No files to compile" << std::endl;
         return 1;
     }
 
-    unsigned overall_res = 0;
-    for (auto &[src, dst] : compilation_list) {
-        std::ifstream input_stream(src);
-        if (input_stream.fail()) {
+    unsigned overallRes = 0;
+    for (auto &[src, dst] : compilationList) {
+        std::ifstream inputStream(src);
+        if (inputStream.fail()) {
             std::cerr << "Error: Failed to open file: " << src << std::endl;
             return 1;
         }
 
         std::stringstream ss;
-        ss << input_stream.rdbuf();
-        std::string parser_input = ss.str();
-        input_stream.close();
-        es2panda::SourceFile input(src, parser_input, options->ParseModule());
+        ss << inputStream.rdbuf();
+        std::string parserInput = ss.str();
+        inputStream.close();
+        es2panda::SourceFile input(src, parserInput, options->ParseModule());
         options->SetCompilerOutput(dst);
 
         options->ListFiles() && std::cout << "> es2panda: compiling from '" << src << "' to '" << dst << "'"
@@ -101,11 +101,11 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
         auto res = CompileFromSource(compiler, input, options);
         if (res != 0) {
             std::cout << "> es2panda: failed to compile from " << src << " to " << dst << std::endl;
-            overall_res |= static_cast<unsigned>(res);
+            overallRes |= static_cast<unsigned>(res);
         }
     }
 
-    return overall_res;
+    return overallRes;
 }
 
 static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<std::string> const &names)
@@ -135,26 +135,26 @@ static int Run(int argc, const char **argv)
     Logger::ComponentMask mask {};
     mask.set(Logger::Component::ES2PANDA);
     Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), mask);
-    auto plugins_opt = InitializePlugins(options->CompilerOptions().plugins);
-    if (!plugins_opt.has_value()) {
+    auto pluginsOpt = InitializePlugins(options->CompilerOptions().plugins);
+    if (!pluginsOpt.has_value()) {
         return 1;
     }
-    es2panda::Compiler compiler(options->Extension(), options->ThreadCount(), std::move(plugins_opt.value()));
+    es2panda::Compiler compiler(options->Extension(), options->ThreadCount(), std::move(pluginsOpt.value()));
 
-    if (options->CompilerOptions().compilation_mode == CompilationMode::PROJECT) {
+    if (options->CompilerOptions().compilationMode == CompilationMode::PROJECT) {
         return CompileFromConfig(compiler, options.get());
     }
 
-    std::string_view source_file;
-    std::string_view parser_input;
-    if (options->CompilerOptions().compilation_mode == CompilationMode::GEN_STD_LIB) {
-        source_file = "etsstdlib.ets";
-        parser_input = "";
+    std::string_view sourceFile;
+    std::string_view parserInput;
+    if (options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+        sourceFile = "etsstdlib.ets";
+        parserInput = "";
     } else {
-        source_file = options->SourceFile();
-        parser_input = options->ParserInput();
+        sourceFile = options->SourceFile();
+        parserInput = options->ParserInput();
     }
-    es2panda::SourceFile input(source_file, parser_input, options->ParseModule());
+    es2panda::SourceFile input(sourceFile, parserInput, options->ParseModule());
     return CompileFromSource(compiler, input, options.get());
 }
 }  // namespace panda::es2panda::aot

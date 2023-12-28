@@ -47,9 +47,9 @@ void LocalVariable::SetLexical(Scope *scope)
         return;
     }
 
-    VariableScope *var_scope = scope->EnclosingVariableScope();
+    VariableScope *varScope = scope->EnclosingVariableScope();
 
-    BindLexEnvSlot(var_scope->NextSlot());
+    BindLexEnvSlot(varScope->NextSlot());
 }
 
 void GlobalVariable::SetLexical([[maybe_unused]] Scope *scope) {}

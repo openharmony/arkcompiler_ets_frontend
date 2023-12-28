@@ -78,8 +78,8 @@ void ETSLexer::CheckNumberLiteralEnd()
         GetToken().flags_ |= TokenFlags::NUMBER_FLOAT;
         GetToken().src_ = SourceView(GetToken().Start().index, Iterator().Index());
         Iterator().Forward(1);
-        const auto next_cp = Iterator().PeekCp();
-        if (KeywordsUtil::IsIdentifierStart(next_cp) || IsDecimalDigit(next_cp)) {
+        const auto nextCp = Iterator().PeekCp();
+        if (KeywordsUtil::IsIdentifierStart(nextCp) || IsDecimalDigit(nextCp)) {
             ThrowError("Invalid numeric literal");
         }
     } else {
@@ -99,7 +99,7 @@ void ETSLexer::SkipMultiLineComment()
     uint32_t depth = 1U;
 
     // Just to reduce extra nested level(s)
-    auto const check_asterisk = [this, &depth]() -> bool {
+    auto const checkAsterisk = [this, &depth]() -> bool {
         if (Iterator().Peek() == LEX_CHAR_SLASH) {
             Iterator().Forward(1);
 
@@ -124,7 +124,7 @@ void ETSLexer::SkipMultiLineComment()
                 continue;
             }
             case LEX_CHAR_ASTERISK: {
-                if (!check_asterisk()) {
+                if (!checkAsterisk()) {
                     return;
                 }
                 break;

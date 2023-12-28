@@ -25,25 +25,25 @@ void GeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
     VReg callee = FunctionReg(node);
 
     pg_->CreateGeneratorObj(node, callee);
-    pg_->StoreAccumulator(node, func_obj_);
-    pg_->SuspendGenerator(node, func_obj_);
-    pg_->SetLabel(node, catch_table_->LabelSet().TryBegin());
+    pg_->StoreAccumulator(node, funcObj_);
+    pg_->SuspendGenerator(node, funcObj_);
+    pg_->SetLabel(node, catchTable_->LabelSet().TryBegin());
 }
 
 void GeneratorFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
 {
-    const auto &label_set = catch_table_->LabelSet();
+    const auto &labelSet = catchTable_->LabelSet();
 
-    pg_->SetLabel(node, label_set.TryEnd());
-    pg_->SetLabel(node, label_set.CatchBegin());
-    pg_->GeneratorComplete(node, func_obj_);
+    pg_->SetLabel(node, labelSet.TryEnd());
+    pg_->SetLabel(node, labelSet.CatchBegin());
+    pg_->GeneratorComplete(node, funcObj_);
     pg_->EmitThrow(node);
-    pg_->SetLabel(node, label_set.CatchEnd());
+    pg_->SetLabel(node, labelSet.CatchEnd());
 }
 
 void GeneratorFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
-    pg_->GeneratorComplete(node, func_obj_);
+    pg_->GeneratorComplete(node, funcObj_);
     pg_->CreateIterResultObject(node, true);
     pg_->EmitReturn(node);
 }
@@ -57,13 +57,13 @@ void GeneratorFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 void GeneratorFunctionBuilder::Yield(const ir::AstNode *node)
 {
     RegScope rs(pg_);
-    VReg completion_type = pg_->AllocReg();
-    VReg completion_value = pg_->AllocReg();
+    VReg completionType = pg_->AllocReg();
+    VReg completionValue = pg_->AllocReg();
 
     pg_->CreateIterResultObject(node, false);
-    pg_->GeneratorYield(node, func_obj_);
-    SuspendResumeExecution(node, completion_type, completion_value);
+    pg_->GeneratorYield(node, funcObj_);
+    SuspendResumeExecution(node, completionType, completionValue);
 
-    HandleCompletion(node, completion_type, completion_value);
+    HandleCompletion(node, completionType, completionValue);
 }
 }  // namespace panda::es2panda::compiler

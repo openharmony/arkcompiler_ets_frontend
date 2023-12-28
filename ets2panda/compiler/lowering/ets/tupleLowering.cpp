@@ -60,101 +60,100 @@ static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir
 
     // Check if argument of update expression is tuple
     auto *const argument = update->Argument();
-    const bool is_argument_member_expression = argument->IsMemberExpression();
-    auto *const argument_type =
-        is_argument_member_expression ? argument->AsMemberExpression()->Object()->TsType() : nullptr;
+    const bool isArgumentMemberExpression = argument->IsMemberExpression();
+    auto *const argumentType =
+        isArgumentMemberExpression ? argument->AsMemberExpression()->Object()->TsType() : nullptr;
 
-    if ((argument_type == nullptr) || (!argument_type->IsETSTupleType())) {
+    if ((argumentType == nullptr) || (!argumentType->IsETSTupleType())) {
         return update;
     }
     // --------------
 
     // Set tuple type to Object (because we'll need implicit boxing)
-    auto *const saved_type = argument->TsType();
-    argument->SetTsType(argument_type->AsETSTupleType()->ElementType());
+    auto *const savedType = argument->TsType();
+    argument->SetTsType(argumentType->AsETSTupleType()->ElementType());
     // --------------
 
     // Compute necessary types and OpaqueTypeNodes
-    auto *const tuple_type_at_idx = argument_type->AsETSTupleType()->GetTypeAtIndex(
+    auto *const tupleTypeAtIdx = argumentType->AsETSTupleType()->GetTypeAtIndex(
         checker->GetTupleElementAccessValue(argument->AsMemberExpression()->Property()->TsType()));
 
-    auto *const tuple_element_type_node =
-        checker->AllocNode<ir::OpaqueTypeNode>(argument_type->AsETSTupleType()->ElementType());
-    auto *const tuple_type_at_idx_node = checker->AllocNode<ir::OpaqueTypeNode>(tuple_type_at_idx);
+    auto *const tupleElementTypeNode =
+        checker->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType());
+    auto *const tupleTypeAtIdxNode = checker->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx);
     // --------------
 
     // Clone argument of update expression (conversion flag might be added to it, so we need to duplicate it to not make
     // conversions on 'line 3', that belongs to 'line 1' )
-    auto *const member_expr = argument->AsMemberExpression();
-    auto *const argument_clone =
-        checker->AllocNode<ir::MemberExpression>(member_expr->Object(), member_expr->Property(), member_expr->Kind(),
-                                                 member_expr->IsComputed(), member_expr->IsOptional());
-    argument_clone->SetPropVar(member_expr->PropVar());
-    argument_clone->SetParent(member_expr->Parent());
-    argument_clone->SetTsType(member_expr->TsType());
-    argument_clone->SetObjectType(member_expr->ObjType());
+    auto *const memberExpr = argument->AsMemberExpression();
+    auto *const argumentClone =
+        checker->AllocNode<ir::MemberExpression>(memberExpr->Object(), memberExpr->Property(), memberExpr->Kind(),
+                                                 memberExpr->IsComputed(), memberExpr->IsOptional());
+    argumentClone->SetPropVar(memberExpr->PropVar());
+    argumentClone->SetParent(memberExpr->Parent());
+    argumentClone->SetTsType(memberExpr->TsType());
+    argumentClone->SetObjectType(memberExpr->ObjType());
     // --------------
 
     // Generate temporary symbols
     auto *gensym = Gensym(checker->Allocator());
-    auto *const tmp_var = NearestScope(update)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
+    auto *const tmpVar = NearestScope(update)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
         checker->Allocator(), gensym->Name(), varbinder::VariableFlags::LOCAL);
-    tmp_var->SetTsType(tuple_type_at_idx);
-    gensym->SetVariable(tmp_var);
-    gensym->SetTsType(tmp_var->TsType());
+    tmpVar->SetTsType(tupleTypeAtIdx);
+    gensym->SetVariable(tmpVar);
+    gensym->SetTsType(tmpVar->TsType());
 
-    auto *gensym_2 = Gensym(checker->Allocator());
-    auto *const tmp_var_2 = NearestScope(update)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
-        checker->Allocator(), gensym_2->Name(), varbinder::VariableFlags::LOCAL);
-    tmp_var_2->SetTsType(tuple_type_at_idx);
-    gensym_2->SetVariable(tmp_var_2);
-    gensym_2->SetTsType(tmp_var_2->TsType());
+    auto *gensym2 = Gensym(checker->Allocator());
+    auto *const tmpVar2 = NearestScope(update)->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
+        checker->Allocator(), gensym2->Name(), varbinder::VariableFlags::LOCAL);
+    tmpVar2->SetTsType(tupleTypeAtIdx);
+    gensym2->SetVariable(tmpVar2);
+    gensym2->SetTsType(tmpVar2->TsType());
     // --------------
 
     // make node: let gensym = tuple[n] as <tuple type at index n>;
-    auto *const gensym_ts_as = checker->AllocNode<ir::TSAsExpression>(argument_clone, tuple_type_at_idx_node, false);
-    auto *const tuple_as_type =
-        checker->AllocNode<ir::AssignmentExpression>(gensym, gensym_ts_as, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *const gensymTsAs = checker->AllocNode<ir::TSAsExpression>(argumentClone, tupleTypeAtIdxNode, false);
+    auto *const tupleAsType =
+        checker->AllocNode<ir::AssignmentExpression>(gensym, gensymTsAs, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     // --------------
 
     // make node: let gensym2 = (gensym)++;
-    auto *gensym_update = checker->AllocNode<ir::UpdateExpression>(gensym, update->OperatorType(), update->IsPrefix());
-    auto *const gensym_2_assignment = checker->AllocNode<ir::AssignmentExpression>(
-        gensym_2, gensym_update, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *gensymUpdate = checker->AllocNode<ir::UpdateExpression>(gensym, update->OperatorType(), update->IsPrefix());
+    auto *const gensym2Assignment =
+        checker->AllocNode<ir::AssignmentExpression>(gensym2, gensymUpdate, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     // --------------
 
     // make node: tuple[n] = (gensym as <tuple type at index n>) as <tuple element_type>;
-    auto *gensym_as = checker->AllocNode<ir::TSAsExpression>(gensym, tuple_type_at_idx_node, false);
-    auto *gensym_as_tuple_type_at_idx =
-        checker->AllocNode<ir::TSAsExpression>(gensym_as, tuple_element_type_node, false);
-    auto *const tuple_assignment = checker->AllocNode<ir::AssignmentExpression>(
-        argument, gensym_as_tuple_type_at_idx, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *gensymAs = checker->AllocNode<ir::TSAsExpression>(gensym, tupleTypeAtIdxNode, false);
+    auto *gensymAsTupleTypeAtIdx = checker->AllocNode<ir::TSAsExpression>(gensymAs, tupleElementTypeNode, false);
+    auto *const tupleAssignment = checker->AllocNode<ir::AssignmentExpression>(
+        argument, gensymAsTupleTypeAtIdx, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     // --------------
 
     // make node: gensym2 as <tuple type at index n>;
-    auto *const final_tuple_node = checker->AllocNode<ir::TSAsExpression>(gensym_2, tuple_type_at_idx_node, false);
+    auto *const finalTupleNode = checker->AllocNode<ir::TSAsExpression>(gensym2, tupleTypeAtIdxNode, false);
     // --------------
 
     // Construct sequence expression order
-    ArenaVector<ir::Expression *> expression_list(checker->Allocator()->Adapter());
-    expression_list.push_back(tuple_as_type);
-    expression_list.push_back(gensym_2_assignment);
-    expression_list.push_back(tuple_assignment);
-    expression_list.push_back(final_tuple_node);
+    ArenaVector<ir::Expression *> expressionList(checker->Allocator()->Adapter());
+    expressionList.push_back(tupleAsType);
+    expressionList.push_back(gensym2Assignment);
+    expressionList.push_back(tupleAssignment);
+    expressionList.push_back(finalTupleNode);
     // --------------
 
     // Check the new sequence expression
-    auto *const sequence_expr = checker->AllocNode<ir::SequenceExpression>(std::move(expression_list));
-    sequence_expr->SetParent(update->Parent());
-    sequence_expr->Check(checker);
+    auto *const sequenceExpr = checker->AllocNode<ir::SequenceExpression>(std::move(expressionList));
+    sequenceExpr->SetParent(update->Parent());
+    sequenceExpr->Check(checker);
     // --------------
 
     // Set back TsType of argument (not necessarily needed now, but there can be a phase later, that need to get the
     // right type of it)
-    argument->SetTsType(saved_type);
+    argument->SetTsType(savedType);
     // --------------
 
-    return sequence_expr;
+    return sequenceExpr;
 }
 
 static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *const checker,
@@ -169,49 +168,48 @@ static ir::AssignmentExpression *ConvertTupleAssignment(checker::ETSChecker *con
 
     // Check if the left side of an assignment expression is a tuple element access
     auto *const left = assignment->Left();
-    auto *const left_object_type = left->AsMemberExpression()->Object()->TsType();
+    auto *const leftObjectType = left->AsMemberExpression()->Object()->TsType();
 
-    if ((left_object_type == nullptr) || (!left_object_type->IsETSTupleType())) {
+    if ((leftObjectType == nullptr) || (!leftObjectType->IsETSTupleType())) {
         return assignment;
     }
     // --------------
 
     // Set tuple type to <tuple element_type> (because we may need implicit boxing)
-    auto *const saved_left_type = left->TsType();
-    left->SetTsType(left_object_type->AsETSTupleType()->ElementType());
+    auto *const savedLeftType = left->TsType();
+    left->SetTsType(leftObjectType->AsETSTupleType()->ElementType());
     // --------------
 
     // Compute necessary types and OpaqueTypeNodes
-    auto *const element_type_type_node =
-        checker->AllocNode<ir::OpaqueTypeNode>(left_object_type->AsETSTupleType()->ElementType());
-    auto *const tuple_type_at_idx_type_node = checker->AllocNode<ir::OpaqueTypeNode>(saved_left_type);
+    auto *const elementTypeTypeNode =
+        checker->AllocNode<ir::OpaqueTypeNode>(leftObjectType->AsETSTupleType()->ElementType());
+    auto *const tupleTypeAtIdxTypeNode = checker->AllocNode<ir::OpaqueTypeNode>(savedLeftType);
     // --------------
 
     // make node: tuple[n] = ((variable as <tuple type at index n>) as <tuple element_type>)
-    auto *const ts_as_expression_left =
-        checker->AllocNode<ir::TSAsExpression>(assignment->Right(), tuple_type_at_idx_type_node, false);
+    auto *const tsAsExpressionLeft =
+        checker->AllocNode<ir::TSAsExpression>(assignment->Right(), tupleTypeAtIdxTypeNode, false);
 
-    auto *const ts_as_expression =
-        checker->AllocNode<ir::TSAsExpression>(ts_as_expression_left, element_type_type_node, false);
-    auto *const new_assignment =
-        checker->AllocNode<ir::AssignmentExpression>(left, ts_as_expression, assignment->OperatorType());
+    auto *const tsAsExpression = checker->AllocNode<ir::TSAsExpression>(tsAsExpressionLeft, elementTypeTypeNode, false);
+    auto *const newAssignment =
+        checker->AllocNode<ir::AssignmentExpression>(left, tsAsExpression, assignment->OperatorType());
     // --------------
 
     // Check the new assignment
-    new_assignment->SetParent(assignment->Parent());
-    new_assignment->Check(checker);
-    left->SetTsType(saved_left_type);
+    newAssignment->SetParent(assignment->Parent());
+    newAssignment->Check(checker);
+    left->SetTsType(savedLeftType);
     // --------------
 
-    return new_assignment;
+    return newAssignment;
 }
 
 bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
 {
     for (const auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (auto *const ext_prog : ext_programs) {
-            Perform(ctx, ext_prog);
+        for (auto *const extProg : ext_programs) {
+            Perform(ctx, extProg);
         }
     }
 
@@ -238,24 +236,24 @@ bool TupleLowering::Postcondition(public_lib::Context *const ctx, const parser::
 {
     for (const auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (const auto *const ext_prog : ext_programs) {
-            if (!Postcondition(ctx, ext_prog)) {
+        for (const auto *const extProg : ext_programs) {
+            if (!Postcondition(ctx, extProg)) {
                 return false;
             }
         }
     }
 
     return !program->Ast()->IsAnyChild([](const ir::AstNode *const ast) {
-        const bool is_left_member_expr =
+        const bool isLeftMemberExpr =
             ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression();
-        const bool is_left_tuple =
-            is_left_member_expr
+        const bool isLeftTuple =
+            isLeftMemberExpr
                 ? (ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType() != nullptr) &&
                       ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType()->IsETSTupleType()
                 : false;
         // Check if there is an 'assignment expression' with a 'member expression' on it's left, which is a tuple. If
         // yes, then the right hand side must be a type of the element type.
-        return is_left_member_expr && is_left_tuple &&
+        return isLeftMemberExpr && isLeftTuple &&
                (ast->AsAssignmentExpression()->Right()->TsType() ==
                 ast->AsAssignmentExpression()->Left()->AsMemberExpression()->TsType()->AsETSTupleType()->ElementType());
     });

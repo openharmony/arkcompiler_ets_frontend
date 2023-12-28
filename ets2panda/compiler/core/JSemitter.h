@@ -22,7 +22,7 @@ namespace panda::es2panda::compiler {
 
 class JSFunctionEmitter : public FunctionEmitter {
 public:
-    JSFunctionEmitter(const CodeGen *cg, ProgramElement *program_element) : FunctionEmitter(cg, program_element) {}
+    JSFunctionEmitter(const CodeGen *cg, ProgramElement *programElement) : FunctionEmitter(cg, programElement) {}
     ~JSFunctionEmitter() = default;
     NO_COPY_SEMANTIC(JSFunctionEmitter);
     NO_MOVE_SEMANTIC(JSFunctionEmitter);
@@ -36,7 +36,7 @@ protected:
     pandasm::Function *GenFunctionSignature() override;
 
     void GenFunctionAnnotations(pandasm::Function *func) override;
-    void GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
+    void GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
                               varbinder::LocalVariable *variable) const override;
 };
 
@@ -51,7 +51,7 @@ public:
 
 private:
     void GenESAnnotationRecord();
-    void GenESModuleModeRecord(bool is_module);
+    void GenESModuleModeRecord(bool isModule);
 };
 }  // namespace panda::es2panda::compiler
 

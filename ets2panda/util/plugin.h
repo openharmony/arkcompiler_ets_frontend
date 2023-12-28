@@ -49,27 +49,27 @@ public:
 
     void AfterParse(es2panda_Context *context) const
     {
-        if (after_parse_ != nullptr) {
-            after_parse_(context);
+        if (afterParse_ != nullptr) {
+            afterParse_(context);
         }
     }
 
     void AfterCheck(es2panda_Context *context) const
     {
-        if (after_check_ != nullptr) {
-            after_check_(context);
+        if (afterCheck_ != nullptr) {
+            afterCheck_(context);
         }
     }
 
     void AfterLowerings(es2panda_Context *context) const
     {
-        if (after_lowerings_ != nullptr) {
-            after_lowerings_(context);
+        if (afterLowerings_ != nullptr) {
+            afterLowerings_(context);
         }
     }
 
 private:
-    std::string FullNameForProcedure(std::string const &short_name);
+    std::string FullNameForProcedure(std::string const &shortName);
 
     util::StringView name_;
     bool ok_ {true};
@@ -77,9 +77,9 @@ private:
     os::library_loader::LibraryHandle h_;
 
     void (*initialize_)() = nullptr;
-    void (*after_parse_)(es2panda_Context *) = nullptr;
-    void (*after_check_)(es2panda_Context *) = nullptr;
-    void (*after_lowerings_)(es2panda_Context *) = nullptr;
+    void (*afterParse_)(es2panda_Context *) = nullptr;
+    void (*afterCheck_)(es2panda_Context *) = nullptr;
+    void (*afterLowerings_)(es2panda_Context *) = nullptr;
 };
 
 }  // namespace panda::es2panda::util

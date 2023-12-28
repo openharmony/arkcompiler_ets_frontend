@@ -27,51 +27,49 @@ public:
     }
 
 private:
-    [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file) override;
-    ir::TypeNode *ParseParenthesizedOrFunctionType(bool throw_error);
-    ir::TypeNode *ParseFunctionType(lexer::SourcePosition start_loc);
-    void ParseOptionalFunctionParameter(ir::AnnotatedExpression *return_node, bool in_rest = false);
+    [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
+    ir::TypeNode *ParseParenthesizedOrFunctionType(bool throwError);
+    ir::TypeNode *ParseFunctionType(lexer::SourcePosition startLoc);
+    void ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNode, bool inRest = false);
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseStatement(StatementParsingFlags flags = StatementParsingFlags::NONE) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePatternElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
-                                        bool allow_default = true) override;
+                                        bool allowDefault = true) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePropertyDefinition(
         [[maybe_unused]] ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     bool CurrentIsBasicType() override;
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
-    ir::ArrowFunctionExpression *ParsePotentialArrowExpression(ir::Expression **return_expression,
-                                                               const lexer::SourcePosition &start_loc) override;
-    bool ParsePotentialGenericFunctionCall(ir::Expression *primary_expr, ir::Expression **return_expression,
-                                           const lexer::SourcePosition &start_loc,
-                                           bool ignore_call_expression) override;
-    bool ParsePotentialNonNullExpression(ir::Expression **return_expression, lexer::SourcePosition start_loc) override;
+    ir::ArrowFunctionExpression *ParsePotentialArrowExpression(ir::Expression **returnExpression,
+                                                               const lexer::SourcePosition &startLoc) override;
+    bool ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
+                                           const lexer::SourcePosition &startLoc, bool ignoreCallExpression) override;
+    bool ParsePotentialNonNullExpression(ir::Expression **returnExpression, lexer::SourcePosition startLoc) override;
     bool IsNamedFunctionExpression() override;
-    ir::Expression *ParsePotentialAsExpression(ir::Expression *primary_expression) override;
+    ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpression) override;
     ir::Identifier *ParsePrimaryExpressionIdent(ExpressionParseFlags flags) override;
-    void ValidateArrowFunctionRestParameter(ir::SpreadElement *rest_element) override;
+    void ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement) override;
     ir::Decorator *ParseDecorator() override;
     void AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &decorators) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
     ArenaVector<ir::TSInterfaceHeritage *> ParseInterfaceExtendsClause() override;
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
     // NOLINTNEXTLINE(google-default-arguments)
-    ir::TSIndexSignature *ParseIndexSignature(const lexer::SourcePosition &start_loc,
-                                              bool is_readonly = false) override;
-    ir::AstNode *ParsePropertyOrMethodSignature(const lexer::SourcePosition &start_loc, bool is_readonly) override;
+    ir::TSIndexSignature *ParseIndexSignature(const lexer::SourcePosition &startLoc, bool isReadonly = false) override;
+    ir::AstNode *ParsePropertyOrMethodSignature(const lexer::SourcePosition &startLoc, bool isReadonly) override;
     ir::TypeNode *ParseClassKeyAnnotation() override;
-    void ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *type_annotation) override;
+    void ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *typeAnnotation) override;
     void ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
-                             ir::Expression *prop_name, ir::ScriptFunction *func) override;
+                             ir::Expression *propName, ir::ScriptFunction *func) override;
     void ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
-                             ir::Expression *prop_name, ir::ScriptFunction *func) override;
+                             ir::Expression *propName, ir::ScriptFunction *func) override;
     bool IsModifierKind(const lexer::Token &token) override;
-    void ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *next_cp) override;
-    std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **prop_name) override;
+    void ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *nextCp) override;
+    std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **propName) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
-        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status) override;
+        const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     std::tuple<ir::Expression *, bool> ParseInterfacePropertyKey() override;
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
@@ -80,17 +78,17 @@ private:
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     // NOLINTNEXTLINE(google-default-arguments)
-    ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &start_loc,
-                                                                bool is_export_equals = false) override;
-    ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &start_loc) override;
+    ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
+                                                                bool isExportEquals = false) override;
+    ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc) override;
     ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers) override;
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ArenaVector<ir::TSClassImplements *> ParseClassImplementClause() override;
     ir::ClassElement *ParseClassStaticBlock() override;
     void ParseOptionalClassElement(ClassElementDescriptor *desc) override;
-    void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *type_annotation) override;
-    ArrowFunctionDescriptor ConvertToArrowParameter(ir::Expression *expr, bool is_async) override;
-    ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seen_optional) override;
+    void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *typeAnnotation) override;
+    ArrowFunctionDescriptor ConvertToArrowParameter(ir::Expression *expr, bool isAsync) override;
+    ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seenOptional) override;
     void ThrowIllegalBreakError() override;
     void ThrowIllegalContinueError() override;
 };

@@ -21,22 +21,22 @@
 namespace panda::es2panda::ir {
 class TSTypePredicate : public TypeNode {
 public:
-    explicit TSTypePredicate(Expression *parameter_name, TypeNode *type_annotation, bool asserts)
+    explicit TSTypePredicate(Expression *parameterName, TypeNode *typeAnnotation, bool asserts)
         : TypeNode(AstNodeType::TS_TYPE_PREDICATE),
-          parameter_name_(parameter_name),
-          type_annotation_(type_annotation),
+          parameterName_(parameterName),
+          typeAnnotation_(typeAnnotation),
           asserts_(asserts)
     {
     }
 
     Expression *ParameterName() const
     {
-        return parameter_name_;
+        return parameterName_;
     }
 
     TypeNode *TypeAnnotation() const
     {
-        return type_annotation_;
+        return typeAnnotation_;
     }
 
     bool Asserts() const
@@ -60,8 +60,8 @@ public:
     }
 
 private:
-    Expression *parameter_name_;
-    TypeNode *type_annotation_;
+    Expression *parameterName_;
+    TypeNode *typeAnnotation_;
     bool asserts_;
 };
 }  // namespace panda::es2panda::ir

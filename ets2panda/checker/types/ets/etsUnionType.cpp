@@ -24,9 +24,9 @@
 namespace panda::es2panda::checker {
 void ETSUnionType::ToString(std::stringstream &ss) const
 {
-    for (auto it = constituent_types_.begin(); it != constituent_types_.end(); it++) {
+    for (auto it = constituentTypes_.begin(); it != constituentTypes_.end(); it++) {
         (*it)->ToString(ss);
-        if (std::next(it) != constituent_types_.end()) {
+        if (std::next(it) != constituentTypes_.end()) {
             ss << "|";
         }
     }
@@ -34,37 +34,37 @@ void ETSUnionType::ToString(std::stringstream &ss) const
 
 void ETSUnionType::ToAssemblerType(std::stringstream &ss) const
 {
-    lub_type_->ToAssemblerType(ss);
+    lubType_->ToAssemblerType(ss);
 }
 
 void ETSUnionType::ToDebugInfoType(std::stringstream &ss) const
 {
-    lub_type_->ToDebugInfoType(ss);
+    lubType_->ToDebugInfoType(ss);
 }
 
-ETSUnionType::ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituent_types)
-    : Type(TypeFlag::ETS_UNION), constituent_types_(std::move(constituent_types))
+ETSUnionType::ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituentTypes)
+    : Type(TypeFlag::ETS_UNION), constituentTypes_(std::move(constituentTypes))
 {
-    ASSERT(constituent_types_.size() > 1);
-    lub_type_ = ComputeLUB(checker);
+    ASSERT(constituentTypes_.size() > 1);
+    lubType_ = ComputeLUB(checker);
 }
 
 bool ETSUnionType::EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target)
 {
-    return std::all_of(source->constituent_types_.begin(), source->constituent_types_.end(),
+    return std::all_of(source->constituentTypes_.begin(), source->constituentTypes_.end(),
                        [relation, target](auto *s) { return TypeRelatedToSomeType(relation, s, target); });
 }
 
 bool ETSUnionType::TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target)
 {
-    return std::any_of(target->constituent_types_.begin(), target->constituent_types_.end(),
+    return std::any_of(target->constituentTypes_.begin(), target->constituentTypes_.end(),
                        [relation, source](auto *t) { return relation->IsIdenticalTo(source, t); });
 }
 
 Type *ETSUnionType::ComputeLUB(ETSChecker *checker) const
 {
-    auto lub = constituent_types_.front();
-    for (auto *t : constituent_types_) {
+    auto lub = constituentTypes_.front();
+    for (auto *t : constituentTypes_) {
         if (!checker->IsReferenceType(t)) {
             return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
         }
@@ -91,7 +91,7 @@ void ETSUnionType::Identical(TypeRelation *relation, Type *other)
 
 bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    for (auto *it : constituent_types_) {
+    for (auto *it : constituentTypes_) {
         if (!relation->IsAssignableTo(it, target)) {
             return false;
         }
@@ -103,178 +103,178 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const ref_source =
+    auto *const refSource =
         source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ? checker->PrimitiveTypeAsETSBuiltinType(source) : source;
-    auto exact_type = std::find_if(
-        constituent_types_.begin(), constituent_types_.end(), [checker, relation, source, ref_source](Type *ct) {
-            if (ct == ref_source && source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && ct->IsETSObjectType() &&
+    auto exactType = std::find_if(
+        constituentTypes_.begin(), constituentTypes_.end(), [checker, relation, source, refSource](Type *ct) {
+            if (ct == refSource && source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && ct->IsETSObjectType() &&
                 ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
                 relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(ct));
-                return relation->IsAssignableTo(ref_source, ct);
+                return relation->IsAssignableTo(refSource, ct);
             }
             return false;
         });
-    if (exact_type != constituent_types_.end()) {
+    if (exactType != constituentTypes_.end()) {
         return;
     }
-    size_t assignable_count = 0;
-    for (auto *it : constituent_types_) {
-        if (relation->IsAssignableTo(ref_source, it)) {
-            if (ref_source != source) {
+    size_t assignableCount = 0;
+    for (auto *it : constituentTypes_) {
+        if (relation->IsAssignableTo(refSource, it)) {
+            if (refSource != source) {
                 relation->IsAssignableTo(source, it);
                 ASSERT(relation->IsTrue());
             }
-            ++assignable_count;
+            ++assignableCount;
             continue;
         }
-        bool assign_primitive = it->IsETSObjectType() &&
-                                it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
-                                source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE);
-        if (assign_primitive && relation->IsAssignableTo(source, checker->ETSBuiltinTypeAsPrimitiveType(it))) {
-            Type *unboxed_it = checker->ETSBuiltinTypeAsPrimitiveType(it);
-            if (unboxed_it != source) {
+        bool assignPrimitive = it->IsETSObjectType() &&
+                               it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
+                               source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE);
+        if (assignPrimitive && relation->IsAssignableTo(source, checker->ETSBuiltinTypeAsPrimitiveType(it))) {
+            Type *unboxedIt = checker->ETSBuiltinTypeAsPrimitiveType(it);
+            if (unboxedIt != source) {
                 relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(it));
-                source->Cast(relation, unboxed_it);
+                source->Cast(relation, unboxedIt);
                 ASSERT(relation->IsTrue());
             }
-            ++assignable_count;
+            ++assignableCount;
         }
     }
-    if (assignable_count > 1) {
+    if (assignableCount > 1) {
         checker->ThrowTypeError({"Ambiguous assignment: after union normalization several types are assignable."},
                                 relation->GetNode()->Start());
     }
-    relation->Result(assignable_count != 0U);
+    relation->Result(assignableCount != 0U);
 }
 
-void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituent_types)
+void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituentTypes)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     // Firstly, make linearization
-    ArenaVector<Type *> copied_constituents(checker->Allocator()->Adapter());
-    for (auto *ct : constituent_types) {
+    ArenaVector<Type *> copiedConstituents(checker->Allocator()->Adapter());
+    for (auto *ct : constituentTypes) {
         if (ct->IsETSUnionType()) {
-            auto other_types = ct->AsETSUnionType()->ConstituentTypes();
-            copied_constituents.insert(copied_constituents.end(), other_types.begin(), other_types.end());
+            auto otherTypes = ct->AsETSUnionType()->ConstituentTypes();
+            copiedConstituents.insert(copiedConstituents.end(), otherTypes.begin(), otherTypes.end());
         } else {
-            copied_constituents.push_back(ct);
+            copiedConstituents.push_back(ct);
         }
     }
-    constituent_types = copied_constituents;
+    constituentTypes = copiedConstituents;
     // Secondly, remove identical types
-    auto cmp_it = constituent_types.begin();
-    while (cmp_it != constituent_types.end()) {
-        auto it = std::next(cmp_it);
-        while (it != constituent_types.end()) {
-            if (relation->IsIdenticalTo(*it, *cmp_it)) {
-                it = constituent_types.erase(it);
+    auto cmpIt = constituentTypes.begin();
+    while (cmpIt != constituentTypes.end()) {
+        auto it = std::next(cmpIt);
+        while (it != constituentTypes.end()) {
+            if (relation->IsIdenticalTo(*it, *cmpIt)) {
+                it = constituentTypes.erase(it);
             } else {
                 ++it;
             }
         }
-        ++cmp_it;
+        ++cmpIt;
     }
 }
 
-void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types)
+void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituentTypes)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto ets_object = std::find(constituent_types.begin(), constituent_types.end(),
-                                checker->GetGlobalTypesHolder()->GlobalETSObjectType());
-    if (ets_object != constituent_types.end()) {
-        constituent_types.clear();
-        constituent_types.push_back(checker->GetGlobalTypesHolder()->GlobalETSObjectType());
+    auto etsObject = std::find(constituentTypes.begin(), constituentTypes.end(),
+                               checker->GetGlobalTypesHolder()->GlobalETSObjectType());
+    if (etsObject != constituentTypes.end()) {
+        constituentTypes.clear();
+        constituentTypes.push_back(checker->GetGlobalTypesHolder()->GlobalETSObjectType());
         return;
     }
-    LinearizeAndEraseIdentical(relation, constituent_types);
+    LinearizeAndEraseIdentical(relation, constituentTypes);
     // Find number type to remove other numeric types
-    auto number_found =
-        std::find_if(constituent_types.begin(), constituent_types.end(), [](Type *const ct) {
+    auto numberFound =
+        std::find_if(constituentTypes.begin(), constituentTypes.end(), [](Type *const ct) {
             return ct->IsETSObjectType() && ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE);
-        }) != constituent_types.end();
-    auto cmp_it = constituent_types.begin();
-    while (cmp_it != constituent_types.end()) {
-        auto new_end = std::remove_if(
-            constituent_types.begin(), constituent_types.end(), [relation, checker, cmp_it, number_found](Type *ct) {
+        }) != constituentTypes.end();
+    auto cmpIt = constituentTypes.begin();
+    while (cmpIt != constituentTypes.end()) {
+        auto newEnd = std::remove_if(
+            constituentTypes.begin(), constituentTypes.end(), [relation, checker, cmpIt, numberFound](Type *ct) {
                 relation->Result(false);
-                (*cmp_it)->IsSupertypeOf(relation, ct);
-                bool remove_subtype = ct != *cmp_it && relation->IsTrue();
-                bool remove_numeric = number_found && ct->IsETSObjectType() &&
-                                      ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
-                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
-                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
-                bool remove_never = ct == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
-                return remove_subtype || remove_numeric || remove_never;
+                (*cmpIt)->IsSupertypeOf(relation, ct);
+                bool removeSubtype = ct != *cmpIt && relation->IsTrue();
+                bool removeNumeric = numberFound && ct->IsETSObjectType() &&
+                                     ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
+                                     !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
+                                     !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
+                bool removeNever = ct == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+                return removeSubtype || removeNumeric || removeNever;
             });
-        if (new_end != constituent_types.end()) {
-            constituent_types.erase(new_end, constituent_types.end());
-            cmp_it = constituent_types.begin();
+        if (newEnd != constituentTypes.end()) {
+            constituentTypes.erase(newEnd, constituentTypes.end());
+            cmpIt = constituentTypes.begin();
             continue;
         }
-        ++cmp_it;
+        ++cmpIt;
     }
 }
 
-Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ArenaVector<Type *> copied_constituents(allocator->Adapter());
+    ArenaVector<Type *> copiedConstituents(allocator->Adapter());
 
-    for (auto *it : constituent_types_) {
-        copied_constituents.push_back(it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)
-                                          ? relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(it)
-                                          : it->Instantiate(allocator, relation, global_types));
+    for (auto *it : constituentTypes_) {
+        copiedConstituents.push_back(it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)
+                                         ? relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(it)
+                                         : it->Instantiate(allocator, relation, globalTypes));
     }
 
-    ETSUnionType::NormalizeTypes(relation, copied_constituents);
-    if (copied_constituents.size() == 1) {
-        return copied_constituents[0];
+    ETSUnionType::NormalizeTypes(relation, copiedConstituents);
+    if (copiedConstituents.size() == 1) {
+        return copiedConstituents[0];
     }
 
-    return allocator->New<ETSUnionType>(relation->GetChecker()->AsETSChecker(), std::move(copied_constituents));
+    return allocator->New<ETSUnionType>(relation->GetChecker()->AsETSChecker(), std::move(copiedConstituents));
 }
 
 Type *ETSUnionType::Substitute(TypeRelation *relation, const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    ArenaVector<Type *> substituted_constituents(checker->Allocator()->Adapter());
-    for (auto *ctype : constituent_types_) {
-        substituted_constituents.push_back(ctype->Substitute(relation, substitution));
+    ArenaVector<Type *> substitutedConstituents(checker->Allocator()->Adapter());
+    for (auto *ctype : constituentTypes_) {
+        substitutedConstituents.push_back(ctype->Substitute(relation, substitution));
     }
-    return checker->CreateETSUnionType(std::move(substituted_constituents));
+    return checker->CreateETSUnionType(std::move(substitutedConstituents));
 }
 
 void ETSUnionType::Cast(TypeRelation *relation, Type *target)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const ref_target =
+    auto *const refTarget =
         target->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? checker->PrimitiveTypeAsETSBuiltinType(target) : target;
-    auto exact_type =
-        std::find_if(constituent_types_.begin(), constituent_types_.end(), [this, relation, ref_target](Type *src) {
-            if (src == ref_target && relation->IsCastableTo(src, ref_target)) {
-                GetLeastUpperBoundType()->Cast(relation, ref_target);
+    auto exactType =
+        std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [this, relation, refTarget](Type *src) {
+            if (src == refTarget && relation->IsCastableTo(src, refTarget)) {
+                GetLeastUpperBoundType()->Cast(relation, refTarget);
                 ASSERT(relation->IsTrue());
                 return true;
             }
             return false;
         });
-    if (exact_type != constituent_types_.end()) {
+    if (exactType != constituentTypes_.end()) {
         return;
     }
-    for (auto *source : constituent_types_) {
-        if (relation->IsCastableTo(source, ref_target)) {
-            GetLeastUpperBoundType()->Cast(relation, ref_target);
+    for (auto *source : constituentTypes_) {
+        if (relation->IsCastableTo(source, refTarget)) {
+            GetLeastUpperBoundType()->Cast(relation, refTarget);
             ASSERT(relation->IsTrue());
-            if (ref_target != target) {
+            if (refTarget != target) {
                 source->Cast(relation, target);
                 ASSERT(relation->IsTrue());
                 ASSERT(relation->GetNode()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE);
             }
             return;
         }
-        bool cast_primitive = source->IsETSObjectType() &&
-                              source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
-                              target->HasTypeFlag(TypeFlag::ETS_PRIMITIVE);
-        if (cast_primitive && relation->IsCastableTo(checker->ETSBuiltinTypeAsPrimitiveType(source), target)) {
+        bool castPrimitive = source->IsETSObjectType() &&
+                             source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
+                             target->HasTypeFlag(TypeFlag::ETS_PRIMITIVE);
+        if (castPrimitive && relation->IsCastableTo(checker->ETSBuiltinTypeAsPrimitiveType(source), target)) {
             ASSERT(relation->IsTrue());
             return;
         }
@@ -288,8 +288,8 @@ void ETSUnionType::IsSupertypeOf(TypeRelation *relation, Type *source)
     relation->Result(false);
 
     if (source->IsETSUnionType()) {
-        for (auto const &source_ctype : source->AsETSUnionType()->ConstituentTypes()) {
-            if (IsSupertypeOf(relation, source_ctype), !relation->IsTrue()) {
+        for (auto const &sourceCtype : source->AsETSUnionType()->ConstituentTypes()) {
+            if (IsSupertypeOf(relation, sourceCtype), !relation->IsTrue()) {
                 return;
             }
         }
@@ -310,9 +310,9 @@ void ETSUnionType::IsSupertypeOf(TypeRelation *relation, Type *source)
 
 void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)
 {
-    Type *target_type = FindTypeIsCastableToThis(relation->GetNode(), relation, source);
-    if (target_type != nullptr) {
-        source->Cast(relation, target_type);
+    Type *targetType = FindTypeIsCastableToThis(relation->GetNode(), relation, source);
+    if (targetType != nullptr) {
+        source->Cast(relation, targetType);
         return;
     }
 
@@ -322,31 +322,31 @@ void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)
 Type *ETSUnionType::FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const
 {
     ASSERT(node);
-    bool node_was_set = false;
+    bool nodeWasSet = false;
     if (relation->GetNode() == nullptr) {
-        node_was_set = true;
+        nodeWasSet = true;
         relation->SetNode(node);
     }
     // Prioritize object to object conversion
-    auto it = std::find_if(constituent_types_.begin(), constituent_types_.end(), [relation, source](Type *target) {
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [relation, source](Type *target) {
         relation->IsCastableTo(source, target);
         return relation->IsTrue() && source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) &&
                target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT);
     });
-    if (it != constituent_types_.end()) {
-        if (node_was_set) {
+    if (it != constituentTypes_.end()) {
+        if (nodeWasSet) {
             relation->SetNode(nullptr);
         }
         return *it;
     }
-    it = std::find_if(constituent_types_.begin(), constituent_types_.end(), [relation, source](Type *target) {
+    it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [relation, source](Type *target) {
         relation->IsCastableTo(source, target);
         return relation->IsTrue();
     });
-    if (node_was_set) {
+    if (nodeWasSet) {
         relation->SetNode(nullptr);
     }
-    if (it != constituent_types_.end()) {
+    if (it != constituentTypes_.end()) {
         return *it;
     }
     return nullptr;
@@ -355,43 +355,42 @@ Type *ETSUnionType::FindTypeIsCastableToThis(ir::Expression *node, TypeRelation 
 Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const
 {
     ASSERT(node);
-    bool node_was_set = false;
+    bool nodeWasSet = false;
     if (relation->GetNode() == nullptr) {
-        node_was_set = true;
+        nodeWasSet = true;
         relation->SetNode(node);
         relation->SetFlags(TypeRelationFlag::CASTING_CONTEXT);
     }
-    auto is_castable_pred = [](TypeRelation *r, Type *source_type, Type *target_type) {
-        if (target_type->IsETSUnionType()) {
-            auto *found_target_type =
-                target_type->AsETSUnionType()->FindTypeIsCastableToThis(r->GetNode(), r, source_type);
-            r->Result(found_target_type != nullptr);
+    auto isCastablePred = [](TypeRelation *r, Type *sourceType, Type *targetType) {
+        if (targetType->IsETSUnionType()) {
+            auto *foundTargetType = targetType->AsETSUnionType()->FindTypeIsCastableToThis(r->GetNode(), r, sourceType);
+            r->Result(foundTargetType != nullptr);
         } else {
-            r->IsCastableTo(source_type, target_type);
+            r->IsCastableTo(sourceType, targetType);
         }
         return r->IsTrue();
     };
     // Prioritize object to object conversion
     auto it = std::find_if(
-        constituent_types_.begin(), constituent_types_.end(), [relation, target, &is_castable_pred](Type *source) {
-            return is_castable_pred(relation, source, target) && source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) &&
+        constituentTypes_.begin(), constituentTypes_.end(), [relation, target, &isCastablePred](Type *source) {
+            return isCastablePred(relation, source, target) && source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) &&
                    target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT);
         });
-    if (it != constituent_types_.end()) {
-        if (node_was_set) {
+    if (it != constituentTypes_.end()) {
+        if (nodeWasSet) {
             relation->SetNode(nullptr);
             relation->RemoveFlags(TypeRelationFlag::CASTING_CONTEXT);
         }
         return *it;
     }
     it = std::find_if(
-        constituent_types_.begin(), constituent_types_.end(),
-        [relation, target, &is_castable_pred](Type *source) { return is_castable_pred(relation, source, target); });
-    if (node_was_set) {
+        constituentTypes_.begin(), constituentTypes_.end(),
+        [relation, target, &isCastablePred](Type *source) { return isCastablePred(relation, source, target); });
+    if (nodeWasSet) {
         relation->SetNode(nullptr);
         relation->RemoveFlags(TypeRelationFlag::CASTING_CONTEXT);
     }
-    if (it != constituent_types_.end()) {
+    if (it != constituentTypes_.end()) {
         return *it;
     }
     return nullptr;
@@ -399,9 +398,9 @@ Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelat
 
 Type *ETSUnionType::FindUnboxableType() const
 {
-    auto it = std::find_if(constituent_types_.begin(), constituent_types_.end(),
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(),
                            [](Type *t) { return t->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE); });
-    if (it != constituent_types_.end()) {
+    if (it != constituentTypes_.end()) {
         return *it;
     }
     return nullptr;
@@ -409,21 +408,21 @@ Type *ETSUnionType::FindUnboxableType() const
 
 bool ETSUnionType::HasObjectType(ETSObjectFlags flag) const
 {
-    auto it = std::find_if(constituent_types_.begin(), constituent_types_.end(),
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(),
                            [flag](Type *t) { return t->AsETSObjectType()->HasObjectFlag(flag); });
-    return it != constituent_types_.end();
+    return it != constituentTypes_.end();
 }
 
 Type *ETSUnionType::FindExactOrBoxedType(ETSChecker *checker, Type *const type) const
 {
-    auto it = std::find_if(constituent_types_.begin(), constituent_types_.end(), [checker, type](Type *ct) {
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [checker, type](Type *ct) {
         if (ct->IsETSObjectType() && ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
-            auto *const unboxed_ct = checker->ETSBuiltinTypeAsPrimitiveType(ct);
-            return unboxed_ct == type;
+            auto *const unboxedCt = checker->ETSBuiltinTypeAsPrimitiveType(ct);
+            return unboxedCt == type;
         }
         return ct == type;
     });
-    if (it != constituent_types_.end()) {
+    if (it != constituentTypes_.end()) {
         return *it;
     }
     return nullptr;

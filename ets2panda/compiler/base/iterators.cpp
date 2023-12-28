@@ -23,12 +23,7 @@ namespace panda::es2panda::compiler {
 // Iterator
 
 Iterator::Iterator(PandaGen *pg, const ir::AstNode *node, IteratorType type)
-    : pg_(pg),
-      node_(node),
-      method_(pg->AllocReg()),
-      iterator_(pg->AllocReg()),
-      next_result_(pg->AllocReg()),
-      type_(type)
+    : pg_(pg), node_(node), method_(pg->AllocReg()), iterator_(pg->AllocReg()), nextResult_(pg->AllocReg()), type_(type)
 {
     if (type_ == IteratorType::ASYNC) {
         pg_->GetAsyncIterator(node);
@@ -51,7 +46,7 @@ void Iterator::GetMethod(util::StringView name) const
 
 void Iterator::CallMethodWithValue() const
 {
-    pg_->Call1This(node_, method_, iterator_, next_result_);
+    pg_->Call1This(node_, method_, iterator_, nextResult_);
 }
 
 void Iterator::CallMethod() const
@@ -68,7 +63,7 @@ void Iterator::Next() const
     }
 
     pg_->ThrowIfNotObject(node_);
-    pg_->StoreAccumulator(node_, next_result_);
+    pg_->StoreAccumulator(node_, nextResult_);
 }
 
 void Iterator::Complete() const
@@ -79,14 +74,14 @@ void Iterator::Complete() const
 
 void Iterator::Value() const
 {
-    pg_->LoadAccumulator(node_, next_result_);
+    pg_->LoadAccumulator(node_, nextResult_);
     pg_->LoadObjByName(node_, "value");
 }
 
-void Iterator::Close(bool abrupt_completion) const
+void Iterator::Close(bool abruptCompletion) const
 {
     if (type_ == IteratorType::SYNC) {
-        if (!abrupt_completion) {
+        if (!abruptCompletion) {
             pg_->LoadConst(node_, Constant::JS_HOLE);
         }
         pg_->CloseIterator(node_, iterator_);
@@ -95,17 +90,17 @@ void Iterator::Close(bool abrupt_completion) const
 
     RegScope rs(pg_);
     VReg completion = pg_->AllocReg();
-    VReg inner_result = pg_->AllocReg();
-    VReg inner_result_type = pg_->AllocReg();
+    VReg innerResult = pg_->AllocReg();
+    VReg innerResultType = pg_->AllocReg();
 
     pg_->StoreAccumulator(node_, completion);
-    pg_->StoreConst(node_, inner_result_type, Constant::JS_HOLE);
+    pg_->StoreConst(node_, innerResultType, Constant::JS_HOLE);
 
-    TryContext try_ctx(pg_);
-    const auto &label_set = try_ctx.LabelSet();
-    Label *return_exits = pg_->AllocLabel();
+    TryContext tryCtx(pg_);
+    const auto &labelSet = tryCtx.LabelSet();
+    Label *returnExits = pg_->AllocLabel();
 
-    pg_->SetLabel(node_, label_set.TryBegin());
+    pg_->SetLabel(node_, labelSet.TryBegin());
 
     // 4. Let innerResult be GetMethod(iterator, "return").
     GetMethod("return");
@@ -113,58 +108,58 @@ void Iterator::Close(bool abrupt_completion) const
     // 5. If innerResult.[[Type]] is normal, then
     {
         // b. If return is undefined, return Completion(completion).
-        pg_->BranchIfNotUndefined(node_, return_exits);
+        pg_->BranchIfNotUndefined(node_, returnExits);
         // a. Let return be innerResult.[[Value]].
         pg_->LoadAccumulator(node_, completion);
 
-        if (abrupt_completion) {
+        if (abruptCompletion) {
             pg_->EmitThrow(node_);
         } else {
             pg_->DirectReturn(node_);
         }
 
-        pg_->SetLabel(node_, return_exits);
+        pg_->SetLabel(node_, returnExits);
 
         {
-            TryContext inner_try_ctx(pg_);
-            const auto &inner_label_set = inner_try_ctx.LabelSet();
+            TryContext innerTryCtx(pg_);
+            const auto &innerLabelSet = innerTryCtx.LabelSet();
 
-            pg_->SetLabel(node_, inner_label_set.TryBegin());
+            pg_->SetLabel(node_, innerLabelSet.TryBegin());
             // c. Set innerResult to Call(return, iterator).
             CallMethod();
             // d. If innerResult.[[Type]] is normal, set innerResult to Await(innerResult.[[Value]]).
             pg_->FuncBuilder()->Await(node_);
-            pg_->StoreAccumulator(node_, inner_result);
-            pg_->SetLabel(node_, inner_label_set.TryEnd());
-            pg_->Branch(node_, inner_label_set.CatchEnd());
+            pg_->StoreAccumulator(node_, innerResult);
+            pg_->SetLabel(node_, innerLabelSet.TryEnd());
+            pg_->Branch(node_, innerLabelSet.CatchEnd());
 
-            pg_->SetLabel(node_, inner_label_set.CatchBegin());
-            pg_->StoreAccumulator(node_, inner_result);
-            pg_->StoreAccumulator(node_, inner_result_type);
-            pg_->SetLabel(node_, inner_label_set.CatchEnd());
+            pg_->SetLabel(node_, innerLabelSet.CatchBegin());
+            pg_->StoreAccumulator(node_, innerResult);
+            pg_->StoreAccumulator(node_, innerResultType);
+            pg_->SetLabel(node_, innerLabelSet.CatchEnd());
         }
     }
 
-    pg_->SetLabel(node_, label_set.TryEnd());
-    pg_->Branch(node_, label_set.CatchEnd());
+    pg_->SetLabel(node_, labelSet.TryEnd());
+    pg_->Branch(node_, labelSet.CatchEnd());
 
-    pg_->SetLabel(node_, label_set.CatchBegin());
-    pg_->StoreAccumulator(node_, inner_result);
-    pg_->StoreAccumulator(node_, inner_result_type);
-    pg_->SetLabel(node_, label_set.CatchEnd());
+    pg_->SetLabel(node_, labelSet.CatchBegin());
+    pg_->StoreAccumulator(node_, innerResult);
+    pg_->StoreAccumulator(node_, innerResultType);
+    pg_->SetLabel(node_, labelSet.CatchEnd());
 
     // 6. If completion.[[Type]] is throw, return Completion(completion).
-    if (abrupt_completion) {
+    if (abruptCompletion) {
         pg_->LoadAccumulator(node_, completion);
         pg_->EmitThrow(node_);
     } else {
         // 7. If innerResult.[[Type]] is throw, return Completion(innerResult).
-        pg_->LoadAccumulator(node_, inner_result_type);
+        pg_->LoadAccumulator(node_, innerResultType);
         pg_->EmitRethrow(node_);
     }
 
     // 8. If Type(innerResult.[[Value]]) is not Object, throw a TypeError exception.
-    pg_->LoadAccumulator(node_, inner_result);
+    pg_->LoadAccumulator(node_, innerResult);
     pg_->ThrowIfNotObject(node_);
 }
 
@@ -175,46 +170,46 @@ DestructuringIterator::DestructuringIterator(PandaGen *pg, const ir::AstNode *no
     pg_->StoreConst(node, result_, Constant::JS_UNDEFINED);
 }
 
-void DestructuringIterator::Step(Label *done_target) const
+void DestructuringIterator::Step(Label *doneTarget) const
 {
-    TryContext try_ctx(pg_);
-    const auto &label_set = try_ctx.LabelSet();
-    Label *normal_close = pg_->AllocLabel();
-    Label *no_close = pg_->AllocLabel();
+    TryContext tryCtx(pg_);
+    const auto &labelSet = tryCtx.LabelSet();
+    Label *normalClose = pg_->AllocLabel();
+    Label *noClose = pg_->AllocLabel();
 
-    pg_->SetLabel(node_, label_set.TryBegin());
+    pg_->SetLabel(node_, labelSet.TryBegin());
     Next();
     Complete();
     pg_->StoreAccumulator(node_, done_);
-    pg_->BranchIfFalse(node_, normal_close);
+    pg_->BranchIfFalse(node_, normalClose);
     pg_->StoreConst(node_, done_, Constant::JS_TRUE);
     pg_->LoadConst(node_, Constant::JS_UNDEFINED);
-    OnIterDone(done_target);
-    pg_->Branch(node_, no_close);
+    OnIterDone(doneTarget);
+    pg_->Branch(node_, noClose);
 
-    pg_->SetLabel(node_, normal_close);
+    pg_->SetLabel(node_, normalClose);
     Value();
     pg_->StoreAccumulator(node_, result_);
-    pg_->SetLabel(node_, no_close);
+    pg_->SetLabel(node_, noClose);
 
-    pg_->SetLabel(node_, label_set.TryEnd());
-    pg_->Branch(node_, label_set.CatchEnd());
+    pg_->SetLabel(node_, labelSet.TryEnd());
+    pg_->Branch(node_, labelSet.CatchEnd());
 
-    pg_->SetLabel(node_, label_set.CatchBegin());
+    pg_->SetLabel(node_, labelSet.CatchBegin());
     pg_->StoreAccumulator(node_, result_);
     pg_->StoreConst(node_, done_, Constant::JS_TRUE);
     pg_->LoadAccumulator(node_, result_);
     pg_->EmitThrow(node_);
-    pg_->SetLabel(node_, label_set.CatchEnd());
+    pg_->SetLabel(node_, labelSet.CatchEnd());
 }
 
-void DestructuringIterator::OnIterDone([[maybe_unused]] Label *done_target) const
+void DestructuringIterator::OnIterDone([[maybe_unused]] Label *doneTarget) const
 {
     pg_->LoadConst(node_, Constant::JS_UNDEFINED);
 }
 
-void DestructuringRestIterator::OnIterDone([[maybe_unused]] Label *done_target) const
+void DestructuringRestIterator::OnIterDone([[maybe_unused]] Label *doneTarget) const
 {
-    pg_->Branch(node_, done_target);
+    pg_->Branch(node_, doneTarget);
 }
 }  // namespace panda::es2panda::compiler

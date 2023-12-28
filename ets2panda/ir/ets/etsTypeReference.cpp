@@ -37,25 +37,25 @@ void ETSTypeReference::Iterate(const NodeTraverser &cb) const
 
 ir::Identifier *ETSTypeReference::BaseName() const
 {
-    ir::ETSTypeReferencePart *part_iter = part_;
+    ir::ETSTypeReferencePart *partIter = part_;
 
-    while (part_iter->Previous() != nullptr) {
-        part_iter = part_iter->Previous();
+    while (partIter->Previous() != nullptr) {
+        partIter = partIter->Previous();
     }
 
-    ir::Expression *base_name = part_iter->Name();
+    ir::Expression *baseName = partIter->Name();
 
-    if (base_name->IsIdentifier()) {
-        return base_name->AsIdentifier();
+    if (baseName->IsIdentifier()) {
+        return baseName->AsIdentifier();
     }
 
-    ir::TSQualifiedName *name_iter = base_name->AsTSQualifiedName();
+    ir::TSQualifiedName *nameIter = baseName->AsTSQualifiedName();
 
-    while (name_iter->Left()->IsTSQualifiedName()) {
-        name_iter = name_iter->Left()->AsTSQualifiedName();
+    while (nameIter->Left()->IsTSQualifiedName()) {
+        nameIter = nameIter->Left()->AsTSQualifiedName();
     }
 
-    return name_iter->Left()->AsIdentifier();
+    return nameIter->Left()->AsIdentifier();
 }
 
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const
@@ -96,10 +96,10 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 
     checker::Type *type = part_->GetType(checker);
     if (IsNullAssignable() || IsUndefinedAssignable()) {
-        auto nullish_flags = (IsNullAssignable() ? checker::TypeFlag::NULL_TYPE : checker::TypeFlag(0)) |
-                             (IsUndefinedAssignable() ? checker::TypeFlag::UNDEFINED : checker::TypeFlag(0));
+        auto nullishFlags = (IsNullAssignable() ? checker::TypeFlag::NULL_TYPE : checker::TypeFlag(0)) |
+                            (IsUndefinedAssignable() ? checker::TypeFlag::UNDEFINED : checker::TypeFlag(0));
 
-        type = checker->CreateNullishType(type, nullish_flags, checker->Allocator(), checker->Relation(),
+        type = checker->CreateNullishType(type, nullishFlags, checker->Allocator(), checker->Relation(),
                                           checker->GetGlobalTypesHolder());
     }
 
@@ -110,11 +110,11 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 // NOLINTNEXTLINE(google-default-arguments)
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const part_clone = part_ != nullptr ? part_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+    auto *const partClone = part_ != nullptr ? part_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSTypeReference>(part_clone); clone != nullptr) {
-        if (part_clone != nullptr) {
-            part_clone->SetParent(clone);
+    if (auto *const clone = allocator->New<ETSTypeReference>(partClone); clone != nullptr) {
+        if (partClone != nullptr) {
+            partClone->SetParent(clone);
         }
 
         clone->flags_ = flags_;

@@ -26,22 +26,22 @@ CodeGen *RegSpiller::GetCodeGen() const noexcept
 
 std::pair<RegSpiller::SpillInfo, const checker::Type *> RegSpiller::New() noexcept
 {
-    const VReg origin {VReg::REG_START - spill_index_++};
-    const auto *const origin_type = cg_->GetVRegType(origin);
-    const SpillInfo spill_info {origin, cg_->AllocRegWithType(origin_type)};
-    return std::make_pair(spill_info, origin_type);
+    const VReg origin {VReg::REG_START - spillIndex_++};
+    const auto *const originType = cg_->GetVRegType(origin);
+    const SpillInfo spillInfo {origin, cg_->AllocRegWithType(originType)};
+    return std::make_pair(spillInfo, originType);
 }
 
 void RegSpiller::Adjust(const std::unordered_set<VReg> &regs) noexcept
 {
     while (true) {
-        const VReg origin {VReg::REG_START - spill_index_};
+        const VReg origin {VReg::REG_START - spillIndex_};
 
         if (regs.count(origin) == 0) {
             break;
         }
 
-        ++spill_index_;
+        ++spillIndex_;
     }
 }
 
@@ -52,25 +52,25 @@ void RegSpiller::SetCodeGen(CodeGen &cg) noexcept
 
 std::uint32_t RegSpiller::SpillIndex() const noexcept
 {
-    return spill_index_;
+    return spillIndex_;
 }
 
 std::uint32_t &RegSpiller::SpillIndex() noexcept
 {
-    return spill_index_;
+    return spillIndex_;
 }
 
 RegScope DynamicRegSpiller::Start(CodeGen &cg)
 {
     SetCodeGen(cg);
-    reg_end_ = GetCodeGen()->NextReg().GetIndex();
+    regEnd_ = GetCodeGen()->NextReg().GetIndex();
     return RegScope {&cg};
 }
 
 RegSpiller::SpillInfo DynamicRegSpiller::Restore()
 {
-    const auto new_spill_index = --SpillIndex();
-    return RegSpiller::SpillInfo(VReg {VReg::REG_START - new_spill_index}, VReg {reg_end_ - SpillIndex()});
+    const auto newSpillIndex = --SpillIndex();
+    return RegSpiller::SpillInfo(VReg {VReg::REG_START - newSpillIndex}, VReg {regEnd_ - SpillIndex()});
 }
 
 bool DynamicRegSpiller::Restored() const
@@ -79,7 +79,7 @@ bool DynamicRegSpiller::Restored() const
 }
 
 IRNode *DynamicRegSpiller::MoveReg(const ir::AstNode *const node, const VReg vd, const VReg vs,
-                                   [[maybe_unused]] const bool spill_mov)
+                                   [[maybe_unused]] const bool spillMov)
 {
     return GetCodeGen()->AllocMov(node, vd, vs);
 }
@@ -109,19 +109,19 @@ bool StaticRegSpiller::Restored() const
     return spills_.empty();
 }
 
-IRNode *StaticRegSpiller::MoveReg(const ir::AstNode *const node, const VReg vd, const VReg vs, const bool spill_mov)
+IRNode *StaticRegSpiller::MoveReg(const ir::AstNode *const node, const VReg vd, const VReg vs, const bool spillMov)
 {
     if (vd == vs) {
         return nullptr;
     }
 
-    const auto *const source_type = GetCodeGen()->GetVRegType(vs);
-    if (source_type == nullptr) {
+    const auto *const sourceType = GetCodeGen()->GetVRegType(vs);
+    if (sourceType == nullptr) {
         return nullptr;
     }
 
-    GetCodeGen()->SetVRegType(vd, source_type);
-    if (spill_mov) {
+    GetCodeGen()->SetVRegType(vd, sourceType);
+    if (spillMov) {
         spills_.emplace_back(vd, vs);
     }
 

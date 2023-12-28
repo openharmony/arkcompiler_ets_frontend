@@ -37,7 +37,7 @@ enum class GeneratorState {
 
 class GeneratorFunctionBuilder : public FunctionBuilder {
 public:
-    explicit GeneratorFunctionBuilder(PandaGen *pg, CatchTable *catch_table) : FunctionBuilder(pg, catch_table) {}
+    explicit GeneratorFunctionBuilder(PandaGen *pg, CatchTable *catchTable) : FunctionBuilder(pg, catchTable) {}
 
     ~GeneratorFunctionBuilder() override = default;
     NO_COPY_SEMANTIC(GeneratorFunctionBuilder);

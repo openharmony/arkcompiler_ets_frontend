@@ -62,7 +62,7 @@ public:
         decorators_.emplace_back(decorator);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }

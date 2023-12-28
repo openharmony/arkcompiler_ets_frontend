@@ -34,30 +34,30 @@
 #include "checker/ets/typeRelationContext.h"
 
 namespace panda::es2panda::ir {
-bool AssignmentExpression::ConvertibleToAssignmentPattern(bool must_be_pattern)
+bool AssignmentExpression::ConvertibleToAssignmentPattern(bool mustBePattern)
 {
-    bool conv_result = true;
+    bool convResult = true;
 
     switch (left_->Type()) {
         case AstNodeType::ARRAY_EXPRESSION: {
-            conv_result = left_->AsArrayExpression()->ConvertibleToArrayPattern();
+            convResult = left_->AsArrayExpression()->ConvertibleToArrayPattern();
             break;
         }
         case AstNodeType::SPREAD_ELEMENT: {
-            conv_result = must_be_pattern && left_->AsSpreadElement()->ConvertibleToRest(false);
+            convResult = mustBePattern && left_->AsSpreadElement()->ConvertibleToRest(false);
             break;
         }
         case AstNodeType::OBJECT_EXPRESSION: {
-            conv_result = left_->AsObjectExpression()->ConvertibleToObjectPattern();
+            convResult = left_->AsObjectExpression()->ConvertibleToObjectPattern();
             break;
         }
         case AstNodeType::ASSIGNMENT_EXPRESSION: {
-            conv_result = left_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(must_be_pattern);
+            convResult = left_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(mustBePattern);
             break;
         }
         case AstNodeType::META_PROPERTY_EXPRESSION:
         case AstNodeType::CHAIN_EXPRESSION: {
-            conv_result = false;
+            convResult = false;
             break;
         }
         default: {
@@ -65,30 +65,30 @@ bool AssignmentExpression::ConvertibleToAssignmentPattern(bool must_be_pattern)
         }
     }
 
-    if (must_be_pattern) {
+    if (mustBePattern) {
         SetType(AstNodeType::ASSIGNMENT_PATTERN);
     }
 
     if (!right_->IsAssignmentExpression()) {
-        return conv_result;
+        return convResult;
     }
 
     switch (right_->Type()) {
         case AstNodeType::ARRAY_EXPRESSION: {
-            conv_result = right_->AsArrayExpression()->ConvertibleToArrayPattern();
+            convResult = right_->AsArrayExpression()->ConvertibleToArrayPattern();
             break;
         }
         case AstNodeType::CHAIN_EXPRESSION:
         case AstNodeType::SPREAD_ELEMENT: {
-            conv_result = false;
+            convResult = false;
             break;
         }
         case AstNodeType::OBJECT_EXPRESSION: {
-            conv_result = right_->AsObjectExpression()->ConvertibleToObjectPattern();
+            convResult = right_->AsObjectExpression()->ConvertibleToObjectPattern();
             break;
         }
         case AstNodeType::ASSIGNMENT_EXPRESSION: {
-            conv_result = right_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(false);
+            convResult = right_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(false);
             break;
         }
         default: {
@@ -96,7 +96,7 @@ bool AssignmentExpression::ConvertibleToAssignmentPattern(bool must_be_pattern)
         }
     }
 
-    return conv_result;
+    return convResult;
 }
 
 void AssignmentExpression::TransformChildren(const NodeTransformer &cb)

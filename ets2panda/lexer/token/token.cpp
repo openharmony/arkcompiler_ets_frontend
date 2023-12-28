@@ -19,37 +19,37 @@ namespace panda::es2panda::lexer {
 bool Token::IsAccessability() const
 {
     return (type_ == TokenType::LITERAL_IDENT &&
-            (keyword_type_ == TokenType::KEYW_PUBLIC || keyword_type_ == TokenType::KEYW_PROTECTED ||
-             keyword_type_ == TokenType::KEYW_PRIVATE || keyword_type_ == TokenType::KEYW_INTERNAL) &&
+            (keywordType_ == TokenType::KEYW_PUBLIC || keywordType_ == TokenType::KEYW_PROTECTED ||
+             keywordType_ == TokenType::KEYW_PRIVATE || keywordType_ == TokenType::KEYW_INTERNAL) &&
             ((flags_ & TokenFlags::HAS_ESCAPE) == 0));
 }
 
 bool Token::IsAsyncModifier() const
 {
-    return (type_ == TokenType::LITERAL_IDENT && keyword_type_ == TokenType::KEYW_ASYNC &&
+    return (type_ == TokenType::LITERAL_IDENT && keywordType_ == TokenType::KEYW_ASYNC &&
             (flags_ & TokenFlags::HAS_ESCAPE) == 0);
 }
 
 bool Token::IsForInOf() const
 {
-    return (keyword_type_ == TokenType::KEYW_IN || keyword_type_ == TokenType::KEYW_OF);
+    return (keywordType_ == TokenType::KEYW_IN || keywordType_ == TokenType::KEYW_OF);
 }
 
 bool Token::IsStaticModifier() const
 {
-    return (type_ == TokenType::LITERAL_IDENT && keyword_type_ == TokenType::KEYW_STATIC &&
+    return (type_ == TokenType::LITERAL_IDENT && keywordType_ == TokenType::KEYW_STATIC &&
             (flags_ & TokenFlags::HAS_ESCAPE) == 0);
 }
 
 bool Token::IsDeclareModifier() const
 {
-    return (type_ == TokenType::LITERAL_IDENT && keyword_type_ == TokenType::KEYW_DECLARE &&
+    return (type_ == TokenType::LITERAL_IDENT && keywordType_ == TokenType::KEYW_DECLARE &&
             (flags_ & TokenFlags::HAS_ESCAPE) == 0);
 }
 
 bool Token::IsReadonlyModifier() const
 {
-    return (type_ == TokenType::LITERAL_IDENT && keyword_type_ == TokenType::KEYW_READONLY &&
+    return (type_ == TokenType::LITERAL_IDENT && keywordType_ == TokenType::KEYW_READONLY &&
             (flags_ & TokenFlags::HAS_ESCAPE) == 0);
 }
 
@@ -80,7 +80,7 @@ bool Token::IsKeyword() const
 
 bool Token::IsReservedTypeName() const
 {
-    switch (keyword_type_) {
+    switch (keywordType_) {
         case TokenType::KEYW_ANY:
         case TokenType::KEYW_UNKNOWN:
         case TokenType::KEYW_NEVER:
@@ -98,7 +98,7 @@ bool Token::IsReservedTypeName() const
 
 bool Token::IsDefinableTypeName() const
 {
-    switch (keyword_type_) {
+    switch (keywordType_) {
         case TokenType::KEYW_BOOLEAN:
         case TokenType::KEYW_DOUBLE:
         case TokenType::KEYW_BYTE:

@@ -23,13 +23,13 @@ class TSTypeParameterInstantiation;
 
 class TSImportType : public TypeNode {
 public:
-    explicit TSImportType(Expression *param, TSTypeParameterInstantiation *type_params, Expression *qualifier,
-                          bool is_typeof)
+    explicit TSImportType(Expression *param, TSTypeParameterInstantiation *typeParams, Expression *qualifier,
+                          bool isTypeof)
         : TypeNode(AstNodeType::TS_IMPORT_TYPE),
           param_(param),
-          type_params_(type_params),
+          typeParams_(typeParams),
           qualifier_(qualifier),
-          is_typeof_(is_typeof)
+          isTypeof_(isTypeof)
     {
     }
 
@@ -40,7 +40,7 @@ public:
 
     const TSTypeParameterInstantiation *TypeParams() const
     {
-        return type_params_;
+        return typeParams_;
     }
 
     const Expression *Qualifier() const
@@ -50,7 +50,7 @@ public:
 
     bool IsTypeof() const
     {
-        return is_typeof_;
+        return isTypeof_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -70,9 +70,9 @@ public:
 
 private:
     Expression *param_;
-    TSTypeParameterInstantiation *type_params_;
+    TSTypeParameterInstantiation *typeParams_;
     Expression *qualifier_;
-    bool is_typeof_;
+    bool isTypeof_;
 };
 }  // namespace panda::es2panda::ir
 

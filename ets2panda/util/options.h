@@ -73,27 +73,27 @@ public:
 
     const es2panda::CompilerOptions &CompilerOptions() const
     {
-        return compiler_options_;
+        return compilerOptions_;
     }
 
     const std::string &ParserInput() const
     {
-        return parser_input_;
+        return parserInput_;
     }
 
     const std::string &CompilerOutput() const
     {
-        return compiler_output_;
+        return compilerOutput_;
     }
 
-    void SetCompilerOutput(const std::string &compiler_output)
+    void SetCompilerOutput(const std::string &compilerOutput)
     {
-        compiler_output_ = compiler_output;
+        compilerOutput_ = compilerOutput;
     }
 
     std::string_view LogLevel() const
     {
-        switch (log_level_) {
+        switch (logLevel_) {
             case util::LogLevel::DEBUG: {
                 return "debug";
             }
@@ -117,22 +117,22 @@ public:
 
     const std::string &SourceFile() const
     {
-        return source_file_;
+        return sourceFile_;
     }
 
     const std::string &ErrorMsg() const
     {
-        return error_msg_;
+        return errorMsg_;
     }
 
     int OptLevel() const
     {
-        return opt_level_;
+        return optLevel_;
     }
 
     int ThreadCount() const
     {
-        return thread_count_;
+        return threadCount_;
     }
 
     bool ParseModule() const
@@ -157,23 +157,23 @@ public:
 
     bool ListFiles() const
     {
-        return list_files_;
+        return listFiles_;
     }
 
 private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};
     OptionFlags options_ {OptionFlags::DEFAULT};
-    es2panda::CompilerOptions compiler_options_ {};
+    es2panda::CompilerOptions compilerOptions_ {};
     panda::PandArgParser *argparser_;
-    std::string parser_input_;
-    std::string compiler_output_;
+    std::string parserInput_;
+    std::string compilerOutput_;
     std::string result_;
-    std::string source_file_;
-    std::string error_msg_;
-    int opt_level_ {0};
-    int thread_count_ {0};
-    bool list_files_ {false};
-    util::LogLevel log_level_ {util::LogLevel::ERROR};
+    std::string sourceFile_;
+    std::string errorMsg_;
+    int optLevel_ {0};
+    int threadCount_ {0};
+    bool listFiles_ {false};
+    util::LogLevel logLevel_ {util::LogLevel::ERROR};
 };
 }  // namespace panda::es2panda::util
 

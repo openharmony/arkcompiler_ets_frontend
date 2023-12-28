@@ -18,20 +18,20 @@
 #include <utility>
 
 namespace panda::es2panda::checker {
-IndexInfo *IndexInfo::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+IndexInfo *IndexInfo::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    return allocator->New<IndexInfo>(type_->Instantiate(allocator, relation, global_types), param_name_, readonly_);
+    return allocator->New<IndexInfo>(type_->Instantiate(allocator, relation, globalTypes), paramName_, readonly_);
 }
 
-void IndexInfo::ToString(std::stringstream &ss, bool num_index) const
+void IndexInfo::ToString(std::stringstream &ss, bool numIndex) const
 {
     if (readonly_) {
         ss << "readonly ";
     }
 
-    ss << "[" << param_name_ << ": ";
+    ss << "[" << paramName_ << ": ";
 
-    if (num_index) {
+    if (numIndex) {
         ss << "number]: ";
     } else {
         ss << "string]: ";

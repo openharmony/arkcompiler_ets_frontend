@@ -35,7 +35,7 @@ public:
     NO_COPY_SEMANTIC(ETSParameterExpression);
     NO_MOVE_SEMANTIC(ETSParameterExpression);
 
-    explicit ETSParameterExpression(AnnotatedExpression *ident_or_spread, Expression *initializer);
+    explicit ETSParameterExpression(AnnotatedExpression *identOrSpread, Expression *initializer);
 
     // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
@@ -70,12 +70,12 @@ public:
 
     [[nodiscard]] std::size_t GetRequiredParams() const noexcept
     {
-        return extra_value_;
+        return extraValue_;
     }
 
     void SetRequiredParams(std::size_t const value) noexcept
     {
-        extra_value_ = value;
+        extraValue_ = value;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -99,8 +99,8 @@ private:
     Identifier *ident_;
     Expression *initializer_;
     SpreadElement *spread_ = nullptr;
-    util::StringView saved_lexer_ = "";
-    std::size_t extra_value_ = 0U;
+    util::StringView savedLexer_ = "";
+    std::size_t extraValue_ = 0U;
 };
 }  // namespace panda::es2panda::ir
 

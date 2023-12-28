@@ -125,23 +125,23 @@ public:
     {
     }
 
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assembler_name,
-                           ir::AstNode *decl_node, ETSObjectFlags flags)
-        : ETSObjectType(allocator, name, assembler_name, decl_node, flags,
+    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
+                           ir::AstNode *declNode, ETSObjectFlags flags)
+        : ETSObjectType(allocator, name, assemblerName, declNode, flags,
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
 
     void AddConstructSignature(Signature *signature)
     {
-        construct_signatures_.push_back(signature);
-        properties_instantiated_ = true;
+        constructSignatures_.push_back(signature);
+        propertiesInstantiated_ = true;
     }
 
     void AddConstructSignature(const ArenaVector<Signature *> &signatures)
     {
-        construct_signatures_.insert(construct_signatures_.end(), signatures.begin(), signatures.end());
-        properties_instantiated_ = true;
+        constructSignatures_.insert(constructSignatures_.end(), signatures.begin(), signatures.end());
+        propertiesInstantiated_ = true;
     }
 
     void AddInterface(ETSObjectType *interface)
@@ -153,17 +153,17 @@ public:
 
     void SetSuperType(ETSObjectType *super)
     {
-        super_type_ = super;
+        superType_ = super;
     }
 
-    void SetTypeArguments(ArenaVector<Type *> &&type_args)
+    void SetTypeArguments(ArenaVector<Type *> &&typeArgs)
     {
-        type_arguments_ = std::move(type_args);
+        typeArguments_ = std::move(typeArgs);
     }
 
-    void SetEnclosingType(ETSObjectType *enclosing_type)
+    void SetEnclosingType(ETSObjectType *enclosingType)
     {
-        enclosing_type_ = enclosing_type;
+        enclosingType_ = enclosingType;
     }
 
     PropertyMap InstanceMethods() const
@@ -204,24 +204,24 @@ public:
 
     const ArenaVector<Type *> &TypeArguments() const
     {
-        return type_arguments_;
+        return typeArguments_;
     }
 
     ArenaVector<Type *> &TypeArguments()
     {
-        return type_arguments_;
+        return typeArguments_;
     }
 
     const ArenaVector<Signature *> &ConstructSignatures() const
     {
         EnsurePropertiesInstantiated();
-        return construct_signatures_;
+        return constructSignatures_;
     }
 
     ArenaVector<Signature *> &ConstructSignatures()
     {
         EnsurePropertiesInstantiated();
-        return construct_signatures_;
+        return constructSignatures_;
     }
 
     const ArenaVector<ETSObjectType *> &Interfaces() const
@@ -236,32 +236,32 @@ public:
 
     ir::AstNode *GetDeclNode() const
     {
-        return decl_node_;
+        return declNode_;
     }
 
     const ETSObjectType *SuperType() const
     {
-        return super_type_;
+        return superType_;
     }
 
     ETSObjectType *SuperType()
     {
-        return super_type_;
+        return superType_;
     }
 
     const ETSObjectType *EnclosingType() const
     {
-        return enclosing_type_;
+        return enclosingType_;
     }
 
     ETSObjectType *EnclosingType()
     {
-        return enclosing_type_;
+        return enclosingType_;
     }
 
     ETSObjectType *OutermostClass()
     {
-        auto *iter = enclosing_type_;
+        auto *iter = enclosingType_;
 
         while (iter != nullptr && iter->EnclosingType() != nullptr) {
             iter = iter->EnclosingType();
@@ -270,19 +270,19 @@ public:
         return iter;
     }
 
-    void SetBaseType(ETSObjectType *base_type)
+    void SetBaseType(ETSObjectType *baseType)
     {
-        base_type_ = base_type;
+        baseType_ = baseType;
     }
 
     ETSObjectType *GetBaseType() noexcept
     {
-        return base_type_;
+        return baseType_;
     }
 
     const ETSObjectType *GetBaseType() const noexcept
     {
-        return base_type_;
+        return baseType_;
     }
 
     ETSObjectType const *GetConstOriginalBaseType() const noexcept;
@@ -355,17 +355,17 @@ public:
 
     const util::StringView &AssemblerName() const
     {
-        return assembler_name_;
+        return assemblerName_;
     }
 
-    void SetName(const util::StringView &new_name)
+    void SetName(const util::StringView &newName)
     {
-        name_ = new_name;
+        name_ = newName;
     }
 
-    void SetAssemblerName(const util::StringView &new_name)
+    void SetAssemblerName(const util::StringView &newName)
     {
-        assembler_name_ = new_name;
+        assemblerName_ = newName;
     }
 
     ETSObjectFlags ObjectFlags() const
@@ -403,8 +403,8 @@ public:
 
     ETSObjectType *GetInstantiatedType(util::StringView hash)
     {
-        auto found = instantiation_map_.find(hash);
-        if (found != instantiation_map_.end()) {
+        auto found = instantiationMap_.find(hash);
+        if (found != instantiationMap_.end()) {
             return found->second;
         }
 
@@ -418,17 +418,17 @@ public:
         }
 
         if (HasObjectFlag(ETSObjectFlags::CLASS)) {
-            ASSERT(decl_node_->IsClassDefinition() && decl_node_->AsClassDefinition()->TypeParams());
-            return decl_node_->AsClassDefinition()->TypeParams()->Scope();
+            ASSERT(declNode_->IsClassDefinition() && declNode_->AsClassDefinition()->TypeParams());
+            return declNode_->AsClassDefinition()->TypeParams()->Scope();
         }
 
-        ASSERT(decl_node_->IsTSInterfaceDeclaration() && decl_node_->AsTSInterfaceDeclaration()->TypeParams());
-        return decl_node_->AsTSInterfaceDeclaration()->TypeParams()->Scope();
+        ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
+        return declNode_->AsTSInterfaceDeclaration()->TypeParams()->Scope();
     }
 
     InstantiationMap &GetInstantiationMap()
     {
-        return instantiation_map_;
+        return instantiationMap_;
     }
 
     template <PropertyType TYPE>
@@ -446,12 +446,12 @@ public:
     void AddProperty(varbinder::LocalVariable *prop)
     {
         properties_[static_cast<size_t>(TYPE)].emplace(prop->Name(), prop);
-        properties_instantiated_ = true;
+        propertiesInstantiated_ = true;
     }
 
     [[nodiscard]] bool IsGeneric() const noexcept
     {
-        return !type_arguments_.empty();
+        return !typeArguments_.empty();
     }
 
     std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
@@ -459,49 +459,47 @@ public:
     std::vector<varbinder::LocalVariable *> GetAllProperties() const;
     void CreatePropertyMap(ArenaAllocator *allocator);
     varbinder::LocalVariable *CopyProperty(varbinder::LocalVariable *prop, ArenaAllocator *allocator,
-                                           TypeRelation *relation, GlobalTypesHolder *global_types);
+                                           TypeRelation *relation, GlobalTypesHolder *globalTypes);
     std::vector<varbinder::LocalVariable *> Methods() const;
     std::vector<varbinder::LocalVariable *> Fields() const;
     varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                    PropertySearchFlags flags) const;
-    varbinder::LocalVariable *CollectSignaturesForSyntheticType(ETSFunctionType *func_type,
-                                                                const util::StringView &name,
+    varbinder::LocalVariable *CollectSignaturesForSyntheticType(ETSFunctionType *funcType, const util::StringView &name,
                                                                 PropertySearchFlags flags) const;
     bool CheckIdenticalFlags(ETSObjectFlags target) const;
-    bool CheckIdenticalVariable(varbinder::Variable *other_var) const;
+    bool CheckIdenticalVariable(varbinder::Variable *otherVar) const;
 
     void Iterate(const PropertyTraverser &cb) const;
     void ToString(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
-    bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &new_type_args,
-                            const Substitution *substitution);
-    void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copied_type, ArenaVector<Type *> &new_type_args,
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+    bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &newTypeArgs, const Substitution *substitution);
+    void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &newTypeArgs,
                                  const Substitution *substitution);
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     bool CastNumericObject(TypeRelation *relation, Type *target);
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
-    Type *AsSuper(Checker *checker, varbinder::Variable *source_var) override;
+    Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar) override;
 
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
     {
-        ss << assembler_name_;
+        ss << assemblerName_;
     }
 
-    static void DebugInfoTypeFromName(std::stringstream &ss, util::StringView asm_name);
+    static void DebugInfoTypeFromName(std::stringstream &ss, util::StringView asmName);
 
     void ToDebugInfoType(std::stringstream &ss) const override
     {
-        DebugInfoTypeFromName(ss, assembler_name_);
+        DebugInfoTypeFromName(ss, assemblerName_);
     }
 
     void ToDebugInfoSignatureType(std::stringstream &ss) const
     {
         ss << compiler::Signatures::GENERIC_BEGIN;
-        ss << assembler_name_;
+        ss << assemblerName_;
         ss << compiler::Signatures::GENERIC_END;
     }
 
@@ -520,18 +518,18 @@ protected:
 
 private:
     template <size_t... IS>
-    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assembler_name,
-                           ir::AstNode *decl_node, ETSObjectFlags flags, [[maybe_unused]] std::index_sequence<IS...> s)
+    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
+                           ir::AstNode *declNode, ETSObjectFlags flags, [[maybe_unused]] std::index_sequence<IS...> s)
         : Type(TypeFlag::ETS_OBJECT),
           allocator_(allocator),
           name_(name),
-          assembler_name_(assembler_name),
-          decl_node_(decl_node),
+          assemblerName_(assemblerName),
+          declNode_(declNode),
           interfaces_(allocator->Adapter()),
           flags_(flags),
-          instantiation_map_(allocator->Adapter()),
-          type_arguments_(allocator->Adapter()),
-          construct_signatures_(allocator->Adapter()),
+          instantiationMap_(allocator->Adapter()),
+          typeArguments_(allocator->Adapter()),
+          constructSignatures_(allocator->Adapter()),
           properties_ {(void(IS), PropertyMap {allocator->Adapter()})...}
     {
     }
@@ -540,33 +538,33 @@ private:
     void InstantiateProperties() const;
     void EnsurePropertiesInstantiated() const
     {
-        if (!properties_instantiated_) {
+        if (!propertiesInstantiated_) {
             InstantiateProperties();
-            properties_instantiated_ = true;
+            propertiesInstantiated_ = true;
         }
     }
     std::unordered_map<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
     void IdenticalUptoNullability(TypeRelation *relation, Type *other);
-    bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unbox_flags, TypeFlag widening_flags,
-                               TypeFlag narrowing_flags);
+    bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
+                               TypeFlag narrowingFlags);
 
     ArenaAllocator *allocator_;
     util::StringView name_;
-    util::StringView assembler_name_;
-    ir::AstNode *decl_node_;
+    util::StringView assemblerName_;
+    ir::AstNode *declNode_;
     ArenaVector<ETSObjectType *> interfaces_;
     ETSObjectFlags flags_;
-    InstantiationMap instantiation_map_;
-    ArenaVector<Type *> type_arguments_;
-    ETSObjectType *super_type_ {};
-    ETSObjectType *enclosing_type_ {};
-    ETSObjectType *base_type_ {};
+    InstantiationMap instantiationMap_;
+    ArenaVector<Type *> typeArguments_;
+    ETSObjectType *superType_ {};
+    ETSObjectType *enclosingType_ {};
+    ETSObjectType *baseType_ {};
 
     // for lazy properties instantiation
     TypeRelation *relation_ = nullptr;
     const Substitution *substitution_ = nullptr;
-    mutable bool properties_instantiated_ = false;
-    mutable ArenaVector<Signature *> construct_signatures_;
+    mutable bool propertiesInstantiated_ = false;
+    mutable ArenaVector<Signature *> constructSignatures_;
     mutable PropertyHolder properties_;
 };
 }  // namespace panda::es2panda::checker

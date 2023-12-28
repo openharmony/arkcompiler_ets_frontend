@@ -23,7 +23,7 @@ namespace panda::es2panda::compiler {
 class LabelPair {
 public:
     LabelPair(Label *begin, Label *end) : begin_(begin), end_(end) {}
-    explicit LabelPair(LabelPair *label_pair) : begin_(label_pair->begin_), end_(label_pair->end_) {}
+    explicit LabelPair(LabelPair *labelPair) : begin_(labelPair->begin_), end_(labelPair->end_) {}
 
     Label *Begin() const
     {

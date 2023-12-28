@@ -107,52 +107,52 @@ ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
     return Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), value);
 }
 
-ETSArrayType *ETSChecker::CreateETSArrayType(Type *element_type)
+ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
 {
-    auto res = array_types_.find(element_type);
+    auto res = arrayTypes_.find(elementType);
 
-    if (res != array_types_.end()) {
+    if (res != arrayTypes_.end()) {
         return res->second;
     }
 
-    auto *array_type = Allocator()->New<ETSArrayType>(element_type);
-    auto it = array_types_.insert({element_type, array_type});
-    if (it.second && !element_type->IsETSTypeParameter()) {
-        CreateBuiltinArraySignature(array_type, array_type->Rank());
+    auto *arrayType = Allocator()->New<ETSArrayType>(elementType);
+    auto it = arrayTypes_.insert({elementType, arrayType});
+    if (it.second && !elementType->IsETSTypeParameter()) {
+        CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
 
-    return array_type;
+    return arrayType;
 }
 
-Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
+Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituentTypes)
 {
-    if (constituent_types.empty()) {
+    if (constituentTypes.empty()) {
         return nullptr;
     }
 
-    ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
+    ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
 
-    for (auto *it : constituent_types) {
-        new_constituent_types.push_back(
+    for (auto *it : constituentTypes) {
+        newConstituentTypes.push_back(
             it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? BoxingConverter::ETSTypeFromSource(this, it) : it);
     }
 
-    ETSUnionType::NormalizeTypes(Relation(), new_constituent_types);
-    if (new_constituent_types.size() == 1) {
-        return new_constituent_types[0];
+    ETSUnionType::NormalizeTypes(Relation(), newConstituentTypes);
+    if (newConstituentTypes.size() == 1) {
+        return newConstituentTypes[0];
     }
-    return Allocator()->New<ETSUnionType>(this, std::move(new_constituent_types));
+    return Allocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
 }
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)
 {
-    auto *func_type = Allocator()->New<ETSFunctionType>(signatures[0]->Function()->Id()->Name(), Allocator());
+    auto *funcType = Allocator()->New<ETSFunctionType>(signatures[0]->Function()->Id()->Name(), Allocator());
 
     for (auto *it : signatures) {
-        func_type->AddCallSignature(it);
+        funcType->AddCallSignature(it);
     }
 
-    return func_type;
+    return funcType;
 }
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature)
@@ -175,14 +175,14 @@ ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, Sig
     return Allocator()->New<ETSFunctionType>(name, signature, Allocator());
 }
 
-Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *return_type, ir::ScriptFunction *func)
+Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func)
 {
-    return Allocator()->New<Signature>(info, return_type, func);
+    return Allocator()->New<Signature>(info, returnType, func);
 }
 
-Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *return_type, util::StringView internal_name)
+Signature *ETSChecker::CreateSignature(SignatureInfo *info, Type *returnType, util::StringView internalName)
 {
-    return Allocator()->New<Signature>(info, return_type, internal_name);
+    return Allocator()->New<Signature>(info, returnType, internalName);
 }
 
 SignatureInfo *ETSChecker::CreateSignatureInfo()
@@ -200,13 +200,13 @@ ETSFunctionType *ETSChecker::CreateETSFunctionType(util::StringView name)
     return Allocator()->New<ETSFunctionType>(name, Allocator());
 }
 
-ETSExtensionFuncHelperType *ETSChecker::CreateETSExtensionFuncHelperType(ETSFunctionType *class_method_type,
-                                                                         ETSFunctionType *extension_function_type)
+ETSExtensionFuncHelperType *ETSChecker::CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
+                                                                         ETSFunctionType *extensionFunctionType)
 {
-    return Allocator()->New<ETSExtensionFuncHelperType>(class_method_type, extension_function_type);
+    return Allocator()->New<ETSExtensionFuncHelperType>(classMethodType, extensionFunctionType);
 }
 
-ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *decl_node,
+ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode,
                                                             ETSObjectFlags flags)
 {
     if (name == compiler::Signatures::BUILTIN_STRING_CLASS) {
@@ -214,316 +214,316 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView nam
             return GlobalBuiltinETSStringType();
         }
         GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_STRING_BUILTIN)] =
-            CreateNewETSObjectType(name, decl_node, flags | ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING);
+            CreateNewETSObjectType(name, declNode, flags | ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING);
 
         GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_STRING)] =
             Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType());
         return GlobalBuiltinETSStringType();
     }
 
-    auto *obj_type = CreateNewETSObjectType(name, decl_node, flags);
+    auto *objType = CreateNewETSObjectType(name, declNode, flags);
 
     if (name == compiler::Signatures::BUILTIN_OBJECT_CLASS) {
         if (GlobalETSObjectType() != nullptr) {
             return GlobalETSObjectType();
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_OBJECT_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_OBJECT_BUILTIN)] = objType;
         auto *nullish =
-            CreateNullishType(obj_type, checker::TypeFlag::NULLISH, Allocator(), Relation(), GetGlobalTypesHolder());
+            CreateNullishType(objType, checker::TypeFlag::NULLISH, Allocator(), Relation(), GetGlobalTypesHolder());
         GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
     } else if (name == compiler::Signatures::BUILTIN_EXCEPTION_CLASS) {
         if (GlobalBuiltinExceptionType() != nullptr) {
             return GlobalBuiltinExceptionType();
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_EXCEPTION_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_EXCEPTION_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_ERROR_CLASS) {
         if (GlobalBuiltinErrorType() != nullptr) {
             return GlobalBuiltinErrorType();
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_ERROR_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_ERROR_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_TYPE_CLASS) {
         if (GlobalBuiltinTypeType() != nullptr) {
             return GlobalBuiltinTypeType();
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_TYPE_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_TYPE_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_PROMISE_CLASS) {
         if (GlobalBuiltinPromiseType() != nullptr) {
             return GlobalBuiltinPromiseType();
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_PROMISE_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_PROMISE_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalETSObjectType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalETSObjectType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_BOOLEAN_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalETSBooleanType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalETSBooleanType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BOOLEAN_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BOOLEAN_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_BYTE_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalByteType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalByteType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BYTE_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_BYTE_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_CHAR_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalCharType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalCharType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_CHAR_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_CHAR_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_SHORT_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalShortType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalShortType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_SHORT_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_SHORT_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_INT_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalIntType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalIntType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_INT_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_INT_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_LONG_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalLongType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalLongType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_LONG_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_LONG_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_FLOAT_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalFloatType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalFloatType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_FLOAT_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_FLOAT_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_FLOAT_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalFloatType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalFloatType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_FLOAT_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_FLOAT_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_DOUBLE_BOX_CLASS) {
         if (GlobalBuiltinBoxType(GlobalDoubleType()) != nullptr) {
             return GlobalBuiltinBoxType(GlobalDoubleType());
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN)] = objType;
     } else if (name == compiler::Signatures::BUILTIN_VOID_CLASS) {
         if (GlobalBuiltinVoidType() != nullptr) {
             return GlobalBuiltinVoidType();
         }
-        GetGlobalTypesHolder()->GlobalTypes()[static_cast<std::size_t>(GlobalTypeId::ETS_VOID_BUILTIN)] = obj_type;
+        GetGlobalTypesHolder()->GlobalTypes()[static_cast<std::size_t>(GlobalTypeId::ETS_VOID_BUILTIN)] = objType;
     }
 
-    return obj_type;
+    return objType;
 }
 
-ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNode *decl_node, ETSObjectFlags flags)
+ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags)
 {
-    auto res = primitive_wrappers_.Wrappers().find(name);
-    if (res == primitive_wrappers_.Wrappers().end()) {
-        return CreateETSObjectTypeCheckBuiltins(name, decl_node, flags);
+    auto res = primitiveWrappers_.Wrappers().find(name);
+    if (res == primitiveWrappers_.Wrappers().end()) {
+        return CreateETSObjectTypeCheckBuiltins(name, declNode, flags);
     }
 
     if (res->second.first != nullptr) {
         return res->second.first;
     }
 
-    auto *obj_type = CreateNewETSObjectType(name, decl_node, flags | res->second.second);
-    primitive_wrappers_.Wrappers().at(name).first = obj_type;
-    return obj_type;
+    auto *objType = CreateNewETSObjectType(name, declNode, flags | res->second.second);
+    primitiveWrappers_.Wrappers().at(name).first = objType;
+    return objType;
 }
 
-ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const enum_decl)
+ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const enumDecl)
 {
-    varbinder::Variable *enum_var = enum_decl->Key()->Variable();
-    ASSERT(enum_var != nullptr);
+    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
+    ASSERT(enumVar != nullptr);
 
     ETSEnumType::UType ordinal = -1;
-    auto *const enum_type = Allocator()->New<ETSEnumType>(enum_decl, ordinal++);
-    enum_type->SetVariable(enum_var);
-    enum_var->SetTsType(enum_type);
+    auto *const enumType = Allocator()->New<ETSEnumType>(enumDecl, ordinal++);
+    enumType->SetVariable(enumVar);
+    enumVar->SetTsType(enumType);
 
-    for (auto *const member : enum_type->GetMembers()) {
-        auto *const member_var = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enum_literal_type = Allocator()->New<ETSEnumType>(enum_decl, ordinal++, member->AsTSEnumMember());
-        enum_literal_type->SetVariable(member_var);
-        member_var->SetTsType(enum_literal_type);
+    for (auto *const member : enumType->GetMembers()) {
+        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
+        auto *const enumLiteralType = Allocator()->New<ETSEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
+        enumLiteralType->SetVariable(memberVar);
+        memberVar->SetTsType(enumLiteralType);
     }
 
-    auto *const names_array_ident = CreateEnumNamesArray(enum_type);
+    auto *const namesArrayIdent = CreateEnumNamesArray(enumType);
 
-    auto const get_name_method = CreateEnumGetNameMethod(names_array_ident, enum_type);
-    enum_type->SetGetNameMethod(get_name_method);
+    auto const getNameMethod = CreateEnumGetNameMethod(namesArrayIdent, enumType);
+    enumType->SetGetNameMethod(getNameMethod);
 
-    auto const value_of_method = CreateEnumValueOfMethod(names_array_ident, enum_type);
-    enum_type->SetValueOfMethod(value_of_method);
+    auto const valueOfMethod = CreateEnumValueOfMethod(namesArrayIdent, enumType);
+    enumType->SetValueOfMethod(valueOfMethod);
 
-    auto const from_int_method = CreateEnumFromIntMethod(names_array_ident, enum_type);
-    enum_type->SetFromIntMethod(from_int_method);
+    auto const fromIntMethod = CreateEnumFromIntMethod(namesArrayIdent, enumType);
+    enumType->SetFromIntMethod(fromIntMethod);
 
-    auto *const values_array_ident = CreateEnumValuesArray(enum_type);
+    auto *const valuesArrayIdent = CreateEnumValuesArray(enumType);
 
-    auto const get_value_method = CreateEnumGetValueMethod(values_array_ident, enum_type);
-    enum_type->SetGetValueMethod(get_value_method);
+    auto const getValueMethod = CreateEnumGetValueMethod(valuesArrayIdent, enumType);
+    enumType->SetGetValueMethod(getValueMethod);
 
-    auto *const string_values_array_ident = CreateEnumStringValuesArray(enum_type);
+    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumType);
 
-    auto const to_string_method = CreateEnumToStringMethod(string_values_array_ident, enum_type);
-    enum_type->SetToStringMethod(to_string_method);
+    auto const toStringMethod = CreateEnumToStringMethod(stringValuesArrayIdent, enumType);
+    enumType->SetToStringMethod(toStringMethod);
 
-    auto *const items_array_ident = CreateEnumItemsArray(enum_type);
+    auto *const itemsArrayIdent = CreateEnumItemsArray(enumType);
 
-    auto const values_method = CreateEnumValuesMethod(items_array_ident, enum_type);
-    enum_type->SetValuesMethod(values_method);
+    auto const valuesMethod = CreateEnumValuesMethod(itemsArrayIdent, enumType);
+    enumType->SetValuesMethod(valuesMethod);
 
-    for (auto *const member : enum_type->GetMembers()) {
-        auto *const enum_literal_type =
+    for (auto *const member : enumType->GetMembers()) {
+        auto *const enumLiteralType =
             member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType()->AsETSEnumType();
-        enum_literal_type->SetGetValueMethod(get_value_method);
-        enum_literal_type->SetGetNameMethod(get_name_method);
-        enum_literal_type->SetToStringMethod(to_string_method);
+        enumLiteralType->SetGetValueMethod(getValueMethod);
+        enumLiteralType->SetGetNameMethod(getNameMethod);
+        enumLiteralType->SetToStringMethod(toStringMethod);
     }
 
-    return enum_type;
+    return enumType;
 }
 
-ETSStringEnumType *ETSChecker::CreateETSStringEnumType(ir::TSEnumDeclaration const *const enum_decl)
+ETSStringEnumType *ETSChecker::CreateETSStringEnumType(ir::TSEnumDeclaration const *const enumDecl)
 {
-    varbinder::Variable *enum_var = enum_decl->Key()->Variable();
-    ASSERT(enum_var != nullptr);
+    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
+    ASSERT(enumVar != nullptr);
 
     ETSEnumType::UType ordinal = -1;
-    auto *const enum_type = Allocator()->New<ETSStringEnumType>(enum_decl, ordinal++);
-    enum_type->SetVariable(enum_var);
-    enum_var->SetTsType(enum_type);
+    auto *const enumType = Allocator()->New<ETSStringEnumType>(enumDecl, ordinal++);
+    enumType->SetVariable(enumVar);
+    enumVar->SetTsType(enumType);
 
-    for (auto *const member : enum_type->GetMembers()) {
-        auto *const member_var = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enum_literal_type =
-            Allocator()->New<ETSStringEnumType>(enum_decl, ordinal++, member->AsTSEnumMember());
-        enum_literal_type->SetVariable(member_var);
-        member_var->SetTsType(enum_literal_type);
+    for (auto *const member : enumType->GetMembers()) {
+        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
+        auto *const enumLiteralType =
+            Allocator()->New<ETSStringEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
+        enumLiteralType->SetVariable(memberVar);
+        memberVar->SetTsType(enumLiteralType);
     }
 
-    auto *const names_array_ident = CreateEnumNamesArray(enum_type);
+    auto *const namesArrayIdent = CreateEnumNamesArray(enumType);
 
-    auto const get_name_method = CreateEnumGetNameMethod(names_array_ident, enum_type);
-    enum_type->SetGetNameMethod(get_name_method);
+    auto const getNameMethod = CreateEnumGetNameMethod(namesArrayIdent, enumType);
+    enumType->SetGetNameMethod(getNameMethod);
 
-    auto const value_of_method = CreateEnumValueOfMethod(names_array_ident, enum_type);
-    enum_type->SetValueOfMethod(value_of_method);
+    auto const valueOfMethod = CreateEnumValueOfMethod(namesArrayIdent, enumType);
+    enumType->SetValueOfMethod(valueOfMethod);
 
-    auto const from_int_method = CreateEnumFromIntMethod(names_array_ident, enum_type);
-    enum_type->SetFromIntMethod(from_int_method);
+    auto const fromIntMethod = CreateEnumFromIntMethod(namesArrayIdent, enumType);
+    enumType->SetFromIntMethod(fromIntMethod);
 
-    auto *const string_values_array_ident = CreateEnumStringValuesArray(enum_type);
+    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumType);
 
-    auto const to_string_method = CreateEnumToStringMethod(string_values_array_ident, enum_type);
-    enum_type->SetToStringMethod(to_string_method);
-    enum_type->SetGetValueMethod(to_string_method);
+    auto const toStringMethod = CreateEnumToStringMethod(stringValuesArrayIdent, enumType);
+    enumType->SetToStringMethod(toStringMethod);
+    enumType->SetGetValueMethod(toStringMethod);
 
-    auto *const items_array_ident = CreateEnumItemsArray(enum_type);
+    auto *const itemsArrayIdent = CreateEnumItemsArray(enumType);
 
-    auto const values_method = CreateEnumValuesMethod(items_array_ident, enum_type);
-    enum_type->SetValuesMethod(values_method);
+    auto const valuesMethod = CreateEnumValuesMethod(itemsArrayIdent, enumType);
+    enumType->SetValuesMethod(valuesMethod);
 
-    for (auto *const member : enum_type->GetMembers()) {
-        auto *const enum_literal_type =
+    for (auto *const member : enumType->GetMembers()) {
+        auto *const enumLiteralType =
             member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType()->AsETSStringEnumType();
-        enum_literal_type->SetGetValueMethod(to_string_method);
-        enum_literal_type->SetGetNameMethod(get_name_method);
-        enum_literal_type->SetToStringMethod(to_string_method);
+        enumLiteralType->SetGetValueMethod(toStringMethod);
+        enumLiteralType->SetGetNameMethod(getNameMethod);
+        enumLiteralType->SetToStringMethod(toStringMethod);
     }
 
-    return enum_type;
+    return enumType;
 }
 
-ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::AstNode *decl_node, ETSObjectFlags flags)
+ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags)
 {
-    util::StringView assembler_name = name;
+    util::StringView assemblerName = name;
     util::StringView prefix {};
 
-    auto *containing_obj_type = util::Helpers::GetContainingObjectType(decl_node->Parent());
+    auto *containingObjType = util::Helpers::GetContainingObjectType(declNode->Parent());
 
-    if (containing_obj_type != nullptr) {
-        prefix = containing_obj_type->AssemblerName();
-    } else if (decl_node->GetTopStatement()->Type() !=
+    if (containingObjType != nullptr) {
+        prefix = containingObjType->AssemblerName();
+    } else if (declNode->GetTopStatement()->Type() !=
                ir::AstNodeType::BLOCK_STATEMENT) {  // NOTE: should not occur, fix for TS_INTERFACE_DECLARATION
-        ASSERT(decl_node->IsTSInterfaceDeclaration());
-        assembler_name = decl_node->AsTSInterfaceDeclaration()->InternalName();
+        ASSERT(declNode->IsTSInterfaceDeclaration());
+        assemblerName = declNode->AsTSInterfaceDeclaration()->InternalName();
     } else {
-        auto *program = static_cast<ir::ETSScript *>(decl_node->GetTopStatement())->Program();
+        auto *program = static_cast<ir::ETSScript *>(declNode->GetTopStatement())->Program();
         prefix = program->GetPackageName();
     }
 
     if (!prefix.Empty()) {
-        util::UString full_path(prefix, Allocator());
-        full_path.Append('.');
-        full_path.Append(name);
-        assembler_name = full_path.View();
+        util::UString fullPath(prefix, Allocator());
+        fullPath.Append('.');
+        fullPath.Append(name);
+        assemblerName = fullPath.View();
     }
 
     Language lang(Language::Id::ETS);
-    bool has_decl = false;
+    bool hasDecl = false;
 
-    if (decl_node->IsClassDefinition()) {
-        auto *cls_def = decl_node->AsClassDefinition();
-        lang = cls_def->Language();
-        has_decl = cls_def->IsDeclare();
+    if (declNode->IsClassDefinition()) {
+        auto *clsDef = declNode->AsClassDefinition();
+        lang = clsDef->Language();
+        hasDecl = clsDef->IsDeclare();
     }
 
-    if (decl_node->IsTSInterfaceDeclaration()) {
-        auto *iface_decl = decl_node->AsTSInterfaceDeclaration();
-        lang = iface_decl->Language();
-        has_decl = iface_decl->IsDeclare();
+    if (declNode->IsTSInterfaceDeclaration()) {
+        auto *ifaceDecl = declNode->AsTSInterfaceDeclaration();
+        lang = ifaceDecl->Language();
+        hasDecl = ifaceDecl->IsDeclare();
     }
 
-    auto res = compiler::Signatures::Dynamic::LanguageFromType(assembler_name.Utf8());
+    auto res = compiler::Signatures::Dynamic::LanguageFromType(assemblerName.Utf8());
     if (res) {
         lang = *res;
     }
 
     if (lang.IsDynamic()) {
-        return Allocator()->New<ETSDynamicType>(Allocator(), name, assembler_name, decl_node, flags, lang, has_decl);
+        return Allocator()->New<ETSDynamicType>(Allocator(), name, assemblerName, declNode, flags, lang, hasDecl);
     }
 
-    return Allocator()->New<ETSObjectType>(Allocator(), name, assembler_name, decl_node, flags);
+    return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName, declNode, flags);
 }
 
-std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(ETSArrayType *array_type,
+std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType,
                                                                                           size_t dim)
 {
     std::stringstream ss;
-    array_type->ToAssemblerTypeWithRank(ss);
+    arrayType->ToAssemblerTypeWithRank(ss);
     ss << compiler::Signatures::METHOD_SEPARATOR << compiler::Signatures::CTOR << compiler::Signatures::MANGLE_BEGIN;
-    array_type->ToAssemblerTypeWithRank(ss);
+    arrayType->ToAssemblerTypeWithRank(ss);
 
     auto *info = CreateSignatureInfo();
-    info->min_arg_count = dim;
+    info->minArgCount = dim;
 
     for (size_t i = 0; i < dim; i++) {
         util::UString param(std::to_string(i), Allocator());
-        auto *param_var =
+        auto *paramVar =
             varbinder::Scope::CreateVar(Allocator(), param.View(), varbinder::VariableFlags::NONE, nullptr);
-        param_var->SetTsType(GlobalIntType());
+        paramVar->SetTsType(GlobalIntType());
 
-        info->params.push_back(param_var);
+        info->params.push_back(paramVar);
 
         ss << compiler::Signatures::MANGLE_SEPARATOR << compiler::Signatures::PRIMITIVE_INT;
     }
 
     ss << compiler::Signatures::MANGLE_SEPARATOR << compiler::Signatures::PRIMITIVE_VOID
        << compiler::Signatures::MANGLE_SEPARATOR;
-    auto internal_name = util::UString(ss.str(), Allocator()).View();
+    auto internalName = util::UString(ss.str(), Allocator()).View();
 
-    return {internal_name, info};
+    return {internalName, info};
 }
 
-Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *array_type, size_t dim)
+Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim)
 {
-    auto res = global_array_signatures_.find(array_type);
+    auto res = globalArraySignatures_.find(arrayType);
 
-    if (res != global_array_signatures_.end()) {
+    if (res != globalArraySignatures_.end()) {
         return res->second;
     }
 
-    auto [internalName, info] = CreateBuiltinArraySignatureInfo(array_type, dim);
+    auto [internalName, info] = CreateBuiltinArraySignatureInfo(arrayType, dim);
     auto *signature = CreateSignature(info, GlobalVoidType(), internalName);
-    global_array_signatures_.insert({array_type, signature});
+    globalArraySignatures_.insert({arrayType, signature});
 
     return signature;
 }

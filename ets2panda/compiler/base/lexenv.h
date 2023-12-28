@@ -34,7 +34,7 @@ public:
     VirtualStoreVar() = delete;
 
     static void Expand(PandaGen *pg, const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
-                       bool is_decl);
+                       bool isDecl);
 };
 }  // namespace panda::es2panda::compiler
 

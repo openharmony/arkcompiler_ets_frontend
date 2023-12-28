@@ -23,22 +23,22 @@ namespace panda::es2panda::checker {
 varbinder::LocalVariable *ETSDynamicType::GetPropertyDynamic(const util::StringView &name,
                                                              const ETSChecker *checker) const
 {
-    auto it = properties_cache_.find(name);
-    if (it != properties_cache_.end()) {
+    auto it = propertiesCache_.find(name);
+    if (it != propertiesCache_.end()) {
         return it->second;
     }
 
     varbinder::LocalVariable *var = varbinder::Scope::CreateVar<varbinder::PropertyDecl>(
         Allocator(), name, varbinder::VariableFlags::BUILTIN_TYPE, nullptr);
     var->SetTsType(checker->GlobalBuiltinDynamicType(lang_));
-    properties_cache_.emplace(name, var);
+    propertiesCache_.emplace(name, var);
 
     return var;
 }
 
 void ETSDynamicType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    if (has_decl_) {
+    if (hasDecl_) {
         return ETSObjectType::AssignmentTarget(relation, source);
     }
 
@@ -54,7 +54,7 @@ void ETSDynamicType::AssignmentTarget(TypeRelation *relation, Type *source)
 
 bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    if (has_decl_) {
+    if (hasDecl_) {
         return ETSObjectType::AssignmentSource(relation, target);
     }
 
@@ -71,7 +71,7 @@ bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSDynamicType::Cast(TypeRelation *relation, Type *target)
 {
-    if (has_decl_) {
+    if (hasDecl_) {
         return ETSObjectType::Cast(relation, target);
     }
 
@@ -85,7 +85,7 @@ void ETSDynamicType::Cast(TypeRelation *relation, Type *target)
 
 void ETSDynamicType::CastTarget(TypeRelation *relation, Type *source)
 {
-    if (has_decl_) {
+    if (hasDecl_) {
         ETSObjectType::CastTarget(relation, source);
         return;
     }

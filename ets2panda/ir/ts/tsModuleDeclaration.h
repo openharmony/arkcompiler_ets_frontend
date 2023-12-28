@@ -25,14 +25,14 @@ class Expression;
 class TSModuleDeclaration : public Statement {
 public:
     explicit TSModuleDeclaration(ArenaAllocator *allocator, Expression *name, Statement *body, bool declare,
-                                 bool global, bool is_external_ambient)
+                                 bool global, bool isExternalAmbient)
         : Statement(AstNodeType::TS_MODULE_DECLARATION),
           decorators_(allocator->Adapter()),
           name_(name),
           body_(body),
           declare_(declare),
           global_(global),
-          is_external_ambient_(is_external_ambient)
+          isExternalAmbient_(isExternalAmbient)
     {
     }
 
@@ -73,7 +73,7 @@ public:
 
     bool IsExternalOrAmbient() const
     {
-        return is_external_ambient_;
+        return isExternalAmbient_;
     }
 
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
@@ -81,9 +81,9 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
-        return !in_ts;
+        return !inTs;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -107,7 +107,7 @@ private:
     Statement *body_;
     bool declare_;
     bool global_;
-    bool is_external_ambient_;
+    bool isExternalAmbient_;
 };
 }  // namespace panda::es2panda::ir
 

@@ -28,7 +28,7 @@ public:
     {
     }
 
-    PrivateFieldKind ToPrivateFieldKind([[maybe_unused]] bool is_static) const override
+    PrivateFieldKind ToPrivateFieldKind([[maybe_unused]] bool isStatic) const override
     {
         return PrivateFieldKind::FIELD;
     }

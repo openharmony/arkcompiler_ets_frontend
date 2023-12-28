@@ -23,9 +23,9 @@
 #include "ir/ts/tsEnumMember.h"
 
 namespace panda::es2panda::checker {
-ETSEnumInterface::ETSEnumInterface(const ir::TSEnumDeclaration *const enum_decl, UType ordinal,
-                                   const ir::TSEnumMember *const member, TypeFlag const type_flag)
-    : Type(type_flag), decl_(enum_decl), ordinal_ {ordinal}, member_(member)
+ETSEnumInterface::ETSEnumInterface(const ir::TSEnumDeclaration *const enumDecl, UType ordinal,
+                                   const ir::TSEnumMember *const member, TypeFlag const typeFlag)
+    : Type(typeFlag), decl_(enumDecl), ordinal_ {ordinal}, member_(member)
 {
 }
 
@@ -57,14 +57,14 @@ void ETSEnumInterface::Cast(TypeRelation *relation, Type *target)
 }
 
 Type *ETSEnumInterface::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                                    [[maybe_unused]] GlobalTypesHolder *global_types)
+                                    [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
 }
 
 void ETSEnumInterface::Identical(TypeRelation *const relation, Type *const other)
 {
-    ETSEnumInterface const *const other_enum_type = [other]() -> ETSEnumInterface const * {
+    ETSEnumInterface const *const otherEnumType = [other]() -> ETSEnumInterface const * {
         if (other->IsETSEnumType()) {
             return other->AsETSEnumType();
         }
@@ -74,8 +74,7 @@ void ETSEnumInterface::Identical(TypeRelation *const relation, Type *const other
         return nullptr;
     }();
 
-    relation->Result(other_enum_type != nullptr && IsSameEnumType(other_enum_type) &&
-                     member_ == other_enum_type->member_);
+    relation->Result(otherEnumType != nullptr && IsSameEnumType(otherEnumType) && member_ == otherEnumType->member_);
 }
 
 void ETSEnumInterface::ToAssemblerType(std::stringstream &ss) const
@@ -132,16 +131,16 @@ ETSEnumInterface *ETSEnumInterface::LookupConstant(ETSChecker *const checker, co
         checker->ThrowTypeError({"No enum constant named '", prop->Name(), "' in enum '", this, "'"}, prop->Start());
     }
 
-    auto *const enum_interface =
-        [enum_type = member->Key()->AsIdentifier()->Variable()->TsType()]() -> checker::ETSEnumInterface * {
-        if (enum_type->IsETSEnumType()) {
-            return enum_type->AsETSEnumType();
+    auto *const enumInterface =
+        [enumType = member->Key()->AsIdentifier()->Variable()->TsType()]() -> checker::ETSEnumInterface * {
+        if (enumType->IsETSEnumType()) {
+            return enumType->AsETSEnumType();
         }
-        return enum_type->AsETSStringEnumType();
+        return enumType->AsETSStringEnumType();
     }();
 
-    ASSERT(enum_interface->IsLiteralType());
-    return enum_interface;
+    ASSERT(enumInterface->IsLiteralType());
+    return enumInterface;
 }
 
 ETSFunctionType *ETSEnumInterface::LookupMethod(ETSChecker *checker, const ir::Expression *const expression,
@@ -168,41 +167,41 @@ bool ETSEnumInterface::IsSameEnumLiteralType(const ETSEnumInterface *const other
 
 bool ETSEnumInterface::IsEnumInstanceExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enum_interface =
-        [enum_type = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enum_type->IsETSEnumType()) {
-            return enum_type->AsETSEnumType();
+    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
+        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
+        if (enumType->IsETSEnumType()) {
+            return enumType->AsETSEnumType();
         }
-        if (enum_type->IsETSStringEnumType()) {
-            return enum_type->AsETSStringEnumType();
+        if (enumType->IsETSStringEnumType()) {
+            return enumType->AsETSStringEnumType();
         }
         return nullptr;
     }();
 
-    ASSERT(IsSameEnumType(enum_interface));
+    ASSERT(IsSameEnumType(enumInterface));
 
     return IsEnumLiteralExpression(expression) || !IsEnumTypeExpression(expression);
 }
 
 bool ETSEnumInterface::IsEnumLiteralExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enum_interface =
-        [enum_type = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enum_type->IsETSEnumType()) {
-            return enum_type->AsETSEnumType();
+    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
+        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
+        if (enumType->IsETSEnumType()) {
+            return enumType->AsETSEnumType();
         }
-        if (enum_type->IsETSStringEnumType()) {
-            return enum_type->AsETSStringEnumType();
+        if (enumType->IsETSStringEnumType()) {
+            return enumType->AsETSStringEnumType();
         }
         return nullptr;
     }();
 
-    ASSERT(IsSameEnumType(enum_interface));
+    ASSERT(IsSameEnumType(enumInterface));
 
     if (expression->IsMemberExpression()) {
-        const auto *const member_expr = expression->AsMemberExpression();
-        return member_expr->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS &&
-               IsEnumTypeExpression(member_expr->Object());
+        const auto *const memberExpr = expression->AsMemberExpression();
+        return memberExpr->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS &&
+               IsEnumTypeExpression(memberExpr->Object());
     }
 
     return false;
@@ -210,72 +209,72 @@ bool ETSEnumInterface::IsEnumLiteralExpression(const ir::Expression *const expre
 
 bool ETSEnumInterface::IsEnumTypeExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enum_interface =
-        [enum_type = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enum_type->IsETSEnumType()) {
-            return enum_type->AsETSEnumType();
+    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
+        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
+        if (enumType->IsETSEnumType()) {
+            return enumType->AsETSEnumType();
         }
-        if (enum_type->IsETSStringEnumType()) {
-            return enum_type->AsETSStringEnumType();
+        if (enumType->IsETSStringEnumType()) {
+            return enumType->AsETSStringEnumType();
         }
         return nullptr;
     }();
 
-    ASSERT(IsSameEnumType(enum_interface));
+    ASSERT(IsSameEnumType(enumInterface));
 
     if (expression->IsCallExpression()) {
         return false;
     }
 
-    const auto *const local_var = [expression]() -> const varbinder::LocalVariable * {
+    const auto *const localVar = [expression]() -> const varbinder::LocalVariable * {
         if (expression->IsMemberExpression()) {
-            const auto *const member_expr = expression->AsMemberExpression();
-            return member_expr->PropVar() != nullptr
-                       ? member_expr->PropVar()
-                       : member_expr->Object()->AsIdentifier()->Variable()->AsLocalVariable();
+            const auto *const memberExpr = expression->AsMemberExpression();
+            return memberExpr->PropVar() != nullptr
+                       ? memberExpr->PropVar()
+                       : memberExpr->Object()->AsIdentifier()->Variable()->AsLocalVariable();
         }
         return expression->AsIdentifier()->Variable()->AsLocalVariable();
     }();
 
-    ASSERT(local_var->Declaration() == decl_->Key()->AsIdentifier()->Variable()->Declaration() ||
-           !local_var->HasFlag(varbinder::VariableFlags::ENUM_LITERAL));
-    return local_var->HasFlag(varbinder::VariableFlags::ENUM_LITERAL);
+    ASSERT(localVar->Declaration() == decl_->Key()->AsIdentifier()->Variable()->Declaration() ||
+           !localVar->HasFlag(varbinder::VariableFlags::ENUM_LITERAL));
+    return localVar->HasFlag(varbinder::VariableFlags::ENUM_LITERAL);
 }
 
 ETSEnumInterface::Method ETSEnumInterface::FromIntMethod() const noexcept
 {
-    ASSERT(from_int_method_.global_signature != nullptr && from_int_method_.member_proxy_type == nullptr);
-    return from_int_method_;
+    ASSERT(fromIntMethod_.globalSignature != nullptr && fromIntMethod_.memberProxyType == nullptr);
+    return fromIntMethod_;
 }
 
 ETSEnumInterface::Method ETSEnumInterface::GetValueMethod() const noexcept
 {
-    ASSERT(get_value_method_.global_signature != nullptr && get_value_method_.member_proxy_type != nullptr);
-    return get_value_method_;
+    ASSERT(getValueMethod_.globalSignature != nullptr && getValueMethod_.memberProxyType != nullptr);
+    return getValueMethod_;
 }
 
 ETSEnumInterface::Method ETSEnumInterface::GetNameMethod() const noexcept
 {
-    ASSERT(get_name_method_.global_signature != nullptr && get_name_method_.member_proxy_type != nullptr);
-    return get_name_method_;
+    ASSERT(getNameMethod_.globalSignature != nullptr && getNameMethod_.memberProxyType != nullptr);
+    return getNameMethod_;
 }
 
 ETSEnumInterface::Method ETSEnumInterface::ToStringMethod() const noexcept
 {
-    ASSERT(to_string_method_.global_signature != nullptr && to_string_method_.member_proxy_type != nullptr);
-    return to_string_method_;
+    ASSERT(toStringMethod_.globalSignature != nullptr && toStringMethod_.memberProxyType != nullptr);
+    return toStringMethod_;
 }
 
 ETSEnumInterface::Method ETSEnumInterface::ValueOfMethod() const noexcept
 {
-    ASSERT(value_of_method_.global_signature != nullptr && value_of_method_.member_proxy_type != nullptr);
-    return value_of_method_;
+    ASSERT(valueOfMethod_.globalSignature != nullptr && valueOfMethod_.memberProxyType != nullptr);
+    return valueOfMethod_;
 }
 
 ETSEnumInterface::Method ETSEnumInterface::ValuesMethod() const noexcept
 {
-    ASSERT(values_method_.global_signature != nullptr && values_method_.member_proxy_type != nullptr);
-    return values_method_;
+    ASSERT(valuesMethod_.globalSignature != nullptr && valuesMethod_.memberProxyType != nullptr);
+    return valuesMethod_;
 }
 
 bool ETSEnumInterface::IsLiteralType() const noexcept
@@ -287,12 +286,12 @@ ir::TSEnumMember *ETSEnumInterface::FindMember(const util::StringView &name) con
 {
     ASSERT(!IsLiteralType());
     const auto &members = GetMembers();
-    auto member_it = std::find_if(members.begin(), members.end(), [name](const ir::AstNode *const node) {
+    auto memberIt = std::find_if(members.begin(), members.end(), [name](const ir::AstNode *const node) {
         return node->AsTSEnumMember()->Key()->AsIdentifier()->Name() == name;
     });
 
-    if (member_it != members.end()) {
-        return (*member_it)->AsTSEnumMember();
+    if (memberIt != members.end()) {
+        return (*memberIt)->AsTSEnumMember();
     }
 
     return nullptr;
@@ -302,18 +301,18 @@ ETSFunctionType *ETSEnumInterface::LookupConstantMethod(ETSChecker *const checke
                                                         const ir::Identifier *const prop) const
 {
     if (prop->Name() == TO_STRING_METHOD_NAME) {
-        ASSERT(to_string_method_.member_proxy_type != nullptr);
-        return to_string_method_.member_proxy_type;
+        ASSERT(toStringMethod_.memberProxyType != nullptr);
+        return toStringMethod_.memberProxyType;
     }
 
     if (prop->Name() == GET_VALUE_METHOD_NAME) {
-        ASSERT(get_value_method_.member_proxy_type != nullptr);
-        return get_value_method_.member_proxy_type;
+        ASSERT(getValueMethod_.memberProxyType != nullptr);
+        return getValueMethod_.memberProxyType;
     }
 
     if (prop->Name() == GET_NAME_METHOD_NAME) {
-        ASSERT(get_name_method_.member_proxy_type != nullptr);
-        return get_name_method_.member_proxy_type;
+        ASSERT(getNameMethod_.memberProxyType != nullptr);
+        return getNameMethod_.memberProxyType;
     }
 
     checker->ThrowTypeError({"No enum item method called '", prop->Name(), "'"}, prop->Start());
@@ -322,13 +321,13 @@ ETSFunctionType *ETSEnumInterface::LookupConstantMethod(ETSChecker *const checke
 ETSFunctionType *ETSEnumInterface::LookupTypeMethod(ETSChecker *const checker, const ir::Identifier *const prop) const
 {
     if (prop->Name() == VALUES_METHOD_NAME) {
-        ASSERT(values_method_.member_proxy_type != nullptr);
-        return values_method_.member_proxy_type;
+        ASSERT(valuesMethod_.memberProxyType != nullptr);
+        return valuesMethod_.memberProxyType;
     }
 
     if (prop->Name() == VALUE_OF_METHOD_NAME) {
-        ASSERT(value_of_method_.member_proxy_type != nullptr);
-        return value_of_method_.member_proxy_type;
+        ASSERT(valueOfMethod_.memberProxyType != nullptr);
+        return valueOfMethod_.memberProxyType;
     }
 
     checker->ThrowTypeError({"No enum type method called '", prop->Name(), "'"}, prop->Start());

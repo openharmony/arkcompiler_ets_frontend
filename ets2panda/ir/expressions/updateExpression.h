@@ -31,14 +31,11 @@ public:
     NO_COPY_SEMANTIC(UpdateExpression);
     NO_MOVE_SEMANTIC(UpdateExpression);
 
-    explicit UpdateExpression(Expression *const argument, lexer::TokenType const update_operator, bool const is_prefix)
-        : Expression(AstNodeType::UPDATE_EXPRESSION),
-          argument_(argument),
-          operator_(update_operator),
-          prefix_(is_prefix)
+    explicit UpdateExpression(Expression *const argument, lexer::TokenType const updateOperator, bool const isPrefix)
+        : Expression(AstNodeType::UPDATE_EXPRESSION), argument_(argument), operator_(updateOperator), prefix_(isPrefix)
     {
-        ASSERT(update_operator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
-               update_operator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
+        ASSERT(updateOperator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
+               updateOperator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
     }
 
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields

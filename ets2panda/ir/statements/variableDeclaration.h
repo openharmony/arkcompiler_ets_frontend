@@ -65,7 +65,7 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }

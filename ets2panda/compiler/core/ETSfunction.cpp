@@ -38,17 +38,17 @@ namespace panda::es2panda::compiler {
 void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 {
     RegScope rs(etsg);
-    auto *super_type = etsg->ContainingObjectType()->SuperType();
+    auto *superType = etsg->ContainingObjectType()->SuperType();
 
-    if (super_type == nullptr) {
+    if (superType == nullptr) {
         etsg->CallThisStatic0(etsg->RootNode(), etsg->GetThisReg(), Signatures::BUILTIN_OBJECT_CTOR);
 
         return;
     }
 
-    auto res = std::find_if(super_type->ConstructSignatures().cbegin(), super_type->ConstructSignatures().cend(),
+    auto res = std::find_if(superType->ConstructSignatures().cbegin(), superType->ConstructSignatures().cend(),
                             [](const checker::Signature *sig) { return sig->Params().empty(); });
-    if (res == super_type->ConstructSignatures().cend()) {
+    if (res == superType->ConstructSignatures().cend()) {
         return;
     }
 
@@ -57,7 +57,7 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 
 void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block)
 {
-    auto const check_initializer = [](ArenaVector<ir::AstNode *> const &nodes) -> bool {
+    auto const checkInitializer = [](ArenaVector<ir::AstNode *> const &nodes) -> bool {
         for (auto const *const node : nodes) {
             if (node->IsMethodDefinition() && node->AsClassElement()->Key()->IsIdentifier()) {
                 if (node->AsClassElement()->Id()->Name() == compiler::Signatures::INIT_METHOD) {
@@ -68,17 +68,17 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
         return true;
     };
 
-    auto *script_func = etsg->RootNode()->AsScriptFunction();
+    auto *scriptFunc = etsg->RootNode()->AsScriptFunction();
 
-    if (script_func->IsEnum()) {
+    if (scriptFunc->IsEnum()) {
         // NOTE: add enum methods
-    } else if (script_func->IsStaticBlock()) {
-        const auto *class_def = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
+    } else if (scriptFunc->IsStaticBlock()) {
+        const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
 
         // Check if it is the Global class static constructor and the special '_$init$_" method exists
-        bool const compile_initializer = class_def->IsGlobal() ? check_initializer(class_def->Body()) : true;
+        bool const compileInitializer = classDef->IsGlobal() ? checkInitializer(classDef->Body()) : true;
 
-        for (const auto *prop : class_def->Body()) {
+        for (const auto *prop : classDef->Body()) {
             if (!prop->IsClassProperty() || !prop->IsStatic()) {
                 continue;
             }
@@ -86,18 +86,18 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
             // Don't compile variable initializers if they present in '_$init$_" method
             auto *const item = prop->AsClassProperty();
             auto *const value = item->Value();
-            if (value != nullptr && (compile_initializer || item->IsConst() || value->IsArrowFunctionExpression())) {
+            if (value != nullptr && (compileInitializer || item->IsConst() || value->IsArrowFunctionExpression())) {
                 item->Compile(etsg);
             }
         }
-    } else if (script_func->IsConstructor()) {
-        if (script_func->IsImplicitSuperCallNeeded()) {
+    } else if (scriptFunc->IsConstructor()) {
+        if (scriptFunc->IsImplicitSuperCallNeeded()) {
             CallImplicitCtor(etsg);
         }
 
-        const auto *class_def = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
+        const auto *classDef = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
 
-        for (const auto *prop : class_def->Body()) {
+        for (const auto *prop : classDef->Body()) {
             if (!prop->IsClassProperty() || prop->IsStatic()) {
                 continue;
             }
@@ -110,7 +110,7 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
 
     if (statements.empty()) {
         etsg->SetFirstStmt(block);
-        if (script_func->IsConstructor() || script_func->IsStaticBlock() || script_func->IsEntryPoint()) {
+        if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock() || scriptFunc->IsEntryPoint()) {
             ASSERT(etsg->ReturnType() != etsg->Checker()->GlobalBuiltinVoidType());
             etsg->EmitReturnVoid(block);
         } else {
@@ -127,7 +127,7 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
     etsg->CompileStatements(statements);
 
     if (!statements.back()->IsReturnStatement()) {
-        if (script_func->IsConstructor() || script_func->IsStaticBlock() || script_func->IsEntryPoint()) {
+        if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock() || scriptFunc->IsEntryPoint()) {
             ASSERT(etsg->ReturnType() != etsg->Checker()->GlobalBuiltinVoidType());
             etsg->EmitReturnVoid(statements.back());
             return;
@@ -135,10 +135,10 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
 
         ASSERT(!etsg->ReturnType()->IsETSVoidType());
 
-        if (script_func->Signature()->ReturnType() == etsg->Checker()->GlobalBuiltinVoidType()) {
+        if (scriptFunc->Signature()->ReturnType() == etsg->Checker()->GlobalBuiltinVoidType()) {
             etsg->LoadBuiltinVoid(statements.back());
         } else {
-            etsg->LoadDefaultValue(statements.back(), script_func->Signature()->ReturnType());
+            etsg->LoadDefaultValue(statements.back(), scriptFunc->Signature()->ReturnType());
         }
         etsg->ReturnAcc(statements.back());
     }
@@ -152,12 +152,12 @@ void ETSFunction::CompileFunction(ETSGen *etsg)
 void ETSFunction::Compile(ETSGen *etsg)
 {
     FunctionRegScope lrs(etsg);
-    auto *top_scope = etsg->TopScope();
+    auto *topScope = etsg->TopScope();
 
-    if (top_scope->IsFunctionScope()) {
+    if (topScope->IsFunctionScope()) {
         CompileFunction(etsg);
     } else {
-        ASSERT(top_scope->IsGlobalScope());
+        ASSERT(topScope->IsGlobalScope());
         CompileSourceBlock(etsg, etsg->RootNode()->AsBlockStatement());
     }
 

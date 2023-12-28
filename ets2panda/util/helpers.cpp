@@ -88,9 +88,9 @@ util::StringView Helpers::LiteralToPropName(const ir::Expression *lit)
 bool Helpers::IsIndex(double number)
 {
     if (number >= 0 && number < static_cast<double>(INVALID_INDEX)) {
-        auto int_num = static_cast<uint32_t>(number);
+        auto intNum = static_cast<uint32_t>(number);
 
-        if (static_cast<double>(int_num) == number) {
+        if (static_cast<double>(intNum) == number) {
             return true;
         }
     }
@@ -162,44 +162,44 @@ util::StringView Helpers::ToStringView(ArenaAllocator *allocator, int32_t number
 
 bool Helpers::IsRelativePath(const std::string &path)
 {
-    auto path_delimiter = panda::os::file::File::GetPathDelim();
+    auto pathDelimiter = panda::os::file::File::GetPathDelim();
 
-    std::string current_dir_reference = ".";
-    std::string parent_dir_reference = "..";
+    std::string currentDirReference = ".";
+    std::string parentDirReference = "..";
 
-    current_dir_reference.append(path_delimiter);
-    parent_dir_reference.append(path_delimiter);
+    currentDirReference.append(pathDelimiter);
+    parentDirReference.append(pathDelimiter);
 
-    return ((path.find(current_dir_reference) == 0) || (path.find(parent_dir_reference) == 0));
+    return ((path.find(currentDirReference) == 0) || (path.find(parentDirReference) == 0));
 }
 
 std::string Helpers::GetAbsPath(const std::string &path)
 {
-    std::string full_file_path = path;
-    std::string import_extension;
+    std::string fullFilePath = path;
+    std::string importExtension;
     if (!panda::os::file::File::IsRegularFile(path) && (panda::os::GetAbsolutePath(path).empty())) {
-        import_extension = ".ets";
-        full_file_path = path + import_extension;
-        if (!panda::os::file::File::IsRegularFile(full_file_path)) {
-            import_extension = ".ts";
-            full_file_path = path + import_extension;
-            if (!panda::os::file::File::IsRegularFile(full_file_path)) {
+        importExtension = ".ets";
+        fullFilePath = path + importExtension;
+        if (!panda::os::file::File::IsRegularFile(fullFilePath)) {
+            importExtension = ".ts";
+            fullFilePath = path + importExtension;
+            if (!panda::os::file::File::IsRegularFile(fullFilePath)) {
                 return path;
             }
         }
     }
-    std::string abs_file_path = panda::os::GetAbsolutePath(full_file_path);
-    abs_file_path.erase(abs_file_path.find(import_extension), import_extension.size());
-    return abs_file_path;
+    std::string absFilePath = panda::os::GetAbsolutePath(fullFilePath);
+    absFilePath.erase(absFilePath.find(importExtension), importExtension.size());
+    return absFilePath;
 }
 
 bool Helpers::IsRealPath(const std::string &path)
 {
     if (!panda::os::file::File::IsRegularFile(path) && (panda::os::GetAbsolutePath(path).empty())) {
-        auto import_extension = ".ets";
-        if (!panda::os::file::File::IsRegularFile(path + import_extension)) {
-            import_extension = ".ts";
-            if (!panda::os::file::File::IsRegularFile(path + import_extension)) {
+        auto importExtension = ".ets";
+        if (!panda::os::file::File::IsRegularFile(path + importExtension)) {
+            importExtension = ".ts";
+            if (!panda::os::file::File::IsRegularFile(path + importExtension)) {
                 return false;
             }
         }
@@ -381,11 +381,11 @@ bool Helpers::IsSpecialPropertyKey(const ir::Expression *expr)
     return lit->Str().Is("prototype") || lit->Str().Is("constructor");
 }
 
-bool Helpers::IsConstantPropertyKey(const ir::Expression *expr, bool is_computed)
+bool Helpers::IsConstantPropertyKey(const ir::Expression *expr, bool isComputed)
 {
     switch (expr->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            return !is_computed;
+            return !isComputed;
         }
         case ir::AstNodeType::NUMBER_LITERAL:
         case ir::AstNodeType::STRING_LITERAL:
@@ -488,10 +488,10 @@ std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::AstNode *node)
 }
 
 void Helpers::CheckImportedName(ArenaVector<ir::AstNode *> *specifiers, const ir::ImportSpecifier *specifier,
-                                const std::string &file_name)
+                                const std::string &fileName)
 {
-    auto new_ident_name = specifier->Imported()->Name();
-    auto new_alias_name = specifier->Local()->Name();
+    auto newIdentName = specifier->Imported()->Name();
+    auto newAliasName = specifier->Local()->Name();
     std::stringstream message {};
 
     for (auto *it : *specifiers) {
@@ -499,21 +499,21 @@ void Helpers::CheckImportedName(ArenaVector<ir::AstNode *> *specifiers, const ir
             continue;
         }
 
-        auto saved_ident_name = it->AsImportSpecifier()->Imported()->Name();
-        auto saved_alias_name = it->AsImportSpecifier()->Local()->Name();
+        auto savedIdentName = it->AsImportSpecifier()->Imported()->Name();
+        auto savedAliasName = it->AsImportSpecifier()->Local()->Name();
 
-        if (saved_ident_name == saved_alias_name && saved_alias_name == new_ident_name) {
-            message << "Warning: '" << new_ident_name << "' has already imported ";
+        if (savedIdentName == savedAliasName && savedAliasName == newIdentName) {
+            message << "Warning: '" << newIdentName << "' has already imported ";
             break;
         }
-        if (saved_ident_name == new_ident_name && new_alias_name != saved_alias_name) {
-            message << "Warning: '" << new_ident_name << "' is explicitly used with alias several times ";
+        if (savedIdentName == newIdentName && newAliasName != savedAliasName) {
+            message << "Warning: '" << newIdentName << "' is explicitly used with alias several times ";
             break;
         }
     }
 
     if (message.rdbuf()->in_avail() > 0) {
-        std::cerr << message.str() << "[" << file_name.c_str() << ":" << specifier->Start().line << ":"
+        std::cerr << message.str() << "[" << fileName.c_str() << ":" << specifier->Start().line << ":"
                   << specifier->Start().index << "]" << std::endl;
     }
 }
@@ -541,19 +541,19 @@ util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::Scri
 
     switch (parent->Type()) {
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
-            const ir::VariableDeclarator *var_decl = parent->AsVariableDeclarator();
+            const ir::VariableDeclarator *varDecl = parent->AsVariableDeclarator();
 
-            if (var_decl->Id()->IsIdentifier()) {
-                return var_decl->Id()->AsIdentifier()->Name();
+            if (varDecl->Id()->IsIdentifier()) {
+                return varDecl->Id()->AsIdentifier()->Name();
             }
 
             break;
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
-            const ir::MethodDefinition *method_def = parent->AsMethodDefinition();
+            const ir::MethodDefinition *methodDef = parent->AsMethodDefinition();
 
-            if (method_def->Key()->IsIdentifier()) {
-                auto *ident = method_def->Id();
+            if (methodDef->Key()->IsIdentifier()) {
+                auto *ident = methodDef->Id();
 
                 if (!ident->IsPrivateIdent()) {
                     return ident->Name();
@@ -675,8 +675,8 @@ std::string Helpers::CreateEscapedString(const std::string &str)
 
 std::string Helpers::UTF16toUTF8(const char16_t c)
 {
-    const utf::Utf8Char utf8_ch = utf::ConvertUtf16ToUtf8(c, 0, false);
-    return std::string(reinterpret_cast<const char *>(utf8_ch.ch.data()), utf8_ch.n);
+    const utf::Utf8Char utf8Ch = utf::ConvertUtf16ToUtf8(c, 0, false);
+    return std::string(reinterpret_cast<const char *>(utf8Ch.ch.data()), utf8Ch.n);
 }
 
 std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::string_view signature)
@@ -684,11 +684,11 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
     auto idx = signature.find_last_of(':');
     auto stripped = signature.substr(0, idx);
     idx = stripped.find_last_of('.');
-    auto full_class_name = stripped.substr(0, idx);
-    auto method_name = stripped.substr(idx + 1);
-    idx = full_class_name.find_last_of('.');
-    auto class_name = full_class_name.substr(idx + 1);
-    return {class_name, method_name};
+    auto fullClassName = stripped.substr(0, idx);
+    auto methodName = stripped.substr(idx + 1);
+    idx = fullClassName.find_last_of('.');
+    auto className = fullClassName.substr(idx + 1);
+    return {className, methodName};
 }
 
 }  // namespace panda::es2panda::util

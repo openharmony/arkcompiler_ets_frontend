@@ -18,14 +18,14 @@
 #include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::compiler {
-TargetTypeContext::TargetTypeContext(ETSGen *etsg, const checker::Type *target_type)
-    : etsg_(etsg), prev_(etsg->target_type_)
+TargetTypeContext::TargetTypeContext(ETSGen *etsg, const checker::Type *targetType)
+    : etsg_(etsg), prev_(etsg->targetType_)
 {
-    etsg->target_type_ = target_type;
+    etsg->targetType_ = targetType;
 }
 
 TargetTypeContext::~TargetTypeContext()
 {
-    etsg_->target_type_ = prev_;
+    etsg_->targetType_ = prev_;
 }
 }  // namespace panda::es2panda::compiler

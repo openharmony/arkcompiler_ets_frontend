@@ -35,10 +35,10 @@ template <typename CodeGen>
 class SwitchBuilder {
 public:
     SwitchBuilder(CodeGen *cg, const ir::SwitchStatement *stmt)
-        : cg_(cg), end_(cg->AllocLabel()), label_ctx_(cg, LabelTarget(end_, LabelTarget::BREAK_LABEL)), stmt_(stmt)
+        : cg_(cg), end_(cg->AllocLabel()), labelCtx_(cg, LabelTarget(end_, LabelTarget::BREAK_LABEL)), stmt_(stmt)
     {
         for (size_t i = 0; i < stmt_->Cases().size(); i++) {
-            case_labels_.push_back(cg_->AllocLabel());
+            caseLabels_.push_back(cg_->AllocLabel());
         }
     }
 
@@ -51,7 +51,7 @@ public:
 
     void SetCaseTarget(uint32_t index)
     {
-        cg_->SetLabel(stmt_->Cases()[index], case_labels_[index]);
+        cg_->SetLabel(stmt_->Cases()[index], caseLabels_[index]);
     }
 
     void CompileTagOfSwitch(const VReg tag)
@@ -72,21 +72,21 @@ public:
 
     void JumpIfCase(const VReg tag, const uint32_t index)
     {
-        const auto *const case_target = stmt_->Cases()[index];
-        case_target->Test()->Compile(cg_);
+        const auto *const caseTarget = stmt_->Cases()[index];
+        caseTarget->Test()->Compile(cg_);
 
         if constexpr (std::is_same_v<CodeGen, PandaGen>) {
-            cg_->Condition(case_target, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, tag, case_labels_[index]);
+            cg_->Condition(caseTarget, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, tag, caseLabels_[index]);
         } else {
             const compiler::TargetTypeContext ttctx(cg_, cg_->GetVRegType(tag));
-            cg_->Condition(case_target, lexer::TokenType::PUNCTUATOR_NOT_EQUAL, tag, case_labels_[index]);
+            cg_->Condition(caseTarget, lexer::TokenType::PUNCTUATOR_NOT_EQUAL, tag, caseLabels_[index]);
         }
     }
 
-    void JumpToDefault(uint32_t default_index)
+    void JumpToDefault(uint32_t defaultIndex)
     {
-        const ir::SwitchCaseStatement *default_target = stmt_->Cases()[default_index];
-        cg_->Branch(default_target, case_labels_[default_index]);
+        const ir::SwitchCaseStatement *defaultTarget = stmt_->Cases()[defaultIndex];
+        cg_->Branch(defaultTarget, caseLabels_[defaultIndex]);
     }
 
     void Break()
@@ -97,9 +97,9 @@ public:
 private:
     CodeGen *cg_;
     Label *end_;
-    LabelContext label_ctx_;
+    LabelContext labelCtx_;
     const ir::SwitchStatement *stmt_;
-    std::vector<Label *> case_labels_;
+    std::vector<Label *> caseLabels_;
 };
 }  // namespace panda::es2panda::compiler
 

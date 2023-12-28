@@ -23,14 +23,14 @@ enum class TSTupleKind { NONE, NAMED, DEFAULT };
 
 class TSTupleType : public TypeNode {
 public:
-    explicit TSTupleType(ArenaVector<TypeNode *> &&element_types)
-        : TypeNode(AstNodeType::TS_TUPLE_TYPE), element_types_(std::move(element_types))
+    explicit TSTupleType(ArenaVector<TypeNode *> &&elementTypes)
+        : TypeNode(AstNodeType::TS_TUPLE_TYPE), elementTypes_(std::move(elementTypes))
     {
     }
 
     const ArenaVector<TypeNode *> &ElementType() const
     {
-        return element_types_;
+        return elementTypes_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -49,7 +49,7 @@ public:
     }
 
 private:
-    ArenaVector<TypeNode *> element_types_;
+    ArenaVector<TypeNode *> elementTypes_;
 };
 }  // namespace panda::es2panda::ir
 

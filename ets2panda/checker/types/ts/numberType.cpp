@@ -36,10 +36,10 @@ void NumberType::AssignmentTarget(TypeRelation *relation, Type *source)
     if (source->IsNumberLiteralType()) {
         relation->Result(true);
     } else if (source->IsEnumType()) {
-        const EnumType *source_enum_type = source->AsEnumType();
-        const varbinder::EnumVariable *enum_var = source_enum_type->EnumVar();
+        const EnumType *sourceEnumType = source->AsEnumType();
+        const varbinder::EnumVariable *enumVar = sourceEnumType->EnumVar();
 
-        if (std::holds_alternative<double>(enum_var->Value())) {
+        if (std::holds_alternative<double>(enumVar->Value())) {
             relation->Result(true);
         }
     }
@@ -51,7 +51,7 @@ TypeFacts NumberType::GetTypeFacts() const
 }
 
 Type *NumberType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                              [[maybe_unused]] GlobalTypesHolder *global_types)
+                              [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
 }

@@ -23,19 +23,19 @@ namespace panda::es2panda::checker {
 class ETSTypeParameter : public Type {
 public:
     explicit ETSTypeParameter() : Type(TypeFlag::ETS_TYPE_PARAMETER) {}
-    explicit ETSTypeParameter(Type *default_type, Type *constraint_type)
-        : Type(TypeFlag::ETS_TYPE_PARAMETER), default_(default_type), constraint_(constraint_type)
+    explicit ETSTypeParameter(Type *defaultType, Type *constraintType)
+        : Type(TypeFlag::ETS_TYPE_PARAMETER), default_(defaultType), constraint_(constraintType)
     {
     }
 
     void SetDeclNode(ir::TSTypeParameter *decl)
     {
-        decl_node_ = decl;
+        declNode_ = decl;
     }
 
     ir::TSTypeParameter *GetDeclNode() const
     {
-        return decl_node_;
+        return declNode_;
     }
 
     ETSTypeParameter *GetOriginal() const;
@@ -74,7 +74,7 @@ public:
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
 
     bool ConstraintIsSubtypeOf(TypeRelation *relation, Type *target)
@@ -91,7 +91,7 @@ public:
     void ToDebugInfoType(std::stringstream &ss) const override;
 
 private:
-    ir::TSTypeParameter *decl_node_ {};
+    ir::TSTypeParameter *declNode_ {};
     Type *default_ {};
     Type *constraint_ {};
 };

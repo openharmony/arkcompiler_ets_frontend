@@ -43,7 +43,7 @@ protected:
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     CodeGen *cg_;
-    uint32_t reg_base_;
+    uint32_t regBase_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -60,7 +60,7 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    varbinder::Scope *prev_scope_ {};
+    varbinder::Scope *prevScope_ {};
 };
 
 class LoopRegScope : public RegScope {
@@ -74,7 +74,7 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    varbinder::Scope *prev_scope_ {};
+    varbinder::Scope *prevScope_ {};
 };
 
 class FunctionRegScope : public RegScope {
@@ -91,7 +91,7 @@ public:
 private:
     using StoreParamCb = std::function<void(varbinder::LocalVariable *, VReg)>;
     void InitializeParams(const StoreParamCb &cb);
-    EnvScope *env_scope_ {};
+    EnvScope *envScope_ {};
 };
 }  // namespace panda::es2panda::compiler
 

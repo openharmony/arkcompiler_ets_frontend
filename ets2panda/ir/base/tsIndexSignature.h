@@ -33,10 +33,10 @@ public:
     NO_COPY_SEMANTIC(TSIndexSignature);
     NO_MOVE_SEMANTIC(TSIndexSignature);
 
-    explicit TSIndexSignature(Expression *const param, TypeNode *const type_annotation, bool const readonly)
+    explicit TSIndexSignature(Expression *const param, TypeNode *const typeAnnotation, bool const readonly)
         : TypedAstNode(AstNodeType::TS_INDEX_SIGNATURE),
           param_(param),
-          type_annotation_(type_annotation),
+          typeAnnotation_(typeAnnotation),
           readonly_(readonly)
     {
     }
@@ -50,7 +50,7 @@ public:
 
     [[nodiscard]] const TypeNode *TypeAnnotation() const noexcept
     {
-        return type_annotation_;
+        return typeAnnotation_;
     }
 
     [[nodiscard]] bool Readonly() const noexcept
@@ -80,7 +80,7 @@ public:
 
 private:
     Expression *param_;
-    TypeNode *type_annotation_;
+    TypeNode *typeAnnotation_;
     bool readonly_;
 };
 }  // namespace panda::es2panda::ir

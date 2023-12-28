@@ -34,9 +34,9 @@ void EnumLiteralType::Identical([[maybe_unused]] TypeRelation *relation, [[maybe
 void EnumLiteralType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsEnumType()) {
-        const EnumType *source_enum_type = source->AsEnumType();
+        const EnumType *sourceEnumType = source->AsEnumType();
 
-        if (variable_ == source_enum_type->EnumVar()) {
+        if (variable_ == sourceEnumType->EnumVar()) {
             relation->Result(true);
         }
     } else if (source->HasTypeFlag(TypeFlag::NUMBER_LIKE)) {
@@ -50,7 +50,7 @@ TypeFacts EnumLiteralType::GetTypeFacts() const
 }
 
 Type *EnumLiteralType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                                   [[maybe_unused]] GlobalTypesHolder *global_types)
+                                   [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return allocator->New<EnumLiteralType>(name_, scope_, kind_);
 }

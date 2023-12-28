@@ -45,64 +45,63 @@ std::string_view UnionLowering::Name()
 ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
 {
     // Create the name for the synthetic class node
-    util::UString union_field_class_name(util::StringView(panda_file::GetDummyClassName()), checker->Allocator());
-    varbinder::Variable *found_var = nullptr;
-    if ((found_var = checker->Scope()->FindLocal(union_field_class_name.View(),
-                                                 varbinder::ResolveBindingOptions::BINDINGS)) != nullptr) {
-        return found_var->Declaration()->Node()->AsClassDeclaration()->Definition();
+    util::UString unionFieldClassName(util::StringView(panda_file::GetDummyClassName()), checker->Allocator());
+    varbinder::Variable *foundVar = nullptr;
+    if ((foundVar = checker->Scope()->FindLocal(unionFieldClassName.View(),
+                                                varbinder::ResolveBindingOptions::BINDINGS)) != nullptr) {
+        return foundVar->Declaration()->Node()->AsClassDeclaration()->Definition();
     }
-    auto *ident = checker->AllocNode<ir::Identifier>(union_field_class_name.View(), checker->Allocator());
+    auto *ident = checker->AllocNode<ir::Identifier>(unionFieldClassName.View(), checker->Allocator());
     auto [decl, var] = varbinder->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
     ident->SetVariable(var);
 
-    auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
-    auto *class_def =
+    auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
+    auto *classDef =
         checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
                                                 ir::ModifierFlags::NONE, Language(Language::Id::ETS));
-    class_def->SetScope(class_ctx.GetScope());
-    auto *class_decl = checker->AllocNode<ir::ClassDeclaration>(class_def, checker->Allocator());
-    class_def->Scope()->BindNode(class_decl);
-    class_def->SetTsType(checker->GlobalETSObjectType());
-    decl->BindNode(class_decl);
-    var->SetScope(class_def->Scope());
+    classDef->SetScope(classCtx.GetScope());
+    auto *classDecl = checker->AllocNode<ir::ClassDeclaration>(classDef, checker->Allocator());
+    classDef->Scope()->BindNode(classDecl);
+    classDef->SetTsType(checker->GlobalETSObjectType());
+    decl->BindNode(classDecl);
+    var->SetScope(classDef->Scope());
 
-    varbinder->AsETSBinder()->BuildClassDefinition(class_def);
-    return class_def;
+    varbinder->AsETSBinder()->BuildClassDefinition(classDef);
+    return classDef;
 }
 
 varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
-                                                        checker::Type *field_type, const util::StringView &prop_name)
+                                                        checker::Type *fieldType, const util::StringView &propName)
 {
     auto *const allocator = checker->Allocator();
-    auto *const dummy_class = GetUnionFieldClass(checker, varbinder);
-    auto *class_scope = dummy_class->Scope()->AsClassScope();
+    auto *const dummyClass = GetUnionFieldClass(checker, varbinder);
+    auto *classScope = dummyClass->Scope()->AsClassScope();
 
     // Enter the union filed class instance field scope
-    auto field_ctx =
-        varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, class_scope->InstanceFieldScope());
+    auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, classScope->InstanceFieldScope());
 
-    if (auto *var = class_scope->FindLocal(prop_name, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
+    if (auto *var = classScope->FindLocal(propName, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
         return var->AsLocalVariable();
     }
 
     // Create field name for synthetic class
-    auto *field_ident = allocator->New<ir::Identifier>(prop_name, allocator);
+    auto *fieldIdent = allocator->New<ir::Identifier>(propName, allocator);
 
     // Create the synthetic class property node
     auto *field =
-        allocator->New<ir::ClassProperty>(field_ident, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
+        allocator->New<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
 
     // Add the declaration to the scope
-    auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(field_ident->Start(), field_ident->Name());
+    auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
-    var->SetTsType(field_type);
-    field_ident->SetVariable(var);
-    field->SetTsType(field_type);
+    var->SetTsType(fieldType);
+    fieldIdent->SetVariable(var);
+    field->SetTsType(fieldType);
     decl->BindNode(field);
 
-    ArenaVector<ir::AstNode *> field_decl {allocator->Adapter()};
-    field_decl.push_back(field);
-    dummy_class->AddProperties(std::move(field_decl));
+    ArenaVector<ir::AstNode *> fieldDecl {allocator->Adapter()};
+    fieldDecl.push_back(field);
+    dummyClass->AddProperties(std::move(fieldDecl));
     return var->AsLocalVariable();
 }
 
@@ -114,15 +113,15 @@ void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinde
     ASSERT(expr->PropVar() != nullptr);
 }
 
-ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type *const opaque_type,
+ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type *const opaqueType,
                                     ir::Expression *const node, ir::AstNode *const parent)
 {
-    auto *const type_node = checker->AllocNode<ir::OpaqueTypeNode>(opaque_type);
-    auto *const as_expression = checker->AllocNode<ir::TSAsExpression>(node, type_node, false);
-    as_expression->SetParent(parent);
-    node->SetParent(as_expression);
-    as_expression->Check(checker);
-    return as_expression;
+    auto *const typeNode = checker->AllocNode<ir::OpaqueTypeNode>(opaqueType);
+    auto *const asExpression = checker->AllocNode<ir::TSAsExpression>(node, typeNode, false);
+    asExpression->SetParent(parent);
+    node->SetParent(asExpression);
+    asExpression->Check(checker);
+    return asExpression;
 }
 
 /*
@@ -131,69 +130,67 @@ ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type 
  *      where (ref) is some unboxable type from union constituent types.
  *  Finally, `(union) as (prim)` expression replaces union_node that came above.
  */
-ir::TSAsExpression *UnionCastToPrimitive(checker::ETSChecker *checker, checker::ETSObjectType *unboxable_ref,
-                                         checker::Type *unboxed_prim, ir::Expression *union_node)
+ir::TSAsExpression *UnionCastToPrimitive(checker::ETSChecker *checker, checker::ETSObjectType *unboxableRef,
+                                         checker::Type *unboxedPrim, ir::Expression *unionNode)
 {
-    auto *const union_as_ref_expression = GenAsExpression(checker, unboxable_ref, union_node, nullptr);
-    union_as_ref_expression->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxed_prim));
-    union_node->SetParent(union_as_ref_expression);
+    auto *const unionAsRefExpression = GenAsExpression(checker, unboxableRef, unionNode, nullptr);
+    unionAsRefExpression->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedPrim));
+    unionNode->SetParent(unionAsRefExpression);
 
-    auto *const ref_as_prim_expression =
-        GenAsExpression(checker, unboxed_prim, union_as_ref_expression, union_node->Parent());
-    union_as_ref_expression->SetParent(ref_as_prim_expression);
+    auto *const refAsPrimExpression = GenAsExpression(checker, unboxedPrim, unionAsRefExpression, unionNode->Parent());
+    unionAsRefExpression->SetParent(refAsPrimExpression);
 
-    return ref_as_prim_expression;
+    return refAsPrimExpression;
 }
 
 ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *checker, ir::TSAsExpression *expr)
 {
-    auto *const union_type = expr->Expr()->TsType()->AsETSUnionType();
-    auto *source_type = union_type->FindExactOrBoxedType(checker, expr->TsType());
-    if (source_type == nullptr) {
-        source_type = union_type->AsETSUnionType()->FindTypeIsCastableToSomeType(expr->Expr(), checker->Relation(),
-                                                                                 expr->TsType());
+    auto *const unionType = expr->Expr()->TsType()->AsETSUnionType();
+    auto *sourceType = unionType->FindExactOrBoxedType(checker, expr->TsType());
+    if (sourceType == nullptr) {
+        sourceType = unionType->AsETSUnionType()->FindTypeIsCastableToSomeType(expr->Expr(), checker->Relation(),
+                                                                               expr->TsType());
     }
-    if (source_type != nullptr && expr->Expr()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
+    if (sourceType != nullptr && expr->Expr()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
         if (expr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-            auto *const boxed_expr_type = checker::BoxingConverter::ETSTypeFromSource(checker, expr->TsType());
-            auto *const as_expr = GenAsExpression(checker, boxed_expr_type, expr->Expr(), expr);
-            as_expr->SetBoxingUnboxingFlags(expr->Expr()->GetBoxingUnboxingFlags());
+            auto *const boxedExprType = checker::BoxingConverter::ETSTypeFromSource(checker, expr->TsType());
+            auto *const asExpr = GenAsExpression(checker, boxedExprType, expr->Expr(), expr);
+            asExpr->SetBoxingUnboxingFlags(expr->Expr()->GetBoxingUnboxingFlags());
             expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
-            expr->SetExpr(as_expr);
+            expr->SetExpr(asExpr);
         }
         return expr;
     }
-    auto *const unboxable_union_type = source_type != nullptr ? source_type : union_type->FindUnboxableType();
-    auto *const unboxed_union_type = checker->ETSBuiltinTypeAsPrimitiveType(unboxable_union_type);
-    expr->SetExpr(
-        UnionCastToPrimitive(checker, unboxable_union_type->AsETSObjectType(), unboxed_union_type, expr->Expr()));
+    auto *const unboxableUnionType = sourceType != nullptr ? sourceType : unionType->FindUnboxableType();
+    auto *const unboxedUnionType = checker->ETSBuiltinTypeAsPrimitiveType(unboxableUnionType);
+    expr->SetExpr(UnionCastToPrimitive(checker, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr()));
     return expr;
 }
 
-ir::BinaryExpression *GenInstanceofExpr(checker::ETSChecker *checker, ir::Expression *union_node,
-                                        checker::Type *constituent_type)
+ir::BinaryExpression *GenInstanceofExpr(checker::ETSChecker *checker, ir::Expression *unionNode,
+                                        checker::Type *constituentType)
 {
-    auto *const lhs_expr = union_node->Clone(checker->Allocator())->AsExpression();
-    lhs_expr->Check(checker);
-    lhs_expr->SetBoxingUnboxingFlags(union_node->GetBoxingUnboxingFlags());
-    auto *rhs_type = constituent_type;
-    if (!constituent_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-        checker->Relation()->SetNode(union_node);
-        rhs_type = checker::conversion::Boxing(checker->Relation(), constituent_type);
+    auto *const lhsExpr = unionNode->Clone(checker->Allocator())->AsExpression();
+    lhsExpr->Check(checker);
+    lhsExpr->SetBoxingUnboxingFlags(unionNode->GetBoxingUnboxingFlags());
+    auto *rhsType = constituentType;
+    if (!constituentType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        checker->Relation()->SetNode(unionNode);
+        rhsType = checker::conversion::Boxing(checker->Relation(), constituentType);
         checker->Relation()->SetNode(nullptr);
     }
-    auto *const rhs_expr =
-        checker->Allocator()->New<ir::Identifier>(rhs_type->AsETSObjectType()->Name(), checker->Allocator());
-    auto *const instanceof_expr =
-        checker->Allocator()->New<ir::BinaryExpression>(lhs_expr, rhs_expr, lexer::TokenType::KEYW_INSTANCEOF);
-    lhs_expr->SetParent(instanceof_expr);
-    rhs_expr->SetParent(instanceof_expr);
-    auto rhs_var = NearestScope(union_node)->Find(rhs_expr->Name());
-    rhs_expr->SetVariable(rhs_var.variable);
-    rhs_expr->SetTsType(rhs_var.variable->TsType());
-    instanceof_expr->SetOperationType(checker->GlobalETSObjectType());
-    instanceof_expr->SetTsType(checker->GlobalETSBooleanType());
-    return instanceof_expr;
+    auto *const rhsExpr =
+        checker->Allocator()->New<ir::Identifier>(rhsType->AsETSObjectType()->Name(), checker->Allocator());
+    auto *const instanceofExpr =
+        checker->Allocator()->New<ir::BinaryExpression>(lhsExpr, rhsExpr, lexer::TokenType::KEYW_INSTANCEOF);
+    lhsExpr->SetParent(instanceofExpr);
+    rhsExpr->SetParent(instanceofExpr);
+    auto rhsVar = NearestScope(unionNode)->Find(rhsExpr->Name());
+    rhsExpr->SetVariable(rhsVar.variable);
+    rhsExpr->SetTsType(rhsVar.variable->TsType());
+    instanceofExpr->SetOperationType(checker->GlobalETSObjectType());
+    instanceofExpr->SetTsType(checker->GlobalETSBooleanType());
+    return instanceofExpr;
 }
 
 ir::VariableDeclaration *GenVariableDeclForBinaryExpr(checker::ETSChecker *checker, varbinder::Scope *scope,
@@ -201,84 +198,83 @@ ir::VariableDeclaration *GenVariableDeclForBinaryExpr(checker::ETSChecker *check
 {
     ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL);
-    auto *var_id = Gensym(checker->Allocator());
-    auto *var = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(checker->Allocator(), var_id->Name(),
+    auto *varId = Gensym(checker->Allocator());
+    auto *var = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(checker->Allocator(), varId->Name(),
                                                                              varbinder::VariableFlags::LOCAL);
     var->SetTsType(checker->GlobalETSBooleanType());
-    var_id->SetVariable(var);
-    var_id->SetTsType(var->TsType());
+    varId->SetVariable(var);
+    varId->SetTsType(var->TsType());
 
-    auto declarator = checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, var_id);
+    auto declarator = checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, varId);
     ArenaVector<ir::VariableDeclarator *> declarators(checker->Allocator()->Adapter());
     declarators.push_back(declarator);
 
-    auto var_kind = ir::VariableDeclaration::VariableDeclarationKind::LET;
-    auto *binary_var_decl =
-        checker->AllocNode<ir::VariableDeclaration>(var_kind, checker->Allocator(), std::move(declarators), false);
-    binary_var_decl->SetRange({expr->Start(), expr->End()});
-    return binary_var_decl;
+    auto varKind = ir::VariableDeclaration::VariableDeclarationKind::LET;
+    auto *binaryVarDecl =
+        checker->AllocNode<ir::VariableDeclaration>(varKind, checker->Allocator(), std::move(declarators), false);
+    binaryVarDecl->SetRange({expr->Start(), expr->End()});
+    return binaryVarDecl;
 }
 
-ir::ExpressionStatement *GenExpressionStmtWithAssignment(checker::ETSChecker *checker, ir::Identifier *var_decl_id,
+ir::ExpressionStatement *GenExpressionStmtWithAssignment(checker::ETSChecker *checker, ir::Identifier *varDeclId,
                                                          ir::Expression *expr)
 {
-    auto *assignment_for_binary =
-        checker->AllocNode<ir::AssignmentExpression>(var_decl_id, expr, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    assignment_for_binary->SetTsType(expr->TsType());
-    return checker->AllocNode<ir::ExpressionStatement>(assignment_for_binary);
+    auto *assignmentForBinary =
+        checker->AllocNode<ir::AssignmentExpression>(varDeclId, expr, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    assignmentForBinary->SetTsType(expr->TsType());
+    return checker->AllocNode<ir::ExpressionStatement>(assignmentForBinary);
 }
 
-ir::BlockStatement *GenBlockStmtForAssignmentBinary(checker::ETSChecker *checker, ir::Identifier *var_decl_id,
+ir::BlockStatement *GenBlockStmtForAssignmentBinary(checker::ETSChecker *checker, ir::Identifier *varDeclId,
                                                     ir::Expression *expr)
 {
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(checker->VarBinder());
+    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(checker->VarBinder());
     ArenaVector<ir::Statement *> stmts(checker->Allocator()->Adapter());
-    auto *stmt = GenExpressionStmtWithAssignment(checker, var_decl_id, expr);
+    auto *stmt = GenExpressionStmtWithAssignment(checker, varDeclId, expr);
     stmts.push_back(stmt);
-    auto *const local_block_stmt = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
-    local_block_stmt->SetScope(local_ctx.GetScope());
-    stmt->SetParent(local_block_stmt);
-    local_block_stmt->SetRange(stmt->Range());
-    local_ctx.GetScope()->BindNode(local_block_stmt);
-    return local_block_stmt;
+    auto *const localBlockStmt = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
+    localBlockStmt->SetScope(localCtx.GetScope());
+    stmt->SetParent(localBlockStmt);
+    localBlockStmt->SetRange(stmt->Range());
+    localCtx.GetScope()->BindNode(localBlockStmt);
+    return localBlockStmt;
 }
 
-ir::Expression *SetBoxFlagOrGenAsExpression(checker::ETSChecker *checker, checker::Type *constituent_type,
-                                            ir::Expression *other_node)
+ir::Expression *SetBoxFlagOrGenAsExpression(checker::ETSChecker *checker, checker::Type *constituentType,
+                                            ir::Expression *otherNode)
 {
-    if (constituent_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE) &&
-        !other_node->IsETSUnionType() && other_node->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        auto *unboxed_constituent_type = checker->ETSBuiltinTypeAsPrimitiveType(constituent_type);
-        if (unboxed_constituent_type != other_node->TsType()) {
-            auto *const prim_as_expression =
-                GenAsExpression(checker, unboxed_constituent_type, other_node, other_node->Parent());
-            prim_as_expression->SetBoxingUnboxingFlags(checker->GetBoxingFlag(constituent_type));
-            return prim_as_expression;
+    if (constituentType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE) &&
+        !otherNode->IsETSUnionType() && otherNode->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        auto *unboxedConstituentType = checker->ETSBuiltinTypeAsPrimitiveType(constituentType);
+        if (unboxedConstituentType != otherNode->TsType()) {
+            auto *const primAsExpression =
+                GenAsExpression(checker, unboxedConstituentType, otherNode, otherNode->Parent());
+            primAsExpression->SetBoxingUnboxingFlags(checker->GetBoxingFlag(constituentType));
+            return primAsExpression;
         }
-        return other_node;
+        return otherNode;
     }
-    if (other_node->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        other_node->SetBoxingUnboxingFlags(
-            checker->GetBoxingFlag(checker::BoxingConverter::ETSTypeFromSource(checker, other_node->TsType())));
+    if (otherNode->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        otherNode->SetBoxingUnboxingFlags(
+            checker->GetBoxingFlag(checker::BoxingConverter::ETSTypeFromSource(checker, otherNode->TsType())));
     }
-    return other_node;
+    return otherNode;
 }
 
 ir::Expression *ProcessOperandsInBinaryExpr(checker::ETSChecker *checker, ir::BinaryExpression *expr,
-                                            checker::Type *constituent_type)
+                                            checker::Type *constituentType)
 {
     ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL);
-    bool is_lhs_union;
-    ir::Expression *union_node =
-        (is_lhs_union = expr->Left()->TsType()->IsETSUnionType()) ? expr->Left() : expr->Right();
-    auto *const as_expression = GenAsExpression(checker, constituent_type, union_node, expr);
-    if (is_lhs_union) {
-        expr->SetLeft(as_expression);
-        expr->SetRight(SetBoxFlagOrGenAsExpression(checker, constituent_type, expr->Right()));
+    bool isLhsUnion = expr->Left()->TsType()->IsETSUnionType();
+    ir::Expression *unionNode = isLhsUnion ? expr->Left() : expr->Right();
+    auto *const asExpression = GenAsExpression(checker, constituentType, unionNode, expr);
+    if (isLhsUnion) {
+        expr->SetLeft(asExpression);
+        expr->SetRight(SetBoxFlagOrGenAsExpression(checker, constituentType, expr->Right()));
     } else {
-        expr->SetRight(as_expression);
-        expr->SetLeft(SetBoxFlagOrGenAsExpression(checker, constituent_type, expr->Left()));
+        expr->SetRight(asExpression);
+        expr->SetLeft(SetBoxFlagOrGenAsExpression(checker, constituentType, expr->Left()));
     }
     expr->SetOperationType(checker->GlobalETSObjectType());
     expr->SetTsType(checker->GlobalETSBooleanType());
@@ -295,8 +291,8 @@ ir::Statement *FindStatementFromNode(ir::Expression *expr)
     return node->AsStatement();
 }
 
-void InsertInstanceofTreeBeforeStmt(ir::Statement *stmt, ir::VariableDeclaration *binary_var_decl,
-                                    ir::Statement *instanceof_tree)
+void InsertInstanceofTreeBeforeStmt(ir::Statement *stmt, ir::VariableDeclaration *binaryVarDecl,
+                                    ir::Statement *instanceofTree)
 {
     if (stmt->IsVariableDeclarator()) {
         ASSERT(stmt->Parent()->IsVariableDeclaration());
@@ -304,77 +300,77 @@ void InsertInstanceofTreeBeforeStmt(ir::Statement *stmt, ir::VariableDeclaration
     }
     ASSERT(stmt->Parent()->IsBlockStatement());
     auto *block = stmt->Parent()->AsBlockStatement();
-    binary_var_decl->SetParent(block);
-    instanceof_tree->SetParent(block);
-    auto it_stmt = std::find(block->Statements().begin(), block->Statements().end(), stmt);
-    block->Statements().insert(it_stmt, {binary_var_decl, instanceof_tree});
+    binaryVarDecl->SetParent(block);
+    instanceofTree->SetParent(block);
+    auto itStmt = std::find(block->Statements().begin(), block->Statements().end(), stmt);
+    block->Statements().insert(itStmt, {binaryVarDecl, instanceofTree});
 }
 
-ir::BlockStatement *ReplaceBinaryExprInStmt(checker::ETSChecker *checker, ir::Expression *union_node,
+ir::BlockStatement *ReplaceBinaryExprInStmt(checker::ETSChecker *checker, ir::Expression *unionNode,
                                             ir::BlockStatement *block, ir::BinaryExpression *expr)
 {
     auto *stmt = FindStatementFromNode(expr);
     ASSERT(stmt->IsVariableDeclarator() || block == stmt->Parent());  // statement with union
-    auto *const binary_var_decl = GenVariableDeclForBinaryExpr(checker, NearestScope(stmt), expr);
-    auto *const var_decl_id = binary_var_decl->Declarators().front()->Id();  // only one declarator was generated
-    ir::IfStatement *instanceof_tree = nullptr;
-    for (auto *u_type : union_node->TsType()->AsETSUnionType()->ConstituentTypes()) {
-        auto *const test = GenInstanceofExpr(checker, union_node, u_type);
-        auto *cloned_binary = expr->Clone(checker->Allocator(), expr->Parent())->AsBinaryExpression();
-        cloned_binary->Check(checker);
+    auto *const binaryVarDecl = GenVariableDeclForBinaryExpr(checker, NearestScope(stmt), expr);
+    auto *const varDeclId = binaryVarDecl->Declarators().front()->Id();  // only one declarator was generated
+    ir::IfStatement *instanceofTree = nullptr;
+    for (auto *uType : unionNode->TsType()->AsETSUnionType()->ConstituentTypes()) {
+        auto *const test = GenInstanceofExpr(checker, unionNode, uType);
+        auto *clonedBinary = expr->Clone(checker->Allocator(), expr->Parent())->AsBinaryExpression();
+        clonedBinary->Check(checker);
         auto *const consequent = GenBlockStmtForAssignmentBinary(
-            checker, var_decl_id->AsIdentifier(), ProcessOperandsInBinaryExpr(checker, cloned_binary, u_type));
-        instanceof_tree = checker->Allocator()->New<ir::IfStatement>(test, consequent, instanceof_tree);
-        test->SetParent(instanceof_tree);
-        consequent->SetParent(instanceof_tree);
-        if (instanceof_tree->Alternate() != nullptr) {
-            instanceof_tree->Alternate()->SetParent(instanceof_tree);
+            checker, varDeclId->AsIdentifier(), ProcessOperandsInBinaryExpr(checker, clonedBinary, uType));
+        instanceofTree = checker->Allocator()->New<ir::IfStatement>(test, consequent, instanceofTree);
+        test->SetParent(instanceofTree);
+        consequent->SetParent(instanceofTree);
+        if (instanceofTree->Alternate() != nullptr) {
+            instanceofTree->Alternate()->SetParent(instanceofTree);
         }
     }
-    ASSERT(instanceof_tree != nullptr);
+    ASSERT(instanceofTree != nullptr);
     // Replacing a binary expression with an identifier
     // that was set in one of the branches of the `instanceof_tree` tree
-    stmt->TransformChildrenRecursively([var_decl_id](ir::AstNode *ast) -> ir::AstNode * {
+    stmt->TransformChildrenRecursively([varDeclId](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsBinaryExpression() && ast->AsBinaryExpression()->OperationType() != nullptr &&
             ast->AsBinaryExpression()->OperationType()->IsETSUnionType()) {
-            return var_decl_id;
+            return varDeclId;
         }
 
         return ast;
     });
-    InsertInstanceofTreeBeforeStmt(stmt, binary_var_decl, instanceof_tree);
+    InsertInstanceofTreeBeforeStmt(stmt, binaryVarDecl, instanceofTree);
     return block;
 }
 
 ir::BlockStatement *HandleBlockWithBinaryAndUnion(checker::ETSChecker *checker, ir::BlockStatement *block,
-                                                  ir::BinaryExpression *bin_expr)
+                                                  ir::BinaryExpression *binExpr)
 {
-    if (bin_expr->OperatorType() != lexer::TokenType::PUNCTUATOR_EQUAL &&
-        bin_expr->OperatorType() != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
+    if (binExpr->OperatorType() != lexer::TokenType::PUNCTUATOR_EQUAL &&
+        binExpr->OperatorType() != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
         checker->ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.",
-                                bin_expr->Start());
+                                binExpr->Start());
     }
-    ir::Expression *union_node = bin_expr->Left()->TsType()->IsETSUnionType() ? bin_expr->Left() : bin_expr->Right();
-    return ReplaceBinaryExprInStmt(checker, union_node, block, bin_expr);
+    ir::Expression *unionNode = binExpr->Left()->TsType()->IsETSUnionType() ? binExpr->Left() : binExpr->Right();
+    return ReplaceBinaryExprInStmt(checker, unionNode, block, binExpr);
 }
 
 ir::BlockStatement *HandleBlockWithBinaryAndUnions(checker::ETSChecker *checker, ir::BlockStatement *block,
-                                                   const ir::NodePredicate &handle_binary)
+                                                   const ir::NodePredicate &handleBinary)
 {
-    ir::BlockStatement *modified_ast_block = block;
-    while (modified_ast_block->IsAnyChild(handle_binary)) {
-        modified_ast_block = HandleBlockWithBinaryAndUnion(
-            checker, modified_ast_block, modified_ast_block->FindChild(handle_binary)->AsBinaryExpression());
+    ir::BlockStatement *modifiedAstBlock = block;
+    while (modifiedAstBlock->IsAnyChild(handleBinary)) {
+        modifiedAstBlock = HandleBlockWithBinaryAndUnion(
+            checker, modifiedAstBlock, modifiedAstBlock->FindChild(handleBinary)->AsBinaryExpression());
     }
-    return modified_ast_block;
+    return modifiedAstBlock;
 }
 
 bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (auto *ext_prog : ext_programs) {
-            Perform(ctx, ext_prog);
+        for (auto *extProg : ext_programs) {
+            Perform(ctx, extProg);
         }
     }
 
@@ -394,12 +390,12 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
             return HandleUnionCastToPrimitive(checker, ast->AsTSAsExpression());
         }
 
-        auto handle_binary = [](const ir::AstNode *ast_node) {
-            return ast_node->IsBinaryExpression() && ast_node->AsBinaryExpression()->OperationType() != nullptr &&
-                   ast_node->AsBinaryExpression()->OperationType()->IsETSUnionType();
+        auto handleBinary = [](const ir::AstNode *astNode) {
+            return astNode->IsBinaryExpression() && astNode->AsBinaryExpression()->OperationType() != nullptr &&
+                   astNode->AsBinaryExpression()->OperationType()->IsETSUnionType();
         };
-        if (ast->IsBlockStatement() && ast->IsAnyChild(handle_binary)) {
-            return HandleBlockWithBinaryAndUnions(checker, ast->AsBlockStatement(), handle_binary);
+        if (ast->IsBlockStatement() && ast->IsAnyChild(handleBinary)) {
+            return HandleBlockWithBinaryAndUnions(checker, ast->AsBlockStatement(), handleBinary);
         }
 
         return ast;
@@ -415,14 +411,14 @@ bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Progra
                ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
                ast->AsMemberExpression()->PropVar() == nullptr;
     });
-    if (!current || ctx->compiler_context->Options()->compilation_mode != CompilationMode::GEN_STD_LIB) {
+    if (!current || ctx->compilerContext->Options()->compilationMode != CompilationMode::GEN_STD_LIB) {
         return current;
     }
 
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (auto *ext_prog : ext_programs) {
-            if (!Postcondition(ctx, ext_prog)) {
+        for (auto *extProg : ext_programs) {
+            if (!Postcondition(ctx, extProg)) {
                 return false;
             }
         }

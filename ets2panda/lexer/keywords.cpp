@@ -20,55 +20,55 @@
 namespace panda::es2panda::lexer {
 
 KeywordString JSKeywords::Handle_as([[maybe_unused]] const KeywordsUtil &util, std::string_view src,
-                                    TokenType token_type)
+                                    TokenType tokenType)
 {
-    return {src, TokenType::LITERAL_IDENT, token_type};
+    return {src, TokenType::LITERAL_IDENT, tokenType};
 }
 
-KeywordString JSKeywords::Handle_await(const KeywordsUtil &util, std::string_view src, TokenType token_type)
+KeywordString JSKeywords::Handle_await(const KeywordsUtil &util, std::string_view src, TokenType tokenType)
 {
-    const auto *parser_context = util.GetParserContext();
+    const auto *parserContext = util.GetParserContext();
 
-    if (!parser_context->IsAsync() && !parser_context->IsModule()) {
-        return {src, TokenType::LITERAL_IDENT, token_type};
+    if (!parserContext->IsAsync() && !parserContext->IsModule()) {
+        return {src, TokenType::LITERAL_IDENT, tokenType};
     }
 
     util.CheckEscapedKeyword();
 
-    return {src, token_type};
+    return {src, tokenType};
 }
 
-KeywordString JSKeywords::Handle_yield(const KeywordsUtil &util, std::string_view src, TokenType token_type)
+KeywordString JSKeywords::Handle_yield(const KeywordsUtil &util, std::string_view src, TokenType tokenType)
 {
-    const auto *parser_context = util.GetParserContext();
+    const auto *parserContext = util.GetParserContext();
 
-    if (!parser_context->IsGenerator()) {
+    if (!parserContext->IsGenerator()) {
         util.ThrowUnexpectedStrictModeReservedKeyword();
     }
 
     util.CheckEscapedKeyword();
 
-    return {src, token_type};
+    return {src, tokenType};
 }
 
-KeywordString TSKeywords::Handle_as(const KeywordsUtil &util, std::string_view src, TokenType token_type)
+KeywordString TSKeywords::Handle_as(const KeywordsUtil &util, std::string_view src, TokenType tokenType)
 {
-    return JSKeywords::Handle_as(util, src, token_type);
+    return JSKeywords::Handle_as(util, src, tokenType);
 }
 
-KeywordString TSKeywords::Handle_await(const KeywordsUtil &util, std::string_view src, TokenType token_type)
+KeywordString TSKeywords::Handle_await(const KeywordsUtil &util, std::string_view src, TokenType tokenType)
 {
-    return JSKeywords::Handle_await(util, src, token_type);
+    return JSKeywords::Handle_await(util, src, tokenType);
 }
 
-KeywordString TSKeywords::Handle_yield(const KeywordsUtil &util, std::string_view src, TokenType token_type)
+KeywordString TSKeywords::Handle_yield(const KeywordsUtil &util, std::string_view src, TokenType tokenType)
 {
-    return JSKeywords::Handle_yield(util, src, token_type);
+    return JSKeywords::Handle_yield(util, src, tokenType);
 }
 
-KeywordString ASKeywords::Handle_as(const KeywordsUtil &util, std::string_view src, TokenType token_type)
+KeywordString ASKeywords::Handle_as(const KeywordsUtil &util, std::string_view src, TokenType tokenType)
 {
-    return JSKeywords::Handle_as(util, src, token_type);
+    return JSKeywords::Handle_as(util, src, tokenType);
 }
 
 }  // namespace panda::es2panda::lexer

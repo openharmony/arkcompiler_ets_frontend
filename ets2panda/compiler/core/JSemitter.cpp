@@ -28,15 +28,15 @@ pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
     auto *func = new pandasm::Function(Cg()->InternalName().Mutf8(), panda_file::SourceLang::ECMASCRIPT);
     GetProgramElement()->SetFunction(func);
 
-    size_t param_count = Cg()->InternalParamCount();
-    func->params.reserve(param_count);
+    size_t paramCount = Cg()->InternalParamCount();
+    func->params.reserve(paramCount);
 
-    for (uint32_t i = 0; i < param_count; ++i) {
+    for (uint32_t i = 0; i < paramCount; ++i) {
         func->params.emplace_back(pandasm::Type("any", 0), panda_file::SourceLang::ECMASCRIPT);
     }
 
-    func->regs_num = VReg::REG_START - Cg()->TotalRegsNum();
-    func->return_type = pandasm::Type("any", 0);
+    func->regsNum = VReg::REG_START - Cg()->TotalRegsNum();
+    func->returnType = pandasm::Type("any", 0);
 
     return func;
 #else
@@ -44,32 +44,32 @@ pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
 #endif
 }
 
-void JSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
+void JSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
                                              [[maybe_unused]] varbinder::LocalVariable *variable) const
 {
-    variable_debug.signature = "any";
-    variable_debug.signature_type = "any";
+    variableDebug.signature = "any";
+    variableDebug.signatureType = "any";
 }
 
 void JSFunctionEmitter::GenFunctionAnnotations(pandasm::Function *func)
 {
-    pandasm::AnnotationData func_annotation_data("_ESAnnotation");
-    pandasm::AnnotationElement ic_size_annotation_element(
+    pandasm::AnnotationData funcAnnotationData("_ESAnnotation");
+    pandasm::AnnotationElement icSizeAnnotationElement(
         "icSize", std::make_unique<pandasm::ScalarValue>(
                       pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(Pg()->IcSize())));
-    func_annotation_data.AddElement(std::move(ic_size_annotation_element));
+    funcAnnotationData.AddElement(std::move(icSizeAnnotationElement));
 
-    pandasm::AnnotationElement parameter_length_annotation_element(
+    pandasm::AnnotationElement parameterLengthAnnotationElement(
         "parameterLength", std::make_unique<pandasm::ScalarValue>(
                                pandasm::ScalarValue::Create<pandasm::Value::Type::U32>(Pg()->FormalParametersCount())));
-    func_annotation_data.AddElement(std::move(parameter_length_annotation_element));
+    funcAnnotationData.AddElement(std::move(parameterLengthAnnotationElement));
 
-    pandasm::AnnotationElement func_name_annotation_element(
+    pandasm::AnnotationElement funcNameAnnotationElement(
         "funcName", std::make_unique<pandasm::ScalarValue>(
                         pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(Pg()->FunctionName().Mutf8())));
-    func_annotation_data.AddElement(std::move(func_name_annotation_element));
+    funcAnnotationData.AddElement(std::move(funcNameAnnotationElement));
 
-    func->metadata->AddAnnotations({func_annotation_data});
+    func->metadata->AddAnnotations({funcAnnotationData});
 }
 
 void JSEmitter::GenAnnotation()
@@ -85,25 +85,25 @@ void JSEmitter::GenAnnotation()
 
 void JSEmitter::GenESAnnotationRecord()
 {
-    auto annotation_record = pandasm::Record("_ESAnnotation", Program()->lang);
-    annotation_record.metadata->SetAttribute("external");
-    annotation_record.metadata->SetAccessFlags(ACC_ANNOTATION);
-    Program()->record_table.emplace(annotation_record.name, std::move(annotation_record));
+    auto annotationRecord = pandasm::Record("_ESAnnotation", Program()->lang);
+    annotationRecord.metadata->SetAttribute("external");
+    annotationRecord.metadata->SetAccessFlags(ACC_ANNOTATION);
+    Program()->recordTable.emplace(annotationRecord.name, std::move(annotationRecord));
 }
 
-void JSEmitter::GenESModuleModeRecord(bool is_module)
+void JSEmitter::GenESModuleModeRecord(bool isModule)
 {
-    auto mode_record = pandasm::Record("_ESModuleMode", Program()->lang);
-    mode_record.metadata->SetAccessFlags(ACC_PUBLIC);
+    auto modeRecord = pandasm::Record("_ESModuleMode", Program()->lang);
+    modeRecord.metadata->SetAccessFlags(ACC_PUBLIC);
 
-    auto mode_field = pandasm::Field(Program()->lang);
-    mode_field.name = "isModule";
-    mode_field.type = pandasm::Type("u8", 0);
-    mode_field.metadata->SetValue(
-        pandasm::ScalarValue::Create<pandasm::Value::Type::U8>(static_cast<uint8_t>(is_module)));
+    auto modeField = pandasm::Field(Program()->lang);
+    modeField.name = "isModule";
+    modeField.type = pandasm::Type("u8", 0);
+    modeField.metadata->SetValue(
+        pandasm::ScalarValue::Create<pandasm::Value::Type::U8>(static_cast<uint8_t>(isModule)));
 
-    mode_record.field_list.emplace_back(std::move(mode_field));
+    modeRecord.fieldList.emplace_back(std::move(modeField));
 
-    Program()->record_table.emplace(mode_record.name, std::move(mode_record));
+    Program()->recordTable.emplace(modeRecord.name, std::move(modeRecord));
 }
 }  // namespace panda::es2panda::compiler

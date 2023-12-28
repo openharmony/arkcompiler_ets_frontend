@@ -23,10 +23,10 @@ class GlobalTypesHolder;
 
 class ETSAsyncFuncReturnType : public ETSObjectType {
 public:
-    ETSAsyncFuncReturnType(ArenaAllocator *allocator, ETSObjectType *promise_type)
-        : ETSObjectType(allocator, ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE), promise_type_(promise_type)
+    ETSAsyncFuncReturnType(ArenaAllocator *allocator, ETSObjectType *promiseType)
+        : ETSObjectType(allocator, ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE), promiseType_(promiseType)
     {
-        ASSERT(promise_type->TypeArguments().size() == 1);
+        ASSERT(promiseType->TypeArguments().size() == 1);
         SetAssemblerName(compiler::Signatures::BUILTIN_OBJECT);
     }
 
@@ -37,16 +37,16 @@ public:
 
     const Type *GetPromiseTypeArg() const
     {
-        return promise_type_->TypeArguments()[0];
+        return promiseType_->TypeArguments()[0];
     }
 
     Type *GetPromiseTypeArg()
     {
-        return promise_type_->TypeArguments()[0];
+        return promiseType_->TypeArguments()[0];
     }
 
 private:
-    ETSObjectType *promise_type_;
+    ETSObjectType *promiseType_;
 };
 }  // namespace panda::es2panda::checker
 

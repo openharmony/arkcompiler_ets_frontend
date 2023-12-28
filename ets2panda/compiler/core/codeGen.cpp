@@ -33,12 +33,12 @@ ArenaAllocator *CodeGen::Allocator() const noexcept
 
 const ArenaVector<CatchTable *> &CodeGen::CatchList() const noexcept
 {
-    return catch_list_;
+    return catchList_;
 }
 
 const varbinder::FunctionScope *CodeGen::TopScope() const noexcept
 {
-    return top_scope_;
+    return topScope_;
 }
 
 const varbinder::Scope *CodeGen::Scope() const noexcept
@@ -48,7 +48,7 @@ const varbinder::Scope *CodeGen::Scope() const noexcept
 
 const ir::AstNode *CodeGen::RootNode() const noexcept
 {
-    return root_node_;
+    return rootNode_;
 }
 
 ArenaVector<IRNode *> &CodeGen::Insns() noexcept
@@ -63,47 +63,47 @@ const ArenaVector<IRNode *> &CodeGen::Insns() const noexcept
 
 VReg CodeGen::NextReg() const noexcept
 {
-    return VReg {used_regs_};
+    return VReg {usedRegs_};
 }
 
 std::uint32_t CodeGen::TotalRegsNum() const noexcept
 {
-    return total_regs_;
+    return totalRegs_;
 }
 
 std::size_t CodeGen::LabelCount() const noexcept
 {
-    return label_id_;
+    return labelId_;
 }
 
 const DebugInfo &CodeGen::Debuginfo() const noexcept
 {
-    return debug_info_;
+    return debugInfo_;
 }
 
 VReg CodeGen::AllocReg()
 {
-    const VReg vreg(used_regs_--);
+    const VReg vreg(usedRegs_--);
     SetVRegType(vreg, nullptr);
     return vreg;
 }
 
 VReg CodeGen::AllocRegWithType(const checker::Type *const type)
 {
-    const VReg vreg(used_regs_--);
+    const VReg vreg(usedRegs_--);
     SetVRegType(vreg, type);
     return vreg;
 }
 
 void CodeGen::SetVRegType(const VReg vreg, const checker::Type *const type)
 {
-    type_map_.insert_or_assign(vreg, type);
+    typeMap_.insert_or_assign(vreg, type);
 }
 
 const checker::Type *CodeGen::GetVRegType(const VReg vreg) const
 {
-    const auto it = type_map_.find(vreg);
-    return it != type_map_.end() ? it->second : nullptr;
+    const auto it = typeMap_.find(vreg);
+    return it != typeMap_.end() ? it->second : nullptr;
 }
 
 checker::Type const *CodeGen::TypeForVar(varbinder::Variable const *var) const noexcept
@@ -113,7 +113,7 @@ checker::Type const *CodeGen::TypeForVar(varbinder::Variable const *var) const n
 
 Label *CodeGen::AllocLabel()
 {
-    std::string id = std::string {Label::PREFIX} + std::to_string(label_id_++);
+    std::string id = std::string {Label::PREFIX} + std::to_string(labelId_++);
     return sa_.AllocLabel(std::move(id));
 }
 
@@ -124,22 +124,22 @@ bool CodeGen::IsDebug() const noexcept
 
 std::uint32_t CodeGen::ParamCount() const noexcept
 {
-    if (root_node_->IsProgram()) {
+    if (rootNode_->IsProgram()) {
         return 0U;
     }
 
-    return root_node_->AsScriptFunction()->Params().size();
+    return rootNode_->AsScriptFunction()->Params().size();
 }
 
 std::uint32_t CodeGen::FormalParametersCount() const noexcept
 {
-    if (root_node_->IsProgram()) {
+    if (rootNode_->IsProgram()) {
         return 0U;
     }
 
-    ASSERT(root_node_->IsScriptFunction());
+    ASSERT(rootNode_->IsScriptFunction());
 
-    return root_node_->AsScriptFunction()->FormalParamsLength();
+    return rootNode_->AsScriptFunction()->FormalParamsLength();
 }
 
 std::uint32_t CodeGen::InternalParamCount() const noexcept
@@ -150,12 +150,12 @@ std::uint32_t CodeGen::InternalParamCount() const noexcept
 
 const util::StringView &CodeGen::InternalName() const noexcept
 {
-    return top_scope_->InternalName();
+    return topScope_->InternalName();
 }
 
 const util::StringView &CodeGen::FunctionName() const noexcept
 {
-    return top_scope_->Name();
+    return topScope_->Name();
 }
 
 varbinder::VarBinder *CodeGen::VarBinder() const noexcept
@@ -165,8 +165,8 @@ varbinder::VarBinder *CodeGen::VarBinder() const noexcept
 
 std::int32_t CodeGen::AddLiteralBuffer(LiteralBuffer &&buf)
 {
-    program_element_->BuffStorage().emplace_back(std::move(buf));
-    return literal_buffer_idx_++;
+    programElement_->BuffStorage().emplace_back(std::move(buf));
+    return literalBufferIdx_++;
 }
 
 void CodeGen::LoadAccumulatorString(const ir::AstNode *node, const util::StringView &str)
@@ -186,7 +186,7 @@ void CodeGen::Branch(const ir::AstNode *node, Label *label)
 
 bool CodeGen::CheckControlFlowChange() const
 {
-    const auto *iter = dynamic_context_;
+    const auto *iter = dynamicContext_;
 
     while (iter != nullptr) {
         if (iter->HasFinalizer()) {
@@ -201,60 +201,60 @@ bool CodeGen::CheckControlFlowChange() const
 
 Label *CodeGen::ControlFlowChangeBreak(const ir::Identifier *label)
 {
-    auto *iter = dynamic_context_;
+    auto *iter = dynamicContext_;
 
-    util::StringView label_name = label != nullptr ? label->Name() : LabelTarget::BREAK_LABEL;
-    Label *break_target = nullptr;
+    util::StringView labelName = label != nullptr ? label->Name() : LabelTarget::BREAK_LABEL;
+    Label *breakTarget = nullptr;
 
     while (iter != nullptr) {
-        iter->AbortContext(ControlFlowChange::BREAK, label_name);
-        const auto *const_iter = iter;
+        iter->AbortContext(ControlFlowChange::BREAK, labelName);
+        const auto *constIter = iter;
 
-        const auto &label_target_name = const_iter->Target().BreakLabel();
+        const auto &labelTargetName = constIter->Target().BreakLabel();
 
-        if (const_iter->Target().BreakTarget() != nullptr) {
-            break_target = const_iter->Target().BreakTarget();
+        if (constIter->Target().BreakTarget() != nullptr) {
+            breakTarget = constIter->Target().BreakTarget();
         }
 
-        if (label_target_name == label_name) {
+        if (labelTargetName == labelName) {
             break;
         }
 
         iter = iter->Prev();
     }
 
-    return break_target;
+    return breakTarget;
 }
 
 Label *CodeGen::ControlFlowChangeContinue(const ir::Identifier *label)
 {
-    auto *iter = dynamic_context_;
-    util::StringView label_name = label != nullptr ? label->Name() : LabelTarget::CONTINUE_LABEL;
-    Label *continue_target = nullptr;
+    auto *iter = dynamicContext_;
+    util::StringView labelName = label != nullptr ? label->Name() : LabelTarget::CONTINUE_LABEL;
+    Label *continueTarget = nullptr;
 
     while (iter != nullptr) {
-        iter->AbortContext(ControlFlowChange::CONTINUE, label_name);
-        const auto *const_iter = iter;
+        iter->AbortContext(ControlFlowChange::CONTINUE, labelName);
+        const auto *constIter = iter;
 
-        const auto &label_target_name = const_iter->Target().ContinueLabel();
+        const auto &labelTargetName = constIter->Target().ContinueLabel();
 
-        if (const_iter->Target().ContinueTarget() != nullptr) {
-            continue_target = const_iter->Target().ContinueTarget();
+        if (constIter->Target().ContinueTarget() != nullptr) {
+            continueTarget = constIter->Target().ContinueTarget();
         }
 
-        if (label_target_name == label_name) {
+        if (labelTargetName == labelName) {
             break;
         }
 
         iter = iter->Prev();
     }
 
-    return continue_target;
+    return continueTarget;
 }
 
 std::uint32_t CodeGen::TryDepth() const
 {
-    const auto *iter = dynamic_context_;
+    const auto *iter = dynamicContext_;
     std::uint32_t depth = 0;
 
     while (iter != nullptr) {
@@ -268,29 +268,29 @@ std::uint32_t CodeGen::TryDepth() const
     return depth;
 }
 
-CatchTable *CodeGen::CreateCatchTable(const util::StringView exception_type)
+CatchTable *CodeGen::CreateCatchTable(const util::StringView exceptionType)
 {
-    auto *catch_table = allocator_->New<CatchTable>(this, TryDepth(), exception_type);
-    catch_list_.push_back(catch_table);
-    return catch_table;
+    auto *catchTable = allocator_->New<CatchTable>(this, TryDepth(), exceptionType);
+    catchList_.push_back(catchTable);
+    return catchTable;
 }
 
-CatchTable *CodeGen::CreateCatchTable(const LabelPair try_label_pair, const util::StringView exception_type)
+CatchTable *CodeGen::CreateCatchTable(const LabelPair tryLabelPair, const util::StringView exceptionType)
 {
-    auto *catch_table = allocator_->New<CatchTable>(this, TryDepth(), try_label_pair, exception_type);
-    catch_list_.push_back(catch_table);
-    return catch_table;
+    auto *catchTable = allocator_->New<CatchTable>(this, TryDepth(), tryLabelPair, exceptionType);
+    catchList_.push_back(catchTable);
+    return catchTable;
 }
 
 void CodeGen::SortCatchTables()
 {
-    std::stable_sort(catch_list_.begin(), catch_list_.end(),
+    std::stable_sort(catchList_.begin(), catchList_.end(),
                      [](const CatchTable *a, const CatchTable *b) { return b->Depth() < a->Depth(); });
 }
 
 void CodeGen::SetFirstStmt(const ir::Statement *stmt) noexcept
 {
-    debug_info_.first_stmt_ = stmt;
+    debugInfo_.firstStmt_ = stmt;
 }
 
 void CodeGen::Unimplemented()
@@ -335,21 +335,21 @@ CompilerContext *CodeGen::Context() const noexcept
 
 ProgramElement *CodeGen::ProgElement() const noexcept
 {
-    return program_element_;
+    return programElement_;
 }
 
 CodeGen::TypeMap &CodeGen::GetTypeMap() noexcept
 {
-    return type_map_;
+    return typeMap_;
 }
 
 const CodeGen::TypeMap &CodeGen::GetTypeMap() const noexcept
 {
-    return type_map_;
+    return typeMap_;
 }
 
 compiler::AstCompiler *CodeGen::GetAstCompiler() const
 {
-    return ast_compiler_;
+    return astCompiler_;
 }
 }  // namespace panda::es2panda::compiler

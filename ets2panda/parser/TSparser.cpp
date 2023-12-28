@@ -115,9 +115,9 @@
 #include "ir/ts/tsExternalModuleReference.h"
 
 namespace panda::es2panda::parser {
-std::unique_ptr<lexer::Lexer> TSParser::InitLexer(const SourceFile &source_file)
+std::unique_ptr<lexer::Lexer> TSParser::InitLexer(const SourceFile &sourceFile)
 {
-    GetProgram()->SetSource(source_file);
+    GetProgram()->SetSource(sourceFile);
     auto lexer = std::make_unique<lexer::TSLexer>(&GetContext());
     SetLexer(lexer.get());
     return lexer;
@@ -145,11 +145,11 @@ ir::Decorator *TSParser::ParseDecorator()
             ThrowSyntaxError("Identifier expected");
         }
 
-        auto *ident_node = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-        ident_node->SetRange(Lexer()->GetToken().Loc());
+        auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        identNode->SetRange(Lexer()->GetToken().Loc());
 
         expr =
-            AllocNode<ir::MemberExpression>(expr, ident_node, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+            AllocNode<ir::MemberExpression>(expr, identNode, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         Lexer()->NextToken();
     }
 
@@ -179,7 +179,7 @@ void TSParser::AddDecorators(ir::AstNode *node, ArenaVector<ir::Decorator *> &de
 ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
 {
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
-    lexer::SourcePosition type_start = Lexer()->GetToken().Start();
+    lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -187,10 +187,10 @@ ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
     }
 
     if (Lexer()->GetToken().IsReservedTypeName()) {
-        std::string err_msg("Type alias name cannot be '");
-        err_msg.append(TokenToString(Lexer()->GetToken().KeywordType()));
-        err_msg.append("'");
-        ThrowSyntaxError(err_msg.c_str());
+        std::string errMsg("Type alias name cannot be '");
+        errMsg.append(TokenToString(Lexer()->GetToken().KeywordType()));
+        errMsg.append("'");
+        ThrowSyntaxError(errMsg.c_str());
     }
 
     const util::StringView &ident = Lexer()->GetToken().Ident();
@@ -199,10 +199,10 @@ ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
-    ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
+    ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
-        type_param_decl = ParseTypeParameterDeclaration(&options);
+        typeParamDecl = ParseTypeParameterDeclaration(&options);
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -212,13 +212,13 @@ ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
     Lexer()->NextToken();  // eat '='
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-    ir::TypeNode *type_annotation = ParseTypeAnnotation(&options);
+    ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
-    auto *type_alias_decl =
-        AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, type_param_decl, type_annotation, InAmbientContext());
-    type_alias_decl->SetRange({type_start, Lexer()->GetToken().End()});
+    auto *typeAliasDecl =
+        AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, typeParamDecl, typeAnnotation, InAmbientContext());
+    typeAliasDecl->SetRange({typeStart, Lexer()->GetToken().End()});
 
-    return type_alias_decl;
+    return typeAliasDecl;
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
@@ -236,39 +236,39 @@ ir::Expression *TSParser::ParsePotentialAsExpression(ir::Expression *expr)
     Lexer()->NextToken();  // eat 'as'
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_CONST;
-    ir::TypeNode *type_annotation = ParseTypeAnnotation(&options);
+    ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
-    bool is_const = false;
-    if (type_annotation->IsTSTypeReference() && type_annotation->AsTSTypeReference()->TypeName()->IsIdentifier()) {
-        const util::StringView &ref_name = type_annotation->AsTSTypeReference()->TypeName()->AsIdentifier()->Name();
-        if (ref_name.Is("const")) {
-            is_const = true;
+    bool isConst = false;
+    if (typeAnnotation->IsTSTypeReference() && typeAnnotation->AsTSTypeReference()->TypeName()->IsIdentifier()) {
+        const util::StringView &refName = typeAnnotation->AsTSTypeReference()->TypeName()->AsIdentifier()->Name();
+        if (refName.Is("const")) {
+            isConst = true;
         }
     }
 
-    lexer::SourcePosition start_loc = expr->Start();
-    auto *as_expr = AllocNode<ir::TSAsExpression>(expr, type_annotation, is_const);
-    as_expr->SetRange({start_loc, Lexer()->GetToken().End()});
+    lexer::SourcePosition startLoc = expr->Start();
+    auto *asExpr = AllocNode<ir::TSAsExpression>(expr, typeAnnotation, isConst);
+    asExpr->SetRange({startLoc, Lexer()->GetToken().End()});
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
-        return ParsePotentialAsExpression(as_expr);
+        return ParsePotentialAsExpression(asExpr);
     }
 
-    return as_expr;
+    return asExpr;
 }
 
-void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *return_node, bool is_rest)
+void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNode, bool isRest)
 {
-    bool is_optional = false;
+    bool isOptional = false;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-        if (is_rest) {
+        if (isRest) {
             ThrowSyntaxError("A rest parameter cannot be optional");
         }
 
-        switch (return_node->Type()) {
+        switch (returnNode->Type()) {
             case ir::AstNodeType::IDENTIFIER: {
-                return_node->AsIdentifier()->SetOptional(true);
+                returnNode->AsIdentifier()->SetOptional(true);
                 break;
             }
             case ir::AstNodeType::OBJECT_PATTERN:
@@ -277,16 +277,16 @@ void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *return_no
                     ThrowSyntaxError("A binding pattern parameter cannot be optional in an implementation signature.");
                 }
 
-                if (return_node->IsObjectPattern()) {
-                    return_node->AsObjectPattern()->SetOptional(true);
+                if (returnNode->IsObjectPattern()) {
+                    returnNode->AsObjectPattern()->SetOptional(true);
                     break;
                 }
 
-                return_node->AsArrayPattern()->SetOptional(true);
+                returnNode->AsArrayPattern()->SetOptional(true);
                 break;
             }
             case ir::AstNodeType::REST_ELEMENT: {
-                return_node->AsRestElement()->SetOptional(true);
+                returnNode->AsRestElement()->SetOptional(true);
                 break;
             }
             default: {
@@ -294,39 +294,39 @@ void TSParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *return_no
             }
         }
 
-        is_optional = true;
+        isOptional = true;
         Lexer()->NextToken();  // eat '?'
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        return_node->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
+        returnNode->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         return;
     }
 
-    if (is_rest) {
+    if (isRest) {
         ThrowSyntaxError("A rest parameter cannot have an initializer");
     }
 
-    if (return_node->IsIdentifier() && is_optional) {
+    if (returnNode->IsIdentifier() && isOptional) {
         ThrowSyntaxError("Parameter cannot have question mark and initializer");
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::Expression *TSParser::ParsePatternElement(ExpressionParseFlags flags, bool allow_default)
+ir::Expression *TSParser::ParsePatternElement(ExpressionParseFlags flags, bool allowDefault)
 {
-    ir::AnnotatedExpression *return_node = nullptr;
-    bool is_optional = false;
+    ir::AnnotatedExpression *returnNode = nullptr;
+    bool isOptional = false;
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            return_node = ParseArrayExpression(ExpressionParseFlags::MUST_BE_PATTERN);
-            is_optional = return_node->AsArrayPattern()->IsOptional();
+            returnNode = ParseArrayExpression(ExpressionParseFlags::MUST_BE_PATTERN);
+            isOptional = returnNode->AsArrayPattern()->IsOptional();
             break;
         }
         case lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD: {
@@ -334,43 +334,43 @@ ir::Expression *TSParser::ParsePatternElement(ExpressionParseFlags flags, bool a
                 ThrowSyntaxError("Unexpected token");
             }
 
-            return_node = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
+            returnNode = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            return_node =
+            returnNode =
                 ParseObjectExpression(ExpressionParseFlags::MUST_BE_PATTERN | ExpressionParseFlags::OBJECT_PATTERN);
-            is_optional = return_node->AsObjectPattern()->IsOptional();
+            isOptional = returnNode->AsObjectPattern()->IsOptional();
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            return_node = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            return_node->AsIdentifier()->SetReference();
+            returnNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            returnNode->AsIdentifier()->SetReference();
 
-            if (return_node->AsIdentifier()->Decorators().empty()) {
-                return_node->SetRange(Lexer()->GetToken().Loc());
+            if (returnNode->AsIdentifier()->Decorators().empty()) {
+                returnNode->SetRange(Lexer()->GetToken().Loc());
             } else {
-                return_node->SetRange(
-                    {return_node->AsIdentifier()->Decorators().front()->Start(), Lexer()->GetToken().End()});
+                returnNode->SetRange(
+                    {returnNode->AsIdentifier()->Decorators().front()->Start(), Lexer()->GetToken().End()});
             }
 
             Lexer()->NextToken();
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-                is_optional = true;
+                isOptional = true;
 
                 if ((flags & ExpressionParseFlags::IN_REST) != 0) {
                     ThrowSyntaxError("A rest parameter cannot be optional");
                 }
 
-                return_node->AsIdentifier()->SetOptional(true);
+                returnNode->AsIdentifier()->SetOptional(true);
                 Lexer()->NextToken();
             }
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
                 Lexer()->NextToken();  // eat ':'
                 TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-                return_node->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
+                returnNode->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
             }
             break;
         }
@@ -379,24 +379,24 @@ ir::Expression *TSParser::ParsePatternElement(ExpressionParseFlags flags, bool a
         }
     }
 
-    if ((return_node->IsObjectPattern() || return_node->IsArrayPattern()) && !InAmbientContext() &&
-        ((GetContext().Status() & ParserStatus::FUNCTION) != 0) && is_optional) {
+    if ((returnNode->IsObjectPattern() || returnNode->IsArrayPattern()) && !InAmbientContext() &&
+        ((GetContext().Status() & ParserStatus::FUNCTION) != 0) && isOptional) {
         ThrowSyntaxError("A binding pattern parameter cannot be optional in an implementation signature.");
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        return return_node;
+        return returnNode;
     }
 
     if ((flags & ExpressionParseFlags::IN_REST) != 0) {
         ThrowSyntaxError("A rest parameter cannot have an initializer.");
     }
 
-    if (!allow_default) {
+    if (!allowDefault) {
         ThrowSyntaxError("Invalid destructuring assignment target");
     }
 
-    if (is_optional) {
+    if (isOptional) {
         ThrowSyntaxError("Parameter cannot have question mark and initializer");
     }
 
@@ -407,13 +407,13 @@ ir::Expression *TSParser::ParsePatternElement(ExpressionParseFlags flags, bool a
         ThrowSyntaxError("Yield is not allowed in generator parameters");
     }
 
-    ir::Expression *right_node = ParseExpression();
+    ir::Expression *rightNode = ParseExpression();
 
-    auto *assignment_expression = AllocNode<ir::AssignmentExpression>(
-        ir::AstNodeType::ASSIGNMENT_PATTERN, return_node, right_node, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    assignment_expression->SetRange({return_node->Start(), right_node->End()});
+    auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
+        ir::AstNodeType::ASSIGNMENT_PATTERN, returnNode, rightNode, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    assignmentExpression->SetRange({returnNode->Start(), rightNode->End()});
 
-    return assignment_expression;
+    return assignmentExpression;
 }
 
 bool TSParser::CurrentLiteralIsBasicType() const
@@ -463,10 +463,10 @@ bool TSParser::CurrentIsBasicType()
 
 ir::TypeNode *TSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *type_annotation = nullptr;
+    ir::TypeNode *typeAnnotation = nullptr;
 
     while (true) {
-        ir::TypeNode *element = ParseTypeAnnotationElement(type_annotation, options);
+        ir::TypeNode *element = ParseTypeAnnotationElement(typeAnnotation, options);
 
         *options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
 
@@ -474,14 +474,14 @@ ir::TypeNode *TSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *option
             break;
         }
 
-        type_annotation = element;
+        typeAnnotation = element;
 
         if ((((*options) & TypeAnnotationParsingOptions::BREAK_AT_NEW_LINE) != 0) && Lexer()->GetToken().NewLine()) {
             break;
         }
     }
 
-    return type_annotation;
+    return typeAnnotation;
 }
 
 ir::TypeNode *TSParser::ParseIdentifierReference()
@@ -537,8 +537,8 @@ bool TSParser::IsStartOfTypePredicate() const
            Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
 
     auto pos = Lexer()->Save();
-    bool is_asserts = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ASSERTS;
-    if (is_asserts) {
+    bool isAsserts = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ASSERTS;
+    if (isAsserts) {
         Lexer()->NextToken();
     }
 
@@ -548,7 +548,7 @@ bool TSParser::IsStartOfTypePredicate() const
         return false;
     }
 
-    if (is_asserts) {
+    if (isAsserts) {
         Lexer()->Rewind(pos);
         return true;
     }
@@ -575,7 +575,7 @@ bool TSParser::IsStartOfAbstractConstructorType() const
     return result;
 }
 
-ir::TSImportType *TSParser::ParseImportType(const lexer::SourcePosition &start_loc, bool is_typeof)
+ir::TSImportType *TSParser::ParseImportType(const lexer::SourcePosition &startLoc, bool isTypeof)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT);
 
@@ -606,60 +606,60 @@ ir::TSImportType *TSParser::ParseImportType(const lexer::SourcePosition &start_l
         qualifier = ParseQualifiedName();
     }
 
-    ir::TSTypeParameterInstantiation *type_params = nullptr;
+    ir::TSTypeParameterInstantiation *typeParams = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
             Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
         }
 
-        type_params = ParseTypeParameterInstantiation(&options);
+        typeParams = ParseTypeParameterInstantiation(&options);
     }
 
-    auto *import_type = AllocNode<ir::TSImportType>(param, type_params, qualifier, is_typeof);
+    auto *importType = AllocNode<ir::TSImportType>(param, typeParams, qualifier, isTypeof);
 
-    import_type->SetRange({start_loc, Lexer()->GetToken().End()});
+    importType->SetRange({startLoc, Lexer()->GetToken().End()});
 
-    return import_type;
+    return importType;
 }
 
-ir::TypeNode *TSParser::ParseThisType(bool throw_error)
+ir::TypeNode *TSParser::ParseThisType(bool throwError)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
 
-    if (throw_error && ((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0)) {
+    if (throwError && ((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0)) {
         ThrowSyntaxError(
             "A 'this' type is available only in a non-static member "
             "of a class or interface.");
     }
 
-    auto *return_type = AllocNode<ir::TSThisType>();
-    return_type->SetRange(Lexer()->GetToken().Loc());
+    auto *returnType = AllocNode<ir::TSThisType>();
+    returnType->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
 
-    return return_type;
+    return returnType;
 }
 
-ir::TypeNode *TSParser::ParseConditionalType(ir::Expression *check_type, bool restrict_extends)
+ir::TypeNode *TSParser::ParseConditionalType(ir::Expression *checkType, bool restrictExtends)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
-    if (restrict_extends) {
+    if (restrictExtends) {
         ThrowSyntaxError("'?' expected.");
     }
 
-    lexer::SourcePosition start_loc = check_type->Start();
+    lexer::SourcePosition startLoc = checkType->Start();
 
     Lexer()->NextToken();  // eat 'extends'
 
-    ParserStatus saved_status = GetContext().Status();
+    ParserStatus savedStatus = GetContext().Status();
     GetContext().Status() |= ParserStatus::IN_EXTENDS;
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
-    auto *extends_type = ParseTypeAnnotation(&options);
+    auto *extendsType = ParseTypeAnnotation(&options);
 
-    GetContext().Status() = saved_status;
+    GetContext().Status() = savedStatus;
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
         ThrowSyntaxError("'?' expected.");
@@ -668,7 +668,7 @@ ir::TypeNode *TSParser::ParseConditionalType(ir::Expression *check_type, bool re
     Lexer()->NextToken();  // eat '?'
 
     options &= ~TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
-    auto *true_type = ParseTypeAnnotation(&options);
+    auto *trueType = ParseTypeAnnotation(&options);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         ThrowSyntaxError("':' expected.");
@@ -676,15 +676,15 @@ ir::TypeNode *TSParser::ParseConditionalType(ir::Expression *check_type, bool re
 
     Lexer()->NextToken();  // eat ':'
 
-    auto *false_type = ParseTypeAnnotation(&options);
+    auto *falseType = ParseTypeAnnotation(&options);
 
-    lexer::SourcePosition end_loc = false_type->End();
+    lexer::SourcePosition endLoc = falseType->End();
 
-    auto *conditional_type = AllocNode<ir::TSConditionalType>(check_type, extends_type, true_type, false_type);
+    auto *conditionalType = AllocNode<ir::TSConditionalType>(checkType, extendsType, trueType, falseType);
 
-    conditional_type->SetRange({start_loc, end_loc});
+    conditionalType->SetRange({startLoc, endLoc});
 
-    return conditional_type;
+    return conditionalType;
 }
 
 ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
@@ -692,7 +692,7 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY) {
-        lexer::SourcePosition type_operator_start = Lexer()->GetToken().Start();
+        lexer::SourcePosition typeOperatorStart = Lexer()->GetToken().Start();
         Lexer()->NextToken();
 
         ir::TypeNode *type = ParseTypeAnnotation(&options);
@@ -703,24 +703,24 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
                 "and tuple literal types.");
         }
 
-        auto *type_operator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::READONLY);
+        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::READONLY);
 
-        type_operator->SetRange({type_operator_start, type->End()});
+        typeOperator->SetRange({typeOperatorStart, type->End()});
 
-        return type_operator;
+        return typeOperator;
     }
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_KEYOF) {
-        lexer::SourcePosition type_operator_start = Lexer()->GetToken().Start();
+        lexer::SourcePosition typeOperatorStart = Lexer()->GetToken().Start();
         Lexer()->NextToken();
 
         ir::TypeNode *type = ParseTypeAnnotation(&options);
 
-        auto *type_operator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
+        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
 
-        type_operator->SetRange({type_operator_start, type->End()});
+        typeOperator->SetRange({typeOperatorStart, type->End()});
 
-        return type_operator;
+        return typeOperator;
     }
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_INFER) {
@@ -730,31 +730,31 @@ ir::TypeNode *TSParser::ParseTypeOperatorOrTypeReference()
                 "'extends' clause of a conditional type.");
         }
 
-        lexer::SourcePosition infer_start = Lexer()->GetToken().Start();
+        lexer::SourcePosition inferStart = Lexer()->GetToken().Start();
         Lexer()->NextToken();
 
-        ir::TSTypeParameter *type_param = ParseTypeParameter(&options);
+        ir::TSTypeParameter *typeParam = ParseTypeParameter(&options);
 
-        auto *infer_type = AllocNode<ir::TSInferType>(type_param);
+        auto *inferType = AllocNode<ir::TSInferType>(typeParam);
 
-        infer_type->SetRange({infer_start, Lexer()->GetToken().End()});
+        inferType->SetRange({inferStart, Lexer()->GetToken().End()});
 
-        return infer_type;
+        return inferType;
     }
 
     return ParseIdentifierReference();
 }
 
-ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seen_optional)
+ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seenOptional)
 {
-    lexer::SourcePosition element_start = Lexer()->GetToken().Start();
+    lexer::SourcePosition elementStart = Lexer()->GetToken().Start();
     ir::TypeNode *element = nullptr;
-    bool is_optional = false;
+    bool isOptional = false;
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && !CurrentLiteralIsBasicType()) {
-        auto *element_ident = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-        element_ident->SetRange(Lexer()->GetToken().Loc());
+        auto *elementIdent = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        elementIdent->SetRange(Lexer()->GetToken().Loc());
 
         if (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON || Lexer()->Lookahead() == lexer::LEX_CHAR_QUESTION) {
             if (*kind == ir::TSTupleKind::DEFAULT) {
@@ -765,9 +765,9 @@ ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seen_opti
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
                 Lexer()->NextToken();  // eat '?'
-                is_optional = true;
-                *seen_optional = true;
-            } else if (*seen_optional) {
+                isOptional = true;
+                *seenOptional = true;
+            } else if (*seenOptional) {
                 ThrowSyntaxError("A required element cannot follow an optional element");
             }
 
@@ -776,10 +776,10 @@ ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seen_opti
             }
 
             Lexer()->NextToken();  // eat ':'
-            auto *element_type = ParseTypeAnnotation(&options);
+            auto *elementType = ParseTypeAnnotation(&options);
             *kind = ir::TSTupleKind::NAMED;
 
-            element = AllocNode<ir::TSNamedTupleMember>(element_ident, element_type, is_optional);
+            element = AllocNode<ir::TSNamedTupleMember>(elementIdent, elementType, isOptional);
         } else {
             element = ParseTypeReferenceOrQuery();
         }
@@ -797,7 +797,7 @@ ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seen_opti
     }
 
     if (element != nullptr) {
-        element->SetRange({element_start, Lexer()->GetToken().End()});
+        element->SetRange({elementStart, Lexer()->GetToken().End()});
     }
     return element;
 }
@@ -805,15 +805,15 @@ ir::TypeNode *TSParser::ParseTupleElement(ir::TSTupleKind *kind, bool *seen_opti
 ir::TSTupleType *TSParser::ParseTupleType()
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
-    lexer::SourcePosition tuple_start = Lexer()->GetToken().Start();
+    lexer::SourcePosition tupleStart = Lexer()->GetToken().Start();
     ArenaVector<ir::TypeNode *> elements(Allocator()->Adapter());
     ir::TSTupleKind kind = ir::TSTupleKind::NONE;
-    bool seen_optional = false;
+    bool seenOptional = false;
 
     Lexer()->NextToken();  // eat '['
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        ir::TypeNode *element = ParseTupleElement(&kind, &seen_optional);
+        ir::TypeNode *element = ParseTupleElement(&kind, &seenOptional);
         elements.push_back(element);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
@@ -827,22 +827,22 @@ ir::TSTupleType *TSParser::ParseTupleType()
         Lexer()->NextToken();  // eat ','
     }
 
-    lexer::SourcePosition tuple_end = Lexer()->GetToken().End();
+    lexer::SourcePosition tupleEnd = Lexer()->GetToken().End();
     Lexer()->NextToken();  // eat ']'
 
-    auto *tuple_type = AllocNode<ir::TSTupleType>(std::move(elements));
-    tuple_type->SetRange({tuple_start, tuple_end});
-    return tuple_type;
+    auto *tupleType = AllocNode<ir::TSTupleType>(std::move(elements));
+    tupleType->SetRange({tupleStart, tupleEnd});
+    return tupleType;
 }
 
-ir::TypeNode *TSParser::ParseIndexAccessType(ir::TypeNode *type_name)
+ir::TypeNode *TSParser::ParseIndexAccessType(ir::TypeNode *typeName)
 {
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
     do {
         Lexer()->NextToken();  // eat '['
 
-        ir::TypeNode *index_type = ParseTypeAnnotation(&options);
+        ir::TypeNode *indexType = ParseTypeAnnotation(&options);
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
             ThrowSyntaxError("']' expected");
@@ -850,25 +850,25 @@ ir::TypeNode *TSParser::ParseIndexAccessType(ir::TypeNode *type_name)
 
         Lexer()->NextToken();  // eat ']'
 
-        type_name = AllocNode<ir::TSIndexedAccessType>(type_name, index_type);
-        type_name->SetRange({type_name->AsTSIndexedAccessType()->ObjectType()->Start(), Lexer()->GetToken().End()});
+        typeName = AllocNode<ir::TSIndexedAccessType>(typeName, indexType);
+        typeName->SetRange({typeName->AsTSIndexedAccessType()->ObjectType()->Start(), Lexer()->GetToken().End()});
     } while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
              Lexer()->Lookahead() != lexer::LEX_CHAR_RIGHT_SQUARE);
 
-    return type_name;
+    return typeName;
 }
 
-ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parse_query)
+ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parseQuery)
 {
-    lexer::SourcePosition reference_start_loc = Lexer()->GetToken().Start();
+    lexer::SourcePosition referenceStartLoc = Lexer()->GetToken().Start();
 
-    if (parse_query) {
+    if (parseQuery) {
         ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_TYPEOF);
         Lexer()->NextToken();  // eat 'typeof'
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT) {
-            lexer::SourcePosition &start_loc = reference_start_loc;
-            return ParseImportType(start_loc, true);
+            lexer::SourcePosition &startLoc = referenceStartLoc;
+            return ParseImportType(startLoc, true);
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -879,9 +879,9 @@ ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parse_query)
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
            Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
 
-    ir::Expression *type_name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    type_name->SetRange(Lexer()->GetToken().Loc());
-    type_name->AsIdentifier()->SetReference();
+    ir::Expression *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    typeName->SetRange(Lexer()->GetToken().Loc());
+    typeName->AsIdentifier()->SetReference();
 
     if (Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN) {
         Lexer()->ForwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
@@ -890,54 +890,54 @@ ir::TypeNode *TSParser::ParseTypeReferenceOrQuery(bool parse_query)
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
-        type_name = ParseQualifiedReference(type_name);
+        typeName = ParseQualifiedReference(typeName);
     }
 
-    ir::TSTypeParameterInstantiation *type_param_inst = nullptr;
+    ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        if (parse_query) {
+        if (parseQuery) {
             ThrowSyntaxError("Unexpected token.");
         }
 
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        type_param_inst = ParseTypeParameterInstantiation(&options);
+        typeParamInst = ParseTypeParameterInstantiation(&options);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
         Lexer()->Lookahead() != lexer::LEX_CHAR_RIGHT_SQUARE) {
-        ir::TypeNode *type_ref {};
-        if (parse_query) {
-            type_ref = AllocNode<ir::TSTypeQuery>(type_name);
+        ir::TypeNode *typeRef {};
+        if (parseQuery) {
+            typeRef = AllocNode<ir::TSTypeQuery>(typeName);
         } else {
-            type_ref = AllocNode<ir::TSTypeReference>(type_name, type_param_inst);
+            typeRef = AllocNode<ir::TSTypeReference>(typeName, typeParamInst);
         }
 
-        type_ref->SetRange({reference_start_loc, Lexer()->GetToken().End()});
+        typeRef->SetRange({referenceStartLoc, Lexer()->GetToken().End()});
 
-        return ParseIndexAccessType(type_ref);
+        return ParseIndexAccessType(typeRef);
     }
 
-    ir::TypeNode *return_node = nullptr;
+    ir::TypeNode *returnNode = nullptr;
 
-    lexer::SourcePosition reference_end_loc = type_name->End();
+    lexer::SourcePosition referenceEndLoc = typeName->End();
 
-    if (parse_query) {
-        return_node = AllocNode<ir::TSTypeQuery>(type_name);
+    if (parseQuery) {
+        returnNode = AllocNode<ir::TSTypeQuery>(typeName);
     } else {
-        return_node = AllocNode<ir::TSTypeReference>(type_name, type_param_inst);
+        returnNode = AllocNode<ir::TSTypeReference>(typeName, typeParamInst);
     }
 
-    return_node->SetRange({reference_start_loc, reference_end_loc});
+    returnNode->SetRange({referenceStartLoc, referenceEndLoc});
 
-    return return_node;
+    return returnNode;
 }
 
 ir::TSTypeParameter *TSParser::ParseMappedTypeParameter()
 {
-    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
 
-    auto *param_name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    param_name->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+    auto *paramName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    paramName->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
 
@@ -946,20 +946,20 @@ ir::TSTypeParameter *TSParser::ParseMappedTypeParameter()
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
     ir::TypeNode *constraint = ParseTypeAnnotation(&options);
 
-    lexer::SourcePosition end_loc = constraint->End();
+    lexer::SourcePosition endLoc = constraint->End();
 
-    auto *type_parameter = AllocNode<ir::TSTypeParameter>(param_name, constraint, nullptr);
+    auto *typeParameter = AllocNode<ir::TSTypeParameter>(paramName, constraint, nullptr);
 
-    type_parameter->SetRange({start_loc, end_loc});
+    typeParameter->SetRange({startLoc, endLoc});
 
-    return type_parameter;
+    return typeParameter;
 }
 
-ir::MappedOption TSParser::ParseMappedOption(lexer::TokenType token_type)
+ir::MappedOption TSParser::ParseMappedOption(lexer::TokenType tokenType)
 {
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_MINUS &&
         Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_PLUS &&
-        Lexer()->GetToken().KeywordType() != token_type && Lexer()->GetToken().Type() != token_type) {
+        Lexer()->GetToken().KeywordType() != tokenType && Lexer()->GetToken().Type() != tokenType) {
         return ir::MappedOption::NO_OPTS;
     }
 
@@ -971,8 +971,8 @@ ir::MappedOption TSParser::ParseMappedOption(lexer::TokenType token_type)
         Lexer()->NextToken();
     }
 
-    if (Lexer()->GetToken().KeywordType() != token_type && Lexer()->GetToken().Type() != token_type) {
-        ThrowSyntaxError({"'", TokenToString(token_type), "' expected."});
+    if (Lexer()->GetToken().KeywordType() != tokenType && Lexer()->GetToken().Type() != tokenType) {
+        ThrowSyntaxError({"'", TokenToString(tokenType), "' expected."});
     }
 
     Lexer()->NextToken();
@@ -984,14 +984,14 @@ ir::TSMappedType *TSParser::ParseMappedType()
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
 
-    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
 
     ir::MappedOption readonly = ParseMappedOption(lexer::TokenType::KEYW_READONLY);
 
     Lexer()->NextToken();  // eat '['
 
-    ir::TSTypeParameter *type_parameter = ParseMappedTypeParameter();
+    ir::TSTypeParameter *typeParameter = ParseMappedTypeParameter();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         ThrowSyntaxError("']' expected");
@@ -1001,11 +1001,11 @@ ir::TSMappedType *TSParser::ParseMappedType()
 
     ir::MappedOption optional = ParseMappedOption(lexer::TokenType::PUNCTUATOR_QUESTION_MARK);
 
-    ir::TypeNode *type_annotation = nullptr;
+    ir::TypeNode *typeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        type_annotation = ParseTypeAnnotation(&options);
+        typeAnnotation = ParseTypeAnnotation(&options);
     }
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON &&
@@ -1021,66 +1021,66 @@ ir::TSMappedType *TSParser::ParseMappedType()
         ThrowSyntaxError("'}' expected");
     }
 
-    auto *mapped_type = AllocNode<ir::TSMappedType>(type_parameter, type_annotation, readonly, optional);
+    auto *mappedType = AllocNode<ir::TSMappedType>(typeParameter, typeAnnotation, readonly, optional);
 
-    mapped_type->SetRange({start_loc, Lexer()->GetToken().End()});
+    mappedType->SetRange({startLoc, Lexer()->GetToken().End()});
 
     Lexer()->NextToken();  // eat '}'
 
-    return mapped_type;
+    return mappedType;
 }
 
 ir::TSTypePredicate *TSParser::ParseTypePredicate()
 {
     auto pos = Lexer()->Save();
-    lexer::SourcePosition start_pos = Lexer()->GetToken().Start();
-    bool is_asserts = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ASSERTS;
-    if (is_asserts) {
+    lexer::SourcePosition startPos = Lexer()->GetToken().Start();
+    bool isAsserts = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ASSERTS;
+    if (isAsserts) {
         Lexer()->NextToken();  // eat 'asserts'
         if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_IS) {
-            is_asserts = false;
+            isAsserts = false;
             Lexer()->Rewind(pos);
         }
     }
 
-    ir::Expression *parameter_name = nullptr;
+    ir::Expression *parameterName = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        parameter_name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        parameterName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     } else {
-        parameter_name = AllocNode<ir::TSThisType>();
+        parameterName = AllocNode<ir::TSThisType>();
     }
 
-    parameter_name->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+    parameterName->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
 
-    ir::TypeNode *type_annotation = nullptr;
-    lexer::SourcePosition end_pos;
+    ir::TypeNode *typeAnnotation = nullptr;
+    lexer::SourcePosition endPos;
     ir::TSTypePredicate *result = nullptr;
 
-    if (is_asserts && Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_IS) {
-        end_pos = parameter_name->End();
-        result = AllocNode<ir::TSTypePredicate>(parameter_name, type_annotation, is_asserts);
-        result->SetRange({start_pos, end_pos});
+    if (isAsserts && Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_IS) {
+        endPos = parameterName->End();
+        result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts);
+        result->SetRange({startPos, endPos});
         return result;
     }
 
     Lexer()->NextToken();  // eat 'is'
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-    type_annotation = ParseTypeAnnotation(&options);
-    end_pos = type_annotation->End();
+    typeAnnotation = ParseTypeAnnotation(&options);
+    endPos = typeAnnotation->End();
 
-    result = AllocNode<ir::TSTypePredicate>(parameter_name, type_annotation, is_asserts);
+    result = AllocNode<ir::TSTypePredicate>(parameterName, typeAnnotation, isAsserts);
 
-    result->SetRange({start_pos, end_pos});
+    result->SetRange({startPos, endPos});
 
     return result;
 }
 
-ir::TypeNode *TSParser::ParseTypeLiteralOrMappedType(ir::TypeNode *type_annotation)
+ir::TypeNode *TSParser::ParseTypeLiteralOrMappedType(ir::TypeNode *typeAnnotation)
 {
-    if (type_annotation != nullptr) {
+    if (typeAnnotation != nullptr) {
         return nullptr;
     }
 
@@ -1088,46 +1088,46 @@ ir::TypeNode *TSParser::ParseTypeLiteralOrMappedType(ir::TypeNode *type_annotati
         return ParseMappedType();
     }
 
-    lexer::SourcePosition body_start = Lexer()->GetToken().Start();
+    lexer::SourcePosition bodyStart = Lexer()->GetToken().Start();
     auto members = ParseTypeLiteralOrInterface();
-    lexer::SourcePosition body_end = Lexer()->GetToken().End();
+    lexer::SourcePosition bodyEnd = Lexer()->GetToken().End();
     Lexer()->NextToken();
 
-    auto *literal_type = AllocNode<ir::TSTypeLiteral>(std::move(members));
-    auto *type_var = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, literal_type);
-    literal_type->SetVariable(type_var);
-    literal_type->SetRange({body_start, body_end});
-    return literal_type;
+    auto *literalType = AllocNode<ir::TSTypeLiteral>(std::move(members));
+    auto *typeVar = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, literalType);
+    literalType->SetVariable(typeVar);
+    literalType->SetRange({bodyStart, bodyEnd});
+    return literalType;
 }
 
-ir::TypeNode *TSParser::ParseTypeReferenceOrTypePredicate(ir::TypeNode *type_annotation, bool can_be_ts_type_predicate)
+ir::TypeNode *TSParser::ParseTypeReferenceOrTypePredicate(ir::TypeNode *typeAnnotation, bool canBeTsTypePredicate)
 {
-    if (type_annotation != nullptr) {
+    if (typeAnnotation != nullptr) {
         return nullptr;
     }
 
-    if (can_be_ts_type_predicate && IsStartOfTypePredicate()) {
+    if (canBeTsTypePredicate && IsStartOfTypePredicate()) {
         return ParseTypePredicate();
     }
 
     return ParseTypeOperatorOrTypeReference();
 }
 
-ir::TypeNode *TSParser::ParseThisTypeOrTypePredicate(ir::TypeNode *type_annotation, bool can_be_ts_type_predicate,
-                                                     bool throw_error)
+ir::TypeNode *TSParser::ParseThisTypeOrTypePredicate(ir::TypeNode *typeAnnotation, bool canBeTsTypePredicate,
+                                                     bool throwError)
 {
-    if (type_annotation != nullptr) {
+    if (typeAnnotation != nullptr) {
         return nullptr;
     }
 
-    if (can_be_ts_type_predicate && IsStartOfTypePredicate()) {
+    if (canBeTsTypePredicate && IsStartOfTypePredicate()) {
         return ParseTypePredicate();
     }
 
-    return ParseThisType(throw_error);
+    return ParseThisType(throwError);
 }
 
-ir::TSArrayType *TSParser::ParseArrayType(ir::TypeNode *element_type)
+ir::TSArrayType *TSParser::ParseArrayType(ir::TypeNode *elementType)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
     Lexer()->NextToken();  // eat '['
@@ -1136,33 +1136,33 @@ ir::TSArrayType *TSParser::ParseArrayType(ir::TypeNode *element_type)
         ThrowSyntaxError("']' expected");
     }
 
-    lexer::SourcePosition end_loc = Lexer()->GetToken().End();
+    lexer::SourcePosition endLoc = Lexer()->GetToken().End();
     Lexer()->NextToken();  // eat ']'
 
-    lexer::SourcePosition start_loc = element_type->Start();
-    auto *array_type = AllocNode<ir::TSArrayType>(element_type);
-    array_type->SetRange({start_loc, end_loc});
+    lexer::SourcePosition startLoc = elementType->Start();
+    auto *arrayType = AllocNode<ir::TSArrayType>(elementType);
+    arrayType->SetRange({startLoc, endLoc});
 
-    return array_type;
+    return arrayType;
 }
 
-ir::TSUnionType *TSParser::ParseUnionType(ir::TypeNode *type, bool restrict_extends)
+ir::TSUnionType *TSParser::ParseUnionType(ir::TypeNode *type, bool restrictExtends)
 {
     ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
-    lexer::SourcePosition start_loc;
+    lexer::SourcePosition startLoc;
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::IN_UNION;
 
-    if (restrict_extends) {
+    if (restrictExtends) {
         options |= TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
     }
 
     if (type != nullptr) {
-        start_loc = type->Start();
+        startLoc = type->Start();
         types.push_back(type);
     } else {
-        start_loc = Lexer()->GetToken().Start();
+        startLoc = Lexer()->GetToken().Start();
     }
 
     while (true) {
@@ -1175,37 +1175,37 @@ ir::TSUnionType *TSParser::ParseUnionType(ir::TypeNode *type, bool restrict_exte
         types.push_back(ParseTypeAnnotation(&options));
     }
 
-    lexer::SourcePosition end_loc = types.back()->End();
+    lexer::SourcePosition endLoc = types.back()->End();
 
-    auto *union_type = AllocNode<ir::TSUnionType>(std::move(types));
-    auto *type_var = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, union_type);
-    union_type->SetVariable(type_var);
-    union_type->SetRange({start_loc, end_loc});
+    auto *unionType = AllocNode<ir::TSUnionType>(std::move(types));
+    auto *typeVar = varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, unionType);
+    unionType->SetVariable(typeVar);
+    unionType->SetRange({startLoc, endLoc});
 
-    return union_type;
+    return unionType;
 }
 
-ir::TSIntersectionType *TSParser::ParseIntersectionType(ir::Expression *type, bool in_union, bool restrict_extends)
+ir::TSIntersectionType *TSParser::ParseIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends)
 {
     ArenaVector<ir::Expression *> types(Allocator()->Adapter());
-    lexer::SourcePosition start_loc;
+    lexer::SourcePosition startLoc;
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::IN_INTERSECTION;
 
-    if (restrict_extends) {
+    if (restrictExtends) {
         options |= TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
     }
 
-    if (in_union) {
+    if (inUnion) {
         options |= TypeAnnotationParsingOptions::IN_UNION;
     }
 
     if (type != nullptr) {
-        start_loc = type->Start();
+        startLoc = type->Start();
         types.push_back(type);
     } else {
-        start_loc = Lexer()->GetToken().Start();
+        startLoc = Lexer()->GetToken().Start();
     }
 
     while (true) {
@@ -1218,20 +1218,20 @@ ir::TSIntersectionType *TSParser::ParseIntersectionType(ir::Expression *type, bo
         types.push_back(ParseTypeAnnotation(&options));
     }
 
-    lexer::SourcePosition end_loc = types.back()->End();
+    lexer::SourcePosition endLoc = types.back()->End();
 
-    auto *intersection_type = AllocNode<ir::TSIntersectionType>(std::move(types));
-    auto *type_var =
-        varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, intersection_type);
-    intersection_type->SetVariable(type_var);
-    intersection_type->SetRange({start_loc, end_loc});
+    auto *intersectionType = AllocNode<ir::TSIntersectionType>(std::move(types));
+    auto *typeVar =
+        varbinder::Scope::CreateVar(Allocator(), "__type", varbinder::VariableFlags::TYPE, intersectionType);
+    intersectionType->SetVariable(typeVar);
+    intersectionType->SetRange({startLoc, endLoc});
 
-    return intersection_type;
+    return intersectionType;
 }
 
 ir::TypeNode *TSParser::ParseBasicType()
 {
-    ir::TypeNode *type_annotation = nullptr;
+    ir::TypeNode *typeAnnotation = nullptr;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MINUS) {
         Lexer()->NextToken();
@@ -1243,81 +1243,81 @@ ir::TypeNode *TSParser::ParseBasicType()
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::LITERAL_NUMBER: {
             if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NUMBER_BIGINT) != 0) {
-                auto *bigint_node = AllocNode<ir::BigIntLiteral>(Lexer()->GetToken().BigInt());
-                bigint_node->SetRange(Lexer()->GetToken().Loc());
+                auto *bigintNode = AllocNode<ir::BigIntLiteral>(Lexer()->GetToken().BigInt());
+                bigintNode->SetRange(Lexer()->GetToken().Loc());
 
-                type_annotation = AllocNode<ir::TSLiteralType>(bigint_node);
+                typeAnnotation = AllocNode<ir::TSLiteralType>(bigintNode);
             } else {
-                auto *number_node = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
-                number_node->SetRange(Lexer()->GetToken().Loc());
+                auto *numberNode = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
+                numberNode->SetRange(Lexer()->GetToken().Loc());
 
-                type_annotation = AllocNode<ir::TSLiteralType>(number_node);
+                typeAnnotation = AllocNode<ir::TSLiteralType>(numberNode);
             }
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
-            auto *string_node = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
-            string_node->SetRange(Lexer()->GetToken().Loc());
+            auto *stringNode = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
+            stringNode->SetRange(Lexer()->GetToken().Loc());
 
-            type_annotation = AllocNode<ir::TSLiteralType>(string_node);
+            typeAnnotation = AllocNode<ir::TSLiteralType>(stringNode);
             break;
         }
         case lexer::TokenType::LITERAL_TRUE: {
-            auto *boolean_literal = AllocNode<ir::BooleanLiteral>(true);
-            boolean_literal->SetRange(Lexer()->GetToken().Loc());
+            auto *booleanLiteral = AllocNode<ir::BooleanLiteral>(true);
+            booleanLiteral->SetRange(Lexer()->GetToken().Loc());
 
-            type_annotation = AllocNode<ir::TSLiteralType>(boolean_literal);
+            typeAnnotation = AllocNode<ir::TSLiteralType>(booleanLiteral);
             break;
         }
         case lexer::TokenType::LITERAL_FALSE: {
-            auto *boolean_literal = AllocNode<ir::BooleanLiteral>(false);
-            boolean_literal->SetRange(Lexer()->GetToken().Loc());
+            auto *booleanLiteral = AllocNode<ir::BooleanLiteral>(false);
+            booleanLiteral->SetRange(Lexer()->GetToken().Loc());
 
-            type_annotation = AllocNode<ir::TSLiteralType>(boolean_literal);
+            typeAnnotation = AllocNode<ir::TSLiteralType>(booleanLiteral);
             break;
         }
         case lexer::TokenType::KEYW_ANY: {
-            type_annotation = AllocNode<ir::TSAnyKeyword>();
+            typeAnnotation = AllocNode<ir::TSAnyKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_BOOLEAN: {
-            type_annotation = AllocNode<ir::TSBooleanKeyword>();
+            typeAnnotation = AllocNode<ir::TSBooleanKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_NUMBER: {
-            type_annotation = AllocNode<ir::TSNumberKeyword>();
+            typeAnnotation = AllocNode<ir::TSNumberKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_STRING: {
-            type_annotation = AllocNode<ir::TSStringKeyword>();
+            typeAnnotation = AllocNode<ir::TSStringKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_UNKNOWN: {
-            type_annotation = AllocNode<ir::TSUnknownKeyword>();
+            typeAnnotation = AllocNode<ir::TSUnknownKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_VOID: {
-            type_annotation = AllocNode<ir::TSVoidKeyword>();
+            typeAnnotation = AllocNode<ir::TSVoidKeyword>();
             break;
         }
         case lexer::TokenType::LITERAL_NULL: {
-            type_annotation = AllocNode<ir::TSNullKeyword>();
+            typeAnnotation = AllocNode<ir::TSNullKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_UNDEFINED: {
-            type_annotation = AllocNode<ir::TSUndefinedKeyword>();
+            typeAnnotation = AllocNode<ir::TSUndefinedKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_NEVER: {
-            type_annotation = AllocNode<ir::TSNeverKeyword>();
+            typeAnnotation = AllocNode<ir::TSNeverKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_OBJECT: {
-            type_annotation = AllocNode<ir::TSObjectKeyword>();
+            typeAnnotation = AllocNode<ir::TSObjectKeyword>();
             break;
         }
         case lexer::TokenType::KEYW_BIGINT: {
-            type_annotation = AllocNode<ir::TSBigintKeyword>();
+            typeAnnotation = AllocNode<ir::TSBigintKeyword>();
             break;
         }
         default: {
@@ -1325,20 +1325,20 @@ ir::TypeNode *TSParser::ParseBasicType()
         }
     }
 
-    type_annotation->SetRange(Lexer()->GetToken().Loc());
+    typeAnnotation->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
-    return type_annotation;
+    return typeAnnotation;
 }
 
 ir::TSTypeReference *TSParser::ParseConstExpression()
 {
-    auto *ident_ref = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    ident_ref->SetReference();
-    ident_ref->SetRange(Lexer()->GetToken().Loc());
+    auto *identRef = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    identRef->SetReference();
+    identRef->SetRange(Lexer()->GetToken().Loc());
 
-    auto *type_reference = AllocNode<ir::TSTypeReference>(ident_ref, nullptr);
-    type_reference->SetRange(Lexer()->GetToken().Loc());
+    auto *typeReference = AllocNode<ir::TSTypeReference>(identRef, nullptr);
+    typeReference->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
 
@@ -1350,29 +1350,29 @@ ir::TSTypeReference *TSParser::ParseConstExpression()
         ThrowSyntaxError("Unexpected token.");
     }
 
-    return type_reference;
+    return typeReference;
 }
 
-ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *type_annotation, bool throw_error)
+ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *typeAnnotation, bool throwError)
 {
-    if (type_annotation != nullptr) {
+    if (typeAnnotation != nullptr) {
         return nullptr;
     }
 
-    lexer::SourcePosition type_start = Lexer()->GetToken().Start();
+    lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
 
-    bool abstract_constructor = false;
+    bool abstractConstructor = false;
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
-        abstract_constructor = true;
+        abstractConstructor = true;
         Lexer()->NextToken();  // eat 'abstract'
     }
 
-    bool is_construction_type = false;
+    bool isConstructionType = false;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_NEW) {
         Lexer()->NextToken();  // eat 'new'
-        is_construction_type = true;
+        isConstructionType = true;
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS &&
             Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LESS_THAN) {
@@ -1380,11 +1380,11 @@ ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *type_anno
         }
     }
 
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN || is_construction_type) {
-        return ParseFunctionType(type_start, is_construction_type, throw_error, abstract_constructor);
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN || isConstructionType) {
+        return ParseFunctionType(typeStart, isConstructionType, throwError, abstractConstructor);
     }
 
-    const auto start_pos = Lexer()->Save();
+    const auto startPos = Lexer()->Save();
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     Lexer()->NextToken();  // eat '('
 
@@ -1392,46 +1392,46 @@ ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *type_anno
     ir::TypeNode *type = ParseTypeAnnotation(&options);
 
     if (type == nullptr) {
-        Lexer()->Rewind(start_pos);
-        return ParseFunctionType(type_start, false, throw_error);
+        Lexer()->Rewind(startPos);
+        return ParseFunctionType(typeStart, false, throwError);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->Rewind(start_pos);
-        return ParseFunctionType(type_start, false, throw_error);
+        Lexer()->Rewind(startPos);
+        return ParseFunctionType(typeStart, false, throwError);
     }
 
-    if (throw_error && Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+    if (throwError && Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("')' expected");
     }
 
-    lexer::SourcePosition end_loc = Lexer()->GetToken().End();
+    lexer::SourcePosition endLoc = Lexer()->GetToken().End();
     Lexer()->NextToken();  // eat ')'
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW) {
-        Lexer()->Rewind(start_pos);
+        Lexer()->Rewind(startPos);
 
-        return ParseFunctionType(type_start, false, throw_error);
+        return ParseFunctionType(typeStart, false, throwError);
     }
 
     auto *result = AllocNode<ir::TSParenthesizedType>(type);
-    result->SetRange({type_start, end_loc});
+    result->SetRange({typeStart, endLoc});
 
     return result;
 }
 
-ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition start_loc, bool is_construction_type, bool throw_error,
-                                          bool abstract_constructor)
+ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition startLoc, bool isConstructionType, bool throwError,
+                                          bool abstractConstructor)
 {
-    ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
+    ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto options = throw_error ? TypeAnnotationParsingOptions::THROW_ERROR : TypeAnnotationParsingOptions::NO_OPTS;
-        type_param_decl = ParseTypeParameterDeclaration(&options);
+        auto options = throwError ? TypeAnnotationParsingOptions::THROW_ERROR : TypeAnnotationParsingOptions::NO_OPTS;
+        typeParamDecl = ParseTypeParameterDeclaration(&options);
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-            if (!throw_error) {
+            if (!throwError) {
                 return nullptr;
             }
 
@@ -1449,24 +1449,24 @@ ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition start_loc, bool 
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
-    ir::TypeNode *return_type_annotation = ParseTypeAnnotation(&options);
+    ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
 
-    ir::TypeNode *func_type = nullptr;
+    ir::TypeNode *funcType = nullptr;
 
-    ir::FunctionSignature signature(type_param_decl, std::move(params), return_type_annotation);
+    ir::FunctionSignature signature(typeParamDecl, std::move(params), returnTypeAnnotation);
 
-    if (is_construction_type) {
-        func_type = AllocNode<ir::TSConstructorType>(std::move(signature), abstract_constructor);
+    if (isConstructionType) {
+        funcType = AllocNode<ir::TSConstructorType>(std::move(signature), abstractConstructor);
     } else {
-        func_type = AllocNode<ir::TSFunctionType>(std::move(signature));
+        funcType = AllocNode<ir::TSFunctionType>(std::move(signature));
     }
 
-    func_type->SetRange({start_loc, return_type_annotation->End()});
+    funcType->SetRange({startLoc, returnTypeAnnotation->End()});
 
-    return func_type;
+    return funcType;
 }
 
-ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation, TypeAnnotationParsingOptions *options)
+ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *typeAnnotation, TypeAnnotationParsingOptions *options)
 {
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
@@ -1475,35 +1475,35 @@ ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation
                 break;
             }
 
-            return ParseUnionType(type_annotation, ((*options) & TypeAnnotationParsingOptions::RESTRICT_EXTENDS) != 0);
+            return ParseUnionType(typeAnnotation, ((*options) & TypeAnnotationParsingOptions::RESTRICT_EXTENDS) != 0);
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
             if (((*options) & TypeAnnotationParsingOptions::IN_INTERSECTION) != 0) {
                 break;
             }
 
-            return ParseIntersectionType(type_annotation, ((*options) & TypeAnnotationParsingOptions::IN_UNION) != 0,
+            return ParseIntersectionType(typeAnnotation, ((*options) & TypeAnnotationParsingOptions::IN_UNION) != 0,
                                          ((*options) & TypeAnnotationParsingOptions::RESTRICT_EXTENDS) != 0);
         }
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
         case lexer::TokenType::KEYW_NEW: {
-            return ParseParenthesizedOrFunctionType(type_annotation,
+            return ParseParenthesizedOrFunctionType(typeAnnotation,
                                                     ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0);
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            if (type_annotation != nullptr) {
+            if (typeAnnotation != nullptr) {
                 if (Lexer()->Lookahead() == lexer::LEX_CHAR_RIGHT_SQUARE) {
-                    return ParseArrayType(type_annotation);
+                    return ParseArrayType(typeAnnotation);
                 }
 
-                return ParseIndexAccessType(type_annotation);
+                return ParseIndexAccessType(typeAnnotation);
             }
 
             return ParseTupleType();
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            return ParseTypeLiteralOrMappedType(type_annotation);
+            return ParseTypeLiteralOrMappedType(typeAnnotation);
         }
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::LITERAL_NUMBER:
@@ -1512,26 +1512,26 @@ ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation
         case lexer::TokenType::LITERAL_TRUE:
         case lexer::TokenType::LITERAL_NULL:
         case lexer::TokenType::KEYW_VOID: {
-            if (type_annotation != nullptr) {
+            if (typeAnnotation != nullptr) {
                 break;
             }
 
             return ParseBasicType();
         }
         case lexer::TokenType::KEYW_TYPEOF: {
-            if (type_annotation != nullptr) {
+            if (typeAnnotation != nullptr) {
                 break;
             }
 
             return ParseTypeReferenceOrQuery(true);
         }
         case lexer::TokenType::KEYW_IMPORT: {
-            if (type_annotation != nullptr) {
+            if (typeAnnotation != nullptr) {
                 break;
             }
 
-            lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
-            return ParseImportType(start_loc);
+            lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+            return ParseImportType(startLoc);
         }
         case lexer::TokenType::KEYW_CONST: {
             if (((*options) & TypeAnnotationParsingOptions::ALLOW_CONST) == 0) {
@@ -1543,12 +1543,12 @@ ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation
         }
         case lexer::TokenType::LITERAL_IDENT: {
             if (IsStartOfAbstractConstructorType()) {
-                return ParseParenthesizedOrFunctionType(type_annotation,
+                return ParseParenthesizedOrFunctionType(typeAnnotation,
                                                         ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0);
             }
 
             return ParseTypeReferenceOrTypePredicate(
-                type_annotation, ((*options) & TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE) != 0);
+                typeAnnotation, ((*options) & TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE) != 0);
         }
         case lexer::TokenType::KEYW_EXTENDS: {
             if (((*options) &
@@ -1556,16 +1556,16 @@ ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation
                 break;
             }
 
-            if (type_annotation == nullptr) {
+            if (typeAnnotation == nullptr) {
                 return ParseIdentifierReference();
             }
 
-            return ParseConditionalType(type_annotation,
+            return ParseConditionalType(typeAnnotation,
                                         ((*options) & TypeAnnotationParsingOptions::RESTRICT_EXTENDS) != 0);
         }
         case lexer::TokenType::KEYW_THIS: {
             return ParseThisTypeOrTypePredicate(
-                type_annotation, ((*options) & TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE) != 0,
+                typeAnnotation, ((*options) & TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE) != 0,
                 ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0);
         }
         default: {
@@ -1573,7 +1573,7 @@ ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation
         }
     }
 
-    if (type_annotation == nullptr && (((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0)) {
+    if (typeAnnotation == nullptr && (((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0)) {
         ThrowSyntaxError("Type expected");
     }
 
@@ -1583,57 +1583,56 @@ ir::TypeNode *TSParser::ParseTypeAnnotationElement(ir::TypeNode *type_annotation
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ObjectExpression *TSParser::ParseObjectExpression(ExpressionParseFlags flags)
 {
-    ir::ObjectExpression *obj_expression = ParserImpl::ParseObjectExpression(flags);
-    ParsePotentialOptionalFunctionParameter(obj_expression);
-    return obj_expression;
+    ir::ObjectExpression *objExpression = ParserImpl::ParseObjectExpression(flags);
+    ParsePotentialOptionalFunctionParameter(objExpression);
+    return objExpression;
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ArrayExpression *TSParser::ParseArrayExpression(ExpressionParseFlags flags)
 {
-    ir::ArrayExpression *array_expression = ParserImpl::ParseArrayExpression(flags);
-    ParsePotentialOptionalFunctionParameter(array_expression);
-    return array_expression;
+    ir::ArrayExpression *arrayExpression = ParserImpl::ParseArrayExpression(flags);
+    ParsePotentialOptionalFunctionParameter(arrayExpression);
+    return arrayExpression;
 }
 
-ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Expression **return_expression,
-                                                                     const lexer::SourcePosition &start_loc)
+ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Expression **returnExpression,
+                                                                     const lexer::SourcePosition &startLoc)
 {
-    ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
+    ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
-            *return_expression = ParseFunctionExpression(ParserStatus::ASYNC_FUNCTION);
-            (*return_expression)->SetStart(start_loc);
+            *returnExpression = ParseFunctionExpression(ParserStatus::ASYNC_FUNCTION);
+            (*returnExpression)->SetStart(startLoc);
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            ir::Expression *ident_ref = ParsePrimaryExpression();
-            ASSERT(ident_ref->IsIdentifier());
+            ir::Expression *identRef = ParsePrimaryExpression();
+            ASSERT(identRef->IsIdentifier());
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
                 ThrowSyntaxError("Unexpected token, expected '=>'");
             }
 
-            ir::ArrowFunctionExpression *arrow_func_expr =
-                ParseArrowFunctionExpression(ident_ref, nullptr, nullptr, true);
-            arrow_func_expr->SetStart(start_loc);
+            ir::ArrowFunctionExpression *arrowFuncExpr = ParseArrowFunctionExpression(identRef, nullptr, nullptr, true);
+            arrowFuncExpr->SetStart(startLoc);
 
-            return arrow_func_expr;
+            return arrowFuncExpr;
         }
         case lexer::TokenType::PUNCTUATOR_ARROW: {
-            ir::ArrowFunctionExpression *arrow_func_expr =
-                ParseArrowFunctionExpression(*return_expression, nullptr, nullptr, true);
-            arrow_func_expr->SetStart(start_loc);
-            return arrow_func_expr;
+            ir::ArrowFunctionExpression *arrowFuncExpr =
+                ParseArrowFunctionExpression(*returnExpression, nullptr, nullptr, true);
+            arrowFuncExpr->SetStart(startLoc);
+            return arrowFuncExpr;
         }
         case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
-            const auto saved_pos = Lexer()->Save();
+            const auto savedPos = Lexer()->Save();
 
             auto options = TypeAnnotationParsingOptions::NO_OPTS;
-            type_param_decl = ParseTypeParameterDeclaration(&options);
-            if (type_param_decl == nullptr) {
-                Lexer()->Rewind(saved_pos);
+            typeParamDecl = ParseTypeParameterDeclaration(&options);
+            if (typeParamDecl == nullptr) {
+                Lexer()->Rewind(savedPos);
                 return nullptr;
             }
 
@@ -1644,28 +1643,28 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
             [[fallthrough]];
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-            ir::CallExpression *call_expression = ParseCallExpression(*return_expression, false);
+            ir::CallExpression *callExpression = ParseCallExpression(*returnExpression, false);
 
-            ir::TypeNode *return_type_annotation = nullptr;
+            ir::TypeNode *returnTypeAnnotation = nullptr;
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
                 Lexer()->NextToken();  // eat ':'
                 TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-                return_type_annotation = ParseTypeAnnotation(&options);
+                returnTypeAnnotation = ParseTypeAnnotation(&options);
             }
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW) {
-                ir::ArrowFunctionExpression *arrow_func_expr =
-                    ParseArrowFunctionExpression(call_expression, type_param_decl, return_type_annotation, true);
-                arrow_func_expr->SetStart(start_loc);
+                ir::ArrowFunctionExpression *arrowFuncExpr =
+                    ParseArrowFunctionExpression(callExpression, typeParamDecl, returnTypeAnnotation, true);
+                arrowFuncExpr->SetStart(startLoc);
 
-                return arrow_func_expr;
+                return arrowFuncExpr;
             }
 
-            if (return_type_annotation != nullptr || type_param_decl != nullptr) {
+            if (returnTypeAnnotation != nullptr || typeParamDecl != nullptr) {
                 ThrowSyntaxError("'=>' expected");
             }
 
-            *return_expression = call_expression;
+            *returnExpression = callExpression;
             break;
         }
         default: {
@@ -1676,25 +1675,25 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
     return nullptr;
 }
 
-bool TSParser::ParsePotentialGenericFunctionCall(ir::Expression *primary_expr, ir::Expression **return_expression,
-                                                 const lexer::SourcePosition &start_loc, bool ignore_call_expression)
+bool TSParser::ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
+                                                 const lexer::SourcePosition &startLoc, bool ignoreCallExpression)
 {
     if (Lexer()->Lookahead() == lexer::LEX_CHAR_LESS_THAN ||
-        (!primary_expr->IsIdentifier() && !primary_expr->IsMemberExpression())) {
+        (!primaryExpr->IsIdentifier() && !primaryExpr->IsMemberExpression())) {
         return true;
     }
 
-    const auto saved_pos = Lexer()->Save();
+    const auto savedPos = Lexer()->Save();
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
         Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
     }
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
-    ir::TSTypeParameterInstantiation *type_params = ParseTypeParameterInstantiation(&options);
+    ir::TSTypeParameterInstantiation *typeParams = ParseTypeParameterInstantiation(&options);
 
-    if (type_params == nullptr) {
-        Lexer()->Rewind(saved_pos);
+    if (typeParams == nullptr) {
+        Lexer()->Rewind(savedPos);
         return true;
     }
 
@@ -1703,9 +1702,9 @@ bool TSParser::ParsePotentialGenericFunctionCall(ir::Expression *primary_expr, i
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        if (!ignore_call_expression) {
-            *return_expression = ParseCallExpression(*return_expression, false);
-            (*return_expression)->AsCallExpression()->SetTypeParams(type_params);
+        if (!ignoreCallExpression) {
+            *returnExpression = ParseCallExpression(*returnExpression, false);
+            (*returnExpression)->AsCallExpression()->SetTypeParams(typeParams);
             return false;
         }
 
@@ -1713,26 +1712,26 @@ bool TSParser::ParsePotentialGenericFunctionCall(ir::Expression *primary_expr, i
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
-        ir::TemplateLiteral *property_node = ParseTemplateLiteral();
-        lexer::SourcePosition end_loc = property_node->End();
+        ir::TemplateLiteral *propertyNode = ParseTemplateLiteral();
+        lexer::SourcePosition endLoc = propertyNode->End();
 
-        *return_expression = AllocNode<ir::TaggedTemplateExpression>(*return_expression, property_node, type_params);
-        (*return_expression)->SetRange({start_loc, end_loc});
+        *returnExpression = AllocNode<ir::TaggedTemplateExpression>(*returnExpression, propertyNode, typeParams);
+        (*returnExpression)->SetRange({startLoc, endLoc});
         return false;
     }
 
-    Lexer()->Rewind(saved_pos);
+    Lexer()->Rewind(savedPos);
     return true;
 }
 
-bool TSParser::ParsePotentialNonNullExpression(ir::Expression **return_expression, lexer::SourcePosition start_loc)
+bool TSParser::ParsePotentialNonNullExpression(ir::Expression **returnExpression, lexer::SourcePosition startLoc)
 {
-    if (return_expression == nullptr || Lexer()->GetToken().NewLine()) {
+    if (returnExpression == nullptr || Lexer()->GetToken().NewLine()) {
         return true;
     }
 
-    *return_expression = AllocNode<ir::TSNonNullExpression>(*return_expression);
-    (*return_expression)->SetRange({start_loc, Lexer()->GetToken().End()});
+    *returnExpression = AllocNode<ir::TSNonNullExpression>(*returnExpression);
+    (*returnExpression)->SetRange({startLoc, Lexer()->GetToken().End()});
     Lexer()->NextToken();
     return false;
 }
@@ -1745,80 +1744,80 @@ bool TSParser::IsNamedFunctionExpression()
 
 ir::Identifier *TSParser::ParsePrimaryExpressionIdent([[maybe_unused]] ExpressionParseFlags flags)
 {
-    auto *ident_node = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    ident_node->SetReference();
-    ident_node->SetRange(Lexer()->GetToken().Loc());
+    auto *identNode = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    identNode->SetReference();
+    identNode->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
 
-    ParsePotentialOptionalFunctionParameter(ident_node);
+    ParsePotentialOptionalFunctionParameter(identNode);
 
-    return ident_node;
+    return identNode;
 }
 
-void TSParser::ValidateArrowFunctionRestParameter(ir::SpreadElement *rest_element)
+void TSParser::ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement)
 {
-    ParseOptionalFunctionParameter(rest_element, true);
+    ParseOptionalFunctionParameter(restElement, true);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("')' expected");
     }
 }
 
-ir::TSSignatureDeclaration *TSParser::ParseSignatureMember(bool is_call_signature)
+ir::TSSignatureDeclaration *TSParser::ParseSignatureMember(bool isCallSignature)
 {
-    lexer::SourcePosition member_start_loc = Lexer()->GetToken().Start();
+    lexer::SourcePosition memberStartLoc = Lexer()->GetToken().Start();
 
-    if (!is_call_signature) {
+    if (!isCallSignature) {
         Lexer()->NextToken();  // eat 'new' keyword
     }
 
-    ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
+    ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
-        type_param_decl = ParseTypeParameterDeclaration(&options);
+        typeParamDecl = ParseTypeParameterDeclaration(&options);
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
             ThrowSyntaxError("'(' expected");
         }
     }
 
-    FunctionParameterContext func_param_context(&GetContext());
+    FunctionParameterContext funcParamContext(&GetContext());
     auto params = ParseFunctionParams();
 
-    ir::TypeNode *type_annotation = nullptr;
+    ir::TypeNode *typeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options =
             TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
-        type_annotation = ParseTypeAnnotation(&options);
+        typeAnnotation = ParseTypeAnnotation(&options);
     }
 
-    auto kind = is_call_signature ? ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE
-                                  : ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CONSTRUCT_SIGNATURE;
-    auto *signature_member = AllocNode<ir::TSSignatureDeclaration>(
-        kind, ir::FunctionSignature(type_param_decl, std::move(params), type_annotation));
-    signature_member->SetRange({member_start_loc, Lexer()->GetToken().End()});
+    auto kind = isCallSignature ? ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE
+                                : ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CONSTRUCT_SIGNATURE;
+    auto *signatureMember = AllocNode<ir::TSSignatureDeclaration>(
+        kind, ir::FunctionSignature(typeParamDecl, std::move(params), typeAnnotation));
+    signatureMember->SetRange({memberStartLoc, Lexer()->GetToken().End()});
 
-    return signature_member;
+    return signatureMember;
 }
 
 bool TSParser::IsPotentiallyIndexSignature()
 {
-    const auto saved_pos = Lexer()->Save();
+    const auto savedPos = Lexer()->Save();
 
     Lexer()->NextToken();  // eat '['
 
-    bool is_index_signature =
+    bool isIndexSignature =
         Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && Lexer()->Lookahead() == lexer::LEX_CHAR_COLON;
 
-    Lexer()->Rewind(saved_pos);
+    Lexer()->Rewind(savedPos);
 
-    return is_index_signature;
+    return isIndexSignature;
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::TSIndexSignature *TSParser::ParseIndexSignature(const lexer::SourcePosition &start_loc, bool is_readonly)
+ir::TSIndexSignature *TSParser::ParseIndexSignature(const lexer::SourcePosition &startLoc, bool isReadonly)
 {
     Lexer()->NextToken();  // eat '['
 
@@ -1833,15 +1832,15 @@ ir::TSIndexSignature *TSParser::ParseIndexSignature(const lexer::SourcePosition 
     Lexer()->NextToken();  // eat ':'
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-    ir::TypeNode *key_type = ParseTypeAnnotation(&options);
+    ir::TypeNode *keyType = ParseTypeAnnotation(&options);
 
-    if (!key_type->IsTSNumberKeyword() && !key_type->IsTSStringKeyword()) {
+    if (!keyType->IsTSNumberKeyword() && !keyType->IsTSStringKeyword()) {
         ThrowSyntaxError(
             "An index signature parameter type must be either "
             "'string' or 'number'");
     }
 
-    key->SetTsTypeAnnotation(key_type);
+    key->SetTsTypeAnnotation(keyType);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         ThrowSyntaxError("']' expected.");
@@ -1855,17 +1854,17 @@ ir::TSIndexSignature *TSParser::ParseIndexSignature(const lexer::SourcePosition 
 
     Lexer()->NextToken();  // eat ':'
 
-    ir::TypeNode *type_annotation = ParseTypeAnnotation(&options);
+    ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
-    auto *index_signature = AllocNode<ir::TSIndexSignature>(key, type_annotation, is_readonly);
-    index_signature->SetRange({start_loc, Lexer()->GetToken().End()});
-    return index_signature;
+    auto *indexSignature = AllocNode<ir::TSIndexSignature>(key, typeAnnotation, isReadonly);
+    indexSignature->SetRange({startLoc, Lexer()->GetToken().End()});
+    return indexSignature;
 }
 
 std::tuple<ir::Expression *, bool> TSParser::ParseInterfacePropertyKey()
 {
     ir::Expression *key = nullptr;
-    bool is_computed = false;
+    bool isComputed = false;
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
@@ -1894,7 +1893,7 @@ std::tuple<ir::Expression *, bool> TSParser::ParseInterfacePropertyKey()
             Lexer()->NextToken();  // eat left square bracket
 
             key = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
-            is_computed = true;
+            isComputed = true;
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
                 ThrowSyntaxError("Unexpected token, expected ']'");
@@ -1907,27 +1906,27 @@ std::tuple<ir::Expression *, bool> TSParser::ParseInterfacePropertyKey()
     }
 
     Lexer()->NextToken();
-    return {key, is_computed};
+    return {key, isComputed};
 }
 
 void TSParser::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, varbinder::VariableFlags flags)
 {
-    varbinder::Variable *prop_var = nullptr;
-    bool is_method = (flags & varbinder::VariableFlags::METHOD) != 0;
-    util::StringView prop_name = "__computed";
+    varbinder::Variable *propVar = nullptr;
+    bool isMethod = (flags & varbinder::VariableFlags::METHOD) != 0;
+    util::StringView propName = "__computed";
 
     switch (key->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            prop_name = key->AsIdentifier()->Name();
+            propName = key->AsIdentifier()->Name();
             break;
         }
         case ir::AstNodeType::NUMBER_LITERAL: {
-            prop_name = key->AsNumberLiteral()->Str();
+            propName = key->AsNumberLiteral()->Str();
             flags |= varbinder::VariableFlags::NUMERIC_NAME;
             break;
         }
         case ir::AstNodeType::STRING_LITERAL: {
-            prop_name = key->AsStringLiteral()->Str();
+            propName = key->AsStringLiteral()->Str();
             break;
         }
         default: {
@@ -1936,80 +1935,80 @@ void TSParser::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expressi
         }
     }
 
-    prop_var = is_method ? varbinder::Scope::CreateVar<varbinder::MethodDecl>(Allocator(), prop_name, flags, node)
-                         : varbinder::Scope::CreateVar<varbinder::PropertyDecl>(Allocator(), prop_name, flags, node);
+    propVar = isMethod ? varbinder::Scope::CreateVar<varbinder::MethodDecl>(Allocator(), propName, flags, node)
+                       : varbinder::Scope::CreateVar<varbinder::PropertyDecl>(Allocator(), propName, flags, node);
 
-    node->SetVariable(prop_var);
+    node->SetVariable(propVar);
 }
 
-ir::AstNode *TSParser::ParsePropertyOrMethodSignature(const lexer::SourcePosition &start_loc, bool is_readonly)
+ir::AstNode *TSParser::ParsePropertyOrMethodSignature(const lexer::SourcePosition &startLoc, bool isReadonly)
 {
     auto [key, isComputed] = ParseInterfacePropertyKey();
 
-    bool is_optional = false;
+    bool isOptional = false;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-        is_optional = true;
+        isOptional = true;
         Lexer()->NextToken();  // eat '?'
     }
 
     varbinder::VariableFlags flags = varbinder::VariableFlags::NONE;
 
-    if (is_optional) {
+    if (isOptional) {
         flags |= varbinder::VariableFlags::OPTIONAL;
     }
 
-    if (is_readonly) {
+    if (isReadonly) {
         flags |= varbinder::VariableFlags::READONLY;
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        if (is_readonly) {
+        if (isReadonly) {
             ThrowSyntaxError("'readonly' modifier can only appear on a property declaration or index signature.",
-                             start_loc);
+                             startLoc);
         }
 
-        ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
+        ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
             auto options = TypeAnnotationParsingOptions::THROW_ERROR;
-            type_param_decl = ParseTypeParameterDeclaration(&options);
+            typeParamDecl = ParseTypeParameterDeclaration(&options);
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
             ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
         }
 
-        FunctionParameterContext func_param_context(&GetContext());
+        FunctionParameterContext funcParamContext(&GetContext());
         auto params = ParseFunctionParams();
 
-        ir::TypeNode *return_type = nullptr;
+        ir::TypeNode *returnType = nullptr;
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             Lexer()->NextToken();  // eat ':'
             TypeAnnotationParsingOptions options =
                 TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
-            return_type = ParseTypeAnnotation(&options);
+            returnType = ParseTypeAnnotation(&options);
         }
 
-        auto *method_signature = AllocNode<ir::TSMethodSignature>(
-            key, ir::FunctionSignature(type_param_decl, std::move(params), return_type), isComputed, is_optional);
-        CreateTSVariableForProperty(method_signature, key, flags | varbinder::VariableFlags::METHOD);
-        method_signature->SetRange({start_loc, Lexer()->GetToken().End()});
-        return method_signature;
+        auto *methodSignature = AllocNode<ir::TSMethodSignature>(
+            key, ir::FunctionSignature(typeParamDecl, std::move(params), returnType), isComputed, isOptional);
+        CreateTSVariableForProperty(methodSignature, key, flags | varbinder::VariableFlags::METHOD);
+        methodSignature->SetRange({startLoc, Lexer()->GetToken().End()});
+        return methodSignature;
     }
 
-    ir::TypeNode *type_annotation = nullptr;
+    ir::TypeNode *typeAnnotation = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options =
             TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::BREAK_AT_NEW_LINE;
-        type_annotation = ParseTypeAnnotation(&options);
+        typeAnnotation = ParseTypeAnnotation(&options);
     }
 
-    auto *property_signature =
-        AllocNode<ir::TSPropertySignature>(key, type_annotation, isComputed, is_optional, is_readonly);
-    CreateTSVariableForProperty(property_signature, key, flags | varbinder::VariableFlags::PROPERTY);
-    property_signature->SetRange({start_loc, Lexer()->GetToken().End()});
-    return property_signature;
+    auto *propertySignature =
+        AllocNode<ir::TSPropertySignature>(key, typeAnnotation, isComputed, isOptional, isReadonly);
+    CreateTSVariableForProperty(propertySignature, key, flags | varbinder::VariableFlags::PROPERTY);
+    propertySignature->SetRange({startLoc, Lexer()->GetToken().End()});
+    return propertySignature;
 }
 
 ir::AstNode *TSParser::ParseTypeLiteralOrInterfaceMember()
@@ -2023,31 +2022,31 @@ ir::AstNode *TSParser::ParseTypeLiteralOrInterfaceMember()
         return ParseSignatureMember(true);
     }
 
-    char32_t next_cp = Lexer()->Lookahead();
+    char32_t nextCp = Lexer()->Lookahead();
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_NEW &&
-        (next_cp == lexer::LEX_CHAR_LEFT_PAREN || next_cp == lexer::LEX_CHAR_LESS_THAN)) {
+        (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN)) {
         return ParseSignatureMember(false);
     }
 
-    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
-    bool is_readonly = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY &&
-                       next_cp != lexer::LEX_CHAR_LEFT_PAREN && next_cp != lexer::LEX_CHAR_COLON &&
-                       next_cp != lexer::LEX_CHAR_COMMA;
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+    bool isReadonly = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY &&
+                      nextCp != lexer::LEX_CHAR_LEFT_PAREN && nextCp != lexer::LEX_CHAR_COLON &&
+                      nextCp != lexer::LEX_CHAR_COMMA;
 
-    if (is_readonly) {
+    if (isReadonly) {
         Lexer()->NextToken();  // eat 'readonly"
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
         IsPotentiallyIndexSignature()) {
-        return ParseIndexSignature(start_loc, is_readonly);
+        return ParseIndexSignature(startLoc, isReadonly);
     }
 
-    return ParsePropertyOrMethodSignature(start_loc, is_readonly);
+    return ParsePropertyOrMethodSignature(startLoc, isReadonly);
 }
 
 void TSParser::ValidateFunctionParam(const ArenaVector<ir::Expression *> &params, const ir::Expression *parameter,
-                                     bool *seen_optional)
+                                     bool *seenOptional)
 {
     if (!parameter->IsIdentifier()) {
         GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
@@ -2061,15 +2060,15 @@ void TSParser::ValidateFunctionParam(const ArenaVector<ir::Expression *> &params
         return;
     }
 
-    bool current_is_optional = parameter->AsIdentifier()->IsOptional();
-    if (*seen_optional && !current_is_optional) {
+    bool currentIsOptional = parameter->AsIdentifier()->IsOptional();
+    if (*seenOptional && !currentIsOptional) {
         ThrowSyntaxError("A required parameter cannot follow an optional parameter");
     }
 
-    *seen_optional |= current_is_optional;
-    const util::StringView &param_name = parameter->AsIdentifier()->Name();
+    *seenOptional |= currentIsOptional;
+    const util::StringView &paramName = parameter->AsIdentifier()->Name();
 
-    if (param_name.Is("this")) {
+    if (paramName.Is("this")) {
         if (!params.empty()) {
             ThrowSyntaxError("A 'this' parameter must be the first parameter");
         }
@@ -2087,7 +2086,7 @@ void TSParser::ValidateFunctionParam(const ArenaVector<ir::Expression *> &params
         }
     }
 
-    if (param_name.Is("constructor") && ((GetContext().Status() & ParserStatus::CONSTRUCTOR_FUNCTION) != 0)) {
+    if (paramName.Is("constructor") && ((GetContext().Status() & ParserStatus::CONSTRUCTOR_FUNCTION) != 0)) {
         ThrowSyntaxError("'constructor' cannot be used as a parameter property name");
     }
 }
@@ -2098,7 +2097,7 @@ ArenaVector<ir::Expression *> TSParser::ParseFunctionParams()
     Lexer()->NextToken();
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    bool seen_optional = false;
+    bool seenOptional = false;
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
@@ -2110,7 +2109,7 @@ ArenaVector<ir::Expression *> TSParser::ParseFunctionParams()
         }
 
         ir::Expression *parameter = ParseFunctionParameter();
-        ValidateFunctionParam(params, parameter, &seen_optional);
+        ValidateFunctionParam(params, parameter, &seenOptional);
 
         if (!decorators.empty()) {
             parameter->AddDecorators(std::move(decorators));
@@ -2138,8 +2137,8 @@ ir::TSParameterProperty *TSParser::CreateParameterProperty(ir::Expression *param
 {
     auto accessibility = ir::AccessibilityOption::NO_OPTS;
     bool readonly = false;
-    bool is_static = false;
-    bool is_export = false;
+    bool isStatic = false;
+    bool isExport = false;
 
     if ((modifiers & ir::ModifierFlags::PRIVATE) != 0) {
         accessibility = ir::AccessibilityOption::PRIVATE;
@@ -2154,12 +2153,12 @@ ir::TSParameterProperty *TSParser::CreateParameterProperty(ir::Expression *param
     }
 
     if ((modifiers & ir::ModifierFlags::STATIC) != 0) {
-        is_static = true;
+        isStatic = true;
     }
 
     // NOTE(Csaba Repasi): Handle export property of TSParameterProperty
 
-    return AllocNode<ir::TSParameterProperty>(accessibility, parameter, readonly, is_static, is_export);
+    return AllocNode<ir::TSParameterProperty>(accessibility, parameter, readonly, isStatic, isExport);
 }
 
 ir::Expression *TSParser::ParseFunctionParameter()
@@ -2168,38 +2167,37 @@ ir::Expression *TSParser::ParseFunctionParameter()
         Lexer()->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
     }
 
-    lexer::SourcePosition parameter_start = Lexer()->GetToken().Start();
+    lexer::SourcePosition parameterStart = Lexer()->GetToken().Start();
     ir::ModifierFlags modifiers = ParseModifiers();
     // NOTE(Csaba Repasi): throw error if using strick mode reserved keyword here
     if (((GetContext().Status() & ParserStatus::CONSTRUCTOR_FUNCTION) == 0) && modifiers != ir::ModifierFlags::NONE) {
-        ThrowSyntaxError("A parameter property is only allowed in a constructor implementation.", parameter_start);
+        ThrowSyntaxError("A parameter property is only allowed in a constructor implementation.", parameterStart);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         CheckRestrictedBinding();
     }
 
-    ir::Expression *function_parameter = ParsePatternElement(ExpressionParseFlags::NO_OPTS, true);
+    ir::Expression *functionParameter = ParsePatternElement(ExpressionParseFlags::NO_OPTS, true);
 
-    if (modifiers != ir::ModifierFlags::NONE && function_parameter->IsRestElement()) {
-        ThrowSyntaxError("A parameter property cannot be declared using a rest parameter.", parameter_start);
+    if (modifiers != ir::ModifierFlags::NONE && functionParameter->IsRestElement()) {
+        ThrowSyntaxError("A parameter property cannot be declared using a rest parameter.", parameterStart);
     }
 
     if (modifiers != ir::ModifierFlags::NONE &&
-        (function_parameter->IsArrayPattern() || function_parameter->IsObjectPattern() ||
-         (function_parameter->IsAssignmentPattern() &&
-          (function_parameter->AsAssignmentPattern()->Left()->IsArrayPattern() ||
-           function_parameter->AsAssignmentPattern()->Left()->IsObjectPattern())))) {
-        ThrowSyntaxError("A parameter property may not be declared using a binding pattern.", parameter_start);
+        (functionParameter->IsArrayPattern() || functionParameter->IsObjectPattern() ||
+         (functionParameter->IsAssignmentPattern() &&
+          (functionParameter->AsAssignmentPattern()->Left()->IsArrayPattern() ||
+           functionParameter->AsAssignmentPattern()->Left()->IsObjectPattern())))) {
+        ThrowSyntaxError("A parameter property may not be declared using a binding pattern.", parameterStart);
     }
 
     if (modifiers != ir::ModifierFlags::NONE) {
-        function_parameter = CreateParameterProperty(function_parameter, modifiers);
-        function_parameter->SetRange(
-            {parameter_start, function_parameter->AsTSParameterProperty()->Parameter()->End()});
+        functionParameter = CreateParameterProperty(functionParameter, modifiers);
+        functionParameter->SetRange({parameterStart, functionParameter->AsTSParameterProperty()->Parameter()->End()});
     }
 
-    return function_parameter;
+    return functionParameter;
 }
 
 ir::TypeNode *TSParser::ParseClassKeyAnnotation()
@@ -2214,25 +2212,25 @@ ir::TypeNode *TSParser::ParseClassKeyAnnotation()
     return nullptr;
 }
 
-void TSParser::ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *type_annotation)
+void TSParser::ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *typeAnnotation)
 {
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS && desc->is_private_ident) {
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS && desc->isPrivateIdent) {
         ThrowSyntaxError("A method cannot be named with a private identifier");
     }
 
-    if (type_annotation == nullptr && (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
-                                       Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN)) {
+    if (typeAnnotation == nullptr && (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
+                                      Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN)) {
         if (((desc->modifiers & (ir::ModifierFlags::DECLARE | ir::ModifierFlags::READONLY)) != 0)) {
             ThrowSyntaxError("Class method can not be declare nor readonly");
         }
-        desc->class_method = true;
+        desc->classMethod = true;
     } else {
-        if (((desc->modifiers & ir::ModifierFlags::ASYNC) != 0) || desc->is_generator) {
+        if (((desc->modifiers & ir::ModifierFlags::ASYNC) != 0) || desc->isGenerator) {
             ThrowSyntaxError("Expected '('");
         }
-        desc->class_field = true;
+        desc->classField = true;
 
-        if (desc->invalid_computed_property) {
+        if (desc->invalidComputedProperty) {
             ThrowSyntaxError(
                 "Computed property name must refer to a symbol or "
                 "literal expression whose value is "
@@ -2241,64 +2239,64 @@ void TSParser::ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNo
     }
 
     if ((desc->modifiers & ir::ModifierFlags::ASYNC) != 0) {
-        desc->new_status |= ParserStatus::ASYNC_FUNCTION;
+        desc->newStatus |= ParserStatus::ASYNC_FUNCTION;
     }
 
-    if (desc->is_generator) {
-        desc->new_status |= ParserStatus::GENERATOR_FUNCTION;
+    if (desc->isGenerator) {
+        desc->newStatus |= ParserStatus::GENERATOR_FUNCTION;
     }
 }
 
 ir::MethodDefinition *TSParser::ParseClassMethod(ClassElementDescriptor *desc,
-                                                 const ArenaVector<ir::AstNode *> &properties,
-                                                 ir::Expression *prop_name, lexer::SourcePosition *prop_end)
+                                                 const ArenaVector<ir::AstNode *> &properties, ir::Expression *propName,
+                                                 lexer::SourcePosition *propEnd)
 {
-    if (desc->method_kind == ir::MethodDefinitionKind::SET || desc->method_kind == ir::MethodDefinitionKind::GET) {
-        desc->new_status |= ParserStatus::ACCESSOR_FUNCTION;
+    if (desc->methodKind == ir::MethodDefinitionKind::SET || desc->methodKind == ir::MethodDefinitionKind::GET) {
+        desc->newStatus |= ParserStatus::ACCESSOR_FUNCTION;
     }
 
-    desc->new_status |= ParserStatus::IN_METHOD_DEFINITION;
+    desc->newStatus |= ParserStatus::IN_METHOD_DEFINITION;
 
-    if (InAmbientContext() && (desc->new_status & ParserStatus::ASYNC_FUNCTION) != 0) {
+    if (InAmbientContext() && (desc->newStatus & ParserStatus::ASYNC_FUNCTION) != 0) {
         ThrowSyntaxError("'async' modifier cannot be used in an ambient context.");
     }
 
-    if (InAmbientContext() && desc->is_generator) {
+    if (InAmbientContext() && desc->isGenerator) {
         ThrowSyntaxError("Generators are not allowed in an ambient context.");
     }
 
-    if (desc->method_kind != ir::MethodDefinitionKind::SET &&
-        ((desc->new_status & ParserStatus::CONSTRUCTOR_FUNCTION) == 0)) {
-        desc->new_status |= ParserStatus::NEED_RETURN_TYPE;
+    if (desc->methodKind != ir::MethodDefinitionKind::SET &&
+        ((desc->newStatus & ParserStatus::CONSTRUCTOR_FUNCTION) == 0)) {
+        desc->newStatus |= ParserStatus::NEED_RETURN_TYPE;
     }
 
-    ir::ScriptFunction *func = ParseFunction(desc->new_status);
+    ir::ScriptFunction *func = ParseFunction(desc->newStatus);
 
     if (func->IsOverload() && !desc->decorators.empty()) {
         ThrowSyntaxError("A decorator can only decorate a method implementation, not an overload.",
                          desc->decorators.front()->Start());
     }
 
-    auto *func_expr = AllocNode<ir::FunctionExpression>(func);
-    func_expr->SetRange(func->Range());
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    funcExpr->SetRange(func->Range());
 
-    if (desc->method_kind == ir::MethodDefinitionKind::SET) {
-        ValidateClassSetter(desc, properties, prop_name, func);
-    } else if (desc->method_kind == ir::MethodDefinitionKind::GET) {
-        ValidateClassGetter(desc, properties, prop_name, func);
+    if (desc->methodKind == ir::MethodDefinitionKind::SET) {
+        ValidateClassSetter(desc, properties, propName, func);
+    } else if (desc->methodKind == ir::MethodDefinitionKind::GET) {
+        ValidateClassGetter(desc, properties, propName, func);
     }
 
-    *prop_end = func->End();
+    *propEnd = func->End();
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-    auto *method = AllocNode<ir::MethodDefinition>(desc->method_kind, prop_name, func_expr, desc->modifiers,
-                                                   Allocator(), desc->is_computed);
-    method->SetRange(func_expr->Range());
+    auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
+                                                   desc->isComputed);
+    method->SetRange(funcExpr->Range());
 
     return method;
 }
 
 void TSParser::ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
-                                   ir::Expression *prop_name, ir::ScriptFunction *func)
+                                   ir::Expression *propName, ir::ScriptFunction *func)
 {
     if (func->Params().size() != 1) {
         ThrowSyntaxError("Setter must have exactly one formal parameter");
@@ -2306,12 +2304,12 @@ void TSParser::ValidateClassSetter(ClassElementDescriptor *desc, const ArenaVect
 
     if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
         ir::ModifierFlags access = GetAccessability(desc->modifiers);
-        CheckAccessorPair(properties, prop_name, ir::MethodDefinitionKind::GET, access);
+        CheckAccessorPair(properties, propName, ir::MethodDefinitionKind::GET, access);
     }
 }
 
 void TSParser::ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
-                                   ir::Expression *prop_name, ir::ScriptFunction *func)
+                                   ir::Expression *propName, ir::ScriptFunction *func)
 {
     if (!func->Params().empty()) {
         ThrowSyntaxError("Getter must not have formal parameters");
@@ -2320,13 +2318,13 @@ void TSParser::ValidateClassGetter(ClassElementDescriptor *desc, const ArenaVect
     if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
         ir::ModifierFlags access = GetAccessability(desc->modifiers);
 
-        CheckAccessorPair(properties, prop_name, ir::MethodDefinitionKind::SET, access);
+        CheckAccessorPair(properties, propName, ir::MethodDefinitionKind::SET, access);
     }
 }
 
-void TSParser::ValidateIndexSignatureTypeAnnotation(ir::TypeNode *type_annotation)
+void TSParser::ValidateIndexSignatureTypeAnnotation(ir::TypeNode *typeAnnotation)
 {
-    if (type_annotation == nullptr) {
+    if (typeAnnotation == nullptr) {
         ThrowSyntaxError("An index signature must have a type annotation");
     }
 }
@@ -2364,7 +2362,7 @@ void TSParser::ThrowErrorIfStaticConstructor(ir::ModifierFlags flags)
     }
 }
 
-std::tuple<bool, bool, bool> TSParser::ParseComputedClassFieldOrIndexSignature(ir::Expression **prop_name)
+std::tuple<bool, bool, bool> TSParser::ParseComputedClassFieldOrIndexSignature(ir::Expression **propName)
 {
     Lexer()->NextToken();  // eat left square bracket
 
@@ -2381,38 +2379,38 @@ std::tuple<bool, bool, bool> TSParser::ParseComputedClassFieldOrIndexSignature(i
 
         Lexer()->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        ir::TypeNode *type_annotation = ParseTypeAnnotation(&options);
+        ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
 
-        if (!type_annotation->IsTSNumberKeyword() && !type_annotation->IsTSStringKeyword()) {
+        if (!typeAnnotation->IsTSNumberKeyword() && !typeAnnotation->IsTSStringKeyword()) {
             ThrowSyntaxError(
                 "An index signature parameter type must be either "
                 "'string' or 'number'");
         }
 
-        id->SetTsTypeAnnotation(type_annotation);
+        id->SetTsTypeAnnotation(typeAnnotation);
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
             ThrowSyntaxError("']' expected");
         }
 
-        *prop_name = id;
+        *propName = id;
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
         return {false, false, true};
     }
 
-    *prop_name = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    *propName = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
 
-    bool invalid_computed_property =
-        !(*prop_name)->IsNumberLiteral() && !(*prop_name)->IsStringLiteral() &&
-        !((*prop_name)->IsMemberExpression() && (*prop_name)->AsMemberExpression()->Object()->IsIdentifier() &&
-          (*prop_name)->AsMemberExpression()->Object()->AsIdentifier()->Name().Is("Symbol"));
+    bool invalidComputedProperty =
+        !(*propName)->IsNumberLiteral() && !(*propName)->IsStringLiteral() &&
+        !((*propName)->IsMemberExpression() && (*propName)->AsMemberExpression()->Object()->IsIdentifier() &&
+          (*propName)->AsMemberExpression()->Object()->AsIdentifier()->Name().Is("Symbol"));
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         ThrowSyntaxError("Unexpected token, expected ']'");
     }
 
-    return {true, invalid_computed_property, false};
+    return {true, invalidComputedProperty, false};
 }
 
 ir::TypeNode *TSParser::ParseFunctionReturnType([[maybe_unused]] ParserStatus status)
@@ -2440,32 +2438,32 @@ void TSParser::ValidateFunctionOverloadParams(const ArenaVector<ir::Expression *
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> TSParser::ParseFunctionBody(
-    const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status)
+    const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus)
 {
-    bool is_declare = InAmbientContext();
-    bool is_overload = false;
-    bool let_declare = true;
+    bool isDeclare = InAmbientContext();
+    bool isOverload = false;
+    bool letDeclare = true;
     ir::BlockStatement *body = nullptr;
-    lexer::SourcePosition end_loc = Lexer()->GetToken().End();
+    lexer::SourcePosition endLoc = Lexer()->GetToken().End();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        if ((new_status & ParserStatus::FUNCTION_DECLARATION) != 0) {
+        if ((newStatus & ParserStatus::FUNCTION_DECLARATION) != 0) {
             ValidateFunctionOverloadParams(params);
-        } else if (!is_declare && ((context_status & ParserStatus::IN_METHOD_DEFINITION) == 0)) {
+        } else if (!isDeclare && ((contextStatus & ParserStatus::IN_METHOD_DEFINITION) == 0)) {
             ThrowSyntaxError("Unexpected token, expected '{'");
         } else {
-            let_declare = false;
+            letDeclare = false;
         }
 
-        is_overload = true;
-    } else if (is_declare) {
+        isOverload = true;
+    } else if (isDeclare) {
         ThrowSyntaxError("An implementation cannot be declared in ambient contexts.");
     } else {
         body = ParseBlockStatement();
-        end_loc = body->End();
+        endLoc = body->End();
     }
 
-    return {let_declare, body, end_loc, is_overload};
+    return {letDeclare, body, endLoc, isOverload};
 }
 
 ir::Expression *TSParser::ParseModuleReference()
@@ -2517,9 +2515,9 @@ ir::AstNode *TSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
             ThrowSyntaxError("identifier expected");
         }
 
-        auto *import_equals_decl = AllocNode<ir::TSImportEqualsDeclaration>(local, ParseModuleReference(), false);
+        auto *importEqualsDecl = AllocNode<ir::TSImportEqualsDeclaration>(local, ParseModuleReference(), false);
 
-        return import_equals_decl;
+        return importEqualsDecl;
     }
 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
@@ -2535,8 +2533,8 @@ ir::AstNode *TSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
     return nullptr;
 }
 
-ir::TSImportEqualsDeclaration *TSParser::ParseTsImportEqualsDeclaration(const lexer::SourcePosition &start_loc,
-                                                                        bool is_export)
+ir::TSImportEqualsDeclaration *TSParser::ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
+                                                                        bool isExport)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT);
     Lexer()->NextToken();
@@ -2557,45 +2555,45 @@ ir::TSImportEqualsDeclaration *TSParser::ParseTsImportEqualsDeclaration(const le
         ThrowSyntaxError("identifier expected");
     }
 
-    auto *import_equals_decl = AllocNode<ir::TSImportEqualsDeclaration>(id, ParseModuleReference(), is_export);
-    import_equals_decl->SetRange({start_loc, Lexer()->GetToken().End()});
+    auto *importEqualsDecl = AllocNode<ir::TSImportEqualsDeclaration>(id, ParseModuleReference(), isExport);
+    importEqualsDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
-    ConsumeSemicolon(import_equals_decl);
+    ConsumeSemicolon(importEqualsDecl);
 
-    return import_equals_decl;
+    return importEqualsDecl;
 }
 
 ir::Statement *TSParser::ParseExportDeclaration(StatementParsingFlags flags)
 {
-    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat `export` keyword
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_DEFAULT: {
-            return ParseExportDefaultDeclaration(start_loc);
+            return ParseExportDefaultDeclaration(startLoc);
         }
         case lexer::TokenType::PUNCTUATOR_MULTIPLY: {
-            return ParseExportAllDeclaration(start_loc);
+            return ParseExportAllDeclaration(startLoc);
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            return ParseExportNamedSpecifiers(start_loc);
+            return ParseExportNamedSpecifiers(startLoc);
         }
         case lexer::TokenType::KEYW_IMPORT: {
-            return ParseTsImportEqualsDeclaration(start_loc, true);
+            return ParseTsImportEqualsDeclaration(startLoc, true);
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            return ParseExportDefaultDeclaration(start_loc, true);
+            return ParseExportDefaultDeclaration(startLoc, true);
         }
         default: {
-            ir::ExportNamedDeclaration *export_decl = ParseNamedExportDeclaration(start_loc);
+            ir::ExportNamedDeclaration *exportDecl = ParseNamedExportDeclaration(startLoc);
 
-            if (export_decl->Decl()->IsVariableDeclaration() && ((flags & StatementParsingFlags::GLOBAL) == 0) &&
-                export_decl->Parent() != nullptr && !export_decl->Parent()->IsTSModuleBlock() &&
+            if (exportDecl->Decl()->IsVariableDeclaration() && ((flags & StatementParsingFlags::GLOBAL) == 0) &&
+                exportDecl->Parent() != nullptr && !exportDecl->Parent()->IsTSModuleBlock() &&
                 !GetContext().IsModule()) {
                 ThrowSyntaxError("Modifiers cannot appear here'");
             }
 
-            return export_decl;
+            return exportDecl;
         }
     }
 }
@@ -2608,46 +2606,46 @@ ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
-        ir::SpreadElement *rest_element = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
+        ir::SpreadElement *restElement = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
 
-        rest_element->SetGrouped();
-        rest_element->SetStart(start);
+        restElement->SetGrouped();
+        restElement->SetStart(start);
 
-        ValidateArrowFunctionRestParameter(rest_element);
+        ValidateArrowFunctionRestParameter(restElement);
 
         Lexer()->NextToken();
 
-        ir::TypeNode *return_type_annotation = nullptr;
+        ir::TypeNode *returnTypeAnnotation = nullptr;
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             Lexer()->NextToken();  // eat ':'
-            return_type_annotation = ParseTypeAnnotation(&options);
+            returnTypeAnnotation = ParseTypeAnnotation(&options);
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
             ThrowSyntaxError("Unexpected token");
         }
 
-        return ParseArrowFunctionExpression(rest_element, nullptr, return_type_annotation, false);
+        return ParseArrowFunctionExpression(restElement, nullptr, returnTypeAnnotation, false);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         Lexer()->NextToken();
 
-        ir::TypeNode *return_type_annotation = nullptr;
+        ir::TypeNode *returnTypeAnnotation = nullptr;
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             Lexer()->NextToken();  // eat ':'
-            return_type_annotation = ParseTypeAnnotation(&options);
+            returnTypeAnnotation = ParseTypeAnnotation(&options);
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
             ThrowSyntaxError("Unexpected token");
         }
 
-        auto *arrow_expr = ParseArrowFunctionExpression(nullptr, nullptr, return_type_annotation, false);
-        arrow_expr->SetStart(start);
-        arrow_expr->AsArrowFunctionExpression()->Function()->SetStart(start);
+        auto *arrowExpr = ParseArrowFunctionExpression(nullptr, nullptr, returnTypeAnnotation, false);
+        arrowExpr->SetStart(start);
+        arrowExpr->AsArrowFunctionExpression()->Function()->SetStart(start);
 
-        return arrow_expr;
+        return arrowExpr;
     }
 
     ir::Expression *expr = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::ACCEPT_REST |
@@ -2662,22 +2660,22 @@ ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList
     Lexer()->NextToken();
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        auto saved_pos = Lexer()->Save();
+        auto savedPos = Lexer()->Save();
         Lexer()->NextToken();  // eat ':'
         options = TypeAnnotationParsingOptions::NO_OPTS;
-        ir::TypeNode *return_type_annotation = ParseTypeAnnotation(&options);
+        ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
 
-        if (return_type_annotation == nullptr) {
-            Lexer()->Rewind(saved_pos);
+        if (returnTypeAnnotation == nullptr) {
+            Lexer()->Rewind(savedPos);
             return expr;
         }
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-            Lexer()->Rewind(saved_pos);
+            Lexer()->Rewind(savedPos);
             return expr;
         }
 
-        return ParseArrowFunctionExpression(expr, nullptr, return_type_annotation, false);
+        return ParseArrowFunctionExpression(expr, nullptr, returnTypeAnnotation, false);
     }
 
     return expr;
@@ -2685,7 +2683,7 @@ ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList
 
 ir::Statement *TSParser::ParseConstStatement(StatementParsingFlags flags)
 {
-    lexer::SourcePosition const_var_star = Lexer()->GetToken().Start();
+    lexer::SourcePosition constVarStar = Lexer()->GetToken().Start();
     Lexer()->NextToken();
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM) {
@@ -2696,12 +2694,11 @@ ir::Statement *TSParser::ParseConstStatement(StatementParsingFlags flags)
         ThrowSyntaxError("Lexical declaration is not allowed in single statement context");
     }
 
-    auto *variable_decl =
-        ParseVariableDeclaration(VariableParsingFlags::CONST | VariableParsingFlags::NO_SKIP_VAR_KIND);
-    variable_decl->SetStart(const_var_star);
-    ConsumeSemicolon(variable_decl);
+    auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::CONST | VariableParsingFlags::NO_SKIP_VAR_KIND);
+    variableDecl->SetStart(constVarStar);
+    ConsumeSemicolon(variableDecl);
 
-    return variable_decl;
+    return variableDecl;
 }
 
 ir::Statement *TSParser::ParsePotentialConstEnum(VariableParsingFlags flags)
@@ -2740,9 +2737,9 @@ ir::AnnotatedExpression *TSParser::ParseVariableDeclaratorKey(VariableParsingFla
     return init;
 }
 
-void TSParser::ThrowPossibleOutOfBoundaryJumpError(bool allow_break)
+void TSParser::ThrowPossibleOutOfBoundaryJumpError(bool allowBreak)
 {
-    if (((GetContext().Status() & ParserStatus::FUNCTION) != 0) && !allow_break) {
+    if (((GetContext().Status() & ParserStatus::FUNCTION) != 0) && !allowBreak) {
         ThrowSyntaxError("Jump target cannot cross function boundary");
     }
 }
@@ -2775,58 +2772,58 @@ void TSParser::ThrowIfBodyEmptyError(ir::Statement *consequent)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::ExportDefaultDeclaration *TSParser::ParseExportDefaultDeclaration(const lexer::SourcePosition &start_loc,
-                                                                      bool is_export_equals)
+ir::ExportDefaultDeclaration *TSParser::ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
+                                                                      bool isExportEquals)
 {
     Lexer()->NextToken();  // eat `default` keyword or `=`
 
-    ir::AstNode *decl_node = nullptr;
-    bool eat_semicolon = false;
+    ir::AstNode *declNode = nullptr;
+    bool eatSemicolon = false;
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_FUNCTION: {
-            decl_node = ParseFunctionDeclaration(true);
+            declNode = ParseFunctionDeclaration(true);
             break;
         }
         case lexer::TokenType::KEYW_CLASS: {
-            decl_node = ParseClassDeclaration(ir::ClassDefinitionModifiers::ID_REQUIRED);
+            declNode = ParseClassDeclaration(ir::ClassDefinitionModifiers::ID_REQUIRED);
             break;
         }
         case lexer::TokenType::KEYW_INTERFACE: {
-            decl_node = ParseInterfaceDeclaration(false);
+            declNode = ParseInterfaceDeclaration(false);
             break;
         }
         case lexer::TokenType::KEYW_ASYNC: {
             if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) == 0) {
                 Lexer()->NextToken();  // eat `async`
-                decl_node = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
+                declNode = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
                 break;
             }
             [[fallthrough]];
         }
         default: {
-            decl_node = ParseExpression();
-            eat_semicolon = true;
+            declNode = ParseExpression();
+            eatSemicolon = true;
             break;
         }
     }
 
-    lexer::SourcePosition end_loc = decl_node->End();
-    auto *export_declaration = AllocNode<ir::ExportDefaultDeclaration>(decl_node, is_export_equals);
-    export_declaration->SetRange({start_loc, end_loc});
+    lexer::SourcePosition endLoc = declNode->End();
+    auto *exportDeclaration = AllocNode<ir::ExportDefaultDeclaration>(declNode, isExportEquals);
+    exportDeclaration->SetRange({startLoc, endLoc});
 
-    if (eat_semicolon) {
-        ConsumeSemicolon(export_declaration);
+    if (eatSemicolon) {
+        ConsumeSemicolon(exportDeclaration);
     }
 
-    return export_declaration;
+    return exportDeclaration;
 }
 
-ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::SourcePosition &start_loc)
+ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
 {
     ir::Statement *decl = nullptr;
 
-    ir::ClassDefinitionModifiers class_modifiers = ir::ClassDefinitionModifiers::ID_REQUIRED;
+    ir::ClassDefinitionModifiers classModifiers = ir::ClassDefinitionModifiers::ID_REQUIRED;
     ir::ModifierFlags flags = ir::ModifierFlags::NONE;
 
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
@@ -2856,7 +2853,7 @@ ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::S
             break;
         }
         case lexer::TokenType::KEYW_CLASS: {
-            decl = ParseClassDeclaration(class_modifiers, flags);
+            decl = ParseClassDeclaration(classModifiers, flags);
             break;
         }
         case lexer::TokenType::KEYW_ENUM: {
@@ -2891,22 +2888,22 @@ ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::S
         ConsumeSemicolon(decl);
     }
 
-    lexer::SourcePosition end_loc = decl->End();
+    lexer::SourcePosition endLoc = decl->End();
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
-    auto *export_declaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), decl, std::move(specifiers));
-    export_declaration->SetRange({start_loc, end_loc});
+    auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), decl, std::move(specifiers));
+    exportDeclaration->SetRange({startLoc, endLoc});
 
-    return export_declaration;
+    return exportDeclaration;
 }
 
 ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
-    char32_t next_char = Lexer()->Lookahead();
-    if (next_char == lexer::LEX_CHAR_LEFT_PAREN || next_char == lexer::LEX_CHAR_DOT) {
+    char32_t nextChar = Lexer()->Lookahead();
+    if (nextChar == lexer::LEX_CHAR_LEFT_PAREN || nextChar == lexer::LEX_CHAR_DOT) {
         return ParseExpressionStatement();
     }
 
-    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat import
 
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
@@ -2914,25 +2911,25 @@ ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
     ir::StringLiteral *source = nullptr;
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
-        ir::AstNode *ast_node = ParseImportSpecifiers(&specifiers);
-        if (ast_node != nullptr) {
-            ASSERT(ast_node->IsTSImportEqualsDeclaration());
-            ast_node->SetRange({start_loc, Lexer()->GetToken().End()});
-            ConsumeSemicolon(ast_node->AsTSImportEqualsDeclaration());
-            return ast_node->AsTSImportEqualsDeclaration();
+        ir::AstNode *astNode = ParseImportSpecifiers(&specifiers);
+        if (astNode != nullptr) {
+            ASSERT(astNode->IsTSImportEqualsDeclaration());
+            astNode->SetRange({startLoc, Lexer()->GetToken().End()});
+            ConsumeSemicolon(astNode->AsTSImportEqualsDeclaration());
+            return astNode->AsTSImportEqualsDeclaration();
         }
         source = ParseFromClause(true);
     } else {
         source = ParseFromClause(false);
     }
 
-    lexer::SourcePosition end_loc = source->End();
-    auto *import_declaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
-    import_declaration->SetRange({start_loc, end_loc});
+    lexer::SourcePosition endLoc = source->End();
+    auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
+    importDeclaration->SetRange({startLoc, endLoc});
 
-    ConsumeSemicolon(import_declaration);
+    ConsumeSemicolon(importDeclaration);
 
-    return import_declaration;
+    return importDeclaration;
 }
 
 }  // namespace panda::es2panda::parser

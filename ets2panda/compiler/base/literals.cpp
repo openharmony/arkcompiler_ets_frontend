@@ -24,51 +24,51 @@ namespace panda::es2panda::compiler {
 void Literals::GetTemplateObject(PandaGen *pg, const ir::TaggedTemplateExpression *lit)
 {
     RegScope rs(pg);
-    VReg template_arg = pg->AllocReg();
-    VReg index_reg = pg->AllocReg();
-    VReg raw_arr = pg->AllocReg();
-    VReg cooked_arr = pg->AllocReg();
+    VReg templateArg = pg->AllocReg();
+    VReg indexReg = pg->AllocReg();
+    VReg rawArr = pg->AllocReg();
+    VReg cookedArr = pg->AllocReg();
 
-    const ir::TemplateLiteral *template_lit = lit->Quasi();
+    const ir::TemplateLiteral *templateLit = lit->Quasi();
 
-    pg->CreateEmptyArray(template_lit);
-    pg->StoreAccumulator(template_lit, raw_arr);
+    pg->CreateEmptyArray(templateLit);
+    pg->StoreAccumulator(templateLit, rawArr);
 
-    pg->CreateEmptyArray(template_lit);
-    pg->StoreAccumulator(template_lit, cooked_arr);
+    pg->CreateEmptyArray(templateLit);
+    pg->StoreAccumulator(templateLit, cookedArr);
 
-    size_t elem_index = 0;
+    size_t elemIndex = 0;
 
-    for (const auto *element : template_lit->Quasis()) {
-        pg->LoadAccumulatorInt(element, elem_index);
-        pg->StoreAccumulator(element, index_reg);
+    for (const auto *element : templateLit->Quasis()) {
+        pg->LoadAccumulatorInt(element, elemIndex);
+        pg->StoreAccumulator(element, indexReg);
 
         pg->LoadAccumulatorString(element, element->Raw());
-        pg->StoreObjByValue(element, raw_arr, index_reg);
+        pg->StoreObjByValue(element, rawArr, indexReg);
 
         pg->LoadAccumulatorString(element, element->Cooked());
-        pg->StoreObjByValue(element, cooked_arr, index_reg);
+        pg->StoreObjByValue(element, cookedArr, indexReg);
 
-        elem_index++;
+        elemIndex++;
     }
 
     pg->CreateEmptyArray(lit);
-    pg->StoreAccumulator(lit, template_arg);
+    pg->StoreAccumulator(lit, templateArg);
 
-    elem_index = 0;
-    pg->LoadAccumulatorInt(lit, elem_index);
-    pg->StoreAccumulator(lit, index_reg);
+    elemIndex = 0;
+    pg->LoadAccumulatorInt(lit, elemIndex);
+    pg->StoreAccumulator(lit, indexReg);
 
-    pg->LoadAccumulator(lit, raw_arr);
-    pg->StoreObjByValue(lit, template_arg, index_reg);
+    pg->LoadAccumulator(lit, rawArr);
+    pg->StoreObjByValue(lit, templateArg, indexReg);
 
-    elem_index++;
-    pg->LoadAccumulatorInt(lit, elem_index);
-    pg->StoreAccumulator(lit, index_reg);
+    elemIndex++;
+    pg->LoadAccumulatorInt(lit, elemIndex);
+    pg->StoreAccumulator(lit, indexReg);
 
-    pg->LoadAccumulator(lit, cooked_arr);
-    pg->StoreObjByValue(lit, template_arg, index_reg);
+    pg->LoadAccumulator(lit, cookedArr);
+    pg->StoreObjByValue(lit, templateArg, indexReg);
 
-    pg->GetTemplateObject(lit, template_arg);
+    pg->GetTemplateObject(lit, templateArg);
 }
 }  // namespace panda::es2panda::compiler

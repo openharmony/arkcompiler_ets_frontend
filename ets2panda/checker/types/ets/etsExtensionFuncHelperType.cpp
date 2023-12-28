@@ -29,9 +29,9 @@ namespace panda::es2panda::checker {
 
 void ETSExtensionFuncHelperType::ToString(std::stringstream &ss) const
 {
-    class_method_type_->ToString(ss);
+    classMethodType_->ToString(ss);
     ss << " | ";
-    extension_function_type_->ToString(ss);
+    extensionFunctionType_->ToString(ss);
 }
 
 void ETSExtensionFuncHelperType::AssignmentTarget(TypeRelation *relation, Type *source)
@@ -40,11 +40,11 @@ void ETSExtensionFuncHelperType::AssignmentTarget(TypeRelation *relation, Type *
         return;
     }
 
-    if (relation->IsAssignableTo(source->AsETSFunctionType(), class_method_type_)) {
+    if (relation->IsAssignableTo(source->AsETSFunctionType(), classMethodType_)) {
         return;
     }
 
-    if (relation->IsAssignableTo(source->AsETSFunctionType(), extension_function_type_)) {
+    if (relation->IsAssignableTo(source->AsETSFunctionType(), extensionFunctionType_)) {
         return;
     }
 }

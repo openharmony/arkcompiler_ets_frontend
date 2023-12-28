@@ -227,17 +227,17 @@ public:
 
     NumberLiteralPool &NumberLiteralMap()
     {
-        return number_literal_map_;
+        return numberLiteralMap_;
     }
 
     StringLiteralPool &StringLiteralMap()
     {
-        return string_literal_map_;
+        return stringLiteralMap_;
     }
 
     StringLiteralPool &BigintLiteralMap()
     {
-        return bigint_literal_map_;
+        return bigintLiteralMap_;
     }
 
     bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
@@ -255,26 +255,26 @@ public:
     static ir::MemberExpression *ResolveLeftMostMemberExpression(ir::MemberExpression *expr);
 
     // Helpers
-    void CheckTruthinessOfType(Type *type, lexer::SourcePosition line_info);
-    Type *CheckNonNullType(Type *type, lexer::SourcePosition line_info);
+    void CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo);
+    Type *CheckNonNullType(Type *type, lexer::SourcePosition lineInfo);
     Type *GetBaseTypeOfLiteralType(Type *type);
-    void CheckReferenceExpression(ir::Expression *expr, const char *invalid_reference_msg,
-                                  const char *invalid_optional_chain_msg);
-    void CheckTestingKnownTruthyCallableOrAwaitableType(ir::Expression *cond_expr, Type *type, ir::AstNode *body);
+    void CheckReferenceExpression(ir::Expression *expr, const char *invalidReferenceMsg,
+                                  const char *invalidOptionalChainMsg);
+    void CheckTestingKnownTruthyCallableOrAwaitableType(ir::Expression *condExpr, Type *type, ir::AstNode *body);
     Type *ExtractDefinitelyFalsyTypes(Type *type);
     Type *RemoveDefinitelyFalsyTypes(Type *type);
     TypeFlag GetFalsyFlags(Type *type);
-    bool IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *search_var);
-    bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var);
-    bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var);
-    [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *left_type, Type *right_type,
-                                           lexer::SourcePosition line_info);
-    [[noreturn]] void ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition line_info,
-                                           bool is_as_src_left_type = false);
-    void ElaborateElementwise(Type *target_type, ir::Expression *source_node, const lexer::SourcePosition &pos);
+    bool IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *searchVar);
+    bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
+    bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar);
+    [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
+                                           lexer::SourcePosition lineInfo);
+    [[noreturn]] void ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo,
+                                           bool isAsSrcLeftType = false);
+    void ElaborateElementwise(Type *targetType, ir::Expression *sourceNode, const lexer::SourcePosition &pos);
     void InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declarator);
     Type *GetTypeOfVariable(varbinder::Variable *var) override;
-    Type *GetUnaryResultType(Type *operand_type);
+    Type *GetUnaryResultType(Type *operandType);
     Type *GetTypeFromClassOrInterfaceReference(ir::TSTypeReference *node, varbinder::Variable *var);
     Type *GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbinder::Variable *var);
     Type *GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Variable *var);
@@ -283,90 +283,89 @@ public:
     Type *CreateNumberLiteralType(double value);
     Type *CreateBigintLiteralType(const util::StringView &str, bool negative);
     Type *CreateStringLiteralType(const util::StringView &str);
-    Type *CreateFunctionTypeWithSignature(Signature *call_signature);
-    Type *CreateConstructorTypeWithSignature(Signature *construct_signature);
-    Type *CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&element_flags,
-                          ElementFlags combined_flags, uint32_t min_length, uint32_t fixed_length, bool readonly);
-    Type *CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&element_flags,
-                          ElementFlags combined_flags, uint32_t min_length, uint32_t fixed_length, bool readonly,
-                          NamedTupleMemberPool &&named_members);
-    Type *CreateUnionType(std::initializer_list<Type *> constituent_types);
-    Type *CreateUnionType(ArenaVector<Type *> &&constituent_types);
-    Type *CreateUnionType(ArenaVector<Type *> &constituent_types);
-    Type *CreateObjectTypeWithCallSignature(Signature *call_signature);
-    Type *CreateObjectTypeWithConstructSignature(Signature *construct_signature);
+    Type *CreateFunctionTypeWithSignature(Signature *callSignature);
+    Type *CreateConstructorTypeWithSignature(Signature *constructSignature);
+    Type *CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
+                          uint32_t minLength, uint32_t fixedLength, bool readonly);
+    Type *CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
+                          uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers);
+    Type *CreateUnionType(std::initializer_list<Type *> constituentTypes);
+    Type *CreateUnionType(ArenaVector<Type *> &&constituentTypes);
+    Type *CreateUnionType(ArenaVector<Type *> &constituentTypes);
+    Type *CreateObjectTypeWithCallSignature(Signature *callSignature);
+    Type *CreateObjectTypeWithConstructSignature(Signature *constructSignature);
 
     // Object
     void ResolvePropertiesOfObjectType(ObjectType *type, ir::AstNode *member,
-                                       ArenaVector<ir::TSSignatureDeclaration *> &signature_declarations,
-                                       ArenaVector<ir::TSIndexSignature *> &index_declarations, bool is_interface);
+                                       ArenaVector<ir::TSSignatureDeclaration *> &signatureDeclarations,
+                                       ArenaVector<ir::TSIndexSignature *> &indexDeclarations, bool isInterface);
     void ResolveSignaturesOfObjectType(ObjectType *type,
-                                       ArenaVector<ir::TSSignatureDeclaration *> &signature_declarations);
-    void ResolveIndexInfosOfObjectType(ObjectType *type, ArenaVector<ir::TSIndexSignature *> &index_declarations);
+                                       ArenaVector<ir::TSSignatureDeclaration *> &signatureDeclarations);
+    void ResolveIndexInfosOfObjectType(ObjectType *type, ArenaVector<ir::TSIndexSignature *> &indexDeclarations);
     void ResolveDeclaredMembers(InterfaceType *type);
     bool ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder::Variable *prop,
-                                              const lexer::SourcePosition &loc_info);
-    varbinder::Variable *GetPropertyOfType(Type *type, const util::StringView &name, bool get_partial = false,
-                                           varbinder::VariableFlags propagate_flags = varbinder::VariableFlags::NONE);
-    varbinder::Variable *GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool get_partial,
-                                                varbinder::VariableFlags propagate_flags);
+                                              const lexer::SourcePosition &locInfo);
+    varbinder::Variable *GetPropertyOfType(Type *type, const util::StringView &name, bool getPartial = false,
+                                           varbinder::VariableFlags propagateFlags = varbinder::VariableFlags::NONE);
+    varbinder::Variable *GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool getPartial,
+                                                varbinder::VariableFlags propagateFlags);
     void CheckIndexConstraints(Type *type);
     void ResolveUnionTypeMembers(UnionType *type);
     void ResolveObjectTypeMembers(ObjectType *type);
     void ResolveInterfaceOrClassTypeMembers(InterfaceType *type);
     Type *CheckComputedPropertyName(ir::Expression *key);
-    Type *GetPropertyTypeForIndexType(Type *type, Type *index_type);
-    IndexInfo *GetApplicableIndexInfo(Type *type, Type *index_type);
+    Type *GetPropertyTypeForIndexType(Type *type, Type *indexType);
+    IndexInfo *GetApplicableIndexInfo(Type *type, Type *indexType);
     ArenaVector<ObjectType *> GetBaseTypes(InterfaceType *type);
     void ResolveStructuredTypeMembers(Type *type) override;
 
     // Function
     Type *HandleFunctionReturn(ir::ScriptFunction *func);
-    void CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params, SignatureInfo *signature_info);
+    void CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params, SignatureInfo *signatureInfo);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionParameter(
-        ir::Expression *param, SignatureInfo *signature_info);
+        ir::Expression *param, SignatureInfo *signatureInfo);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionIdentifierParameter(
         ir::Identifier *param);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionAssignmentPatternParameter(
         ir::AssignmentExpression *param);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionRestParameter(
-        ir::SpreadElement *param, SignatureInfo *signature_info);
+        ir::SpreadElement *param, SignatureInfo *signatureInfo);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionArrayPatternParameter(
         ir::ArrayExpression *param);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionObjectPatternParameter(
         ir::ObjectExpression *param);
-    void InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *func_var);
-    void CollectTypesFromReturnStatements(ir::AstNode *parent, ArenaVector<Type *> *return_types);
-    void CheckAllCodePathsInNonVoidFunctionReturnOrThrow(ir::ScriptFunction *func, lexer::SourcePosition line_info,
-                                                         const char *err_msg);
+    void InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *funcVar);
+    void CollectTypesFromReturnStatements(ir::AstNode *parent, ArenaVector<Type *> *returnTypes);
+    void CheckAllCodePathsInNonVoidFunctionReturnOrThrow(ir::ScriptFunction *func, lexer::SourcePosition lineInfo,
+                                                         const char *errMsg);
     void CreatePatternParameterName(ir::AstNode *node, std::stringstream &ss);
     void ThrowReturnTypeCircularityError(ir::ScriptFunction *func);
-    ArgRange GetArgRange(const ArenaVector<Signature *> &signatures, ArenaVector<Signature *> *potential_signatures,
-                         uint32_t call_args_size, bool *have_signature_with_rest);
-    bool CallMatchesSignature(const ArenaVector<ir::Expression *> &args, Signature *signature, bool throw_error);
+    ArgRange GetArgRange(const ArenaVector<Signature *> &signatures, ArenaVector<Signature *> *potentialSignatures,
+                         uint32_t callArgsSize, bool *haveSignatureWithRest);
+    bool CallMatchesSignature(const ArenaVector<ir::Expression *> &args, Signature *signature, bool throwError);
     Type *ResolveCallOrNewExpression(const ArenaVector<Signature *> &signatures,
-                                     ArenaVector<ir::Expression *> arguments, const lexer::SourcePosition &err_pos);
-    Type *CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpression *array_pattern, Type *inferred_type);
-    Type *CreateParameterTypeForObjectAssignmentPattern(ir::ObjectExpression *object_pattern, Type *inferred_type);
+                                     ArenaVector<ir::Expression *> arguments, const lexer::SourcePosition &errPos);
+    Type *CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpression *arrayPattern, Type *inferredType);
+    Type *CreateParameterTypeForObjectAssignmentPattern(ir::ObjectExpression *objectPattern, Type *inferredType);
 
     // Binary like expression
-    Type *CheckBinaryOperator(Type *left_type, Type *right_type, ir::Expression *left_expr, ir::Expression *right_expr,
+    Type *CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
                               ir::AstNode *expr, lexer::TokenType op);
-    Type *CheckPlusOperator(Type *left_type, Type *right_type, ir::Expression *left_expr, ir::Expression *right_expr,
+    Type *CheckPlusOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
                             ir::AstNode *expr, lexer::TokenType op);
-    Type *CheckCompareOperator(Type *left_type, Type *right_type, ir::Expression *left_expr, ir::Expression *right_expr,
+    Type *CheckCompareOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
                                ir::AstNode *expr, lexer::TokenType op);
-    Type *CheckAndOperator(Type *left_type, Type *right_type, ir::Expression *left_expr);
-    Type *CheckOrOperator(Type *left_type, Type *right_type, ir::Expression *left_expr);
-    Type *CheckInstanceofExpression(Type *left_type, Type *right_type, ir::Expression *right_expr, ir::AstNode *expr);
-    Type *CheckInExpression(Type *left_type, Type *right_type, ir::Expression *left_expr, ir::Expression *right_expr,
+    Type *CheckAndOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr);
+    Type *CheckOrOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr);
+    Type *CheckInstanceofExpression(Type *leftType, Type *rightType, ir::Expression *rightExpr, ir::AstNode *expr);
+    Type *CheckInExpression(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
                             ir::AstNode *expr);
-    void CheckAssignmentOperator(lexer::TokenType op, ir::Expression *left_expr, Type *left_type, Type *value_type);
+    void CheckAssignmentOperator(lexer::TokenType op, ir::Expression *leftExpr, Type *leftType, Type *valueType);
 
 private:
-    NumberLiteralPool number_literal_map_;
-    StringLiteralPool string_literal_map_;
-    StringLiteralPool bigint_literal_map_;
+    NumberLiteralPool numberLiteralMap_;
+    StringLiteralPool stringLiteralMap_;
+    StringLiteralPool bigintLiteralMap_;
 };
 
 }  // namespace panda::es2panda::checker

@@ -61,16 +61,16 @@ void ClassDefinition::TransformChildren(const NodeTransformer &cb)
         ident_ = cb(ident_)->AsIdentifier();
     }
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterDeclaration();
     }
 
-    if (super_class_ != nullptr) {
-        super_class_ = cb(super_class_)->AsExpression();
+    if (superClass_ != nullptr) {
+        superClass_ = cb(superClass_)->AsExpression();
     }
 
-    if (super_type_params_ != nullptr) {
-        super_type_params_ = cb(super_type_params_)->AsTSTypeParameterInstantiation();
+    if (superTypeParams_ != nullptr) {
+        superTypeParams_ = cb(superTypeParams_)->AsTSTypeParameterInstantiation();
     }
 
     for (auto *&it : implements_) {
@@ -92,16 +92,16 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
         cb(ident_);
     }
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
-    if (super_class_ != nullptr) {
-        cb(super_class_);
+    if (superClass_ != nullptr) {
+        cb(superClass_);
     }
 
-    if (super_type_params_ != nullptr) {
-        cb(super_type_params_);
+    if (superTypeParams_ != nullptr) {
+        cb(superTypeParams_);
     }
 
     for (auto *it : implements_) {
@@ -119,16 +119,16 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
 
 void ClassDefinition::Dump(ir::AstDumper *dumper) const
 {
-    auto prop_filter = [](AstNode *prop) -> bool {
+    auto propFilter = [](AstNode *prop) -> bool {
         return !prop->IsClassStaticBlock() || !prop->AsClassStaticBlock()->Function()->IsHidden();
     };
     dumper->Add({{"id", AstDumper::Nullish(ident_)},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
-                 {"superClass", AstDumper::Nullish(super_class_)},
-                 {"superTypeParameters", AstDumper::Optional(super_type_params_)},
+                 {"typeParameters", AstDumper::Optional(typeParams_)},
+                 {"superClass", AstDumper::Nullish(superClass_)},
+                 {"superTypeParameters", AstDumper::Optional(superTypeParams_)},
                  {"implements", implements_},
                  {"constructor", AstDumper::Optional(ctor_)},
-                 {"body", body_, prop_filter}});
+                 {"body", body_, propFilter}});
 }
 
 void ClassDefinition::Dump(ir::SrcDumper *dumper) const
@@ -150,15 +150,15 @@ void ClassDefinition::Dump(ir::SrcDumper *dumper) const
     dumper->Add("class ");
     ident_->Dump(dumper);
 
-    if (type_params_ != nullptr) {
+    if (typeParams_ != nullptr) {
         dumper->Add("<");
-        type_params_->Dump(dumper);
+        typeParams_->Dump(dumper);
         dumper->Add("> ");
     }
 
-    if (super_class_ != nullptr) {
+    if (superClass_ != nullptr) {
         dumper->Add(" extends ");
-        super_class_->Dump(dumper);
+        superClass_->Dump(dumper);
     }
 
     if (!implements_.empty()) {

@@ -20,7 +20,7 @@
 namespace panda::es2panda::compiler {
 bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    return ctx->checker->StartChecker(ctx->compiler_context->VarBinder(), *ctx->compiler_context->Options());
+    return ctx->checker->StartChecker(ctx->compilerContext->VarBinder(), *ctx->compilerContext->Options());
 }
 
 }  // namespace panda::es2panda::compiler

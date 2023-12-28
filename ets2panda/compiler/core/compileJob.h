@@ -40,12 +40,12 @@ public:
 
     const ProgramElement *GetProgramElement() const
     {
-        return &program_element_;
+        return &programElement_;
     }
 
     ProgramElement *GetProgramElement()
     {
-        return &program_element_;
+        return &programElement_;
     }
 
     void SetContext(CompilerContext *context, varbinder::FunctionScope *scope)
@@ -63,7 +63,7 @@ private:
     std::condition_variable cond_;
     CompilerContext *context_ {};
     varbinder::FunctionScope *scope_ {};
-    ProgramElement program_element_;
+    ProgramElement programElement_;
     CompileJob *dependant_ {};
     size_t dependencies_ {0};
 };

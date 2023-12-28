@@ -26,25 +26,25 @@
 namespace panda::es2panda::ir {
 void TSTypePredicate::TransformChildren(const NodeTransformer &cb)
 {
-    parameter_name_ = cb(parameter_name_)->AsExpression();
-    if (type_annotation_ != nullptr) {
-        type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    parameterName_ = cb(parameterName_)->AsExpression();
+    if (typeAnnotation_ != nullptr) {
+        typeAnnotation_ = static_cast<TypeNode *>(cb(typeAnnotation_));
     }
 }
 
 void TSTypePredicate::Iterate(const NodeTraverser &cb) const
 {
-    cb(parameter_name_);
-    if (type_annotation_ != nullptr) {
-        cb(type_annotation_);
+    cb(parameterName_);
+    if (typeAnnotation_ != nullptr) {
+        cb(typeAnnotation_);
     }
 }
 
 void TSTypePredicate::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypePredicate"},
-                 {"parameterName", parameter_name_},
-                 {"typeAnnotation", AstDumper::Nullish(type_annotation_)},
+                 {"parameterName", parameterName_},
+                 {"typeAnnotation", AstDumper::Nullish(typeAnnotation_)},
                  {"asserts", asserts_}});
 }
 void TSTypePredicate::Dump(ir::SrcDumper *dumper) const

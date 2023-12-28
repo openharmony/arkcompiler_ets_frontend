@@ -102,8 +102,8 @@ checker::Type *BlockExpression::Check(checker::ETSChecker *checker)
 {
     if (TsType() == nullptr) {
         for (auto *const node : statements_) {
-            if (auto *const expr_type = node->Check(checker); expr_type != nullptr) {
-                SetTsType(expr_type);
+            if (auto *const exprType = node->Check(checker); exprType != nullptr) {
+                SetTsType(exprType);
             }
         }
     }

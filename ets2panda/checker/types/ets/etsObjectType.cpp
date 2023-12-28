@@ -32,8 +32,8 @@ void ETSObjectType::Iterate(const PropertyTraverser &cb) const
         cb(prop);
     }
 
-    if (super_type_ != nullptr) {
-        super_type_->Iterate(cb);
+    if (superType_ != nullptr) {
+        superType_->Iterate(cb);
     }
 
     for (const auto *interface : interfaces_) {
@@ -96,8 +96,8 @@ varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &nam
         }
     }
 
-    if (super_type_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        res = super_type_->GetProperty(name, flags);
+    if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
+        res = superType_->GetProperty(name, flags);
     }
 
     return res;
@@ -108,21 +108,21 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
 {
     varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varbinder::VariableFlags::SYNTHETIC |
                                                                               varbinder::VariableFlags::METHOD);
-    ETSFunctionType *func_type = CreateETSFunctionType(name);
-    func_type->AddTypeFlag(TypeFlag::SYNTHETIC);
+    ETSFunctionType *funcType = CreateETSFunctionType(name);
+    funcType->AddTypeFlag(TypeFlag::SYNTHETIC);
 
-    varbinder::LocalVariable *functional_interface = CollectSignaturesForSyntheticType(func_type, name, flags);
+    varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(funcType, name, flags);
 
-    if (functional_interface != nullptr) {
-        return functional_interface;
+    if (functionalInterface != nullptr) {
+        return functionalInterface;
     }
 
-    if (func_type->CallSignatures().empty()) {
+    if (funcType->CallSignatures().empty()) {
         return nullptr;
     }
 
-    res->SetTsType(func_type);
-    func_type->SetVariable(res);
+    res->SetTsType(funcType);
+    funcType->SetVariable(res);
     return res;
 }
 
@@ -131,18 +131,18 @@ ETSFunctionType *ETSObjectType::CreateETSFunctionType(const util::StringView &na
     return allocator_->New<ETSFunctionType>(name, allocator_);
 }
 
-varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunctionType *func_type,
+varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunctionType *funcType,
                                                                            const util::StringView &name,
                                                                            PropertySearchFlags flags) const
 {
-    auto const add_signature = [func_type, flags](varbinder::LocalVariable *found) -> void {
+    auto const addSignature = [funcType, flags](varbinder::LocalVariable *found) -> void {
         for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
             if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
                 it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
                 continue;
             }
 
-            func_type->AddCallSignature(it);
+            funcType->AddCallSignature(it);
         }
     };
 
@@ -159,7 +159,7 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
             }
 
             ASSERT(found->TsType()->IsETSFunctionType());
-            add_signature(found);
+            addSignature(found);
         }
     }
 
@@ -171,12 +171,12 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
             }
 
             ASSERT(found->TsType()->IsETSFunctionType());
-            add_signature(found);
+            addSignature(found);
         }
     }
 
-    if (super_type_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
-        return super_type_->CollectSignaturesForSyntheticType(func_type, name, flags);
+    if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
+        return superType_->CollectSignaturesForSyntheticType(funcType, name, flags);
     }
 
     return nullptr;
@@ -184,38 +184,38 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
 
 std::vector<varbinder::LocalVariable *> ETSObjectType::GetAllProperties() const
 {
-    std::vector<varbinder::LocalVariable *> all_properties;
+    std::vector<varbinder::LocalVariable *> allProperties;
     for (const auto &[_, prop] : InstanceFields()) {
         (void)_;
-        all_properties.push_back(prop);
+        allProperties.push_back(prop);
     }
 
     for (const auto &[_, prop] : StaticFields()) {
         (void)_;
-        all_properties.push_back(prop);
+        allProperties.push_back(prop);
     }
 
     for (const auto &[_, prop] : InstanceMethods()) {
         (void)_;
-        all_properties.push_back(prop);
+        allProperties.push_back(prop);
     }
 
     for (const auto &[_, prop] : StaticMethods()) {
         (void)_;
-        all_properties.push_back(prop);
+        allProperties.push_back(prop);
     }
 
     for (const auto &[_, prop] : InstanceDecls()) {
         (void)_;
-        all_properties.push_back(prop);
+        allProperties.push_back(prop);
     }
 
     for (const auto &[_, prop] : StaticDecls()) {
         (void)_;
-        all_properties.push_back(prop);
+        allProperties.push_back(prop);
     }
 
-    return all_properties;
+    return allProperties;
 }
 
 std::vector<varbinder::LocalVariable *> ETSObjectType::Methods() const
@@ -252,47 +252,47 @@ std::vector<varbinder::LocalVariable *> ETSObjectType::Fields() const
 
 std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties() const
 {
-    std::vector<const varbinder::LocalVariable *> foreign_props;
-    std::unordered_set<util::StringView> own_props;
+    std::vector<const varbinder::LocalVariable *> foreignProps;
+    std::unordered_set<util::StringView> ownProps;
 
     EnsurePropertiesInstantiated();
-    own_props.reserve(properties_.size());
+    ownProps.reserve(properties_.size());
 
     for (const auto *prop : GetAllProperties()) {
-        own_props.insert(prop->Name());
+        ownProps.insert(prop->Name());
     }
 
-    auto all_props = CollectAllProperties();
-    for (const auto &[name, var] : all_props) {
-        if (own_props.find(name) == own_props.end()) {
-            foreign_props.push_back(var);
+    auto allProps = CollectAllProperties();
+    for (const auto &[name, var] : allProps) {
+        if (ownProps.find(name) == ownProps.end()) {
+            foreignProps.push_back(var);
         }
     }
 
-    return foreign_props;
+    return foreignProps;
 }
 
 std::unordered_map<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
 {
-    std::unordered_map<util::StringView, const varbinder::LocalVariable *> prop_map;
+    std::unordered_map<util::StringView, const varbinder::LocalVariable *> propMap;
     EnsurePropertiesInstantiated();
-    prop_map.reserve(properties_.size());
-    Iterate([&prop_map](const varbinder::LocalVariable *var) { prop_map.insert({var->Name(), var}); });
+    propMap.reserve(properties_.size());
+    Iterate([&propMap](const varbinder::LocalVariable *var) { propMap.insert({var->Name(), var}); });
 
-    return prop_map;
+    return propMap;
 }
 
 void ETSObjectType::ToString(std::stringstream &ss) const
 {
     ss << name_;
 
-    if (!type_arguments_.empty()) {
-        auto const type_arguments_size = type_arguments_.size();
+    if (!typeArguments_.empty()) {
+        auto const typeArgumentsSize = typeArguments_.size();
         ss << compiler::Signatures::GENERIC_BEGIN;
-        type_arguments_[0]->ToString(ss);
-        for (std::size_t i = 1U; i < type_arguments_size; ++i) {
+        typeArguments_[0]->ToString(ss);
+        for (std::size_t i = 1U; i < typeArgumentsSize; ++i) {
             ss << ',';
-            type_arguments_[i]->ToString(ss);
+            typeArguments_[i]->ToString(ss);
         }
         ss << compiler::Signatures::GENERIC_END;
     }
@@ -315,9 +315,9 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         return;
     }
 
-    auto *this_base = GetOriginalBaseType();
-    auto *other_base = other->AsETSObjectType()->GetOriginalBaseType();
-    if (this_base->Variable() != other_base->Variable()) {
+    auto *thisBase = GetOriginalBaseType();
+    auto *otherBase = other->AsETSObjectType()->GetOriginalBaseType();
+    if (thisBase->Variable() != otherBase->Variable()) {
         return;
     }
 
@@ -326,57 +326,57 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         return;
     }
 
-    auto const other_type_arguments = other->AsETSObjectType()->TypeArguments();
+    auto const otherTypeArguments = other->AsETSObjectType()->TypeArguments();
 
     if (HasTypeFlag(TypeFlag::GENERIC) || IsNullish()) {
         if (!HasTypeFlag(TypeFlag::GENERIC)) {
             relation->Result(true);
             return;
         }
-        if (type_arguments_.empty() != other_type_arguments.empty()) {
+        if (typeArguments_.empty() != otherTypeArguments.empty()) {
             return;
         }
 
-        auto const args_number = type_arguments_.size();
-        ASSERT(args_number == other_type_arguments.size());
+        auto const argsNumber = typeArguments_.size();
+        ASSERT(argsNumber == otherTypeArguments.size());
 
-        for (size_t idx = 0U; idx < args_number; ++idx) {
-            if (type_arguments_[idx]->IsWildcardType() || other_type_arguments[idx]->IsWildcardType()) {
+        for (size_t idx = 0U; idx < argsNumber; ++idx) {
+            if (typeArguments_[idx]->IsWildcardType() || otherTypeArguments[idx]->IsWildcardType()) {
                 continue;
             }
 
             // checking the nullishness of type args before getting their original base types
             // because most probably GetOriginalBaseType will return the non-nullish version of the type
-            if (!type_arguments_[idx]->IsNullish() && other_type_arguments[idx]->IsNullish()) {
+            if (!typeArguments_[idx]->IsNullish() && otherTypeArguments[idx]->IsNullish()) {
                 return;
             }
 
-            const auto get_original_base_type_or_type = [&relation](Type *const original_type) {
-                auto *const base_type = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(original_type);
-                return base_type == nullptr ? original_type : base_type;
+            const auto getOriginalBaseTypeOrType = [&relation](Type *const originalType) {
+                auto *const baseType = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(originalType);
+                return baseType == nullptr ? originalType : baseType;
             };
 
-            auto *const type_arg_type = get_original_base_type_or_type(type_arguments_[idx]);
-            auto *const other_type_arg_type = get_original_base_type_or_type(other_type_arguments[idx]);
+            auto *const typeArgType = getOriginalBaseTypeOrType(typeArguments_[idx]);
+            auto *const otherTypeArgType = getOriginalBaseTypeOrType(otherTypeArguments[idx]);
 
-            type_arg_type->Identical(relation, other_type_arg_type);
+            typeArgType->Identical(relation, otherTypeArgType);
             if (!relation->IsTrue()) {
                 return;
             }
         }
     } else {
         if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            auto get_invoke_signature = [](const ETSObjectType *type) {
-                auto const prop_invoke =
+            auto getInvokeSignature = [](const ETSObjectType *type) {
+                auto const propInvoke =
                     type->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD);
-                ASSERT(prop_invoke != nullptr);
-                return prop_invoke->TsType()->AsETSFunctionType()->CallSignatures()[0];
+                ASSERT(propInvoke != nullptr);
+                return propInvoke->TsType()->AsETSFunctionType()->CallSignatures()[0];
             };
 
-            auto *const this_invoke_signature = get_invoke_signature(this);
-            auto *const other_invoke_signature = get_invoke_signature(other->AsETSObjectType());
+            auto *const thisInvokeSignature = getInvokeSignature(this);
+            auto *const otherInvokeSignature = getInvokeSignature(other->AsETSObjectType());
 
-            relation->IsIdenticalTo(this_invoke_signature, other_invoke_signature);
+            relation->IsIdenticalTo(thisInvokeSignature, otherInvokeSignature);
             return;
         }
     }
@@ -394,15 +394,15 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 
 bool ETSObjectType::CheckIdenticalFlags(ETSObjectFlags target) const
 {
-    auto cleaned_target_flags = static_cast<ETSObjectFlags>(target & (~ETSObjectFlags::COMPLETELY_RESOLVED));
-    cleaned_target_flags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
-    cleaned_target_flags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
-    cleaned_target_flags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
-    auto cleaned_self_flags = static_cast<ETSObjectFlags>(ObjectFlags() & (~ETSObjectFlags::COMPLETELY_RESOLVED));
-    cleaned_self_flags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
-    cleaned_self_flags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
-    cleaned_self_flags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
-    return cleaned_self_flags == cleaned_target_flags;
+    auto cleanedTargetFlags = static_cast<ETSObjectFlags>(target & (~ETSObjectFlags::COMPLETELY_RESOLVED));
+    cleanedTargetFlags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
+    cleanedTargetFlags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
+    cleanedTargetFlags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+    auto cleanedSelfFlags = static_cast<ETSObjectFlags>(ObjectFlags() & (~ETSObjectFlags::COMPLETELY_RESOLVED));
+    cleanedSelfFlags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
+    cleanedSelfFlags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
+    cleanedSelfFlags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+    return cleanedSelfFlags == cleanedTargetFlags;
 }
 
 bool ETSObjectType::AssignmentSource(TypeRelation *const relation, Type *const target)
@@ -439,18 +439,18 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
     IsSupertypeOf(relation, source);
 }
 
-bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unbox_flags,
-                                          TypeFlag widening_flags, TypeFlag narrowing_flags)
+bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unboxFlags,
+                                          TypeFlag wideningFlags, TypeFlag narrowingFlags)
 {
-    if (target->HasTypeFlag(unbox_flags)) {
+    if (target->HasTypeFlag(unboxFlags)) {
         conversion::Unboxing(relation, this);
         return true;
     }
-    if (target->HasTypeFlag(widening_flags)) {
+    if (target->HasTypeFlag(wideningFlags)) {
         conversion::UnboxingWideningPrimitive(relation, this, target);
         return true;
     }
-    if (target->HasTypeFlag(narrowing_flags)) {
+    if (target->HasTypeFlag(narrowingFlags)) {
         conversion::UnboxingNarrowingPrimitive(relation, this, target);
         return true;
     }
@@ -478,55 +478,55 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             return true;
         }
     }
-    TypeFlag unbox_flags = TypeFlag::NONE;
-    TypeFlag widening_flags = TypeFlag::NONE;
-    TypeFlag narrowing_flags = TypeFlag::NONE;
+    TypeFlag unboxFlags = TypeFlag::NONE;
+    TypeFlag wideningFlags = TypeFlag::NONE;
+    TypeFlag narrowingFlags = TypeFlag::NONE;
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
-        unbox_flags = TypeFlag::SHORT;
-        widening_flags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowing_flags = TypeFlag::BYTE | TypeFlag::CHAR;
-        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
+        unboxFlags = TypeFlag::SHORT;
+        wideningFlags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowingFlags = TypeFlag::BYTE | TypeFlag::CHAR;
+        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
-        unbox_flags = TypeFlag::CHAR;
-        widening_flags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT;
-        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
+        unboxFlags = TypeFlag::CHAR;
+        wideningFlags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT;
+        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
-        unbox_flags = TypeFlag::INT;
-        widening_flags = TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR;
-        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
+        unboxFlags = TypeFlag::INT;
+        wideningFlags = TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR;
+        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
-        unbox_flags = TypeFlag::LONG;
-        widening_flags = TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT;
-        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
+        unboxFlags = TypeFlag::LONG;
+        wideningFlags = TypeFlag::FLOAT | TypeFlag::DOUBLE;
+        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT;
+        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
-        unbox_flags = TypeFlag::FLOAT;
-        widening_flags = TypeFlag::DOUBLE;
-        narrowing_flags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG;
-        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
+        unboxFlags = TypeFlag::FLOAT;
+        wideningFlags = TypeFlag::DOUBLE;
+        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG;
+        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
             return true;
         }
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
-        unbox_flags = TypeFlag::DOUBLE;
-        widening_flags = TypeFlag::NONE;
-        narrowing_flags =
+        unboxFlags = TypeFlag::DOUBLE;
+        wideningFlags = TypeFlag::NONE;
+        narrowingFlags =
             TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT;
-        if (CastWideningNarrowing(relation, target, unbox_flags, widening_flags, narrowing_flags)) {
+        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
             return true;
         }
     }
@@ -542,10 +542,10 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
                 conversion::WideningReference(relation, this, target->AsETSObjectType());
                 return true;
             }
-            auto unboxed_target = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
-            CastNumericObject(relation, unboxed_target);
+            auto unboxedTarget = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+            CastNumericObject(relation, unboxedTarget);
             if (relation->IsTrue()) {
-                conversion::Boxing(relation, unboxed_target);
+                conversion::Boxing(relation, unboxedTarget);
                 return true;
             }
             conversion::WideningReference(relation, this, target->AsETSObjectType());
@@ -607,11 +607,11 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
 void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
-    auto *const ets_checker = relation->GetChecker()->AsETSChecker();
+    auto *const etsChecker = relation->GetChecker()->AsETSChecker();
 
     // 3.8.3 Subtyping among Array Types
     auto const *const base = GetConstOriginalBaseType();
-    if (base == ets_checker->GlobalETSObjectType() && source->IsETSArrayType()) {
+    if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
         relation->Result(true);
         return;
     }
@@ -631,7 +631,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
     // All classes and interfaces are subtypes of Object
-    if (base == ets_checker->GlobalETSObjectType()) {
+    if (base == etsChecker->GlobalETSObjectType()) {
         relation->Result(true);
         return;
     }
@@ -641,16 +641,16 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    ETSObjectType *source_obj = source->AsETSObjectType();
-    if (auto *source_super = source_obj->SuperType(); source_super != nullptr) {
-        IsSupertypeOf(relation, source_super);
+    ETSObjectType *sourceObj = source->AsETSObjectType();
+    if (auto *sourceSuper = sourceObj->SuperType(); sourceSuper != nullptr) {
+        IsSupertypeOf(relation, sourceSuper);
         if (relation->IsTrue()) {
             return;
         }
     }
 
     if (HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-        for (auto *itf : source_obj->Interfaces()) {
+        for (auto *itf : sourceObj->Interfaces()) {
             IsSupertypeOf(relation, itf);
             if (relation->IsTrue()) {
                 return;
@@ -659,49 +659,48 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
     }
 }
 
-Type *ETSObjectType::AsSuper(Checker *checker, varbinder::Variable *source_var)
+Type *ETSObjectType::AsSuper(Checker *checker, varbinder::Variable *sourceVar)
 {
-    if (source_var == nullptr) {
+    if (sourceVar == nullptr) {
         return nullptr;
     }
 
-    if (variable_ == source_var) {
+    if (variable_ == sourceVar) {
         return this;
     }
 
     if (HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         Type *res = nullptr;
         for (auto *const it : checker->AsETSChecker()->GetInterfaces(this)) {
-            res = it->AsSuper(checker, source_var);
+            res = it->AsSuper(checker, sourceVar);
             if (res != nullptr) {
                 return res;
             }
         }
-        return checker->GetGlobalTypesHolder()->GlobalETSObjectType()->AsSuper(checker, source_var);
+        return checker->GetGlobalTypesHolder()->GlobalETSObjectType()->AsSuper(checker, sourceVar);
     }
 
-    Type *const super_type = checker->AsETSChecker()->GetSuperType(this);
+    Type *const superType = checker->AsETSChecker()->GetSuperType(this);
 
-    if (super_type == nullptr) {
+    if (superType == nullptr) {
         return nullptr;
     }
 
-    if (!super_type->IsETSObjectType()) {
+    if (!superType->IsETSObjectType()) {
         return nullptr;
     }
 
-    if (ETSObjectType *const super_obj = super_type->AsETSObjectType();
-        super_obj->HasObjectFlag(ETSObjectFlags::CLASS)) {
-        Type *const res = super_obj->AsSuper(checker, source_var);
+    if (ETSObjectType *const superObj = superType->AsETSObjectType(); superObj->HasObjectFlag(ETSObjectFlags::CLASS)) {
+        Type *const res = superObj->AsSuper(checker, sourceVar);
         if (res != nullptr) {
             return res;
         }
     }
 
-    if (source_var->TsType()->IsETSObjectType() &&
-        source_var->TsType()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+    if (sourceVar->TsType()->IsETSObjectType() &&
+        sourceVar->TsType()->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         for (auto *const it : checker->AsETSChecker()->GetInterfaces(this)) {
-            Type *const res = it->AsSuper(checker, source_var);
+            Type *const res = it->AsSuper(checker, sourceVar);
             if (res != nullptr) {
                 return res;
             }
@@ -712,21 +711,21 @@ Type *ETSObjectType::AsSuper(Checker *checker, varbinder::Variable *source_var)
 }
 
 varbinder::LocalVariable *ETSObjectType::CopyProperty(varbinder::LocalVariable *prop, ArenaAllocator *allocator,
-                                                      TypeRelation *relation, GlobalTypesHolder *global_types)
+                                                      TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    auto *const copied_prop = prop->Copy(allocator, prop->Declaration());
-    auto *const copied_prop_type = ETSChecker::TryToInstantiate(
-        relation->GetChecker()->AsETSChecker()->GetTypeOfVariable(prop), allocator, relation, global_types);
+    auto *const copiedProp = prop->Copy(allocator, prop->Declaration());
+    auto *const copiedPropType = ETSChecker::TryToInstantiate(
+        relation->GetChecker()->AsETSChecker()->GetTypeOfVariable(prop), allocator, relation, globalTypes);
     // NOTE: don't change type variable if it differs from copying one!
-    if (copied_prop_type->Variable() == prop) {
-        copied_prop_type->SetVariable(copied_prop);
+    if (copiedPropType->Variable() == prop) {
+        copiedPropType->SetVariable(copiedProp);
     }
-    copied_prop->SetTsType(copied_prop_type);
-    return copied_prop;
+    copiedProp->SetTsType(copiedPropType);
+    return copiedProp;
 }
 
 Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *const relation,
-                                 GlobalTypesHolder *const global_types)
+                                 GlobalTypesHolder *const globalTypes)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     std::lock_guard guard {*checker->Mutex()};
@@ -737,82 +736,82 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     }
     relation->IncreaseTypeRecursionCount(base);
 
-    auto *const copied_type = checker->CreateNewETSObjectType(name_, decl_node_, flags_);
-    copied_type->type_flags_ = type_flags_;
-    copied_type->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
-    copied_type->SetAssemblerName(assembler_name_);
-    copied_type->SetVariable(variable_);
-    copied_type->SetSuperType(super_type_);
+    auto *const copiedType = checker->CreateNewETSObjectType(name_, declNode_, flags_);
+    copiedType->typeFlags_ = typeFlags_;
+    copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
+                                 ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+    copiedType->SetAssemblerName(assemblerName_);
+    copiedType->SetVariable(variable_);
+    copiedType->SetSuperType(superType_);
 
     for (auto *const it : interfaces_) {
-        copied_type->AddInterface(it);
+        copiedType->AddInterface(it);
     }
 
-    for (auto *const type_argument : TypeArguments()) {
-        copied_type->TypeArguments().emplace_back(type_argument->Instantiate(allocator, relation, global_types));
+    for (auto *const typeArgument : TypeArguments()) {
+        copiedType->TypeArguments().emplace_back(typeArgument->Instantiate(allocator, relation, globalTypes));
     }
-    copied_type->SetBaseType(this);
-    copied_type->properties_instantiated_ = false;
-    copied_type->relation_ = relation;
-    copied_type->substitution_ = nullptr;
+    copiedType->SetBaseType(this);
+    copiedType->propertiesInstantiated_ = false;
+    copiedType->relation_ = relation;
+    copiedType->substitution_ = nullptr;
 
     relation->DecreaseTypeRecursionCount(base);
 
-    return copied_type;
+    return copiedType;
 }
 
 static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalVariable *prop, TypeRelation *relation,
                                                                const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const copied_prop_type = checker->GetTypeOfVariable(prop)->Substitute(relation, substitution);
-    auto *const copied_prop = prop->Copy(checker->Allocator(), prop->Declaration());
-    copied_prop_type->SetVariable(copied_prop);
-    copied_prop->SetTsType(copied_prop_type);
-    return copied_prop;
+    auto *const copiedPropType = checker->GetTypeOfVariable(prop)->Substitute(relation, substitution);
+    auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
+    copiedPropType->SetVariable(copiedProp);
+    copiedProp->SetTsType(copiedPropType);
+    return copiedProp;
 }
 
 ETSObjectType const *ETSObjectType::GetConstOriginalBaseType() const noexcept
 {
-    if (auto *base_iter = GetBaseType(); base_iter != nullptr) {
-        auto *base_iter_next = base_iter->GetBaseType();
-        while (base_iter_next != nullptr && base_iter_next != base_iter) {
-            base_iter = base_iter_next;
-            base_iter_next = base_iter->GetBaseType();
+    if (auto *baseIter = GetBaseType(); baseIter != nullptr) {
+        auto *baseIterNext = baseIter->GetBaseType();
+        while (baseIterNext != nullptr && baseIterNext != baseIter) {
+            baseIter = baseIterNext;
+            baseIterNext = baseIter->GetBaseType();
         }
-        return base_iter;
+        return baseIter;
     }
     return this;
 }
 
-bool ETSObjectType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVector<Type *> &new_type_args,
+bool ETSObjectType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVector<Type *> &newTypeArgs,
                                        const Substitution *const substitution)
 {
-    bool any_change = false;
-    new_type_args.reserve(type_arguments_.size());
+    bool anyChange = false;
+    newTypeArgs.reserve(typeArguments_.size());
 
-    for (auto *const arg : type_arguments_) {
-        auto *const new_arg = arg->Substitute(relation, substitution);
-        new_type_args.push_back(new_arg);
-        any_change = any_change || (new_arg != arg);
+    for (auto *const arg : typeArguments_) {
+        auto *const newArg = arg->Substitute(relation, substitution);
+        newTypeArgs.push_back(newArg);
+        anyChange = anyChange || (newArg != arg);
     }
 
-    return any_change;
+    return anyChange;
 }
 
-void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObjectType *const copied_type,
-                                            ArenaVector<Type *> &new_type_args, const Substitution *const substitution)
+void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObjectType *const copiedType,
+                                            ArenaVector<Type *> &newTypeArgs, const Substitution *const substitution)
 {
-    copied_type->type_flags_ = type_flags_;
-    copied_type->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
-    copied_type->SetVariable(variable_);
-    copied_type->SetBaseType(this);
+    copiedType->typeFlags_ = typeFlags_;
+    copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
+                                 ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+    copiedType->SetVariable(variable_);
+    copiedType->SetBaseType(this);
 
-    copied_type->SetTypeArguments(std::move(new_type_args));
-    copied_type->relation_ = relation;
-    copied_type->substitution_ = substitution;
+    copiedType->SetTypeArguments(std::move(newTypeArgs));
+    copiedType->relation_ = relation;
+    copiedType->substitution_ = substitution;
 }
 
 Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -824,12 +823,12 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *base = GetOriginalBaseType();
 
-    ArenaVector<Type *> new_type_args {checker->Allocator()->Adapter()};
-    const bool any_change = SubstituteTypeArgs(relation, new_type_args, substitution);
+    ArenaVector<Type *> newTypeArgs {checker->Allocator()->Adapter()};
+    const bool anyChange = SubstituteTypeArgs(relation, newTypeArgs, substitution);
     // Lambda types can capture type params in their bodies, normal classes cannot.
     // NOTE: gogabr. determine precise conditions where we do not need to copy.
     // Perhaps keep track of captured type parameters for each type.
-    if (!any_change && !HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+    if (!anyChange && !HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         return this;
     }
 
@@ -843,77 +842,77 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
     }
     relation->IncreaseTypeRecursionCount(base);
 
-    auto *const copied_type = checker->CreateNewETSObjectType(name_, decl_node_, flags_);
-    SetCopiedTypeProperties(relation, copied_type, new_type_args, substitution);
-    GetInstantiationMap().try_emplace(hash, copied_type);
+    auto *const copiedType = checker->CreateNewETSObjectType(name_, declNode_, flags_);
+    SetCopiedTypeProperties(relation, copiedType, newTypeArgs, substitution);
+    GetInstantiationMap().try_emplace(hash, copiedType);
 
-    if (super_type_ != nullptr) {
-        copied_type->SetSuperType(super_type_->Substitute(relation, substitution)->AsETSObjectType());
+    if (superType_ != nullptr) {
+        copiedType->SetSuperType(superType_->Substitute(relation, substitution)->AsETSObjectType());
     }
     for (auto *itf : interfaces_) {
-        auto *new_itf = itf->Substitute(relation, substitution)->AsETSObjectType();
-        copied_type->AddInterface(new_itf);
+        auto *newItf = itf->Substitute(relation, substitution)->AsETSObjectType();
+        copiedType->AddInterface(newItf);
     }
 
     relation->DecreaseTypeRecursionCount(base);
 
-    return copied_type;
+    return copiedType;
 }
 
 void ETSObjectType::InstantiateProperties() const
 {
-    if (base_type_ == nullptr || base_type_ == this) {
+    if (baseType_ == nullptr || baseType_ == this) {
         return;
     }
-    ASSERT(!properties_instantiated_);
+    ASSERT(!propertiesInstantiated_);
     ASSERT(relation_ != nullptr);
 
-    for (auto *const it : base_type_->ConstructSignatures()) {
-        auto *new_sig = it->Substitute(relation_, substitution_);
-        construct_signatures_.push_back(new_sig);
+    for (auto *const it : baseType_->ConstructSignatures()) {
+        auto *newSig = it->Substitute(relation_, substitution_);
+        constructSignatures_.push_back(newSig);
     }
 
-    for (auto const &[_, prop] : base_type_->InstanceFields()) {
+    for (auto const &[_, prop] : baseType_->InstanceFields()) {
         (void)_;
-        auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
-        properties_[static_cast<size_t>(PropertyType::INSTANCE_FIELD)].emplace(prop->Name(), copied_prop);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        properties_[static_cast<size_t>(PropertyType::INSTANCE_FIELD)].emplace(prop->Name(), copiedProp);
     }
 
-    for (auto const &[_, prop] : base_type_->StaticFields()) {
+    for (auto const &[_, prop] : baseType_->StaticFields()) {
         (void)_;
-        auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
-        properties_[static_cast<size_t>(PropertyType::STATIC_FIELD)].emplace(prop->Name(), copied_prop);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        properties_[static_cast<size_t>(PropertyType::STATIC_FIELD)].emplace(prop->Name(), copiedProp);
     }
 
-    for (auto const &[_, prop] : base_type_->InstanceMethods()) {
+    for (auto const &[_, prop] : baseType_->InstanceMethods()) {
         (void)_;
-        auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
-        properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].emplace(prop->Name(), copied_prop);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].emplace(prop->Name(), copiedProp);
     }
 
-    for (auto const &[_, prop] : base_type_->StaticMethods()) {
+    for (auto const &[_, prop] : baseType_->StaticMethods()) {
         (void)_;
-        auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
-        properties_[static_cast<size_t>(PropertyType::STATIC_METHOD)].emplace(prop->Name(), copied_prop);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        properties_[static_cast<size_t>(PropertyType::STATIC_METHOD)].emplace(prop->Name(), copiedProp);
     }
 
-    for (auto const &[_, prop] : base_type_->InstanceDecls()) {
+    for (auto const &[_, prop] : baseType_->InstanceDecls()) {
         (void)_;
-        auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
-        properties_[static_cast<size_t>(PropertyType::INSTANCE_DECL)].emplace(prop->Name(), copied_prop);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        properties_[static_cast<size_t>(PropertyType::INSTANCE_DECL)].emplace(prop->Name(), copiedProp);
     }
 
-    for (auto const &[_, prop] : base_type_->StaticDecls()) {
+    for (auto const &[_, prop] : baseType_->StaticDecls()) {
         (void)_;
-        auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
-        properties_[static_cast<size_t>(PropertyType::STATIC_DECL)].emplace(prop->Name(), copied_prop);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        properties_[static_cast<size_t>(PropertyType::STATIC_DECL)].emplace(prop->Name(), copiedProp);
     }
 }
 
-void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringView asm_name)
+void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringView asmName)
 {
     ss << compiler::Signatures::CLASS_REF_BEGIN;
-    auto copied = asm_name.Mutf8();
+    auto copied = asmName.Mutf8();
     std::replace(copied.begin(), copied.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
                  *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
     ss << copied;

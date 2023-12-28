@@ -19,44 +19,44 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::checker {
-Type *TSChecker::CheckBinaryOperator(Type *left_type, Type *right_type, ir::Expression *left_expr,
-                                     ir::Expression *right_expr, ir::AstNode *expr, lexer::TokenType op)
+Type *TSChecker::CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr,
+                                     ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
 {
-    CheckNonNullType(left_type, left_expr->Start());
-    CheckNonNullType(right_type, right_expr->Start());
+    CheckNonNullType(leftType, leftExpr->Start());
+    CheckNonNullType(rightType, rightExpr->Start());
 
-    if (left_type->HasTypeFlag(TypeFlag::BOOLEAN_LIKE) && right_type->HasTypeFlag(TypeFlag::BOOLEAN_LIKE)) {
-        lexer::TokenType suggested_op;
+    if (leftType->HasTypeFlag(TypeFlag::BOOLEAN_LIKE) && rightType->HasTypeFlag(TypeFlag::BOOLEAN_LIKE)) {
+        lexer::TokenType suggestedOp;
         switch (op) {
             case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
             case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-                suggested_op = lexer::TokenType::PUNCTUATOR_LOGICAL_OR;
+                suggestedOp = lexer::TokenType::PUNCTUATOR_LOGICAL_OR;
                 break;
             }
             case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
             case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL: {
-                suggested_op = lexer::TokenType::PUNCTUATOR_LOGICAL_AND;
+                suggestedOp = lexer::TokenType::PUNCTUATOR_LOGICAL_AND;
                 break;
             }
             case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
             case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL: {
-                suggested_op = lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL;
+                suggestedOp = lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL;
                 break;
             }
             default: {
-                suggested_op = lexer::TokenType::EOS;
+                suggestedOp = lexer::TokenType::EOS;
                 break;
             }
         }
 
-        if (suggested_op != lexer::TokenType::EOS) {
+        if (suggestedOp != lexer::TokenType::EOS) {
             ThrowTypeError(
-                {"The ", op, " operator is not allowed for boolean types. Consider using ", suggested_op, " instead"},
+                {"The ", op, " operator is not allowed for boolean types. Consider using ", suggestedOp, " instead"},
                 expr->Start());
         }
     }
 
-    if (!left_type->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
+    if (!leftType->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
         ThrowTypeError(
             "The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an "
             "enum "
@@ -64,105 +64,103 @@ Type *TSChecker::CheckBinaryOperator(Type *left_type, Type *right_type, ir::Expr
             expr->Start());
     }
 
-    if (!right_type->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
+    if (!rightType->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
         ThrowTypeError(
             "The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an "
             "enum "
             "type.",
-            right_expr->Start());
+            rightExpr->Start());
     }
 
-    Type *result_type = nullptr;
-    if ((left_type->IsAnyType() && right_type->IsAnyType()) ||
-        !(left_type->HasTypeFlag(TypeFlag::BIGINT_LIKE) || right_type->HasTypeFlag(TypeFlag::BIGINT_LIKE))) {
-        result_type = GlobalNumberType();
-    } else if (left_type->HasTypeFlag(TypeFlag::BIGINT_LIKE) && right_type->HasTypeFlag(TypeFlag::BIGINT_LIKE)) {
+    Type *resultType = nullptr;
+    if ((leftType->IsAnyType() && rightType->IsAnyType()) ||
+        !(leftType->HasTypeFlag(TypeFlag::BIGINT_LIKE) || rightType->HasTypeFlag(TypeFlag::BIGINT_LIKE))) {
+        resultType = GlobalNumberType();
+    } else if (leftType->HasTypeFlag(TypeFlag::BIGINT_LIKE) && rightType->HasTypeFlag(TypeFlag::BIGINT_LIKE)) {
         if (op == lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT ||
             op == lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL) {
             ThrowTypeError({"operator ", op, " cannot be applied to types 'bigint' and 'bigint'"}, expr->Start());
         }
-        result_type = GlobalBigintType();
+        resultType = GlobalBigintType();
     } else {
-        ThrowBinaryLikeError(op, left_type, right_type, expr->Start());
+        ThrowBinaryLikeError(op, leftType, rightType, expr->Start());
     }
 
-    CheckAssignmentOperator(op, left_expr, left_type, result_type);
-    return result_type;
+    CheckAssignmentOperator(op, leftExpr, leftType, resultType);
+    return resultType;
 }
 
-Type *TSChecker::CheckPlusOperator(Type *left_type, Type *right_type, ir::Expression *left_expr,
-                                   ir::Expression *right_expr, ir::AstNode *expr, lexer::TokenType op)
+Type *TSChecker::CheckPlusOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
+                                   ir::AstNode *expr, lexer::TokenType op)
 {
-    if (!left_type->HasTypeFlag(TypeFlag::STRING_LIKE) && !right_type->HasTypeFlag(TypeFlag::STRING_LIKE)) {
-        CheckNonNullType(left_type, left_expr->Start());
-        CheckNonNullType(right_type, right_expr->Start());
+    if (!leftType->HasTypeFlag(TypeFlag::STRING_LIKE) && !rightType->HasTypeFlag(TypeFlag::STRING_LIKE)) {
+        CheckNonNullType(leftType, leftExpr->Start());
+        CheckNonNullType(rightType, rightExpr->Start());
     }
 
-    Type *result_type = nullptr;
-    if (IsTypeAssignableTo(left_type, GlobalNumberType()) && IsTypeAssignableTo(right_type, GlobalNumberType())) {
-        result_type = GlobalNumberType();
-    } else if (IsTypeAssignableTo(left_type, GlobalBigintType()) &&
-               IsTypeAssignableTo(right_type, GlobalBigintType())) {
-        result_type = GlobalBigintType();
-    } else if (IsTypeAssignableTo(left_type, GlobalStringType()) ||
-               IsTypeAssignableTo(right_type, GlobalStringType())) {
-        result_type = GlobalStringType();
-    } else if (MaybeTypeOfKind(left_type, TypeFlag::UNKNOWN)) {
-        ThrowTypeError("object is of type 'unknown'", left_expr->Start());
-    } else if (MaybeTypeOfKind(right_type, TypeFlag::UNKNOWN)) {
-        ThrowTypeError("object is of type 'unknown'", right_expr->Start());
-    } else if (left_type->IsAnyType() || right_type->IsAnyType()) {
-        result_type = GlobalAnyType();
+    Type *resultType = nullptr;
+    if (IsTypeAssignableTo(leftType, GlobalNumberType()) && IsTypeAssignableTo(rightType, GlobalNumberType())) {
+        resultType = GlobalNumberType();
+    } else if (IsTypeAssignableTo(leftType, GlobalBigintType()) && IsTypeAssignableTo(rightType, GlobalBigintType())) {
+        resultType = GlobalBigintType();
+    } else if (IsTypeAssignableTo(leftType, GlobalStringType()) || IsTypeAssignableTo(rightType, GlobalStringType())) {
+        resultType = GlobalStringType();
+    } else if (MaybeTypeOfKind(leftType, TypeFlag::UNKNOWN)) {
+        ThrowTypeError("object is of type 'unknown'", leftExpr->Start());
+    } else if (MaybeTypeOfKind(rightType, TypeFlag::UNKNOWN)) {
+        ThrowTypeError("object is of type 'unknown'", rightExpr->Start());
+    } else if (leftType->IsAnyType() || rightType->IsAnyType()) {
+        resultType = GlobalAnyType();
     } else {
-        ThrowBinaryLikeError(op, left_type, right_type, expr->Start());
+        ThrowBinaryLikeError(op, leftType, rightType, expr->Start());
     }
 
     if (op == lexer::TokenType::PUNCTUATOR_PLUS_EQUAL) {
-        CheckAssignmentOperator(op, left_expr, left_type, result_type);
+        CheckAssignmentOperator(op, leftExpr, leftType, resultType);
     }
 
-    return result_type;
+    return resultType;
 }
 
-Type *TSChecker::CheckCompareOperator(Type *left_type, Type *right_type, ir::Expression *left_expr,
-                                      ir::Expression *right_expr, ir::AstNode *expr, lexer::TokenType op)
+Type *TSChecker::CheckCompareOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr,
+                                      ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
 {
-    CheckNonNullType(left_type, left_expr->Start());
-    CheckNonNullType(right_type, right_expr->Start());
+    CheckNonNullType(leftType, leftExpr->Start());
+    CheckNonNullType(rightType, rightExpr->Start());
 
-    if (AreTypesComparable(left_type, right_type) || (IsTypeAssignableTo(left_type, GlobalNumberOrBigintType()) &&
-                                                      IsTypeAssignableTo(right_type, GlobalNumberOrBigintType()))) {
+    if (AreTypesComparable(leftType, rightType) || (IsTypeAssignableTo(leftType, GlobalNumberOrBigintType()) &&
+                                                    IsTypeAssignableTo(rightType, GlobalNumberOrBigintType()))) {
         return GlobalBooleanType();
     }
 
-    ThrowBinaryLikeError(op, left_type, right_type, expr->Start());
+    ThrowBinaryLikeError(op, leftType, rightType, expr->Start());
 
     return GlobalAnyType();
 }
 
-Type *TSChecker::CheckAndOperator(Type *left_type, Type *right_type, ir::Expression *left_expr)
+Type *TSChecker::CheckAndOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr)
 {
-    CheckTruthinessOfType(left_type, left_expr->Start());
+    CheckTruthinessOfType(leftType, leftExpr->Start());
 
-    if ((static_cast<uint64_t>(left_type->GetTypeFacts()) & static_cast<uint64_t>(TypeFacts::TRUTHY)) != 0U) {
-        Type *result_type = CreateUnionType({ExtractDefinitelyFalsyTypes(right_type), right_type});
-        return result_type;
+    if ((static_cast<uint64_t>(leftType->GetTypeFacts()) & static_cast<uint64_t>(TypeFacts::TRUTHY)) != 0U) {
+        Type *resultType = CreateUnionType({ExtractDefinitelyFalsyTypes(rightType), rightType});
+        return resultType;
     }
 
-    return left_type;
+    return leftType;
 }
 
-Type *TSChecker::CheckOrOperator(Type *left_type, Type *right_type, ir::Expression *left_expr)
+Type *TSChecker::CheckOrOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr)
 {
-    CheckTruthinessOfType(left_type, left_expr->Start());
+    CheckTruthinessOfType(leftType, leftExpr->Start());
 
-    if ((static_cast<uint64_t>(left_type->GetTypeFacts()) & static_cast<uint64_t>(TypeFacts::FALSY)) != 0U) {
+    if ((static_cast<uint64_t>(leftType->GetTypeFacts()) & static_cast<uint64_t>(TypeFacts::FALSY)) != 0U) {
         // NOTE: aszilagyi. subtype reduction in the result union
-        Type *result_type = CreateUnionType({RemoveDefinitelyFalsyTypes(left_type), right_type});
-        return result_type;
+        Type *resultType = CreateUnionType({RemoveDefinitelyFalsyTypes(leftType), rightType});
+        return resultType;
     }
 
-    return left_type;
+    return leftType;
 }
 
 static bool TypeHasCallOrConstructSignatures(Type *type)
@@ -171,58 +169,57 @@ static bool TypeHasCallOrConstructSignatures(Type *type)
            (!type->AsObjectType()->CallSignatures().empty() || !type->AsObjectType()->ConstructSignatures().empty());
 }
 
-Type *TSChecker::CheckInstanceofExpression(Type *left_type, Type *right_type, ir::Expression *right_expr,
+Type *TSChecker::CheckInstanceofExpression(Type *leftType, Type *rightType, ir::Expression *rightExpr,
                                            ir::AstNode *expr)
 {
-    if (left_type->TypeFlags() != TypeFlag::ANY && IsAllTypesAssignableTo(left_type, GlobalPrimitiveType())) {
+    if (leftType->TypeFlags() != TypeFlag::ANY && IsAllTypesAssignableTo(leftType, GlobalPrimitiveType())) {
         ThrowTypeError({"The left-hand side of an 'instanceof' expression must be of type 'any',",
                         " an object type or a type parameter."},
                        expr->Start());
     }
 
     // NOTE: aszilagyi. Check if right type is subtype of globalFunctionType
-    if (right_type->TypeFlags() != TypeFlag::ANY && !TypeHasCallOrConstructSignatures(right_type)) {
+    if (rightType->TypeFlags() != TypeFlag::ANY && !TypeHasCallOrConstructSignatures(rightType)) {
         ThrowTypeError({"The right-hand side of an 'instanceof' expression must be of type 'any'",
                         " or of a type assignable to the 'Function' interface type."},
-                       right_expr->Start());
+                       rightExpr->Start());
     }
 
     return GlobalBooleanType();
 }
 
-Type *TSChecker::CheckInExpression(Type *left_type, Type *right_type, ir::Expression *left_expr,
-                                   ir::Expression *right_expr, ir::AstNode *expr)
+Type *TSChecker::CheckInExpression(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
+                                   ir::AstNode *expr)
 {
-    CheckNonNullType(left_type, left_expr->Start());
-    CheckNonNullType(right_type, right_expr->Start());
+    CheckNonNullType(leftType, leftExpr->Start());
+    CheckNonNullType(rightType, rightExpr->Start());
 
     // NOTE: aszilagyi. Check IsAllTypesAssignableTo with ESSymbol too
-    if (left_type->TypeFlags() != TypeFlag::ANY && !IsAllTypesAssignableTo(left_type, GlobalStringOrNumberType())) {
+    if (leftType->TypeFlags() != TypeFlag::ANY && !IsAllTypesAssignableTo(leftType, GlobalStringOrNumberType())) {
         ThrowTypeError(
             {"The left-hand side of an 'in' expression must be of type 'any',", " 'string', 'number', or 'symbol'."},
             expr->Start());
     }
 
     // NOTE: aszilagyi. Handle type parameters
-    if (!IsAllTypesAssignableTo(right_type, GlobalNonPrimitiveType())) {
-        ThrowTypeError("The right-hand side of an 'in' expression must not be a primitive.", right_expr->Start());
+    if (!IsAllTypesAssignableTo(rightType, GlobalNonPrimitiveType())) {
+        ThrowTypeError("The right-hand side of an 'in' expression must not be a primitive.", rightExpr->Start());
     }
 
     return GlobalBooleanType();
 }
 
-void TSChecker::CheckAssignmentOperator(lexer::TokenType op, ir::Expression *left_expr, Type *left_type,
-                                        Type *value_type)
+void TSChecker::CheckAssignmentOperator(lexer::TokenType op, ir::Expression *leftExpr, Type *leftType, Type *valueType)
 {
     if (IsAssignmentOperator(op)) {
         CheckReferenceExpression(
-            left_expr, "the left hand side of an assignment expression must be a variable or a property access",
+            leftExpr, "the left hand side of an assignment expression must be a variable or a property access",
             "The left-hand side of an assignment expression may not be an optional property access.");
 
-        if (!IsTypeAssignableTo(value_type, left_type)) {
-            ThrowAssignmentError(value_type, left_type, left_expr->Start(),
-                                 left_expr->Parent()->AsAssignmentExpression()->Right()->IsMemberExpression() ||
-                                     left_expr->Parent()->AsAssignmentExpression()->Right()->IsChainExpression());
+        if (!IsTypeAssignableTo(valueType, leftType)) {
+            ThrowAssignmentError(valueType, leftType, leftExpr->Start(),
+                                 leftExpr->Parent()->AsAssignmentExpression()->Right()->IsMemberExpression() ||
+                                     leftExpr->Parent()->AsAssignmentExpression()->Right()->IsChainExpression());
         }
     }
 }

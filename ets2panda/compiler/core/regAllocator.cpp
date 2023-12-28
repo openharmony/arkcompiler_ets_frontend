@@ -57,9 +57,9 @@ SimpleAllocator::SimpleAllocator(CodeGen *const cg) noexcept : AllocatorBase(cg)
 
 Label *SimpleAllocator::AllocLabel(std::string &&id)
 {
-    const auto *last_ins_node =
+    const auto *lastInsNode =
         GetCodeGen().Insns().empty() ? FIRST_NODE_OF_FUNCTION : GetCodeGen().Insns().back()->Node();
-    return Alloc<Label>(last_ins_node, std::move(id));
+    return Alloc<Label>(lastInsNode, std::move(id));
 }
 
 void SimpleAllocator::AddLabel(Label *const label) const
@@ -90,9 +90,9 @@ std::pair<bool, std::size_t> RegAllocatorBase::RegIndicesValid(const IRNode *con
     std::size_t limit = 0;
 
     for (const auto &format : formats) {
-        for (const auto &format_item : format.GetFormatItem()) {
-            if (format_item.IsVReg()) {
-                limit = 1U << format_item.BitWidth();
+        for (const auto &formatItem : format.GetFormatItem()) {
+            if (formatItem.IsVReg()) {
+                limit = 1U << formatItem.BitWidth();
                 break;
             }
         }
@@ -127,12 +127,12 @@ VReg RegAllocatorBase::Spill(IRNode *const ins, const VReg reg) const
 
 void RegAllocatorBase::Restore(const IRNode *const ins) const
 {
-    const auto spill_info = spiller_->Restore();
-    if (spiller_->GetCodeGen()->GetVRegType(spill_info.OriginReg()) == nullptr) {
+    const auto spillInfo = spiller_->Restore();
+    if (spiller_->GetCodeGen()->GetVRegType(spillInfo.OriginReg()) == nullptr) {
         return;
     }
 
-    if (auto *const mov = spiller_->MoveReg(ins->Node(), spill_info.OriginReg(), spill_info.SpillReg(), false);
+    if (auto *const mov = spiller_->MoveReg(ins->Node(), spillInfo.OriginReg(), spillInfo.SpillReg(), false);
         mov != nullptr) {
         PushBack(mov);
     }
@@ -142,16 +142,16 @@ void RegAllocatorBase::Restore(const IRNode *const ins) const
 
 RegAllocator::RegAllocator(CodeGen *const cg, RegSpiller *const spiller) noexcept : RegAllocatorBase(cg, spiller) {}
 
-void RegAllocator::Run(IRNode *const ins, const int32_t spill_max)
+void RegAllocator::Run(IRNode *const ins, const int32_t spillMax)
 {
     ASSERT(Spiller().Restored());
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
-    const auto reg_cnt = ins->Registers(&regs);
-    const auto registers = Span<VReg *>(
-        regs.data(), regs.data() + (spill_max == std::numeric_limits<int32_t>::max() ? reg_cnt : spill_max));
+    const auto regCnt = ins->Registers(&regs);
+    const auto registers =
+        Span<VReg *>(regs.data(), regs.data() + (spillMax == std::numeric_limits<int32_t>::max() ? regCnt : spillMax));
 
-    std::array<OutVReg, IRNode::MAX_REG_OPERAND> dst_regs {};
-    ins->OutRegisters(&dst_regs);
+    std::array<OutVReg, IRNode::MAX_REG_OPERAND> dstRegs {};
+    ins->OutRegisters(&dstRegs);
 
     const auto [indices_valid, limit] = RegIndicesValid(ins, registers);
     if (indices_valid) {
@@ -161,29 +161,29 @@ void RegAllocator::Run(IRNode *const ins, const int32_t spill_max)
 
     const auto rs = Spiller().Start(GetCodeGen());
 
-    std::unordered_set<VReg> valid_regs;
+    std::unordered_set<VReg> validRegs;
     for (auto *const reg : registers) {
         if (!reg->IsValid(limit)) {
             continue;
         }
 
-        valid_regs.insert(*reg);
+        validRegs.insert(*reg);
     }
 
-    std::vector<IRNode *> dst_moves;
+    std::vector<IRNode *> dstMoves;
     size_t i = 0;
     for (auto *const reg : registers) {
-        auto dst_info = dst_regs[i++];
+        auto dstInfo = dstRegs[i++];
         if (reg->IsValid(limit)) {
             continue;
         }
 
-        Spiller().Adjust(valid_regs);
+        Spiller().Adjust(validRegs);
 
         auto r = Spill(ins, *reg);
 
-        if (dst_info.reg != nullptr) {
-            dst_moves.push_back(GetCodeGen().AllocMov(ins->Node(), dst_info, r));
+        if (dstInfo.reg != nullptr) {
+            dstMoves.push_back(GetCodeGen().AllocMov(ins->Node(), dstInfo, r));
         }
 
         *reg = r;
@@ -191,7 +191,7 @@ void RegAllocator::Run(IRNode *const ins, const int32_t spill_max)
 
     PushBack(ins);
 
-    for (auto *mov : dst_moves) {
+    for (auto *mov : dstMoves) {
         PushBack(mov);
     }
 
@@ -209,14 +209,14 @@ RangeRegAllocator::RangeRegAllocator(CodeGen *const cg, RegSpiller *const spille
 {
 }
 
-void RangeRegAllocator::Run(IRNode *const ins, VReg range_start, const std::size_t arg_count)
+void RangeRegAllocator::Run(IRNode *const ins, VReg rangeStart, const std::size_t argCount)
 {
     ASSERT(Spiller().Restored());
-    const auto range_end = range_start + arg_count;
+    const auto rangeEnd = rangeStart + argCount;
 
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
-    const auto reg_cnt = ins->Registers(&regs);
-    const auto registers = Span<VReg *>(regs.data(), regs.data() + reg_cnt);
+    const auto regCnt = ins->Registers(&regs);
+    const auto registers = Span<VReg *>(regs.data(), regs.data() + regCnt);
     if (RegIndicesValid(ins, registers).first) {
         PushBack(ins);
         return;
@@ -224,23 +224,22 @@ void RangeRegAllocator::Run(IRNode *const ins, VReg range_start, const std::size
 
     const auto rs = Spiller().Start(GetCodeGen());
 
-    auto reg_iter = registers.begin();
-    const auto reg_iter_end =
-        reg_iter + registers.size() - 1;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    auto regIter = registers.begin();
+    const auto regIterEnd = regIter + registers.size() - 1;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
-    while (reg_iter != reg_iter_end) {
-        auto *const reg = *reg_iter;
+    while (regIter != regIterEnd) {
+        auto *const reg = *regIter;
 
         *reg = Spill(ins, *reg);
-        reg_iter++;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        regIter++;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
 
-    auto *const reg_start_reg = *reg_iter;
-    auto reg = range_start++;
-    *reg_start_reg = Spill(ins, reg);
+    auto *const regStartReg = *regIter;
+    auto reg = rangeStart++;
+    *regStartReg = Spill(ins, reg);
 
-    while (range_start != range_end) {
-        reg = range_start++;
+    while (rangeStart != rangeEnd) {
+        reg = rangeStart++;
         Spill(ins, reg);
     }
 

@@ -35,7 +35,7 @@ std::string_view ObjectIndexLowering::Name()
 }
 
 ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                                           ir::AssignmentExpression *assignment_expression) const
+                                                           ir::AssignmentExpression *assignmentExpression) const
 {
     //  Note! We assume that parser and checker phase nave been already passed correctly, thus the class has
     //  required accessible index method[s] and all the types are properly resolved.
@@ -43,18 +43,18 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
         std::string {"@@E1."} + std::string {compiler::Signatures::SET_INDEX_METHOD} + "(@@E2, @@E3)";
 
     // Parse ArkTS code string and create and process corresponding AST node(s)
-    auto *const member_expression = assignment_expression->Left()->AsMemberExpression();
-    auto *const lowering_result =
-        parser->CreateFormattedExpression(CALL_EXPRESSION, parser::DEFAULT_SOURCE_FILE, member_expression->Object(),
-                                          member_expression->Property(), assignment_expression->Right());
-    lowering_result->SetParent(assignment_expression->Parent());
+    auto *const memberExpression = assignmentExpression->Left()->AsMemberExpression();
+    auto *const loweringResult =
+        parser->CreateFormattedExpression(CALL_EXPRESSION, parser::DEFAULT_SOURCE_FILE, memberExpression->Object(),
+                                          memberExpression->Property(), assignmentExpression->Right());
+    loweringResult->SetParent(assignmentExpression->Parent());
 
-    lowering_result->Check(checker);
-    return lowering_result;
+    loweringResult->Check(checker);
+    return loweringResult;
 }
 
 ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                                           ir::MemberExpression *member_expression) const
+                                                           ir::MemberExpression *memberExpression) const
 {
     //  Note! We assume that parser and checker phase nave been already passed correctly, thus the class has
     //  required accessible index method[s] and all the types are properly resolved.
@@ -62,22 +62,22 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
         std::string {"@@E1."} + std::string {compiler::Signatures::GET_INDEX_METHOD} + "(@@E2)";
 
     // Parse ArkTS code string and create and process corresponding AST node(s)
-    auto *const lowering_result = parser->CreateFormattedExpression(
-        CALL_EXPRESSION, parser::DEFAULT_SOURCE_FILE, member_expression->Object(), member_expression->Property());
-    lowering_result->SetParent(member_expression->Parent());
+    auto *const loweringResult = parser->CreateFormattedExpression(
+        CALL_EXPRESSION, parser::DEFAULT_SOURCE_FILE, memberExpression->Object(), memberExpression->Property());
+    loweringResult->SetParent(memberExpression->Parent());
 
-    lowering_result->Check(checker);
-    lowering_result->SetBoxingUnboxingFlags(member_expression->GetBoxingUnboxingFlags());
-    return lowering_result;
+    loweringResult->Check(checker);
+    loweringResult->SetBoxingUnboxingFlags(memberExpression->GetBoxingUnboxingFlags());
+    return loweringResult;
 }
 
 bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
+    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
-            for (auto *ext_prog : ext_programs) {
-                Perform(ctx, ext_prog);
+            for (auto *extProg : extPrograms) {
+                Perform(ctx, extProg);
             }
         }
     }
@@ -91,8 +91,8 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
         if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression() &&
             ast->AsAssignmentExpression()->Left()->AsMemberExpression()->Kind() ==
                 ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            if (auto const *const object_type = ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType();
-                object_type != nullptr && !object_type->IsETSDynamicType()) {
+            if (auto const *const objectType = ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType();
+                objectType != nullptr && !objectType->IsETSDynamicType()) {
                 return ProcessIndexSetAccess(parser, checker, ast->AsAssignmentExpression());
             }
         }
@@ -102,8 +102,8 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
     program->Ast()->TransformChildrenRecursively([this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
         if (ast->IsMemberExpression() &&
             ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            if (auto const *const object_type = ast->AsMemberExpression()->ObjType();
-                object_type != nullptr && !object_type->IsETSDynamicType()) {
+            if (auto const *const objectType = ast->AsMemberExpression()->ObjType();
+                objectType != nullptr && !objectType->IsETSDynamicType()) {
                 return ProcessIndexGetAccess(parser, checker, ast->AsMemberExpression());
             }
         }
@@ -115,11 +115,11 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
 
 bool ObjectIndexLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
+    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
-            for (auto *ext_prog : ext_programs) {
-                if (!Postcondition(ctx, ext_prog)) {
+            for (auto *extProg : extPrograms) {
+                if (!Postcondition(ctx, extProg)) {
                     return false;
                 }
             }
@@ -129,8 +129,8 @@ bool ObjectIndexLowering::Postcondition(public_lib::Context *ctx, const parser::
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
         if (ast->IsMemberExpression() &&
             ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            if (auto const *const object_type = ast->AsMemberExpression()->ObjType(); object_type != nullptr) {
-                return !object_type->IsETSDynamicType();
+            if (auto const *const objectType = ast->AsMemberExpression()->ObjType(); objectType != nullptr) {
+                return !objectType->IsETSDynamicType();
             }
         }
         return false;

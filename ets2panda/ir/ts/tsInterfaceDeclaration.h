@@ -32,20 +32,20 @@ class TSTypeParameterDeclaration;
 
 class TSInterfaceDeclaration : public TypedStatement {
 public:
-    explicit TSInterfaceDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *type_params,
-                                    TSInterfaceBody *body, ArenaVector<TSInterfaceHeritage *> &&extends, bool is_static,
-                                    bool is_external, Language lang)
+    explicit TSInterfaceDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *typeParams,
+                                    TSInterfaceBody *body, ArenaVector<TSInterfaceHeritage *> &&extends, bool isStatic,
+                                    bool isExternal, Language lang)
         : TypedStatement(AstNodeType::TS_INTERFACE_DECLARATION),
           decorators_(allocator->Adapter()),
           id_(id),
-          type_params_(type_params),
+          typeParams_(typeParams),
           body_(body),
           extends_(std::move(extends)),
-          is_static_(is_static),
-          is_external_(is_external),
+          isStatic_(isStatic),
+          isExternal_(isExternal),
           lang_(lang)
     {
-        if (is_static_) {
+        if (isStatic_) {
             AddModifier(ir::ModifierFlags::STATIC);
         }
     }
@@ -87,32 +87,32 @@ public:
 
     const util::StringView &InternalName() const
     {
-        return internal_name_;
+        return internalName_;
     }
 
-    void SetInternalName(util::StringView internal_name)
+    void SetInternalName(util::StringView internalName)
     {
-        internal_name_ = internal_name;
+        internalName_ = internalName;
     }
 
     bool IsStatic() const
     {
-        return is_static_;
+        return isStatic_;
     }
 
     bool IsFromExternal() const
     {
-        return is_external_;
+        return isExternal_;
     }
 
     const TSTypeParameterDeclaration *TypeParams() const
     {
-        return type_params_;
+        return typeParams_;
     }
 
     TSTypeParameterDeclaration *TypeParams()
     {
-        return type_params_;
+        return typeParams_;
     }
 
     ArenaVector<TSInterfaceHeritage *> &Extends()
@@ -140,9 +140,9 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
-        return !in_ts;
+        return !inTs;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -159,7 +159,7 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
-    checker::Type *InferType(checker::TSChecker *checker, varbinder::Variable *binding_var) const;
+    checker::Type *InferType(checker::TSChecker *checker, varbinder::Variable *bindingVar) const;
 
     void Accept(ASTVisitorT *v) override
     {
@@ -170,12 +170,12 @@ private:
     ArenaVector<Decorator *> decorators_;
     varbinder::LocalScope *scope_ {nullptr};
     Identifier *id_;
-    TSTypeParameterDeclaration *type_params_;
+    TSTypeParameterDeclaration *typeParams_;
     TSInterfaceBody *body_;
     ArenaVector<TSInterfaceHeritage *> extends_;
-    util::StringView internal_name_ {};
-    bool is_static_;
-    bool is_external_;
+    util::StringView internalName_ {};
+    bool isStatic_;
+    bool isExternal_;
     es2panda::Language lang_;
 };
 }  // namespace panda::es2panda::ir

@@ -34,14 +34,14 @@ public:
     NO_MOVE_SEMANTIC(AssignmentExpression);
 
     explicit AssignmentExpression(Expression *const left, Expression *const right,
-                                  lexer::TokenType const assignment_operator)
-        : AssignmentExpression(AstNodeType::ASSIGNMENT_EXPRESSION, left, right, assignment_operator)
+                                  lexer::TokenType const assignmentOperator)
+        : AssignmentExpression(AstNodeType::ASSIGNMENT_EXPRESSION, left, right, assignmentOperator)
     {
     }
 
     explicit AssignmentExpression(AstNodeType const type, Expression *const left, Expression *const right,
-                                  lexer::TokenType const assignment_operator)
-        : Expression(type), left_(left), right_(right), operator_(assignment_operator)
+                                  lexer::TokenType const assignmentOperator)
+        : Expression(type), left_(left), right_(right), operator_(assignmentOperator)
     {
     }
 
@@ -85,9 +85,9 @@ public:
         return operator_;
     }
 
-    lexer::TokenType SetOperatorType(lexer::TokenType token_type) noexcept
+    lexer::TokenType SetOperatorType(lexer::TokenType tokenType) noexcept
     {
-        return operator_ = token_type;
+        return operator_ = tokenType;
     }
 
     void SetResult(Expression *expr) noexcept
@@ -115,7 +115,7 @@ public:
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] AssignmentExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
-    [[nodiscard]] bool ConvertibleToAssignmentPattern(bool must_be_pattern = true);
+    [[nodiscard]] bool ConvertibleToAssignmentPattern(bool mustBePattern = true);
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -137,7 +137,7 @@ protected:
     {
         operator_ = other.operator_;
         target_ = other.target_;
-        operation_type_ = other.operation_type_;
+        operationType_ = other.operationType_;
     }
 
 private:
@@ -146,7 +146,7 @@ private:
     Expression *result_ = nullptr;
     lexer::TokenType operator_;
     varbinder::Variable *target_ {};
-    checker::Type *operation_type_ {};
+    checker::Type *operationType_ {};
 };
 }  // namespace panda::es2panda::ir
 

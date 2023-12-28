@@ -39,9 +39,9 @@ ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression
       decorators_(allocator->Adapter()),
       elements_(allocator->Adapter())
 {
-    preferred_type_ = other.preferred_type_;
-    is_declaration_ = other.is_declaration_;
-    trailing_comma_ = other.trailing_comma_;
+    preferredType_ = other.preferredType_;
+    isDeclaration_ = other.isDeclaration_;
+    trailingComma_ = other.trailingComma_;
     optional_ = other.optional_;
 
     for (auto *element : other.elements_) {
@@ -67,29 +67,29 @@ ArrayExpression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode
 
 bool ArrayExpression::ConvertibleToArrayPattern()
 {
-    bool rest_found = false;
-    bool conv_result = true;
+    bool restFound = false;
+    bool convResult = true;
     for (auto *it : elements_) {
         switch (it->Type()) {
             case AstNodeType::ARRAY_EXPRESSION: {
-                conv_result = it->AsArrayExpression()->ConvertibleToArrayPattern();
+                convResult = it->AsArrayExpression()->ConvertibleToArrayPattern();
                 break;
             }
             case AstNodeType::SPREAD_ELEMENT: {
-                if (!rest_found && it == elements_.back() && !trailing_comma_) {
-                    conv_result = it->AsSpreadElement()->ConvertibleToRest(is_declaration_);
+                if (!restFound && it == elements_.back() && !trailingComma_) {
+                    convResult = it->AsSpreadElement()->ConvertibleToRest(isDeclaration_);
                 } else {
-                    conv_result = false;
+                    convResult = false;
                 }
-                rest_found = true;
+                restFound = true;
                 break;
             }
             case AstNodeType::OBJECT_EXPRESSION: {
-                conv_result = it->AsObjectExpression()->ConvertibleToObjectPattern();
+                convResult = it->AsObjectExpression()->ConvertibleToObjectPattern();
                 break;
             }
             case AstNodeType::ASSIGNMENT_EXPRESSION: {
-                conv_result = it->AsAssignmentExpression()->ConvertibleToAssignmentPattern();
+                convResult = it->AsAssignmentExpression()->ConvertibleToAssignmentPattern();
                 break;
             }
             case AstNodeType::MEMBER_EXPRESSION:
@@ -102,18 +102,18 @@ bool ArrayExpression::ConvertibleToArrayPattern()
                 break;
             }
             default: {
-                conv_result = false;
+                convResult = false;
                 break;
             }
         }
 
-        if (!conv_result) {
+        if (!convResult) {
             break;
         }
     }
 
     SetType(AstNodeType::ARRAY_PATTERN);
-    return conv_result;
+    return convResult;
 }
 
 ValidationInfo ArrayExpression::ValidateExpression()
@@ -139,12 +139,12 @@ ValidationInfo ArrayExpression::ValidateExpression()
                 break;
             }
             case AstNodeType::ASSIGNMENT_EXPRESSION: {
-                auto *assignment_expr = it->AsAssignmentExpression();
+                auto *assignmentExpr = it->AsAssignmentExpression();
 
-                if (assignment_expr->Left()->IsArrayExpression()) {
-                    info = assignment_expr->Left()->AsArrayExpression()->ValidateExpression();
-                } else if (assignment_expr->Left()->IsObjectExpression()) {
-                    info = assignment_expr->Left()->AsObjectExpression()->ValidateExpression();
+                if (assignmentExpr->Left()->IsArrayExpression()) {
+                    info = assignmentExpr->Left()->AsArrayExpression()->ValidateExpression();
+                } else if (assignmentExpr->Left()->IsObjectExpression()) {
+                    info = assignmentExpr->Left()->AsObjectExpression()->ValidateExpression();
                 }
 
                 break;
@@ -235,84 +235,84 @@ checker::Type *ArrayExpression::Check(checker::TSChecker *checker)
 checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
 {
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    ArenaVector<checker::ElementFlags> element_flags(checker->Allocator()->Adapter());
-    checker::ElementFlags combined_flags = checker::ElementFlags::NO_OPTS;
-    uint32_t min_length = 0;
+    ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
+    checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;
+    uint32_t minLength = 0;
     uint32_t index = elements_.size();
-    bool add_optional = true;
+    bool addOptional = true;
 
     for (auto it = elements_.rbegin(); it != elements_.rend(); it++) {
-        checker::Type *element_type = nullptr;
-        checker::ElementFlags member_flag = checker::ElementFlags::NO_OPTS;
+        checker::Type *elementType = nullptr;
+        checker::ElementFlags memberFlag = checker::ElementFlags::NO_OPTS;
 
         switch ((*it)->Type()) {
             case ir::AstNodeType::REST_ELEMENT: {
-                element_type = checker->Allocator()->New<checker::ArrayType>(checker->GlobalAnyType());
-                member_flag = checker::ElementFlags::REST;
-                add_optional = false;
+                elementType = checker->Allocator()->New<checker::ArrayType>(checker->GlobalAnyType());
+                memberFlag = checker::ElementFlags::REST;
+                addOptional = false;
                 break;
             }
             case ir::AstNodeType::OBJECT_PATTERN: {
-                element_type = (*it)->AsObjectPattern()->CheckPattern(checker);
-                member_flag = checker::ElementFlags::REQUIRED;
-                add_optional = false;
+                elementType = (*it)->AsObjectPattern()->CheckPattern(checker);
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
                 break;
             }
             case ir::AstNodeType::ARRAY_PATTERN: {
-                element_type = (*it)->AsArrayPattern()->CheckPattern(checker);
-                member_flag = checker::ElementFlags::REQUIRED;
-                add_optional = false;
+                elementType = (*it)->AsArrayPattern()->CheckPattern(checker);
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
                 break;
             }
             case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                auto *assignment_pattern = (*it)->AsAssignmentPattern();
+                auto *assignmentPattern = (*it)->AsAssignmentPattern();
 
-                if (assignment_pattern->Left()->IsIdentifier()) {
-                    const ir::Identifier *ident = assignment_pattern->Left()->AsIdentifier();
+                if (assignmentPattern->Left()->IsIdentifier()) {
+                    const ir::Identifier *ident = assignmentPattern->Left()->AsIdentifier();
                     ASSERT(ident->Variable());
-                    varbinder::Variable *binding_var = ident->Variable();
-                    checker::Type *initializer_type =
-                        checker->GetBaseTypeOfLiteralType(assignment_pattern->Right()->Check(checker));
-                    binding_var->SetTsType(initializer_type);
-                    element_type = initializer_type;
-                } else if (assignment_pattern->Left()->IsArrayPattern()) {
-                    auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-                    auto destructuring_context =
-                        checker::ArrayDestructuringContext(checker, assignment_pattern->Left()->AsArrayPattern(), false,
-                                                           true, nullptr, assignment_pattern->Right());
-                    destructuring_context.Start();
-                    element_type = destructuring_context.InferredType();
+                    varbinder::Variable *bindingVar = ident->Variable();
+                    checker::Type *initializerType =
+                        checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
+                    bindingVar->SetTsType(initializerType);
+                    elementType = initializerType;
+                } else if (assignmentPattern->Left()->IsArrayPattern()) {
+                    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+                    auto destructuringContext =
+                        checker::ArrayDestructuringContext(checker, assignmentPattern->Left()->AsArrayPattern(), false,
+                                                           true, nullptr, assignmentPattern->Right());
+                    destructuringContext.Start();
+                    elementType = destructuringContext.InferredType();
                 } else {
-                    ASSERT(assignment_pattern->Left()->IsObjectPattern());
-                    auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-                    auto destructuring_context =
-                        checker::ObjectDestructuringContext(checker, assignment_pattern->Left()->AsObjectPattern(),
-                                                            false, true, nullptr, assignment_pattern->Right());
-                    destructuring_context.Start();
-                    element_type = destructuring_context.InferredType();
+                    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+                    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+                    auto destructuringContext =
+                        checker::ObjectDestructuringContext(checker, assignmentPattern->Left()->AsObjectPattern(),
+                                                            false, true, nullptr, assignmentPattern->Right());
+                    destructuringContext.Start();
+                    elementType = destructuringContext.InferredType();
                 }
 
-                if (add_optional) {
-                    member_flag = checker::ElementFlags::OPTIONAL;
+                if (addOptional) {
+                    memberFlag = checker::ElementFlags::OPTIONAL;
                 } else {
-                    member_flag = checker::ElementFlags::REQUIRED;
+                    memberFlag = checker::ElementFlags::REQUIRED;
                 }
 
                 break;
             }
             case ir::AstNodeType::OMITTED_EXPRESSION: {
-                element_type = checker->GlobalAnyType();
-                member_flag = checker::ElementFlags::REQUIRED;
-                add_optional = false;
+                elementType = checker->GlobalAnyType();
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
                 break;
             }
             case ir::AstNodeType::IDENTIFIER: {
                 const ir::Identifier *ident = (*it)->AsIdentifier();
                 ASSERT(ident->Variable());
-                element_type = checker->GlobalAnyType();
-                ident->Variable()->SetTsType(element_type);
-                member_flag = checker::ElementFlags::REQUIRED;
-                add_optional = false;
+                elementType = checker->GlobalAnyType();
+                ident->Variable()->SetTsType(elementType);
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
                 break;
             }
             default: {
@@ -320,58 +320,56 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
             }
         }
 
-        util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index - 1);
+        util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index - 1);
 
-        auto *member_var =
-            varbinder::Scope::CreateVar(checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, *it);
+        auto *memberVar =
+            varbinder::Scope::CreateVar(checker->Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY, *it);
 
-        if (member_flag == checker::ElementFlags::OPTIONAL) {
-            member_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
+        if (memberFlag == checker::ElementFlags::OPTIONAL) {
+            memberVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
         } else {
-            min_length++;
+            minLength++;
         }
 
-        member_var->SetTsType(element_type);
-        element_flags.push_back(member_flag);
-        desc->properties.insert(desc->properties.begin(), member_var);
+        memberVar->SetTsType(elementType);
+        elementFlags.push_back(memberFlag);
+        desc->properties.insert(desc->properties.begin(), memberVar);
 
-        combined_flags |= member_flag;
+        combinedFlags |= memberFlag;
         index--;
     }
 
-    return checker->CreateTupleType(desc, std::move(element_flags), combined_flags, min_length, desc->properties.size(),
+    return checker->CreateTupleType(desc, std::move(elementFlags), combinedFlags, minLength, desc->properties.size(),
                                     false);
 }
 
 void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
-                                                  ArrayExpression *const current_element, const bool is_array,
-                                                  const bool is_preferred_tuple, const std::size_t idx)
+                                                  ArrayExpression *const currentElement, const bool isArray,
+                                                  const bool isPreferredTuple, const std::size_t idx)
 {
-    if (is_preferred_tuple) {
-        current_element->SetPreferredType(is_array ? preferred_type_
-                                                   : preferred_type_->AsETSTupleType()->GetTypeAtIndex(idx));
+    if (isPreferredTuple) {
+        currentElement->SetPreferredType(isArray ? preferredType_
+                                                 : preferredType_->AsETSTupleType()->GetTypeAtIndex(idx));
 
-        if (current_element->GetPreferredType()->IsETSTupleType()) {
-            checker->ValidateTupleMinElementSize(current_element,
-                                                 current_element->GetPreferredType()->AsETSTupleType());
+        if (currentElement->GetPreferredType()->IsETSTupleType()) {
+            checker->ValidateTupleMinElementSize(currentElement, currentElement->GetPreferredType()->AsETSTupleType());
         }
 
         return;
     }
 
-    if (preferred_type_->IsETSArrayType()) {
-        if (preferred_type_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
-            checker->ValidateTupleMinElementSize(current_element,
-                                                 preferred_type_->AsETSArrayType()->ElementType()->AsETSTupleType());
+    if (preferredType_->IsETSArrayType()) {
+        if (preferredType_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
+            checker->ValidateTupleMinElementSize(currentElement,
+                                                 preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType());
         }
 
-        current_element->SetPreferredType(is_array ? preferred_type_
-                                                   : preferred_type_->AsETSArrayType()->ElementType());
+        currentElement->SetPreferredType(isArray ? preferredType_ : preferredType_->AsETSArrayType()->ElementType());
         return;
     }
 
-    if (current_element->GetPreferredType() == nullptr) {
-        current_element->SetPreferredType(preferred_type_);
+    if (currentElement->GetPreferredType() == nullptr) {
+        currentElement->SetPreferredType(preferredType_);
     }
 }
 

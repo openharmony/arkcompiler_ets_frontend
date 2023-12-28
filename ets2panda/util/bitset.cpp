@@ -24,9 +24,9 @@
 namespace panda::es2panda::util {
 BitSet::BitSet(size_t size) : size_(size)
 {
-    size_t data_size = DataSize();
-    data_ = new uint8_t[data_size];
-    memset_s(data_, data_size, 0, data_size);
+    size_t dataSize = DataSize();
+    data_ = new uint8_t[dataSize];
+    memset_s(data_, dataSize, 0, dataSize);
 }
 
 BitSet::~BitSet()

@@ -69,14 +69,14 @@ void DoubleType::Cast(TypeRelation *const relation, Type *const target)
         }
 
         if (target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE)) {
-            auto unboxed_target = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
-            if (unboxed_target == nullptr) {
+            auto unboxedTarget = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+            if (unboxedTarget == nullptr) {
                 conversion::Forbidden(relation);
                 return;
             }
-            Cast(relation, unboxed_target);
+            Cast(relation, unboxedTarget);
             if (relation->IsTrue()) {
-                conversion::Boxing(relation, unboxed_target);
+                conversion::Boxing(relation, unboxedTarget);
                 return;
             }
             conversion::Forbidden(relation);
@@ -91,7 +91,7 @@ void DoubleType::Cast(TypeRelation *const relation, Type *const target)
 }
 
 Type *DoubleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                              [[maybe_unused]] GlobalTypesHolder *global_types)
+                              [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
 }

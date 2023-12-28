@@ -30,148 +30,146 @@ void AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
     }
 
     for (uint32_t index = 0; index < node->Elements().size(); index++) {
-        ir::Expression *current_array_elem = node->Elements()[index];
-        AssignmentContext(relation, current_array_elem,
-                          current_array_elem->Check(relation->GetChecker()->AsETSChecker()), target->ElementType(),
-                          current_array_elem->Start(),
+        ir::Expression *currentArrayElem = node->Elements()[index];
+        AssignmentContext(relation, currentArrayElem, currentArrayElem->Check(relation->GetChecker()->AsETSChecker()),
+                          target->ElementType(), currentArrayElem->Start(),
                           {"Array element at index ", index, " is not compatible with the target array element type."});
     }
 }
 
-bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args,
+bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                                  const lexer::SourcePosition &pos)
 {
-    checker_->CheckNumberOfTypeArguments(type, type_args, pos);
+    checker_->CheckNumberOfTypeArguments(type, typeArgs, pos);
     if (type->TypeArguments().empty()) {
         result_ = type;
         return true;
     }
 
     /*
-    The first loop is to create a substitution of type_params & type_args.
-    so that we can replace the type_params in constaints by the right type.
+    The first loop is to create a substitution of typeParams & typeArgs.
+    so that we can replace the typeParams in constaints by the right type.
     e.g:
         class X <K extends Comparable<T>,T> {}
         function main(){
             const myCharClass = new X<Char,String>();
         }
-    In the case above, the constraints_substitution should store "K->Char" and "T->String".
-    And in the second loop, we use this substitution to replace type_params in constraints.
+    In the case above, the constraintsSubstitution should store "K->Char" and "T->String".
+    And in the second loop, we use this substitution to replace typeParams in constraints.
     In this case, we will check "Comparable<String>" with "Char", since "Char" doesn't
     extends "Comparable<String>", we will get an error here.
     */
 
-    auto const get_types = [this, &type_args, type](size_t idx) -> std::pair<ETSTypeParameter *, Type *> {
-        auto *type_param = type->TypeArguments().at(idx)->AsETSTypeParameter();
-        if (type_args != nullptr && idx < type_args->Params().size()) {
-            return {type_param, type_args->Params().at(idx)->GetType(checker_)};
+    auto const getTypes = [this, &typeArgs, type](size_t idx) -> std::pair<ETSTypeParameter *, Type *> {
+        auto *typeParam = type->TypeArguments().at(idx)->AsETSTypeParameter();
+        if (typeArgs != nullptr && idx < typeArgs->Params().size()) {
+            return {typeParam, typeArgs->Params().at(idx)->GetType(checker_)};
         }
-        return {type_param, type_param->GetDefaultType()};
+        return {typeParam, typeParam->GetDefaultType()};
     };
 
     auto *const substitution = checker_->NewSubstitution();
 
     for (size_t idx = 0; idx < type->TypeArguments().size(); ++idx) {
-        auto const [type_param, type_arg] = get_types(idx);
-        checker_->CheckValidGenericTypeParameter(type_arg, pos);
-        type_arg->Substitute(checker_->Relation(), substitution);
-        ETSChecker::EmplaceSubstituted(substitution, type_param, type_arg);
+        auto const [typeParam, typeArg] = getTypes(idx);
+        checker_->CheckValidGenericTypeParameter(typeArg, pos);
+        typeArg->Substitute(checker_->Relation(), substitution);
+        ETSChecker::EmplaceSubstituted(substitution, typeParam, typeArg);
     }
 
     for (size_t idx = 0; idx < type->TypeArguments().size(); ++idx) {
-        auto const [type_param, type_arg] = get_types(idx);
-        if (type_param->GetConstraintType() == nullptr) {
+        auto const [typeParam, typeArg] = getTypes(idx);
+        if (typeParam->GetConstraintType() == nullptr) {
             continue;
         }
-        auto *const constraint = type_param->GetConstraintType()->Substitute(checker_->Relation(), substitution);
+        auto *const constraint = typeParam->GetConstraintType()->Substitute(checker_->Relation(), substitution);
 
-        if (!ValidateTypeArg(constraint, type_arg) && type_args != nullptr &&
+        if (!ValidateTypeArg(constraint, typeArg) && typeArgs != nullptr &&
             !checker_->Relation()->NoThrowGenericTypeAlias()) {
-            checker_->ThrowTypeError({"Type '", type_arg, "' is not assignable to constraint type '", constraint, "'."},
-                                     type_args->Params().at(idx)->Start());
+            checker_->ThrowTypeError({"Type '", typeArg, "' is not assignable to constraint type '", constraint, "'."},
+                                     typeArgs->Params().at(idx)->Start());
         }
     }
 
     return false;
 }
 
-bool InstantiationContext::ValidateTypeArg(Type *constraint_type, Type *type_arg)
+bool InstantiationContext::ValidateTypeArg(Type *constraintType, Type *typeArg)
 {
-    if (!ETSChecker::IsReferenceType(type_arg)) {
+    if (!ETSChecker::IsReferenceType(typeArg)) {
         return false;
     }
 
-    if (type_arg->IsETSUnionType()) {
-        auto const &constituent_types = type_arg->AsETSUnionType()->ConstituentTypes();
-        return std::all_of(constituent_types.begin(), constituent_types.end(),
-                           [this, constraint_type](Type *c_type) { return ValidateTypeArg(constraint_type, c_type); });
+    if (typeArg->IsETSUnionType()) {
+        auto const &constituentTypes = typeArg->AsETSUnionType()->ConstituentTypes();
+        return std::all_of(constituentTypes.begin(), constituentTypes.end(),
+                           [this, constraintType](Type *cType) { return ValidateTypeArg(constraintType, cType); });
     }
 
-    return checker_->Relation()->IsAssignableTo(type_arg, constraint_type);
+    return checker_->Relation()->IsAssignableTo(typeArg, constraintType);
 }
 
-void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args)
+void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs)
 {
-    ArenaVector<Type *> type_arg_types(checker_->Allocator()->Adapter());
-    type_arg_types.reserve(type->TypeArguments().size());
+    ArenaVector<Type *> typeArgTypes(checker_->Allocator()->Adapter());
+    typeArgTypes.reserve(type->TypeArguments().size());
 
     auto flags = ETSObjectFlags::NO_OPTS;
 
-    if (type_args != nullptr) {
-        for (auto *const it : type_args->Params()) {
-            auto *param_type = checker_->GetTypeFromTypeAnnotation(it);
+    if (typeArgs != nullptr) {
+        for (auto *const it : typeArgs->Params()) {
+            auto *paramType = checker_->GetTypeFromTypeAnnotation(it);
 
-            if (param_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+            if (paramType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
                 checker_->Relation()->SetNode(it);
-                auto *const boxed_type_arg = checker_->PrimitiveTypeAsETSBuiltinType(param_type);
-                ASSERT(boxed_type_arg);
-                param_type = boxed_type_arg->Instantiate(checker_->Allocator(), checker_->Relation(),
-                                                         checker_->GetGlobalTypesHolder());
+                auto *const boxedTypeArg = checker_->PrimitiveTypeAsETSBuiltinType(paramType);
+                ASSERT(boxedTypeArg);
+                paramType = boxedTypeArg->Instantiate(checker_->Allocator(), checker_->Relation(),
+                                                      checker_->GetGlobalTypesHolder());
             }
 
-            type_arg_types.push_back(param_type);
+            typeArgTypes.push_back(paramType);
         }
     }
 
-    while (type_arg_types.size() < type->TypeArguments().size()) {
-        type_arg_types.push_back(type->TypeArguments().at(type_arg_types.size()));
+    while (typeArgTypes.size() < type->TypeArguments().size()) {
+        typeArgTypes.push_back(type->TypeArguments().at(typeArgTypes.size()));
     }
 
-    InstantiateType(type, type_arg_types, (type_args == nullptr) ? lexer::SourcePosition() : type_args->Range().start);
+    InstantiateType(type, typeArgTypes, (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start);
     result_->AddObjectFlag(flags);
 }
 
-void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type *> &type_arg_types,
+void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type *> &typeArgTypes,
                                            const lexer::SourcePosition &pos)
 {
-    util::StringView hash = checker_->GetHashFromTypeArguments(type_arg_types);
-    auto const &type_params = type->TypeArguments();
+    util::StringView hash = checker_->GetHashFromTypeArguments(typeArgTypes);
+    auto const &typeParams = type->TypeArguments();
 
-    while (type_arg_types.size() < type_params.size()) {
-        type_arg_types.push_back(type_params.at(type_arg_types.size()));
+    while (typeArgTypes.size() < typeParams.size()) {
+        typeArgTypes.push_back(typeParams.at(typeArgTypes.size()));
     }
 
     auto *substitution = checker_->NewSubstitution();
-    auto *constraints_substitution = checker_->NewSubstitution();
-    for (size_t ix = 0; ix < type_params.size(); ix++) {
-        if (!type_params[ix]->IsETSTypeParameter()) {
+    auto *constraintsSubstitution = checker_->NewSubstitution();
+    for (size_t ix = 0; ix < typeParams.size(); ix++) {
+        if (!typeParams[ix]->IsETSTypeParameter()) {
             continue;
         }
-        ETSChecker::EmplaceSubstituted(constraints_substitution, type_params[ix]->AsETSTypeParameter(),
-                                       type_arg_types[ix]);
+        ETSChecker::EmplaceSubstituted(constraintsSubstitution, typeParams[ix]->AsETSTypeParameter(), typeArgTypes[ix]);
     }
-    for (size_t ix = 0; ix < type_params.size(); ix++) {
-        auto *type_param = type_params[ix];
-        if (!type_param->IsETSTypeParameter()) {
+    for (size_t ix = 0; ix < typeParams.size(); ix++) {
+        auto *typeParam = typeParams[ix];
+        if (!typeParam->IsETSTypeParameter()) {
             continue;
         }
-        if (!checker_->IsCompatibleTypeArgument(type_param->AsETSTypeParameter(), type_arg_types[ix],
-                                                constraints_substitution) &&
+        if (!checker_->IsCompatibleTypeArgument(typeParam->AsETSTypeParameter(), typeArgTypes[ix],
+                                                constraintsSubstitution) &&
             !checker_->Relation()->NoThrowGenericTypeAlias()) {
             checker_->ThrowTypeError(
-                {"Type ", type_arg_types[ix], " is not assignable to", " type parameter ", type_params[ix]}, pos);
+                {"Type ", typeArgTypes[ix], " is not assignable to", " type parameter ", typeParams[ix]}, pos);
         }
-        ETSChecker::EmplaceSubstituted(substitution, type_param->AsETSTypeParameter(), type_arg_types[ix]);
+        ETSChecker::EmplaceSubstituted(substitution, typeParam->AsETSTypeParameter(), typeArgTypes[ix]);
     }
     result_ = type->Substitute(checker_->Relation(), substitution)->AsETSObjectType();
 

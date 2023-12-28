@@ -40,13 +40,13 @@ public:
     NO_COPY_SEMANTIC(ETSNewClassInstanceExpression);
     NO_MOVE_SEMANTIC(ETSNewClassInstanceExpression);
 
-    explicit ETSNewClassInstanceExpression(ir::Expression *const type_reference,
+    explicit ETSNewClassInstanceExpression(ir::Expression *const typeReference,
                                            ArenaVector<ir::Expression *> &&arguments,
-                                           ir::ClassDefinition *const class_definition)
+                                           ir::ClassDefinition *const classDefinition)
         : Expression(AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION),
-          type_reference_(type_reference),
+          typeReference_(typeReference),
           arguments_(std::move(arguments)),
-          class_def_(class_definition)
+          classDef_(classDefinition)
     {
     }
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -57,17 +57,17 @@ public:
 
     [[nodiscard]] ir::ClassDefinition *ClassDefinition() noexcept
     {
-        return class_def_;
+        return classDef_;
     }
 
     [[nodiscard]] const ir::ClassDefinition *ClassDefinition() const noexcept
     {
-        return class_def_;
+        return classDef_;
     }
 
     [[nodiscard]] ir::Expression *GetTypeRef() const noexcept
     {
-        return type_reference_;
+        return typeReference_;
     }
 
     [[nodiscard]] ArenaVector<ir::Expression *> GetArguments() const noexcept
@@ -99,9 +99,9 @@ public:
     }
 
 private:
-    ir::Expression *type_reference_;
+    ir::Expression *typeReference_;
     ArenaVector<ir::Expression *> arguments_;
-    ir::ClassDefinition *class_def_;
+    ir::ClassDefinition *classDef_;
     checker::Signature *signature_ {};
 };
 }  // namespace panda::es2panda::ir

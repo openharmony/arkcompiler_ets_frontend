@@ -47,8 +47,8 @@ bool LambdaLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (auto *ext_prog : ext_programs) {
-            Perform(ctx, ext_prog);
+        for (auto *extProg : ext_programs) {
+            Perform(ctx, extProg);
         }
     }
 
@@ -70,8 +70,8 @@ bool LambdaLowering::Postcondition(public_lib::Context *ctx, const parser::Progr
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (auto *ext_prog : ext_programs) {
-            if (!Postcondition(ctx, ext_prog)) {
+        for (auto *extProg : ext_programs) {
+            if (!Postcondition(ctx, extProg)) {
                 return false;
             }
         }

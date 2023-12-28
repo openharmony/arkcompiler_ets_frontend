@@ -36,8 +36,8 @@ public:
     using JumpResolver = std::function<void()>;
 
     explicit PendingExit(
-        const ir::AstNode *node, JumpResolver jump_resolver = [] {})
-        : node_(node), jump_resolver_(std::move(jump_resolver))
+        const ir::AstNode *node, JumpResolver jumpResolver = [] {})
+        : node_(node), jumpResolver_(std::move(jumpResolver))
     {
     }
     ~PendingExit() = default;
@@ -47,7 +47,7 @@ public:
 
     void ResolveJump() const
     {
-        jump_resolver_();
+        jumpResolver_();
     }
 
     const ir::AstNode *Node() const
@@ -57,7 +57,7 @@ public:
 
 private:
     const ir::AstNode *node_;
-    JumpResolver jump_resolver_;
+    JumpResolver jumpResolver_;
 };
 
 using PendingExitsVector = std::vector<PendingExit>;
@@ -70,7 +70,7 @@ public:
 
     void RecordExit(const PendingExit &pe)
     {
-        pending_exits_.push_back(pe);
+        pendingExits_.push_back(pe);
         MarkDead();
     }
 
@@ -79,7 +79,7 @@ public:
         return value ? LivenessStatus::ALIVE : LivenessStatus::DEAD;
     }
 
-    LivenessStatus ResolveJump(const ir::AstNode *node, ir::AstNodeType jump_kind);
+    LivenessStatus ResolveJump(const ir::AstNode *node, ir::AstNodeType jumpKind);
     LivenessStatus ResolveContinues(const ir::AstNode *node);
     LivenessStatus ResolveBreaks(const ir::AstNode *node);
     const ir::AstNode *GetJumpTarget(const ir::AstNode *node) const;
@@ -87,13 +87,13 @@ public:
 protected:
     void ClearPendingExits();
     PendingExitsVector &PendingExits();
-    void SetPendingExits(const PendingExitsVector &pending_exits);
+    void SetPendingExits(const PendingExitsVector &pendingExits);
     PendingExitsVector &OldPendingExits();
-    void SetOldPendingExits(const PendingExitsVector &old_pending_exits);
+    void SetOldPendingExits(const PendingExitsVector &oldPendingExits);
 
 private:
-    PendingExitsVector pending_exits_;
-    PendingExitsVector old_pending_exits_;
+    PendingExitsVector pendingExits_;
+    PendingExitsVector oldPendingExits_;
 };
 }  // namespace panda::es2panda::checker
 #endif

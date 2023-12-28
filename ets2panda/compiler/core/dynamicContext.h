@@ -45,7 +45,7 @@ public:
     void *operator new[](size_t) = delete;
 
     virtual void AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                              [[maybe_unused]] const util::StringView &target_label) {};
+                              [[maybe_unused]] const util::StringView &targetLabel) {};
 
     virtual bool HasTryCatch() const
     {
@@ -96,7 +96,7 @@ private:
 class LabelContext : public DynamicContext {
 public:
     explicit LabelContext(CodeGen *cg, LabelTarget target) : DynamicContext(cg, target) {}
-    explicit LabelContext(CodeGen *cg, const ir::LabelledStatement *labelled_stmt);
+    explicit LabelContext(CodeGen *cg, const ir::LabelledStatement *labelledStmt);
     NO_COPY_SEMANTIC(LabelContext);
     NO_MOVE_SEMANTIC(LabelContext);
     ~LabelContext();
@@ -108,12 +108,12 @@ public:
 
 private:
     Label *label_ {};
-    const ir::LabelledStatement *labelled_stmt_ {};
+    const ir::LabelledStatement *labelledStmt_ {};
 };
 
 class LexEnvContext : public DynamicContext {
 public:
-    explicit LexEnvContext(LoopEnvScope *env_scope, PandaGen *pg, LabelTarget target);
+    explicit LexEnvContext(LoopEnvScope *envScope, PandaGen *pg, LabelTarget target);
     NO_COPY_SEMANTIC(LexEnvContext);
     NO_MOVE_SEMANTIC(LexEnvContext);
     ~LexEnvContext();
@@ -125,14 +125,14 @@ public:
 
     bool HasTryCatch() const override;
     void AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                      [[maybe_unused]] const util::StringView &target_label) override;
+                      [[maybe_unused]] const util::StringView &targetLabel) override;
 
 protected:
     PandaGen *AsPandaGen() const;
 
 private:
-    LoopEnvScope *env_scope_;
-    CatchTable *catch_table_ {};
+    LoopEnvScope *envScope_;
+    CatchTable *catchTable_ {};
 };
 
 class IteratorContext : public DynamicContext {
@@ -158,11 +158,11 @@ public:
     }
 
     void AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                      [[maybe_unused]] const util::StringView &target_label) override;
+                      [[maybe_unused]] const util::StringView &targetLabel) override;
 
 private:
     const Iterator &iterator_;
-    CatchTable *catch_table_;
+    CatchTable *catchTable_;
 };
 
 class CatchContext : public DynamicContext {
@@ -173,7 +173,7 @@ public:
 
     CatchTable *GetCatchTable() const
     {
-        return catch_table_;
+        return catchTable_;
     }
 
     const TryLabelSet &LabelSet() const;
@@ -191,13 +191,13 @@ protected:
 
 private:
     void InitCatchTable();
-    CatchTable *catch_table_ {};
+    CatchTable *catchTable_ {};
 };
 
 class TryContext : public CatchContext {
 public:
-    explicit TryContext(CodeGen *cg, const ir::TryStatement *try_stmt, bool has_finalizer = true)
-        : CatchContext(cg), try_stmt_(try_stmt), has_finalizer_(has_finalizer)
+    explicit TryContext(CodeGen *cg, const ir::TryStatement *tryStmt, bool hasFinalizer = true)
+        : CatchContext(cg), tryStmt_(tryStmt), hasFinalizer_(hasFinalizer)
 
     {
         InitFinalizer();
@@ -216,7 +216,7 @@ public:
 
     VReg FinalizerRun() const
     {
-        return finalizer_run_;
+        return finalizerRun_;
     }
 
     bool HasFinalizer() const override;
@@ -224,16 +224,16 @@ public:
     void EmitFinalizer();
 
     void AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                      [[maybe_unused]] const util::StringView &target_label) override
+                      [[maybe_unused]] const util::StringView &targetLabel) override
     {
         EmitFinalizer();
     }
 
 private:
-    const ir::TryStatement *try_stmt_ {};
-    VReg finalizer_run_ {};
-    bool has_finalizer_ {};
-    bool in_finalizer_ {};
+    const ir::TryStatement *tryStmt_ {};
+    VReg finalizerRun_ {};
+    bool hasFinalizer_ {};
+    bool inFinalizer_ {};
 };
 
 class ETSCatchContext : public DynamicContext {
@@ -244,7 +244,7 @@ public:
 
     ArenaVector<const CatchTable *> GetETSCatchTable() const
     {
-        return catch_tables_;
+        return catchTables_;
     }
 
     bool HasTryCatch() const override
@@ -252,24 +252,24 @@ public:
         return true;
     }
 
-    CatchTable *AddNewCathTable(util::StringView assembler_type);
-    CatchTable *AddNewCathTable(util::StringView assembler_type, LabelPair try_label_pair);
+    CatchTable *AddNewCathTable(util::StringView assemblerType);
+    CatchTable *AddNewCathTable(util::StringView assemblerType, LabelPair tryLabelPair);
 
 protected:
     explicit ETSCatchContext(CodeGen *cg, ArenaAllocator *allocator)
-        : DynamicContext(cg, {}), catch_tables_(allocator->Adapter())
+        : DynamicContext(cg, {}), catchTables_(allocator->Adapter())
     {
     }
 
 private:
-    ArenaVector<const CatchTable *> catch_tables_;
+    ArenaVector<const CatchTable *> catchTables_;
 };
 
 class ETSTryContext : public ETSCatchContext {
 public:
-    explicit ETSTryContext(CodeGen *cg, ArenaAllocator *allocator, const ir::TryStatement *try_stmt,
-                           bool has_finalizer = true)
-        : ETSCatchContext(cg, allocator), try_stmt_(try_stmt), has_finalizer_(has_finalizer)
+    explicit ETSTryContext(CodeGen *cg, ArenaAllocator *allocator, const ir::TryStatement *tryStmt,
+                           bool hasFinalizer = true)
+        : ETSCatchContext(cg, allocator), tryStmt_(tryStmt), hasFinalizer_(hasFinalizer)
 
     {
     }
@@ -285,12 +285,12 @@ public:
         return DynamicContextType::TRY;
     }
 
-    void EmitFinalizer(LabelPair trycatch_label_pair,
-                       const ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> &finalizer_insertions);
+    void EmitFinalizer(LabelPair trycatchLabelPair,
+                       const ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> &finalizerInsertions);
 
 private:
-    const ir::TryStatement *try_stmt_ {};
-    const bool has_finalizer_ {};
+    const ir::TryStatement *tryStmt_ {};
+    const bool hasFinalizer_ {};
 };
 
 }  // namespace panda::es2panda::compiler

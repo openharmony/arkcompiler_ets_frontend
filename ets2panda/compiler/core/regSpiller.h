@@ -30,15 +30,15 @@ class RegSpiller {
 protected:
     class SpillInfo final {
     public:
-        constexpr explicit SpillInfo(VReg origin_reg, VReg spill_reg) noexcept;
+        constexpr explicit SpillInfo(VReg originReg, VReg spillReg) noexcept;
 
         [[nodiscard]] constexpr VReg OriginReg() const noexcept;
         [[nodiscard]] constexpr VReg SpillReg() const noexcept;
         [[nodiscard]] constexpr SpillInfo Reversed() const noexcept;
 
     private:
-        VReg origin_reg_ {VReg::Invalid()};
-        VReg spill_reg_ {VReg::Invalid()};
+        VReg originReg_ {VReg::Invalid()};
+        VReg spillReg_ {VReg::Invalid()};
     };
 
 public:
@@ -50,7 +50,7 @@ public:
     [[nodiscard]] virtual RegScope Start(CodeGen &cg) = 0;
     [[nodiscard]] virtual SpillInfo Restore() = 0;
     [[nodiscard]] virtual bool Restored() const = 0;
-    [[nodiscard]] virtual IRNode *MoveReg(const ir::AstNode *node, VReg vd, VReg vs, bool spill_mov) = 0;
+    [[nodiscard]] virtual IRNode *MoveReg(const ir::AstNode *node, VReg vd, VReg vs, bool spillMov) = 0;
     virtual void Finalize() noexcept = 0;
 
     [[nodiscard]] CodeGen *GetCodeGen() const noexcept;
@@ -64,7 +64,7 @@ protected:
 
 private:
     CodeGen *cg_ {};
-    std::uint32_t spill_index_ {0};
+    std::uint32_t spillIndex_ {0};
 };
 
 class DynamicRegSpiller final : public RegSpiller {
@@ -77,11 +77,11 @@ public:
     [[nodiscard]] RegScope Start(CodeGen &cg) override;
     [[nodiscard]] SpillInfo Restore() override;
     [[nodiscard]] bool Restored() const override;
-    [[nodiscard]] IRNode *MoveReg(const ir::AstNode *node, VReg vd, VReg vs, bool spill_mov) override;
+    [[nodiscard]] IRNode *MoveReg(const ir::AstNode *node, VReg vd, VReg vs, bool spillMov) override;
     void Finalize() noexcept override;
 
 private:
-    std::uint32_t reg_end_ {0};
+    std::uint32_t regEnd_ {0};
 };
 
 class StaticRegSpiller final : public RegSpiller {
@@ -94,31 +94,31 @@ public:
     [[nodiscard]] RegScope Start(CodeGen &cg) override;
     [[nodiscard]] SpillInfo Restore() override;
     [[nodiscard]] bool Restored() const override;
-    [[nodiscard]] IRNode *MoveReg(const ir::AstNode *node, VReg vd, VReg vs, bool spill_mov) override;
+    [[nodiscard]] IRNode *MoveReg(const ir::AstNode *node, VReg vd, VReg vs, bool spillMov) override;
     void Finalize() noexcept override;
 
 private:
     std::vector<SpillInfo> spills_ {};
 };
 
-constexpr RegSpiller::SpillInfo::SpillInfo(const VReg origin_reg, const VReg spill_reg) noexcept
-    : origin_reg_(origin_reg), spill_reg_(spill_reg)
+constexpr RegSpiller::SpillInfo::SpillInfo(const VReg originReg, const VReg spillReg) noexcept
+    : originReg_(originReg), spillReg_(spillReg)
 {
 }
 
 constexpr VReg RegSpiller::SpillInfo::OriginReg() const noexcept
 {
-    return origin_reg_;
+    return originReg_;
 }
 
 constexpr VReg RegSpiller::SpillInfo::SpillReg() const noexcept
 {
-    return spill_reg_;
+    return spillReg_;
 }
 
 constexpr RegSpiller::SpillInfo RegSpiller::SpillInfo::Reversed() const noexcept
 {
-    return SpillInfo {spill_reg_, origin_reg_};
+    return SpillInfo {spillReg_, originReg_};
 }
 
 }  // namespace panda::es2panda::compiler

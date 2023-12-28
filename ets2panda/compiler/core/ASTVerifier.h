@@ -31,14 +31,14 @@ public:
         lexer::SourceLocation location;
     };
     struct NamedError {
-        util::StringView check_name;
+        util::StringView checkName;
         Error error;
     };
     using Errors = ArenaVector<NamedError>;
 
     using CheckFunction = std::function<bool(const ir::AstNode *)>;
     struct NamedCheck {
-        util::StringView check_name;
+        util::StringView checkName;
         CheckFunction check;
     };
     using Checks = ArenaVector<NamedCheck>;
@@ -46,7 +46,7 @@ public:
     NO_COPY_SEMANTIC(ASTVerifier);
     NO_MOVE_SEMANTIC(ASTVerifier);
 
-    explicit ASTVerifier(ArenaAllocator *allocator, bool save_errors = true, util::StringView source_code = "");
+    explicit ASTVerifier(ArenaAllocator *allocator, bool saveErrors = true, util::StringView sourceCode = "");
     ~ASTVerifier() = default;
 
     using CheckSet = ArenaSet<util::StringView>;
@@ -66,11 +66,11 @@ public:
      * @param check_set Set of strings which will be used as check names
      * @return bool Result of analysis
      */
-    bool Verify(const ir::AstNode *ast, const CheckSet &check_set);
+    bool Verify(const ir::AstNode *ast, const CheckSet &checkSet);
 
     Errors GetErrors() const
     {
-        return named_errors_;
+        return namedErrors_;
     }
 
 private:
@@ -86,16 +86,16 @@ private:
     bool VerifyModifierAccess(const ir::AstNode *ast);
     bool VerifyExportAccess(const ir::AstNode *ast);
 
-    bool HandleImportExportIdentifier(const ir::Identifier *ident, const ir::AstNode *call_expr = nullptr);
+    bool HandleImportExportIdentifier(const ir::Identifier *ident, const ir::AstNode *callExpr = nullptr);
     bool CheckImportExportVariable(const varbinder::Variable *var, const ir::Identifier *ident, util::StringView name);
-    bool CheckImportExportMethod(const varbinder::Variable *var_callee, const ir::AstNode *call_expr,
+    bool CheckImportExportMethod(const varbinder::Variable *varCallee, const ir::AstNode *callExpr,
                                  util::StringView name);
 
     void AddError(const std::string &message, const lexer::SourcePosition &from)
     {
-        if (save_errors_) {
+        if (saveErrors_) {
             const auto loc = index_.has_value() ? index_->GetLocation(from) : lexer::SourceLocation {};
-            encountered_errors_.emplace_back(Error {message, loc});
+            encounteredErrors_.emplace_back(Error {message, loc});
         }
     }
 
@@ -105,13 +105,13 @@ private:
 private:
     std::optional<const lexer::LineIndex> index_;
 
-    bool save_errors_;
+    bool saveErrors_;
     ArenaAllocator *allocator_;
-    Errors named_errors_;
-    ArenaVector<Error> encountered_errors_;
+    Errors namedErrors_;
+    ArenaVector<Error> encounteredErrors_;
     Checks checks_;
-    CheckSet all_checks_;
-    std::unordered_set<util::StringView> imported_variables_;
+    CheckSet allChecks_;
+    std::unordered_set<util::StringView> importedVariables_;
 };
 
 std::string ToStringHelper(const ir::AstNode *ast);

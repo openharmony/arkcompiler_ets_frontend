@@ -25,27 +25,27 @@ class ETSTupleType : public ETSArrayType {
     using TupleSizeType = int32_t;
 
 public:
-    explicit ETSTupleType(ArenaAllocator *const allocator, Type *const element_type = nullptr,
-                          Type *const spread_type = nullptr)
-        : ETSArrayType(element_type), type_list_(allocator->Adapter()), spread_type_(spread_type)
+    explicit ETSTupleType(ArenaAllocator *const allocator, Type *const elementType = nullptr,
+                          Type *const spreadType = nullptr)
+        : ETSArrayType(elementType), typeList_(allocator->Adapter()), spreadType_(spreadType)
     {
-        type_flags_ |= TypeFlag::ETS_TUPLE;
+        typeFlags_ |= TypeFlag::ETS_TUPLE;
     }
 
-    explicit ETSTupleType(ArenaAllocator *const allocator, const TupleSizeType size, Type *const element_type = nullptr,
-                          Type *const spread_type = nullptr)
-        : ETSArrayType(element_type), type_list_(allocator->Adapter()), spread_type_(spread_type), size_(size)
+    explicit ETSTupleType(ArenaAllocator *const allocator, const TupleSizeType size, Type *const elementType = nullptr,
+                          Type *const spreadType = nullptr)
+        : ETSArrayType(elementType), typeList_(allocator->Adapter()), spreadType_(spreadType), size_(size)
     {
-        type_flags_ |= TypeFlag::ETS_TUPLE;
+        typeFlags_ |= TypeFlag::ETS_TUPLE;
     }
-    explicit ETSTupleType(const ArenaVector<Type *> &type_list, Type *const element_type = nullptr,
-                          Type *const spread_type = nullptr)
-        : ETSArrayType(element_type),
-          type_list_(type_list),
-          spread_type_(spread_type),
-          size_(static_cast<TupleSizeType>(type_list.size()))
+    explicit ETSTupleType(const ArenaVector<Type *> &typeList, Type *const elementType = nullptr,
+                          Type *const spreadType = nullptr)
+        : ETSArrayType(elementType),
+          typeList_(typeList),
+          spreadType_(spreadType),
+          size_(static_cast<TupleSizeType>(typeList.size()))
     {
-        type_flags_ |= TypeFlag::ETS_TUPLE;
+        typeFlags_ |= TypeFlag::ETS_TUPLE;
     }
 
     [[nodiscard]] TupleSizeType GetTupleSize() const
@@ -55,27 +55,27 @@ public:
 
     [[nodiscard]] TupleSizeType GetMinTupleSize() const
     {
-        return size_ + (spread_type_ == nullptr ? 0 : 1);
+        return size_ + (spreadType_ == nullptr ? 0 : 1);
     }
 
     [[nodiscard]] ArenaVector<Type *> GetTupleTypesList() const
     {
-        return type_list_;
+        return typeList_;
     }
 
     [[nodiscard]] bool HasSpreadType() const
     {
-        return spread_type_ != nullptr;
+        return spreadType_ != nullptr;
     }
 
     [[nodiscard]] Type *GetSpreadType() const
     {
-        return spread_type_;
+        return spreadType_;
     }
 
-    void SetSpreadType(Type *const new_spread_type)
+    void SetSpreadType(Type *const newSpreadType)
     {
-        spread_type_ = new_spread_type;
+        spreadType_ = newSpreadType;
     }
 
     [[nodiscard]] Type *GetTypeAtIndex(int32_t index) const;
@@ -86,11 +86,11 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void Cast(TypeRelation *relation, Type *target) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
-    ArenaVector<Type *> type_list_;
-    Type *spread_type_ {};
+    ArenaVector<Type *> typeList_;
+    Type *spreadType_ {};
     TupleSizeType size_ {0};
 };
 

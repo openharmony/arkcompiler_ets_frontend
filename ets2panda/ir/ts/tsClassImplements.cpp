@@ -33,8 +33,8 @@ void TSClassImplements::Iterate(const NodeTraverser &cb) const
 {
     cb(expression_);
 
-    if (type_parameters_ != nullptr) {
-        cb(type_parameters_);
+    if (typeParameters_ != nullptr) {
+        cb(typeParameters_);
     }
 }
 
@@ -42,13 +42,13 @@ void TSClassImplements::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSClassImplements"},
                  {"expression", expression_},
-                 {"typeParameters", AstDumper::Optional(type_parameters_)}});
+                 {"typeParameters", AstDumper::Optional(typeParameters_)}});
 }
 
 void TSClassImplements::Dump(ir::SrcDumper *dumper) const
 {
     expression_->Dump(dumper);
-    ASSERT(type_parameters_ == nullptr);
+    ASSERT(typeParameters_ == nullptr);
 }
 
 void TSClassImplements::Compile([[maybe_unused]] compiler::PandaGen *pg) const

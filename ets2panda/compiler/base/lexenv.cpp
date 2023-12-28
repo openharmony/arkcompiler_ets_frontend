@@ -43,9 +43,9 @@ static void CheckConstAssignment(PandaGen *pg, const ir::AstNode *node, varbinde
 static void ExpandLoadLexVar(PandaGen *pg, const ir::AstNode *node, const varbinder::ConstScopeFindResult &result)
 {
     if (result.variable->Declaration()->IsVarDecl()) {
-        pg->LoadLexicalVar(node, result.lex_level, result.variable->AsLocalVariable()->LexIdx());
+        pg->LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx());
     } else {
-        pg->LoadLexical(node, result.name, result.lex_level, result.variable->AsLocalVariable()->LexIdx());
+        pg->LoadLexical(node, result.name, result.lexLevel, result.variable->AsLocalVariable()->LexIdx());
     }
 }
 
@@ -87,32 +87,32 @@ static void StoreLocalExport(PandaGen *pg, const ir::AstNode *node, varbinder::V
 }
 
 static void ExpandStoreLexVar(PandaGen *pg, const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
-                              bool is_decl)
+                              bool isDecl)
 {
     varbinder::LocalVariable *local = result.variable->AsLocalVariable();
 
     const auto *decl = result.variable->Declaration();
 
-    if (decl->IsLetOrConstDecl() && !is_decl) {
+    if (decl->IsLetOrConstDecl() && !isDecl) {
         if (decl->IsConstDecl()) {
             pg->ThrowConstAssignment(node, local->Name());
         }
 
-        pg->StoreLexical(node, result.name, result.lex_level, local->LexIdx());
+        pg->StoreLexical(node, result.name, result.lexLevel, local->LexIdx());
     } else {
-        pg->StoreLexicalVar(node, result.lex_level, local->LexIdx());
+        pg->StoreLexicalVar(node, result.lexLevel, local->LexIdx());
     }
 
     StoreLocalExport(pg, node, local);
 }
 
 static void ExpandStoreNormalVar(PandaGen *pg, const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
-                                 bool is_decl)
+                                 bool isDecl)
 {
     auto *local = result.variable->AsLocalVariable();
-    VReg local_reg = local->Vreg();
+    VReg localReg = local->Vreg();
 
-    if (!is_decl) {
+    if (!isDecl) {
         if (CheckTdz(node)) {
             pg->ThrowTdz(node, local->Name());
         }
@@ -120,17 +120,17 @@ static void ExpandStoreNormalVar(PandaGen *pg, const ir::AstNode *node, const va
         CheckConstAssignment(pg, node, local);
     }
 
-    pg->StoreAccumulator(node, local_reg);
+    pg->StoreAccumulator(node, localReg);
     StoreLocalExport(pg, node, local);
 }
 
 void VirtualStoreVar::Expand(PandaGen *pg, const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
-                             bool is_decl)
+                             bool isDecl)
 {
     if (result.variable->LexicalBound()) {
-        ExpandStoreLexVar(pg, node, result, is_decl);
+        ExpandStoreLexVar(pg, node, result, isDecl);
     } else {
-        ExpandStoreNormalVar(pg, node, result, is_decl);
+        ExpandStoreNormalVar(pg, node, result, isDecl);
     }
 }
 }  // namespace panda::es2panda::compiler

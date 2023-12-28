@@ -90,18 +90,18 @@ void MemberExpression::Dump(ir::SrcDumper *dumper) const
 void MemberExpression::LoadRhs(compiler::PandaGen *pg) const
 {
     compiler::RegScope rs(pg);
-    bool is_super = object_->IsSuperExpression();
-    compiler::Operand prop = pg->ToPropertyKey(property_, computed_, is_super);
+    bool isSuper = object_->IsSuperExpression();
+    compiler::Operand prop = pg->ToPropertyKey(property_, computed_, isSuper);
 
-    if (is_super) {
+    if (isSuper) {
         pg->LoadSuperProperty(this, prop);
     } else if (IsPrivateReference()) {
         const auto &name = property_->AsIdentifier()->Name();
-        compiler::VReg obj_reg = pg->AllocReg();
-        pg->StoreAccumulator(this, obj_reg);
+        compiler::VReg objReg = pg->AllocReg();
+        pg->StoreAccumulator(this, objReg);
         compiler::VReg ctor = pg->AllocReg();
         compiler::Function::LoadClassContexts(this, pg, ctor, name);
-        pg->ClassPrivateFieldGet(this, ctor, obj_reg, name);
+        pg->ClassPrivateFieldGet(this, ctor, objReg, name);
     } else {
         pg->LoadObjProperty(this, prop);
     }
@@ -128,11 +128,11 @@ void MemberExpression::Compile(compiler::PandaGen *pg) const
     pg->GetAstCompiler()->Compile(this);
 }
 
-void MemberExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg obj_reg) const
+void MemberExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg objReg) const
 {
     object_->Compile(pg);
-    pg->StoreAccumulator(this, obj_reg);
-    pg->OptionalChainCheck(IsOptional(), obj_reg);
+    pg->StoreAccumulator(this, objReg);
+    pg->OptionalChainCheck(IsOptional(), objReg);
     LoadRhs(pg);
 }
 
@@ -149,7 +149,7 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
 std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
                                                                                            checker::Type *type) const
 {
-    auto const *const enum_interface = [type]() -> checker::ETSEnumInterface const * {
+    auto const *const enumInterface = [type]() -> checker::ETSEnumInterface const * {
         if (type->IsETSEnumType()) {
             return type->AsETSEnumType();
         }
@@ -157,32 +157,32 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }();
 
     if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-        return {enum_interface->LookupMethod(checker, object_, property_->AsIdentifier()), nullptr};
+        return {enumInterface->LookupMethod(checker, object_, property_->AsIdentifier()), nullptr};
     }
 
-    auto *const literal_type = enum_interface->LookupConstant(checker, object_, property_->AsIdentifier());
-    return {literal_type, literal_type->GetMemberVar()};
+    auto *const literalType = enumInterface->LookupConstant(checker, object_, property_->AsIdentifier());
+    return {literalType, literalType->GetMemberVar()};
 }
 
 std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveObjectMember(
     checker::ETSChecker *checker) const
 {
-    auto resolve_res = checker->ResolveMemberReference(this, obj_type_);
-    switch (resolve_res.size()) {
+    auto resolveRes = checker->ResolveMemberReference(this, objType_);
+    switch (resolveRes.size()) {
         case 1U: {
-            if (resolve_res[0]->Kind() == checker::ResolvedKind::PROPERTY) {
-                auto var = resolve_res[0]->Variable()->AsLocalVariable();
-                checker->ValidatePropertyAccess(var, obj_type_, property_->Start());
+            if (resolveRes[0]->Kind() == checker::ResolvedKind::PROPERTY) {
+                auto var = resolveRes[0]->Variable()->AsLocalVariable();
+                checker->ValidatePropertyAccess(var, objType_, property_->Start());
                 return {checker->GetTypeOfVariable(var), var};
             }
-            return {checker->GetTypeOfVariable(resolve_res[0]->Variable()), nullptr};
+            return {checker->GetTypeOfVariable(resolveRes[0]->Variable()), nullptr};
         }
         case 2U: {
             // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
-            auto *resolved_type = checker->CreateETSExtensionFuncHelperType(
-                checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),
-                checker->GetTypeOfVariable(resolve_res[0]->Variable())->AsETSFunctionType());
-            return {resolved_type, nullptr};
+            auto *resolvedType = checker->CreateETSExtensionFuncHelperType(
+                checker->GetTypeOfVariable(resolveRes[1]->Variable())->AsETSFunctionType(),
+                checker->GetTypeOfVariable(resolveRes[0]->Variable())->AsETSFunctionType());
+            return {resolvedType, nullptr};
         }
         default: {
             UNREACHABLE();
@@ -190,36 +190,36 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }
 }
 
-checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type)
+checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    auto *const union_type = base_type->AsETSUnionType();
-    checker::Type *common_prop_type = nullptr;
-    auto const add_prop_type = [this, checker, &common_prop_type](checker::Type *member_type) {
-        if (common_prop_type != nullptr && common_prop_type != member_type) {
+    auto *const unionType = baseType->AsETSUnionType();
+    checker::Type *commonPropType = nullptr;
+    auto const addPropType = [this, checker, &commonPropType](checker::Type *memberType) {
+        if (commonPropType != nullptr && commonPropType != memberType) {
             checker->ThrowTypeError("Member type must be the same for all union objects.", Start());
         }
-        common_prop_type = member_type;
+        commonPropType = memberType;
     };
-    for (auto *const type : union_type->ConstituentTypes()) {
+    for (auto *const type : unionType->ConstituentTypes()) {
         auto *const apparent = checker->GetApparentType(type);
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
-            add_prop_type(ResolveObjectMember(checker).first);
-        } else if (apparent->IsETSEnumType() || base_type->IsETSStringEnumType()) {
-            add_prop_type(ResolveEnumMember(checker, apparent).first);
+            addPropType(ResolveObjectMember(checker).first);
+        } else if (apparent->IsETSEnumType() || baseType->IsETSStringEnumType()) {
+            addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
             UNREACHABLE();
         }
     }
-    SetObjectType(union_type->GetLeastUpperBoundType()->AsETSObjectType());
-    return common_prop_type;
+    SetObjectType(unionType->GetLeastUpperBoundType()->AsETSObjectType());
+    return commonPropType;
 }
 
 checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     SetOptionalType(type);
     if (PropVar() != nullptr) {
-        unchecked_type_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
+        uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     }
     if (IsOptional() && Object()->TsType()->IsNullishOrNullLike()) {
         checker->Relation()->SetNode(this);
@@ -259,10 +259,10 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 
     if (object_->IsIdentifier() &&
         object_->AsIdentifier()->Variable()->Declaration()->Node()->Parent()->IsVariableDeclarator()) {
-        auto const var_decl =
+        auto const varDecl =
             object_->AsIdentifier()->Variable()->Declaration()->Node()->Parent()->AsVariableDeclarator();
-        if (var_decl->Init() != nullptr && var_decl->Init()->IsArrayExpression() &&
-            var_decl->Init()->AsArrayExpression()->Elements().size() <= index) {
+        if (varDecl->Init() != nullptr && varDecl->Init()->IsArrayExpression() &&
+            varDecl->Init()->AsArrayExpression()->Elements().size() <= index) {
             checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.",
                                     property_->Start());
         }
@@ -271,27 +271,27 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 
 checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *checker)
 {
-    checker::PropertySearchFlags search_flag =
+    checker::PropertySearchFlags searchFlag =
         checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::IS_FUNCTIONAL;
-    search_flag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
+    searchFlag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
     // NOTE(DZ) maybe we need to exclude static methods: search_flag &= ~(checker::PropertySearchFlags::SEARCH_STATIC);
 
-    if (obj_type_->HasTypeFlag(checker::TypeFlag::GENERIC)) {
-        search_flag |= checker::PropertySearchFlags::SEARCH_ALL;
+    if (objType_->HasTypeFlag(checker::TypeFlag::GENERIC)) {
+        searchFlag |= checker::PropertySearchFlags::SEARCH_ALL;
     }
 
-    bool const is_setter = Parent()->IsAssignmentExpression() && Parent()->AsAssignmentExpression()->Left() == this;
-    std::string_view const method_name =
-        is_setter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
+    bool const isSetter = Parent()->IsAssignmentExpression() && Parent()->AsAssignmentExpression()->Left() == this;
+    std::string_view const methodName =
+        isSetter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
 
-    auto *const method = obj_type_->GetProperty(method_name, search_flag);
+    auto *const method = objType_->GetProperty(methodName, searchFlag);
     if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
         checker->ThrowTypeError("Object type doesn't have proper index access method.", Start());
     }
 
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
     arguments.emplace_back(property_);
-    if (is_setter) {
+    if (isSetter) {
         arguments.emplace_back(Parent()->AsAssignmentExpression()->Right());
     }
 
@@ -302,7 +302,7 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     if (signature == nullptr) {
         checker->ThrowTypeError("Cannot find index access method with the required signature.", Property()->Start());
     }
-    checker->ValidateSignatureAccessibility(obj_type_, nullptr, signature, Start(),
+    checker->ValidateSignatureAccessibility(objType_, nullptr, signature, Start(),
                                             "Index access method is not visible here.");
 
     ASSERT(signature->Function() != nullptr);
@@ -311,59 +311,59 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         checker->CheckThrowingStatements(this);
     }
 
-    return is_setter ? signature->Params()[1]->TsType() : signature->ReturnType();
+    return isSetter ? signature->Params()[1]->TsType() : signature->ReturnType();
 }
 
-checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *base_type)
+checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    ASSERT(base_type->IsETSTupleType());
+    ASSERT(baseType->IsETSTupleType());
 
-    auto *const tuple_type_at_idx =
-        base_type->AsETSTupleType()->GetTypeAtIndex(checker->GetTupleElementAccessValue(Property()->TsType()));
+    auto *const tupleTypeAtIdx =
+        baseType->AsETSTupleType()->GetTypeAtIndex(checker->GetTupleElementAccessValue(Property()->TsType()));
 
     if ((!Parent()->IsAssignmentExpression() || Parent()->AsAssignmentExpression()->Left() != this) &&
         (!Parent()->IsUpdateExpression())) {
         // Error never should be thrown by this call, because LUB of types can be converted to any type which
         // LUB was calculated by casting
-        const checker::CastingContext cast(checker->Relation(), this, base_type->AsETSArrayType()->ElementType(),
-                                           tuple_type_at_idx, Start(), {"Tuple type couldn't be converted "});
+        const checker::CastingContext cast(checker->Relation(), this, baseType->AsETSArrayType()->ElementType(),
+                                           tupleTypeAtIdx, Start(), {"Tuple type couldn't be converted "});
 
         // NOTE(mmartin): this can be replaced with the general type mapper, once implemented
         if ((GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-            auto *const saved_node = checker->Relation()->GetNode();
-            if (saved_node == nullptr) {
+            auto *const savedNode = checker->Relation()->GetNode();
+            if (savedNode == nullptr) {
                 checker->Relation()->SetNode(this);
             }
 
-            SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tuple_type_at_idx));
+            SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tupleTypeAtIdx));
 
-            checker->Relation()->SetNode(saved_node);
+            checker->Relation()->SetNode(savedNode);
         }
 
-        if (tuple_type_at_idx->IsETSObjectType() && base_type->AsETSArrayType()->ElementType()->IsETSObjectType()) {
-            SetTupleConvertedType(tuple_type_at_idx);
+        if (tupleTypeAtIdx->IsETSObjectType() && baseType->AsETSArrayType()->ElementType()->IsETSObjectType()) {
+            SetTupleConvertedType(tupleTypeAtIdx);
         }
     }
 
-    return tuple_type_at_idx;
+    return tupleTypeAtIdx;
 }
 
-checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *base_type)
+checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
-    if (base_type->IsETSArrayType() || base_type->IsETSDynamicType()) {
+    if (baseType->IsETSArrayType() || baseType->IsETSDynamicType()) {
         checker->ValidateArrayIndex(property_);
 
-        if (base_type->IsETSTupleType()) {
-            checker->ValidateTupleIndex(base_type->AsETSTupleType(), this);
-        } else if (base_type->IsETSArrayType() && property_->IsNumberLiteral()) {
+        if (baseType->IsETSTupleType()) {
+            checker->ValidateTupleIndex(baseType->AsETSTupleType(), this);
+        } else if (baseType->IsETSArrayType() && property_->IsNumberLiteral()) {
             // Check if the index value is inside array bounds if it is defined explicitly
             CheckArrayIndexValue(checker);
         }
 
         // NOTE: apply capture conversion on this type
-        if (base_type->IsETSArrayType()) {
-            if (base_type->IsETSTupleType()) {
-                return CheckTupleAccessMethod(checker, base_type);
+        if (baseType->IsETSArrayType()) {
+            if (baseType->IsETSTupleType()) {
+                return CheckTupleAccessMethod(checker, baseType);
             }
 
             if (object_->IsArrayExpression() && property_->IsNumberLiteral()) {
@@ -371,15 +371,15 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
                 return object_->AsArrayExpression()->Elements()[number]->Check(checker);
             }
 
-            return base_type->AsETSArrayType()->ElementType();
+            return baseType->AsETSArrayType()->ElementType();
         }
 
         // Dynamic
-        return checker->GlobalBuiltinDynamicType(base_type->AsETSDynamicType()->Language());
+        return checker->GlobalBuiltinDynamicType(baseType->AsETSDynamicType()->Language());
     }
 
-    if (base_type->IsETSObjectType()) {
-        SetObjectType(base_type->AsETSObjectType());
+    if (baseType->IsETSObjectType()) {
+        SetObjectType(baseType->AsETSObjectType());
         return CheckIndexAccessMethod(checker);
     }
 

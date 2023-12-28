@@ -43,12 +43,12 @@ public:
     {
     }
 
-    explicit ArrayExpression(AstNodeType node_type, ArenaVector<Expression *> &&elements,
-                             ArenaAllocator *const allocator, bool const trailing_comma)
-        : AnnotatedExpression(node_type),
+    explicit ArrayExpression(AstNodeType nodeType, ArenaVector<Expression *> &&elements,
+                             ArenaAllocator *const allocator, bool const trailingComma)
+        : AnnotatedExpression(nodeType),
           decorators_(allocator->Adapter()),
           elements_(std::move(elements)),
-          trailing_comma_(trailing_comma)
+          trailingComma_(trailingComma)
     {
     }
 
@@ -70,7 +70,7 @@ public:
 
     [[nodiscard]] bool IsDeclaration() const noexcept
     {
-        return is_declaration_;
+        return isDeclaration_;
     }
 
     [[nodiscard]] bool IsOptional() const noexcept
@@ -80,7 +80,7 @@ public:
 
     void SetDeclaration() noexcept
     {
-        is_declaration_ = true;
+        isDeclaration_ = true;
     }
 
     void SetOptional(bool optional) noexcept
@@ -88,14 +88,14 @@ public:
         optional_ = optional;
     }
 
-    void SetPreferredType(checker::Type *preferred_type) noexcept
+    void SetPreferredType(checker::Type *preferredType) noexcept
     {
-        preferred_type_ = preferred_type;
+        preferredType_ = preferredType;
     }
 
     [[nodiscard]] checker::Type *GetPreferredType() noexcept
     {
-        return preferred_type_;
+        return preferredType_;
     }
 
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
@@ -113,7 +113,7 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }
@@ -132,8 +132,8 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
-    void HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *current_element, bool is_array,
-                                     bool is_preferred_tuple, std::size_t idx);
+    void HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *currentElement, bool isArray,
+                                     bool isPreferredTuple, std::size_t idx);
 
     void Accept(ASTVisitorT *v) override
     {
@@ -143,9 +143,9 @@ public:
 private:
     ArenaVector<Decorator *> decorators_;
     ArenaVector<Expression *> elements_;
-    checker::Type *preferred_type_ {};
-    bool is_declaration_ {};
-    bool trailing_comma_;
+    checker::Type *preferredType_ {};
+    bool isDeclaration_ {};
+    bool trailingComma_;
     bool optional_ {};
 };
 }  // namespace panda::es2panda::ir

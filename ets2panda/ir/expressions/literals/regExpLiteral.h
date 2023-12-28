@@ -29,8 +29,8 @@ public:
     NO_COPY_SEMANTIC(RegExpLiteral);
     NO_MOVE_SEMANTIC(RegExpLiteral);
 
-    explicit RegExpLiteral(util::StringView pattern, lexer::RegExpFlags flags, util::StringView flags_str)
-        : Literal(AstNodeType::REGEXP_LITERAL), pattern_(pattern), flags_(flags), flags_str_(flags_str)
+    explicit RegExpLiteral(util::StringView pattern, lexer::RegExpFlags flags, util::StringView flagsStr)
+        : Literal(AstNodeType::REGEXP_LITERAL), pattern_(pattern), flags_(flags), flagsStr_(flagsStr)
     {
     }
 
@@ -64,7 +64,7 @@ public:
 private:
     util::StringView pattern_;
     lexer::RegExpFlags flags_;
-    util::StringView flags_str_;
+    util::StringView flagsStr_;
 };
 }  // namespace panda::es2panda::ir
 

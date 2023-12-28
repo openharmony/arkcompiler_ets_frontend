@@ -28,8 +28,8 @@ public:
     ~TypedBinder() = default;
 
 protected:
-    void HandleCustomNodes(ir::AstNode *child_node) override;
-    void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *type_node) override;
+    void HandleCustomNodes(ir::AstNode *childNode) override;
+    void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *typeNode) override;
 };
 }  // namespace panda::es2panda::varbinder
 

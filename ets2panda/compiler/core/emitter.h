@@ -51,8 +51,8 @@ class RegSpiller;
 
 class FunctionEmitter {
 public:
-    explicit FunctionEmitter(const CodeGen *cg, ProgramElement *program_element)
-        : cg_(cg), program_element_(program_element)
+    explicit FunctionEmitter(const CodeGen *cg, ProgramElement *programElement)
+        : cg_(cg), programElement_(programElement)
     {
     }
 
@@ -65,10 +65,10 @@ public:
 protected:
     virtual pandasm::Function *GenFunctionSignature() = 0;
     virtual void GenFunctionAnnotations(pandasm::Function *func) = 0;
-    virtual void GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
+    virtual void GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
                                       varbinder::LocalVariable *variable) const = 0;
 
-    void GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *panda_ins);
+    void GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns);
     void GenFunctionInstructions(pandasm::Function *func);
     void GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const;
     void GenSourceFileDebugInfo(pandasm::Function *func);
@@ -83,12 +83,12 @@ protected:
 
     ProgramElement *GetProgramElement() const
     {
-        return program_element_;
+        return programElement_;
     }
 
 private:
     const CodeGen *cg_;
-    ProgramElement *program_element_;
+    ProgramElement *programElement_;
     size_t offset_ {0};
 };
 
@@ -99,13 +99,13 @@ public:
     NO_MOVE_SEMANTIC(Emitter);
 
     void AddLiteralBuffer(const LiteralBuffer &literals, uint32_t index);
-    void AddProgramElement(ProgramElement *program_element);
+    void AddProgramElement(ProgramElement *programElement);
     static void DumpAsm(const pandasm::Program *prog);
-    pandasm::Program *Finalize(bool dump_debug_info, std::string_view global_class = "");
+    pandasm::Program *Finalize(bool dumpDebugInfo, std::string_view globalClass = "");
 
     uint32_t &LiteralBufferIndex()
     {
-        return literal_buffer_index_;
+        return literalBufferIndex_;
     }
 
     virtual void GenAnnotation() = 0;
@@ -126,7 +126,7 @@ protected:
 private:
     pandasm::Program *prog_;
     const CompilerContext *context_;
-    uint32_t literal_buffer_index_ {};
+    uint32_t literalBufferIndex_ {};
 };
 }  // namespace panda::es2panda::compiler
 

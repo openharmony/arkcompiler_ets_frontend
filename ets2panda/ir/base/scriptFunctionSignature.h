@@ -26,9 +26,8 @@ class FunctionSignature {
 public:
     using FunctionParams = ArenaVector<Expression *>;
 
-    FunctionSignature(TSTypeParameterDeclaration *type_params, FunctionParams &&params,
-                      TypeNode *return_type_annotation)
-        : type_params_(type_params), params_(std::move(params)), return_type_annotation_(return_type_annotation)
+    FunctionSignature(TSTypeParameterDeclaration *typeParams, FunctionParams &&params, TypeNode *returnTypeAnnotation)
+        : typeParams_(typeParams), params_(std::move(params)), returnTypeAnnotation_(returnTypeAnnotation)
     {
     }
 
@@ -44,27 +43,27 @@ public:
 
     TSTypeParameterDeclaration *TypeParams()
     {
-        return type_params_;
+        return typeParams_;
     }
 
     const TSTypeParameterDeclaration *TypeParams() const
     {
-        return type_params_;
+        return typeParams_;
     }
 
     TypeNode *ReturnType()
     {
-        return return_type_annotation_;
+        return returnTypeAnnotation_;
     }
 
     void SetReturnType(TypeNode *type)
     {
-        return_type_annotation_ = type;
+        returnTypeAnnotation_ = type;
     }
 
     const TypeNode *ReturnType() const
     {
-        return return_type_annotation_;
+        return returnTypeAnnotation_;
     }
 
     void Iterate(const NodeTraverser &cb) const;
@@ -72,9 +71,9 @@ public:
     void TransformChildren(const NodeTransformer &cb);
 
 private:
-    TSTypeParameterDeclaration *type_params_;
+    TSTypeParameterDeclaration *typeParams_;
     ArenaVector<Expression *> params_;
-    TypeNode *return_type_annotation_;
+    TypeNode *returnTypeAnnotation_;
 };
 
 }  // namespace panda::es2panda::ir

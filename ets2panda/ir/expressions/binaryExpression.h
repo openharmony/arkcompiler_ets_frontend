@@ -32,8 +32,8 @@ public:
     NO_COPY_SEMANTIC(BinaryExpression);
     NO_MOVE_SEMANTIC(BinaryExpression);
 
-    explicit BinaryExpression(Expression *const left, Expression *const right, lexer::TokenType const operator_type)
-        : Expression(AstNodeType::BINARY_EXPRESSION), left_(left), right_(right), operator_(operator_type)
+    explicit BinaryExpression(Expression *const left, Expression *const right, lexer::TokenType const operatorType)
+        : Expression(AstNodeType::BINARY_EXPRESSION), left_(left), right_(right), operator_(operatorType)
     {
     }
 
@@ -121,25 +121,25 @@ public:
         SetStart(left_->Start());
     }
 
-    void SetOperator(lexer::TokenType operator_type) noexcept
+    void SetOperator(lexer::TokenType operatorType) noexcept
     {
-        operator_ = operator_type;
+        operator_ = operatorType;
         type_ = AstNodeType::BINARY_EXPRESSION;
     }
 
     [[nodiscard]] checker::Type *OperationType() noexcept
     {
-        return operation_type_;
+        return operationType_;
     }
 
-    void SetOperationType(checker::Type *const operation_type) noexcept
+    void SetOperationType(checker::Type *const operationType) noexcept
     {
-        operation_type_ = operation_type;
+        operationType_ = operationType;
     }
 
     [[nodiscard]] const checker::Type *OperationType() const noexcept
     {
-        return operation_type_;
+        return operationType_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -164,7 +164,7 @@ private:
     Expression *right_ = nullptr;
     Expression *result_ = nullptr;
     lexer::TokenType operator_;
-    checker::Type *operation_type_ {};
+    checker::Type *operationType_ {};
 };
 }  // namespace panda::es2panda::ir
 

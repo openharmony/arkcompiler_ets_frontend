@@ -43,8 +43,8 @@ bool TSChecker::InAssignment(ir::AstNode *node)
         }
 
         if (parent->Parent()->IsBinaryExpression()) {
-            ir::BinaryExpression *binary_expr = parent->Parent()->AsBinaryExpression();
-            return IsAssignmentOperator(binary_expr->OperatorType()) && binary_expr->Left() == parent;
+            ir::BinaryExpression *binaryExpr = parent->Parent()->AsBinaryExpression();
+            return IsAssignmentOperator(binaryExpr->OperatorType()) && binaryExpr->Left() == parent;
         }
 
         if (parent->Parent()->IsUpdateExpression()) {
@@ -87,9 +87,9 @@ bool TSChecker::IsLiteralType(const Type *type)
     }
 
     if (type->IsUnionType()) {
-        auto &constituent_types = type->AsUnionType()->ConstituentTypes();
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
         bool result = true;
-        for (auto *it : constituent_types) {
+        for (auto *it : constituentTypes) {
             result &= it->HasTypeFlag(TypeFlag::UNIT);
         }
         return result;
@@ -120,8 +120,8 @@ bool TSChecker::MaybeTypeOfKind(const Type *type, TypeFlag flags)
 
     if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION)) {
         if (type->IsUnionType()) {
-            const auto &constituent_types = type->AsUnionType()->ConstituentTypes();
-            for (auto *it : constituent_types) {
+            const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+            for (auto *it : constituentTypes) {
                 if (MaybeTypeOfKind(it, flags)) {
                     return true;
                 }
@@ -140,8 +140,8 @@ bool TSChecker::MaybeTypeOfKind(const Type *type, ObjectType::ObjectTypeKind kin
 
     if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION)) {
         if (type->IsUnionType()) {
-            const auto &constituent_types = type->AsUnionType()->ConstituentTypes();
-            for (auto *it : constituent_types) {
+            const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+            for (auto *it : constituentTypes) {
                 if (MaybeTypeOfKind(it, kind)) {
                     return true;
                 }

@@ -25,12 +25,12 @@ std::set<std::string> &ProgramElement::Strings()
 
 std::vector<pandasm::Ins *> &ProgramElement::LiteralBufferIns()
 {
-    return literal_buffer_ins_;
+    return literalBufferIns_;
 }
 
 std::vector<LiteralBuffer> &ProgramElement::BuffStorage()
 {
-    return buff_storage_;
+    return buffStorage_;
 }
 
 pandasm::Function *ProgramElement::Function()

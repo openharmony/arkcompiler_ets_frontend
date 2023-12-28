@@ -41,15 +41,15 @@ public:
 private:
     TSChecker *GetTSChecker() const;
 
-    varbinder::EnumMemberResult EvaluateBinaryExpression(checker::TSChecker *checker, varbinder::EnumVariable *enum_var,
+    varbinder::EnumMemberResult EvaluateBinaryExpression(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
                                                          const ir::BinaryExpression *expr) const;
-    varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker, varbinder::EnumVariable *enum_var,
+    varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
                                                    const ir::AstNode *expr) const;
-    varbinder::EnumMemberResult EvaluateUnaryExpression(checker::TSChecker *checker, varbinder::EnumVariable *enum_var,
+    varbinder::EnumMemberResult EvaluateUnaryExpression(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
                                                         const ir::UnaryExpression *expr) const;
-    void InferEnumVariableType(varbinder::EnumVariable *variable, double *value, bool *init_next, bool *is_literal_enum,
-                               bool is_const_enum) const;
-    checker::Type *InferType(checker::TSChecker *checker, bool is_const, ir::TSEnumDeclaration *st) const;
+    void InferEnumVariableType(varbinder::EnumVariable *variable, double *value, bool *initNext, bool *isLiteralEnum,
+                               bool isConstEnum) const;
+    checker::Type *InferType(checker::TSChecker *checker, bool isConst, ir::TSEnumDeclaration *st) const;
 };
 
 }  // namespace panda::es2panda::checker

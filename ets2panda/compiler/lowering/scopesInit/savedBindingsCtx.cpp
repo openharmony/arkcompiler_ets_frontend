@@ -22,31 +22,31 @@
 
 namespace panda::es2panda::compiler {
 
-void ImportDeclarationContext::BindImportDecl(ir::ImportDeclaration *import_decl)
+void ImportDeclarationContext::BindImportDecl(ir::ImportDeclaration *importDecl)
 {
-    varbinder::ModuleScope::ImportDeclList decl_list(Allocator()->Adapter());
+    varbinder::ModuleScope::ImportDeclList declList(Allocator()->Adapter());
 
     for (const auto &[name, variable] : VarBinder()->GetScope()->Bindings()) {
         if (SavedBindings().find(name) != SavedBindings().end()) {
             continue;
         }
 
-        decl_list.push_back(variable->Declaration()->AsImportDecl());
+        declList.push_back(variable->Declaration()->AsImportDecl());
     }
 
-    VarBinder()->GetScope()->AsModuleScope()->AddImportDecl(import_decl, std::move(decl_list));
+    VarBinder()->GetScope()->AsModuleScope()->AddImportDecl(importDecl, std::move(declList));
 }
 
-void ExportDeclarationContext::BindExportDecl(ir::AstNode *export_decl)
+void ExportDeclarationContext::BindExportDecl(ir::AstNode *exportDecl)
 {
     if (VarBinder() == nullptr) {
         return;
     }
 
-    varbinder::ModuleScope::ExportDeclList decl_list(Allocator()->Adapter());
+    varbinder::ModuleScope::ExportDeclList declList(Allocator()->Adapter());
 
-    if (export_decl->IsExportDefaultDeclaration()) {
-        auto *decl = export_decl->AsExportDefaultDeclaration();
+    if (exportDecl->IsExportDefaultDeclaration()) {
+        auto *decl = exportDecl->AsExportDefaultDeclaration();
         auto *rhs = decl->Decl();
 
         if (VarBinder()->GetScope()->Bindings().size() == SavedBindings().size()) {
@@ -65,16 +65,16 @@ void ExportDeclarationContext::BindExportDecl(ir::AstNode *export_decl)
             continue;
         }
 
-        util::StringView export_name(export_decl->IsExportDefaultDeclaration() ? "default" : name);
+        util::StringView exportName(exportDecl->IsExportDefaultDeclaration() ? "default" : name);
 
         variable->AddFlag(varbinder::VariableFlags::LOCAL_EXPORT);
         auto *decl =
-            VarBinder()->AddDecl<varbinder::ExportDecl>(variable->Declaration()->Node()->Start(), export_name, name);
-        decl_list.push_back(decl);
+            VarBinder()->AddDecl<varbinder::ExportDecl>(variable->Declaration()->Node()->Start(), exportName, name);
+        declList.push_back(decl);
     }
 
-    auto *module_scope = VarBinder()->GetScope()->AsModuleScope();
-    module_scope->AddExportDecl(export_decl, std::move(decl_list));
+    auto *moduleScope = VarBinder()->GetScope()->AsModuleScope();
+    moduleScope->AddExportDecl(exportDecl, std::move(declList));
 }
 
 }  // namespace panda::es2panda::compiler

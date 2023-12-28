@@ -23,8 +23,8 @@
 #include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
-FunctionBuilder::FunctionBuilder(PandaGen *pg, CatchTable *catch_table)
-    : pg_(pg), catch_table_(catch_table), func_obj_(catch_table != nullptr ? pg_->AllocReg() : VReg(VReg::REG_START))
+FunctionBuilder::FunctionBuilder(PandaGen *pg, CatchTable *catchTable)
+    : pg_(pg), catchTable_(catchTable), funcObj_(catchTable != nullptr ? pg_->AllocReg() : VReg(VReg::REG_START))
 {
 }
 
@@ -40,46 +40,46 @@ void FunctionBuilder::DirectReturn(const ir::AstNode *node) const
 
 void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 {
-    const auto *root_node = pg_->RootNode();
+    const auto *rootNode = pg_->RootNode();
 
-    if (!root_node->IsScriptFunction() || !root_node->AsScriptFunction()->IsConstructor()) {
+    if (!rootNode->IsScriptFunction() || !rootNode->AsScriptFunction()->IsConstructor()) {
         pg_->EmitReturnUndefined(node);
         return;
     }
 
-    pg_->GetThis(root_node);
-    pg_->ThrowIfSuperNotCorrectCall(root_node, 0);
+    pg_->GetThis(rootNode);
+    pg_->ThrowIfSuperNotCorrectCall(rootNode, 0);
     pg_->EmitReturn(node);
 }
 
-void FunctionBuilder::AsyncYield(const ir::AstNode *node, VReg completion_type, VReg completion_value) const
+void FunctionBuilder::AsyncYield(const ir::AstNode *node, VReg completionType, VReg completionValue) const
 {
     ASSERT(BuilderKind() == BuilderType::ASYNC_GENERATOR);
 
-    pg_->GeneratorYield(node, func_obj_);
-    pg_->SuspendAsyncGenerator(node, func_obj_);
+    pg_->GeneratorYield(node, funcObj_);
+    pg_->SuspendAsyncGenerator(node, funcObj_);
 
-    ResumeGenerator(node, completion_type, completion_value);
+    ResumeGenerator(node, completionType, completionValue);
 }
 
-void FunctionBuilder::SuspendResumeExecution(const ir::AstNode *node, VReg completion_type, VReg completion_value) const
+void FunctionBuilder::SuspendResumeExecution(const ir::AstNode *node, VReg completionType, VReg completionValue) const
 {
     ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
            BuilderKind() == BuilderType::GENERATOR);
 
-    pg_->SuspendGenerator(node, func_obj_);
-    ResumeGenerator(node, completion_type, completion_value);
+    pg_->SuspendGenerator(node, funcObj_);
+    ResumeGenerator(node, completionType, completionValue);
 }
 
-void FunctionBuilder::ResumeGenerator(const ir::AstNode *node, VReg completion_type, VReg completion_value) const
+void FunctionBuilder::ResumeGenerator(const ir::AstNode *node, VReg completionType, VReg completionValue) const
 {
     ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
            BuilderKind() == BuilderType::GENERATOR);
 
-    pg_->ResumeGenerator(node, func_obj_);
-    pg_->StoreAccumulator(node, completion_value);
-    pg_->GetResumeMode(node, func_obj_);
-    pg_->StoreAccumulator(node, completion_type);
+    pg_->ResumeGenerator(node, funcObj_);
+    pg_->StoreAccumulator(node, completionValue);
+    pg_->GetResumeMode(node, funcObj_);
+    pg_->StoreAccumulator(node, completionType);
 }
 
 VReg FunctionBuilder::FunctionReg(const ir::ScriptFunction *node) const
@@ -100,43 +100,43 @@ void FunctionBuilder::Await(const ir::AstNode *node)
     ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR);
 
     RegScope rs(pg_);
-    VReg completion_type = pg_->AllocReg();
-    VReg completion_value = pg_->AllocReg();
+    VReg completionType = pg_->AllocReg();
+    VReg completionValue = pg_->AllocReg();
 
-    pg_->AsyncFunctionAwait(node, func_obj_);
-    SuspendResumeExecution(node, completion_type, completion_value);
+    pg_->AsyncFunctionAwait(node, funcObj_);
+    SuspendResumeExecution(node, completionType, completionValue);
 
-    HandleCompletion(node, completion_type, completion_value);
+    HandleCompletion(node, completionType, completionValue);
 }
 
-void FunctionBuilder::HandleCompletion(const ir::AstNode *node, VReg completion_type, VReg completion_value)
+void FunctionBuilder::HandleCompletion(const ir::AstNode *node, VReg completionType, VReg completionValue)
 {
     // .return(value)
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
 
-    auto *not_ret_label = pg_->AllocLabel();
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completion_type, not_ret_label);
-    if (!handle_return_) {
-        handle_return_ = true;
+    auto *notRetLabel = pg_->AllocLabel();
+    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notRetLabel);
+    if (!handleReturn_) {
+        handleReturn_ = true;
         pg_->ControlFlowChangeBreak();
-        handle_return_ = false;
+        handleReturn_ = false;
     }
 
-    pg_->LoadAccumulator(node, completion_value);
+    pg_->LoadAccumulator(node, completionValue);
     pg_->DirectReturn(node);
 
     // .throw(value)
-    pg_->SetLabel(node, not_ret_label);
+    pg_->SetLabel(node, notRetLabel);
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
 
-    auto *not_throw_label = pg_->AllocLabel();
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completion_type, not_throw_label);
-    pg_->LoadAccumulator(node, completion_value);
+    auto *notThrowLabel = pg_->AllocLabel();
+    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notThrowLabel);
+    pg_->LoadAccumulator(node, completionValue);
     pg_->EmitThrow(node);
 
     // .next(value)
-    pg_->SetLabel(node, not_throw_label);
-    pg_->LoadAccumulator(node, completion_value);
+    pg_->SetLabel(node, notThrowLabel);
+    pg_->LoadAccumulator(node, completionValue);
 }
 
 void FunctionBuilder::YieldStar(const ir::AstNode *node)
@@ -145,47 +145,47 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
 
     RegScope rs(pg_);
 
-    auto *loop_start = pg_->AllocLabel();
-    auto *return_completion = pg_->AllocLabel();
-    auto *throw_completion = pg_->AllocLabel();
-    auto *call_method = pg_->AllocLabel();
-    auto *normal_or_throw_completion = pg_->AllocLabel();
-    auto *iterator_complete = pg_->AllocLabel();
+    auto *loopStart = pg_->AllocLabel();
+    auto *returnCompletion = pg_->AllocLabel();
+    auto *throwCompletion = pg_->AllocLabel();
+    auto *callMethod = pg_->AllocLabel();
+    auto *normalOrThrowCompletion = pg_->AllocLabel();
+    auto *iteratorComplete = pg_->AllocLabel();
 
     // 4. Let iteratorRecord be ? GetIterator(value, generatorKind).
     Iterator iterator(pg_, node, GeneratorKind());
 
     // 6. Let received be NormalCompletion(undefined).
-    VReg received_value = iterator.NextResult();
-    VReg received_type = pg_->AllocReg();
-    VReg next_method = pg_->AllocReg();
-    VReg exit_return = pg_->AllocReg();
+    VReg receivedValue = iterator.NextResult();
+    VReg receivedType = pg_->AllocReg();
+    VReg nextMethod = pg_->AllocReg();
+    VReg exitReturn = pg_->AllocReg();
 
-    pg_->StoreConst(node, received_value, Constant::JS_UNDEFINED);
+    pg_->StoreConst(node, receivedValue, Constant::JS_UNDEFINED);
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::NEXT));
-    pg_->StoreAccumulator(node, received_type);
-    pg_->MoveVreg(node, next_method, iterator.Method());
+    pg_->StoreAccumulator(node, receivedType);
+    pg_->MoveVreg(node, nextMethod, iterator.Method());
 
     // 7. Repeat
-    pg_->SetLabel(node, loop_start);
-    pg_->StoreConst(node, exit_return, Constant::JS_FALSE);
+    pg_->SetLabel(node, loopStart);
+    pg_->StoreConst(node, exitReturn, Constant::JS_FALSE);
 
     // a. If received.[[Type]] is normal, then
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::NEXT));
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_STRICT_EQUAL, received_type, throw_completion);
-    pg_->MoveVreg(node, iterator.Method(), next_method);
-    pg_->Branch(node, call_method);
+    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_STRICT_EQUAL, receivedType, throwCompletion);
+    pg_->MoveVreg(node, iterator.Method(), nextMethod);
+    pg_->Branch(node, callMethod);
 
     // b. Else if received.[[Type]] is throw, then
-    pg_->SetLabel(node, throw_completion);
+    pg_->SetLabel(node, throwCompletion);
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_STRICT_EQUAL, received_type, return_completion);
+    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_STRICT_EQUAL, receivedType, returnCompletion);
 
     // i. Let throw be ? GetMethod(iterator, "throw").
     iterator.GetMethod("throw");
 
     // ii. If throw is not undefined, then
-    pg_->BranchIfNotUndefined(node, call_method);
+    pg_->BranchIfNotUndefined(node, callMethod);
 
     // iii. Else,
     // 1. NOTE: If iterator does not have a throw method, this throw is going to terminate the yield* loop. But first we
@@ -201,17 +201,17 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
 
     // c. Else,
     // i. Assert: received.[[Type]] is return.
-    pg_->SetLabel(node, return_completion);
-    pg_->StoreConst(node, exit_return, Constant::JS_TRUE);
+    pg_->SetLabel(node, returnCompletion);
+    pg_->StoreConst(node, exitReturn, Constant::JS_TRUE);
     // ii. Let return be ? GetMethod(iterator, "return").
     iterator.GetMethod("return");
 
     // iii. If return is undefined, then
-    pg_->BranchIfNotUndefined(node, call_method);
+    pg_->BranchIfNotUndefined(node, callMethod);
 
     // 1. If generatorKind is async, set received.[[Value]] to ? Await(received.[[Value]]).
     pg_->ControlFlowChangeBreak();
-    pg_->LoadAccumulator(node, received_value);
+    pg_->LoadAccumulator(node, receivedValue);
 
     if (GeneratorKind() == IteratorType::ASYNC) {
         Await(node);
@@ -220,7 +220,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
     // 2. Return Completion(received).
     pg_->DirectReturn(node);
 
-    pg_->SetLabel(node, call_method);
+    pg_->SetLabel(node, callMethod);
     // i. Let innerResult be ? Call(iteratorRecord.[[NextMethod]], iteratorRecord.[[Iterator]], « received.[[Value]] »).
     // 1. Let innerResult be ? Call(throw, iterator, « received.[[Value]] »).
     // iv. Let innerReturnResult be ? Call(return, iterator, « received.[[Value]] »).
@@ -233,7 +233,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         Await(node);
     }
 
-    pg_->StoreAccumulator(node, received_value);
+    pg_->StoreAccumulator(node, receivedValue);
 
     // ii. If Type(innerResult) is not Object, throw a TypeError exception.
     // 4. If Type(innerResult) is not Object, throw a TypeError exception.
@@ -244,7 +244,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
     // v. Let done be ? IteratorComplete(innerResult).
     // vii. Let done be ? IteratorComplete(innerReturnResult).
     iterator.Complete();
-    pg_->BranchIfTrue(node, iterator_complete);
+    pg_->BranchIfTrue(node, iteratorComplete);
 
     // vi. If generatorKind is async, set received to AsyncGeneratorYield(? IteratorValue(innerResult)).
     // 7. If generatorKind is async, set received to AsyncGeneratorYield(? IteratorValue(innerResult)).
@@ -255,54 +255,54 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         // 5. Set value to ? Await(value).
         Await(node);
         // 6. Set generator.[[AsyncGeneratorState]] to suspendedYield.
-        AsyncYield(node, received_type, received_value);
+        AsyncYield(node, receivedType, receivedValue);
 
         // a. If resumptionValue.[[Type]] is not return
         pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
-        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, received_type, loop_start);
+        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, receivedType, loopStart);
 
         // b. Let awaited be Await(resumptionValue.[[Value]]).
-        pg_->LoadAccumulator(node, received_value);
-        pg_->AsyncFunctionAwait(node, func_obj_);
-        SuspendResumeExecution(node, received_type, received_value);
+        pg_->LoadAccumulator(node, receivedValue);
+        pg_->AsyncFunctionAwait(node, funcObj_);
+        SuspendResumeExecution(node, receivedType, receivedValue);
 
         // c. If awaited.[[Type]] is throw, return Completion(awaited).
         pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
         // d. Assert: awaited.[[Type]] is normal.
         // e. Return Completion { [[Type]]: return, [[Value]]: awaited.[[Value]], [[Target]]: empty }.
-        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, received_type, return_completion);
+        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, receivedType, returnCompletion);
     } else {
         // vii. Else, set received to GeneratorYield(innerResult).
         // 8. Else, set received to GeneratorYield(innerResult).
         // x. Else, set received to GeneratorYield(innerReturnResult).
-        pg_->LoadAccumulator(node, received_value);
-        pg_->GeneratorYield(node, func_obj_);
-        SuspendResumeExecution(node, received_type, received_value);
+        pg_->LoadAccumulator(node, receivedValue);
+        pg_->GeneratorYield(node, funcObj_);
+        SuspendResumeExecution(node, receivedType, receivedValue);
     }
 
-    pg_->Branch(node, loop_start);
+    pg_->Branch(node, loopStart);
 
     // v. If done is true, then
     // 6. If done is true, then
     // viii. If done is true, then
-    pg_->SetLabel(node, iterator_complete);
+    pg_->SetLabel(node, iteratorComplete);
 
-    pg_->LoadAccumulator(node, exit_return);
-    pg_->BranchIfFalse(node, normal_or_throw_completion);
+    pg_->LoadAccumulator(node, exitReturn);
+    pg_->BranchIfFalse(node, normalOrThrowCompletion);
 
     // 1. Let value be ? IteratorValue(innerReturnResult).
     iterator.Value();
 
     if (pg_->CheckControlFlowChange()) {
-        pg_->StoreAccumulator(node, received_value);
+        pg_->StoreAccumulator(node, receivedValue);
         pg_->ControlFlowChangeBreak();
-        pg_->LoadAccumulator(node, received_value);
+        pg_->LoadAccumulator(node, receivedValue);
     }
 
     // 2. Return Completion { [[Type]]: return, [[Value]]: value, [[Target]]: empty }.
     pg_->DirectReturn(node);
 
-    pg_->SetLabel(node, normal_or_throw_completion);
+    pg_->SetLabel(node, normalOrThrowCompletion);
     // 1. Return ? IteratorValue(innerResult).
     // a. Return ? IteratorValue(innerResult).
     iterator.Value();

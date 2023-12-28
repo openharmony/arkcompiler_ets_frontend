@@ -21,7 +21,7 @@
 namespace panda::es2panda::lexer {
 class TSLexer final : public Lexer {
 public:
-    explicit TSLexer(const parser::ParserContext *parser_context) : Lexer(parser_context, false)
+    explicit TSLexer(const parser::ParserContext *parserContext) : Lexer(parserContext, false)
     {
         SkipWhiteSpaces();
     }

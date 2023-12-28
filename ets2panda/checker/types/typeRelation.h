@@ -75,15 +75,15 @@ DEFINE_BITOPS(TypeRelationFlag)
 
 class RelationKey {
 public:
-    uint64_t source_id;
-    uint64_t target_id;
+    uint64_t sourceId;
+    uint64_t targetId;
 };
 
 class RelationKeyHasher {
 public:
     size_t operator()(const RelationKey &key) const noexcept
     {
-        return static_cast<size_t>(key.source_id ^ key.target_id);
+        return static_cast<size_t>(key.sourceId ^ key.targetId);
     }
 };
 
@@ -91,7 +91,7 @@ class RelationKeyComparator {
 public:
     bool operator()(const RelationKey &lhs, const RelationKey &rhs) const
     {
-        return lhs.source_id == rhs.source_id && lhs.target_id == rhs.target_id;
+        return lhs.sourceId == rhs.sourceId && lhs.targetId == rhs.targetId;
     }
 };
 
@@ -128,7 +128,7 @@ using TypeErrorMessageElement =
 class TypeRelation {
 public:
     explicit TypeRelation(Checker *checker)
-        : checker_(checker), result_(RelationResult::FALSE), instantiation_recursion_map_(Allocator()->Adapter())
+        : checker_(checker), result_(RelationResult::FALSE), instantiationRecursionMap_(Allocator()->Adapter())
     {
     }
 
@@ -224,13 +224,13 @@ public:
 
     void IncreaseTypeRecursionCount(Type *const type)
     {
-        if (const auto found_type = instantiation_recursion_map_.find(type);
-            found_type != instantiation_recursion_map_.end()) {
-            found_type->second += 1;
+        if (const auto foundType = instantiationRecursionMap_.find(type);
+            foundType != instantiationRecursionMap_.end()) {
+            foundType->second += 1;
             return;
         }
 
-        instantiation_recursion_map_.insert({type, 1});
+        instantiationRecursionMap_.insert({type, 1});
     }
 
     bool TypeInstantiationPossible(Type *const type)
@@ -240,23 +240,23 @@ public:
         // possible to reference the correct types of it's members and methods. 2 is possibly enough, because if we
         // chain expressions, every one of them will be rechecked separately, thus allowing another 2 recursion.
         constexpr auto MAX_RECURSIVE_TYPE_INST = 2;
-        const auto found_type = instantiation_recursion_map_.find(type);
-        return found_type == instantiation_recursion_map_.end() ? true : (found_type->second < MAX_RECURSIVE_TYPE_INST);
+        const auto foundType = instantiationRecursionMap_.find(type);
+        return foundType == instantiationRecursionMap_.end() ? true : (foundType->second < MAX_RECURSIVE_TYPE_INST);
     }
 
     void DecreaseTypeRecursionCount(Type *const type)
     {
-        const auto found_type = instantiation_recursion_map_.find(type);
-        if (found_type == instantiation_recursion_map_.end()) {
+        const auto foundType = instantiationRecursionMap_.find(type);
+        if (foundType == instantiationRecursionMap_.end()) {
             return;
         }
 
-        if (found_type->second > 1) {
-            found_type->second -= 1;
+        if (foundType->second > 1) {
+            foundType->second -= 1;
             return;
         }
 
-        instantiation_recursion_map_.erase(type);
+        instantiationRecursionMap_.erase(type);
     }
 
     bool IsIdenticalTo(Type *source, Type *target);
@@ -265,7 +265,7 @@ public:
     bool IsAssignableTo(Type *source, Type *target);
     bool IsComparableTo(Type *source, Type *target);
     bool IsCastableTo(Type *source, Type *target);
-    void RaiseError(const std::string &err_msg, const lexer::SourcePosition &loc) const;
+    void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
 
     bool Result(bool res)
@@ -306,14 +306,14 @@ private:
     RelationResult result_ {};
     TypeRelationFlag flags_ {};
     ir::Expression *node_ {};
-    ArenaMap<checker::Type *, int8_t> instantiation_recursion_map_;
+    ArenaMap<checker::Type *, int8_t> instantiationRecursionMap_;
 };
 class SavedTypeRelationFlagsContext {
 public:
-    explicit SavedTypeRelationFlagsContext(TypeRelation *relation, TypeRelationFlag new_flag)
+    explicit SavedTypeRelationFlagsContext(TypeRelation *relation, TypeRelationFlag newFlag)
         : relation_(relation), prev_(relation->flags_)
     {
-        relation_->flags_ = new_flag;
+        relation_->flags_ = newFlag;
     }
 
     NO_COPY_SEMANTIC(SavedTypeRelationFlagsContext);

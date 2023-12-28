@@ -28,8 +28,8 @@ void NamedType::TransformChildren(const NodeTransformer &cb)
 {
     name_ = cb(name_)->AsIdentifier();
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
     }
 
     if (next_ != nullptr) {
@@ -41,8 +41,8 @@ void NamedType::Iterate(const NodeTraverser &cb) const
 {
     cb(name_);
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     if (next_ != nullptr) {
@@ -54,7 +54,7 @@ void NamedType::Dump(AstDumper *dumper) const
 {
     dumper->Add({{"type", "NamedType"},
                  {"name", name_},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
+                 {"typeParameters", AstDumper::Optional(typeParams_)},
                  {"next", AstDumper::Optional(next_)},
                  {"isNullable", nullable_}});
 }

@@ -41,7 +41,7 @@ TypeFacts BigintType::GetTypeFacts() const
 }
 
 Type *BigintType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                              [[maybe_unused]] GlobalTypesHolder *global_types)
+                              [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
 }

@@ -78,15 +78,15 @@ protected:
 TEST_F(ASTVerifierTest, NullParent)
 {
     panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
-    panda::es2panda::ir::StringLiteral empty_node;
+    panda::es2panda::ir::StringLiteral emptyNode;
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("HasParent");
-    bool has_parent = verifier.Verify(&empty_node, checks);
+    bool hasParent = verifier.Verify(&emptyNode, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(has_parent, false);
+    ASSERT_EQ(hasParent, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(name, "HasParent");
     ASSERT_EQ(error.message, "NULL_PARENT: STR_LITERAL <null>");
@@ -95,15 +95,15 @@ TEST_F(ASTVerifierTest, NullParent)
 TEST_F(ASTVerifierTest, NullType)
 {
     panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
-    panda::es2panda::ir::StringLiteral empty_node;
+    panda::es2panda::ir::StringLiteral emptyNode;
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("HasType");
-    bool has_type = verifier.Verify(&empty_node, checks);
+    bool hasType = verifier.Verify(&emptyNode, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(has_type, false);
+    ASSERT_EQ(hasType, false);
     ASSERT_NE(errors.size(), 0);
     ASSERT_EQ(name, "HasType");
     ASSERT_EQ(error.message, "NULL_TS_TYPE: STR_LITERAL <null>");
@@ -112,14 +112,14 @@ TEST_F(ASTVerifierTest, NullType)
 TEST_F(ASTVerifierTest, WithoutScope)
 {
     panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
-    panda::es2panda::ir::StringLiteral empty_node;
+    panda::es2panda::ir::StringLiteral emptyNode;
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("HasScope");
-    bool has_scope = verifier.Verify(&empty_node, checks);
+    bool hasScope = verifier.Verify(&emptyNode, checks);
     const auto &errors = verifier.GetErrors();
 
-    ASSERT_EQ(has_scope, true);
+    ASSERT_EQ(hasScope, true);
     ASSERT_EQ(errors.size(), 0);
 }
 
@@ -132,8 +132,8 @@ TEST_F(ASTVerifierTest, ScopeTest)
     ident.SetVariable(&local);
 
     panda::es2panda::varbinder::LocalScope scope(Allocator(), nullptr);
-    panda::es2panda::varbinder::FunctionScope parent_scope(Allocator(), nullptr);
-    scope.SetParent(&parent_scope);
+    panda::es2panda::varbinder::FunctionScope parentScope(Allocator(), nullptr);
+    scope.SetParent(&parentScope);
     scope.AddDecl(Allocator(), &decl, panda::es2panda::ScriptExtension::ETS);
     scope.BindNode(&ident);
 
@@ -141,9 +141,9 @@ TEST_F(ASTVerifierTest, ScopeTest)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("HasScope");
-    bool is_ok = verifier.Verify(&ident, checks);
+    bool isOk = verifier.Verify(&ident, checks);
 
-    ASSERT_EQ(is_ok, true);
+    ASSERT_EQ(isOk, true);
 }
 
 TEST_F(ASTVerifierTest, ScopeNodeTest)
@@ -155,19 +155,19 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
     ident.SetVariable(&local);
 
     panda::es2panda::varbinder::LocalScope scope(Allocator(), nullptr);
-    panda::es2panda::varbinder::FunctionScope parent_scope(Allocator(), nullptr);
-    scope.SetParent(&parent_scope);
+    panda::es2panda::varbinder::FunctionScope parentScope(Allocator(), nullptr);
+    scope.SetParent(&parentScope);
     scope.AddDecl(Allocator(), &decl, panda::es2panda::ScriptExtension::ETS);
     scope.BindNode(&ident);
-    parent_scope.BindNode(&ident);
+    parentScope.BindNode(&ident);
 
     local.SetScope(&scope);
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyScopeNode");
-    bool is_ok = verifier.Verify(&ident, checks);
+    bool isOk = verifier.Verify(&ident, checks);
 
-    ASSERT_EQ(is_ok, true);
+    ASSERT_EQ(isOk, true);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
@@ -179,7 +179,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
 
     auto left = panda::es2panda::ir::NumberLiteral(panda::es2panda::lexer::Number {1});
     auto right = panda::es2panda::ir::NumberLiteral(panda::es2panda::lexer::Number {6});
-    auto arithmetic_expression =
+    auto arithmeticExpression =
         panda::es2panda::ir::BinaryExpression(&left, &right, panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS);
 
     left.SetTsType(etschecker.GlobalIntType());
@@ -187,8 +187,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("CheckArithmeticExpression");
-    bool is_correct = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
-    ASSERT_EQ(is_correct, true);
+    bool isCorrect = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
+    ASSERT_EQ(isCorrect, true);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
@@ -206,7 +206,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
     auto right2 = panda::es2panda::ir::NumberLiteral(panda::es2panda::lexer::Number {RIGHT2_PARAM});
     auto right1 =
         panda::es2panda::ir::BinaryExpression(&left2, &right2, panda::es2panda::lexer::TokenType::PUNCTUATOR_MULTIPLY);
-    auto arithmetic_expression =
+    auto arithmeticExpression =
         panda::es2panda::ir::BinaryExpression(&left1, &right1, panda::es2panda::lexer::TokenType::PUNCTUATOR_PLUS);
 
     left1.SetTsType(etschecker.GlobalIntType());
@@ -216,8 +216,8 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("CheckArithmeticExpression");
-    bool is_correct = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
-    ASSERT_EQ(is_correct, true);
+    bool isCorrect = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
+    ASSERT_EQ(isCorrect, true);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
@@ -227,11 +227,11 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
     auto program = panda::es2panda::parser::Program::NewProgram<panda::es2panda::varbinder::ETSBinder>(Allocator());
     auto parser = panda::es2panda::parser::ETSParser(&program, panda::es2panda::CompilerOptions {});
 
-    const panda::es2panda::util::StringView left_param("1");
+    const panda::es2panda::util::StringView leftParam("1");
     constexpr uint32_t RIGHT_PARAM = 1;
-    auto left = panda::es2panda::ir::StringLiteral(left_param);
+    auto left = panda::es2panda::ir::StringLiteral(leftParam);
     auto right = panda::es2panda::ir::NumberLiteral(panda::es2panda::lexer::Number {RIGHT_PARAM});
-    auto arithmetic_expression =
+    auto arithmeticExpression =
         panda::es2panda::ir::BinaryExpression(&left, &right, panda::es2panda::lexer::TokenType::PUNCTUATOR_DIVIDE);
 
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
@@ -239,9 +239,9 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("CheckArithmeticExpression");
-    bool is_correct = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
+    bool isCorrect = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
@@ -252,7 +252,7 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
     auto parser = panda::es2panda::parser::ETSParser(&program, panda::es2panda::CompilerOptions {});
     auto left = panda::es2panda::ir::BooleanLiteral(true);
     auto right = panda::es2panda::ir::NumberLiteral(panda::es2panda::lexer::Number {1});
-    auto arithmetic_expression =
+    auto arithmeticExpression =
         panda::es2panda::ir::BinaryExpression(&left, &right, panda::es2panda::lexer::TokenType::PUNCTUATOR_DIVIDE);
 
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
@@ -260,9 +260,9 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("CheckArithmeticExpression");
-    bool is_correct = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
+    bool isCorrect = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
 }
 
 constexpr char const *PRIVATE_PROTECTED_PUBLIC_TEST =
@@ -320,10 +320,10 @@ TEST_F(ASTVerifierTest, PrivateProtectedPublicAccessTestCorrect)
     auto *ast = reinterpret_cast<panda::es2panda::ir::AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
 
-    ASSERT_EQ(is_correct, true);
+    ASSERT_EQ(isCorrect, true);
     ASSERT_EQ(errors.size(), 0);
     impl_->DestroyContext(ctx);
 }
@@ -357,11 +357,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR MUST BE UNREACHABLE.ID a");
     impl_->DestroyContext(ctx);
@@ -397,11 +397,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID a");
     impl_->DestroyContext(ctx);
@@ -438,11 +438,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
     impl_->DestroyContext(ctx);
@@ -479,11 +479,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
     impl_->DestroyContext(ctx);
@@ -533,11 +533,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID privateMethod");
     impl_->DestroyContext(ctx);
@@ -588,11 +588,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID privateMethod");
     impl_->DestroyContext(ctx);
@@ -643,11 +643,11 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID privateMethod");
     impl_->DestroyContext(ctx);
@@ -682,10 +682,10 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
 
-    ASSERT_EQ(is_correct, true);
+    ASSERT_EQ(isCorrect, true);
     ASSERT_EQ(errors.size(), 0);
     impl_->DestroyContext(ctx);
 }
@@ -720,11 +720,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID a");
     impl_->DestroyContext(ctx);
@@ -761,11 +761,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
     impl_->DestroyContext(ctx);
@@ -802,11 +802,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
     impl_->DestroyContext(ctx);
@@ -856,11 +856,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID protectedMethod");
     impl_->DestroyContext(ctx);
@@ -911,11 +911,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID protectedMethod");
     impl_->DestroyContext(ctx);
@@ -966,11 +966,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
 
     auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
     checks.insert("VerifyModifierAccessRecursive");
-    bool is_correct = verifier.Verify(ast, checks);
+    bool isCorrect = verifier.Verify(ast, checks);
     const auto &errors = verifier.GetErrors();
     const auto [name, error] = errors[0];
 
-    ASSERT_EQ(is_correct, false);
+    ASSERT_EQ(isCorrect, false);
     ASSERT_EQ(errors.size(), 1);
     ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID protectedMethod");
     impl_->DestroyContext(ctx);

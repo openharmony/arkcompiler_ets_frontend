@@ -21,12 +21,12 @@
 namespace panda::es2panda::checker {
 void ArrayType::ToString(std::stringstream &ss) const
 {
-    bool elem_is_union = (element_->TypeFlags() == TypeFlag::UNION);
-    if (elem_is_union) {
+    bool elemIsUnion = (element_->TypeFlags() == TypeFlag::UNION);
+    if (elemIsUnion) {
         ss << "(";
     }
     ElementType()->ToString(ss);
-    if (elem_is_union) {
+    if (elemIsUnion) {
         ss << ")";
     }
     ss << "[]";
@@ -44,8 +44,8 @@ void ArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
     if (source->IsArrayType()) {
         relation->IsAssignableTo(source->AsArrayType()->ElementType(), element_);
     } else if (source->IsObjectType() && source->AsObjectType()->IsTupleType()) {
-        ObjectType *source_obj = source->AsObjectType();
-        for (auto *it : source_obj->Properties()) {
+        ObjectType *sourceObj = source->AsObjectType();
+        for (auto *it : sourceObj->Properties()) {
             if (!relation->IsAssignableTo(it->TsType(), element_)) {
                 return;
             }
@@ -59,8 +59,8 @@ TypeFacts ArrayType::GetTypeFacts() const
     return TypeFacts::OBJECT_FACTS;
 }
 
-Type *ArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *ArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    return allocator->New<ArrayType>(element_->Instantiate(allocator, relation, global_types));
+    return allocator->New<ArrayType>(element_->Instantiate(allocator, relation, globalTypes));
 }
 }  // namespace panda::es2panda::checker

@@ -24,12 +24,12 @@ class GlobalTypesHolder;
 
 class ETSUnionType : public Type {
 public:
-    // constituent_types must be normalized
-    explicit ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituent_types);
+    // constituentTypes must be normalized
+    explicit ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituentTypes);
 
     const ArenaVector<Type *> &ConstituentTypes() const
     {
-        return constituent_types_;
+        return constituentTypes_;
     }
 
     void ToString(std::stringstream &ss) const override;
@@ -38,7 +38,7 @@ public:
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
@@ -49,15 +49,15 @@ public:
 
     Type *GetLeastUpperBoundType() const
     {
-        ASSERT(lub_type_ != nullptr);
-        return lub_type_;
+        ASSERT(lubType_ != nullptr);
+        return lubType_;
     }
 
     bool HasObjectType(ETSObjectFlags flag) const;
 
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 
-    static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
+    static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituentTypes);
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
@@ -73,12 +73,12 @@ private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);
 
-    static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
+    static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituentTypes);
 
     Type *ComputeLUB(ETSChecker *checker) const;
 
-    ArenaVector<Type *> const constituent_types_;
-    Type *lub_type_ {nullptr};
+    ArenaVector<Type *> const constituentTypes_;
+    Type *lubType_ {nullptr};
 };
 }  // namespace panda::es2panda::checker
 

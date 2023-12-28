@@ -46,10 +46,10 @@ TypeFacts TypeReference::GetTypeFacts() const
     return TypeFacts::NONE;
 }
 
-Type *TypeReference::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *TypeReference::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     if (*ref_ != nullptr) {
-        return (*ref_)->Instantiate(allocator, relation, global_types);
+        return (*ref_)->Instantiate(allocator, relation, globalTypes);
     }
 
     UNREACHABLE();

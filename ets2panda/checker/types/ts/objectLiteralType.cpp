@@ -26,22 +26,22 @@ void ObjectLiteralType::ToString(std::stringstream &ss) const
 {
     ss << "{ ";
 
-    if (desc_->string_index_info != nullptr) {
-        desc_->string_index_info->ToString(ss, false);
+    if (desc_->stringIndexInfo != nullptr) {
+        desc_->stringIndexInfo->ToString(ss, false);
         ss << "; ";
     }
 
-    if (desc_->number_index_info != nullptr) {
-        desc_->number_index_info->ToString(ss, true);
+    if (desc_->numberIndexInfo != nullptr) {
+        desc_->numberIndexInfo->ToString(ss, true);
         ss << "; ";
     }
 
-    for (auto *it : desc_->call_signatures) {
+    for (auto *it : desc_->callSignatures) {
         it->ToString(ss, nullptr, true);
         ss << "; ";
     }
 
-    for (auto *it : desc_->construct_signatures) {
+    for (auto *it : desc_->constructSignatures) {
         ss << "new ";
         it->ToString(ss, nullptr, true);
         ss << "; ";
@@ -74,18 +74,18 @@ void ObjectLiteralType::ToString(std::stringstream &ss) const
 
 TypeFacts ObjectLiteralType::GetTypeFacts() const
 {
-    if (desc_->properties.empty() && desc_->call_signatures.empty() && desc_->construct_signatures.empty() &&
-        desc_->number_index_info == nullptr && desc_->string_index_info == nullptr) {
+    if (desc_->properties.empty() && desc_->callSignatures.empty() && desc_->constructSignatures.empty() &&
+        desc_->numberIndexInfo == nullptr && desc_->stringIndexInfo == nullptr) {
         return TypeFacts::EMPTY_OBJECT_FACTS;
     }
 
     return TypeFacts::OBJECT_FACTS;
 }
 
-Type *ObjectLiteralType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *ObjectLiteralType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copied_desc = allocator->New<ObjectDescriptor>(allocator);
-    desc_->Copy(allocator, copied_desc, relation, global_types);
-    return allocator->New<ObjectLiteralType>(copied_desc);
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
+    desc_->Copy(allocator, copiedDesc, relation, globalTypes);
+    return allocator->New<ObjectLiteralType>(copiedDesc);
 }
 }  // namespace panda::es2panda::checker

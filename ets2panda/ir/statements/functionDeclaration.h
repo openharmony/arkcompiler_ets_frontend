@@ -23,11 +23,11 @@ class ScriptFunction;
 
 class FunctionDeclaration : public Statement {
 public:
-    explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool is_anonymous = false)
+    explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool isAnonymous = false)
         : Statement(AstNodeType::FUNCTION_DECLARATION),
           decorators_(allocator->Adapter()),
           func_(func),
-          is_anonymous_(is_anonymous)
+          isAnonymous_(isAnonymous)
     {
     }
 
@@ -38,7 +38,7 @@ public:
 
     bool IsAnonymous() const
     {
-        return is_anonymous_;
+        return isAnonymous_;
     }
 
     const ScriptFunction *Function() const
@@ -51,9 +51,9 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
-        return !in_ts;
+        return !inTs;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -73,7 +73,7 @@ public:
 private:
     ArenaVector<Decorator *> decorators_;
     ScriptFunction *func_;
-    const bool is_anonymous_;
+    const bool isAnonymous_;
 };
 }  // namespace panda::es2panda::ir
 

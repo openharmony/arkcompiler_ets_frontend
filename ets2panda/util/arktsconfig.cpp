@@ -99,9 +99,9 @@ std::string ArkTsConfig::Pattern::GetSearchRoot() const
     if (!IsPattern()) {
         relative = value_;
     } else {
-        auto found_star = value_.find_first_of('*');
-        auto found_question = value_.find_first_of('?');
-        relative = value_.substr(0, std::min(found_star, found_question));
+        auto foundStar = value_.find_first_of('*');
+        auto foundQuestion = value_.find_first_of('?');
+        relative = value_.substr(0, std::min(foundStar, foundQuestion));
         relative = relative.parent_path();
     }
     return MakeAbsolute(relative.string(), base_);
@@ -134,18 +134,18 @@ bool ArkTsConfig::Pattern::Match(const std::string &path) const
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
-static std::string ResolveConfigLocation(const std::string &rel_path, const std::string &base)
+static std::string ResolveConfigLocation(const std::string &relPath, const std::string &base)
 {
-    auto resolved_path = MakeAbsolute(rel_path, base);
-    auto new_base = base;
-    while (!fs::exists(resolved_path)) {
-        resolved_path = MakeAbsolute(rel_path, JoinPaths(new_base, "node_modules"));
-        if (new_base == ParentPath(new_base)) {
+    auto resolvedPath = MakeAbsolute(relPath, base);
+    auto newBase = base;
+    while (!fs::exists(resolvedPath)) {
+        resolvedPath = MakeAbsolute(relPath, JoinPaths(newBase, "node_modules"));
+        if (newBase == ParentPath(newBase)) {
             return "";
         }
-        new_base = ParentPath(new_base);
+        newBase = ParentPath(newBase);
     }
-    return resolved_path;
+    return resolvedPath;
 }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
@@ -175,53 +175,53 @@ bool ArkTsConfig::Parse()
     static const std::string LANGUAGE = "language";
     static const std::string HAS_DECL = "hasDecl";
 
-    ASSERT(!is_parsed_);
-    is_parsed_ = true;
-    auto arkts_config_dir = ParentPath(panda::os::GetAbsolutePath(config_path_));
+    ASSERT(!isParsed_);
+    isParsed_ = true;
+    auto arktsConfigDir = ParentPath(panda::os::GetAbsolutePath(configPath_));
 
     // Read input
-    std::ifstream input_stream(config_path_);
-    CHECK(!input_stream.fail(), false, "Failed to open file: " << config_path_);
+    std::ifstream inputStream(configPath_);
+    CHECK(!inputStream.fail(), false, "Failed to open file: " << configPath_);
     std::stringstream ss;
-    ss << input_stream.rdbuf();
-    std::string ts_config_source = ss.str();
-    input_stream.close();
+    ss << inputStream.rdbuf();
+    std::string tsConfigSource = ss.str();
+    inputStream.close();
 
     // Parse json
-    auto arkts_config = std::make_unique<JsonObject>(ts_config_source);
-    CHECK(arkts_config->IsValid(), false, "ArkTsConfig is not valid json");
+    auto arktsConfig = std::make_unique<JsonObject>(tsConfigSource);
+    CHECK(arktsConfig->IsValid(), false, "ArkTsConfig is not valid json");
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     // Parse "extends"
-    auto extends = arkts_config->GetValue<JsonObject::StringT>(EXTENDS);
+    auto extends = arktsConfig->GetValue<JsonObject::StringT>(EXTENDS);
     if (extends != nullptr) {
-        auto base_path = ResolveConfigLocation(*extends, arkts_config_dir);
-        CHECK(!base_path.empty(), false, "Can't resolve config path: " << *extends);
-        auto base = ArkTsConfig(base_path);
+        auto basePath = ResolveConfigLocation(*extends, arktsConfigDir);
+        CHECK(!basePath.empty(), false, "Can't resolve config path: " << *extends);
+        auto base = ArkTsConfig(basePath);
         CHECK(base.Parse(), false, "Failed to parse base config: " << *extends);
         Inherit(base);
     }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
     // Parse "baseUrl", "outDir", "rootDir"
-    auto compiler_options = arkts_config->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
-    auto parse_rel_dir = [&](std::string &dst, const std::string &key) {
-        if (compiler_options != nullptr) {
-            auto path = compiler_options->get()->GetValue<JsonObject::StringT>(key);
+    auto compilerOptions = arktsConfig->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
+    auto parseRelDir = [&](std::string &dst, const std::string &key) {
+        if (compilerOptions != nullptr) {
+            auto path = compilerOptions->get()->GetValue<JsonObject::StringT>(key);
             dst = ((path != nullptr) ? *path : "");
         }
-        dst = MakeAbsolute(dst, arkts_config_dir);
+        dst = MakeAbsolute(dst, arktsConfigDir);
     };
-    parse_rel_dir(base_url_, BASE_URL);
-    parse_rel_dir(out_dir_, OUT_DIR);
-    parse_rel_dir(root_dir_, ROOT_DIR);
+    parseRelDir(baseUrl_, BASE_URL);
+    parseRelDir(outDir_, OUT_DIR);
+    parseRelDir(rootDir_, ROOT_DIR);
 
     // Parse "paths"
-    if (compiler_options != nullptr) {
-        auto paths = compiler_options->get()->GetValue<JsonObject::JsonObjPointer>(PATHS);
+    if (compilerOptions != nullptr) {
+        auto paths = compilerOptions->get()->GetValue<JsonObject::JsonObjPointer>(PATHS);
         if (paths != nullptr) {
-            for (size_t key_idx = 0; key_idx < paths->get()->GetSize(); ++key_idx) {
-                auto &key = paths->get()->GetKeyByIndex(key_idx);
+            for (size_t keyIdx = 0; keyIdx < paths->get()->GetSize(); ++keyIdx) {
+                auto &key = paths->get()->GetKeyByIndex(keyIdx);
                 if (paths_.count(key) == 0U) {
                     paths_.insert({key, {}});
                 }
@@ -231,22 +231,22 @@ bool ArkTsConfig::Parse()
                 CHECK(!values->empty(), false, "Substitutions for pattern '" << key << "' shouldn't be an empty array");
                 for (auto &v : *values) {
                     auto p = *v.Get<JsonObject::StringT>();
-                    paths_[key].emplace_back(MakeAbsolute(p, base_url_));
+                    paths_[key].emplace_back(MakeAbsolute(p, baseUrl_));
                 }
             }
         }
 
-        auto dynamic_paths = compiler_options->get()->GetValue<JsonObject::JsonObjPointer>(DYNAMIC_PATHS);
-        if (dynamic_paths != nullptr) {
-            for (size_t key_idx = 0; key_idx < dynamic_paths->get()->GetSize(); ++key_idx) {
-                auto &key = dynamic_paths->get()->GetKeyByIndex(key_idx);
-                auto data = dynamic_paths->get()->GetValue<JsonObject::JsonObjPointer>(key);
+        auto dynamicPaths = compilerOptions->get()->GetValue<JsonObject::JsonObjPointer>(DYNAMIC_PATHS);
+        if (dynamicPaths != nullptr) {
+            for (size_t keyIdx = 0; keyIdx < dynamicPaths->get()->GetSize(); ++keyIdx) {
+                auto &key = dynamicPaths->get()->GetKeyByIndex(keyIdx);
+                auto data = dynamicPaths->get()->GetValue<JsonObject::JsonObjPointer>(key);
                 CHECK(data, false, "Invalid value for for dynamic path with key '" << key << "'");
 
-                auto lang_value = data->get()->GetValue<JsonObject::StringT>(LANGUAGE);
-                CHECK(lang_value, false, "Invalid 'language' value for dynamic path with key '" << key << "'");
+                auto langValue = data->get()->GetValue<JsonObject::StringT>(LANGUAGE);
+                CHECK(langValue, false, "Invalid 'language' value for dynamic path with key '" << key << "'");
 
-                auto lang = Language::FromString(*lang_value);
+                auto lang = Language::FromString(*langValue);
                 CHECK((lang && lang->IsDynamic()), false,
                       "Invalid 'language' value for dynamic path with key '" << key << "'. Should be one of "
                                                                              << ValidDynamicLanguages());
@@ -254,43 +254,43 @@ bool ArkTsConfig::Parse()
                 CHECK(compiler::Signatures::Dynamic::IsSupported(*lang), false,
                       "Interoperability with language '" << lang->ToString() << "' is not supported");
 
-                auto has_decl_value = data->get()->GetValue<JsonObject::BoolT>(HAS_DECL);
-                CHECK(has_decl_value, false, "Invalid 'hasDecl' value for dynamic path with key '" << key << "'");
+                auto hasDeclValue = data->get()->GetValue<JsonObject::BoolT>(HAS_DECL);
+                CHECK(hasDeclValue, false, "Invalid 'hasDecl' value for dynamic path with key '" << key << "'");
 
-                auto normalized_key = panda::os::NormalizePath(key);
-                auto res = dynamic_paths_.insert({normalized_key, DynamicImportData(*lang, *has_decl_value)});
+                auto normalizedKey = panda::os::NormalizePath(key);
+                auto res = dynamicPaths_.insert({normalizedKey, DynamicImportData(*lang, *hasDeclValue)});
                 CHECK(res.second, false, "Duplicated dynamic path '" << key << "' for key '" << key << "'");
             }
         }
     }
 
     // Parse "files"
-    auto files = arkts_config->GetValue<JsonObject::ArrayT>(FILES);
+    auto files = arktsConfig->GetValue<JsonObject::ArrayT>(FILES);
     if (files != nullptr) {
         files_ = {};
         CHECK(!files->empty(), false, "The 'files' list in config file is empty");
         for (auto &f : *files) {
-            files_.emplace_back(MakeAbsolute(*f.Get<JsonObject::StringT>(), arkts_config_dir));
+            files_.emplace_back(MakeAbsolute(*f.Get<JsonObject::StringT>(), arktsConfigDir));
         }
     }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     // Parse "include"
-    auto include = arkts_config->GetValue<JsonObject::ArrayT>(INCLUDE);
+    auto include = arktsConfig->GetValue<JsonObject::ArrayT>(INCLUDE);
     if (include != nullptr) {
         include_ = {};
         CHECK(!include->empty(), false, "The 'include' list in config file is empty");
         for (auto &i : *include) {
-            include_.emplace_back(*i.Get<JsonObject::StringT>(), arkts_config_dir);
+            include_.emplace_back(*i.Get<JsonObject::StringT>(), arktsConfigDir);
         }
     }
     // Parse "exclude"
-    auto exclude = arkts_config->GetValue<JsonObject::ArrayT>(EXCLUDE);
+    auto exclude = arktsConfig->GetValue<JsonObject::ArrayT>(EXCLUDE);
     if (exclude != nullptr) {
         exclude_ = {};
         CHECK(!exclude->empty(), false, "The 'exclude' list in config file is empty");
         for (auto &e : *exclude) {
-            exclude_.emplace_back(*e.Get<JsonObject::StringT>(), arkts_config_dir);
+            exclude_.emplace_back(*e.Get<JsonObject::StringT>(), arktsConfigDir);
         }
     }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
@@ -300,9 +300,9 @@ bool ArkTsConfig::Parse()
 
 void ArkTsConfig::Inherit(const ArkTsConfig &base)
 {
-    base_url_ = base.base_url_;
-    out_dir_ = base.out_dir_;
-    root_dir_ = base.root_dir_;
+    baseUrl_ = base.baseUrl_;
+    outDir_ = base.outDir_;
+    rootDir_ = base.rootDir_;
     paths_ = base.paths_;
     files_ = base.files_;
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
@@ -314,23 +314,23 @@ void ArkTsConfig::Inherit(const ArkTsConfig &base)
 // Remove '/' and '*' from the end of path
 static std::string TrimPath(const std::string &path)
 {
-    std::string trimmed_path = path;
-    while (!trimmed_path.empty() && (trimmed_path.back() == '*' || trimmed_path.back() == '/')) {
-        trimmed_path.pop_back();
+    std::string trimmedPath = path;
+    while (!trimmedPath.empty() && (trimmedPath.back() == '*' || trimmedPath.back() == '/')) {
+        trimmedPath.pop_back();
     }
-    return trimmed_path;
+    return trimmedPath;
 }
 
 std::string ArkTsConfig::ResolvePath(const std::string &path)
 {
     for (const auto &[alias, paths] : paths_) {
-        auto trimmed_alias = TrimPath(alias);
-        size_t pos = path.rfind(trimmed_alias, 0);
+        auto trimmedAlias = TrimPath(alias);
+        size_t pos = path.rfind(trimmedAlias, 0);
         if (pos == 0) {
             std::string resolved = path;
             // NOTE(ivagin): arktsconfig contains array of paths for each prefix, for now just get first one
-            std::string new_prefix = TrimPath(paths[0]);
-            resolved.replace(pos, trimmed_alias.length(), new_prefix);
+            std::string newPrefix = TrimPath(paths[0]);
+            resolved.replace(pos, trimmedAlias.length(), newPrefix);
             return resolved;
         }
     }
@@ -348,88 +348,88 @@ static bool MatchExcludes(const fs::path &path, const std::vector<ArkTsConfig::P
     return false;
 }
 
-static std::vector<fs::path> GetSourceList(const std::shared_ptr<ArkTsConfig> &arkts_config)
+static std::vector<fs::path> GetSourceList(const std::shared_ptr<ArkTsConfig> &arktsConfig)
 {
-    auto includes = arkts_config->Include();
-    auto excludes = arkts_config->Exclude();
-    auto files = arkts_config->Files();
+    auto includes = arktsConfig->Include();
+    auto excludes = arktsConfig->Exclude();
+    auto files = arktsConfig->Files();
 
     // If "files" and "includes" are empty - include everything from tsconfig root
-    auto config_dir = fs::absolute(fs::path(arkts_config->ConfigPath())).parent_path();
+    auto configDir = fs::absolute(fs::path(arktsConfig->ConfigPath())).parent_path();
     if (files.empty() && includes.empty()) {
-        includes = {ArkTsConfig::Pattern("**/*", config_dir.string())};
+        includes = {ArkTsConfig::Pattern("**/*", configDir.string())};
     }
     // If outDir in not default add it into exclude
-    if (!fs::equivalent(arkts_config->OutDir(), config_dir)) {
-        excludes.emplace_back("**/*", arkts_config->OutDir());
+    if (!fs::equivalent(arktsConfig->OutDir(), configDir)) {
+        excludes.emplace_back("**/*", arktsConfig->OutDir());
     }
 
     // Collect "files"
-    std::vector<fs::path> source_list;
+    std::vector<fs::path> sourceList;
     for (auto &f : files) {
         CHECK(fs::exists(f) && fs::path(f).has_filename(), {}, "No such file: " << f);
-        source_list.emplace_back(f);
+        sourceList.emplace_back(f);
     }
 
     // Collect "include"
     // TSC traverses folders for sources starting from 'include' rather than from 'rootDir', so we do the same
     for (auto &include : includes) {
-        auto traverse_root = fs::path(include.GetSearchRoot());
-        if (!fs::exists(traverse_root)) {
+        auto traverseRoot = fs::path(include.GetSearchRoot());
+        if (!fs::exists(traverseRoot)) {
             continue;
         }
-        if (!fs::is_directory(traverse_root)) {
-            if (include.Match(traverse_root.string()) && !MatchExcludes(traverse_root, excludes)) {
-                source_list.emplace_back(traverse_root);
+        if (!fs::is_directory(traverseRoot)) {
+            if (include.Match(traverseRoot.string()) && !MatchExcludes(traverseRoot, excludes)) {
+                sourceList.emplace_back(traverseRoot);
             }
             continue;
         }
-        for (const auto &dir_entry : fs::recursive_directory_iterator(traverse_root)) {
-            if (include.Match(dir_entry.path().string()) && !MatchExcludes(dir_entry, excludes)) {
-                source_list.emplace_back(dir_entry);
+        for (const auto &dirEntry : fs::recursive_directory_iterator(traverseRoot)) {
+            if (include.Match(dirEntry.path().string()) && !MatchExcludes(dirEntry, excludes)) {
+                sourceList.emplace_back(dirEntry);
             }
         }
     }
-    return source_list;
+    return sourceList;
 }
 
 // Analogue of 'std::filesystem::relative()'
 // Example: Relative("/a/b/c", "/a/b") returns "c"
 static fs::path Relative(const fs::path &src, const fs::path &base)
 {
-    fs::path tmp_path = src;
-    fs::path rel_path;
-    while (!fs::equivalent(tmp_path, base)) {
-        rel_path = rel_path.empty() ? tmp_path.filename() : tmp_path.filename() / rel_path;
-        if (tmp_path == tmp_path.parent_path()) {
+    fs::path tmpPath = src;
+    fs::path relPath;
+    while (!fs::equivalent(tmpPath, base)) {
+        relPath = relPath.empty() ? tmpPath.filename() : tmpPath.filename() / relPath;
+        if (tmpPath == tmpPath.parent_path()) {
             return fs::path();
         }
-        tmp_path = tmp_path.parent_path();
+        tmpPath = tmpPath.parent_path();
     }
-    return rel_path;
+    return relPath;
 }
 
 // Compute path to destination file and create subfolders
-static fs::path ComputeDestination(const fs::path &src, const fs::path &root_dir, const fs::path &out_dir)
+static fs::path ComputeDestination(const fs::path &src, const fs::path &rootDir, const fs::path &outDir)
 {
-    auto rel = Relative(src, root_dir);
-    CHECK(!rel.empty(), {}, root_dir << " is not root directory for " << src);
-    auto dst = out_dir / rel;
+    auto rel = Relative(src, rootDir);
+    CHECK(!rel.empty(), {}, rootDir << " is not root directory for " << src);
+    auto dst = outDir / rel;
     fs::create_directories(dst.parent_path());
     return dst.replace_extension("abc");
 }
 
-std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::shared_ptr<ArkTsConfig> &arkts_config)
+std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::shared_ptr<ArkTsConfig> &arktsConfig)
 {
-    auto source_files = GetSourceList(arkts_config);
-    std::vector<std::pair<std::string, std::string>> compilation_list;
-    for (auto &src : source_files) {
-        auto dst = ComputeDestination(src, arkts_config->RootDir(), arkts_config->OutDir());
+    auto sourceFiles = GetSourceList(arktsConfig);
+    std::vector<std::pair<std::string, std::string>> compilationList;
+    for (auto &src : sourceFiles) {
+        auto dst = ComputeDestination(src, arktsConfig->RootDir(), arktsConfig->OutDir());
         CHECK(!dst.empty(), {}, "Invalid destination file");
-        compilation_list.emplace_back(src.string(), dst.string());
+        compilationList.emplace_back(src.string(), dst.string());
     }
 
-    return compilation_list;
+    return compilationList;
 }
 #else
 std::vector<std::pair<std::string, std::string>> FindProjectSources(

@@ -33,8 +33,8 @@ public:
     {
     }
 
-    FunctionExpression(ir::Identifier *named_expr, ScriptFunction *const func)
-        : Expression(AstNodeType::FUNCTION_EXPRESSION), func_(func), expr_name_(named_expr)
+    FunctionExpression(ir::Identifier *namedExpr, ScriptFunction *const func)
+        : Expression(AstNodeType::FUNCTION_EXPRESSION), func_(func), exprName_(namedExpr)
     {
     }
 
@@ -50,12 +50,12 @@ public:
 
     bool IsAnonymous() const
     {
-        return expr_name_ == nullptr;
+        return exprName_ == nullptr;
     }
 
     ir::Identifier *Id()
     {
-        return expr_name_;
+        return exprName_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -78,7 +78,7 @@ public:
 
 private:
     ScriptFunction *func_;
-    ir::Identifier *expr_name_ {};
+    ir::Identifier *exprName_ {};
 };
 }  // namespace panda::es2panda::ir
 

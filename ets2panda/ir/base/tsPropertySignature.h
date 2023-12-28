@@ -29,9 +29,8 @@ public:
     NO_COPY_SEMANTIC(TSPropertySignature);
     NO_MOVE_SEMANTIC(TSPropertySignature);
 
-    explicit TSPropertySignature(Expression *key, TypeNode *type_annotation, bool computed, bool optional,
-                                 bool readonly)
-        : AnnotatedAstNode(AstNodeType::TS_PROPERTY_SIGNATURE, type_annotation),
+    explicit TSPropertySignature(Expression *key, TypeNode *typeAnnotation, bool computed, bool optional, bool readonly)
+        : AnnotatedAstNode(AstNodeType::TS_PROPERTY_SIGNATURE, typeAnnotation),
           key_(key),
           computed_(computed),
           optional_(optional),

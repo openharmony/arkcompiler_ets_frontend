@@ -33,8 +33,8 @@ public:
     static void Compile(ETSGen *etsg);
 
 private:
-    static void GenerateEnumMembers(ETSGen *etsg, const ir::AstNode *node, VReg array_obj,
-                                    const ir::TSEnumMember *enum_member, int32_t index);
+    static void GenerateEnumMembers(ETSGen *etsg, const ir::AstNode *node, VReg arrayObj,
+                                    const ir::TSEnumMember *enumMember, int32_t index);
     static void CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block);
     static void CompileFunction(ETSGen *etsg);
     static void CallImplicitCtor(ETSGen *etsg);

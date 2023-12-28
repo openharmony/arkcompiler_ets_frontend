@@ -36,7 +36,7 @@ void TSTypeOperator::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({
         {"type", "TSTypeOperator"},
-        {"operator", AstDumper::TypeOperatorToString(operator_type_)},
+        {"operator", AstDumper::TypeOperatorToString(operatorType_)},
         {"typeAnnotation", type_},
     });
 }

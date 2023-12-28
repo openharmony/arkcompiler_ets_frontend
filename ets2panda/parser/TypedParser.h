@@ -33,9 +33,9 @@ public:
 protected:
     void ParseDecorators(ArenaVector<ir::Decorator *> &decorators);
     void CheckDeclare();
-    ir::TSModuleDeclaration *ParseAmbientExternalModuleDeclaration(const lexer::SourcePosition &start_loc);
+    ir::TSModuleDeclaration *ParseAmbientExternalModuleDeclaration(const lexer::SourcePosition &startLoc);
     ir::TSModuleBlock *ParseTsModuleBlock();
-    ir::TSModuleDeclaration *ParseModuleOrNamespaceDeclaration(const lexer::SourcePosition &start_loc);
+    ir::TSModuleDeclaration *ParseModuleOrNamespaceDeclaration(const lexer::SourcePosition &startLoc);
     ArenaVector<ir::AstNode *> ParseTypeLiteralOrInterface();
     void CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::AstNode *> &members);
 
@@ -45,14 +45,14 @@ protected:
 
     ir::TSTypeParameterDeclaration *ParseTypeParameterDeclaration(TypeAnnotationParsingOptions *options);
     ir::Expression *ParseQualifiedName(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    ir::Expression *ParseQualifiedReference(ir::Expression *type_name,
+    ir::Expression *ParseQualifiedReference(ir::Expression *typeName,
                                             ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    void ParsePotentialOptionalFunctionParameter(ir::AnnotatedExpression *return_node);
+    void ParsePotentialOptionalFunctionParameter(ir::AnnotatedExpression *returnNode);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
-    ir::Statement *ParseInterfaceDeclaration(bool is_static) override;
+    ir::Statement *ParseInterfaceDeclaration(bool isStatic) override;
     // NOLINTNEXTLINE(google-default-arguments)
-    ir::Statement *ParseEnumDeclaration(bool is_const = false, bool is_static = false) override;
+    ir::Statement *ParseEnumDeclaration(bool isConst = false, bool isStatic = false) override;
     ir::Statement *ParsePotentialExpressionStatement(StatementParsingFlags flags) override;
     void ConvertThisKeywordToIdentIfNecessary() override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
@@ -63,15 +63,15 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags = ir::ModifierFlags::NONE,
-                                   ir::Identifier *ident_node = nullptr) override;
+                                   ir::Identifier *identNode = nullptr) override;
 
     static bool CheckClassElementInterfaceBody(ir::AstNode *property, ArenaVector<ir::AstNode *> &properties);
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
 
     ir::ModifierFlags ParseModifiers() override;
-    ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seen_optional) override;
-    ir::Expression *ParsePotentialAsExpression(ir::Expression *primary_expr) override;
+    ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seenOptional) override;
+    ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr) override;
 
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseSuperClass() override;
     ir::Expression *ParseSuperClassReference() override;
@@ -84,12 +84,12 @@ protected:
     virtual ir::Statement *ParseDeclareAndDecorators(StatementParsingFlags flags);
     virtual void ParseOptionalClassElement(ClassElementDescriptor *desc);
     virtual ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options);
-    virtual ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enum_start,
-                                                    bool is_const, bool is_static);
+    virtual ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
+                                                    bool isConst, bool isStatic);
     virtual std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement();
     virtual ir::TypeNode *ParseInterfaceExtendsElement();
 
-    virtual void ValidateIndexSignatureTypeAnnotation([[maybe_unused]] ir::TypeNode *type_annotation) {}
+    virtual void ValidateIndexSignatureTypeAnnotation([[maybe_unused]] ir::TypeNode *typeAnnotation) {}
     virtual ir::Decorator *ParseDecorator()
     {
         return nullptr;
@@ -107,13 +107,13 @@ protected:
         return nullptr;
     }
     // NOLINTNEXTLINE(google-default-arguments)
-    virtual ir::TSIndexSignature *ParseIndexSignature([[maybe_unused]] const lexer::SourcePosition &start_loc,
-                                                      [[maybe_unused]] bool is_readonly = false)
+    virtual ir::TSIndexSignature *ParseIndexSignature([[maybe_unused]] const lexer::SourcePosition &startLoc,
+                                                      [[maybe_unused]] bool isReadonly = false)
     {
         return nullptr;
     }
-    virtual ir::AstNode *ParsePropertyOrMethodSignature([[maybe_unused]] const lexer::SourcePosition &start_loc,
-                                                        [[maybe_unused]] bool is_readonly)
+    virtual ir::AstNode *ParsePropertyOrMethodSignature([[maybe_unused]] const lexer::SourcePosition &startLoc,
+                                                        [[maybe_unused]] bool isReadonly)
     {
         return nullptr;
     }
@@ -134,7 +134,7 @@ protected:
     {
     }
 
-    ir::VariableDeclarator *ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition start_loc,
+    ir::VariableDeclarator *ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition startLoc,
                                                     VariableParsingFlags flags) override;
 
     using InterfaceId = std::tuple<ir::Identifier *, varbinder::InterfaceDecl *, bool>;
@@ -148,7 +148,7 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual void CreateCCtor([[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
                              [[maybe_unused]] const lexer::SourcePosition &loc,
-                             [[maybe_unused]] bool in_global_class = false)
+                             [[maybe_unused]] bool inGlobalClass = false)
     {
     }
 };

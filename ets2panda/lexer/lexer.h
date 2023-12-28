@@ -71,7 +71,7 @@ public:
 
     size_t &NextTokenLine()
     {
-        return next_token_line_;
+        return nextTokenLine_;
     }
 
 private:
@@ -80,7 +80,7 @@ private:
     Token token_ {};
     util::StringView::Iterator iterator_;
     size_t line_ {};
-    size_t next_token_line_ {};
+    size_t nextTokenLine_ {};
 };
 
 class LexerTemplateString {
@@ -93,7 +93,7 @@ public:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     util::UString str;
     size_t end {};
-    bool scan_expression {};
+    bool scanExpression {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -101,7 +101,7 @@ class TemplateLiteralParserContext;
 
 class Lexer {
 public:
-    explicit Lexer(const parser::ParserContext *parser_context, bool start_lexer = true);
+    explicit Lexer(const parser::ParserContext *parserContext, bool startLexer = true);
     NO_COPY_SEMANTIC(Lexer);
     NO_MOVE_SEMANTIC(Lexer);
     virtual ~Lexer() = default;
@@ -145,7 +145,7 @@ public:
                             ConversionResult &result, Base... base) noexcept
     {
         Ret ret {};
-        char *end_ptr;
+        char *endPtr;
         // NOLINTBEGIN(cppcoreguidelines-special-member-functions)
         struct SaveErrno {
             explicit SaveErrno() : errno_(errno)
@@ -161,20 +161,20 @@ public:
 
         private:
             decltype(errno) errno_;
-        } const saved_errno;
+        } const savedErrno;
         // NOLINTEND(cppcoreguidelines-special-member-functions)
 
-        const Tret tmp = converter(str, &end_ptr, base...);
+        const Tret tmp = converter(str, &endPtr, base...);
 
-        bool out_of_range = false;
+        bool outOfRange = false;
         if constexpr (std::is_same_v<Ret, int>) {
-            out_of_range = tmp < static_cast<Tret>(std::numeric_limits<int>::min()) ||
-                           tmp > static_cast<Tret>(std::numeric_limits<int>::max());
+            outOfRange = tmp < static_cast<Tret>(std::numeric_limits<int>::min()) ||
+                         tmp > static_cast<Tret>(std::numeric_limits<int>::max());
         }
 
-        if (end_ptr == str) {
+        if (endPtr == str) {
             result = ConversionResult::INVALID_ARGUMENT;
-        } else if (errno == ERANGE || out_of_range) {
+        } else if (errno == ERANGE || outOfRange) {
             result = ConversionResult::OUT_OF_RANGE;
         } else {
             result = ConversionResult::SUCCESS;
@@ -194,7 +194,7 @@ protected:
     RegExpFlags ScanRegExpFlags();
 
     [[noreturn]] void ThrowError(std::string_view message) const;
-    [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType token_type) const;
+    [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;
 
     void SetTokenStart();
     void SetTokenEnd();
@@ -261,12 +261,12 @@ protected:
     void ScanNumberLeadingZeroImplNonAllowedCases();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanNumberRadix(bool allow_numeric_separator = true);
-    void ScanNumber(bool allow_big_int = true);
+    void ScanNumber(bool allowBigInt = true);
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanTooLargeNumber(RadixType number);
     virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
     void ScanDecimalLiteral();
-    void ScanDecimalDigits(bool allow_numeric_separator);
+    void ScanDecimalDigits(bool allowNumericSeparator);
     virtual void CheckNumberLiteralEnd();
 
     inline static uint32_t HexValue(char32_t ch);
@@ -282,41 +282,41 @@ protected:
     const LexerPosition &Pos() const;
 
 private:
-    TemplateLiteralParserContext *tl_ctx_ {};
+    TemplateLiteralParserContext *tlCtx_ {};
     ArenaAllocator *allocator_;
     Keywords *kws_ {};
-    const parser::ParserContext *parser_context_;
+    const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
 };
 
 class TemplateLiteralParserContext {
 public:
-    explicit TemplateLiteralParserContext(Lexer *lexer) : lexer_(lexer), prev_(lexer_->tl_ctx_) {}
+    explicit TemplateLiteralParserContext(Lexer *lexer) : lexer_(lexer), prev_(lexer_->tlCtx_) {}
     NO_MOVE_SEMANTIC(TemplateLiteralParserContext);
     NO_COPY_SEMANTIC(TemplateLiteralParserContext);
 
     ~TemplateLiteralParserContext()
     {
-        lexer_->tl_ctx_ = prev_;
+        lexer_->tlCtx_ = prev_;
     }
 
     void ConsumeLeftBrace()
     {
-        brace_depth_++;
+        braceDepth_++;
     }
 
     bool ConsumeRightBrace()
     {
-        brace_depth_--;
+        braceDepth_--;
 
-        return brace_depth_ == 0;
+        return braceDepth_ == 0;
     }
 
 private:
     Lexer *lexer_;
     TemplateLiteralParserContext *prev_ {};
-    size_t brace_depth_ {1};
+    size_t braceDepth_ {1};
 };
 
 template <char32_t END>
@@ -324,10 +324,10 @@ void Lexer::ScanString()
 {
     util::UString str(Allocator());
     GetToken().type_ = TokenType::LITERAL_STRING;
-    GetToken().keyword_type_ = TokenType::LITERAL_STRING;
+    GetToken().keywordType_ = TokenType::LITERAL_STRING;
 
-    const auto start_pos = Iterator().Index();
-    auto escape_end = start_pos;
+    const auto startPos = Iterator().Index();
+    auto escapeEnd = startPos;
 
     do {
         char32_t cp = Iterator().Peek();
@@ -345,7 +345,7 @@ void Lexer::ScanString()
                 }
 
                 GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
-                str.Append(SourceView(escape_end, Iterator().Index()));
+                str.Append(SourceView(escapeEnd, Iterator().Index()));
 
                 if (cp == LEX_CHAR_CR) {
                     Iterator().Forward(1);
@@ -358,16 +358,16 @@ void Lexer::ScanString()
                 pos_.line_++;
                 str.Append(LEX_CHAR_LF);
                 Iterator().Forward(1);
-                escape_end = Iterator().Index();
+                escapeEnd = Iterator().Index();
                 continue;
             }
             case LEX_CHAR_BACKSLASH: {
                 GetToken().flags_ |= TokenFlags::HAS_ESCAPE;
-                str.Append(SourceView(escape_end, Iterator().Index()));
+                str.Append(SourceView(escapeEnd, Iterator().Index()));
 
                 Iterator().Forward(1);
                 ScanStringUnicodePart(&str);
-                escape_end = Iterator().Index();
+                escapeEnd = Iterator().Index();
                 continue;
             }
             case LEX_CHAR_BACK_TICK:
@@ -400,10 +400,10 @@ void Lexer::ScanString()
         }
 
         if (GetToken().flags_ & TokenFlags::HAS_ESCAPE) {
-            str.Append(SourceView(escape_end, Iterator().Index()));
+            str.Append(SourceView(escapeEnd, Iterator().Index()));
             GetToken().src_ = str.View();
         } else {
-            GetToken().src_ = SourceView(start_pos, Iterator().Index());
+            GetToken().src_ = SourceView(startPos, Iterator().Index());
         }
 
         break;
@@ -443,7 +443,7 @@ template <typename RadixType, typename RadixLimit>
 void Lexer::ScanNumberLeadingZeroImpl()
 {
     GetToken().type_ = TokenType::LITERAL_NUMBER;
-    GetToken().keyword_type_ = TokenType::LITERAL_NUMBER;
+    GetToken().keywordType_ = TokenType::LITERAL_NUMBER;
 
     switch (Iterator().Peek()) {
         case LEX_CHAR_LOWERCASE_X:
@@ -510,7 +510,7 @@ void Lexer::ScanNumberRadix(bool allow_numeric_separator)
         ThrowError("Invalid digit");
     }
 
-    bool allow_numeric_on_next = true;
+    bool allowNumericOnNext = true;
 
     do {
         cp = Iterator().Peek();
@@ -521,22 +521,22 @@ void Lexer::ScanNumberRadix(bool allow_numeric_separator)
 
             number = number * RADIX + digit;
             Iterator().Forward(1);
-            allow_numeric_on_next = true;
+            allowNumericOnNext = true;
             continue;
         }
 
         if (cp == LEX_CHAR_UNDERSCORE) {
-            if (!allow_numeric_separator || !allow_numeric_on_next) {
+            if (!allow_numeric_separator || !allowNumericOnNext) {
                 ThrowError("Invalid numeric separator");
             }
 
             GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
             Iterator().Forward(1);
-            allow_numeric_on_next = false;
+            allowNumericOnNext = false;
             continue;
         }
 
-        if (!allow_numeric_on_next) {
+        if (!allowNumericOnNext) {
             Iterator().Backward(1);
             ThrowError("Numeric separators are not allowed at the end of numeric literals");
         }

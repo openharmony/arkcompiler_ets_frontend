@@ -24,14 +24,14 @@ enum class AccessibilityOption { NO_OPTS, PUBLIC, PRIVATE, PROTECTED };
 
 class TSParameterProperty : public Expression {
 public:
-    explicit TSParameterProperty(AccessibilityOption accessibility, Expression *parameter, bool readonly,
-                                 bool is_static, bool is_export)
+    explicit TSParameterProperty(AccessibilityOption accessibility, Expression *parameter, bool readonly, bool isStatic,
+                                 bool isExport)
         : Expression(AstNodeType::TS_PARAMETER_PROPERTY),
           accessibility_(accessibility),
           parameter_(parameter),
           readonly_(readonly),
-          static_(is_static),
-          export_(is_export)
+          static_(isStatic),
+          export_(isExport)
     {
     }
 

@@ -21,8 +21,8 @@
 namespace panda::es2panda::ir {
 class TSTypeOperator : public TypeNode {
 public:
-    explicit TSTypeOperator(TypeNode *type, TSOperatorType operator_type)
-        : TypeNode(AstNodeType::TS_TYPE_OPERATOR), type_(type), operator_type_(operator_type)
+    explicit TSTypeOperator(TypeNode *type, TSOperatorType operatorType)
+        : TypeNode(AstNodeType::TS_TYPE_OPERATOR), type_(type), operatorType_(operatorType)
     {
     }
 
@@ -33,17 +33,17 @@ public:
 
     bool IsReadonly() const
     {
-        return operator_type_ == TSOperatorType::READONLY;
+        return operatorType_ == TSOperatorType::READONLY;
     }
 
     bool IsKeyof() const
     {
-        return operator_type_ == TSOperatorType::KEYOF;
+        return operatorType_ == TSOperatorType::KEYOF;
     }
 
     bool IsUnique() const
     {
-        return operator_type_ == TSOperatorType::UNIQUE;
+        return operatorType_ == TSOperatorType::UNIQUE;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -63,7 +63,7 @@ public:
 
 private:
     TypeNode *type_;
-    TSOperatorType operator_type_;
+    TSOperatorType operatorType_;
 };
 }  // namespace panda::es2panda::ir
 

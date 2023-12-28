@@ -24,7 +24,7 @@ namespace panda::es2panda::util {
 
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const panda::es2panda::parser::Program *program,
-                            const std::string &out_path);
+                            const std::string &outPath);
 
 class TSDeclGen {
 public:
@@ -46,26 +46,25 @@ private:
     void ThrowError(std::string_view message, const lexer::SourcePosition &pos);
     std::string GetKeyName(const ir::Expression *key);
 
-    void GenType(const checker::Type *checker_type);
-    void GenTypeNonNullish(const checker::Type *checker_type);
-    void GenFunctionType(const checker::ETSFunctionType *function_type,
-                         const ir::MethodDefinition *method_def = nullptr);
-    void GenTypeParameterType(const checker::ETSTypeParameter *type_param);
-    void GenObjectType(const checker::ETSObjectType *object_type);
-    void GenEnumType(const checker::ETSEnumType *enum_type);
+    void GenType(const checker::Type *checkerType);
+    void GenTypeNonNullish(const checker::Type *checkerType);
+    void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
+    void GenTypeParameterType(const checker::ETSTypeParameter *typeParam);
+    void GenObjectType(const checker::ETSObjectType *objectType);
+    void GenEnumType(const checker::ETSEnumType *enumType);
 
-    void GenImportDeclaration(const ir::ETSImportDeclaration *import_declaration);
-    void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *type_alias);
-    void GenEnumDeclaration(const ir::TSEnumDeclaration *enum_decl);
-    void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interface_decl);
-    void GenClassDeclaration(const ir::ClassDeclaration *class_decl);
-    void GenMethodDeclaration(const ir::MethodDefinition *method_def);
-    void GenPropDeclaration(const ir::ClassProperty *class_prop);
+    void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
+    void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);
+    void GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl);
+    void GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl);
+    void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
+    void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
+    void GenPropDeclaration(const ir::ClassProperty *classProp);
     void GenLiteral(const ir::Literal *literal);
 
     template <class T>
     void GenModifier(const T *node);
-    void GenTypeParameters(const ir::TSTypeParameterDeclaration *type_params);
+    void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
 
     template <class T, class CB>
     void GenCommaSeparated(const T &container, const CB &cb);
@@ -89,9 +88,9 @@ private:
 
     struct GenState {
         const ir::Expression *super {nullptr};
-        bool in_interface {false};
-        bool in_global_class {false};
-        std::string current_class_descriptor {};
+        bool inInterface {false};
+        bool inGlobalClass {false};
+        std::string currentClassDescriptor {};
     } state_ {};
 
     std::stringstream output_ {};

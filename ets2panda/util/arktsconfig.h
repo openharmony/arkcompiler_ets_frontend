@@ -60,7 +60,7 @@ public:
 
     class DynamicImportData {
     public:
-        explicit DynamicImportData(Language lang, bool has_decl) : lang_(lang), has_decl_(has_decl) {}
+        explicit DynamicImportData(Language lang, bool hasDecl) : lang_(lang), hasDecl_(hasDecl) {}
 
         Language GetLanguage() const
         {
@@ -69,35 +69,35 @@ public:
 
         bool HasDecl() const
         {
-            return has_decl_;
+            return hasDecl_;
         }
 
     private:
         Language lang_;
-        bool has_decl_;
+        bool hasDecl_;
     };
 
-    explicit ArkTsConfig(std::string config_path) : config_path_(std::move(config_path)) {}
+    explicit ArkTsConfig(std::string configPath) : configPath_(std::move(configPath)) {}
     bool Parse();
 
     std::string ResolvePath(const std::string &path);
 
     std::string ConfigPath() const
     {
-        return config_path_;
+        return configPath_;
     }
 
     std::string BaseUrl() const
     {
-        return base_url_;
+        return baseUrl_;
     }
     std::string RootDir() const
     {
-        return root_dir_;
+        return rootDir_;
     }
     std::string OutDir() const
     {
-        return out_dir_;
+        return outDir_;
     }
     const std::vector<std::string> &Files() const
     {
@@ -109,7 +109,7 @@ public:
     }
     const std::unordered_map<std::string, DynamicImportData> &DynamicPaths() const
     {
-        return dynamic_paths_;
+        return dynamicPaths_;
     }
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     const std::vector<Pattern> &Include() const
@@ -125,14 +125,14 @@ public:
 private:
     void Inherit(const ArkTsConfig &base);
 
-    bool is_parsed_ = false;
-    std::string config_path_;
+    bool isParsed_ = false;
+    std::string configPath_;
 
-    std::string base_url_ {};
-    std::string out_dir_ {};
-    std::string root_dir_ {};
+    std::string baseUrl_ {};
+    std::string outDir_ {};
+    std::string rootDir_ {};
     std::unordered_map<std::string, std::vector<std::string>> paths_ {};
-    std::unordered_map<std::string, DynamicImportData> dynamic_paths_ {};
+    std::unordered_map<std::string, DynamicImportData> dynamicPaths_ {};
     std::vector<std::string> files_ {};
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     std::vector<Pattern> include_ {};
@@ -142,7 +142,7 @@ private:
 
 // Find source files and compute destination locations
 // Return: vector of path pairs <source file, destination abc file>
-std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::shared_ptr<ArkTsConfig> &arkts_config);
+std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::shared_ptr<ArkTsConfig> &arktsConfig);
 
 std::string JoinPaths(const std::string &a, const std::string &b);
 std::string ParentPath(const std::string &path);

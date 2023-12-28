@@ -36,8 +36,8 @@ void ClassProperty::TransformChildren(const NodeTransformer &cb)
         value_ = cb(value_)->AsExpression();
     }
 
-    if (type_annotation_ != nullptr) {
-        type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    if (typeAnnotation_ != nullptr) {
+        typeAnnotation_ = static_cast<TypeNode *>(cb(typeAnnotation_));
     }
 
     for (auto *&it : decorators_) {
@@ -53,8 +53,8 @@ void ClassProperty::Iterate(const NodeTraverser &cb) const
         cb(value_);
     }
 
-    if (type_annotation_ != nullptr) {
-        cb(type_annotation_);
+    if (typeAnnotation_ != nullptr) {
+        cb(typeAnnotation_);
     }
 
     for (auto *it : decorators_) {
@@ -73,8 +73,8 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"readonly", IsReadonly()},
                  {"declare", IsDeclare()},
                  {"optional", IsOptionalDeclaration()},
-                 {"computed", is_computed_},
-                 {"typeAnnotation", AstDumper::Optional(type_annotation_)},
+                 {"computed", isComputed_},
+                 {"typeAnnotation", AstDumper::Optional(typeAnnotation_)},
                  {"definite", IsDefinite()},
                  {"decorators", decorators_}});
 }
@@ -103,9 +103,9 @@ void ClassProperty::Dump(ir::SrcDumper *dumper) const
         key_->Dump(dumper);
     }
 
-    if (type_annotation_ != nullptr) {
+    if (typeAnnotation_ != nullptr) {
         dumper->Add(": ");
-        type_annotation_->Dump(dumper);
+        typeAnnotation_->Dump(dumper);
     }
 
     if (value_ != nullptr) {
@@ -141,9 +141,9 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
 {
     auto *const key = key_->Clone(allocator)->AsExpression();
     auto *const value = value_->Clone(allocator)->AsExpression();
-    auto *const type_annotation = type_annotation_->Clone(allocator, this);
+    auto *const typeAnnotation = typeAnnotation_->Clone(allocator, this);
 
-    if (auto *const clone = allocator->New<ClassProperty>(key, value, type_annotation, flags_, allocator, is_computed_);
+    if (auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
         clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
@@ -151,7 +151,7 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
 
         key->SetParent(clone);
         value->SetParent(clone);
-        type_annotation->SetParent(clone);
+        typeAnnotation->SetParent(clone);
 
         for (auto *const decorator : decorators_) {
             clone->AddDecorator(decorator->Clone(allocator, clone));

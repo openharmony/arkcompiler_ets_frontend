@@ -30,7 +30,7 @@ void TryStatement::TransformChildren(const NodeTransformer &cb)
 {
     block_ = cb(block_)->AsBlockStatement();
 
-    for (auto *&it : catch_clauses_) {
+    for (auto *&it : catchClauses_) {
         it = cb(it)->AsCatchClause();
     }
 
@@ -43,7 +43,7 @@ void TryStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(block_);
 
-    for (auto *it : catch_clauses_) {
+    for (auto *it : catchClauses_) {
         cb(it);
     }
 
@@ -56,7 +56,7 @@ void TryStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TryStatement"},
                  {"block", block_},
-                 {"handler", catch_clauses_},
+                 {"handler", catchClauses_},
                  {"finalizer", AstDumper::Nullish(finalizer_)}});
 }
 
@@ -70,7 +70,7 @@ void TryStatement::Dump(ir::SrcDumper *dumper) const
     dumper->DecrIndent();
     dumper->Endl();
     dumper->Add("}");
-    for (auto clause : catch_clauses_) {
+    for (auto clause : catchClauses_) {
         dumper->Add(" catch ");
         clause->Dump(dumper);
     }
@@ -87,7 +87,7 @@ void TryStatement::Dump(ir::SrcDumper *dumper) const
 
 bool TryStatement::HasDefaultCatchClause() const
 {
-    return (!catch_clauses_.empty() && catch_clauses_.back()->IsDefaultCatchClause());
+    return (!catchClauses_.empty() && catchClauses_.back()->IsDefaultCatchClause());
 }
 
 void TryStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -118,9 +118,9 @@ void TryStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *ty
     if (finalizer_ != nullptr) {
         finalizer_->SetReturnType(checker, type);
     }
-    for (auto *catch_clause : catch_clauses_) {
-        if (catch_clause != nullptr) {
-            catch_clause->SetReturnType(checker, type);
+    for (auto *catchClause : catchClauses_) {
+        if (catchClause != nullptr) {
+            catchClause->SetReturnType(checker, type);
         }
     }
 }

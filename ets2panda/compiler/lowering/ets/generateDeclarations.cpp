@@ -22,9 +22,8 @@ namespace panda::es2panda::compiler {
 bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker;
-    return (
-        ctx->compiler_context->Options()->ts_decl_out.empty() ||
-        util::GenerateTsDeclarations(checker->AsETSChecker(), program, ctx->compiler_context->Options()->ts_decl_out));
+    return (ctx->compilerContext->Options()->tsDeclOut.empty() ||
+            util::GenerateTsDeclarations(checker->AsETSChecker(), program, ctx->compilerContext->Options()->tsDeclOut));
 }
 
 }  // namespace panda::es2panda::compiler

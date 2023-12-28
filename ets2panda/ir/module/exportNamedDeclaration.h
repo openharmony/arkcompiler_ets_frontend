@@ -70,9 +70,9 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
-        return !in_ts && (source_ == nullptr);
+        return !inTs && (source_ == nullptr);
     }
 
     void TransformChildren(const NodeTransformer &cb) override;

@@ -21,31 +21,31 @@ namespace panda::es2panda::ir {
 
 void FunctionSignature::Iterate(const NodeTraverser &cb) const
 {
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     for (auto *it : Params()) {
         cb(it);
     }
 
-    if (return_type_annotation_ != nullptr) {
-        cb(return_type_annotation_);
+    if (returnTypeAnnotation_ != nullptr) {
+        cb(returnTypeAnnotation_);
     }
 }
 
 void FunctionSignature::TransformChildren(const NodeTransformer &cb)
 {
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterDeclaration();
     }
 
     for (auto *&it : params_) {
         it = cb(it)->AsExpression();
     }
 
-    if (return_type_annotation_ != nullptr) {
-        return_type_annotation_ = static_cast<TypeNode *>(cb(return_type_annotation_));
+    if (returnTypeAnnotation_ != nullptr) {
+        returnTypeAnnotation_ = static_cast<TypeNode *>(cb(returnTypeAnnotation_));
     }
 }
 }  // namespace panda::es2panda::ir

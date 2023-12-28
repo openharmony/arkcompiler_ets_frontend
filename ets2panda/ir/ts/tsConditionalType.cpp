@@ -24,27 +24,27 @@
 namespace panda::es2panda::ir {
 void TSConditionalType::TransformChildren(const NodeTransformer &cb)
 {
-    check_type_ = cb(check_type_)->AsExpression();
-    extends_type_ = cb(extends_type_)->AsExpression();
-    true_type_ = cb(true_type_)->AsExpression();
-    false_type_ = cb(false_type_)->AsExpression();
+    checkType_ = cb(checkType_)->AsExpression();
+    extendsType_ = cb(extendsType_)->AsExpression();
+    trueType_ = cb(trueType_)->AsExpression();
+    falseType_ = cb(falseType_)->AsExpression();
 }
 
 void TSConditionalType::Iterate(const NodeTraverser &cb) const
 {
-    cb(check_type_);
-    cb(extends_type_);
-    cb(true_type_);
-    cb(false_type_);
+    cb(checkType_);
+    cb(extendsType_);
+    cb(trueType_);
+    cb(falseType_);
 }
 
 void TSConditionalType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSConditionalType"},
-                 {"checkType", check_type_},
-                 {"extendsType", extends_type_},
-                 {"trueType", true_type_},
-                 {"falseType", false_type_}});
+                 {"checkType", checkType_},
+                 {"extendsType", extendsType_},
+                 {"trueType", trueType_},
+                 {"falseType", falseType_}});
 }
 
 void TSConditionalType::Dump(ir::SrcDumper *dumper) const

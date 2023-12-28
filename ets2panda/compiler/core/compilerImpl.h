@@ -35,22 +35,22 @@ class CompilerContext;
 class CompilationUnit {
 public:
     explicit CompilationUnit(const SourceFile &i, const CompilerOptions &o, uint32_t s, ScriptExtension e)
-        : input(i), options(o), raw_parser_status(s), ext(e)
+        : input(i), options(o), rawParserStatus(s), ext(e)
     {
     }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     const SourceFile &input;
     const CompilerOptions &options;
-    uint32_t raw_parser_status;
+    uint32_t rawParserStatus;
     ScriptExtension ext;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class CompilerImpl {
 public:
-    explicit CompilerImpl(size_t thread_count, std::vector<util::Plugin> const *plugins)
-        : queue_(thread_count), plugins_(plugins)
+    explicit CompilerImpl(size_t threadCount, std::vector<util::Plugin> const *plugins)
+        : queue_(threadCount), plugins_(plugins)
     {
     }
     NO_COPY_SEMANTIC(CompilerImpl);
