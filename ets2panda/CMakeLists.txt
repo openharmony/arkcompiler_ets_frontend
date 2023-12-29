@@ -32,23 +32,6 @@ else()
 endif()
 file(MAKE_DIRECTORY "${GENERATED_DIR}")
 if(PANDA_WITH_ETS)
-  file(WRITE "${DEFAULT_ARKTSCONFIG}/arktsconfig.json"
-      "{\n"
-      "  \"compilerOptions\": {\n"
-      "    \"baseUrl\": \"${PANDA_ROOT}\",\n"
-      "    \"paths\": {\n"
-      "      \"std\": [\"${PANDA_ROOT}/plugins/ets/stdlib/std\"],\n"
-      "      \"escompat\": [\"${PANDA_ROOT}/plugins/ets/stdlib/escompat\"],\n"
-      "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"],\n"
-      "      \"dynamic_import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\"]\n"
-      "    },\n"
-      "    \"dynamicPaths\": {\n"
-      "      \"dynamic_js_import_tests\": {\"language\": \"js\", \"hasDecl\": false},\n"
-      "      \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\": {\"language\": \"js\", \"hasDecl\": true}\n"
-      "    }\n"
-      "  }\n"
-      "}\n"
-  )
   file(WRITE "${GENERATED_DIR}/arktsconfig.json"
       "{\n"
       "  \"compilerOptions\": {\n"
@@ -66,6 +49,8 @@ if(PANDA_WITH_ETS)
       "  }\n"
       "}\n"
   )
+  file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${DEFAULT_ARKTSCONFIG}/")
+  file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
 endif()
 
 add_custom_command(
