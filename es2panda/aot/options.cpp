@@ -229,6 +229,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> opCacheFile("cache-file", "", "cache file for incremental compile");
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
+    panda::PandArg<bool> opuseDefineSemantic("use-define-semantic", false, "Compile ts class fields "\
+        "in accordance with ECMAScript2022");
 
     // patchfix && hotreload
     panda::PandArg<std::string> opDumpSymbolTable("dump-symbol-table", "", "dump symbol table to file");
@@ -279,6 +281,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opCacheFile);
     argparser_->Add(&opNpmModuleEntryList);
     argparser_->Add(&opMergeAbc);
+    argparser_->Add(&opuseDefineSemantic);
 
     argparser_->Add(&opDumpSymbolTable);
     argparser_->Add(&opInputSymbolTable);
@@ -385,6 +388,10 @@ bool Options::Parse(int argc, const char **argv)
                 RemoveExtension(util::Helpers::BaseName(compilerOutput_));
         }
         compilerOptions_.mergeAbc = opMergeAbc.GetValue();
+    }
+
+    if (opuseDefineSemantic.GetValue()) {
+        compilerOptions_.useDefineSemantic = opuseDefineSemantic.GetValue();
     }
 
     if (!inputIsEmpty) {

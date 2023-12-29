@@ -134,6 +134,9 @@ Program ParserImpl::Parse(const std::string &fileName, const std::string &source
     program_.SetRecordName(recordName);
     program_.SetDebug(options.isDebug);
     program_.SetTargetApiVersion(options.targetApiVersion);
+    if (Extension() == ScriptExtension::TS) {
+        program_.SetDefineSemantic(options.useDefineSemantic);
+    }
 
     /*
      * In order to make the lexer's memory alive, the return value 'lexer' can not be omitted.

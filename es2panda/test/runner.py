@@ -1520,7 +1520,8 @@ def main():
         runner.add_directory("parser/binder", "js", ["--dump-assembly"])
         runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
         runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
-        runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer"])
+        runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer",
+                                                             "--use-define-semantic"])
 
         runners.append(runner)
 
