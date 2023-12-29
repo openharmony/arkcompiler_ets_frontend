@@ -38,6 +38,9 @@ namespace panda::es2panda {
 struct CompilerOptions;
 }  // namespace panda::es2panda
 
+namespace panda::es2panda::binder {
+class Scope;
+}
 namespace panda::pandasm {
 struct Program;
 }  // namespace panda::pandasm
@@ -104,6 +107,9 @@ public:
     static std::wstring Utf8ToUtf16(const std::string &utf8);
     template <typename T, typename... Args>
     static T FileStream(const std::string &str, Args &&...args);
+    static bool ShouldCheckConcurrent(const binder::Scope *scope, const util::StringView name);
+    static void SendableCheckForClassStaticInitializer(const util::StringView name, const binder::Scope *&iter,
+        ir::ScriptFunction *&concurrentFunc);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;

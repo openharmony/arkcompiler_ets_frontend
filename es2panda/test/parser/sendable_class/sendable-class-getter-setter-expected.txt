@@ -1,10 +1,10 @@
 .language ECMAScript
 
-.function any .#14092125037830611713#Prop(any a0, any a1, any a2, any a3) {
+.function any .#6753558177563459672#Prop(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	lda a3
-	stprivateproperty 0x0, 0x0, 0x0, a2
+	stobjbyname 0x0, prop, a2
 	ldundefined
 	returnundefined
 label_2: 
@@ -13,8 +13,6 @@ label_2:
 .function any .A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	ldlexvar 0x0, 0x1
-	callruntime.callinit 0x0, a2
 	lda a2
 	return
 label_2: 
@@ -24,7 +22,7 @@ label_2:
 label_1: 
 label_0: 
 	lda a2
-	ldprivateproperty 0x0, 0x0, 0x0
+	ldobjbyname 0x0, prop
 	return
 label_2: 
 }
@@ -32,27 +30,9 @@ label_2:
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	callruntime.newsendablelexenv 0x2
-	callruntime.createsendableprivateproperty 0x1, _0
 	ldhole
 	sta v0
 	callruntime.definesendableclass 0x0, .A, _2, 0x0, v0
-	sta v0
-	callruntime.definesendablemethod 0x1, .instance_initializer, 0x0
-	stlexvar 0x0, 0x1
-	poplexenv
-	lda v0
-	sttoglobalrecord 0x2, A
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any .instance_initializer(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	ldundefined
-	callruntime.defineprivateproperty 0x0, 0x0, 0x0, a2
 	ldundefined
 	returnundefined
 label_2: 
@@ -64,11 +44,31 @@ label_2:
 slot _0
 {
   index: 0
-    tag: 0
-    val: 2
+    tag: 2
+    val: 0
 },
 {
   index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
     tag: 2
     val: 0
 },
@@ -77,12 +77,12 @@ slot _1
 {
   index: 0
     tag: 0
-    val: 2
+    val: 5
 },
 {
   index: 1
-    tag: 2
-    val: 0
+    tag: 5
+    val: prop
 },
 {
   index: 2
@@ -154,7 +154,7 @@ slot _2
 {
   index: 9
     tag: 27
-    val: .#14092125037830611713#Prop
+    val: .#6753558177563459672#Prop
 },
 {
   index: 10

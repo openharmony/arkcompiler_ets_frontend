@@ -15,7 +15,7 @@
 
 class Person {
     name: string;
-    #age: number;
+    private age: number;
     mother: Person;
     father: Person;
     constructor() {

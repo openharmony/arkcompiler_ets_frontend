@@ -87,10 +87,6 @@ VariableEnvScope::VariableEnvScope(PandaGen *pg, binder::VariableScope *scope)
 {
     Initialize(pg);
     if (HasEnv()) {
-        if (scope_->Node()->IsClassDefinition() && scope_->Node()->AsClassDefinition()->IsSendable()) {
-            pg_->NewSendableLexEnv(scope_->Node(), scope->LexicalSlots());
-            return;
-        }
         pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
     }
 }

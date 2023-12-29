@@ -14,14 +14,14 @@
  */
 
 class A {
-    #prop: string;
+    private prop: string;
     constructor() {
         "use sendable";
     }
     get Prop() {
-        return this.#prop;
+        return this.prop;
     }
     set Prop(prop: string) {
-        this.#prop = prop;
+        this.prop = prop;
     }
 }

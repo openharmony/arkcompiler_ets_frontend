@@ -133,16 +133,17 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
                 level++;
             }
 
-            if (iter->IsFunctionScope() && !concurrentFunc) {
-                if (iter->Node()->AsScriptFunction()->IsConcurrent()) {
-                    concurrentFunc = const_cast<ir::ScriptFunction *>(iter->Node()->AsScriptFunction());
-                }
+            if (util::Helpers::ShouldCheckConcurrent(iter, name) && !concurrentFunc) {
+                concurrentFunc = const_cast<ir::ScriptFunction *>(iter->Node()->AsScriptFunction());
             }
 
-            if (iter->AsVariableScope()->NeedLexEnv()) {
+            if (iter->AsVariableScope()->NeedLexEnv() &&
+                (!iter->IsClassScope() || !iter->Node()->AsClassDefinition()->IsSendable())) {
                 lexLevel++;
             }
         }
+
+        util::Helpers::SendableCheckForClassStaticInitializer(name, iter, concurrentFunc);
 
         iter = iter->Parent();
     }

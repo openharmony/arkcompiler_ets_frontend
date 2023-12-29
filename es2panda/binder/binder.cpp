@@ -744,14 +744,17 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::CLASS_PROPERTY: {
-            // for ts tranformer cases
-            if (Program()->Extension() == ScriptExtension::TS) {
-                const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(childNode->AsClassProperty());
+            /* for ts tranformer cases, all class properties are implemented by transformer in api10 and
+             * only public instance class properties are implemented by transformer in api11*/
+            auto *prop = childNode->AsClassProperty();
+            if (Program()->Extension() == ScriptExtension::TS && (Program()->TargetApiVersion() < 11 ||
+                (!prop->IsStatic() && !prop->IsPrivate()))) {
+                const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(prop);
                 auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
                 ResolveReferences(childNode);
                 break;
             }
-            auto *prop = childNode->AsClassProperty();
+
             ResolveReference(prop, prop->Key());
             if (prop->Value() != nullptr) {
                 ASSERT(parent->IsClassDefinition());
