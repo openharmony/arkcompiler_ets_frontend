@@ -25,6 +25,7 @@ import { pathContainsDirectory } from './functions/PathHelper';
 import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
+import { FaultID } from '../Problems';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
 export class TsUtils {
@@ -532,11 +533,7 @@ export class TsUtils {
   }
 
   // return true if two class types are not related by inheritance and structural identity check is needed
-  needToDeduceStructuralIdentity(
-    lhsType: ts.Type,
-    rhsType: ts.Type,
-    rhsExpr: ts.Expression
-  ): boolean {
+  needToDeduceStructuralIdentity(lhsType: ts.Type, rhsType: ts.Type, rhsExpr: ts.Expression): boolean {
     lhsType = TsUtils.getNonNullableType(lhsType);
     rhsType = TsUtils.getNonNullableType(rhsType);
     if (this.isLibraryType(lhsType)) {
@@ -561,8 +558,11 @@ export class TsUtils {
       // missing exact rule
       return true;
     }
-    return lhsType.isClassOrInterface() && rhsType.isClassOrInterface() &&
-      !this.relatedByInheritanceOrIdentical(rhsType, lhsType);
+    return (
+      lhsType.isClassOrInterface() &&
+      rhsType.isClassOrInterface() &&
+      !this.relatedByInheritanceOrIdentical(rhsType, lhsType)
+    );
   }
 
   private processParentTypes(
@@ -850,8 +850,8 @@ export class TsUtils {
       if (!prop.name) {
         return false;
       }
-      const isValidComputedProperty = ts.isComputedPropertyName(prop.name) &&
-        this.isValidComputedPropertyName(prop.name, true);
+      const isValidComputedProperty =
+        ts.isComputedPropertyName(prop.name) && this.isValidComputedPropertyName(prop.name, true);
       if (!ts.isStringLiteral(prop.name) && !ts.isNumericLiteral(prop.name) && !isValidComputedProperty) {
         return false;
       }
@@ -976,6 +976,140 @@ export class TsUtils {
       nodeOrComment.kind === ts.SyntaxKind.MultiLineCommentTrivia ?
       (nodeOrComment as ts.CommentRange).end :
       (nodeOrComment as ts.Node).getEnd();
+  }
+
+  static getHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, faultId: number): [number, number] {
+    return (
+      this.highlightRangeHandlers.get(faultId)?.call(this, nodeOrComment) ?? [
+        this.getStartPos(nodeOrComment),
+        this.getEndPos(nodeOrComment)
+      ]
+    );
+  }
+
+  static highlightRangeHandlers = new Map([
+    [FaultID.VarDeclaration, TsUtils.getVarDeclarationHighlightRange],
+    [FaultID.CatchWithUnsupportedType, TsUtils.getCatchWithUnsupportedTypeHighlightRange],
+    [FaultID.ForInStatement, TsUtils.getForInStatementHighlightRange],
+    [FaultID.WithStatement, TsUtils.getWithStatementHighlightRange],
+    [FaultID.DeleteOperator, TsUtils.getDeleteOperatorHighlightRange],
+    [FaultID.TypeQuery, TsUtils.getTypeQueryHighlightRange],
+    [FaultID.InstanceofUnsupported, TsUtils.getInstanceofUnsupportedHighlightRange],
+    [FaultID.ConstAssertion, TsUtils.getConstAssertionHighlightRange],
+    [FaultID.LimitedReturnTypeInference, TsUtils.getLimitedReturnTypeInferenceHighlightRange],
+    [FaultID.LocalFunction, TsUtils.getLocalFunctionHighlightRange],
+    [FaultID.FunctionBind, TsUtils.getFunctionApplyCallHighlightRange],
+    [FaultID.FunctionApplyCall, TsUtils.getFunctionApplyCallHighlightRange],
+    [FaultID.DeclWithDuplicateName, TsUtils.getDeclWithDuplicateNameHighlightRange],
+    [FaultID.ObjectLiteralNoContextType, TsUtils.getObjectLiteralNoContextTypeHighlightRange],
+    [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange]
+  ]);
+
+  static getVarDeclarationHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'var');
+  }
+
+  static getCatchWithUnsupportedTypeHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    const catchClauseNode = (nodeOrComment as ts.CatchClause).variableDeclaration;
+    if (catchClauseNode !== undefined) {
+      return [catchClauseNode.getStart(), catchClauseNode.getEnd()];
+    }
+
+    return undefined;
+  }
+
+  static getForInStatementHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return [
+      this.getEndPos((nodeOrComment as ts.ForInStatement).initializer) + 1,
+      this.getStartPos((nodeOrComment as ts.ForInStatement).expression) - 1
+    ];
+  }
+
+  static getWithStatementHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return [this.getStartPos(nodeOrComment), (nodeOrComment as ts.WithStatement).statement.getStart() - 1];
+  }
+
+  static getDeleteOperatorHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'delete');
+  }
+
+  static getTypeQueryHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'typeof');
+  }
+
+  static getInstanceofUnsupportedHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    return this.getKeywordHighlightRange((nodeOrComment as ts.BinaryExpression).operatorToken, 'instanceof');
+  }
+
+  static getConstAssertionHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    if (nodeOrComment.kind === ts.SyntaxKind.AsExpression) {
+      return [
+        (nodeOrComment as ts.AsExpression).expression.getEnd() + 1,
+        (nodeOrComment as ts.AsExpression).type.getStart() - 1
+      ];
+    }
+    return [
+      (nodeOrComment as ts.TypeAssertion).expression.getEnd() + 1,
+      (nodeOrComment as ts.TypeAssertion).type.getEnd() + 1
+    ];
+  }
+
+  static getLimitedReturnTypeInferenceHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    let node: ts.Node | undefined;
+    if (nodeOrComment.kind === ts.SyntaxKind.FunctionExpression) {
+      // we got error about return type so it should be present
+      node = (nodeOrComment as ts.FunctionExpression).type;
+    } else if (nodeOrComment.kind === ts.SyntaxKind.FunctionDeclaration) {
+      node = (nodeOrComment as ts.FunctionDeclaration).name;
+    }
+
+    if (node !== undefined) {
+      return [node.getStart(), node.getEnd()];
+    }
+
+    return undefined;
+  }
+
+  static getLocalFunctionHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'function');
+  }
+
+  static getFunctionApplyCallHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    const pointPos = (nodeOrComment as ts.Node).getText().lastIndexOf('.');
+    return [this.getStartPos(nodeOrComment) + pointPos + 1, this.getEndPos(nodeOrComment)];
+  }
+
+  static getDeclWithDuplicateNameHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    // in case of private identifier no range update is needed
+    const nameNode: ts.Node | undefined = (nodeOrComment as ts.NamedDeclaration).name;
+    if (nameNode !== undefined) {
+      return [nameNode.getStart(), nameNode.getEnd()];
+    }
+
+    return undefined;
+  }
+
+  static getObjectLiteralNoContextTypeHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, '{');
+  }
+
+  static getClassExpressionHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'class');
+  }
+
+  static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
+    const start = this.getStartPos(nodeOrComment);
+    return [start, start + keyword.length];
   }
 
   isStdRecordType(type: ts.Type): boolean {

@@ -207,7 +207,7 @@ export class TypeScriptLinter {
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (TypeScriptLinter.ideMode) {
-      this.incrementCountersIdeMode(node, faultId, line, character, autofixable, autofix);
+      this.incrementCountersIdeMode(node, faultId, autofixable, autofix);
     } else {
       const faultDescr = faultDesc[faultId];
       const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
@@ -238,17 +238,15 @@ export class TypeScriptLinter {
   private incrementCountersIdeMode(
     node: ts.Node | ts.CommentRange,
     faultId: number,
-    line: number,
-    character: number,
     autofixable: boolean,
     autofix?: Autofix[]
   ): void {
     if (!TypeScriptLinter.ideMode) {
       return;
     }
-    const startPos = TsUtils.getStartPos(node);
-    const endPos = TsUtils.getEndPos(node);
-    const pos = this.sourceFile!.getLineAndCharacterOfPosition(endPos);
+    const [startOffset, endOffset] = TsUtils.getHighlightRange(node, faultId);
+    const startPos = this.sourceFile!.getLineAndCharacterOfPosition(startOffset);
+    const endPos = this.sourceFile!.getLineAndCharacterOfPosition(endOffset);
 
     const faultDescr = faultDesc[faultId];
     const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
@@ -258,12 +256,12 @@ export class TypeScriptLinter {
     const severity = faultsAttrs[faultId]?.severity ?? ProblemSeverity.ERROR;
     const isMsgNumValid = cookBookMsgNum > 0;
     const badNodeInfo: ProblemInfo = {
-      line: line,
-      column: character,
-      endLine: pos.line + 1,
-      endColumn: pos.character + 1,
-      start: startPos,
-      end: endPos,
+      line: startPos.line + 1,
+      column: startPos.character + 1,
+      endLine: endPos.line + 1,
+      endColumn: endPos.character + 1,
+      start: startOffset,
+      end: endOffset,
       type: faultType,
       severity: severity,
       problem: FaultID[faultId],
@@ -452,7 +450,7 @@ export class TypeScriptLinter {
       for (const tsTypeExpr of hClause.types) {
         const tsExprType = this.tsTypeChecker.getTypeAtLocation(tsTypeExpr.expression);
         if (tsExprType.isClass()) {
-          this.incrementCounters(node, FaultID.InterfaceExtendsClass);
+          this.incrementCounters(tsTypeExpr, FaultID.InterfaceExtendsClass);
         } else if (tsExprType.isClassOrInterface()) {
           this.lintForInterfaceExtendsDifferentPorpertyTypes(node, tsExprType, prop2type);
         }

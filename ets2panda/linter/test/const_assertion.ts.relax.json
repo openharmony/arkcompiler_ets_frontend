@@ -16,23 +16,31 @@
     "nodes": [
         {
             "line": 16,
-            "column": 11,
-            "problem": "ConstAssertion"
+            "column": 19,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         },
         {
             "line": 17,
-            "column": 11,
-            "problem": "ConstAssertion"
+            "column": 20,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         },
         {
             "line": 19,
-            "column": 12,
-            "problem": "ConstAssertion"
+            "column": 27,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         },
         {
             "line": 20,
-            "column": 12,
-            "problem": "ConstAssertion"
+            "column": 28,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         }
     ]
 }

@@ -24,7 +24,7 @@
         },
         {
             "line": 1,
-            "column": 1,
+            "column": 11,
             "problem": "DeclWithDuplicateName",
             "autofixable": false,
             "suggest": "",
@@ -48,7 +48,7 @@
         },
         {
             "line": 5,
-            "column": 1,
+            "column": 11,
             "problem": "DeclWithDuplicateName",
             "autofixable": false,
             "suggest": "",
@@ -64,7 +64,7 @@
         },
         {
             "line": 9,
-            "column": 1,
+            "column": 11,
             "problem": "DeclWithDuplicateName",
             "autofixable": false,
             "suggest": "",

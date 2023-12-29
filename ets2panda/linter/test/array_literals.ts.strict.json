@@ -17,87 +17,121 @@
         {
             "line": 17,
             "column": 6,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 18,
             "column": 6,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 25,
             "column": 12,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 26,
             "column": 12,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 43,
             "column": 8,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 44,
             "column": 8,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 72,
-            "column": 1,
-            "problem": "LimitedReturnTypeInference"
+            "column": 10,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 72,
             "column": 18,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 75,
             "column": 18,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 97,
             "column": 18,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 100,
             "column": 18,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 126,
             "column": 11,
-            "problem": "ArrayLiteralNoContextType"
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)"
         },
         {
             "line": 126,
             "column": 13,
-            "problem": "ObjectLiteralNoContextType"
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
             "line": 126,
             "column": 30,
-            "problem": "ObjectLiteralNoContextType"
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
             "line": 18,
             "column": 3,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'b' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'b' has no initializer and is not definitely assigned in the constructor."
         },
         {
             "line": 19,
             "column": 3,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'c' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'c' has no initializer and is not definitely assigned in the constructor."
         },
         {
             "line": 20,
             "column": 3,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'd' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'd' has no initializer and is not definitely assigned in the constructor."
         }
     ]
 }

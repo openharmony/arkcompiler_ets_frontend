@@ -24,7 +24,7 @@
         },
         {
             "line": 2,
-            "column": 1,
+            "column": 6,
             "problem": "DeclWithDuplicateName",
             "autofixable": false,
             "suggest": "",

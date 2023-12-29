@@ -17,102 +17,142 @@
         {
             "line": 17,
             "column": 10,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 36,
             "column": 14,
-            "problem": "InOperator"
+            "problem": "InOperator",
+            "suggest": "",
+            "rule": "\"in\" operator is not supported (arkts-no-in)"
         },
         {
             "line": 36,
             "column": 17,
-            "problem": "ClassAsObject"
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         },
         {
             "line": 41,
             "column": 18,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 55,
             "column": 1,
-            "problem": "InterfaceMerging"
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
         },
         {
             "line": 55,
-            "column": 1,
-            "problem": "InterfaceExtendsClass"
+            "column": 30,
+            "problem": "InterfaceExtendsClass",
+            "suggest": "",
+            "rule": "Interfaces cannot extend classes (arkts-extends-only-class)"
         },
         {
             "line": 59,
             "column": 1,
-            "problem": "InterfaceMerging"
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
         },
         {
             "line": 59,
-            "column": 1,
-            "problem": "InterfaceExtendsClass"
+            "column": 30,
+            "problem": "InterfaceExtendsClass",
+            "suggest": "",
+            "rule": "Interfaces cannot extend classes (arkts-extends-only-class)"
         },
         {
             "line": 63,
             "column": 1,
-            "problem": "EnumMerging"
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
         },
         {
             "line": 68,
             "column": 1,
-            "problem": "EnumMerging"
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
         },
         {
             "line": 75,
             "column": 20,
-            "problem": "ClassExpression"
+            "problem": "ClassExpression",
+            "suggest": "",
+            "rule": "Class literals are not supported (arkts-no-class-literals)"
         },
         {
             "line": 83,
             "column": 26,
-            "problem": "ClassExpression"
+            "problem": "ClassExpression",
+            "suggest": "",
+            "rule": "Class literals are not supported (arkts-no-class-literals)"
         },
         {
             "line": 84,
             "column": 17,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 84,
             "column": 25,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 96,
             "column": 13,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 101,
-            "column": 1,
-            "problem": "InterfaceExtendsClass"
+            "column": 24,
+            "problem": "InterfaceExtendsClass",
+            "suggest": "",
+            "rule": "Interfaces cannot extend classes (arkts-extends-only-class)"
         },
         {
             "line": 103,
             "column": 23,
-            "problem": "ImplementsClass"
+            "problem": "ImplementsClass",
+            "suggest": "",
+            "rule": "Classes cannot be specified in \"implements\" clause (arkts-implements-only-iface)"
         },
         {
             "line": 108,
             "column": 7,
-            "problem": "StructuralIdentity"
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
             "line": 109,
             "column": 7,
-            "problem": "StructuralIdentity"
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
             "line": 42,
             "column": 11,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'pipe' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'pipe' has no initializer and is not definitely assigned in the constructor."
         }
     ]
 }

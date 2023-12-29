@@ -17,47 +17,65 @@
         {
             "line": 17,
             "column": 3,
-            "problem": "VarDeclaration"
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
         {
             "line": 19,
             "column": 3,
-            "problem": "LocalFunction"
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
         {
             "line": 21,
             "column": 7,
-            "problem": "VarDeclaration"
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
         {
             "line": 28,
             "column": 3,
-            "problem": "VarDeclaration"
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
         {
             "line": 29,
             "column": 8,
-            "problem": "VarDeclaration"
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
         {
             "line": 31,
-            "column": 3,
-            "problem": "ForInStatement"
+            "column": 14,
+            "problem": "ForInStatement",
+            "suggest": "",
+            "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
         },
         {
             "line": 31,
             "column": 8,
-            "problem": "VarDeclaration"
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
         {
             "line": 37,
             "column": 8,
-            "problem": "VarDeclaration"
+            "problem": "VarDeclaration",
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
         {
             "line": 23,
             "column": 12,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'y' is used before being assigned.",
+            "rule": "Variable 'y' is used before being assigned."
         }
     ]
 }

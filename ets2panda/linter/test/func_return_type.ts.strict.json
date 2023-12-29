@@ -16,49 +16,49 @@
     "nodes": [
         {
             "line": 16,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 23,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 33,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 40,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 46,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 54,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 57,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
@@ -170,14 +170,14 @@
         },
         {
             "line": 131,
-            "column": 1,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 135,
-            "column": 1,
+            "column": 18,
             "problem": "LimitedReturnTypeInference",
             "suggest": "",
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"

@@ -100,7 +100,7 @@
         },
         {
             "line": 89,
-            "column": 1,
+            "column": 22,
             "problem": "DeclWithDuplicateName",
             "suggest": "",
             "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
