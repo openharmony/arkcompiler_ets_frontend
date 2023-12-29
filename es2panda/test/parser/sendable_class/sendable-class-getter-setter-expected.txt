@@ -6,7 +6,6 @@ label_0:
 	lda a3
 	stprivateproperty 0x0, 0x0, 0x0, a2
 	ldundefined
-	callruntime.notifyconcurrentresult
 	returnundefined
 label_2: 
 }
@@ -17,8 +16,6 @@ label_0:
 	ldlexvar 0x0, 0x1
 	callruntime.callinit 0x0, a2
 	lda a2
-	callruntime.notifyconcurrentresult
-	lda a2
 	return
 label_2: 
 }
@@ -28,9 +25,6 @@ label_1:
 label_0: 
 	lda a2
 	ldprivateproperty 0x0, 0x0, 0x0
-	sta v0
-	callruntime.notifyconcurrentresult
-	lda v0
 	return
 label_2: 
 }

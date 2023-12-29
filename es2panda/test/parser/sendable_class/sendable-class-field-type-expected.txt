@@ -6,8 +6,6 @@ label_0:
 	ldlexvar 0x0, 0x1
 	callruntime.callinit 0x0, a2
 	lda a2
-	callruntime.notifyconcurrentresult
-	lda a2
 	return
 label_2: 
 }
