@@ -27,7 +27,11 @@ namespace panda::es2panda::compiler {
 
 class ObjectIndexLowering : public Phase {
 public:
-    DECLARE_PHASE_NAME(ObjectIndexLowering)
+    std::string_view Name() override
+    {
+        return "ObjectIndexLowering";
+    }
+
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 

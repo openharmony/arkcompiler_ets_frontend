@@ -21,28 +21,34 @@
 #include "macros.h"
 #include "parser/ETSparser.h"
 #include "varbinder/ETSBinder.h"
-#include "utils/json_builder.h"
-#include <regex>
 #include "compiler/core/ASTVerifier.h"
 
-#include <algorithm>
 #include <gtest/gtest.h>
 
-// NOLINTBEGIN(cppcoreguidelines-macro-usage)
-#define TREE(node)                           \
-    ([&]() {                                 \
-        using namespace panda::es2panda::ir; \
-        return node;                         \
-    }())
-
-#define NODE(Type, ...) allocator->New<Type>(__VA_ARGS__)
-#define NODES(Type, ...)                                     \
-    ([&]() -> ArenaVector<Type *> {                          \
-        auto v = ArenaVector<Type *> {allocator->Adapter()}; \
-        v.insert(v.end(), {__VA_ARGS__});                    \
-        return v;                                            \
-    }())
-// NOLINTEND(cppcoreguidelines-macro-usage)
+using panda::es2panda::CompilerOptions;
+using panda::es2panda::ScriptExtension;
+using panda::es2panda::checker::ETSChecker;
+using panda::es2panda::compiler::ASTVerifier;
+using panda::es2panda::ir::AstNode;
+using panda::es2panda::ir::BinaryExpression;
+using panda::es2panda::ir::BooleanLiteral;
+using panda::es2panda::ir::ETSScript;
+using panda::es2panda::ir::Expression;
+using panda::es2panda::ir::Identifier;
+using panda::es2panda::ir::NumberLiteral;
+using panda::es2panda::ir::SequenceExpression;
+using panda::es2panda::ir::StringLiteral;
+using panda::es2panda::lexer::Number;
+using panda::es2panda::lexer::TokenType;
+using panda::es2panda::parser::ETSParser;
+using panda::es2panda::parser::Program;
+using panda::es2panda::util::StringView;
+using panda::es2panda::varbinder::ETSBinder;
+using panda::es2panda::varbinder::FunctionScope;
+using panda::es2panda::varbinder::LetDecl;
+using panda::es2panda::varbinder::LocalScope;
+using panda::es2panda::varbinder::LocalVariable;
+using panda::es2panda::varbinder::VariableFlags;
 
 class ASTVerifierTest : public testing::Test {
 public:
@@ -69,6 +75,26 @@ public:
     NO_MOVE_SEMANTIC(ASTVerifierTest);
 
 protected:
+    template <typename Type>
+    Type *Tree(Type *node)
+    {
+        return node;
+    }
+
+    template <typename Type, typename... Args>
+    Type *Node(Args &&...args)
+    {
+        return allocator_->New<Type>(std::forward<Args>(args)...);
+    }
+
+    template <typename Type, typename... Args>
+    panda::ArenaVector<Type *> Nodes(Args &&...args)
+    {
+        auto v = panda::ArenaVector<Type *> {allocator_->Adapter()};
+        v.insert(v.end(), {std::forward<Args>(args)...});
+        return v;
+    }
+
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     es2panda_Impl const *impl_;
     es2panda_Config *cfg_;
@@ -76,238 +102,212 @@ protected:
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
-static void CompareMinified(std::string_view actualJson, std::string_view expectedJson)
-{
-    std::string message {actualJson};
-    static const std::regex R {R"(\s+)"};
-    auto ss = std::stringstream {};
-
-    std::regex_replace(std::ostream_iterator<char>(ss), message.begin(), message.end(), r, "");
-    ASSERT_EQ(ss.str(), expectedJson);
-}
-
 TEST_F(ASTVerifierTest, NullParent)
 {
-    compiler::ASTVerifier verifier {Allocator()};
-    panda::es2panda::ir::StringLiteral emptyNode;
+    ASTVerifier verifier {Allocator()};
+    StringLiteral emptyNode;
 
     const auto check = "NodeHasParent";
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert(check);
-    const auto &errors = verifier.Verify(&empty_node, checks);
-    bool hasParent = errors.size() == 0;
-    ASSERT_EQ(hasParent, false);
-    ASSERT_EQ(errors.size(), 1);
+    const auto [warnings, errors] = verifier.Verify({{"NodeHasParent"}}, {{}}, &emptyNode, checks);
+    bool hasParent = warnings.empty();
+    ASSERT_FALSE(hasParent);
+    ASSERT_EQ(warnings.size(), 1);
 
-    const auto [name, error] = errors[0];
-    ASSERT_EQ(name, check);
-    auto messageExpected = JsonObjectBuilder {};
-    message_expected.AddProperty("type", "StringLiteral");
-    message_expected.AddProperty("value", "");
-    compare_minified(error.message, std::move(message_expected).Build());
+    ASSERT_EQ(warnings[0].GetName(), check);
 }
 
 TEST_F(ASTVerifierTest, NullType)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
-    panda::es2panda::ir::StringLiteral emptyNode;
+    ASTVerifier verifier {Allocator()};
+    StringLiteral emptyNode;
 
     auto check = "NodeHasType";
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert(check);
-    const auto &errors = verifier.Verify(&empty_node, checks);
-    bool hasType = errors.size() == 0;
+    const auto [warnings, errors] = verifier.Verify({{"NodeHasType"}}, {{}}, &emptyNode, checks);
+    bool hasType = warnings.empty();
     ASSERT_EQ(hasType, false);
-    ASSERT_NE(errors.size(), 0);
+    ASSERT_NE(warnings.size(), 0);
 
-    const auto [name, error] = errors[0];
-    ASSERT_EQ(name, check);
-
-    auto messageExpected = JsonObjectBuilder {};
-    message_expected.AddProperty("type", "StringLiteral");
-    message_expected.AddProperty("value", "");
-    compare_minified(error.message, std::move(message_expected).Build());
+    ASSERT_EQ(warnings[0].GetName(), check);
 }
 
 TEST_F(ASTVerifierTest, WithoutScope)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
-    panda::es2panda::ir::StringLiteral emptyNode;
+    ASTVerifier verifier {Allocator()};
+    StringLiteral emptyNode;
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("VariableHasScope");
-    const auto &errors = verifier.Verify(&empty_node, checks);
+    const auto [warnings, errors] = verifier.Verify({{"VariableHasScope"}}, {{}}, &emptyNode, checks);
 
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ScopeTest)
 {
-    compiler::ASTVerifier verifier {Allocator()};
-    ir::Identifier ident(util::StringView("var_decl"), Allocator());
-    varbinder::LetDecl decl("test", &ident);
-    varbinder::LocalVariable local(&decl, varbinder::VariableFlags::LOCAL);
+    ASTVerifier verifier {Allocator()};
+    Identifier ident(StringView("var_decl"), Allocator());
+    LetDecl decl("test", &ident);
+    LocalVariable local(&decl, VariableFlags::LOCAL);
     ident.SetVariable(&local);
 
-    varbinder::LocalScope scope(Allocator(), nullptr);
-    varbinder::FunctionScope parent_scope(Allocator(), nullptr);
-    scope.SetParent(&parent_scope);
+    LocalScope scope(Allocator(), nullptr);
+    FunctionScope parentScope(Allocator(), nullptr);
+    scope.SetParent(&parentScope);
     scope.AddDecl(Allocator(), &decl, ScriptExtension::ETS);
     scope.BindNode(&ident);
 
     local.SetScope(&scope);
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("VariableHasScope");
-    const auto &errors = verifier.Verify(&ident, checks);
+    const auto [warnings, errors] = verifier.Verify({{"VariableHasScope"}}, {{}}, &ident, checks);
 
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ScopeNodeTest)
 {
-    compiler::ASTVerifier verifier {Allocator()};
-    ir::Identifier ident(util::StringView("var_decl"), Allocator());
-    varbinder::LetDecl decl("test", &ident);
-    varbinder::LocalVariable local(&decl, varbinder::VariableFlags::LOCAL);
+    ASTVerifier verifier {Allocator()};
+    Identifier ident(StringView("var_decl"), Allocator());
+    LetDecl decl("test", &ident);
+    LocalVariable local(&decl, VariableFlags::LOCAL);
     ident.SetVariable(&local);
 
-    varbinder::LocalScope scope(Allocator(), nullptr);
-    varbinder::FunctionScope parent_scope(Allocator(), nullptr);
-    scope.SetParent(&parent_scope);
+    LocalScope scope(Allocator(), nullptr);
+    FunctionScope parentScope(Allocator(), nullptr);
+    scope.SetParent(&parentScope);
     scope.AddDecl(Allocator(), &decl, ScriptExtension::ETS);
     scope.BindNode(&ident);
     parentScope.BindNode(&ident);
 
     local.SetScope(&scope);
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("VariableHasEnclosingScope");
-    const auto &errors = verifier.Verify(&ident, checks);
+    const auto [warnings, errors] = verifier.Verify({{"VariableHasEnclosingScope"}}, {{}}, &ident, checks);
 
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
 {
-    checker::ETSChecker etschecker {};
-    compiler::ASTVerifier verifier {Allocator()};
-    auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
-    auto parser = parser::ETSParser(&program, CompilerOptions {});
+    ETSChecker etschecker {};
+    ASTVerifier verifier {Allocator()};
+    auto program = Program::NewProgram<ETSBinder>(Allocator());
+    auto parser = ETSParser(&program, CompilerOptions {});
 
-    auto left = ir::NumberLiteral(lexer::Number {1});
-    auto right = ir::NumberLiteral(lexer::Number {6});
-    auto arithmeticExpression = ir::BinaryExpression(&left, &right, lexer::TokenType::PUNCTUATOR_PLUS);
+    auto left = NumberLiteral(Number {1});
+    auto right = NumberLiteral(Number {6});
+    auto arithmeticExpression = BinaryExpression(&left, &right, TokenType::PUNCTUATOR_PLUS);
 
     left.SetTsType(etschecker.GlobalIntType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto &errors = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
-    ASSERT_EQ(errors.size(), 0);
+    const auto [warnings, errors] =
+        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
 {
-    checker::ETSChecker etschecker {};
-    compiler::ASTVerifier verifier {Allocator()};
-    auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
-    auto parser = parser::ETSParser(&program, CompilerOptions {});
+    ETSChecker etschecker {};
+    ASTVerifier verifier {Allocator()};
+    auto program = Program::NewProgram<ETSBinder>(Allocator());
+    auto parser = ETSParser(&program, CompilerOptions {});
 
     constexpr uint32_t LEFT1_PARAM = 1;
     constexpr uint32_t LEFT2_PARAM = 12;
     constexpr uint32_t RIGHT2_PARAM = 6;
-    auto left1 = ir::NumberLiteral(lexer::Number {LEFT1_PARAM});
-    auto left2 = ir::NumberLiteral(lexer::Number {LEFT2_PARAM});
-    auto right2 = ir::NumberLiteral(lexer::Number {RIGHT2_PARAM});
-    auto right1 = ir::BinaryExpression(&left2, &right2, lexer::TokenType::PUNCTUATOR_MULTIPLY);
-    auto arithmeticExpression = ir::BinaryExpression(&left1, &right1, lexer::TokenType::PUNCTUATOR_PLUS);
+    auto left1 = NumberLiteral(Number {LEFT1_PARAM});
+    auto left2 = NumberLiteral(Number {LEFT2_PARAM});
+    auto right2 = NumberLiteral(Number {RIGHT2_PARAM});
+    auto right1 = BinaryExpression(&left2, &right2, TokenType::PUNCTUATOR_MULTIPLY);
+    auto arithmeticExpression = BinaryExpression(&left1, &right1, TokenType::PUNCTUATOR_PLUS);
 
     left1.SetTsType(etschecker.GlobalIntType());
     right1.SetTsType(etschecker.GlobalIntType());
     left2.SetTsType(etschecker.GlobalIntType());
     right2.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto &errors = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
-    ASSERT_EQ(errors.size(), 0);
+    const auto [warnings, errors] =
+        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
 {
-    checker::ETSChecker etschecker {};
-    compiler::ASTVerifier verifier {Allocator()};
-    auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
-    auto parser = parser::ETSParser(&program, CompilerOptions {});
+    ETSChecker etschecker {};
+    ASTVerifier verifier {Allocator()};
+    auto program = Program::NewProgram<ETSBinder>(Allocator());
+    auto parser = ETSParser(&program, CompilerOptions {});
 
-    const panda::es2panda::util::StringView leftParam("1");
+    const StringView leftParam("1");
     constexpr uint32_t RIGHT_PARAM = 1;
-    auto left = ir::StringLiteral(left_param);
-    auto right = ir::NumberLiteral(lexer::Number {RIGHT_PARAM});
-    auto arithmeticExpression = ir::BinaryExpression(&left, &right, lexer::TokenType::PUNCTUATOR_DIVIDE);
+    auto left = StringLiteral(leftParam);
+    auto right = NumberLiteral(Number {RIGHT_PARAM});
+    auto arithmeticExpression = BinaryExpression(&left, &right, TokenType::PUNCTUATOR_DIVIDE);
 
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto &errors = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
+    const auto [warnings, errors] =
+        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
 
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
 {
-    checker::ETSChecker etschecker {};
-    compiler::ASTVerifier verifier {Allocator()};
-    auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
-    auto parser = parser::ETSParser(&program, CompilerOptions {});
-    auto left = ir::BooleanLiteral(true);
-    auto right = ir::NumberLiteral(lexer::Number {1});
-    auto arithmeticExpression = ir::BinaryExpression(&left, &right, lexer::TokenType::PUNCTUATOR_DIVIDE);
+    ETSChecker etschecker {};
+    ASTVerifier verifier {Allocator()};
+    auto program = Program::NewProgram<ETSBinder>(Allocator());
+    auto parser = ETSParser(&program, CompilerOptions {});
+    auto left = BooleanLiteral(true);
+    auto right = NumberLiteral(Number {1});
+    auto arithmeticExpression = BinaryExpression(&left, &right, TokenType::PUNCTUATOR_DIVIDE);
 
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto &errors = verifier.Verify(arithmetic_expression.AsBinaryExpression(), checks);
+    const auto [warnings, errors] =
+        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
 
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, SequenceExpressionType)
 {
-    compiler::ASTVerifier verifier {Allocator()};
-    auto *allocator = Allocator();
-
-    auto checker = checker::ETSChecker();
-
-    auto *last = TREE(NODE(NumberLiteral, lexer::Number {3}));
-    // clang-format off
-    auto *sequenceExpression =
-        TREE(NODE(SequenceExpression,
-                  NODES(Expression,
-                        NODE(NumberLiteral, lexer::Number {1}),
-                        NODE(NumberLiteral, lexer::Number {2}),
-                        last
-                        )));
-    // clang-format on
+    ASTVerifier verifier {Allocator()};
+    auto checker = ETSChecker();
+    auto *last = Tree(Node<NumberLiteral>(Number {3}));
+    auto *sequenceExpression = Tree(Node<SequenceExpression>(
+        Nodes<Expression>(Node<NumberLiteral>(Number {1}), Node<NumberLiteral>(Number {2}), last)));
 
     last->SetTsType(checker.GlobalIntType());
-    sequence_expression->SetTsType(checker.GlobalIntType());
+    sequenceExpression->SetTsType(checker.GlobalIntType());
 
-    auto checks = compiler::ASTVerifier::InvariantSet {};
+    auto checks = ASTVerifier::InvariantSet {};
     checks.insert("SequenceExpressionHasLastType");
-    const auto &errors = verifier.Verify(sequence_expression, checks);
+    const auto [warnings, errors] =
+        verifier.Verify({{"SequenceExpressionHasLastType"}}, {{}}, sequenceExpression, checks);
 
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
 }
 
 constexpr char const *PRIVATE_PROTECTED_PUBLIC_TEST =
-    R"XXX(
+    R"(
         class Base {
             public a: int = 1;
             protected b: int = 2;
@@ -348,46 +348,44 @@ constexpr char const *PRIVATE_PROTECTED_PUBLIC_TEST =
             let c = derived2.a;
             derived2.publicMethod();
         }
-    )XXX";
+    )";
 
 TEST_F(ASTVerifierTest, PrivateProtectedPublicAccessTestCorrect)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, PRIVATE_PROTECTED_PUBLIC_TEST, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
 
-    ASSERT_EQ(isCorrect, true);
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
         class Derived extends Base {
             public b: int = this.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -396,23 +394,21 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR MUST BE UNREACHABLE.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
@@ -420,14 +416,14 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
             let base: Base = new Base();
             let a = base.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -436,23 +432,21 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
@@ -461,14 +455,14 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
             let derived: Derived = new Derived();
             let a = derived.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -477,23 +471,21 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
@@ -502,14 +494,14 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
             let derived: Base = new Derived();
             let a = derived.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -518,23 +510,21 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
             public privateMethod() {
@@ -545,14 +535,14 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
             let base: Base = new Base();
             base.privateMethod();
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -572,23 +562,21 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
         ->Signature()
         ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID privateMethod");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
             public privateMethod() {
@@ -600,14 +588,14 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
             let derived: Derived = new Derived();
             derived.privateMethod();
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -627,23 +615,21 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
         ->Signature()
         ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID privateMethod");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
             public privateMethod() {
@@ -655,14 +641,14 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
             let derived: Base = new Derived();
             derived.privateMethod();
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -682,37 +668,35 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
         ->Signature()
         ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PRIVATE);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID privateMethod");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class A {
             public a: int = 1;
         }
         class B extends A {
             public b: int = this.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -721,21 +705,20 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
 
-    ASSERT_EQ(isCorrect, true);
-    ASSERT_EQ(errors.size(), 0);
+    ASSERT_EQ(warnings.size(), 0);
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
@@ -743,14 +726,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
             let base: Base = new Base();
             let a = base.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -759,23 +742,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
@@ -784,14 +765,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
             let derived: Derived = new Derived();
             let a = derived.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -800,23 +781,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
         }
@@ -825,14 +804,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
             let derived: Base = new Derived();
             let a = derived.a;
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[1]
         ->AsClassDeclaration()
         ->Definition()
@@ -841,23 +820,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
         ->AsClassProperty()
         ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID a");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
             public protectedMethod() {
@@ -868,14 +845,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
             let base: Base = new Base();
             base.protectedMethod();
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -895,23 +872,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
         ->Signature()
         ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID base.ID protectedMethod");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
             public protectedMethod() {
@@ -923,14 +898,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
             let derived: Derived = new Derived();
             derived.protectedMethod();
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -950,23 +925,21 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
         ->Signature()
         ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID protectedMethod");
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }
 
 TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
 {
-    panda::es2panda::compiler::ASTVerifier verifier {Allocator()};
+    ASTVerifier verifier {Allocator()};
 
-    char const *text = R"XXX(
+    char const *text = R"(
         class Base {
             public a: int = 1;
             public protectedMethod() {
@@ -978,14 +951,14 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
             let derived: Base = new Derived();
             derived.protectedMethod();
         }
-    )XXX";
+    )";
     es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
     impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
-    auto *ast = reinterpret_cast<panda::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+    auto *ast = reinterpret_cast<ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
 
-    ast->AsBlockStatement()
+    ast->AsETSScript()
         ->Statements()[0]
         ->AsClassDeclaration()
         ->Definition()
@@ -1005,14 +978,13 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
         ->Signature()
         ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PROTECTED);
 
-    auto checks = panda::es2panda::compiler::ASTVerifier::CheckSet {Allocator()->Adapter()};
-    checks.insert("VerifyModifierAccessRecursive");
-    bool isCorrect = verifier.Verify(ast, checks);
-    const auto &errors = verifier.GetErrors();
-    const auto [name, error] = errors[0];
+    ASTVerifier::InvariantSet checks;
+    checks.insert("ModifierAccessValidForAll");
 
-    ASSERT_EQ(isCorrect, false);
-    ASSERT_EQ(errors.size(), 1);
-    ASSERT_EQ(error.message, "PROPERTY_NOT_VISIBLE_HERE: MEMBER_EXPR ID derived.ID protectedMethod");
+    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    ASSERT_EQ(warnings.size(), 1);
+
+    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+
     impl_->DestroyContext(ctx);
 }

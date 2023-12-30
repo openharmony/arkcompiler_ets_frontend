@@ -18,7 +18,6 @@
 #include "macros.h"
 
 #include "assembler/assembly-program.h"
-#include "compiler/core/ASTVerifier.h"
 #include "ir/astDump.h"
 #include "ir/expressions/literals/stringLiteral.h"
 

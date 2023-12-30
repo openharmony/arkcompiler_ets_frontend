@@ -22,7 +22,11 @@ namespace panda::es2panda::compiler {
 
 class LambdaConstructionPhase : public Phase {
 public:
-    DECLARE_PHASE_NAME(LambdaConstructionPhase)
+    std::string_view Name() override
+    {
+        return "LambdaConstructionPhase";
+    }
+
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 };

@@ -22,7 +22,11 @@ namespace panda::es2panda::compiler {
 
 class OpAssignmentLowering : public Phase {
 public:
-    DECLARE_PHASE_NAME(OpAssignmentLowering)
+    std::string_view Name() override
+    {
+        return "OpAssignmentLowering";
+    }
+
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 };

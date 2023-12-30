@@ -22,7 +22,11 @@ namespace panda::es2panda::compiler {
 
 class InterfacePropertyDeclarationsPhase : public Phase {
 public:
-    DECLARE_PHASE_NAME(InterfacePropertyDeclarationsPhase)
+    std::string_view Name() override
+    {
+        return "InterfacePropertyDeclarationsPhase";
+    }
+
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
 

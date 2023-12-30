@@ -40,7 +40,10 @@ class ScopesInitPhase : public Phase, public ir::visitor::IterateAstVisitor {
 public:
     using PhaseContext = public_lib::Context;
 
-    DECLARE_PHASE_NAME(ScopesInitPhase)
+    std::string_view Name() override
+    {
+        return "ScopesInitPhase";
+    }
 
     bool Perform(PhaseContext *ctx, parser::Program *program) override;
 

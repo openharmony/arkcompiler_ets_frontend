@@ -19,12 +19,6 @@
 #include "parser/program/program.h"
 #include "public/public.h"
 
-#define DECLARE_PHASE_NAME(Phase)    \
-    std::string_view Name() override \
-    {                                \
-        return #Phase;               \
-    }
-
 namespace panda::es2panda::compiler {
 
 class Phase {

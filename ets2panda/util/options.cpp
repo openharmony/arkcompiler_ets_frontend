@@ -181,8 +181,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> genStdLib("gen-stdlib", false, "Gen standard library");
     panda::PandArg<std::string> plugins("plugins", "", "Plugins");
     panda::PandArg<std::string> skipPhases("skip-phases", "", "Phases to skip");
+    panda::PandArg<std::string> verifierWarnings("verifier-warnings", "", "Show warnings form verifier");
+    panda::PandArg<std::string> verifierErrors("verifier-errors", "", "Show warnings form verifier");
     panda::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
-                                                 "Generate program dump before running phases in the list");
+                                                   "Generate program dump before running phases in the list");
     panda::PandArg<std::string> dumpEtsSrcBeforePhases(
         "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
     panda::PandArg<std::string> dumpEtsSrcAfterPhases(
@@ -222,10 +224,12 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&genStdLib);
     argparser_->Add(&plugins);
     argparser_->Add(&skipPhases);
+    argparser_->Add(&verifierWarnings);
+    argparser_->Add(&verifierErrors);
     argparser_->Add(&dumpBeforePhases);
     argparser_->Add(&dumpEtsSrcBeforePhases);
     argparser_->Add(&dumpAfterPhases);
-    argparser_->Add(&dumpEtsSrcAfterPhases);
+    argparser_->Add(&dumpEtsSrcBeforePhases);
     argparser_->Add(&arktsConfig);
     argparser_->Add(&opTsDeclOut);
 
@@ -401,7 +405,7 @@ bool Options::Parse(int argc, const char **argv)
         }
     }
 
-    if ((dumpEtsSrcBeforePhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
+    if ((dumpEtsSrcAfterPhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
         extension_ != es2panda::ScriptExtension::ETS) {
         errorMsg_ = "--dump-ets-src-* option is valid only with ETS extension";
         return false;
@@ -420,9 +424,11 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.isEtsModule = opEtsModule.GetValue();
     compilerOptions_.plugins = SplitToStringVector(plugins.GetValue());
     compilerOptions_.skipPhases = SplitToStringSet(skipPhases.GetValue());
+    compilerOptions_.verifierWarnings = SplitToStringSet(verifierWarnings.GetValue());
+    compilerOptions_.verifierErrors = SplitToStringSet(verifierErrors.GetValue());
     compilerOptions_.dumpBeforePhases = SplitToStringSet(dumpBeforePhases.GetValue());
     compilerOptions_.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
-    compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
+    compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpBeforePhases.GetValue());
     compilerOptions_.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
 
     return true;
