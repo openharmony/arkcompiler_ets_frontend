@@ -19,6 +19,7 @@
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/envScope.h>
 #include <compiler/core/pandagen.h>
+#include <ir/base/classDefinition.h>
 #include <ir/expressions/identifier.h>
 #include <typescript/extractor/typeRecorder.h>
 
@@ -44,6 +45,15 @@ static void CheckConstAssignment(PandaGen *pg, const ir::AstNode *node, binder::
 
 static void ExpandLoadLexVar(PandaGen *pg, const ir::AstNode *node, const binder::ScopeFindResult &result)
 {
+    if (result.scope->IsClassScope()) {
+        auto classDef = result.scope->AsClassScope()->Node()->AsClassDefinition();
+        if (classDef->IsSendable()) {
+            ASSERT(classDef->Ident() != nullptr);
+            ASSERT(result.name == classDef->Ident()->Name());
+            pg->LoadSendableClass(node, result.lexLevel);
+            return;
+        }
+    }
     pg->LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx(), result.variable->Name());
     const auto *decl = result.variable->Declaration();
     if (decl->IsLetOrConstOrClassDecl()) {
@@ -76,6 +86,15 @@ void VirtualLoadVar::Expand(PandaGen *pg, const ir::AstNode *node, const binder:
 
 static void ExpandStoreLexVar(PandaGen *pg, const ir::AstNode *node, const binder::ScopeFindResult &result, bool isDecl)
 {
+    if (result.scope->IsClassScope()) {
+        auto classDef = result.scope->AsClassScope()->Node()->AsClassDefinition();
+        if (classDef->IsSendable()) {
+            ASSERT(classDef->Ident() != nullptr);
+            ASSERT(result.name == classDef->Ident()->Name());
+            return;
+        }
+    }
+
     binder::LocalVariable *local = result.variable->AsLocalVariable();
 
     const auto *decl = result.variable->Declaration();

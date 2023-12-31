@@ -572,11 +572,6 @@ int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const
     compiler::LiteralBuffer staticBuf(pg->Allocator());
     uint32_t instanceFieldCnt {0};
 
-    if (HasInstancePrivateMethod()) {
-        ++instanceFieldCnt;
-        instanceBuf->Add(pg->Allocator()->New<NumberLiteral>(scope_->instanceMethodValidation_));
-        instanceBuf->Add(pg->Allocator()->New<NumberLiteral>(0));
-    }
     for (auto *prop : body_) {
         if (!prop->IsClassProperty()) {
             continue;
@@ -584,13 +579,8 @@ int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const
 
         auto *classProp = prop->AsClassProperty();
         auto *buf = classProp->IsStatic() ? &staticBuf : (++instanceFieldCnt, instanceBuf);
-        if (classProp->IsPrivate()) {
-            auto slot = scope_->GetPrivateProperty(classProp->Key()->AsPrivateIdentifier()->Name(), false).slot;
-            buf->Add(pg->Allocator()->New<NumberLiteral>(slot));
-        } else {
-            auto name = util::Helpers::LiteralToPropName(pg->Allocator(), classProp->Key());
-            buf->Add(pg->Allocator()->New<StringLiteral>(name));
-        }
+        auto name = util::Helpers::LiteralToPropName(pg->Allocator(), classProp->Key());
+        buf->Add(pg->Allocator()->New<StringLiteral>(name));
 
         FieldType fieldType = FieldType::NONE;
         const auto *typeAnnotation = classProp->TypeAnnotation();
@@ -617,23 +607,6 @@ void ClassDefinition::CompileSendableClass(compiler::PandaGen *pg) const
 
     compiler::LocalRegScope lrs(pg, scope_);
 
-    compiler::VariableEnvScope envScope(pg, scope_);
-
-    // For sendable class, to put the instruction createprivateproperty ahead, the hole in env should be filled.
-    if (ident_ != nullptr) {
-        binder::ScopeFindResult res = scope_->Find(ident_->Name());
-        if (res.variable->LexicalBound()) {
-            pg->LoadConst(ident_, compiler::Constant::JS_UNDEFINED);
-            binder::LocalVariable *local = res.variable->AsLocalVariable();
-            pg->StoreLexicalVar(ident_, res.lexLevel, local->LexIdx(), local);
-        }
-    }
-
-    if (hasPrivateElement_) {
-        int32_t bufIdx = CreateClassPrivateBuffer(pg);
-        pg->CreateSendablePrivateProperty(this, scope_->privateFieldCnt_, bufIdx);
-    }
-
     compiler::VReg baseReg = CompileHeritageClause(pg);
     util::StringView ctorId = ctor_->Function()->Scope()->InternalName();
     util::BitSet compiled(body_.size());
@@ -644,19 +617,7 @@ void ClassDefinition::CompileSendableClass(compiler::PandaGen *pg) const
 
     pg->StoreAccumulator(this, classReg);
 
-    if (HasStaticPrivateMethod()) {
-        pg->StoreLexicalVar(this, 0, scope_->staticMethodValidation_);
-    }
-
     InitializeClassName(pg);
-
-    if (NeedInstanceInitializer()) {
-        auto *func = instanceInitializer_->Function();
-        pg->DefineSendableMethod(func, func->Scope()->InternalName(), func->FormalParamsLength());
-        pg->StoreLexicalVar(instanceInitializer_, 0, GetSlot(instanceInitializer_->Key()));
-    }
-
-    pg->LoadAccumulator(this, classReg);
 
     if (NeedStaticInitializer()) {
         StaticInitialize(pg, classReg);
