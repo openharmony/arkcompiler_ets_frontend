@@ -114,7 +114,7 @@ their property names, you need to use [keep options](#keep-options) to keep them
     ```
     will not be obfuscated.
 * the property names that are specified by [keep options](#keep-options).
-* the property names in system API list. System API list is a name set which is extracted from SDK automatically by default.
+* the property names in system API list. System API list is a name set which is extracted from SDK automatically by default. The cache file is systemApiCache.json, and the path is build/cache/{...}/release/obfuscation in the module directory.
 * in the Native API scenario, the APIs in the d.ts file of so library will not be obfuscated.
 * the property names that are string literals. For example, the property names "name" and "age" in the following code will not be obfuscated.
     ```
@@ -126,10 +126,21 @@ their property names, you need to use [keep options](#keep-options) to keep them
     -enable-property-obfuscation
     -enable-string-property-obfuscation
     ```
-    Note: If there are string literal property names which contain special characters (that is, all characters except
+    **Note**:  
+    **1.** If there are string literal property names which contain special characters (that is, all characters except
     `a-z, A-Z, 0-9, _`, for example `let obj = {"\n": 123, "": 4, " ": 5}` then we would not suggest to enable the
     option `-enable-string-property-obfuscation`, because [keep options](#keep-options) may not allow to keep these
-    names when you do not want to obfuscate them.
+    names when you do not want to obfuscate them.  
+    **2.** The property white list of the system API does not include the string constant in the declaration file. For example, the string `'ohos.want.action.home'` in the example is not included in the white list.
+    ```
+    // System Api @ohos.app.ability.wantConstant snippet:
+    export enum Params {
+      DLP_PARAM_SANDBOX = 'ohos.dlp.param.sandbox'
+    }
+    // Developer source example：
+    let params = obj['ohos.want.action.home'];
+    ```
+    Therefore, when `-enable-string-property-obfuscation` is enabled, if you don't want to obfuscate the property like `'ohos.dlp.param.sandbox'`, which is a string constant in system api. you should keep it manually.
 
 Specifies to obfuscate the names in the global scope. If you use this option, all global names will be obfuscated
 except the following:
@@ -150,7 +161,8 @@ Specifies to obfuscate the file/folder names. This option only takes effect in O
 `-compact`
 
 Specifies to remove unnecessary blank spaces and all line feeds. If you use this option, all code will be compressed into
-one line.
+one line.  
+**Note**: The stack information in release mode only includes the line number of code, not the column number. Therefore, when the compact is enabled, the specific location of the source code cannot be located based on the line number of stack information.
 
 `-remove-log`
 
@@ -158,10 +170,8 @@ Specifies to remove all `console.*` statements.
 
 `-print-namecache` filepath
 
-Specifies to print the name cache that contains the mapping from the old names to new names. The cache will printed to
-the given file. If you use `-enable-property-obfuscation` or `-enable-toplevel-obfuscation`, and you want incremental
-obfuscation in the future (for example, hot fix), then you should use this option and keep the resulting cache file
-carefully.
+Specifies to print the name cache that contains the mapping from the old names to new names.  
+Note: The namecache.json file will be generated every time the module is fully built, so you should save a copy each time you publish a new version.
 
 `-apply-namecache` filepath
 
@@ -169,7 +179,8 @@ Specifies to reuse the given cache file. The old names in the cache will receive
 the cache. Other names will receive new random short names. This option should be used in incremental obfuscation.
 
 By default, DevEco Studio will keep and update the namecache file in the temporary cache directory and apply the cache for
-incremental compilation.
+incremental compilation.  
+Cache directory: build/cache/{...}/release/obfuscation
 
 ### Keep options
 
