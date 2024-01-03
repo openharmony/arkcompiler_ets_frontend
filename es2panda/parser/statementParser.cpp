@@ -1350,7 +1350,14 @@ std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> 
 
         bool isValid = true;
         switch (leftNode->Type()) {
-            case ir::AstNodeType::IDENTIFIER:
+            case ir::AstNodeType::IDENTIFIER: {
+                constexpr std::string_view ASYNC = "async";
+                if (isAwait || !(forKind == ForStatementKind::OF && leftNode->AsIdentifier()->Name().Is(ASYNC) &&
+                    leftNode->End().index - leftNode->Start().index == ASYNC.length())) {
+                    break;
+                }
+                ThrowSyntaxError(" The left-hand side of a for-of loop may not be 'async'", leftNode->Start());
+            }
             case ir::AstNodeType::MEMBER_EXPRESSION: {
                 break;
             }

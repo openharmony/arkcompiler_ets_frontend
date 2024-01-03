@@ -1428,12 +1428,12 @@ ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expre
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
+            if (!lexer_->CheckArrow()) {
+                return nullptr;
+            }
+
             ir::Expression *identRef = ParsePrimaryExpression();
             ASSERT(identRef->IsIdentifier());
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-                ThrowSyntaxError("Unexpected token, expected '=>'");
-            }
 
             ir::ArrowFunctionExpression *arrowFuncExpr = ParseArrowFunctionExpression(identRef, nullptr, nullptr, true);
             arrowFuncExpr->SetStart(startLoc);
