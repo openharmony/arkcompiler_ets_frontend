@@ -321,7 +321,7 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         return;
     }
 
-    if (relation->IgnoreTypeParameters() || (this == other)) {
+    if ((relation->IgnoreTypeParameters() && !HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) || (this == other)) {
         relation->Result(true);
         return;
     }
