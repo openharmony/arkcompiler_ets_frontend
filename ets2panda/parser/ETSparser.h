@@ -106,6 +106,13 @@ private:
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
     void ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements);
     ArenaVector<ir::AstNode *> ParseTopLevelStatements(ArenaVector<ir::Statement *> &statements);
+    void ParseTopLevelType(ArenaVector<ir::Statement *> &statements, bool &defaultExport, std::size_t currentPos,
+                           std::function<ir::Statement *(ETSParser *)> const &parserFunction);
+    void ParseTopLevelNextToken(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::AstNode *> &globalProperties,
+                                ir::ScriptFunction *initFunction);
+    void ParseTokenOfNative(panda::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers);
+    void ParseTokenOfFunction(ir::ModifierFlags memberModifiers, lexer::SourcePosition startLoc,
+                              ArenaVector<ir::AstNode *> &globalProperties);
 #ifdef USE_FTW
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
@@ -160,9 +167,13 @@ private:
     ir::Expression *CreateParameterThis(util::StringView className) override;
 
     // NOLINTNEXTLINE(google-default-arguments)
-    void ParseClassFieldDefiniton(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                  ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *initFunction = nullptr,
-                                  lexer::SourcePosition *letLoc = nullptr);
+    void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
+                                   ArenaVector<ir::AstNode *> *declarations,
+                                   ir::ScriptFunction *initFunction = nullptr,
+                                   lexer::SourcePosition *letLoc = nullptr);
+    lexer::SourcePosition InitializeGlobalVariable(ir::Identifier *fieldName, ir::Expression *&initializer,
+                                                   ir::ScriptFunction *initFunction, lexer::SourcePosition &startLoc,
+                                                   ir::TypeNode *typeAnnotation);
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseTypeReferencePart(
         TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
@@ -188,6 +199,9 @@ private:
 
     void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
+    void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
+                               lexer::LexerPosition savedPos);
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
 
