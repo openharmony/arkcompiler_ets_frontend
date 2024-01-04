@@ -64,7 +64,7 @@ keywords:
 
   - name: 'bigint'
     token: KEYW_BIGINT
-    keyword_like: [ts]
+    keyword_like: [ets, ts]
 
   - name: 'boolean'
     token: KEYW_BOOLEAN
@@ -317,7 +317,7 @@ keywords:
 
   - name: 'number'
     token: KEYW_NUMBER
-    keyword_like: [ts]
+    keyword_like: [ets, ts]
 
   - name: 'object'
     token: KEYW_OBJECT
@@ -390,7 +390,7 @@ keywords:
 
   - name: 'string'
     token: KEYW_STRING
-    keyword_like: [ts]
+    keyword_like: [ets, ts]
 
   - name: 'struct'
     token: KEYW_STRUCT

@@ -84,10 +84,7 @@ bool Token::IsReservedTypeName() const
         case TokenType::KEYW_ANY:
         case TokenType::KEYW_UNKNOWN:
         case TokenType::KEYW_NEVER:
-        case TokenType::KEYW_NUMBER:
-        case TokenType::KEYW_BIGINT:
         case TokenType::KEYW_BOOLEAN:
-        case TokenType::KEYW_STRING:
         case TokenType::KEYW_VOID:
         case TokenType::KEYW_OBJECT:
             return true;
@@ -108,6 +105,14 @@ bool Token::IsDefinableTypeName() const
         case TokenType::KEYW_CHAR:
         case TokenType::KEYW_LONG:
         case TokenType::KEYW_TYPE:
+        case TokenType::KEYW_UNDEFINED:
+        case TokenType::KEYW_VAR:
+        case TokenType::KEYW_IS:
+        case TokenType::KEYW_TYPEOF:
+        case TokenType::KEYW_YIELD:
+        case TokenType::KEYW_STRING:
+        case TokenType::KEYW_NUMBER:
+        case TokenType::KEYW_BIGINT:
             return true;
         default:
             return false;
