@@ -403,10 +403,8 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     compiler::RegScope rs(pg);
     compiler::VReg classReg = pg->AllocReg();
 
-    compiler::LocalRegScope lrs(pg, scope_);
-
-    compiler::VariableEnvScope envScope(pg, scope_);
-
+    compiler::LabelTarget target(pg);
+    compiler::VariableEnvScope classEnvScope(pg, scope_, target);
     compiler::VReg baseReg = CompileHeritageClause(pg);
     util::StringView ctorId = ctor_->Function()->Scope()->InternalName();
     util::BitSet compiled(body_.size());

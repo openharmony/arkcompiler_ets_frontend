@@ -29,7 +29,7 @@ class LabelledStatement;
 
 namespace panda::es2panda::compiler {
 class PandaGen;
-class LoopEnvScope;
+class VariableEnvScope;
 class CatchTable;
 class TryLabelSet;
 
@@ -102,7 +102,7 @@ private:
 
 class LexEnvContext : public DynamicContext {
 public:
-    explicit LexEnvContext(LoopEnvScope *envScope, PandaGen *pg, LabelTarget target);
+    explicit LexEnvContext(VariableEnvScope *envScope, PandaGen *pg, LabelTarget target);
     NO_COPY_SEMANTIC(LexEnvContext);
     NO_MOVE_SEMANTIC(LexEnvContext);
     ~LexEnvContext();
@@ -117,7 +117,7 @@ public:
                       [[maybe_unused]] const util::StringView &targetLabel) override;
 
 private:
-    LoopEnvScope *envScope_;
+    VariableEnvScope *envScope_;
     CatchTable *catchTable_ {};
 };
 

@@ -53,7 +53,7 @@ LabelContext::~LabelContext()
     pg_->SetLabel(labelledStmt_, label_);
 }
 
-LexEnvContext::LexEnvContext(LoopEnvScope *envScope, PandaGen *pg, LabelTarget target)
+LexEnvContext::LexEnvContext(VariableEnvScope *envScope, PandaGen *pg, LabelTarget target)
     : DynamicContext(pg, target), envScope_(envScope)
 {
     if (!envScope_->HasEnv()) {

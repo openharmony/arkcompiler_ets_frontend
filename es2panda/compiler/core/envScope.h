@@ -66,18 +66,17 @@ protected:
     EnvScope *prev_ {};
 };
 
-class LoopEnvScope : public EnvScope {
+class VariableEnvScope : public EnvScope {
 public:
-    explicit LoopEnvScope(PandaGen *pg, binder::LoopScope *scope, LabelTarget target)
-        : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg, scope), lexEnvCtx_(this, pg, target)
+    explicit VariableEnvScope(PandaGen *pg, binder::VariableScope *scope, LabelTarget target)
+        : scope_(scope->NeedLexEnv() ? scope : nullptr), regScope_(pg, scope), lexEnvCtx_(this, pg, target)
     {
-        InitLoopContext(pg, scope);
+        InitVariableContext(pg, scope);
     }
 
-    explicit LoopEnvScope(PandaGen *pg, LabelTarget target, binder::LoopScope *scope)
-        : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg), lexEnvCtx_(this, pg, target)
+    bool HasEnv() const
     {
-        InitLoopContext(pg, scope);
+        return scope_ != nullptr;
     }
 
     binder::VariableScope *Scope() const
@@ -86,38 +85,29 @@ public:
         return scope_;
     }
 
-    bool HasEnv() const
-    {
-        return scope_ != nullptr;
-    }
-
-    void CopyPerIterationCtx();
+protected:
+    binder::VariableScope *scope_ {};
 
 private:
-    static bool NeedEnv(binder::VariableScope *scope)
-    {
-        return scope->IsVariableScope() && scope->AsVariableScope()->NeedLexEnv();
-    }
+    void InitVariableContext(PandaGen *pg, binder::VariableScope *scope);
 
-    void InitLoopContext(PandaGen *pg, binder::VariableScope *scope);
-
-    binder::VariableScope *scope_ {};
     LocalRegScope regScope_;
     LexEnvContext lexEnvCtx_;
 };
 
-class VariableEnvScope : public EnvScope {
+class LoopEnvScope : public VariableEnvScope {
 public:
-    explicit VariableEnvScope(PandaGen *pg, binder::VariableScope *scope);
-    ~VariableEnvScope();
-
-    bool HasEnv() const
+    explicit LoopEnvScope(PandaGen *pg, binder::LoopScope *scope, LabelTarget target)
+        : VariableEnvScope(pg, scope, target)
     {
-        return scope_ != nullptr;
     }
 
-private:
-    binder::VariableScope *scope_ {};
+    explicit LoopEnvScope(PandaGen *pg, LabelTarget target, binder::LoopScope *scope)
+        : VariableEnvScope(pg, scope, target)
+    {
+    }
+
+    void CopyPerIterationCtx();
 };
 
 }  // namespace panda::es2panda::compiler
