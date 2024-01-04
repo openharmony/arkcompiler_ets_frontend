@@ -570,7 +570,7 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
     }
 
     if (this->IsETSNullLike()) {
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+        if (target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
             relation->GetNode()->SetTsType(target);
             relation->Result(true);
             return;
