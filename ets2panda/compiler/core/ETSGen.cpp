@@ -982,6 +982,13 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
 {
     auto ttctx = TargetTypeContext(this, targetType);
 
+    if (node->HasAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE)) {
+        Ra().Emit<CallAccShort, 0>(
+            node, node->AsExpression()->TsType()->AsETSEnumType()->GetValueMethod().globalSignature->InternalName(),
+            dummyReg_, 0);
+        node->RemoveAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE);
+    }
+
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
         ApplyBoxingConversion(node);
         return;

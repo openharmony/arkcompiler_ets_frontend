@@ -22,6 +22,7 @@ namespace panda::es2panda::ir {
 enum class AstNodeFlags {
     NO_OPTS = 0,
     CHECKCAST = 1U << 0U,
+    ENUM_GET_VALUE = 1U << 1U,
 };
 
 enum class ModifierFlags : uint32_t {

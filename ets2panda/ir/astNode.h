@@ -450,7 +450,7 @@ public:
     {                                                       \
         return ((member_name)&flag) != 0U;                  \
     }                                                       \
-    void Remove##flag_type(flag_type flag) noexcept         \
+    void Remove##flag_type(flag_type flag) const noexcept   \
     {                                                       \
         (member_name) &= ~flag;                             \
     }
