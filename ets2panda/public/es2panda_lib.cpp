@@ -129,34 +129,6 @@ static char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
     return res;
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FOR_ALL_MODIFIER_FLAGS(_) \
-    _(STATIC)                     \
-    _(ASYNC)                      \
-    _(PUBLIC)                     \
-    _(PROTECTED)                  \
-    _(PRIVATE)                    \
-    _(DECLARE)                    \
-    _(READONLY)                   \
-    _(OPTIONAL)                   \
-    _(DEFINITE)                   \
-    _(ABSTRACT)                   \
-    _(CONST)                      \
-    _(FINAL)                      \
-    _(NATIVE)                     \
-    _(OVERRIDE)                   \
-    _(CONSTRUCTOR)                \
-    _(SYNCHRONIZED)               \
-    _(FUNCTIONAL)                 \
-    _(IN)                         \
-    _(OUT)                        \
-    _(INTERNAL)                   \
-    _(NULL_ASSIGNABLE)            \
-    _(UNDEFINED_ASSIGNABLE)       \
-    _(EXPORT)                     \
-    _(SETTER)                     \
-    _(DEFAULT_EXPORT)
-
 static ir::ModifierFlags E2pToIrModifierFlags(es2panda_ModifierFlags e2p_flags)
 {
     ir::ModifierFlags ir_flags {ir::ModifierFlags::NONE};
@@ -190,30 +162,6 @@ static es2panda_ModifierFlags IrToE2pModifierFlags(ir::ModifierFlags ir_flags)
 
     return e2p_flags;
 }
-
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FOR_ALL_SCRIPT_FUNCTION_FLAGS(_) \
-    _(GENERATOR)                         \
-    _(ASYNC)                             \
-    _(ARROW)                             \
-    _(EXPRESSION)                        \
-    _(OVERLOAD)                          \
-    _(CONSTRUCTOR)                       \
-    _(METHOD)                            \
-    _(STATIC_BLOCK)                      \
-    _(HIDDEN)                            \
-    _(IMPLICIT_SUPER_CALL_NEEDED)        \
-    _(ENUM)                              \
-    _(EXTERNAL)                          \
-    _(PROXY)                             \
-    _(THROWS)                            \
-    _(RETHROWS)                          \
-    _(GETTER)                            \
-    _(SETTER)                            \
-    _(DEFAULT_PARAM_PROXY)               \
-    _(ENTRY_POINT)                       \
-    _(INSTANCE_EXTENSION_METHOD)         \
-    _(HAS_RETURN)
 
 static ir::ScriptFunctionFlags E2pToIrScriptFunctionFlags(es2panda_ScriptFunctionFlags e2p_flags)
 {
@@ -1466,13 +1414,6 @@ extern "C" es2panda_AstNode *ImportSpecifierLocal(es2panda_AstNode *ast)
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsImportSpecifier();
     return reinterpret_cast<es2panda_AstNode *>(node->Local());
 }
-
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FOR_ALL_MEMBER_EXPRESSION_KINDS(_) \
-    _(ELEMENT_ACCESS)                      \
-    _(PROPERTY_ACCESS)                     \
-    _(GETTER)                              \
-    _(SETTER)
 
 static ir::MemberExpressionKind E2pToIrMemberExpressionKind(es2panda_MemberExpressionKind e2p_kind)
 {
