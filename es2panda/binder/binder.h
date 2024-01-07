@@ -334,6 +334,22 @@ T *Binder::AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool
 
     ThrowRedeclaration(pos, decl->Name());
 }
+
+class ClassTdz {
+public:
+    explicit ClassTdz(const ir::AstNode *parent, const ir::AstNode *childNode, Scope *scope);
+
+    ~ClassTdz()
+    {
+        if (variable_) {
+            variable_->AddFlag(VariableFlags::INITIALIZED);
+        }
+    }
+
+private:
+    Variable *variable_ {};
+};
+
 }  // namespace panda::es2panda::binder
 
 #endif

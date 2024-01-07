@@ -656,6 +656,8 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
 {
     childNode->SetParent(parent);
 
+    ClassTdz classTdz(parent, childNode, scope_);
+
     switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = childNode->AsIdentifier();
@@ -1051,6 +1053,34 @@ void Binder::CheckPrivateDeclaration(const ir::PrivateIdentifier *privateIdent)
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     throw Error{ErrorType::SYNTAX, "Use private property before declaration", loc.line, loc.col};
+}
+
+ClassTdz::ClassTdz(const ir::AstNode *parent, const ir::AstNode *childNode, Scope *scope)
+{
+    /* In ES2022, class element name's evaluation is before class's initialization.
+     * So a computed property name can not access class object which leads to a reference error.
+     * For example:
+     * class A {
+     *   [A]
+     * }
+     */
+    bool isClassTdz = (parent->IsClassProperty() && childNode == parent->AsClassProperty()->Key()) ||
+        (parent->IsMethodDefinition() && childNode == parent->AsMethodDefinition()->Key());
+
+    if (!isClassTdz) {
+        return;
+    }
+
+    ASSERT(parent->Parent()->IsClassDefinition());
+    auto classDef = parent->Parent()->AsClassDefinition();
+    if (!classDef->Ident()) {
+        return;
+    }
+
+    ScopeFindResult res = scope->Find(classDef->Ident()->Name());
+    ASSERT(res.variable && res.variable->Declaration()->IsConstDecl());
+    variable_ = res.variable;
+    variable_->RemoveFlag(VariableFlags::INITIALIZED);
 }
 
 }  // namespace panda::es2panda::binder
