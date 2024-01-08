@@ -57,8 +57,7 @@ action("build_arkguard") {
   script = "compile_arkguard.py"
   args = [
     rebase_path(get_path_info("./", "abspath")),
-    rebase_path(
-        "${root_out_dir}/obj/third_party/typescript/ohos-typescript-4.9.5-r4.tgz"),
+    rebase_path("//third_party/typescript/ohos-typescript-4.9.5-r4.tgz"),
     rebase_path("${target_out_dir}"),
   ]
 
