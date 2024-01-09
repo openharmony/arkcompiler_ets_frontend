@@ -117,6 +117,7 @@ public:
                                                                    "PromiseVoidInferencePhase",
                                                                    "StructLowering",
                                                                    "DefaultParameterLowering",
+                                                                   "BigIntLowering",
                                                                    "GenerateTsDeclarationsPhase",
                                                                    "InterfacePropertyDeclarationsPhase",
                                                                    "LambdaConstructionPhase",

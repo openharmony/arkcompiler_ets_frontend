@@ -63,6 +63,11 @@ public:
         return value_;
     }
 
+    void SetValue(Expression *value)
+    {
+        value_ = value;
+    }
+
     [[nodiscard]] bool IsPrivateElement() const noexcept;
 
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept

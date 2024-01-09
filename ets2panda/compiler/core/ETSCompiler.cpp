@@ -468,6 +468,14 @@ void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
         expr->Right()->Compile(etsg);
         etsg->ApplyConversion(expr->Right(), expr->TsType());
     }
+
+    if (expr->Right()->TsType()->IsETSBigIntType()) {
+        // For bigints we have to copy the bigint object when performing an assignment operation
+        const VReg value = etsg->AllocReg();
+        etsg->StoreAccumulator(expr, value);
+        etsg->CreateBigIntObject(expr, value, Signatures::BUILTIN_BIGINT_CTOR_BIGINT);
+    }
+
     lref.SetValue();
 }
 
@@ -1291,7 +1299,11 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
     etsg->ApplyConversion(expr->Argument(), nullptr);
 
     if (expr->Argument()->TsType()->IsETSBigIntType()) {
-        etsg->UpdateBigInt(expr, originalValueReg, expr->OperatorType());
+        // For postfix operations copy the bigint object before running an update operation
+        compiler::VReg updatedValue = etsg->AllocReg();
+        etsg->CreateBigIntObject(expr->Argument(), originalValueReg, Signatures::BUILTIN_BIGINT_CTOR_BIGINT);
+        etsg->StoreAccumulator(expr->Argument(), updatedValue);
+        etsg->UpdateBigInt(expr, updatedValue, expr->OperatorType());
     } else {
         etsg->Update(expr, expr->OperatorType());
     }

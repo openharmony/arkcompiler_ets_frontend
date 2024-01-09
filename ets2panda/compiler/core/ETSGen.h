@@ -584,7 +584,8 @@ public:
     }
 #endif  // PANDA_WITH_ETS
 
-    void CreateBigIntObject(const ir::AstNode *node, VReg arg0);
+    void CreateBigIntObject(const ir::AstNode *node, VReg arg0,
+                            std::string_view signature = Signatures::BUILTIN_BIGINT_CTOR);
     void CreateLambdaObjectFromIdentReference(const ir::AstNode *node, ir::ClassDefinition *lambdaObj);
     void CreateLambdaObjectFromMemberReference(const ir::AstNode *node, ir::Expression *obj,
                                                ir::ClassDefinition *lambdaObj);
