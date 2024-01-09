@@ -120,10 +120,10 @@ void BinaryExpression::Compile(compiler::PandaGen *pg) const
     compiler::VReg lhs = pg->AllocReg();
 
     left_->Compile(pg);
-    pg->StoreAccumulator(this, lhs);
+    pg->StoreAccumulator(right_, lhs);
     right_->Compile(pg);
 
-    pg->Binary(this, operator_, lhs);
+    pg->Binary(right_, operator_, lhs);
 }
 
 checker::Type *BinaryExpression::Check(checker::Checker *checker) const
