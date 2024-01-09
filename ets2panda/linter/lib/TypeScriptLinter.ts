@@ -752,10 +752,12 @@ export class TypeScriptLinter {
   }
 
   private handlePropertySignature(node: ts.PropertySignature): void {
-    const propName = node.name;
-    if (!!propName && ts.isNumericLiteral(propName)) {
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, );
-    }
+
+    /**
+     * Handler in case any further restrictions are put on properties of interfaces
+     */
+    void this;
+    void node;
   }
 
   private filterOutDecoratorsDiagnostics(

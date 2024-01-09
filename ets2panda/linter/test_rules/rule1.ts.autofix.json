@@ -85,14 +85,6 @@
             "autofixable": false,
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
-        },
-        {
-            "line": 44,
-            "column": 3,
-            "problem": "LiteralAsPropertyName",
-            "autofixable": false,
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         }
     ]
 }

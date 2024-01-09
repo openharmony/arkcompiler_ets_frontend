@@ -53,7 +53,3 @@ const a2: A2 = {
 
 S1["s1"];
 S2["s2"];
-
-interface I {
-  2: number;
-}
