@@ -337,6 +337,7 @@ private:
     ir::Statement *CreateStatement(std::string_view sourceCode, std::string_view fileName = DEFAULT_SOURCE_FILE);
     ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes,
                                             std::string_view fileName = DEFAULT_SOURCE_FILE);
+    // NOLINTEND(google-default-arguments)
 
     template <typename... Args>
     ir::Statement *CreateFormattedStatement(std::string_view const sourceCode, std::string_view const fileName,
@@ -354,6 +355,8 @@ private:
                                                       std::string_view fileName = DEFAULT_SOURCE_FILE);
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view sourceCode,
                                        std::string_view fileName = DEFAULT_SOURCE_FILE);
+    // NOLINTEND(google-default-arguments)
+
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 
