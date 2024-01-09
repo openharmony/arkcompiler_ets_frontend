@@ -142,11 +142,10 @@ Type *ETSTypeParameter::Substitute(TypeRelation *relation, const Substitution *s
         if (this != original && ((ContainsNull() && !replType->ContainsNull()) ||
                                  (ContainsUndefined() && !replType->ContainsUndefined()))) {
             // this type is explicitly marked as nullish
-            ASSERT(replType->IsETSObjectType() || replType->IsETSArrayType() || replType->IsETSFunctionType() ||
-                   replType->IsETSTypeParameter());
+            ASSERT(ETSChecker::IsReferenceType(replType));
             auto nullishFlags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
             auto *newReplType = checker->CreateNullishType(replType, nullishFlags, checker->Allocator(), relation,
-                                                           checker->GetGlobalTypesHolder());
+                                                             checker->GetGlobalTypesHolder());
             replType = newReplType;
         }
         return replType;
