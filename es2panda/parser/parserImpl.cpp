@@ -800,6 +800,8 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotation(TypeAnnotationParsingOptions *
     while (true) {
         ir::Expression *element = ParseTsTypeAnnotationElement(typeAnnotation, options);
 
+        *options &= ~TypeAnnotationParsingOptions::ALLOW_CONST;
+
         *options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
 
         if (!element) {
@@ -915,7 +917,9 @@ void ParserImpl::HandleRestType(ir::AstNodeType elementType, bool *hasRestType) 
     if (elementType ==  ir::AstNodeType::TS_ARRAY_TYPE && *hasRestType) {
         ThrowSyntaxError("A rest element cannot follow another rest element");
     }
-    *hasRestType = true;
+    if (elementType ==  ir::AstNodeType::TS_ARRAY_TYPE) {
+        *hasRestType = true;
+    }
 }
 
 ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional, bool *hasRestType)
@@ -1116,7 +1120,8 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(TypeAnnotationParsingOpt
     }
 
     ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+    if (!(lexer_->GetToken().Flags() & lexer::TokenFlags::NEW_LINE) &&
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         typeParamInst = ParseTsTypeParameterInstantiation(options & TypeAnnotationParsingOptions::THROW_ERROR);
         if (parseQuery) {
             typeName = AllocNode<ir::TypeArgumentsExpression>(typeName, typeParamInst);

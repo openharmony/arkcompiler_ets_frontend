@@ -14,5 +14,8 @@
  */
 
 
-type WithOptAndRest1 = [number, number?, ...string[]];
-type WithOptAndRest2 = [number, number?, string[]];
+interface Example {
+    (a: number): typeof a
+  
+    <T>(): void
+}

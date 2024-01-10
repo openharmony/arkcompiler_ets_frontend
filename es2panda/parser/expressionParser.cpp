@@ -523,7 +523,9 @@ ir::ArrowFunctionExpression *ParserImpl::ParseTsGenericArrowFunction()
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         lexer_->NextToken();  // eat ':'
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        options |= TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
         returnTypeAnnotation = ParseTsTypeAnnotation(&options);
+        options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
