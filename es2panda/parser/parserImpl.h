@@ -330,7 +330,8 @@ private:
     ir::Identifier *SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl);
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
                                               bool isAbstract = false);
-
+    ir::Expression *ParseSuperClass(bool isDeclare, bool *hasSuperClass, bool *isExtendsFromNull);
+    ArenaVector<ir::TSClassImplements *> ParseTSClassImplements(bool isDeclare);
     void ValidateClassConstructor(const ir::MethodDefinition *ctor,
                                   const ArenaVector<ir::Statement *> &properties,
                                   bool isDeclare, bool hasConstructorFuncBody,
@@ -559,16 +560,19 @@ private:
                                             bool isExport, bool isDeclare, bool isConst);
     ir::TSEnumDeclaration *ParseEnumDeclaration(bool isExport = false, bool isDeclare = false, bool isConst = false);
     ir::TSInterfaceDeclaration *ParseTsInterfaceDeclaration(bool isDeclare);
+    void ValidateTsInterfaceName(bool isDeclare);
+    ArenaVector<ir::TSInterfaceHeritage *> ParseTsInterfaceExtends();
     ir::SwitchCaseStatement *ParseSwitchCaseStatement(bool *seenDefault);
     ir::SwitchStatement *ParseSwitchStatement();
     ir::ThrowStatement *ParseThrowStatement();
     ir::Expression *ParseCatchParam();
     ir::CatchClause *ParseCatchClause();
     ir::TryStatement *ParseTryStatement();
-    void ValidateDeclaratorId();
+    void ValidateDeclaratorId(bool isDeclare);
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc, bool isDeclare);
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags, bool isDeclare);
+    ir::Expression *ParseVariableDeclaratorKey(VariableParsingFlags flags, bool isDeclare, bool *isDefinite);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS,
                                             bool isDeclare = false, bool isExport = false);
     ir::WhileStatement *ParseWhileStatement();
