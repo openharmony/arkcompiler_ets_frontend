@@ -66,7 +66,7 @@ void TSDeclGen::Generate()
     license << " */\n\n";
     Out(license.str());
     Out("declare const exports: any;");
-    OutEndl(2);
+    OutEndl(2U);
 
     for (auto *globalStatement : program_->Ast()->Statements()) {
         ResetState();
@@ -396,7 +396,7 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
     }
 
     Out(" } from \"", source, "\";");
-    OutEndl(2);
+    OutEndl(2U);
 }
 
 void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias)
@@ -407,7 +407,7 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     Out("export type ", name, " = ");
     GenType(aliasedType);
     Out(";");
-    OutEndl(2);
+    OutEndl(2U);
 }
 
 void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
@@ -421,7 +421,7 @@ void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
     GenEnumType(enumDecl->TsType()->AsETSEnumType());
 
     Out("}");
-    OutEndl(2);
+    OutEndl(2U);
 }
 
 void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl)
@@ -446,7 +446,7 @@ void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interf
     }
 
     Out("}");
-    OutEndl(2);
+    OutEndl(2U);
 }
 
 void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
@@ -504,7 +504,7 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
         Out("export {", className, "};");
         OutEndl();
         Out("exports.", className, " = ", className, ";");
-        OutEndl(2);
+        OutEndl(2U);
     }
 }
 
@@ -551,7 +551,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
         if (methodName == compiler::Signatures::INIT_METHOD) {
             Out(methodName, "();");
         }
-        OutEndl(2);
+        OutEndl(2U);
     }
 }
 

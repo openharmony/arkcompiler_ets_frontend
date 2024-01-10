@@ -1216,7 +1216,7 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
                 break;
             }
             case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
-                Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 2);
+                Lexer()->BackwardToken(lexer::TokenType::PUNCTUATOR_GREATER_THAN, 2U);
                 break;
             }
             case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {

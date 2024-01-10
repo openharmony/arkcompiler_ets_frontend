@@ -148,7 +148,7 @@ Type *ETSTypeParameter::Substitute(TypeRelation *relation, const Substitution *s
                    replType->IsETSTypeParameter());
             auto nullishFlags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
             auto *newReplType = checker->CreateNullishType(replType, nullishFlags, checker->Allocator(), relation,
-                                                             checker->GetGlobalTypesHolder());
+                                                           checker->GetGlobalTypesHolder());
             replType = newReplType;
         }
         return replType;

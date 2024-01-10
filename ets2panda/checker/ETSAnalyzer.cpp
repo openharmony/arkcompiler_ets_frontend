@@ -2680,7 +2680,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     }
 
     const checker::SavedTypeRelationFlagsContext savedFlagsCtx(checker->Relation(),
-                                                                 checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
+                                                               checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
     st->TypeAnnotation()->Check(checker);
 

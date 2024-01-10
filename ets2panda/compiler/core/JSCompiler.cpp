@@ -917,7 +917,7 @@ void JSCompiler::Compile(const ir::NewExpression *expr) const
             pg->StoreAccumulator(expr, arg);
         }
 
-        pg->NewObject(expr, ctor, expr->Arguments().size() + 2);
+        pg->NewObject(expr, ctor, expr->Arguments().size() + 2U);
     } else {
         compiler::VReg argsObj = pg->AllocReg();
 
