@@ -496,6 +496,7 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 {
     auto *funcScope = func->Scope();
     {
+        ASSERT(funcScope != nullptr);
         auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, funcScope->ParamScope());
 
         for (auto *param : func->Params()) {

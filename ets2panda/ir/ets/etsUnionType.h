@@ -45,6 +45,8 @@ public:
         v->Accept(this);
     }
 
+    [[nodiscard]] ETSUnionType *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+
 private:
     ArenaVector<TypeNode *> types_;
 };

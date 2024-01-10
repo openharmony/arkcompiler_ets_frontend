@@ -191,10 +191,6 @@ private:
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
-    ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *const method,
-                                                      ir::Identifier const *const identNode);
-    ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *const method);
-    void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *identNode = nullptr);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
     std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const;
@@ -350,7 +346,6 @@ private:
     // and correct parent and, probably, variable set to the node(s) after obtaining
     // NOLINTBEGIN(modernize-avoid-c-arrays)
     inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
-    inline static constexpr char const DEFAULT_PROXY_FILE[] = "<default_method>.ets";
     // NOLINTEND(modernize-avoid-c-arrays)
 
     // NOLINTBEGIN(google-default-arguments)

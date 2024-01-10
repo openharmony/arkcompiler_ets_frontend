@@ -294,9 +294,6 @@ static ir::ScriptFunctionFlags E2pToIrScriptFunctionFlags(es2panda_ScriptFunctio
                                                                  : ir::ScriptFunctionFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_RETHROWS) != 0 ? ir::ScriptFunctionFlags::RETHROWS
                                                                    : ir::ScriptFunctionFlags::NONE;
-    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_DEFAULT_PARAM_PROXY) != 0
-                   ? ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY
-                   : ir::ScriptFunctionFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_ENTRY_POINT) != 0 ? ir::ScriptFunctionFlags::ENTRY_POINT
                                                                       : ir::ScriptFunctionFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_HAS_RETURN) != 0 ? ir::ScriptFunctionFlags::HAS_RETURN
@@ -359,9 +356,6 @@ static es2panda_ScriptFunctionFlags IrToE2pScriptFunctionFlags(ir::ScriptFunctio
         (irFlags & ir::ScriptFunctionFlags::THROWS) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_THROWS : e2pFlags);
     e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
         (irFlags & ir::ScriptFunctionFlags::RETHROWS) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_RETHROWS : e2pFlags);
-    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY) != 0
-                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_DEFAULT_PARAM_PROXY
-                                                             : e2pFlags);
     e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::ENTRY_POINT) != 0
                                                              ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_ENTRY_POINT
                                                              : e2pFlags);

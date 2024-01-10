@@ -54,6 +54,17 @@ checker::Type *ETSUndefinedType::GetType([[maybe_unused]] checker::ETSChecker *c
     return TsType();
 }
 
+ETSUndefinedType *ETSUndefinedType::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    if (auto *const clone = allocator->New<ir::ETSUndefinedType>(); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    return nullptr;
+}
+
 void ETSNullType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 
 void ETSNullType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
@@ -89,4 +100,14 @@ checker::Type *ETSNullType::GetType([[maybe_unused]] checker::ETSChecker *checke
     return TsType();
 }
 
+ETSNullType *ETSNullType::Clone(ArenaAllocator *allocator, AstNode *parent)
+{
+    if (auto *const clone = allocator->New<ir::ETSNullType>(); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    return nullptr;
+}
 }  // namespace ark::es2panda::ir

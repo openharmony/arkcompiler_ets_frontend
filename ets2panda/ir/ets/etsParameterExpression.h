@@ -23,9 +23,6 @@ class ETSAnalyzer;
 }  // namespace ark::es2panda::checker
 
 namespace ark::es2panda::ir {
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-inline constexpr char const PROXY_PARAMETER_NAME[] = "$proxy_mask$";
-// NOLINTEND(modernize-avoid-c-arrays)
 
 class ETSParameterExpression final : public Expression {
 public:
@@ -88,6 +85,10 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+    void SetInitializer(Expression *initExpr = nullptr)
+    {
+        initializer_ = initExpr;
+    };
 
     void Accept(ASTVisitorT *v) override
     {

@@ -37,6 +37,7 @@ public:
     {
         v->Accept(this);
     }
+    [[nodiscard]] ETSNullType *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 };
 
 class ETSUndefinedType : public TypeNode {
@@ -56,6 +57,7 @@ public:
     {
         v->Accept(this);
     }
+    [[nodiscard]] ETSUndefinedType *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 };
 
 }  // namespace ark::es2panda::ir

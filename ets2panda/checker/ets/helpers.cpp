@@ -2526,46 +2526,6 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
     return invocable;
 }
 
-void ETSChecker::AddUndefinedParamsForDefaultParams(const Signature *const signature, ir::AstNode *parent,
-                                                    ArenaVector<ark::es2panda::ir::Expression *> &arguments,
-                                                    ETSChecker *checker)
-{
-    if (!signature->Function()->IsDefaultParamProxy() || signature->Function()->Params().size() <= arguments.size()) {
-        return;
-    }
-
-    //  Just to avoid extra nested levels
-    auto const addDefaultLiteral = [&arguments, checker, parent](ir::TypeNode const *const typeAnnotation) -> void {
-        if (typeAnnotation->IsETSPrimitiveType()) {
-            if (typeAnnotation->AsETSPrimitiveType()->GetPrimitiveType() == ir::PrimitiveType::BOOLEAN) {
-                arguments.push_back(checker->Allocator()->New<ir::BooleanLiteral>(false));
-            } else {
-                arguments.push_back(checker->Allocator()->New<ir::NumberLiteral>(lexer::Number(0)));
-            }
-            arguments.back()->SetParent(parent);
-        } else {
-            // A proxy-function is called, so default reference parameters
-            // are initialized with null instead of undefined
-            auto *const nullLiteral = checker->Allocator()->New<ir::NullLiteral>();
-            nullLiteral->SetTsType(checker->GlobalETSNullType());
-            nullLiteral->SetParent(parent);
-            arguments.push_back(nullLiteral);
-        }
-    };
-
-    uint32_t num = 0;
-    for (size_t i = arguments.size(); i != signature->Function()->Params().size() - 1U; ++i) {
-        if (auto const *const param = signature->Function()->Params()[i]->AsETSParameterExpression();
-            !param->IsRestParameter()) {
-            addDefaultLiteral(param->Ident()->TypeAnnotation());
-            num |= (1U << (arguments.size() - 1));
-        }
-    }
-
-    arguments.push_back(checker->Allocator()->New<ir::NumberLiteral>(lexer::Number(num)));
-    arguments.back()->SetParent(parent);
-}
-
 bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)
 {
     if (!type->IsETSFunctionType()) {

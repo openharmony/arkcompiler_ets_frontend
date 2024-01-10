@@ -324,10 +324,6 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
                                          const lexer::SourcePosition &pos, TypeRelationFlag flags,
                                          const std::vector<bool> &argTypeInferenceRequired)
 {
-    if (signature->Function()->IsDefaultParamProxy() && ((flags & TypeRelationFlag::CHECK_PROXY) == 0)) {
-        return nullptr;
-    }
-
     Signature *substitutedSig = MaybeSubstituteTypeParameters(this, signature, typeArguments, arguments, pos, flags);
     if (substitutedSig == nullptr) {
         return nullptr;
@@ -338,13 +334,11 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
     std::size_t const parameterCount = substitutedSig->MinArgCount();
     auto const throwError = (flags & TypeRelationFlag::NO_THROW) == 0;
 
-    if (!signature->Function()->IsDefaultParamProxy()) {
-        if (argumentCount < parameterCount || (argumentCount > parameterCount && !hasRestParameter)) {
-            if (throwError) {
-                ThrowTypeError({"Expected ", parameterCount, " arguments, got ", argumentCount, "."}, pos);
-            }
-            return nullptr;
+    if (argumentCount < parameterCount || (argumentCount > parameterCount && !hasRestParameter)) {
+        if (throwError) {
+            ThrowTypeError({"Expected ", parameterCount, " arguments, got ", argumentCount, "."}, pos);
         }
+        return nullptr;
     }
 
     auto count = std::min(parameterCount, argumentCount);
@@ -362,30 +356,6 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
     }
 
     return substitutedSig;
-}
-
-bool ETSChecker::ValidateProxySignature(Signature *const signature,
-                                        const ir::TSTypeParameterInstantiation *typeArguments,
-                                        const ArenaVector<ir::Expression *> &arguments,
-                                        const std::vector<bool> &argTypeInferenceRequired)
-{
-    if (!signature->Function()->IsDefaultParamProxy()) {
-        return false;
-    }
-
-    auto const *const proxyParam = signature->Function()->Params().back()->AsETSParameterExpression();
-    if (!proxyParam->Ident()->Name().Is(ir::PROXY_PARAMETER_NAME)) {
-        return false;
-    }
-
-    if (arguments.size() < proxyParam->GetRequiredParams()) {
-        return false;
-    }
-
-    return ValidateSignature(signature, typeArguments, arguments, signature->Function()->Start(),
-                             TypeRelationFlag::CHECK_PROXY | TypeRelationFlag::NO_THROW |
-                                 TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING,
-                             argTypeInferenceRequired) != nullptr;
 }
 
 Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> &signatures,
@@ -419,26 +389,16 @@ Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> 
     return compatibleSignature;
 }
 
-std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> ETSChecker::CollectSignatures(
-    ArenaVector<Signature *> &signatures, const ir::TSTypeParameterInstantiation *typeArguments,
-    const ArenaVector<ir::Expression *> &arguments, std::vector<bool> &argTypeInferenceRequired,
-    const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
+ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> &signatures,
+                                                       const ir::TSTypeParameterInstantiation *typeArguments,
+                                                       const ArenaVector<ir::Expression *> &arguments,
+                                                       std::vector<bool> &argTypeInferenceRequired,
+                                                       const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
 {
     ArenaVector<Signature *> compatibleSignatures(Allocator()->Adapter());
-    ArenaVector<Signature *> proxySignatures(Allocator()->Adapter());
-
-    for (auto *sig : signatures) {
-        if (sig->Function()->IsDefaultParamProxy() &&
-            ValidateProxySignature(sig, typeArguments, arguments, argTypeInferenceRequired)) {
-            proxySignatures.push_back(sig);
-        }
-    }
 
     auto collectSignatures = [&](TypeRelationFlag relationFlags) {
         for (auto *sig : signatures) {
-            if (sig->Function()->IsDefaultParamProxy()) {
-                continue;
-            }
             auto *concreteSig =
                 ValidateSignature(sig, typeArguments, arguments, pos, relationFlags, argTypeInferenceRequired);
             if (concreteSig != nullptr) {
@@ -467,11 +427,10 @@ std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> ETSChecker::Collec
             }
         }
     }
-    return std::make_pair(compatibleSignatures, proxySignatures);
+    return compatibleSignatures;
 }
 
 Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compatibleSignatures,
-                                                ArenaVector<Signature *> &proxySignatures,
                                                 const ArenaVector<ir::Expression *> &arguments,
                                                 std::vector<bool> &argTypeInferenceRequired,
                                                 const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
@@ -486,26 +445,6 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
         return nullptr;
     }
 
-    // Just to avoid extra nesting level
-    auto const checkAmbiguous = [this, mostSpecificSignature, &pos](Signature const *const proxySignature) -> void {
-        auto const *const proxyParam = proxySignature->Function()->Params().back()->AsETSParameterExpression();
-        if (!proxyParam->Ident()->Name().Is(ir::PROXY_PARAMETER_NAME)) {
-            ThrowTypeError({"Proxy parameter '", proxyParam->Ident()->Name(), "' has invalid name."}, pos);
-        }
-
-        if (mostSpecificSignature->Params().size() == proxyParam->GetRequiredParams()) {
-            ThrowTypeError({"Reference to ", mostSpecificSignature->Function()->Id()->Name(), " is ambiguous"}, pos);
-        }
-    };
-
-    if (!proxySignatures.empty()) {
-        auto *const proxySignature =
-            ChooseMostSpecificProxySignature(proxySignatures, argTypeInferenceRequired, pos, arguments.size());
-        if (proxySignature != nullptr) {
-            checkAmbiguous(proxySignature);
-        }
-    }
-
     return mostSpecificSignature;
 }
 
@@ -516,20 +455,10 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
                                           TypeRelationFlag resolveFlags)
 {
     std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
-    auto [compatibleSignatures, proxySignatures] =
+    auto compatibleSignatures =
         CollectSignatures(signatures, typeArguments, arguments, argTypeInferenceRequired, pos, resolveFlags);
-
     if (!compatibleSignatures.empty()) {
-        return GetMostSpecificSignature(compatibleSignatures, proxySignatures, arguments, argTypeInferenceRequired, pos,
-                                        resolveFlags);
-    }
-
-    if (!proxySignatures.empty()) {
-        auto *const proxySignature =
-            ChooseMostSpecificProxySignature(proxySignatures, argTypeInferenceRequired, pos, arguments.size());
-        if (proxySignature != nullptr) {
-            return proxySignature;
-        }
+        return GetMostSpecificSignature(compatibleSignatures, arguments, argTypeInferenceRequired, pos, resolveFlags);
     }
 
     if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0 && !arguments.empty() && !signatures.empty()) {
@@ -697,26 +626,6 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     return mostSpecificSignature;
 }
 
-Signature *ETSChecker::ChooseMostSpecificProxySignature(ArenaVector<Signature *> &signatures,
-                                                        const std::vector<bool> &argTypeInferenceRequired,
-                                                        const lexer::SourcePosition &pos, size_t argumentsSize)
-{
-    if (pos.index == 0 && pos.line == 0) {
-        return nullptr;
-    }
-
-    const auto mostSpecificSignature =
-        ChooseMostSpecificSignature(signatures, argTypeInferenceRequired, pos, argumentsSize);
-
-    if (mostSpecificSignature == nullptr) {
-        const auto str = signatures.front()->Function()->Id()->Name().Mutf8().substr(
-            0, signatures.front()->Function()->Id()->Name().Length() - 6);
-        ThrowTypeError("Reference to " + str + " is ambiguous", pos);
-    }
-
-    return mostSpecificSignature;
-}
-
 Signature *ETSChecker::ResolveCallExpression(ArenaVector<Signature *> &signatures,
                                              const ir::TSTypeParameterInstantiation *typeArguments,
                                              const ArenaVector<ir::Expression *> &arguments,
@@ -821,10 +730,6 @@ void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
                                          const ir::MethodDefinition *const currentFunc)
 {
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
-
-    if (currentFunc->Function()->IsDefaultParamProxy()) {
-        return;
-    }
 
     Relation()->IsIdenticalTo(func, overload);
     if (Relation()->IsTrue()) {
@@ -1319,7 +1224,7 @@ void ETSChecker::CheckOverride(Signature *signature)
         iter = iter->SuperType();
     }
 
-    if (!isOverriding && signature->Function()->IsOverride() && !(signature->Function()->IsDefaultParamProxy())) {
+    if (!isOverriding && signature->Function()->IsOverride()) {
         ThrowTypeError({"Method ", signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
                         " not overriding any method"},
                        signature->Function()->Start());

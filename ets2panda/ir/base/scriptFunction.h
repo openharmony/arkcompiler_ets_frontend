@@ -215,16 +215,6 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
     }
 
-    [[nodiscard]] bool IsDefaultParamProxy() const noexcept
-    {
-        return (funcFlags_ & ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY) != 0;
-    }
-
-    void SetDefaultParamProxy() noexcept
-    {
-        AddFlag(ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY);
-    }
-
     [[nodiscard]] bool IsDynamic() const noexcept
     {
         return lang_.IsDynamic();

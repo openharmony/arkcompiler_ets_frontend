@@ -147,6 +147,7 @@ void ETSGen::StoreAccumulator(const ir::AstNode *const node, const VReg vreg)
 {
     const auto *const accType = GetAccumulatorType();
 
+    ASSERT(accType != nullptr);
     if (accType->HasTypeFlag(TYPE_FLAG_BYTECODE_REF)) {
         Ra().Emit<StaObj>(node, vreg);
     } else if (accType->HasTypeFlag(checker::TypeFlag::ETS_WIDE_NUMERIC)) {
@@ -162,6 +163,7 @@ void ETSGen::LoadAccumulator(const ir::AstNode *node, VReg vreg)
 {
     const auto *const vregType = GetVRegType(vreg);
 
+    ASSERT(vregType != nullptr);
     if (vregType->HasTypeFlag(TYPE_FLAG_BYTECODE_REF)) {
         Ra().Emit<LdaObj>(node, vreg);
     } else if (vregType->HasTypeFlag(checker::TypeFlag::ETS_WIDE_NUMERIC)) {

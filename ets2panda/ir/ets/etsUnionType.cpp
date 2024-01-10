@@ -82,4 +82,21 @@ checker::Type *ETSUnionType::GetType([[maybe_unused]] checker::ETSChecker *check
     checker->Relation()->SetNode(nullptr);
     return TsType();
 }
+
+ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ArenaVector<ir::TypeNode *> types(allocator->Adapter());
+    for (auto *it : types_) {
+        auto *type = it->Clone(allocator, nullptr);
+        types.push_back(type);
+    }
+    ETSUnionType *const clone = allocator->New<ir::ETSUnionType>(std::move(types));
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    for (auto *it : clone->types_) {
+        it->SetParent(clone);
+    }
+    return clone;
+}
 }  // namespace ark::es2panda::ir

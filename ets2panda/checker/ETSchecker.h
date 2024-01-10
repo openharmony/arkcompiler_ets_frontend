@@ -321,15 +321,9 @@ public:
                                   const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
                                   std::string_view signatureKind,
                                   TypeRelationFlag resolveFlags = TypeRelationFlag::NONE);
-    bool ValidateProxySignature(Signature *signature, const ir::TSTypeParameterInstantiation *typeArguments,
-                                const ArenaVector<ir::Expression *> &arguments,
-                                const std::vector<bool> &argTypeInferenceRequired);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
-    Signature *ChooseMostSpecificProxySignature(ArenaVector<Signature *> &signatures,
-                                                const std::vector<bool> &argTypeInferenceRequired,
-                                                const lexer::SourcePosition &pos, size_t argumentsSize);
     Signature *ResolveCallExpression(ArenaVector<Signature *> &signatures,
                                      const ir::TSTypeParameterInstantiation *typeArguments,
                                      const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos);
@@ -537,9 +531,6 @@ public:
     util::StringView GetHashFromSubstitution(const Substitution *substitution);
     util::StringView GetHashFromFunctionType(ir::ETSFunctionType *type);
     static ETSObjectType *GetOriginalBaseType(Type *object);
-    void AddUndefinedParamsForDefaultParams(const Signature *signature, ir::AstNode *parent,
-                                            ArenaVector<ark::es2panda::ir::Expression *> &arguments,
-                                            ETSChecker *checker);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
     bool ExtensionETSFunctionType(checker::Type *type);
     void ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
@@ -699,14 +690,14 @@ private:
     template <typename... Args>
     ETSObjectType *AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)(Args...), Args... args) const;
     Signature *GetMostSpecificSignature(ArenaVector<Signature *> &compatibleSignatures,
-                                        ArenaVector<Signature *> &proxySignatures,
                                         const ArenaVector<ir::Expression *> &arguments,
                                         std::vector<bool> &argTypeInferenceRequired, const lexer::SourcePosition &pos,
                                         TypeRelationFlag resolveFlags);
-    std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> CollectSignatures(
-        ArenaVector<Signature *> &signatures, const ir::TSTypeParameterInstantiation *typeArguments,
-        const ArenaVector<ir::Expression *> &arguments, std::vector<bool> &argTypeInferenceRequired,
-        const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags);
+    ArenaVector<Signature *> CollectSignatures(ArenaVector<Signature *> &signatures,
+                                               const ir::TSTypeParameterInstantiation *typeArguments,
+                                               const ArenaVector<ir::Expression *> &arguments,
+                                               std::vector<bool> &argTypeInferenceRequired,
+                                               const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags);
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *callExpr);
     void TransformTraillingLambda(ir::CallExpression *callExpr);

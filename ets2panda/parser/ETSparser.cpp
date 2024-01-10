@@ -1410,7 +1410,8 @@ lexer::SourcePosition ETSParser::InitializeGlobalVariable(ir::Identifier *fieldN
 }
 
 ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
-                                                            ir::Identifier *className, ir::Identifier *identNode)
+                                                            ir::Identifier *className,
+                                                            [[maybe_unused]] ir::Identifier *identNode)
 {
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
     auto methodKind = ir::MethodDefinitionKind::METHOD;
@@ -1447,7 +1448,6 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     method->SetRange(funcExpr->Range());
 
     fieldMap_.insert({methodName->Name(), method});
-    AddProxyOverloadToMethodWithDefaultParams(method, identNode);
 
     return method;
 }
@@ -2251,119 +2251,6 @@ std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptF
     }
 
     return std::make_pair(hasDefaultParameter, requiredParametersNumber);
-}
-
-ir::MethodDefinition *ETSParser::CreateProxyConstructorDefinition(ir::MethodDefinition const *const method)
-{
-    ASSERT(method->IsConstructor());
-
-    const auto *const function = method->Function();
-    std::string proxyMethod = function->Id()->Name().Mutf8() + '(';
-
-    for (const auto *const it : function->Params()) {
-        auto const *const param = it->AsETSParameterExpression();
-        proxyMethod += param->Ident()->Name().Mutf8() + ": " + GetNameForTypeNode(param->TypeAnnotation()) + ", ";
-    }
-
-    proxyMethod += ir::PROXY_PARAMETER_NAME;
-    proxyMethod += ": int) { this(";
-
-    auto const parametersNumber = function->Params().size();
-    for (size_t i = 0U; i < parametersNumber; ++i) {
-        if (auto const *const param = function->Params()[i]->AsETSParameterExpression(); param->IsDefault()) {
-            std::string proxyIf = "(((" + std::string {ir::PROXY_PARAMETER_NAME} + " >> " + std::to_string(i) +
-                                  ") & 0x1) == 0) ? " + param->Ident()->Name().Mutf8() + " : (" +
-                                  param->LexerSaved().Mutf8() + "), ";
-            proxyMethod += proxyIf;
-        } else {
-            proxyMethod += function->Params()[i]->AsETSParameterExpression()->Ident()->Name().Mutf8() + ", ";
-        }
-    }
-
-    proxyMethod.pop_back();  // Note: at least one parameter always should present!
-    proxyMethod.pop_back();
-    proxyMethod += ") }";
-
-    return CreateConstructorDefinition(method->Modifiers(), proxyMethod, DEFAULT_PROXY_FILE);
-}
-
-ir::MethodDefinition *ETSParser::CreateProxyMethodDefinition(ir::MethodDefinition const *const method,
-                                                             ir::Identifier const *const identNode)
-{
-    ASSERT(!method->IsConstructor());
-
-    const auto *const function = method->Function();
-    std::string proxyMethod = function->Id()->Name().Mutf8() + "_proxy(";
-
-    for (const auto *const it : function->Params()) {
-        auto const *const param = it->AsETSParameterExpression();
-        proxyMethod += param->Ident()->Name().Mutf8() + ": " + GetNameForTypeNode(param->TypeAnnotation()) + ", ";
-    }
-
-    const bool hasFunctionReturnType = function->ReturnTypeAnnotation() != nullptr;
-    const std::string returnType = hasFunctionReturnType ? GetNameForTypeNode(function->ReturnTypeAnnotation()) : "";
-
-    proxyMethod += ir::PROXY_PARAMETER_NAME;
-    proxyMethod += ": int)";
-    if (hasFunctionReturnType) {
-        proxyMethod += ": " + returnType;
-    }
-    proxyMethod += " { ";
-
-    auto const parametersNumber = function->Params().size();
-    for (size_t i = 0U; i < parametersNumber; ++i) {
-        if (auto const *const param = function->Params()[i]->AsETSParameterExpression(); param->IsDefault()) {
-            std::string proxyIf = "if (((" + std::string {ir::PROXY_PARAMETER_NAME} + " >> " + std::to_string(i) +
-                                  ") & 0x1) == 1) { " + param->Ident()->Name().Mutf8() + " = " +
-                                  param->LexerSaved().Mutf8() + " } ";
-            proxyMethod += proxyIf;
-        }
-    }
-
-    proxyMethod += ' ';
-    if ((function->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0) {
-        proxyMethod += "return ";
-    }
-
-    if (identNode != nullptr) {
-        if (method->IsStatic()) {
-            ASSERT(identNode != nullptr);
-            proxyMethod += identNode->Name().Mutf8() + ".";
-        } else {
-            proxyMethod += "this.";
-        }
-    }
-
-    proxyMethod += function->Id()->Name().Mutf8();
-    proxyMethod += '(';
-
-    for (const auto *const it : function->Params()) {
-        proxyMethod += it->AsETSParameterExpression()->Ident()->Name().Mutf8() + ", ";
-    }
-    proxyMethod.pop_back();
-    proxyMethod.pop_back();
-    proxyMethod += ") }";
-
-    return CreateMethodDefinition(method->Modifiers(), proxyMethod, DEFAULT_PROXY_FILE);
-}
-
-void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *identNode)
-{
-    if (auto const [has_default_parameters, required_parameters] = CheckDefaultParameters(method->Function());
-        has_default_parameters) {
-        if (ir::MethodDefinition *proxyMethodDef = !method->IsConstructor()
-                                                       ? CreateProxyMethodDefinition(method, identNode)
-                                                       : CreateProxyConstructorDefinition(method);
-            proxyMethodDef != nullptr) {
-            auto *const proxyParam = proxyMethodDef->Function()->Params().back()->AsETSParameterExpression();
-            proxyParam->SetRequiredParams(required_parameters);
-
-            proxyMethodDef->Function()->SetDefaultParamProxy();
-            proxyMethodDef->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
-            method->AddOverload(proxyMethodDef);
-            proxyMethodDef->SetParent(method);
-        }
-    }
 }
 
 std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
