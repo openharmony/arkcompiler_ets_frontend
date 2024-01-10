@@ -604,6 +604,40 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
     conversion::Forbidden(relation);
 }
 
+bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, TypeRelation *const relation,
+                                            Type *const source)
+{
+    // 3.8.3 Subtyping among Array Types
+    auto const *const base = GetConstOriginalBaseType();
+    if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
+        relation->Result(true);
+        return true;
+    }
+
+    if (source->IsETSTypeParameter()) {
+        IsSupertypeOf(relation, source->AsETSTypeParameter()->GetConstraintType());
+        return true;
+    }
+
+    if (!source->IsETSObjectType() ||
+        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
+                                                  ETSObjectFlags::NULL_TYPE)) {
+        return true;
+    }
+
+    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
+        return true;
+    }
+    // All classes and interfaces are subtypes of Object
+    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
+        relation->Result(true);
+        return true;
+    }
+
+    IdenticalUptoNullability(relation, source);
+    return relation->IsTrue();
+}
+
 void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
@@ -620,30 +654,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    // 3.8.3 Subtyping among Array Types
-    auto const *const base = GetConstOriginalBaseType();
-    if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
-        relation->Result(true);
-        return;
-    }
-
-    if (!source->IsETSObjectType() ||
-        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
-                                                  ETSObjectFlags::NULL_TYPE)) {
-        return;
-    }
-
-    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
-        return;
-    }
-    // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
-        relation->Result(true);
-        return;
-    }
-
-    IdenticalUptoNullability(relation, source);
-    if (relation->IsTrue()) {
+    if (DefaultObjectTypeChecks(etsChecker, relation, source)) {
         return;
     }
 

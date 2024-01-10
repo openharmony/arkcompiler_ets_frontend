@@ -28,6 +28,12 @@ class B extends A {
     }
 }
 
+class TupleProvider<X> {
+    memb: [X, X];
+    constructor(value: [X, X]) { this.memb = value;}
+    public publish(): [X, X] { return this.memb; }
+}
+
 
 function main(): void {
     const tup_1: [string, number] = ["a", 12];
@@ -126,4 +132,9 @@ function main(): void {
     assert(a_b_tup[0].foo() == 1);
     assert(a_b_tup[1].foo() == 2);
     assert(a_b_tup[2].foo() == 2);
+
+    let number_tup: [Double, Double] = [42.0, 43.0];
+    let tn: TupleProvider<number> = new TupleProvider<number>(number_tup);
+    let result: [Number, Number] = tn.publish();
+    assert result[0] == 42.0;
 }

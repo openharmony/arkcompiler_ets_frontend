@@ -725,7 +725,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
                         currentElement->Start());
                 }
 
-                const checker::CastingContext cast(
+                checker::AssignmentContext(
                     checker->Relation(), currentElement, elementType, compareType, currentElement->Start(),
                     {"Array initializer's type is not assignable to tuple type at index: ", idx});
 

@@ -14,7 +14,10 @@
  */
 
 #include "etsTupleType.h"
+
+#include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
+#include "ir/ets/etsTuple.h"
 
 namespace panda::es2panda::checker {
 void ETSTupleType::ToString(std::stringstream &ss) const
@@ -127,6 +130,20 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
     }
 
     relation->Result(true);
+}
+
+Type *ETSTupleType::Substitute(TypeRelation *relation, const Substitution *substitution)
+{
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    ArenaVector<Type *> newTypeList(checker->Allocator()->Adapter());
+
+    for (auto *const tupleTypeListElement : GetTupleTypesList()) {
+        newTypeList.emplace_back(tupleTypeListElement->Substitute(relation, substitution));
+    }
+
+    auto *newSpreadType = spreadType_ == nullptr ? nullptr : spreadType_->Substitute(relation, substitution);
+    auto *newElementType = ir::ETSTuple::CalculateLUBForTuple(checker, newTypeList, newSpreadType);
+    return checker->Allocator()->New<ETSTupleType>(std::move(newTypeList), newElementType, newSpreadType);
 }
 
 void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
