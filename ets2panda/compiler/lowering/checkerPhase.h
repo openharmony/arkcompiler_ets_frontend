@@ -20,7 +20,7 @@
 
 namespace ark::es2panda::compiler {
 class CheckerPhase : public Phase {
-    std::string_view Name() override
+    std::string_view Name() const override
     {
         return "CheckerPhase";
     }

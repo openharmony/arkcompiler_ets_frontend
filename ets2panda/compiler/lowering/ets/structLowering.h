@@ -22,7 +22,7 @@ namespace ark::es2panda::compiler {
 
 class StructLowering : public Phase {
 public:
-    std::string_view Name() override
+    std::string_view Name() const override
     {
         return "StructLowering";
     }

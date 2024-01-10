@@ -24,7 +24,7 @@
 
 namespace panda::es2panda::compiler {
 
-std::string_view OptionalLowering::Name()
+std::string_view OptionalLowering::Name() const
 {
     return "OptionalLowering";
 }

@@ -23,32 +23,75 @@
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/ets/etsClassLiteral.h"
+#include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ets/etsScript.h"
+#include "ir/ets/etsParameterExpression.h"
+#include "ir/ets/etsTypeReference.h"
+#include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsScript.h"
 #include "ir/expressions/sequenceExpression.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/module/importNamespaceSpecifier.h"
 #include "ir/module/importDefaultSpecifier.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/memberExpression.h"
+#include "ir/statements/blockStatement.h"
 #include "ir/statements/forInStatement.h"
 #include "ir/statements/forOfStatement.h"
 #include "ir/statements/forUpdateStatement.h"
+#include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
+#include "ir/statements/classDeclaration.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/throwStatement.h"
+#include "ir/statements/tryStatement.h"
+#include "ir/ts/tsClassImplements.h"
+#include "ir/ts/tsEnumDeclaration.h"
+#include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
 #include "lexer/token/tokenType.h"
 #include "util/ustring.h"
 #include "utils/arena_containers.h"
 #include "varbinder/scope.h"
 
-constexpr auto RECURSIVE_SUFFIX = "ForAll";
+#include <algorithm>
+#include <iterator>
 
-namespace ark::es2panda::compiler {
+namespace ark::es2panda::compiler::ast_verifier {
+class CheckContext {
+public:
+    explicit CheckContext() : checkName_ {"Invalid"} {}
+
+    void AddCheckMessage(const std::string &cause, const ir::AstNode &node, const lexer::SourcePosition &from)
+    {
+        const auto loc = from.line;
+        const auto &&dump = node.DumpJSON();
+        messages_.emplace_back(checkName_, cause.data(), dump.data(), loc);
+    }
+
+    void SetCheckName(util::StringView checkName)
+    {
+        checkName_ = checkName;
+    }
+
+    Messages GetMessages()
+    {
+        return messages_;
+    }
+
+private:
+    Messages messages_;
+    util::StringView checkName_;
+};
 
 static bool IsNumericType(const ir::AstNode *ast)
 {
@@ -109,12 +152,20 @@ static bool IsContainedIn(const T *child, const T *parent)
 }
 bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDeclNode)
 {
+    // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
+    if (!ast->GetTopStatement()->IsETSScript()) {
+        return false;
+    }
     auto *currentTopStatement = (static_cast<const ir::ETSScript *>(ast->GetTopStatement()));
     auto *currentProgram = currentTopStatement->Program();
     if (currentProgram == nullptr) {
         return false;
     }
     util::StringView packageNameCurrent = currentProgram->GetPackageName();
+    // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
+    if (!objTypeDeclNode->GetTopStatement()->IsETSScript()) {
+        return false;
+    }
     auto *objectTopStatement = (static_cast<const ir::ETSScript *>(objTypeDeclNode->GetTopStatement()));
     auto *objectProgram = objectTopStatement->Program();
     if (objectProgram == nullptr) {
@@ -217,19 +268,19 @@ class NodeHasParent {
 public:
     explicit NodeHasParent([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
         const auto isEtsScript =
             ast->IsETSScript() || (ast->IsBlockStatement() && ast->AsBlockStatement()->IsProgram());
         const auto hasParent = ast->Parent() != nullptr;
         if (!isEtsScript && !hasParent) {
-            ctx.AddInvariantError("NodeHasParent", "NULL_PARENT", *ast);
-            return ASTVerifier::CheckResult::FAILED;
+            ctx.AddCheckMessage("NULL_PARENT", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
         if (ast->IsProgram()) {
-            return ASTVerifier::CheckResult::SUCCESS;
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 };
 
@@ -237,18 +288,18 @@ class IdentifierHasVariable {
 public:
     explicit IdentifierHasVariable([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
         if (!ast->IsIdentifier()) {
-            return ASTVerifier::CheckResult::SUCCESS;
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
         if (ast->AsIdentifier()->Variable() != nullptr) {
-            return ASTVerifier::CheckResult::SUCCESS;
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
         const auto *id = ast->AsIdentifier();
-        ctx.AddInvariantError("IdentifierHasVariable", "NULL_VARIABLE", *id);
-        return ASTVerifier::CheckResult::FAILED;
+        ctx.AddCheckMessage("NULL_VARIABLE", *id, id->Start());
+        return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
 private:
@@ -258,32 +309,114 @@ class NodeHasType {
 public:
     explicit NodeHasType([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
-        if (ast->IsTyped()) {
+        // NOTE(orlovskymaxim) In TS some ETS constructs are expressions (i.e. class/interface definition)
+        // Because ETS uses some AST classes from TS this introduces semantical problem
+        // Solution for now - manually filter expressions that are statements in ETS
+        if (ast->IsETSPackageDeclaration()) {
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+        if (IsImportLike(ast)) {
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+        if (IsExportLike(ast)) {
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+
+        if (ast->IsTSTypeAliasDeclaration()) {
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+        if (auto [decision, action] = CheckCompound(ctx, ast); action == CheckAction::SKIP_SUBTREE) {
+            return {decision, action};
+        }
+
+        if (ast->IsTyped() && ast->IsExpression()) {
             if (ast->IsClassDefinition() && ast->AsClassDefinition()->Ident()->Name() == "ETSGLOBAL") {
-                return ASTVerifier::CheckResult::SKIP_SUBTREE;
+                return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+            }
+            if (ast->IsIdentifier() && ast->AsIdentifier()->Name() == "") {
+                return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
             }
             const auto *typed = static_cast<const ir::TypedAstNode *>(ast);
             if (typed->TsType() == nullptr) {
-                ctx.AddInvariantError("NodeHasType", "NULL_TS_TYPE", *ast);
-                return ASTVerifier::CheckResult::FAILED;
+                ctx.AddCheckMessage("NULL_TS_TYPE", *ast, ast->Start());
+                return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             }
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
 private:
+    bool IsImportLike(const ir::AstNode *ast) const
+    {
+        if (ast->IsETSImportDeclaration()) {
+            return true;
+        }
+        if (ast->IsImportExpression()) {
+            return true;
+        }
+        if (ast->IsImportSpecifier()) {
+            return true;
+        }
+        if (ast->IsImportDefaultSpecifier()) {
+            return true;
+        }
+        if (ast->IsImportNamespaceSpecifier()) {
+            return true;
+        }
+        return false;
+    }
+
+    bool IsExportLike(const ir::AstNode *ast) const
+    {
+        if (ast->IsExportDefaultDeclaration()) {
+            return true;
+        }
+        if (ast->IsExportSpecifier()) {
+            return true;
+        }
+        if (ast->IsExportAllDeclaration()) {
+            return true;
+        }
+        if (ast->IsExportNamedDeclaration()) {
+            return true;
+        }
+        return false;
+    }
+
+    CheckResult CheckCompound(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        if (ast->IsTSInterfaceDeclaration()) {
+            for (const auto &member : ast->AsTSInterfaceDeclaration()->Body()->Body()) {
+                [[maybe_unused]] auto _ = (*this)(ctx, member);
+            }
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+        if (ast->IsTSEnumDeclaration()) {
+            for (const auto &member : ast->AsTSEnumDeclaration()->Members()) {
+                [[maybe_unused]] auto _ = (*this)(ctx, member);
+            }
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+        if (ast->IsClassDefinition()) {
+            for (const auto &member : ast->AsClassDefinition()->Body()) {
+                [[maybe_unused]] auto _ = (*this)(ctx, member);
+            }
+            return {CheckDecision::CORRECT, CheckAction::SKIP_SUBTREE};
+        }
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
 };
 
 class VariableHasScope {
 public:
     explicit VariableHasScope(ArenaAllocator &allocator) : allocator_ {allocator} {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
         if (!ast->IsIdentifier()) {
-            return ASTVerifier::CheckResult::SUCCESS;  // we will check invariant of Identifier only
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};  // we will check invariant of Identifier only
         }
 
         // we will check invariant for only local variables of identifiers
@@ -291,17 +424,19 @@ public:
             const auto var = *maybeVar;
             const auto scope = var->GetScope();
             if (scope == nullptr) {
-                ctx.AddInvariantError("VariableHasScope", "NULL_SCOPE_LOCAL_VAR", *ast);
-                return ASTVerifier::CheckResult::FAILED;
+                ctx.AddCheckMessage("NULL_SCOPE_LOCAL_VAR", *ast, ast->Start());
+                return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             }
-            return ScopeEncloseVariable(ctx, var) ? ASTVerifier::CheckResult::SUCCESS
-                                                  : ASTVerifier::CheckResult::FAILED;
+            auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
+            if (!ScopeEncloseVariable(ctx, var)) {
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+            return result;
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
-    static std::optional<varbinder::LocalVariable *> GetLocalScopeVariable(ArenaAllocator &allocator,
-                                                                           ASTVerifier::ErrorContext &ctx,
+    static std::optional<varbinder::LocalVariable *> GetLocalScopeVariable(ArenaAllocator &allocator, CheckContext &ctx,
                                                                            const ir::AstNode *ast)
     {
         if (!ast->IsIdentifier()) {
@@ -310,7 +445,8 @@ public:
 
         auto invariantHasVariable = IdentifierHasVariable {allocator};
         const auto variable = ast->AsIdentifier()->Variable();
-        if ((invariantHasVariable(ctx, ast) == ASTVerifier::CheckResult::SUCCESS) && variable->IsLocalVariable()) {
+        const auto [decision, action] = invariantHasVariable(ctx, ast);
+        if (decision == CheckDecision::CORRECT && variable->IsLocalVariable()) {
             const auto localVar = variable->AsLocalVariable();
             if (localVar->HasFlag(varbinder::VariableFlags::LOCAL)) {
                 return localVar;
@@ -319,7 +455,7 @@ public:
         return std::nullopt;
     }
 
-    bool ScopeEncloseVariable(ASTVerifier::ErrorContext &ctx, const varbinder::LocalVariable *var)
+    bool ScopeEncloseVariable(CheckContext &ctx, const varbinder::LocalVariable *var)
     {
         ASSERT(var);
 
@@ -331,22 +467,22 @@ public:
         if (node == nullptr) {
             return true;
         }
-        const auto name = "VariableHasScope";
+        const auto varStart = node->Start();
         bool isOk = true;
         if (scope->Bindings().count(var->Name()) == 0) {
-            ctx.AddInvariantError(name, "SCOPE_DO_NOT_ENCLOSE_LOCAL_VAR", *node);
+            ctx.AddCheckMessage("SCOPE_DO_NOT_ENCLOSE_LOCAL_VAR", *node, varStart);
             isOk = false;
         }
         const auto scopeNode = scope->Node();
         auto varNode = node;
         if (!IsContainedIn(varNode, scopeNode) || scopeNode == nullptr) {
-            ctx.AddInvariantError(name, "SCOPE_NODE_DONT_DOMINATE_VAR_NODE", *node);
+            ctx.AddCheckMessage("SCOPE_NODE_DONT_DOMINATE_VAR_NODE", *node, varStart);
             isOk = false;
         }
         const auto &decls = scope->Decls();
         const auto declDominate = std::count(decls.begin(), decls.end(), var->Declaration());
         if (declDominate == 0) {
-            ctx.AddInvariantError(name, "SCOPE_DECL_DONT_DOMINATE_VAR_DECL", *node);
+            ctx.AddCheckMessage("SCOPE_DECL_DONT_DOMINATE_VAR_DECL", *node, varStart);
             isOk = false;
         }
         return isOk;
@@ -360,11 +496,9 @@ class EveryChildHasValidParent {
 public:
     explicit EveryChildHasValidParent([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
-        ASSERT(ast != nullptr);
-
-        auto result = ASTVerifier::CheckResult::SUCCESS;
+        auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
         if (ast->IsETSScript()) {
             return result;
         }
@@ -384,8 +518,8 @@ public:
                     return;
                 }
 
-                ctx.AddInvariantError("EveryChildHasValidParent", "INCORRECT_PARENT_REF", *node);
-                result = ASTVerifier::CheckResult::FAILED;
+                ctx.AddCheckMessage("INCORRECT_PARENT_REF", *node, node->Start());
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             }
         });
 
@@ -399,33 +533,32 @@ class VariableHasEnclosingScope {
 public:
     explicit VariableHasEnclosingScope(ArenaAllocator &allocator) : allocator_ {allocator} {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
         const auto maybeVar = VariableHasScope::GetLocalScopeVariable(allocator_, ctx, ast);
         if (!maybeVar) {
-            return ASTVerifier::CheckResult::SUCCESS;
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
         const auto var = *maybeVar;
         const auto scope = var->GetScope();
-        const auto name = "VariableHasEnclosingScope";
         if (scope == nullptr) {
             // already checked
-            return ASTVerifier::CheckResult::SUCCESS;
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
         const auto encloseScope = scope->EnclosingVariableScope();
         if (encloseScope == nullptr) {
-            ctx.AddInvariantError(name, "NO_ENCLOSING_VAR_SCOPE", *ast);
-            return ASTVerifier::CheckResult::FAILED;
+            ctx.AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
         const auto node = scope->Node();
-        auto result = ASTVerifier::CheckResult::SUCCESS;
+        auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
         if (!IsContainedIn(ast, node)) {
-            result = ASTVerifier::CheckResult::FAILED;
-            ctx.AddInvariantError(name, "VARIABLE_NOT_ENCLOSE_SCOPE", *ast);
+            result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
         }
         if (!IsContainedIn<varbinder::Scope>(scope, encloseScope)) {
-            result = ASTVerifier::CheckResult::FAILED;
-            ctx.AddInvariantError(name, "VARIABLE_NOT_ENCLOSE_SCOPE", *ast);
+            result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
         }
         return result;
     }
@@ -438,27 +571,27 @@ class SequenceExpressionHasLastType {
 public:
     explicit SequenceExpressionHasLastType([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
         if (!ast->IsSequenceExpression()) {
-            return ASTVerifier::CheckResult::SUCCESS;
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
         const auto *expr = ast->AsSequenceExpression();
         const auto *last = expr->Sequence().back();
-        const auto name = "SequenceExpressionHasLastType";
         if (expr->TsType() == nullptr) {
-            ctx.AddInvariantError(name, "Sequence expression type is null", *expr);
-            return ASTVerifier::CheckResult::FAILED;
+            ctx.AddCheckMessage("Sequence expression type is null", *expr, expr->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
         if (last->TsType() == nullptr) {
-            ctx.AddInvariantError(name, "Sequence expression last type is null", *last);
-            return ASTVerifier::CheckResult::FAILED;
+            ctx.AddCheckMessage("Sequence expression last type is null", *last, last->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
         if (expr->TsType() != last->TsType()) {
-            ctx.AddInvariantError(name, "Sequence expression type and last expression type are not the same", *expr);
-            return ASTVerifier::CheckResult::FAILED;
+            ctx.AddCheckMessage("Sequence expression type and last expression type are not the same", *expr,
+                                expr->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
 private:
@@ -468,108 +601,142 @@ class ForLoopCorrectlyInitialized {
 public:
     explicit ForLoopCorrectlyInitialized([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
-        const auto name = "ForLoopCorrectlyInitialized";
         if (ast->IsForInStatement()) {
-            auto const *left = ast->AsForInStatement()->Left();
-            if (left == nullptr) {
-                ctx.AddInvariantError(name, "NULL FOR-IN-LEFT", *ast);
-                return ASTVerifier::CheckResult::FAILED;
-            }
-
-            if (!left->IsIdentifier() && !left->IsVariableDeclaration()) {
-                ctx.AddInvariantError(name, "INCORRECT FOR-IN-LEFT", *ast);
-                return ASTVerifier::CheckResult::FAILED;
-            }
+            return HandleForInStatement(ctx, ast);
         }
 
         if (ast->IsForOfStatement()) {
-            auto const *left = ast->AsForOfStatement()->Left();
-            if (left == nullptr) {
-                ctx.AddInvariantError(name, "NULL FOR-OF-LEFT", *ast);
-                return ASTVerifier::CheckResult::FAILED;
-            }
-
-            if (!left->IsIdentifier() && !left->IsVariableDeclaration()) {
-                ctx.AddInvariantError(name, "INCORRECT FOR-OF-LEFT", *ast);
-                return ASTVerifier::CheckResult::FAILED;
-            }
+            return HandleForOfStatement(ctx, ast);
         }
 
         if (ast->IsForUpdateStatement()) {
-            // The most important part of for-loop is the test.
-            // But it also can be null. Then there must be break;(return) in the body.
-            auto const *test = ast->AsForUpdateStatement()->Test();
-            if (test == nullptr) {
-                auto const *body = ast->AsForUpdateStatement()->Body();
-                if (body == nullptr) {
-                    ctx.AddInvariantError(name, "NULL FOR-TEST AND FOR-BODY", *ast);
-                    return ASTVerifier::CheckResult::FAILED;
-                }
-                bool hasExit = body->IsBreakStatement() || body->IsReturnStatement();
-                body->IterateRecursively([&hasExit](ir::AstNode *child) {
-                    hasExit |= child->IsBreakStatement() || child->IsReturnStatement();
-                });
-                if (!hasExit) {
-                    // an infinite loop
-                    ctx.AddInvariantError(name, "WARNING: NULL FOR-TEST AND FOR-BODY doesn't exit", *ast);
-                }
-                return ASTVerifier::CheckResult::SUCCESS;
-            }
-
-            if (!test->IsExpression()) {
-                ctx.AddInvariantError(name, "NULL FOR VAR", *ast);
-                return ASTVerifier::CheckResult::FAILED;
-            }
+            return HandleForUpdateStatement(ctx, ast);
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
 private:
+    [[nodiscard]] CheckResult HandleForInStatement(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        auto const *left = ast->AsForInStatement()->Left();
+        if (left == nullptr) {
+            ctx.AddCheckMessage("NULL FOR-IN-LEFT", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+
+        if (!left->IsIdentifier() && !left->IsVariableDeclaration()) {
+            ctx.AddCheckMessage("INCORRECT FOR-IN-LEFT", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
+
+    [[nodiscard]] CheckResult HandleForOfStatement(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        auto const *left = ast->AsForOfStatement()->Left();
+        if (left == nullptr) {
+            ctx.AddCheckMessage("NULL FOR-OF-LEFT", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+
+        if (!left->IsIdentifier() && !left->IsVariableDeclaration()) {
+            ctx.AddCheckMessage("INCORRECT FOR-OF-LEFT", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
+
+    [[nodiscard]] CheckResult HandleForUpdateStatement(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        // The most important part of for-loop is the test.
+        // But it also can be null. Then there must be break;(return) in the body.
+        auto const *test = ast->AsForUpdateStatement()->Test();
+        if (test == nullptr) {
+            auto const *body = ast->AsForUpdateStatement()->Body();
+            if (body == nullptr) {
+                ctx.AddCheckMessage("NULL FOR-TEST AND FOR-BODY", *ast, ast->Start());
+                return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+            bool hasExit = body->IsBreakStatement() || body->IsReturnStatement();
+            body->IterateRecursively(
+                [&hasExit](ir::AstNode *child) { hasExit |= child->IsBreakStatement() || child->IsReturnStatement(); });
+            if (!hasExit) {
+                // an infinite loop
+                ctx.AddCheckMessage("NULL FOR-TEST AND FOR-BODY doesn't exit", *ast, ast->Start());
+            }
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+
+        if (!test->IsExpression()) {
+            ctx.AddCheckMessage("NULL FOR VAR", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
 };
 
 class ModifierAccessValid {
 public:
     explicit ModifierAccessValid([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
-        const auto name = "ModifierAccessValid";
-        if (ast->IsMemberExpression()) {
-            const auto *propVar = ast->AsMemberExpression()->PropVar();
-            if (propVar != nullptr && propVar->HasFlag(varbinder::VariableFlags::PROPERTY) &&
-                !ValidateVariableAccess(propVar, ast->AsMemberExpression())) {
-                ctx.AddInvariantError(name, "PROPERTY_NOT_VISIBLE_HERE", *ast);
-                return ASTVerifier::CheckResult::FAILED;
-            }
+        if (auto [decision, action] = HandleMethodExpression(ctx, ast); decision == CheckDecision::INCORRECT) {
+            return {decision, action};
         }
-        if (ast->IsCallExpression()) {
-            const auto *callExpr = ast->AsCallExpression();
-            const auto *callee = callExpr->Callee();
-            if (callee != nullptr && callee->IsMemberExpression()) {
-                const auto *calleeMember = callee->AsMemberExpression();
-                const auto *propVarCallee = calleeMember->PropVar();
-                if (propVarCallee != nullptr && propVarCallee->HasFlag(varbinder::VariableFlags::METHOD) &&
-                    !ValidateMethodAccess(calleeMember, ast->AsCallExpression())) {
-                    ctx.AddInvariantError(name, "PROPERTY_NOT_VISIBLE_HERE", *callee);
-                    return ASTVerifier::CheckResult::FAILED;
-                }
-            }
+        if (auto [decision, action] = HandleCallExpression(ctx, ast); decision == CheckDecision::INCORRECT) {
+            return {decision, action};
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
 private:
+    CheckResult HandleMethodExpression(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        if (!ast->IsMemberExpression()) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        const auto *propVar = ast->AsMemberExpression()->PropVar();
+        if (propVar != nullptr && propVar->HasFlag(varbinder::VariableFlags::PROPERTY) &&
+            !ValidateVariableAccess(propVar, ast->AsMemberExpression())) {
+            ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
+
+    CheckResult HandleCallExpression(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        if (!ast->IsCallExpression()) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        const auto *callExpr = ast->AsCallExpression();
+        const auto *callee = callExpr->Callee();
+        if (callee != nullptr && callee->IsMemberExpression()) {
+            const auto *calleeMember = callee->AsMemberExpression();
+            const auto *propVarCallee = calleeMember->PropVar();
+            if (propVarCallee != nullptr && propVarCallee->HasFlag(varbinder::VariableFlags::METHOD) &&
+                !ValidateMethodAccess(calleeMember, ast->AsCallExpression())) {
+                ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE", *callee, callee->Start());
+                return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+        }
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
 };
 
 class ImportExportAccessValid {
 public:
     explicit ImportExportAccessValid([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()(ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
-        ASTVerifier::InvariantSet importedVariables {};
+        std::unordered_set<std::string> importedVariables {};
         if (ast->IsETSImportDeclaration()) {
             const auto importDecl = ast->AsETSImportDeclaration()->Specifiers();
             const auto name = [](ir::AstNode *const specifier) {
@@ -585,21 +752,20 @@ public:
                 importedVariables.emplace(name(import));
             }
         }
-        const auto name = "ImportExportAccessValid";
         if (ast->IsCallExpression()) {
             const auto *callExpr = ast->AsCallExpression();
             const auto *callee = callExpr->Callee();
             if (callee != nullptr && callee->IsIdentifier() &&
                 !HandleImportExportIdentifier(importedVariables, callee->AsIdentifier(), callExpr)) {
-                ctx.AddInvariantError(name, "PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *callee);
-                return ASTVerifier::CheckResult::FAILED;
+                ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *callee, callee->Start());
+                return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             }
         }
         if (ast->IsIdentifier() && !HandleImportExportIdentifier(importedVariables, ast->AsIdentifier(), nullptr)) {
-            ctx.AddInvariantError(name, "PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *ast);
-            return ASTVerifier::CheckResult::FAILED;
+            ctx.AddCheckMessage("PROPERTY_NOT_VISIBLE_HERE(NOT_EXPORTED)", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
 private:
@@ -616,7 +782,7 @@ private:
         return node->IsExported();
     }
 
-    bool InvariantImportExportMethod(const ASTVerifier::InvariantSet &importedVariables,
+    bool InvariantImportExportMethod(const std::unordered_set<std::string> &importedVariables,
                                      const varbinder::Variable *varCallee, const ir::AstNode *callExpr,
                                      util::StringView name)
     {
@@ -640,7 +806,7 @@ private:
         return true;
     }
 
-    bool InvariantImportExportVariable(const ASTVerifier::InvariantSet &importedVariables,
+    bool InvariantImportExportVariable(const std::unordered_set<std::string> &importedVariables,
                                        const varbinder::Variable *var, const ir::Identifier *ident,
                                        util::StringView name)
     {
@@ -665,7 +831,7 @@ private:
         return true;
     }
 
-    bool HandleImportExportIdentifier(ASTVerifier::InvariantSet &importedVariables, const ir::Identifier *ident,
+    bool HandleImportExportIdentifier(std::unordered_set<std::string> &importedVariables, const ir::Identifier *ident,
                                       const ir::AstNode *callExpr)
     {
         if (ident->IsReference()) {
@@ -685,114 +851,83 @@ class ArithmeticOperationValid {
 public:
     explicit ArithmeticOperationValid([[maybe_unused]] ArenaAllocator &allocator) {}
 
-    ASTVerifier::CheckResult operator()([[maybe_unused]] ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast)
+    [[nodiscard]] CheckResult operator()([[maybe_unused]] CheckContext &ctx, const ir::AstNode *ast)
     {
         if (ast->IsBinaryExpression() && ast->AsBinaryExpression()->IsArithmetic()) {
             if (ast->AsBinaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS &&
                 IsStringType(ast->AsBinaryExpression()->Left()) && IsStringType(ast->AsBinaryExpression()->Right())) {
-                return ASTVerifier::CheckResult::SUCCESS;
+                return {CheckDecision::CORRECT, CheckAction::CONTINUE};
             }
-            auto result = ASTVerifier::CheckResult::SUCCESS;
-            ast->Iterate([&result](ir::AstNode *child) {
+            auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
+            ast->Iterate([&result, &ctx](ir::AstNode *child) {
                 if (!IsNumericType(child)) {
-                    result = ASTVerifier::CheckResult::FAILED;
+                    ctx.AddCheckMessage("Not a numeric type", *child, child->Start());
+                    result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
                 }
             });
             return result;
         }
 
-        return ASTVerifier::CheckResult::SUCCESS;
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
 private:
 };
 
-template <typename Func>
-static ASTVerifier::InvariantCheck RecursiveInvariant(const Func &func)
-{
-    return [func](ASTVerifier::ErrorContext &ctx, const ir::AstNode *ast) -> ASTVerifier::CheckResult {
-        std::function<void(const ir::AstNode *)> aux;
-        auto result = ASTVerifier::CheckResult::SUCCESS;
-        aux = [&ctx, &func, &aux, &result](const ir::AstNode *child) -> void {
-            if (result == ASTVerifier::CheckResult::FAILED) {
-                return;
-            }
-            const auto newResult = func(ctx, child);
-            if (newResult == ASTVerifier::CheckResult::SKIP_SUBTREE) {
-                return;
-            }
-            result = newResult;
-            child->Iterate(aux);
-        };
-        aux(ast);
-        return result;
-    };
-}
-
-void ASTVerifier::AddInvariant(const std::string &name, const InvariantCheck &invariant)
-{
-    invariantsChecks_[name] = invariant;
-    invariantsNames_.insert(name);
-    invariantsChecks_[name + RECURSIVE_SUFFIX] = RecursiveInvariant(invariant);
-    invariantsNames_.insert(name + RECURSIVE_SUFFIX);
-}
-
 ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
 {
-    AddInvariant("NodeHasParent", *allocator->New<NodeHasParent>(*allocator));
-    AddInvariant("NodeHasType", *allocator->New<NodeHasType>(*allocator));
-    AddInvariant("IdentifierHasVariable", *allocator->New<IdentifierHasVariable>(*allocator));
-    AddInvariant("VariableHasScope", *allocator->New<VariableHasScope>(*allocator));
-    AddInvariant("EveryChildHasValidParent", *allocator->New<EveryChildHasValidParent>(*allocator));
-    AddInvariant("VariableHasEnclosingScope", *allocator->New<VariableHasEnclosingScope>(*allocator));
-    AddInvariant("ForLoopCorrectlyInitialized", *allocator->New<ForLoopCorrectlyInitialized>(*allocator));
-    AddInvariant("ModifierAccessValid", *allocator->New<ModifierAccessValid>(*allocator));
-    AddInvariant("ImportExportAccessValid", *allocator->New<ImportExportAccessValid>(*allocator));
-    AddInvariant("ArithmeticOperationValid", *allocator->New<ArithmeticOperationValid>(*allocator));
-    AddInvariant("SequenceExpressionHasLastType", *allocator->New<SequenceExpressionHasLastType>(*allocator));
+    AddInvariant<NodeHasParent>(allocator, "NodeHasParent");
+    AddInvariant<NodeHasType>(allocator, "NodeHasType");
+    AddInvariant<IdentifierHasVariable>(allocator, "IdentifierHasVariable");
+    AddInvariant<VariableHasScope>(allocator, "VariableHasScope");
+    AddInvariant<EveryChildHasValidParent>(allocator, "EveryChildHasValidParent");
+    AddInvariant<VariableHasEnclosingScope>(allocator, "VariableHasEnclosingScope");
+    AddInvariant<ForLoopCorrectlyInitialized>(allocator, "ForLoopCorrectlyInitialized");
+    AddInvariant<ModifierAccessValid>(allocator, "ModifierAccessValid");
+    AddInvariant<ImportExportAccessValid>(allocator, "ImportExportAccessValid");
+    AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
+    AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
 }
 
-std::tuple<ASTVerifier::Errors, ASTVerifier::Errors> ASTVerifier::VerifyFull(
-    const std::unordered_set<std::string> &warnings, const std::unordered_set<std::string> &asserts,
-    const ir::AstNode *ast)
+Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)
 {
-    auto recursiveChecks = InvariantSet {};
+    auto recursiveChecks = InvariantNameSet {};
     std::copy_if(invariantsNames_.begin(), invariantsNames_.end(),
                  std::inserter(recursiveChecks, recursiveChecks.end()),
                  [](const std::string &s) { return s.find(RECURSIVE_SUFFIX) != s.npos; });
-    return Verify(warnings, asserts, ast, recursiveChecks);
+    return Verify(ast, recursiveChecks);
 }
 
-std::tuple<ASTVerifier::Errors, ASTVerifier::Errors> ASTVerifier::Verify(
-    const std::unordered_set<std::string> &warnings, const std::unordered_set<std::string> &asserts,
-    const ir::AstNode *ast, const InvariantSet &invariantSet)
+Messages ASTVerifier::Verify(const ir::AstNode *ast, const InvariantNameSet &invariantSet)
 {
-    ErrorContext warningCtx {};
-    AssertsContext assertCtx {};
-
+    CheckContext ctx {};
     const auto containsInvariants =
         std::includes(invariantsNames_.begin(), invariantsNames_.end(), invariantSet.begin(), invariantSet.end());
     if (!containsInvariants) {
-        auto invalidInvariants = InvariantSet {};
+        auto invalidInvariants = InvariantNameSet {};
         for (const auto &invariant : invariantSet) {
             if (invariantsNames_.find(invariant) == invariantsNames_.end()) {
-                invalidInvariants.insert(invariant.data());
+                invalidInvariants.insert(invariant);
             }
         }
         for (const auto &invariant : invalidInvariants) {
-            assertCtx.AddError(std::string {"invariant was not found: "} + invariant);
+            ctx.AddCheckMessage(std::string {"Invariant was not found: "} + invariant, *ast, lexer::SourcePosition {});
         }
     }
 
-    for (const auto &invariantName : invariantSet) {
-        if (warnings.count(invariantName) > 0) {
-            invariantsChecks_[invariantName](warningCtx, ast);
-        } else if (asserts.count(invariantName) > 0) {
-            invariantsChecks_[invariantName](assertCtx, ast);
+    for (const auto &name : invariantSet) {
+        if (const auto &found = invariantsChecks_.find(name); found != invariantsChecks_.end()) {
+            if (ast == nullptr) {
+                continue;
+            }
+
+            auto invariant = found->second;
+            ctx.SetCheckName(name.data());
+            invariant(ctx, ast);
         }
     }
 
-    return std::make_tuple(warningCtx.GetErrors(), assertCtx.GetErrors());
+    return ctx.GetMessages();
 }
 
-}  // namespace ark::es2panda::compiler
+}  // namespace ark::es2panda::compiler::ast_verifier

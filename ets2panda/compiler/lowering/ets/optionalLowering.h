@@ -22,7 +22,7 @@ namespace panda::es2panda::compiler {
 
 class OptionalLowering : public Phase {
 public:
-    std::string_view Name() override;
+    std::string_view Name() const override;
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 };

@@ -99,6 +99,8 @@ struct CompilerOptions {
     bool dumpAsm {};
     bool dumpDebugInfo {};
     bool parseOnly {};
+    bool verifierAllChecks {};
+    bool verifierFullProgram {};
     std::string stdLib {};
     std::string tsDeclOut {};
     std::vector<std::string> plugins {};

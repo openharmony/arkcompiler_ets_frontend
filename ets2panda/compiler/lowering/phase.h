@@ -26,7 +26,7 @@ public:
     /* If Apply returns false, processing is stopped. */
     bool Apply(public_lib::Context *ctx, parser::Program *program);
 
-    virtual std::string_view Name() = 0;
+    virtual std::string_view Name() const = 0;
 
     virtual bool Precondition([[maybe_unused]] public_lib::Context *ctx,
                               [[maybe_unused]] const parser::Program *program)

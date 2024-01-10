@@ -30,7 +30,7 @@ public:
     {
     }
 
-    std::string_view Name() override
+    std::string_view Name() const override
     {
         return name_;
     }
