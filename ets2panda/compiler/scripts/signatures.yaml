@@ -304,6 +304,18 @@ signatures:
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_OBJECT_CTOR
 
+  - callee: BUILTIN_STRING
+    method_name: $CTOR
+    params: [BUILTIN_STRING]
+    return_type: PRIMITIVE_VOID
+    ref: BUILTIN_STRING_FROM_STRING_CTOR
+
+  - callee: BUILTIN_STRING
+    method_name: $CTOR
+    params: [BUILTIN_OBJECT]
+    return_type: PRIMITIVE_VOID
+    ref: BUILTIN_STRING_FROM_NULLISH_CTOR
+
   - callee: BUILTIN_OBJECT
     method_name: toString
     params: []
