@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import type {ClassElement, Expression, Node, ObjectBindingPattern, SourceFile, StructDeclaration} from 'typescript';
+import type {ClassElement, Expression, Identifier, Node, ObjectBindingPattern, SourceFile, StructDeclaration} from 'typescript';
 import {
   SyntaxKind,
   factory,
@@ -29,6 +29,7 @@ import {
   isEnumMember,
   isGetAccessor,
   isIdentifier,
+  isMetaProperty,
   isMethodDeclaration,
   isMethodSignature,
   isParameter,
@@ -210,5 +211,12 @@ export class NodeUtils {
 
   public static isInETSFile(node: Node | undefined): boolean {
     return !!node && NodeUtils.getSourceFileOfNode(node).fileName.endsWith('.ets');
+  }
+
+  public static isNewTargetNode(node: Identifier): boolean {
+    if (isMetaProperty(node.parent) && node.parent.keywordToken === SyntaxKind.NewKeyword && node.escapedText === 'target') {
+      return true;
+    }
+    return false;
   }
 }

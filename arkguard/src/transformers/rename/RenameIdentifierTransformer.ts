@@ -14,6 +14,7 @@
  */
 
 import {
+  SyntaxKind,
   factory,
   forEachChild,
   isBreakOrContinueStatement,
@@ -22,6 +23,7 @@ import {
   isIdentifier,
   isImportSpecifier,
   isLabeledStatement,
+  isMetaProperty,
   isSourceFile,
   isStructDeclaration,
   setParentRecursive,
@@ -433,6 +435,10 @@ namespace secharmony {
           return node;
         }
 
+        if (NodeUtils.isNewTargetNode(node)) {
+          return node;
+        }
+        
         let sym: Symbol | undefined = checker.getSymbolAtLocation(shadowNode);
         let mangledPropertyNameOfNoSymbolImportExport = '';
         if ((!sym || sym.name === 'default')) {
