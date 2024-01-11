@@ -17,6 +17,7 @@ let count = 2
 let n = 9
 let a: int[] = new int[count];
 let v: int[] = new int[count];
+type P = Promise<Int> | null
 function assert_eq(value1: int, value2: int): void {
     if (value1 == value2) {
         return;
@@ -28,7 +29,7 @@ function ufib(n: int) : Int {
     if (n >= 0 && n < count) {
         return v[n];
     }
-    let p: Promise<Int>[] = new Promise<Int>[count]
+    let p: P[] = new P[count]
     for (let i = 0; i < count; ++i) {
         p[i] = launch ufib(n-1-i);
     }
