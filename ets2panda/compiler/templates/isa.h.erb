@@ -73,6 +73,7 @@ private:
     std::string id_;
 };
 
+// NOLINTBEGIN(readability-identifier-naming)
 % def insn2node(insn)
 %   mnemonic = insn.mnemonic.split('.')
 %   return mnemonic.map{|el| el == '64' ? 'Wide' : el.capitalize}.join()
@@ -172,8 +173,8 @@ public:
         return <%= reg_cnt %>;
     }
 
-    void Transform(pandasm::Ins *ins, [[maybe_unused]] ProgramElement *program_element,
-                   [[maybe_unused]] uint32_t total_regs) const override {
+    void Transform(pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
+                   [[maybe_unused]] uint32_t totalRegs) const override {
       ins->opcode = pandasm::Opcode::<%= node_kind %>;
 % if op_map['reg'].length != 0
       ins->regs.reserve(<%= op_map['reg'].length %>);
@@ -185,18 +186,18 @@ public:
       ins->ids.reserve(<%= op_map['str'].length + op_map['lbl'].length %>);
 % end
 % for reg in op_map['reg']
-      ins->regs.emplace_back(MapRegister(<%= reg %>.GetIndex(), total_regs));
+      ins->regs.emplace_back(MapRegister(<%= reg %>.GetIndex(), totalRegs));
 % end
 % for imm in op_map['imm']
       ins->imms.emplace_back(<%= imm %>);
 % end
 % if insn.properties.include? 'literalarray_id' and insn.properties.none? 'skip_literal_id_patch'
-      program_element->LiteralBufferIns().push_back(ins);
+      programElement->LiteralBufferIns().push_back(ins);
 %end
 % for str in op_map['str']
       std::string <%= str %>mutf8 = <%= str %>.Mutf8();
       ins->ids.emplace_back(<%= str %>mutf8);
-      program_element->Strings().insert(std::move(<%= str %>mutf8));
+      programElement->Strings().insert(std::move(<%= str %>mutf8));
 % end
 % for lbl in op_map['lbl']
       ins->ids.emplace_back(<%= lbl %>->Id());
@@ -210,6 +211,7 @@ private:
 };
 
 % end
+// NOLINTEND(readability-identifier-naming)
 }  // namespace panda::es2panda::compiler
 
 #endif

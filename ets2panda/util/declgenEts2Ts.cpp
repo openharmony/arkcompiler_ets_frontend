@@ -130,50 +130,50 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
     }
 }
 
-void TSDeclGen::GenTypeNonNullish(const checker::Type *checker_type)
+void TSDeclGen::GenTypeNonNullish(const checker::Type *checkerType)
 {
-    ASSERT(checker_type != nullptr);
+    ASSERT(checkerType != nullptr);
     DebugPrint("  GenType: ");
 #if DEBUG_PRINT
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TYPE_CHECKS(type_flag, typeName)                                                                           \
-    if (checker_type->Is##typeName()) {                                                                            \
-        const auto var_name = checker_type->Variable() == nullptr ? "" : checker_type->Variable()->Name().Mutf8(); \
-        DebugPrint("  Converting type: " #typeName " (" + var_name + ")");                                         \
+#define TYPE_CHECKS(type_flag, typeName)                                                                         \
+    if (checkerType->Is##typeName()) {                                                                           \
+        const auto var_name = checkerType->Variable() == nullptr ? "" : checkerType->Variable()->Name().Mutf8(); \
+        DebugPrint("  Converting type: " #typeName " (" + var_name + ")");                                       \
     }
     TYPE_MAPPING(TYPE_CHECKS)
 #undef TYPE_CHECKS
 #endif
 
-    if (checker_type->IsCharType() || checker_type->IsByteType() || checker_type->IsIntType() ||
-        checker_type->IsShortType() || checker_type->IsNumberType() || checker_type->IsLongType() ||
-        checker_type->IsFloatType() || checker_type->IsDoubleType()) {
+    if (checkerType->IsCharType() || checkerType->IsByteType() || checkerType->IsIntType() ||
+        checkerType->IsShortType() || checkerType->IsNumberType() || checkerType->IsLongType() ||
+        checkerType->IsFloatType() || checkerType->IsDoubleType()) {
         Out("number");
-    } else if (checker_type->IsETSBooleanType()) {
+    } else if (checkerType->IsETSBooleanType()) {
         Out("boolean");
-    } else if (checker_type->IsETSVoidType()) {
+    } else if (checkerType->IsETSVoidType()) {
         Out("void");
-    } else if (checker_type->IsETSStringType()) {
+    } else if (checkerType->IsETSStringType()) {
         Out("string");
-    } else if (checker_type->IsETSArrayType()) {
-        GenType(checker_type->AsETSArrayType()->ElementType());
+    } else if (checkerType->IsETSArrayType()) {
+        GenType(checkerType->AsETSArrayType()->ElementType());
         Out("[]");
-    } else if (checker_type->IsETSEnumType()) {
-        GenEnumType(checker_type->AsETSEnumType());
-    } else if (checker_type->IsETSFunctionType()) {
-        GenFunctionType(checker_type->AsETSFunctionType());
-    } else if (checker_type->IsETSObjectType()) {
-        if (checker_->IsTypeBuiltinType(checker_type)) {
+    } else if (checkerType->IsETSEnumType()) {
+        GenEnumType(checkerType->AsETSEnumType());
+    } else if (checkerType->IsETSFunctionType()) {
+        GenFunctionType(checkerType->AsETSFunctionType());
+    } else if (checkerType->IsETSObjectType()) {
+        if (checker_->IsTypeBuiltinType(checkerType)) {
             Out("number");
             return;
         }
-        GenObjectType(checker_type->AsETSObjectType());
-    } else if (checker_type->IsETSTypeParameter()) {
-        GenTypeParameterType(checker_type->AsETSTypeParameter());
+        GenObjectType(checkerType->AsETSObjectType());
+    } else if (checkerType->IsETSTypeParameter()) {
+        GenTypeParameterType(checkerType->AsETSTypeParameter());
     } else {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TYPE_CHECKS(typeFlag, typeName)              \
-    if (checker_type->Is##typeName()) {              \
+    if (checkerType->Is##typeName()) {               \
         ThrowError("Unsupported type: '" #typeName); \
     }
         TYPE_MAPPING(TYPE_CHECKS)

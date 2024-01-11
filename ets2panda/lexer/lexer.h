@@ -260,7 +260,7 @@ protected:
     void ScanNumberLeadingZeroImpl();
     void ScanNumberLeadingZeroImplNonAllowedCases();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-    void ScanNumberRadix(bool allow_numeric_separator = true);
+    void ScanNumberRadix(bool allowNumericSeparator = true);
     void ScanNumber(bool allowBigInt = true);
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanTooLargeNumber(RadixType number);
@@ -501,7 +501,7 @@ void Lexer::ScanTooLargeNumber([[maybe_unused]] RadixType number)
 }
 
 template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
-void Lexer::ScanNumberRadix(bool allow_numeric_separator)
+void Lexer::ScanNumberRadix(bool allowNumericSeparator)
 {
     RadixType number {};
 
@@ -526,7 +526,7 @@ void Lexer::ScanNumberRadix(bool allow_numeric_separator)
         }
 
         if (cp == LEX_CHAR_UNDERSCORE) {
-            if (!allow_numeric_separator || !allowNumericOnNext) {
+            if (!allowNumericSeparator || !allowNumericOnNext) {
                 ThrowError("Invalid numeric separator");
             }
 
