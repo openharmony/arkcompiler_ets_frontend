@@ -1,0 +1,69 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "LabelledStatement",
+      "label": {
+        "type": "Identifier",
+        "name": "target",
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 1
+          },
+          "end": {
+            "line": 16,
+            "column": 7
+          }
+        }
+      },
+      "body": {
+        "type": "BreakStatement",
+        "label": {
+          "type": "Identifier",
+          "name": "target",
+          "loc": {
+            "start": {
+              "line": 17,
+              "column": 11
+            },
+            "end": {
+              "line": 17,
+              "column": 17
+            }
+          }
+        },
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 5
+          },
+          "end": {
+            "line": 17,
+            "column": 18
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1
+        },
+        "end": {
+          "line": 17,
+          "column": 18
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 18,
+      "column": 1
+    }
+  }
+}
