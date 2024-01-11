@@ -59,10 +59,12 @@ namespace secharmony {
   /**
    * global mangled properties table used by all files in a project
    */
-  export let globalMangledTable: Map<string, string> = undefined;
+  export let globalMangledTable: Map<string, string> = new Map();
 
   // used for property cache
   export let historyMangledTable: Map<string, string> = undefined;
+
+  export let reservedProperties: Set<string> = new Set();
 
   /**
    * Rename Properties Transformer
@@ -87,7 +89,9 @@ namespace secharmony {
       let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
       let tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
-      let reservedProperties: Set<string> = new Set<string>(tmpReservedProps);
+      tmpReservedProps.forEach(item => {
+        reservedProperties.add(item);
+      });
 
       let currentConstructorParams: Set<string> = new Set<string>();
 
@@ -95,9 +99,6 @@ namespace secharmony {
 
       function renamePropertiesTransformer(node: Node): Node {
         collectReservedNames(node);
-        if (globalMangledTable === undefined) {
-          globalMangledTable = new Map<string, string>();
-        }
 
         let ret: Node = renameProperties(node);
         return setParentRecursive(ret, true);
@@ -193,19 +194,36 @@ namespace secharmony {
         let mangledName: string = historyName ? historyName : globalMangledTable.get(original);
 
         while (!mangledName) {
-          mangledName = generator.getName();
-          if (mangledName === original || reservedProperties.has(mangledName)) {
-            mangledName = null;
+          let tmpName = generator.getName();
+          if (reservedProperties.has(tmpName) || tmpName === original) {
             continue;
           }
 
-          let reserved: string[] = [...globalMangledTable.values()];
-          if (historyMangledTable) {
-            reserved = [...reserved, ...historyMangledTable.values()];
+          let isInGlobalMangledTable = false;
+          for (const value of globalMangledTable.values()) {
+            if (value === tmpName) {
+              isInGlobalMangledTable = true;
+              break;
+            }
           }
 
-          if (reserved.includes(mangledName)) {
-            mangledName = null;
+          if (isInGlobalMangledTable) {
+            continue;
+          }
+
+          let isInHistoryMangledTable = false;
+          if (historyMangledTable) {
+            for (const value of historyMangledTable.values()) {
+              if (value === tmpName) {
+                isInHistoryMangledTable = true;
+                break;
+              }
+            }
+          }
+
+          if (!isInHistoryMangledTable) {
+            mangledName = tmpName;
+            break;
           }
         }
         globalMangledTable.set(original, mangledName);

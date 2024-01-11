@@ -12,9 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+let exportVar = 1;
+
+exports.myExportVar = exportVar;
+exports.myVariable = 2;
+exports.myFunction = function() {
+  return 'Hello, world!';
+};
+
+class CommonjsClass1 {
+  id3 = '00001';
+  info3 = {name3: 'jack3', age3: 12};
+}
+
+exports.CommonjsClass1 = CommonjsClass1;
+
+exports.noNameClass = class {
+  stuID = 11
+  stuAge = 15
+  getAge(){
+    return this.stuAge;
+  }
+}

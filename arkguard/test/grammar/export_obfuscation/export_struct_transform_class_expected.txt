@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class e1 {
+class z1 {
 }
-export class f1 extends e1 {
+export class a2 extends z1 {
     constructor() {
         super();
     }
@@ -23,7 +23,7 @@ export class f1 extends e1 {
     callMethod1(): void { }
     ;
 }
-class g1 extends e1 {
+class b2 extends z1 {
     constructor() {
         super();
     }

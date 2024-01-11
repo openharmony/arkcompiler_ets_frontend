@@ -11,11 +11,11 @@
         "mDictionaryList": [],
         "mReservedNames": [],
         "mRenameProperties": true,
-        "mReservedProperties": [],
-        "mKeepStringProperty": false
+        "mReservedProperties": [ "strictEqual" ],
+        "mKeepStringProperty": false,
+        "mTopLevel": true
     },
     "mEnableSourceMap": false,
-    "mEnableNameCache": true,
-    "mTopLevel": true,
+    "mEnableNameCache": false,
     "mExportObfuscation": true
 }

@@ -22,3 +22,16 @@ function publicFoo2(): void {
 }
 
 export {publicFoo2};
+
+function publicFoo3(): void {
+    return;
+}
+
+export {publicFoo3 as publicFoo3Alias};
+
+export function publicFoo4(): void {
+    return;
+}
+
+const defaultValue: number = 1;
+export default defaultValue;

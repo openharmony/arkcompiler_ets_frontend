@@ -12,21 +12,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class d1 {
-    constructor() {
-        this.head = false;
-    }
-    compare(j1, k1) {
-        if (!this.head) {
-            throw new Error('List is empty');
-        }
-        return j1 > k1;
-    }
-    b1(g1, h1) {
-        const i1 = h1;
-        h1 = g1;
+
+class Constants {
+    static readonly prop11: number = 1;
+    private prop22: string = 'hello';
+    method33() {
+        return 1;
     }
 }
-function c1(e1, f1) {
-    return e1 + f1;
+export { Constants as BrowserConstants }
+
+class Constants2 {
+    static readonly prop11: number = 1;
+    private prop22: string = 'hello';
+    method33() {
+        return 1;
+    }
 }
+
+class Constants3 {
+}
+class Constants4 {
+}
+class Constants5 {
+}
+export { Constants2, Constants3, Constants4 as Constants4Alias, Constants5}
+export function fifoCall1() {
+    return 1 + 1;
+}
+
+export function fifoCall2() {
+    return 1 + 1;
+}
+
+export { Constants6, Constants7 as Constants7Alias}

@@ -17,6 +17,7 @@ import { PersonClass01, foo01 } from './export_obfuscation_1';
 
 let instance01 = new PersonClass01();
 const getedName: string = instance01.name
+const getedAge: number = instance01.age
 foo01(1, 2);
 
 export function actionBarProp1(): void {

@@ -14,9 +14,10 @@
         "mReservedProperties": [
             "strictEqual"
         ],
-        "mKeepStringProperty": false
+        "mKeepStringProperty": false,
+        "mTopLevel": true
     },
     "mEnableSourceMap": false,
-    "mEnableNameCache": false,
-    "mTopLevel": true
+    "mEnableNameCache": false
+
 }

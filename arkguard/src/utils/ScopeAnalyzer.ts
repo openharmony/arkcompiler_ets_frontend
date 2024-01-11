@@ -19,7 +19,6 @@ import {
   isCatchClause,
   isClassDeclaration,
   isConstructorDeclaration,
-  isExportSpecifier,
   isFunctionDeclaration,
   isFunctionLike,
   isIdentifier,
@@ -65,6 +64,7 @@ import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
 namespace secharmony {
   type ForLikeStatement = ForStatement | ForInOrOfStatement;
   type ClassLikeDeclaration = ClassDeclaration | ClassExpression;
+  export const noSymbolIdentifier: Set<string> = new Set();
 
   /**
    * type of scope
@@ -171,7 +171,7 @@ namespace secharmony {
      *
      * @param def definition symbol
      */
-    addDefinition(def: Symbol): void;
+    addDefinition(def: Symbol, obfuscateAsProperty?: boolean): void;
 
     /**
      * add label to current scope
@@ -252,7 +252,10 @@ namespace secharmony {
       current.children.push(child);
     }
 
-    function addDefinition(def: Symbol): void {
+    function addDefinition(def: Symbol, obfuscateAsProperty: boolean = false): void {
+      if (current.kind === ScopeKind.GLOBAL || obfuscateAsProperty) {
+        Reflect.set(def, 'obfuscateAsProperty', true);
+      }
       current.defs.add(def);
     }
 
@@ -320,7 +323,7 @@ namespace secharmony {
      * @param ast ast tree of a source file
      * @param checker
      */
-    analyze(ast: SourceFile, checker: TypeChecker): void;
+    analyze(ast: SourceFile, checker: TypeChecker, isEnabledExportObfuscation: boolean): void;
 
     /**
      * get root scope of a file
@@ -342,6 +345,7 @@ namespace secharmony {
 
     let checker: TypeChecker = null;
     let upperLabel: Label | undefined = undefined;
+    let exportObfuscation: boolean = false;
 
     return {
       getReservedNames,
@@ -350,8 +354,9 @@ namespace secharmony {
       getScopeOfNode,
     };
 
-    function analyze(ast: SourceFile, typeChecker: TypeChecker): void {
+    function analyze(ast: SourceFile, typeChecker: TypeChecker, isEnabledExportObfuscation = false): void {
       checker = typeChecker;
+      exportObfuscation = isEnabledExportObfuscation;
       analyzeScope(ast);
     }
 
@@ -373,7 +378,7 @@ namespace secharmony {
         // with export identification, special handling.
         if (def.exportSymbol) {
           current.exportNames.add(def.name);
-          current.addDefinition(def.exportSymbol);
+          current.addDefinition(def.exportSymbol, true);
         }
 
         current.addDefinition(def);
@@ -489,12 +494,23 @@ namespace secharmony {
 
     function analyzeImportNames(node: ImportSpecifier): void {
       try {
-        if (node.propertyName) {
-          current.importNames.add(node.propertyName.text);
-        } else {
-          current.importNames.add(node.name.text);
-        }
+        const propetyNameNode: Identifier | undefined = node.propertyName;
+        if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
+          let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
+          if (!propertySymbol) {
+            noSymbolIdentifier.add(propetyNameNode.escapedText as string);
+          } else {
+            current.addDefinition(propertySymbol);
+          }
 
+          const nameSymbol = checker.getSymbolAtLocation(node.name);
+          if (nameSymbol) {
+            current.addDefinition(nameSymbol);
+          }
+        } else {
+          const nameText = propetyNameNode ? propetyNameNode.text : node.name.text;
+          current.importNames.add(nameText);
+        }
         forEachChild(node, analyzeScope);
       } catch (e) {
         console.error(e);
@@ -549,6 +565,13 @@ namespace secharmony {
       // get export names.
       current.exportNames.add(node.name.text);
       addExportSymbolInScope(node);
+      const propetyNameNode: Identifier | undefined = node.propertyName;
+      if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
+        let propertySymbol = checker.getSymbolAtLocation(propetyNameNode);
+        if (!propertySymbol) {
+          noSymbolIdentifier.add(propetyNameNode.escapedText as string);
+        }
+      }
       forEachChild(node, analyzeScope);
     }
 
@@ -883,6 +906,7 @@ namespace secharmony {
         }
 
         if (symbol.exportSymbol && !currentDefs.has(symbol.exportSymbol)) {
+          Reflect.set(symbol, 'obfuscateAsProperty', true);
           currentDefs.add(symbol);
         }
       }

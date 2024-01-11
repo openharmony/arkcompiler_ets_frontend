@@ -44,7 +44,7 @@ export class class01 {
         classP12 = 3;
     };
     get classP13() { return 1; }
-    set classP14(g) { }
+    set classP14(k) { }
 }
 export enum enum01 {
     enumP1,

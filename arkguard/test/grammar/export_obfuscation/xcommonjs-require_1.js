@@ -12,9 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+const assert = require('assert');
+
+const myModule = require('./xcommonjs-exports_1');
+
+assert.strictEqual(myModule.myExportVar, 1);
+
+assert.strictEqual(myModule.myVariable, 2);
+assert.strictEqual(myModule.myFunction(), 'Hello, world!');
+
+let myclass3 = new myModule.CommonjsClass1()
+assert.strictEqual(myclass3.id3, '00001');
+assert.strictEqual(myclass3.info3.name3, 'jack3');
+assert.strictEqual(myclass3.info3.age3, 12);
+
+let myclass4 = new myModule.noNameClass();
+myclass4.stuAge = 16;
+assert.strictEqual(myclass4.stuID, 11);
+assert.strictEqual(myclass4.getAge(), 16);
