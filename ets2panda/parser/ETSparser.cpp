@@ -741,6 +741,11 @@ void ETSParser::ParseTopLevelNextTokenDefault(ArenaVector<ir::Statement *> &stat
         return;
     }
 
+    if (IsTypeKeyword()) {
+        ParseTopLevelType(statements, defaultExport, currentPos, &ETSParser::ParseTypeAliasDeclaration);
+        return;
+    }
+
     if (initFunction != nullptr) {
         if (auto *const statement = ParseTopLevelStatement(); statement != nullptr) {
             statement->SetParent(initFunction->Body());
@@ -807,10 +812,6 @@ lexer::SourcePosition ETSParser::ParseTopLevelNextTokenResolution(ArenaVector<ir
             ParseTopLevelType(statements, defaultExport, currentPos,
                               std::bind(&ETSParser::ParseTypeDeclaration, std::placeholders::_1, false));
             // NOLINTEND(modernize-avoid-bind)
-            break;
-        }
-        case lexer::TokenType::KEYW_TYPE: {
-            ParseTopLevelType(statements, defaultExport, currentPos, &ETSParser::ParseTypeAliasDeclaration);
             break;
         }
         default: {
@@ -4728,6 +4729,12 @@ bool ETSParser::IsStructKeyword() const
 {
     return (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
             Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT);
+}
+
+bool ETSParser::IsTypeKeyword() const
+{
+    return (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+            Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
 }
 
 void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)

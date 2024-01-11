@@ -430,8 +430,7 @@ keywords:
 
   - name: 'type'
     token: KEYW_TYPE
-    keyword: [ets]
-    keyword_like: [js, ts]
+    keyword_like: [ets, js, ts]
 
   - name: 'typeof'
     token: KEYW_TYPEOF

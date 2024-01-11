@@ -325,6 +325,7 @@ private:
     }
 
     bool IsStructKeyword() const;
+    bool IsTypeKeyword() const;
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;

@@ -107,6 +107,7 @@ bool Token::IsDefinableTypeName() const
         case TokenType::KEYW_INT:
         case TokenType::KEYW_CHAR:
         case TokenType::KEYW_LONG:
+        case TokenType::KEYW_TYPE:
             return true;
         default:
             return false;
