@@ -1087,6 +1087,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
         method->Id()->SetMutator();
         method->Function()->AddFlag(ir::ScriptFunctionFlags::SETTER);
     }
+    method->AddModifier(ir::ModifierFlags::PUBLIC);
 
     method->Function()->SetIdent(method->Id()->Clone(Allocator(), nullptr));
     method->Function()->AddModifier(method->Modifiers());
