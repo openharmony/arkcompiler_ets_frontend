@@ -82,7 +82,11 @@ public:
     static util::StringView ToStringView(ArenaAllocator *allocator, uint32_t number);
     static bool IsRelativePath(const std::string &path);
     static bool IsRealPath(const std::string &path);
-    static std::string GetAbsPath(const std::string &path);
+    static bool IsCompatibleExtension(const std::string &extension);
+    static bool EndsWith(const std::string &str, const std::string &suffix);
+    static std::string GetSourcePath(const std::string &path);
+    static std::string TruncateCompatibleExtension(const std::string &path);
+    static util::StringView TruncateCompatibleExtension(const util::StringView &path);
 
     static const ir::ScriptFunction *GetContainingConstructor(const ir::AstNode *node);
     static const ir::ScriptFunction *GetContainingConstructor(const ir::ClassProperty *node);

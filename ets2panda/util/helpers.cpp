@@ -173,7 +173,21 @@ bool Helpers::IsRelativePath(const std::string &path)
     return ((path.find(currentDirReference) == 0) || (path.find(parentDirReference) == 0));
 }
 
-std::string Helpers::GetAbsPath(const std::string &path)
+bool Helpers::IsCompatibleExtension(const std::string &extension)
+{
+    return extension == ".ets" || extension == ".ts";
+}
+
+bool Helpers::EndsWith(const std::string &str, const std::string &suffix)
+{
+    if (str.length() < suffix.length()) {
+        return false;
+    }
+    size_t expectPos = str.length() - suffix.length();
+    return str.find(suffix, expectPos) == expectPos;
+}
+
+std::string Helpers::GetSourcePath(const std::string &path)
 {
     std::string fullFilePath = path;
     std::string importExtension;
@@ -191,6 +205,27 @@ std::string Helpers::GetAbsPath(const std::string &path)
     std::string absFilePath = ark::os::GetAbsolutePath(fullFilePath);
     absFilePath.erase(absFilePath.find(importExtension), importExtension.size());
     return absFilePath;
+}
+
+std::string Helpers::TruncateCompatibleExtension(const std::string &path)
+{
+    const size_t extensionIndex = path.find_last_of('.');
+    if (extensionIndex != std::string::npos && IsCompatibleExtension(path.substr(extensionIndex, path.length()))) {
+        return path.substr(0, extensionIndex);
+    }
+
+    return path;
+}
+
+util::StringView Helpers::TruncateCompatibleExtension(const util::StringView &path)
+{
+    const size_t extensionIndex = path.Mutf8().find_last_of('.');
+    if (extensionIndex != std::string::npos &&
+        IsCompatibleExtension(path.Mutf8().substr(extensionIndex, path.Mutf8().length()))) {
+        return path.Substr(0, extensionIndex);
+    }
+
+    return path;
 }
 
 bool Helpers::IsRealPath(const std::string &path)
