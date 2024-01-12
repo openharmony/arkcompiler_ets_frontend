@@ -581,50 +581,52 @@ void ETSChecker::BuildDynamicImportClass()
         return;
     }
 
+    // clang-format off
     BuildClass(compiler::Signatures::DYNAMIC_MODULE_CLASS,
-               [this, dynamicImports](varbinder::ClassScope *scope, ArenaVector<ir::AstNode *> *classBody) {
-                   std::unordered_set<util::StringView> fields;
-                   std::vector<ir::ETSImportDeclaration *> imports;
+                [this, dynamicImports](varbinder::ClassScope *scope, ArenaVector<ir::AstNode *> *classBody) {
+                    std::unordered_set<util::StringView> fields;
+                    std::vector<ir::ETSImportDeclaration *> imports;
 
-                   auto *classType = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
+                    auto *classType = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
 
-                   for (auto *import : dynamicImports) {
-                       auto source = import->Source()->Str();
-                       if (fields.find(source) != fields.cend()) {
-                           continue;
-                       }
+                    for (auto *import : dynamicImports) {
+                        auto source = import->Source()->Str();
+                        if (fields.find(source) != fields.cend()) {
+                            continue;
+                        }
 
-                       auto assemblyName = std::string(source);
-                       std::replace_if(
-                           assemblyName.begin(), assemblyName.end(), [](char c) { return std::isalnum(c) == 0; }, '_');
-                       assemblyName.append(std::to_string(fields.size()));
+                        auto assemblyName = std::string(source);
+                        std::replace_if(
+                            assemblyName.begin(), assemblyName.end(), [](char c) { return std::isalnum(c) == 0; }, '_');
+                        assemblyName.append(std::to_string(fields.size()));
 
-                       import->AssemblerName() = util::UString(assemblyName, Allocator()).View();
-                       fields.insert(import->AssemblerName());
-                       imports.push_back(import);
+                        import->AssemblerName() = util::UString(assemblyName, Allocator()).View();
+                        fields.insert(import->AssemblerName());
+                        imports.push_back(import);
 
-                       auto *fieldIdent = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
-                       auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr,
-                                                                  ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC,
-                                                                  Allocator(), false);
-                       field->SetTsType(GlobalBuiltinDynamicType(import->Language()));
+                        auto *fieldIdent = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
+                        auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr,
+                                                                   ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC,
+                                                                   Allocator(), false);
+                        field->SetTsType(GlobalBuiltinDynamicType(import->Language()));
 
-                       auto *decl = Allocator()->New<varbinder::LetDecl>(fieldIdent->Name());
-                       decl->BindNode(field);
+                        auto *decl = Allocator()->New<varbinder::LetDecl>(fieldIdent->Name());
+                        decl->BindNode(field);
 
-                       auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
-                       var->AddFlag(varbinder::VariableFlags::PROPERTY);
-                       fieldIdent->SetVariable(var);
-                       var->SetTsType(GlobalBuiltinDynamicType(import->Language()));
+                        auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
+                        var->AddFlag(varbinder::VariableFlags::PROPERTY);
+                        fieldIdent->SetVariable(var);
+                        var->SetTsType(GlobalBuiltinDynamicType(import->Language()));
 
-                       classType->AddProperty<PropertyType::STATIC_FIELD>(var->AsLocalVariable());
+                        classType->AddProperty<PropertyType::STATIC_FIELD>(var->AsLocalVariable());
 
-                       classBody->push_back(field);
-                   }
+                        classBody->push_back(field);
+                    }
 
-                   classBody->push_back(CreateDynamicModuleClassInitializer(scope, imports));
-                   classBody->push_back(CreateDynamicModuleClassInitMethod(scope));
-               });
+                    classBody->push_back(CreateDynamicModuleClassInitializer(scope, imports));
+                    classBody->push_back(CreateDynamicModuleClassInitMethod(scope));
+                });
+    // clang-format on
 
     EmitDynamicModuleClassInitCall();
 }

@@ -2623,13 +2623,14 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     PropertySearchFlags searchFlag = PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::SEARCH_IN_BASE |
                                      PropertySearchFlags::SEARCH_STATIC_METHOD;
+    // clang-format off
     auto *instantiateMethod =
         resolvedType->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INSTANTIATE_METHOD, searchFlag);
     if (instantiateMethod != nullptr) {
         propertyName = compiler::Signatures::STATIC_INSTANTIATE_METHOD;
     } else if (auto *invokeMethod =
-                   resolvedType->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, searchFlag);
-               invokeMethod != nullptr) {
+                    resolvedType->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, searchFlag);
+                invokeMethod != nullptr) {
         propertyName = compiler::Signatures::STATIC_INVOKE_METHOD;
     } else {
         ThrowTypeError({"No static ", compiler::Signatures::STATIC_INVOKE_METHOD, " method and static ",
@@ -2637,6 +2638,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
                         "() is not allowed."},
                        ident->Start());
     }
+    // clang-format on
 
     auto *classId = AllocNode<ir::Identifier>(className, Allocator());
     auto *methodId = AllocNode<ir::Identifier>(propertyName, Allocator());

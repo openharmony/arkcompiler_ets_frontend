@@ -171,25 +171,27 @@ void ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector
 {
     auto paths = ParseImportDeclarations(statements);
 
+    // clang-format off
     auto removeParsedSources = [this](std::vector<std::string> &items) {
         items.erase(remove_if(begin(items), end(items),
-                              [this](auto x) {
-                                  auto resolved = ResolveImportPath(x);
-                                  auto pathIter =
-                                      std::find_if(resolvedParsedSources_.begin(), resolvedParsedSources_.end(),
-                                                   [resolved](const auto &p) { return p.second == resolved; });
-                                  auto found = pathIter != resolvedParsedSources_.end();
-                                  if (found) {
-                                      resolvedParsedSources_.emplace(x, resolved);
-                                  }
-                                  return found;
-                              }),
+                            [this](auto x) {
+                                auto resolved = ResolveImportPath(x);
+                                auto pathIter =
+                                    std::find_if(resolvedParsedSources_.begin(), resolvedParsedSources_.end(),
+                                                 [resolved](const auto &p) { return p.second == resolved; });
+                                auto found = pathIter != resolvedParsedSources_.end();
+                                if (found) {
+                                    resolvedParsedSources_.emplace(x, resolved);
+                                }
+                                return found;
+                            }),
                     end(items));
 
         for (const auto &item : items) {
             parsedSources_.push_back(ResolveImportPath(item));
         }
     };
+    // clang-format on
 
     removeParsedSources(paths);
 

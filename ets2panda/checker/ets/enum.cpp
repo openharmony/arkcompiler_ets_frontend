@@ -214,13 +214,15 @@ void MakeMethodDef(ETSChecker *const checker, varbinder::ETSBinder *const varbin
 
 ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumInterface const *const enumType)
 {
+    // clang-format off
     return MakeArray(this, VarBinder()->AsETSBinder(), enumType, "NamesArray", GlobalBuiltinETSStringType(),
-                     [this](const ir::TSEnumMember *const member) {
-                         auto *const enumNameStringLiteral =
-                             Allocator()->New<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
-                         enumNameStringLiteral->SetTsType(GlobalBuiltinETSStringType());
-                         return enumNameStringLiteral;
-                     });
+                    [this](const ir::TSEnumMember *const member) {
+                        auto *const enumNameStringLiteral =
+                            Allocator()->New<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
+                        enumNameStringLiteral->SetTsType(GlobalBuiltinETSStringType());
+                        return enumNameStringLiteral;
+                    });
+    // clang-format on
 }
 
 ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enumType)

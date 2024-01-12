@@ -499,10 +499,12 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
         if (auto source = import->ResolvedSource()->Str().Mutf8(),
             program = item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.'));
             source == program || (source + "/index") == program) {
+            // clang-format off
             ir::StringLiteral dirName(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
                                                         0, item->GetProgramPath().Mutf8().find_last_of('/'))),
                                                     Allocator())
-                                          .View());
+                                            .View());
+            // clang-format on
             dirName.SetStart(item->GetETSImportDeclarations()->Source()->Start());
 
             for (auto it : item->GetETSImportDeclarations()->Specifiers()) {
@@ -607,10 +609,12 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
             if (auto source = import->ResolvedSource()->Str().Mutf8(),
                 program = item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.'));
                 source == program || (source + "/index") == program) {
+                // clang-format off
                 ir::StringLiteral dirName(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
                                                             0, item->GetProgramPath().Mutf8().find_last_of('/'))),
                                                         Allocator())
-                                              .View());
+                                            .View());
+                // clang-format on
                 dirName.SetStart(item->GetETSImportDeclarations()->Source()->Start());
 
                 viewedReExport.push_back(item->GetETSImportDeclarations());

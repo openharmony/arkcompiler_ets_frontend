@@ -1107,10 +1107,12 @@ void ETSChecker::ValidateResolvedProperty(const varbinder::LocalVariable *const 
 
 varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpression *const memberExpr)
 {
+    // clang-format off
     auto *globalFunctionVar = Scope()
-                                  ->FindInGlobal(memberExpr->Property()->AsIdentifier()->Name(),
-                                                 varbinder::ResolveBindingOptions::STATIC_METHODS)
-                                  .variable;
+                                ->FindInGlobal(memberExpr->Property()->AsIdentifier()->Name(),
+                                                varbinder::ResolveBindingOptions::STATIC_METHODS)
+                                .variable;
+    // clang-format on
 
     if (globalFunctionVar == nullptr || !ExtensionETSFunctionType(this->GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
