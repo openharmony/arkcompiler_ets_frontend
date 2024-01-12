@@ -47,7 +47,7 @@ EnvScope::~EnvScope()
     pg_->envScope_ = prev_;
 }
 
-void LoopEnvScope::InitLoopContext(PandaGen *pg, binder::VariableScope *scope)
+void VariableEnvScope::InitVariableContext(PandaGen *pg, binder::VariableScope *scope)
 {
     if (!HasEnv()) {
         return;
@@ -79,22 +79,6 @@ void LoopEnvScope::CopyPerIterationCtx()
 
     for (uint32_t i = 0; i < num; i++) {
         pg_->StoreLexicalVar(scope_->Node(), 0, i, lexicals[i]);
-    }
-}
-
-VariableEnvScope::VariableEnvScope(PandaGen *pg, binder::VariableScope *scope)
-    : scope_(scope->NeedLexEnv() ? scope : nullptr)
-{
-    Initialize(pg);
-    if (HasEnv()) {
-        pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
-    }
-}
-
-VariableEnvScope::~VariableEnvScope()
-{
-    if (HasEnv()) {
-        pg_->PopLexEnv(scope_->Node());
     }
 }
 
