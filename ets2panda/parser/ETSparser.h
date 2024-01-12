@@ -124,6 +124,7 @@ private:
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
+    std::vector<std::string> UnixApiDefaultSources(const std::vector<std::string> &stdlib);
     std::vector<std::string> CollectDefaultSources();
     void CollectUserSourcesFromIndex(const std::string &path, const std::string &resolvedPath,
                                      std::vector<std::string> &userPaths);

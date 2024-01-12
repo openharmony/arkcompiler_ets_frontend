@@ -287,12 +287,9 @@ static bool IsCompitableExtension(const std::string &extension)
     return extension == ".ets" || extension == ".ts";
 }
 
-std::vector<std::string> ETSParser::CollectDefaultSources()
+std::vector<std::string> ETSParser::UnixApiDefaultSources([[maybe_unused]] const std::vector<std::string> &stdlib)
 {
     std::vector<std::string> paths;
-    std::vector<std::string> stdlib = {"std/core", "std/math",       "std/containers",
-                                       "std/time", "std/interop/js", "escompat"};
-
 #ifdef USE_UNIX_SYSCALL
     for (auto const &path : stdlib) {
         auto resolvedPath = ResolveImportPath(path);
@@ -303,6 +300,7 @@ std::vector<std::string> ETSParser::CollectDefaultSources()
         }
 
         struct dirent *entry;
+        std::set<std::string> orderedFiles;
         while ((entry = readdir(dir)) != nullptr) {
             if (entry->d_type != DT_REG) {
                 continue;
@@ -310,7 +308,6 @@ std::vector<std::string> ETSParser::CollectDefaultSources()
 
             std::string fileName = entry->d_name;
             std::string::size_type pos = fileName.find_last_of('.');
-
             if (pos == std::string::npos || !IsCompitableExtension(fileName.substr(pos))) {
                 continue;
             }
@@ -320,14 +317,27 @@ std::vector<std::string> ETSParser::CollectDefaultSources()
             if (fileName == "Object.ets") {
                 paths.emplace(paths.begin(), filePath);
             } else {
-                paths.emplace_back(filePath);
+                orderedFiles.emplace(filePath);
             }
         }
-
+        paths.insert(paths.end(), orderedFiles.begin(), orderedFiles.end());
         closedir(dir);
     }
+#endif
+    return paths;
+}
+
+std::vector<std::string> ETSParser::CollectDefaultSources()
+{
+    std::vector<std::string> stdlib = {"std/core", "std/math",       "std/containers",
+                                       "std/time", "std/interop/js", "escompat"};
+
+#ifdef USE_UNIX_SYSCALL
+    return UnixApiDefaultSources(stdlib);
 #else
+    std::vector<std::string> paths;
     for (auto const &path : stdlib) {
+        std::set<std::string> orderedFiles;
         for (auto const &entry : fs::directory_iterator(ResolveImportPath(path))) {
             if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
                 continue;
@@ -341,12 +351,13 @@ std::vector<std::string> ETSParser::CollectDefaultSources()
             if (entry.path().filename().string() == "Object.ets") {
                 paths.emplace(paths.begin(), baseName);
             } else {
-                paths.emplace_back(baseName);
+                orderedFiles.emplace(baseName);
             }
         }
+        paths.insert(paths.end(), orderedFiles.begin(), orderedFiles.end());
     }
-#endif
     return paths;
+#endif
 }
 
 ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
@@ -464,7 +475,7 @@ void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &
 #ifdef USE_UNIX_SYSCALL
     DIR *dir = opendir(resolvedPath.c_str());
     bool isIndex = false;
-    std::vector<std::string> tmpPaths;
+    std::set<std::string> tmpPaths;
 
     if (dir == nullptr) {
         ThrowSyntaxError({"Cannot open folder: ", resolvedPath});
@@ -489,9 +500,9 @@ void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &
             isIndex = true;
             break;
         } else if (fileName == "Object.ets") {
-            tmpPaths.emplace(userPaths.begin(), filePath);
+            userPaths.emplace(userPaths.begin(), filePath);
         } else {
-            tmpPaths.emplace_back(filePath);
+            tmpPaths.insert(filePath);
         }
     }
 
@@ -531,6 +542,7 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
     } else if (fs::exists(resolvedPath + "/index.ts")) {
         userPaths.emplace_back(path + "/index.ts");
     } else {
+        std::set<std::string> orderedFiles;
         for (auto const &entry : fs::directory_iterator(resolvedPath)) {
             if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
                 continue;
@@ -540,8 +552,9 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
             std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
 
             baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
-            userPaths.emplace_back(baseName);
+            orderedFiles.emplace(baseName);
         }
+        userPaths.insert(userPaths.begin(), orderedFiles.begin(), orderedFiles.end());
     }
 #endif
     return {userPaths, false};

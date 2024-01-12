@@ -272,12 +272,11 @@ std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties()
     return foreignProps;
 }
 
-std::unordered_map<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
+ArenaMap<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
 {
-    std::unordered_map<util::StringView, const varbinder::LocalVariable *> propMap;
+    ArenaMap<util::StringView, const varbinder::LocalVariable *> propMap(allocator_->Adapter());
     EnsurePropertiesInstantiated();
-    propMap.reserve(properties_.size());
-    Iterate([&propMap](const varbinder::LocalVariable *var) { propMap.insert({var->Name(), var}); });
+    Iterate([&propMap](const varbinder::LocalVariable *var) { propMap.emplace(var->Name(), var); });
 
     return propMap;
 }

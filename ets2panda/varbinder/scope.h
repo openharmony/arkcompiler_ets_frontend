@@ -245,6 +245,13 @@ public:
         return bindings_;
     }
 
+    ArenaMap<util::StringView, Variable *> OrderedBindings(ArenaAllocator *allocator) const
+    {
+        ArenaMap<util::StringView, Variable *> result(allocator->Adapter());
+        result.insert(bindings_.begin(), bindings_.end());
+        return result;
+    }
+
     virtual Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                  [[maybe_unused]] ScriptExtension extension) = 0;
 

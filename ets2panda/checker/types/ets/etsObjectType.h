@@ -545,7 +545,7 @@ private:
             propertiesInstantiated_ = true;
         }
     }
-    std::unordered_map<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
+    ArenaMap<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
     void IdenticalUptoNullability(TypeRelation *relation, Type *other);
     bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
                                TypeFlag narrowingFlags);
