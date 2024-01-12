@@ -36,7 +36,8 @@ DynamicContext::~DynamicContext()
 LabelContext::LabelContext(PandaGen *pg, const ir::LabelledStatement *labelledStmt)
     : DynamicContext(pg, LabelTarget(labelledStmt->Ident()->Name())), labelledStmt_(labelledStmt)
 {
-    if (!labelledStmt->Body()->IsBlockStatement() && !labelledStmt->Body()->IsIfStatement()) {
+    if (!labelledStmt->Body()->IsBlockStatement() && !labelledStmt->Body()->IsIfStatement() &&
+        !labelledStmt->Body()->IsBreakStatement()) {
         return;
     }
 
