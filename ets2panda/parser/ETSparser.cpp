@@ -2405,6 +2405,16 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
     return tupleType;
 }
 
+std::optional<lexer::SourcePosition> ETSParser::GetDefaultParamPosition(ArenaVector<ir::Expression *> params)
+{
+    for (auto &param : params) {
+        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->IsDefault()) {
+            return param->AsETSParameterExpression()->Initializer()->Start();
+        }
+    }
+    return {};
+}
+
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
@@ -2473,6 +2483,11 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
                  Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
                 typeAnnotation = ParseFunctionType();
                 typeAnnotation->SetStart(startLoc);
+
+                if (auto position = GetDefaultParamPosition(typeAnnotation->AsETSFunctionType()->Params())) {
+                    ThrowSyntaxError("Default parameters can not be used in functional type", position.value());
+                }
+
                 return std::make_pair(typeAnnotation, false);
             }
 
@@ -2481,6 +2496,10 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
                 typeAnnotation = ParseUnionType(typeAnnotation);
+            }
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+                ThrowSyntaxError("Default parameters can not be used in functional type");
             }
 
             ParseRightParenthesis(options, typeAnnotation, savedPos);

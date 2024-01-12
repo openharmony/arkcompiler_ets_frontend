@@ -213,6 +213,7 @@ private:
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
 
     void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
+    std::optional<lexer::SourcePosition> GetDefaultParamPosition(ArenaVector<ir::Expression *> params);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
     void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
