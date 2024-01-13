@@ -54,7 +54,7 @@ public:
     void Dump(ir::SrcDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
-    void CompileToReg(compiler::PandaGen *pg, compiler::VReg &obj_reg) const;
+    void CompileToReg(compiler::PandaGen *pg, compiler::VReg &objReg) const;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 

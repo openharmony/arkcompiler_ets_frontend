@@ -30,8 +30,8 @@ void CompileImports(PandaGen *pg, varbinder::ModuleScope *scope)
     for (const auto &[importDecl, decls] : scope->Imports()) {
         pg->ImportModule(importDecl, importDecl->Source()->Str());
 
-        VReg module_reg = pg->AllocReg();
-        pg->StoreAccumulator(importDecl, module_reg);
+        VReg moduleReg = pg->AllocReg();
+        pg->StoreAccumulator(importDecl, moduleReg);
 
         for (const auto *decl : decls) {
             varbinder::Variable *v = scope->FindLocal(decl->LocalName(), varbinder::ResolveBindingOptions::BINDINGS);
@@ -42,7 +42,7 @@ void CompileImports(PandaGen *pg, varbinder::ModuleScope *scope)
                 varbinder::ConstScopeFindResult result(decl->LocalName(), scope, 0, v);
                 pg->StoreAccToLexEnv(decl->Node(), result, true);
             } else {
-                v->AsModuleVariable()->ModuleReg() = module_reg;
+                v->AsModuleVariable()->ModuleReg() = moduleReg;
             }
         }
     }
@@ -60,18 +60,18 @@ void CompileExports(PandaGen *pg, const varbinder::ModuleScope *scope)
             continue;
         }
 
-        VReg module_reg = pg->AllocReg();
-        pg->StoreAccumulator(exportDecl, module_reg);
+        VReg moduleReg = pg->AllocReg();
+        pg->StoreAccumulator(exportDecl, moduleReg);
 
         if (exportDecl->IsExportAllDeclaration()) {
             pg->StoreModuleVar(exportDecl, decls.front()->ExportName());
             continue;
         }
 
-        pg->CopyModule(exportDecl, module_reg);
+        pg->CopyModule(exportDecl, moduleReg);
 
         for (const auto *decl : decls) {
-            pg->LoadAccumulator(decl->Node(), module_reg);
+            pg->LoadAccumulator(decl->Node(), moduleReg);
             pg->LoadObjByName(decl->Node(), decl->LocalName());
             pg->StoreModuleVar(decl->Node(), decl->ExportName());
         }

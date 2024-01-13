@@ -53,12 +53,12 @@ public:
 
     checker::Type *ReturnType() noexcept
     {
-        return return_type_;
+        return returnType_;
     }
 
     const checker::Type *ReturnType() const noexcept
     {
-        return return_type_;
+        return returnType_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -80,7 +80,7 @@ public:
 
 private:
     Expression *argument_ {};
-    checker::Type *return_type_ {};
+    checker::Type *returnType_ {};
 };
 }  // namespace panda::es2panda::ir
 

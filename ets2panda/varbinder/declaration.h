@@ -96,7 +96,7 @@ public:
 
 protected:
     explicit Decl(util::StringView name) : name_(name) {}
-    explicit Decl(util::StringView name, ir::AstNode *decl_node) : name_(name), node_(decl_node) {}
+    explicit Decl(util::StringView name, ir::AstNode *declNode) : name_(name), node_(declNode) {}
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     util::StringView name_;
@@ -112,8 +112,8 @@ public:
     {
     }
 
-    explicit MultiDecl(ArenaAllocator *allocator, util::StringView name, ir::AstNode *decl_node)
-        : Decl(name, decl_node), declarations_(allocator->Adapter())
+    explicit MultiDecl(ArenaAllocator *allocator, util::StringView name, ir::AstNode *declNode)
+        : Decl(name, declNode), declarations_(allocator->Adapter())
     {
     }
 
@@ -133,9 +133,9 @@ private:
 
 class EnumLiteralDecl : public Decl {
 public:
-    explicit EnumLiteralDecl(util::StringView name, bool is_const) : Decl(name), is_const_(is_const) {}
-    explicit EnumLiteralDecl(util::StringView name, ir::AstNode *decl_node, bool is_const)
-        : Decl(name, decl_node), is_const_(is_const)
+    explicit EnumLiteralDecl(util::StringView name, bool isConst) : Decl(name), isConst_(isConst) {}
+    explicit EnumLiteralDecl(util::StringView name, ir::AstNode *declNode, bool isConst)
+        : Decl(name, declNode), isConst_(isConst)
     {
     }
 
@@ -146,7 +146,7 @@ public:
 
     bool IsConst() const
     {
-        return is_const_;
+        return isConst_;
     }
 
     void BindScope(LocalScope *scope)
@@ -161,14 +161,14 @@ public:
 
 private:
     LocalScope *scope_ {};
-    bool is_const_ {};
+    bool isConst_ {};
 };
 
 class InterfaceDecl : public MultiDecl<ir::TSInterfaceDeclaration> {
 public:
     explicit InterfaceDecl(ArenaAllocator *allocator, util::StringView name) : MultiDecl(allocator, name) {}
-    explicit InterfaceDecl(ArenaAllocator *allocator, util::StringView name, ir::AstNode *decl_node)
-        : MultiDecl(allocator, name, decl_node)
+    explicit InterfaceDecl(ArenaAllocator *allocator, util::StringView name, ir::AstNode *declNode)
+        : MultiDecl(allocator, name, declNode)
     {
     }
 
@@ -277,7 +277,7 @@ public:
 class LetDecl : public Decl {
 public:
     explicit LetDecl(util::StringView name) : Decl(name) {}
-    explicit LetDecl(util::StringView name, ir::AstNode *decl_node) : Decl(name, decl_node) {}
+    explicit LetDecl(util::StringView name, ir::AstNode *declNode) : Decl(name, declNode) {}
 
     DeclType Type() const override
     {
@@ -288,7 +288,7 @@ public:
 class ConstDecl : public Decl {
 public:
     explicit ConstDecl(util::StringView name) : Decl(name) {}
-    explicit ConstDecl(util::StringView name, ir::AstNode *decl_node) : Decl(name, decl_node) {}
+    explicit ConstDecl(util::StringView name, ir::AstNode *declNode) : Decl(name, declNode) {}
 
     DeclType Type() const override
     {
@@ -308,20 +308,20 @@ public:
 
 class ImportDecl : public Decl {
 public:
-    explicit ImportDecl(util::StringView import_name, util::StringView local_name)
-        : Decl(local_name), import_name_(import_name)
+    explicit ImportDecl(util::StringView importName, util::StringView localName)
+        : Decl(localName), importName_(importName)
     {
     }
 
-    explicit ImportDecl(util::StringView import_name, util::StringView local_name, ir::AstNode *node)
-        : Decl(local_name), import_name_(import_name)
+    explicit ImportDecl(util::StringView importName, util::StringView localName, ir::AstNode *node)
+        : Decl(localName), importName_(importName)
     {
         BindNode(node);
     }
 
     const util::StringView &ImportName() const
     {
-        return import_name_;
+        return importName_;
     }
 
     const util::StringView &LocalName() const
@@ -335,25 +335,25 @@ public:
     }
 
 private:
-    util::StringView import_name_;
+    util::StringView importName_;
 };
 
 class ExportDecl : public Decl {
 public:
-    explicit ExportDecl(util::StringView export_name, util::StringView local_name)
-        : Decl(local_name), export_name_(export_name)
+    explicit ExportDecl(util::StringView exportName, util::StringView localName)
+        : Decl(localName), exportName_(exportName)
     {
     }
 
-    explicit ExportDecl(util::StringView export_name, util::StringView local_name, ir::AstNode *node)
-        : Decl(local_name), export_name_(export_name)
+    explicit ExportDecl(util::StringView exportName, util::StringView localName, ir::AstNode *node)
+        : Decl(localName), exportName_(exportName)
     {
         BindNode(node);
     }
 
     const util::StringView &ExportName() const
     {
-        return export_name_;
+        return exportName_;
     }
 
     const util::StringView &LocalName() const
@@ -367,7 +367,7 @@ public:
     }
 
 private:
-    util::StringView export_name_;
+    util::StringView exportName_;
 };
 }  // namespace panda::es2panda::varbinder
 

@@ -73,14 +73,14 @@ class ParserContext {
 public:
     explicit ParserContext(const Program *program, ParserStatus status);
 
-    explicit ParserContext(ParserContext *current, ParserStatus new_status, util::StringView label = "")
+    explicit ParserContext(ParserContext *current, ParserStatus newStatus, util::StringView label = "")
         : program_(current->program_), prev_(current), label_(label), lang_(current->lang_)
     {
-        ParserStatus current_status = current->status_;
-        current_status &= (ParserStatus::MODULE | ParserStatus::ALLOW_NEW_TARGET | ParserStatus::IN_EXTENDS |
-                           ParserStatus::ALLOW_THIS_TYPE | ParserStatus::IN_CLASS_BODY | ParserStatus::FUNCTION |
-                           ParserStatus::IN_AMBIENT_CONTEXT);
-        status_ = current_status | new_status;
+        ParserStatus currentStatus = current->status_;
+        currentStatus &= (ParserStatus::MODULE | ParserStatus::ALLOW_NEW_TARGET | ParserStatus::IN_EXTENDS |
+                          ParserStatus::ALLOW_THIS_TYPE | ParserStatus::IN_CLASS_BODY | ParserStatus::FUNCTION |
+                          ParserStatus::IN_AMBIENT_CONTEXT);
+        status_ = currentStatus | newStatus;
     }
 
     DEFAULT_COPY_SEMANTIC(ParserContext);

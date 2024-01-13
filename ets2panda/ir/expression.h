@@ -124,8 +124,8 @@ public:
     }
 
 protected:
-    explicit AnnotatedExpression(AstNodeType const type, TypeNode *const type_annotation)
-        : Annotated<Expression>(type, type_annotation)
+    explicit AnnotatedExpression(AstNodeType const type, TypeNode *const typeAnnotation)
+        : Annotated<Expression>(type, typeAnnotation)
     {
     }
     explicit AnnotatedExpression(AstNodeType const type) : Annotated<Expression>(type) {}
@@ -146,14 +146,14 @@ public:
         return optional_;
     }
 
-    void SetOptionalType(checker::Type *optional_type)
+    void SetOptionalType(checker::Type *optionalType)
     {
-        optional_type_ = optional_type;
+        optionalType_ = optionalType;
     }
 
     [[nodiscard]] const checker::Type *OptionalType() const noexcept
     {
-        return optional_type_ != nullptr ? optional_type_ : TsType();
+        return optionalType_ != nullptr ? optionalType_ : TsType();
     }
 
 protected:
@@ -165,12 +165,12 @@ protected:
 
     MaybeOptionalExpression(MaybeOptionalExpression const &other) : Expression(static_cast<Expression const &>(other))
     {
-        optional_type_ = other.optional_type_;
+        optionalType_ = other.optionalType_;
         optional_ = other.optional_;
     }
 
 private:
-    checker::Type *optional_type_ {};
+    checker::Type *optionalType_ {};
     bool optional_;
 };
 

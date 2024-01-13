@@ -38,13 +38,13 @@ static void HoistVar(PandaGen *pg, varbinder::Variable *var, const varbinder::Va
 
 static void HoistFunction(PandaGen *pg, varbinder::Variable *var, const varbinder::FunctionDecl *decl)
 {
-    const ir::ScriptFunction *script_function = decl->Node()->AsScriptFunction();
+    const ir::ScriptFunction *scriptFunction = decl->Node()->AsScriptFunction();
     auto *scope = pg->Scope();
 
-    const auto &internal_name = script_function->Scope()->InternalName();
+    const auto &internalName = scriptFunction->Scope()->InternalName();
 
     if (scope->IsGlobalScope()) {
-        pg->DefineFunction(decl->Node(), script_function, internal_name);
+        pg->DefineFunction(decl->Node(), scriptFunction, internalName);
         pg->StoreGlobalVar(decl->Node(), var->Declaration()->Name());
         return;
     }
@@ -52,7 +52,7 @@ static void HoistFunction(PandaGen *pg, varbinder::Variable *var, const varbinde
     ASSERT(scope->IsFunctionScope() || scope->IsCatchScope() || scope->IsLocalScope() || scope->IsModuleScope());
     varbinder::ConstScopeFindResult result(decl->Name(), scope, 0, var);
 
-    pg->DefineFunction(decl->Node(), script_function, internal_name);
+    pg->DefineFunction(decl->Node(), scriptFunction, internalName);
     pg->StoreAccToLexEnv(decl->Node(), result, true);
 }
 

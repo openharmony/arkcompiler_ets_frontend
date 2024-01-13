@@ -44,38 +44,38 @@ void TSChecker::CheckIndexConstraints(Type *type)
         return;
     }
 
-    ObjectType *obj_type = type->AsObjectType();
-    ResolveStructuredTypeMembers(obj_type);
+    ObjectType *objType = type->AsObjectType();
+    ResolveStructuredTypeMembers(objType);
 
-    IndexInfo *number_info = obj_type->NumberIndexInfo();
-    IndexInfo *string_info = obj_type->StringIndexInfo();
-    const ArenaVector<varbinder::LocalVariable *> &properties = obj_type->Properties();
+    IndexInfo *numberInfo = objType->NumberIndexInfo();
+    IndexInfo *stringInfo = objType->StringIndexInfo();
+    const ArenaVector<varbinder::LocalVariable *> &properties = objType->Properties();
 
-    if (number_info != nullptr) {
+    if (numberInfo != nullptr) {
         for (auto *it : properties) {
             if (it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
-                Type *prop_type = GetTypeOfVariable(it);
-                IsTypeAssignableTo(prop_type, number_info->GetType(),
-                                   {"Property '", it->Name(), "' of type '", prop_type,
-                                    "' is not assignable to numeric index type '", number_info->GetType(), "'."},
+                Type *propType = GetTypeOfVariable(it);
+                IsTypeAssignableTo(propType, numberInfo->GetType(),
+                                   {"Property '", it->Name(), "' of type '", propType,
+                                    "' is not assignable to numeric index type '", numberInfo->GetType(), "'."},
                                    it->Declaration()->Node()->Start());
             }
         }
     }
 
-    if (string_info != nullptr) {
+    if (stringInfo != nullptr) {
         for (auto *it : properties) {
-            Type *prop_type = GetTypeOfVariable(it);
-            IsTypeAssignableTo(prop_type, string_info->GetType(),
-                               {"Property '", it->Name(), "' of type '", prop_type,
-                                "' is not assignable to string index type '", string_info->GetType(), "'."},
+            Type *propType = GetTypeOfVariable(it);
+            IsTypeAssignableTo(propType, stringInfo->GetType(),
+                               {"Property '", it->Name(), "' of type '", propType,
+                                "' is not assignable to string index type '", stringInfo->GetType(), "'."},
                                it->Declaration()->Node()->Start());
         }
 
-        if (number_info != nullptr && !IsTypeAssignableTo(number_info->GetType(), string_info->GetType())) {
-            ThrowTypeError({"Number index info type ", number_info->GetType(),
-                            " is not assignable to string index info type ", string_info->GetType(), "."},
-                           number_info->Pos());
+        if (numberInfo != nullptr && !IsTypeAssignableTo(numberInfo->GetType(), stringInfo->GetType())) {
+            ThrowTypeError({"Number index info type ", numberInfo->GetType(),
+                            " is not assignable to string index info type ", stringInfo->GetType(), "."},
+                           numberInfo->Pos());
         }
     }
 }
@@ -83,15 +83,15 @@ void TSChecker::CheckIndexConstraints(Type *type)
 void TSChecker::ResolveStructuredTypeMembers(Type *type)
 {
     if (type->IsObjectType()) {
-        ObjectType *obj_type = type->AsObjectType();
+        ObjectType *objType = type->AsObjectType();
 
-        if (obj_type->IsObjectLiteralType()) {
-            ResolveObjectTypeMembers(obj_type);
+        if (objType->IsObjectLiteralType()) {
+            ResolveObjectTypeMembers(objType);
             return;
         }
 
-        if (obj_type->IsInterfaceType()) {
-            ResolveInterfaceOrClassTypeMembers(obj_type->AsInterfaceType());
+        if (objType->IsInterfaceType()) {
+            ResolveInterfaceOrClassTypeMembers(objType->AsInterfaceType());
             return;
         }
     }
@@ -109,56 +109,54 @@ void TSChecker::ResolveUnionTypeMembers(UnionType *type)
     }
 
     ObjectDescriptor *desc = Allocator()->New<ObjectDescriptor>(Allocator());
-    ArenaVector<Type *> string_info_types(Allocator()->Adapter());
-    ArenaVector<Type *> number_info_types(Allocator()->Adapter());
-    ArenaVector<Signature *> call_signatures(Allocator()->Adapter());
-    ArenaVector<Signature *> construct_signatures(Allocator()->Adapter());
+    ArenaVector<Type *> stringInfoTypes(Allocator()->Adapter());
+    ArenaVector<Type *> numberInfoTypes(Allocator()->Adapter());
+    ArenaVector<Signature *> callSignatures(Allocator()->Adapter());
+    ArenaVector<Signature *> constructSignatures(Allocator()->Adapter());
 
     for (auto *it : type->AsUnionType()->ConstituentTypes()) {
         if (!it->IsObjectType()) {
             continue;
         }
 
-        ObjectType *obj_type = it->AsObjectType();
-        ResolveObjectTypeMembers(obj_type);
+        ObjectType *objType = it->AsObjectType();
+        ResolveObjectTypeMembers(objType);
 
-        if (!obj_type->CallSignatures().empty()) {
-            for (auto *signature : obj_type->CallSignatures()) {
-                call_signatures.push_back(signature);
+        if (!objType->CallSignatures().empty()) {
+            for (auto *signature : objType->CallSignatures()) {
+                callSignatures.push_back(signature);
             }
         }
 
-        if (!obj_type->ConstructSignatures().empty()) {
-            for (auto *signature : obj_type->ConstructSignatures()) {
-                construct_signatures.push_back(signature);
+        if (!objType->ConstructSignatures().empty()) {
+            for (auto *signature : objType->ConstructSignatures()) {
+                constructSignatures.push_back(signature);
             }
         }
 
-        if (obj_type->StringIndexInfo() != nullptr) {
-            string_info_types.push_back(obj_type->StringIndexInfo()->GetType());
+        if (objType->StringIndexInfo() != nullptr) {
+            stringInfoTypes.push_back(objType->StringIndexInfo()->GetType());
         }
 
-        if (obj_type->NumberIndexInfo() != nullptr) {
-            number_info_types.push_back(obj_type->NumberIndexInfo()->GetType());
+        if (objType->NumberIndexInfo() != nullptr) {
+            numberInfoTypes.push_back(objType->NumberIndexInfo()->GetType());
         }
     }
 
-    desc->call_signatures = call_signatures;
-    desc->construct_signatures = construct_signatures;
+    desc->callSignatures = callSignatures;
+    desc->constructSignatures = constructSignatures;
 
-    if (!string_info_types.empty()) {
-        desc->string_index_info =
-            Allocator()->New<IndexInfo>(CreateUnionType(std::move(string_info_types)), "x", false);
+    if (!stringInfoTypes.empty()) {
+        desc->stringIndexInfo = Allocator()->New<IndexInfo>(CreateUnionType(std::move(stringInfoTypes)), "x", false);
     }
 
-    if (!number_info_types.empty()) {
-        desc->number_index_info =
-            Allocator()->New<IndexInfo>(CreateUnionType(std::move(number_info_types)), "x", false);
+    if (!numberInfoTypes.empty()) {
+        desc->numberIndexInfo = Allocator()->New<IndexInfo>(CreateUnionType(std::move(numberInfoTypes)), "x", false);
     }
 
-    ObjectType *merged_type = Allocator()->New<ObjectLiteralType>(desc);
-    merged_type->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
-    type->SetMergedObjectType(merged_type);
+    ObjectType *mergedType = Allocator()->New<ObjectLiteralType>(desc);
+    mergedType->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
+    type->SetMergedObjectType(mergedType);
 }
 
 void TSChecker::ResolveInterfaceOrClassTypeMembers(InterfaceType *type)
@@ -180,29 +178,28 @@ void TSChecker::ResolveObjectTypeMembers(ObjectType *type)
     }
 
     ASSERT(type->Variable() && type->Variable()->Declaration()->Node()->IsTSTypeLiteral());
-    auto *type_literal = type->Variable()->Declaration()->Node()->AsTSTypeLiteral();
-    ArenaVector<ir::TSSignatureDeclaration *> signature_declarations(Allocator()->Adapter());
-    ArenaVector<ir::TSIndexSignature *> index_declarations(Allocator()->Adapter());
+    auto *typeLiteral = type->Variable()->Declaration()->Node()->AsTSTypeLiteral();
+    ArenaVector<ir::TSSignatureDeclaration *> signatureDeclarations(Allocator()->Adapter());
+    ArenaVector<ir::TSIndexSignature *> indexDeclarations(Allocator()->Adapter());
 
-    for (auto *it : type_literal->Members()) {
-        ResolvePropertiesOfObjectType(type, it, signature_declarations, index_declarations, false);
+    for (auto *it : typeLiteral->Members()) {
+        ResolvePropertiesOfObjectType(type, it, signatureDeclarations, indexDeclarations, false);
     }
 
     type->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
 
-    ResolveSignaturesOfObjectType(type, signature_declarations);
-    ResolveIndexInfosOfObjectType(type, index_declarations);
+    ResolveSignaturesOfObjectType(type, signatureDeclarations);
+    ResolveIndexInfosOfObjectType(type, indexDeclarations);
 }
 
 void TSChecker::ResolvePropertiesOfObjectType(ObjectType *type, ir::AstNode *member,
-                                              ArenaVector<ir::TSSignatureDeclaration *> &signature_declarations,
-                                              ArenaVector<ir::TSIndexSignature *> &index_declarations,
-                                              bool is_interface)
+                                              ArenaVector<ir::TSSignatureDeclaration *> &signatureDeclarations,
+                                              ArenaVector<ir::TSIndexSignature *> &indexDeclarations, bool isInterface)
 {
     if (member->IsTSPropertySignature()) {
         varbinder::Variable *prop = member->AsTSPropertySignature()->Variable();
 
-        if (!is_interface ||
+        if (!isInterface ||
             ValidateInterfaceMemberRedeclaration(type, prop, member->AsTSPropertySignature()->Key()->Start())) {
             type->AddProperty(prop->AsLocalVariable());
         }
@@ -213,7 +210,7 @@ void TSChecker::ResolvePropertiesOfObjectType(ObjectType *type, ir::AstNode *mem
     if (member->IsTSMethodSignature()) {
         varbinder::Variable *method = member->AsTSMethodSignature()->Variable();
 
-        if (!is_interface ||
+        if (!isInterface ||
             ValidateInterfaceMemberRedeclaration(type, method, member->AsTSMethodSignature()->Key()->Start())) {
             type->AddProperty(method->AsLocalVariable());
         }
@@ -222,57 +219,57 @@ void TSChecker::ResolvePropertiesOfObjectType(ObjectType *type, ir::AstNode *mem
     }
 
     if (member->IsTSSignatureDeclaration()) {
-        signature_declarations.push_back(member->AsTSSignatureDeclaration());
+        signatureDeclarations.push_back(member->AsTSSignatureDeclaration());
         return;
     }
 
     ASSERT(member->IsTSIndexSignature());
-    index_declarations.push_back(member->AsTSIndexSignature());
+    indexDeclarations.push_back(member->AsTSIndexSignature());
 }
 
 void TSChecker::ResolveSignaturesOfObjectType(ObjectType *type,
-                                              ArenaVector<ir::TSSignatureDeclaration *> &signature_declarations)
+                                              ArenaVector<ir::TSSignatureDeclaration *> &signatureDeclarations)
 {
-    for (auto *it : signature_declarations) {
-        Type *placeholder_obj = it->Check(this);
+    for (auto *it : signatureDeclarations) {
+        Type *placeholderObj = it->Check(this);
 
         if (it->AsTSSignatureDeclaration()->Kind() ==
             ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE) {
-            type->AddCallSignature(placeholder_obj->AsObjectType()->CallSignatures()[0]);
+            type->AddCallSignature(placeholderObj->AsObjectType()->CallSignatures()[0]);
             continue;
         }
 
-        type->AddConstructSignature(placeholder_obj->AsObjectType()->ConstructSignatures()[0]);
+        type->AddConstructSignature(placeholderObj->AsObjectType()->ConstructSignatures()[0]);
     }
 }
-void TSChecker::ResolveIndexInfosOfObjectType(ObjectType *type, ArenaVector<ir::TSIndexSignature *> &index_declarations)
+void TSChecker::ResolveIndexInfosOfObjectType(ObjectType *type, ArenaVector<ir::TSIndexSignature *> &indexDeclarations)
 {
-    for (auto *it : index_declarations) {
-        Type *placeholder_obj = it->Check(this);
+    for (auto *it : indexDeclarations) {
+        Type *placeholderObj = it->Check(this);
 
         if (it->AsTSIndexSignature()->Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
-            IndexInfo *number_info = placeholder_obj->AsObjectType()->NumberIndexInfo();
+            IndexInfo *numberInfo = placeholderObj->AsObjectType()->NumberIndexInfo();
 
             if (type->NumberIndexInfo() != nullptr) {
                 ThrowTypeError("Duplicated index signature for type 'number'", it->Start());
             }
 
-            type->Desc()->number_index_info = number_info;
+            type->Desc()->numberIndexInfo = numberInfo;
             continue;
         }
 
-        IndexInfo *string_info = placeholder_obj->AsObjectType()->StringIndexInfo();
+        IndexInfo *stringInfo = placeholderObj->AsObjectType()->StringIndexInfo();
 
         if (type->StringIndexInfo() != nullptr) {
             ThrowTypeError("Duplicated index signature for type 'string'", it->Start());
         }
 
-        type->Desc()->string_index_info = string_info;
+        type->Desc()->stringIndexInfo = stringInfo;
     }
 }
 
-varbinder::Variable *TSChecker::GetPropertyOfType(Type *type, const util::StringView &name, bool get_partial,
-                                                  varbinder::VariableFlags propagate_flags)
+varbinder::Variable *TSChecker::GetPropertyOfType(Type *type, const util::StringView &name, bool getPartial,
+                                                  varbinder::VariableFlags propagateFlags)
 {
     if (type->IsObjectType()) {
         ResolveObjectTypeMembers(type->AsObjectType());
@@ -280,14 +277,14 @@ varbinder::Variable *TSChecker::GetPropertyOfType(Type *type, const util::String
     }
 
     if (type->IsUnionType()) {
-        return GetPropertyOfUnionType(type->AsUnionType(), name, get_partial, propagate_flags);
+        return GetPropertyOfUnionType(type->AsUnionType(), name, getPartial, propagateFlags);
     }
 
     return nullptr;
 }
 
-varbinder::Variable *TSChecker::GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool get_partial,
-                                                       varbinder::VariableFlags propagate_flags)
+varbinder::Variable *TSChecker::GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool getPartial,
+                                                       varbinder::VariableFlags propagateFlags)
 {
     auto found = type->CachedSyntheticProperties().find(name);
 
@@ -296,56 +293,56 @@ varbinder::Variable *TSChecker::GetPropertyOfUnionType(UnionType *type, const ut
     }
 
     varbinder::VariableFlags flags = varbinder::VariableFlags::PROPERTY;
-    ArenaVector<Type *> collected_types(Allocator()->Adapter());
+    ArenaVector<Type *> collectedTypes(Allocator()->Adapter());
 
     for (auto *it : type->ConstituentTypes()) {
         varbinder::Variable *prop = GetPropertyOfType(it, name);
 
         if (prop == nullptr) {
             if (it->IsArrayType()) {
-                collected_types.push_back(it->AsArrayType()->ElementType());
+                collectedTypes.push_back(it->AsArrayType()->ElementType());
                 continue;
             }
 
             if (!it->IsObjectType()) {
-                if (get_partial) {
+                if (getPartial) {
                     continue;
                 }
 
                 return nullptr;
             }
 
-            ObjectType *obj_type = it->AsObjectType();
+            ObjectType *objType = it->AsObjectType();
 
-            if (obj_type->StringIndexInfo() == nullptr) {
-                if (get_partial) {
+            if (objType->StringIndexInfo() == nullptr) {
+                if (getPartial) {
                     continue;
                 }
 
                 return nullptr;
             }
 
-            collected_types.push_back(obj_type->StringIndexInfo()->GetType());
+            collectedTypes.push_back(objType->StringIndexInfo()->GetType());
             continue;
         }
 
-        prop->AddFlag(propagate_flags);
+        prop->AddFlag(propagateFlags);
 
         if (prop->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             flags |= varbinder::VariableFlags::OPTIONAL;
         }
 
-        collected_types.push_back(GetTypeOfVariable(prop));
+        collectedTypes.push_back(GetTypeOfVariable(prop));
     }
 
-    if (collected_types.empty()) {
+    if (collectedTypes.empty()) {
         return nullptr;
     }
 
-    varbinder::Variable *synthetic_prop = varbinder::Scope::CreateVar(Allocator(), name, flags, nullptr);
-    synthetic_prop->SetTsType(CreateUnionType(std::move(collected_types)));
-    type->CachedSyntheticProperties().insert({name, synthetic_prop});
-    return synthetic_prop;
+    varbinder::Variable *syntheticProp = varbinder::Scope::CreateVar(Allocator(), name, flags, nullptr);
+    syntheticProp->SetTsType(CreateUnionType(std::move(collectedTypes)));
+    type->CachedSyntheticProperties().insert({name, syntheticProp});
+    return syntheticProp;
 }
 
 Type *TSChecker::CheckComputedPropertyName(ir::Expression *key)
@@ -354,9 +351,9 @@ Type *TSChecker::CheckComputedPropertyName(ir::Expression *key)
         return key->TsType();
     }
 
-    Type *key_type = key->Check(this);
+    Type *keyType = key->Check(this);
 
-    if (!key_type->HasTypeFlag(TypeFlag::STRING_LIKE | TypeFlag::NUMBER_LIKE)) {
+    if (!keyType->HasTypeFlag(TypeFlag::STRING_LIKE | TypeFlag::NUMBER_LIKE)) {
         ThrowTypeError(
             "A computed property name in a type literal must refer to an expression whose type is a literal "
             "type "
@@ -364,17 +361,17 @@ Type *TSChecker::CheckComputedPropertyName(ir::Expression *key)
             key->Start());
     }
 
-    key->SetTsType(key_type);
-    return key_type;
+    key->SetTsType(keyType);
+    return keyType;
 }
 
-IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *index_type)
+IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *indexType)
 {
     ResolveStructuredTypeMembers(type);
-    bool get_number_info = index_type->HasTypeFlag(TypeFlag::NUMBER_LIKE);
+    bool getNumberInfo = indexType->HasTypeFlag(TypeFlag::NUMBER_LIKE);
 
     if (type->IsObjectType()) {
-        if (get_number_info) {
+        if (getNumberInfo) {
             return type->AsObjectType()->NumberIndexInfo();
         }
 
@@ -384,7 +381,7 @@ IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *index_type)
     if (type->IsUnionType()) {
         ASSERT(type->AsUnionType()->MergedObjectType());
 
-        if (get_number_info) {
+        if (getNumberInfo) {
             return type->AsUnionType()->MergedObjectType()->NumberIndexInfo();
         }
 
@@ -394,45 +391,45 @@ IndexInfo *TSChecker::GetApplicableIndexInfo(Type *type, Type *index_type)
     return nullptr;
 }
 
-Type *TSChecker::GetPropertyTypeForIndexType(Type *type, Type *index_type)
+Type *TSChecker::GetPropertyTypeForIndexType(Type *type, Type *indexType)
 {
     if (type->IsArrayType()) {
         return type->AsArrayType()->ElementType();
     }
 
-    if (index_type->HasTypeFlag(TypeFlag::STRING_LITERAL | TypeFlag::NUMBER_LITERAL)) {
+    if (indexType->HasTypeFlag(TypeFlag::STRING_LITERAL | TypeFlag::NUMBER_LITERAL)) {
         varbinder::Variable *prop = nullptr;
 
-        if (index_type->IsStringLiteralType()) {
-            prop = GetPropertyOfType(type, index_type->AsStringLiteralType()->Value());
+        if (indexType->IsStringLiteralType()) {
+            prop = GetPropertyOfType(type, indexType->AsStringLiteralType()->Value());
         } else {
-            util::StringView prop_name =
-                util::Helpers::ToStringView(Allocator(), index_type->AsNumberLiteralType()->Value());
-            prop = GetPropertyOfType(type, prop_name);
+            util::StringView propName =
+                util::Helpers::ToStringView(Allocator(), indexType->AsNumberLiteralType()->Value());
+            prop = GetPropertyOfType(type, propName);
         }
 
         if (prop != nullptr) {
-            Type *prop_type = GetTypeOfVariable(prop);
+            Type *propType = GetTypeOfVariable(prop);
 
             if (prop->HasFlag(varbinder::VariableFlags::READONLY)) {
-                prop_type->AddTypeFlag(TypeFlag::READONLY);
+                propType->AddTypeFlag(TypeFlag::READONLY);
             }
 
-            return prop_type;
+            return propType;
         }
     }
 
-    if (index_type->HasTypeFlag(TypeFlag::STRING_LIKE | TypeFlag::NUMBER_LIKE)) {
-        IndexInfo *index_info = GetApplicableIndexInfo(type, index_type);
+    if (indexType->HasTypeFlag(TypeFlag::STRING_LIKE | TypeFlag::NUMBER_LIKE)) {
+        IndexInfo *indexInfo = GetApplicableIndexInfo(type, indexType);
 
-        if (index_info != nullptr) {
-            Type *index_info_type = index_info->GetType();
+        if (indexInfo != nullptr) {
+            Type *indexInfoType = indexInfo->GetType();
 
-            if (index_info->Readonly()) {
-                index_info_type->AddTypeFlag(TypeFlag::READONLY);
+            if (indexInfo->Readonly()) {
+                indexInfoType->AddTypeFlag(TypeFlag::READONLY);
             }
 
-            return index_info_type;
+            return indexInfoType;
         }
     }
 
@@ -457,9 +454,9 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
         }
 
         for (auto *extends : declaration->Extends()) {
-            Type *base_type = extends->Expr()->GetType(this);
+            Type *baseType = extends->Expr()->GetType(this);
 
-            if (!base_type->HasTypeFlag(TypeFlag::OBJECT | TypeFlag::NON_PRIMITIVE | TypeFlag::ANY)) {
+            if (!baseType->HasTypeFlag(TypeFlag::OBJECT | TypeFlag::NON_PRIMITIVE | TypeFlag::ANY)) {
                 ThrowTypeError(
                     "An interface can only extend an object type or intersection of object types with statically "
                     "known "
@@ -467,26 +464,26 @@ ArenaVector<ObjectType *> TSChecker::GetBaseTypes(InterfaceType *type)
                     extends->Start());
             }
 
-            if (!base_type->IsObjectType()) {
+            if (!baseType->IsObjectType()) {
                 continue;
             }
 
-            ObjectType *base_obj = base_type->AsObjectType();
+            ObjectType *baseObj = baseType->AsObjectType();
 
-            if (base_type == type) {
+            if (baseType == type) {
                 ThrowTypeError({"Type ", type->Name(), " recursively references itself as a base type."},
                                decl->Node()->AsTSInterfaceDeclaration()->Id()->Start());
             }
 
-            type->AddBase(base_obj);
+            type->AddBase(baseObj);
 
-            if (!base_obj->IsInterfaceType()) {
+            if (!baseObj->IsInterfaceType()) {
                 continue;
             }
 
-            ArenaVector<ObjectType *> extends_bases = GetBaseTypes(base_obj->AsInterfaceType());
-            for (auto *extend_base : extends_bases) {
-                if (extend_base == type) {
+            ArenaVector<ObjectType *> extendsBases = GetBaseTypes(baseObj->AsInterfaceType());
+            for (auto *extendBase : extendsBases) {
+                if (extendBase == type) {
                     ThrowTypeError({"Type ", type->Name(), " recursively references itself as a base type."},
                                    decl->Node()->AsTSInterfaceDeclaration()->Id()->Start());
                 }
@@ -507,23 +504,23 @@ void TSChecker::ResolveDeclaredMembers(InterfaceType *type)
     ASSERT(type->Variable() && type->Variable()->Declaration()->IsInterfaceDecl());
     varbinder::InterfaceDecl *decl = type->Variable()->Declaration()->AsInterfaceDecl();
 
-    ArenaVector<ir::TSSignatureDeclaration *> signature_declarations(Allocator()->Adapter());
-    ArenaVector<ir::TSIndexSignature *> index_declarations(Allocator()->Adapter());
+    ArenaVector<ir::TSSignatureDeclaration *> signatureDeclarations(Allocator()->Adapter());
+    ArenaVector<ir::TSIndexSignature *> indexDeclarations(Allocator()->Adapter());
 
     for (const auto *declaration : decl->Decls()) {
         for (auto *member : declaration->Body()->Body()) {
-            ResolvePropertiesOfObjectType(type, member, signature_declarations, index_declarations, true);
+            ResolvePropertiesOfObjectType(type, member, signatureDeclarations, indexDeclarations, true);
         }
 
         type->AddObjectFlag(ObjectFlags::RESOLVED_DECLARED_MEMBERS);
 
-        ResolveSignaturesOfObjectType(type, signature_declarations);
-        ResolveIndexInfosOfObjectType(type, index_declarations);
+        ResolveSignaturesOfObjectType(type, signatureDeclarations);
+        ResolveIndexInfosOfObjectType(type, indexDeclarations);
     }
 }
 
 bool TSChecker::ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder::Variable *prop,
-                                                     const lexer::SourcePosition &loc_info)
+                                                     const lexer::SourcePosition &locInfo)
 {
     if (prop->HasFlag(varbinder::VariableFlags::COMPUTED)) {
         return true;
@@ -535,12 +532,12 @@ bool TSChecker::ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder
         return true;
     }
 
-    Type *target_type = GetTypeOfVariable(prop);
-    Type *source_type = GetTypeOfVariable(found);
-    IsTypeIdenticalTo(target_type, source_type,
+    Type *targetType = GetTypeOfVariable(prop);
+    Type *sourceType = GetTypeOfVariable(found);
+    IsTypeIdenticalTo(targetType, sourceType,
                       {"Subsequent property declarations must have the same type.  Property ", prop->Name(),
-                       " must be of type ", source_type, ", but here has type ", target_type, "."},
-                      loc_info);
+                       " must be of type ", sourceType, ", but here has type ", targetType, "."},
+                      locInfo);
     return false;
 }
 }  // namespace panda::es2panda::checker

@@ -44,11 +44,11 @@ public:
 };
 
 struct RegExp {
-    RegExp(util::StringView p, util::StringView f, RegExpFlags re_flags);
+    RegExp(util::StringView p, util::StringView f, RegExpFlags reFlags);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    util::StringView pattern_str;
-    util::StringView flags_str;
+    util::StringView patternStr;
+    util::StringView flagsStr;
     RegExpFlags flags;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
@@ -80,7 +80,7 @@ private:
     uint32_t ParseUnicodeEscape();
 
     void ParseUnicodePropertyEscape();
-    void ValidateNamedBackreference(bool is_unicode);
+    void ValidateNamedBackreference(bool isUnicode);
     void ValidateGroupNameElement(char32_t cp);
     void ParseNamedBackreference();
 
@@ -102,9 +102,9 @@ private:
     RegExp re_;
     ArenaAllocator *allocator_ {};
     util::StringView::Iterator iter_;
-    uint32_t capturing_group_count_ {};
-    std::unordered_set<util::StringView> group_names_;
-    std::unordered_set<util::StringView> back_references_;
+    uint32_t capturingGroupCount_ {};
+    std::unordered_set<util::StringView> groupNames_;
+    std::unordered_set<util::StringView> backReferences_;
 };
 }  // namespace panda::es2panda::lexer
 

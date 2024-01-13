@@ -41,8 +41,8 @@ void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb)
 
     id_ = cb(id_)->AsIdentifier();
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterDeclaration();
     }
 
     for (auto *&it : extends_) {
@@ -60,8 +60,8 @@ void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
 
     cb(id_);
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     for (auto *it : extends_) {
@@ -78,7 +78,7 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
                  {"body", body_},
                  {"id", id_},
                  {"extends", extends_},
-                 {"typeParameters", AstDumper::Optional(type_params_)}});
+                 {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
 void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
@@ -88,9 +88,9 @@ void TSInterfaceDeclaration::Dump(ir::SrcDumper *dumper) const
     dumper->Add("interface ");
     id_->Dump(dumper);
 
-    if (type_params_ != nullptr) {
+    if (typeParams_ != nullptr) {
         dumper->Add("<");
-        type_params_->Dump(dumper);
+        typeParams_->Dump(dumper);
         dumper->Add(">");
     }
 

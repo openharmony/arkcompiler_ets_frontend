@@ -44,9 +44,9 @@ ir::Identifier *Gensym(ArenaAllocator *const allocator)
 util::UString GenName(ArenaAllocator *const allocator)
 {
     static std::string const GENSYM_CORE = "gensym$_";
-    static std::size_t gensym_counter = 0U;
+    static std::size_t gensymCounter = 0U;
 
-    return util::UString {GENSYM_CORE + std::to_string(++gensym_counter), allocator};
+    return util::UString {GENSYM_CORE + std::to_string(++gensymCounter), allocator};
 }
 
 }  // namespace panda::es2panda::compiler

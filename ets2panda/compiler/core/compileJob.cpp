@@ -24,7 +24,7 @@ void CompileJob::Run()
     std::unique_lock<std::mutex> lock(m_);
     cond_.wait(lock, [this] { return dependencies_ == 0; });
 
-    context_->GetCodeGenCb()(context_, scope_, &program_element_);
+    context_->GetCodeGenCb()(context_, scope_, &programElement_);
 
     if (dependant_ != nullptr) {
         dependant_->Signal();

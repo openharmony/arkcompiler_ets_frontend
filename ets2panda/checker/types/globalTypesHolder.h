@@ -222,17 +222,17 @@ public:
 
     Holder &GlobalTypes()
     {
-        return global_types_;
+        return globalTypes_;
     }
 
     const Holder &GlobalTypes() const
     {
-        return global_types_;
+        return globalTypes_;
     }
 
 private:
-    Holder global_types_ {};
-    ArenaMap<util::StringView, GlobalTypeId> builtin_name_mappings_;
+    Holder globalTypes_ {};
+    ArenaMap<util::StringView, GlobalTypeId> builtinNameMappings_;
 };
 }  // namespace panda::es2panda::checker
 

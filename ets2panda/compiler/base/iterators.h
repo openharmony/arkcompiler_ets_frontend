@@ -46,7 +46,7 @@ public:
 
     VReg NextResult() const
     {
-        return next_result_;
+        return nextResult_;
     }
 
     const ir::AstNode *Node() const
@@ -61,7 +61,7 @@ public:
     void Next() const;
     void Complete() const;
     void Value() const;
-    void Close(bool abrupt_completion) const;
+    void Close(bool abruptCompletion) const;
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
@@ -69,7 +69,7 @@ protected:
     const ir::AstNode *node_;
     VReg method_;
     VReg iterator_;
-    VReg next_result_;
+    VReg nextResult_;
     IteratorType type_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
@@ -92,9 +92,9 @@ public:
         return result_;
     }
 
-    void Step(Label *done_target = nullptr) const;
+    void Step(Label *doneTarget = nullptr) const;
 
-    virtual void OnIterDone([[maybe_unused]] Label *done_target) const;
+    virtual void OnIterDone([[maybe_unused]] Label *doneTarget) const;
 
     friend class DestructuringRestIterator;
 
@@ -113,7 +113,7 @@ public:
     DEFAULT_MOVE_SEMANTIC(DestructuringRestIterator);
     ~DestructuringRestIterator() = default;
 
-    void OnIterDone([[maybe_unused]] Label *done_target) const override;
+    void OnIterDone([[maybe_unused]] Label *doneTarget) const override;
 };
 }  // namespace panda::es2panda::compiler
 

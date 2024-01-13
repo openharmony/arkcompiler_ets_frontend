@@ -31,21 +31,20 @@
 #include "ir/statements/labelledStatement.h"
 
 namespace panda::es2panda::compiler {
-DynamicContext::DynamicContext(CodeGen *cg, LabelTarget target)
-    : cg_(cg), target_(target), prev_(Cg()->dynamic_context_)
+DynamicContext::DynamicContext(CodeGen *cg, LabelTarget target) : cg_(cg), target_(target), prev_(Cg()->dynamicContext_)
 {
-    Cg()->dynamic_context_ = this;
+    Cg()->dynamicContext_ = this;
 }
 
 DynamicContext::~DynamicContext()
 {
-    Cg()->dynamic_context_ = prev_;
+    Cg()->dynamicContext_ = prev_;
 }
 
-LabelContext::LabelContext(CodeGen *cg, const ir::LabelledStatement *labelled_stmt)
-    : DynamicContext(cg, LabelTarget(labelled_stmt->Ident()->Name())), labelled_stmt_(labelled_stmt)
+LabelContext::LabelContext(CodeGen *cg, const ir::LabelledStatement *labelledStmt)
+    : DynamicContext(cg, LabelTarget(labelledStmt->Ident()->Name())), labelledStmt_(labelledStmt)
 {
-    if (!labelled_stmt->Body()->IsBlockStatement()) {
+    if (!labelledStmt->Body()->IsBlockStatement()) {
         return;
     }
 
@@ -59,39 +58,39 @@ LabelContext::~LabelContext()
         return;
     }
 
-    Cg()->SetLabel(labelled_stmt_, label_);
+    Cg()->SetLabel(labelledStmt_, label_);
 }
 
-LexEnvContext::LexEnvContext(LoopEnvScope *env_scope, PandaGen *pg, LabelTarget target)
-    : DynamicContext(pg, target), env_scope_(env_scope)
+LexEnvContext::LexEnvContext(LoopEnvScope *envScope, PandaGen *pg, LabelTarget target)
+    : DynamicContext(pg, target), envScope_(envScope)
 {
-    if (!env_scope_->HasEnv()) {
+    if (!envScope_->HasEnv()) {
         return;
     }
 
-    catch_table_ = Cg()->CreateCatchTable();
-    const auto &label_set = catch_table_->LabelSet();
-    const auto *node = env_scope_->Scope()->Node();
+    catchTable_ = Cg()->CreateCatchTable();
+    const auto &labelSet = catchTable_->LabelSet();
+    const auto *node = envScope_->Scope()->Node();
 
-    Cg()->SetLabel(node, label_set.TryBegin());
+    Cg()->SetLabel(node, labelSet.TryBegin());
 }
 
 LexEnvContext::~LexEnvContext()
 {
-    if (!env_scope_->HasEnv()) {
+    if (!envScope_->HasEnv()) {
         return;
     }
 
-    const auto &label_set = catch_table_->LabelSet();
-    const auto *node = env_scope_->Scope()->Node();
+    const auto &labelSet = catchTable_->LabelSet();
+    const auto *node = envScope_->Scope()->Node();
 
-    Cg()->SetLabel(node, label_set.TryEnd());
-    Cg()->Branch(node, label_set.CatchEnd());
+    Cg()->SetLabel(node, labelSet.TryEnd());
+    Cg()->Branch(node, labelSet.CatchEnd());
 
-    Cg()->SetLabel(node, label_set.CatchBegin());
+    Cg()->SetLabel(node, labelSet.CatchBegin());
     AsPandaGen()->PopLexEnv(node);
     AsPandaGen()->EmitThrow(node);
-    Cg()->SetLabel(node, label_set.CatchEnd());
+    Cg()->SetLabel(node, labelSet.CatchEnd());
     AsPandaGen()->PopLexEnv(node);
 }
 
@@ -102,44 +101,44 @@ PandaGen *LexEnvContext::AsPandaGen() const
 
 bool LexEnvContext::HasTryCatch() const
 {
-    return env_scope_->HasEnv();
+    return envScope_->HasEnv();
 }
 
 void LexEnvContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                                 [[maybe_unused]] const util::StringView &target_label)
+                                 [[maybe_unused]] const util::StringView &targetLabel)
 {
-    if (cfc == ControlFlowChange::CONTINUE || !env_scope_->HasEnv()) {
+    if (cfc == ControlFlowChange::CONTINUE || !envScope_->HasEnv()) {
         return;
     }
 
-    const auto *node = env_scope_->Scope()->Node();
+    const auto *node = envScope_->Scope()->Node();
     AsPandaGen()->PopLexEnv(node);
 }
 
 IteratorContext::IteratorContext(PandaGen *pg, const Iterator &iterator, LabelTarget target)
-    : DynamicContext(pg, target), iterator_(iterator), catch_table_(pg->CreateCatchTable())
+    : DynamicContext(pg, target), iterator_(iterator), catchTable_(pg->CreateCatchTable())
 {
-    const auto &label_set = catch_table_->LabelSet();
-    pg->SetLabel(iterator_.Node(), label_set.TryBegin());
+    const auto &labelSet = catchTable_->LabelSet();
+    pg->SetLabel(iterator_.Node(), labelSet.TryBegin());
 }
 
 IteratorContext::~IteratorContext()
 {
-    const auto &label_set = catch_table_->LabelSet();
+    const auto &labelSet = catchTable_->LabelSet();
     const auto *node = iterator_.Node();
 
-    Cg()->SetLabel(node, label_set.TryEnd());
-    Cg()->Branch(node, label_set.CatchEnd());
+    Cg()->SetLabel(node, labelSet.TryEnd());
+    Cg()->Branch(node, labelSet.CatchEnd());
 
-    Cg()->SetLabel(node, label_set.CatchBegin());
+    Cg()->SetLabel(node, labelSet.CatchBegin());
     iterator_.Close(true);
-    Cg()->SetLabel(node, label_set.CatchEnd());
+    Cg()->SetLabel(node, labelSet.CatchEnd());
 }
 
 void IteratorContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
-                                   [[maybe_unused]] const util::StringView &target_label)
+                                   [[maybe_unused]] const util::StringView &targetLabel)
 {
-    if (cfc == ControlFlowChange::CONTINUE && Target().ContinueLabel() == target_label) {
+    if (cfc == ControlFlowChange::CONTINUE && Target().ContinueLabel() == targetLabel) {
         return;
     }
 
@@ -148,142 +147,142 @@ void IteratorContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
 
 void TryContext::InitFinalizer()
 {
-    ASSERT(try_stmt_);
+    ASSERT(tryStmt_);
 
-    if (!has_finalizer_ || (try_stmt_->FinallyBlock() == nullptr)) {
+    if (!hasFinalizer_ || (tryStmt_->FinallyBlock() == nullptr)) {
         return;
     }
 
     auto *pg = static_cast<PandaGen *>(Cg());
 
-    finalizer_run_ = pg->AllocReg();
-    pg->StoreConst(try_stmt_, finalizer_run_, Constant::JS_UNDEFINED);
+    finalizerRun_ = pg->AllocReg();
+    pg->StoreConst(tryStmt_, finalizerRun_, Constant::JS_UNDEFINED);
 }
 
 void CatchContext::InitCatchTable()
 {
     auto *pg = static_cast<PandaGen *>(Cg());
-    catch_table_ = pg->CreateCatchTable();
+    catchTable_ = pg->CreateCatchTable();
 }
 
 const TryLabelSet &CatchContext::LabelSet() const
 {
-    return catch_table_->LabelSet();
+    return catchTable_->LabelSet();
 }
 
 bool TryContext::HasFinalizer() const
 {
-    return has_finalizer_;
+    return hasFinalizer_;
 }
 
 void TryContext::EmitFinalizer()
 {
-    if (!has_finalizer_ || in_finalizer_ || (try_stmt_->FinallyBlock() == nullptr)) {
+    if (!hasFinalizer_ || inFinalizer_ || (tryStmt_->FinallyBlock() == nullptr)) {
         return;
     }
 
     auto *pg = static_cast<PandaGen *>(Cg());
-    in_finalizer_ = true;
-    try_stmt_->FinallyBlock()->Compile(pg);
-    in_finalizer_ = false;
+    inFinalizer_ = true;
+    tryStmt_->FinallyBlock()->Compile(pg);
+    inFinalizer_ = false;
 }
 
-CatchTable *ETSCatchContext::AddNewCathTable(const util::StringView assembler_type)
+CatchTable *ETSCatchContext::AddNewCathTable(const util::StringView assemblerType)
 {
     auto *cg = Cg();
 
-    CatchTable *catch_table = cg->CreateCatchTable(assembler_type);
-    catch_tables_.push_back(catch_table);
+    CatchTable *catchTable = cg->CreateCatchTable(assemblerType);
+    catchTables_.push_back(catchTable);
 
-    return catch_table;
+    return catchTable;
 }
 
-CatchTable *ETSCatchContext::AddNewCathTable(const util::StringView assembler_type, const LabelPair try_label_pair)
+CatchTable *ETSCatchContext::AddNewCathTable(const util::StringView assemblerType, const LabelPair tryLabelPair)
 {
     auto *cg = Cg();
 
-    CatchTable *catch_table = cg->CreateCatchTable(try_label_pair, assembler_type);
-    catch_tables_.push_back(catch_table);
+    CatchTable *catchTable = cg->CreateCatchTable(tryLabelPair, assemblerType);
+    catchTables_.push_back(catchTable);
 
-    return catch_table;
+    return catchTable;
 }
 
 void ETSTryContext::EmitFinalizer(
-    LabelPair trycatch_label_pair,
-    const ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> &finalizer_insertions)
+    LabelPair trycatchLabelPair,
+    const ArenaVector<std::pair<compiler::LabelPair, const ir::Statement *>> &finalizerInsertions)
 {
-    ASSERT(try_stmt_);
+    ASSERT(tryStmt_);
 
-    if (!has_finalizer_ || (try_stmt_->FinallyBlock() == nullptr)) {
+    if (!hasFinalizer_ || (tryStmt_->FinallyBlock() == nullptr)) {
         return;
     }
     auto *etsg = static_cast<ETSGen *>(Cg());
 
-    CatchTable *finalizer_table = AddNewCathTable("", trycatch_label_pair);
+    CatchTable *finalizerTable = AddNewCathTable("", trycatchLabelPair);
     // First compile of the finaly clause, executed if the statement executed normally
-    try_stmt_->FinallyBlock()->Compile(etsg);
+    tryStmt_->FinallyBlock()->Compile(etsg);
 
-    etsg->Branch(try_stmt_, finalizer_table->LabelSet().CatchEnd());
+    etsg->Branch(tryStmt_, finalizerTable->LabelSet().CatchEnd());
 
-    for (std::pair<compiler::LabelPair, const ir::Statement *> insertion : finalizer_insertions) {
-        etsg->SetLabel(try_stmt_, insertion.first.Begin());
+    for (std::pair<compiler::LabelPair, const ir::Statement *> insertion : finalizerInsertions) {
+        etsg->SetLabel(tryStmt_, insertion.first.Begin());
 
         ASSERT(insertion.second != nullptr);
-        bool is_return = insertion.second->IsReturnStatement();
+        bool isReturn = insertion.second->IsReturnStatement();
 
         compiler::RegScope rs(etsg);
         compiler::VReg res = etsg->AllocReg();
 
-        if (is_return) {
+        if (isReturn) {
             etsg->SetAccumulatorType(insertion.second->AsReturnStatement()->ReturnType());
-            etsg->StoreAccumulator(try_stmt_, res);
+            etsg->StoreAccumulator(tryStmt_, res);
             etsg->SetVRegType(res, insertion.second->AsReturnStatement()->ReturnType());
         }
 
         // Second compile of the finaly clause, executed if the statement executed normally, but abrupted by
         // return, break, or continue statements.
-        try_stmt_->FinallyBlock()->Compile(etsg);
+        tryStmt_->FinallyBlock()->Compile(etsg);
 
-        if (is_return) {
+        if (isReturn) {
             etsg->SetAccumulatorType(insertion.second->AsReturnStatement()->ReturnType());
-            etsg->LoadAccumulator(try_stmt_, res);
+            etsg->LoadAccumulator(tryStmt_, res);
         }
 
         if (insertion.first.End() != nullptr) {
-            etsg->Branch(try_stmt_, insertion.first.End());
-        } else if (is_return) {
+            etsg->Branch(tryStmt_, insertion.first.End());
+        } else if (isReturn) {
             if (etsg->CheckControlFlowChange()) {
-                etsg->StoreAccumulator(try_stmt_, res);
+                etsg->StoreAccumulator(tryStmt_, res);
                 etsg->ControlFlowChangeBreak();
-                etsg->LoadAccumulator(try_stmt_, res);
+                etsg->LoadAccumulator(tryStmt_, res);
             }
 
             if (insertion.second->AsReturnStatement()->ReturnType()->IsETSVoidType()) {
-                etsg->EmitReturnVoid(try_stmt_);
+                etsg->EmitReturnVoid(tryStmt_);
             } else {
-                etsg->ReturnAcc(try_stmt_);
+                etsg->ReturnAcc(tryStmt_);
             }
         } else if (insertion.second->IsBreakStatement()) {
             compiler::Label *target = etsg->ControlFlowChangeBreak(insertion.second->AsBreakStatement()->Ident());
-            etsg->Branch(try_stmt_, target);
+            etsg->Branch(tryStmt_, target);
         } else if (insertion.second->IsContinueStatement()) {
             compiler::Label *target = etsg->ControlFlowChangeContinue(insertion.second->AsContinueStatement()->Ident());
-            etsg->Branch(try_stmt_, target);
+            etsg->Branch(tryStmt_, target);
         } else {
             UNREACHABLE();
         }
     }
 
-    etsg->SetLabel(try_stmt_, finalizer_table->LabelSet().CatchBegin());
+    etsg->SetLabel(tryStmt_, finalizerTable->LabelSet().CatchBegin());
 
-    compiler::VReg exception = etsg->StoreException(try_stmt_);
+    compiler::VReg exception = etsg->StoreException(tryStmt_);
     // Third compile of the finaly clause, executed if the statement executed abruptly
-    try_stmt_->FinallyBlock()->Compile(etsg);
+    tryStmt_->FinallyBlock()->Compile(etsg);
 
-    etsg->LoadAccumulator(try_stmt_, exception);
-    etsg->EmitThrow(try_stmt_, exception);
+    etsg->LoadAccumulator(tryStmt_, exception);
+    etsg->EmitThrow(tryStmt_, exception);
 
-    etsg->SetLabel(try_stmt_, finalizer_table->LabelSet().CatchEnd());
+    etsg->SetLabel(tryStmt_, finalizerTable->LabelSet().CatchEnd());
 }
 
 }  // namespace panda::es2panda::compiler

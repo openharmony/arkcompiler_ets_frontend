@@ -33,9 +33,9 @@ public:
     // x = 1
     ir::VariableDeclaration *CreateVarDecl(bool declare, util::StringView name = "x")
     {
-        auto var_decl = alloc_->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, CreateId(name));
+        auto varDecl = alloc_->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, CreateId(name));
         ArenaVector<ir::VariableDeclarator *> tmp {alloc_->Adapter()};
-        tmp.emplace_back(var_decl);
+        tmp.emplace_back(varDecl);
         return alloc_->New<ir::VariableDeclaration>(ir::VariableDeclaration::VariableDeclarationKind::LET, alloc_,
                                                     std::move(tmp), declare);
     }
@@ -46,25 +46,25 @@ public:
     }
 
     // x = x + 1
-    ir::UpdateExpression *CreateIncrement(util::StringView name = "x", bool is_prefix = false)
+    ir::UpdateExpression *CreateIncrement(util::StringView name = "x", bool isPrefix = false)
     {
-        return alloc_->New<ir::UpdateExpression>(CreateId(name), lexer::TokenType::PUNCTUATOR_PLUS_PLUS, is_prefix);
+        return alloc_->New<ir::UpdateExpression>(CreateId(name), lexer::TokenType::PUNCTUATOR_PLUS_PLUS, isPrefix);
     }
 
     // x < 10
     ir::BinaryExpression *CreateLessCmpExpr(util::StringView name = "x")
     {
-        const int any_loop_limit = 10;
+        const int anyLoopLimit = 10;
         return alloc_->New<ir::BinaryExpression>(CreateId(name),
-                                                 alloc_->New<ir::NumberLiteral>(lexer::Number(any_loop_limit)),
+                                                 alloc_->New<ir::NumberLiteral>(lexer::Number(anyLoopLimit)),
                                                  lexer::TokenType::PUNCTUATOR_LESS_THAN);
     }
 
     ir::BlockStatement *CreateBlockWithDeclare(util::StringView name = "x")
     {
-        auto var_decl = CreateVarDecl(true, name);
+        auto varDecl = CreateVarDecl(true, name);
         ArenaVector<ir::Statement *> tmp {alloc_->Adapter()};
-        tmp.emplace_back(var_decl);
+        tmp.emplace_back(varDecl);
         return alloc_->New<ir::BlockStatement>(alloc_, std::move(tmp));
     }
 

@@ -276,7 +276,7 @@ public:
         UNREACHABLE();
     }
 
-    virtual bool CanHaveDecorator([[maybe_unused]] bool in_ts) const
+    virtual bool CanHaveDecorator([[maybe_unused]] bool inTs) const
     {
         return false;
     }
@@ -455,8 +455,8 @@ public:
         (member_name) &= ~flag;                             \
     }
 
-    DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxing_unboxing_flags_);
-    DECLARE_FLAG_OPERATIONS(AstNodeFlags, ast_node_flags_);
+    DECLARE_FLAG_OPERATIONS(BoxingUnboxingFlags, boxingUnboxingFlags_);
+    DECLARE_FLAG_OPERATIONS(AstNodeFlags, astNodeFlags_);
 #undef DECLARE_FLAG_OPERATIONS
 
     ir::ClassElement *AsClassElement()
@@ -532,8 +532,8 @@ protected:
     AstNodeType type_;
     varbinder::Variable *variable_ {};
     ModifierFlags flags_ {};
-    mutable AstNodeFlags ast_node_flags_ {};
-    mutable BoxingUnboxingFlags boxing_unboxing_flags_ {};
+    mutable AstNodeFlags astNodeFlags_ {};
+    mutable BoxingUnboxingFlags boxingUnboxingFlags_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -548,17 +548,17 @@ public:
 
     [[nodiscard]] checker::Type *TsType() noexcept
     {
-        return ts_type_;
+        return tsType_;
     }
 
     [[nodiscard]] const checker::Type *TsType() const noexcept
     {
-        return ts_type_;
+        return tsType_;
     }
 
-    void SetTsType(checker::Type *ts_type) noexcept
+    void SetTsType(checker::Type *tsType) noexcept
     {
-        ts_type_ = ts_type;
+        tsType_ = tsType;
     }
 
     bool IsTyped() const override
@@ -574,7 +574,7 @@ protected:
     Typed(Typed const &other) : T(static_cast<T const &>(other)) {}
 
 private:
-    checker::Type *ts_type_ {};
+    checker::Type *tsType_ {};
 };
 
 template <typename T>
@@ -588,17 +588,17 @@ public:
 
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
-        return type_annotation_;
+        return typeAnnotation_;
     }
 
-    void SetTsTypeAnnotation(TypeNode *const type_annotation) noexcept
+    void SetTsTypeAnnotation(TypeNode *const typeAnnotation) noexcept
     {
-        type_annotation_ = type_annotation;
+        typeAnnotation_ = typeAnnotation;
     }
 
 protected:
-    explicit Annotated(AstNodeType const type, TypeNode *const type_annotation)
-        : T(type), type_annotation_(type_annotation)
+    explicit Annotated(AstNodeType const type, TypeNode *const typeAnnotation)
+        : T(type), typeAnnotation_(typeAnnotation)
     {
     }
     explicit Annotated(AstNodeType const type) : T(type) {}
@@ -607,7 +607,7 @@ protected:
     Annotated(Annotated const &other) : T(static_cast<T const &>(other)) {}
 
 private:
-    TypeNode *type_annotation_ {};
+    TypeNode *typeAnnotation_ {};
 };
 
 class TypedAstNode : public Typed<AstNode> {
@@ -634,8 +634,8 @@ public:
     NO_MOVE_SEMANTIC(AnnotatedAstNode);
 
 protected:
-    explicit AnnotatedAstNode(AstNodeType const type, TypeNode *const type_annotation)
-        : Annotated<AstNode>(type, type_annotation)
+    explicit AnnotatedAstNode(AstNodeType const type, TypeNode *const typeAnnotation)
+        : Annotated<AstNode>(type, typeAnnotation)
     {
     }
     explicit AnnotatedAstNode(AstNodeType const type) : Annotated<AstNode>(type) {}

@@ -38,31 +38,31 @@ enum class Constant {
 
 class DebugInfo {
 public:
-    explicit DebugInfo(ArenaAllocator *allocator) : variable_debug_info_(allocator->Adapter()) {};
+    explicit DebugInfo(ArenaAllocator *allocator) : variableDebugInfo_(allocator->Adapter()) {};
     DEFAULT_COPY_SEMANTIC(DebugInfo);
     DEFAULT_MOVE_SEMANTIC(DebugInfo);
     ~DebugInfo() = default;
 
     ArenaVector<const varbinder::Scope *> &VariableDebugInfo()
     {
-        return variable_debug_info_;
+        return variableDebugInfo_;
     }
 
     const ArenaVector<const varbinder::Scope *> &VariableDebugInfo() const
     {
-        return variable_debug_info_;
+        return variableDebugInfo_;
     }
 
     const ir::Statement *FirstStatement() const
     {
-        return first_stmt_;
+        return firstStmt_;
     }
 
 private:
     friend class CodeGen;
 
-    ArenaVector<const varbinder::Scope *> variable_debug_info_;
-    const ir::Statement *first_stmt_ {};
+    ArenaVector<const varbinder::Scope *> variableDebugInfo_;
+    const ir::Statement *firstStmt_ {};
 };
 
 class CodeGen {
@@ -70,24 +70,23 @@ public:
     using TypeMap = ArenaUnorderedMap<VReg, const checker::Type *>;
 
     explicit CodeGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                     varbinder::FunctionScope *scope, ProgramElement *program_element,
-                     AstCompiler *astcompiler) noexcept
-        : ast_compiler_(astcompiler),
+                     varbinder::FunctionScope *scope, ProgramElement *programElement, AstCompiler *astcompiler) noexcept
+        : astCompiler_(astcompiler),
           allocator_(allocator),
           context_(context),
-          debug_info_(allocator_),
-          top_scope_(scope),
-          scope_(top_scope_),
-          root_node_(scope->Node()),
+          debugInfo_(allocator_),
+          topScope_(scope),
+          scope_(topScope_),
+          rootNode_(scope->Node()),
           insns_(allocator_->Adapter()),
-          catch_list_(allocator_->Adapter()),
-          type_map_(allocator_->Adapter()),
-          program_element_(program_element),
+          catchList_(allocator_->Adapter()),
+          typeMap_(allocator_->Adapter()),
+          programElement_(programElement),
           sa_(this),
           ra_(this, spiller),
           rra_(this, spiller)
     {
-        ast_compiler_->SetCodeGen(this);
+        astCompiler_->SetCodeGen(this);
     }
     virtual ~CodeGen() = default;
     NO_COPY_SEMANTIC(CodeGen);
@@ -137,8 +136,8 @@ public:
     [[nodiscard]] Label *ControlFlowChangeContinue(const ir::Identifier *label);
 
     uint32_t TryDepth() const;
-    [[nodiscard]] CatchTable *CreateCatchTable(util::StringView exception_type = "");
-    [[nodiscard]] CatchTable *CreateCatchTable(LabelPair try_label_pair, util::StringView exception_type = "");
+    [[nodiscard]] CatchTable *CreateCatchTable(util::StringView exceptionType = "");
+    [[nodiscard]] CatchTable *CreateCatchTable(LabelPair tryLabelPair, util::StringView exceptionType = "");
     void SortCatchTables();
 
     void SetFirstStmt(const ir::Statement *stmt) noexcept;
@@ -167,27 +166,27 @@ protected:
     [[nodiscard]] const TypeMap &GetTypeMap() const noexcept;
 
 private:
-    AstCompiler *ast_compiler_;
+    AstCompiler *astCompiler_;
     ArenaAllocator *allocator_ {};
     CompilerContext *context_ {};
-    DebugInfo debug_info_;
-    varbinder::FunctionScope *top_scope_ {};
+    DebugInfo debugInfo_;
+    varbinder::FunctionScope *topScope_ {};
     varbinder::Scope *scope_ {};
-    const ir::AstNode *root_node_ {};
+    const ir::AstNode *rootNode_ {};
     ArenaVector<IRNode *> insns_;
-    ArenaVector<CatchTable *> catch_list_;
-    TypeMap type_map_;
-    ProgramElement *program_element_ {};
-    DynamicContext *dynamic_context_ {};
+    ArenaVector<CatchTable *> catchList_;
+    TypeMap typeMap_;
+    ProgramElement *programElement_ {};
+    DynamicContext *dynamicContext_ {};
 
     SimpleAllocator sa_;
     RegAllocator ra_;
     RangeRegAllocator rra_;
-    std::size_t label_id_ {0};
-    std::int32_t literal_buffer_idx_ {0};
+    std::size_t labelId_ {0};
+    std::int32_t literalBufferIdx_ {0};
 
-    std::uint32_t used_regs_ {VReg::REG_START};
-    std::uint32_t total_regs_ {VReg::REG_START};
+    std::uint32_t usedRegs_ {VReg::REG_START};
+    std::uint32_t totalRegs_ {VReg::REG_START};
     friend class ScopeContext;
     friend class RegScope;
     friend class LocalRegScope;

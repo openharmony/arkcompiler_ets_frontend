@@ -18,11 +18,11 @@
 namespace panda::es2panda::checker {
 CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
                                const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
-                               TypeRelationFlag extra_flags)
+                               TypeRelationFlag extraFlags)
 {
-    flags_ |= extra_flags;
+    flags_ |= extraFlags;
 
-    const SavedTypeRelationFlagsContext saved_type_relation_flags(relation, flags_);
+    const SavedTypeRelationFlagsContext savedTypeRelationFlags(relation, flags_);
     relation->SetNode(node);
     relation->Result(false);
 
@@ -31,12 +31,12 @@ CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Typ
         relation->RaiseError(list, pos);
     }
 
-    unchecked_cast_ = relation->UncheckedCast();
+    uncheckedCast_ = relation->UncheckedCast();
     relation->SetNode(nullptr);
 }
 
 bool CastingContext::UncheckedCast() const noexcept
 {
-    return unchecked_cast_;
+    return uncheckedCast_;
 }
 }  // namespace panda::es2panda::checker

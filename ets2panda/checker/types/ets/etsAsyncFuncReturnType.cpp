@@ -20,7 +20,7 @@
 namespace panda::es2panda::checker {
 void ETSAsyncFuncReturnType::ToString(std::stringstream &ss) const
 {
-    promise_type_->ToString(ss);
+    promiseType_->ToString(ss);
     ss << " | ";
     GetPromiseTypeArg()->ToString(ss);
 }
@@ -28,9 +28,9 @@ void ETSAsyncFuncReturnType::ToString(std::stringstream &ss) const
 void ETSAsyncFuncReturnType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsETSAsyncFuncReturnType()) {
-        auto *other_ret_type = other->AsETSAsyncFuncReturnType();
-        if (relation->IsIdenticalTo(promise_type_, other_ret_type->promise_type_) &&
-            relation->IsIdenticalTo(GetPromiseTypeArg(), other_ret_type->GetPromiseTypeArg())) {
+        auto *otherRetType = other->AsETSAsyncFuncReturnType();
+        if (relation->IsIdenticalTo(promiseType_, otherRetType->promiseType_) &&
+            relation->IsIdenticalTo(GetPromiseTypeArg(), otherRetType->GetPromiseTypeArg())) {
             relation->Result(true);
             return;
         }
@@ -46,7 +46,7 @@ bool ETSAsyncFuncReturnType::AssignmentSource([[maybe_unused]] TypeRelation *rel
 
 void ETSAsyncFuncReturnType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    relation->IsAssignableTo(source, promise_type_) || relation->IsAssignableTo(source, GetPromiseTypeArg());
+    relation->IsAssignableTo(source, promiseType_) || relation->IsAssignableTo(source, GetPromiseTypeArg());
     if (relation->IsTrue() && !source->IsETSObjectType() && relation->ApplyBoxing()) {
         relation->GetChecker()->AsETSChecker()->AddBoxingFlagToPrimitiveType(relation, source);
     }

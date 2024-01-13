@@ -29,8 +29,8 @@ void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb)
 {
     name_ = cb(name_)->AsExpression();
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
     }
 
     if (prev_ != nullptr) {
@@ -42,8 +42,8 @@ void ETSTypeReferencePart::Iterate(const NodeTraverser &cb) const
 {
     cb(name_);
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     if (prev_ != nullptr) {
@@ -55,7 +55,7 @@ void ETSTypeReferencePart::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSTypeReferencePart"},
                  {"name", name_},
-                 {"typeParams", AstDumper::Optional(type_params_)},
+                 {"typeParams", AstDumper::Optional(typeParams_)},
                  {"previous", AstDumper::Optional(prev_)}});
 }
 
@@ -63,8 +63,8 @@ void ETSTypeReferencePart::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(name_ != nullptr);
     name_->Dump(dumper);
-    if (type_params_ != nullptr) {
-        type_params_->Dump(dumper);
+    if (typeParams_ != nullptr) {
+        typeParams_->Dump(dumper);
     }
 }
 
@@ -92,44 +92,43 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
     if (prev_ == nullptr) {
         if ((name_->IsIdentifier()) && (name_->AsIdentifier()->Variable() != nullptr) &&
             (name_->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl())) {
-            return checker->HandleTypeAlias(name_, type_params_);
+            return checker->HandleTypeAlias(name_, typeParams_);
         }
 
-        checker::Type *base_type = checker->GetReferencedTypeBase(name_);
+        checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 
-        ASSERT(base_type != nullptr);
-        if (base_type->IsETSObjectType()) {
-            checker::InstantiationContext ctx(checker, base_type->AsETSObjectType(), type_params_, Start());
+        ASSERT(baseType != nullptr);
+        if (baseType->IsETSObjectType()) {
+            checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
             return ctx.Result();
         }
 
-        return base_type;
+        return baseType;
     }
 
-    checker::Type *base_type = prev_->GetType(checker);
-    return checker->GetReferencedTypeFromBase(base_type, name_);
+    checker::Type *baseType = prev_->GetType(checker);
+    return checker->GetReferencedTypeFromBase(baseType, name_);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const name_clone = name_ != nullptr ? name_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const type_params_clone =
-        type_params_ != nullptr ? type_params_->Clone(allocator)->AsTSTypeParameterInstantiation() : nullptr;
-    auto *const prev_clone = prev_ != nullptr ? prev_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
-
-    if (auto *const clone = allocator->New<ETSTypeReferencePart>(name_clone, type_params_clone, prev_clone);
+    auto *const nameClone = name_ != nullptr ? name_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const typeParamsClone =
+        typeParams_ != nullptr ? typeParams_->Clone(allocator)->AsTSTypeParameterInstantiation() : nullptr;
+    auto *const prevClone = prev_ != nullptr ? prev_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+    if (auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone);
         clone != nullptr) {
-        if (name_clone != nullptr) {
-            name_clone->SetParent(clone);
+        if (nameClone != nullptr) {
+            nameClone->SetParent(clone);
         }
 
-        if (type_params_clone != nullptr) {
-            type_params_clone->SetParent(clone);
+        if (typeParamsClone != nullptr) {
+            typeParamsClone->SetParent(clone);
         }
 
-        if (prev_clone != nullptr) {
-            prev_clone->SetParent(clone);
+        if (prevClone != nullptr) {
+            prevClone->SetParent(clone);
         }
 
         if (parent != nullptr) {

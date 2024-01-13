@@ -49,7 +49,7 @@ public:
     Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
         : allocator_(allocator),
           varbinder_(varbinder),
-          external_sources_(allocator_->Adapter()),
+          externalSources_(allocator_->Adapter()),
           extension_(varbinder->Extension())
     {
     }
@@ -91,32 +91,32 @@ public:
 
     util::StringView SourceCode() const
     {
-        return source_code_;
+        return sourceCode_;
     }
 
     util::StringView SourceFilePath() const
     {
-        return source_file_path_.GetPath();
+        return sourceFilePath_.GetPath();
     }
 
     util::StringView SourceFileFolder() const
     {
-        return source_file_folder_;
+        return sourceFileFolder_;
     }
 
     util::StringView FileName() const
     {
-        return file_name_;
+        return fileName_;
     }
 
     util::StringView AbsoluteName() const
     {
-        return absolute_name_;
+        return absoluteName_;
     }
 
     util::StringView ResolvedFilePath() const
     {
-        return resolved_file_path_;
+        return resolvedFilePath_;
     }
 
     ir::BlockStatement *Ast()
@@ -136,75 +136,75 @@ public:
 
     ir::ClassDefinition *GlobalClass()
     {
-        return global_class_;
+        return globalClass_;
     }
 
     const ir::ClassDefinition *GlobalClass() const
     {
-        return global_class_;
+        return globalClass_;
     }
 
-    void SetGlobalClass(ir::ClassDefinition *global_class)
+    void SetGlobalClass(ir::ClassDefinition *globalClass)
     {
-        global_class_ = global_class;
+        globalClass_ = globalClass;
     }
 
     ExternalSource &ExternalSources()
     {
-        return external_sources_;
+        return externalSources_;
     }
 
     const ExternalSource &ExternalSources() const
     {
-        return external_sources_;
+        return externalSources_;
     }
 
-    void SetSource(const util::StringView &source_code, const util::StringView &source_file_path,
-                   const util::StringView &source_file_folder)
+    void SetSource(const util::StringView &sourceCode, const util::StringView &sourceFilePath,
+                   const util::StringView &sourceFileFolder)
     {
-        source_code_ = source_code;
-        source_file_path_ = util::Path(source_file_path, Allocator());
-        source_file_folder_ = source_file_folder;
-        absolute_name_ = util::UString(os::GetAbsolutePath(source_file_path.Utf8()), Allocator()).View();
+        sourceCode_ = sourceCode;
+        sourceFilePath_ = util::Path(sourceFilePath, Allocator());
+        sourceFileFolder_ = sourceFileFolder;
+        absoluteName_ = util::UString(os::GetAbsolutePath(sourceFilePath.Utf8()), Allocator()).View();
     }
 
-    void SetSource(const panda::es2panda::SourceFile &source_file)
+    void SetSource(const panda::es2panda::SourceFile &sourceFile)
     {
-        source_code_ = util::UString(source_file.source, Allocator()).View();
-        source_file_path_ = util::Path(source_file.file_path, Allocator());
-        source_file_folder_ = util::UString(source_file.file_folder, Allocator()).View();
-        absolute_name_ = source_file_path_.GetAbsolutePath();
-        resolved_file_path_ = util::UString(source_file.resolved_path, Allocator()).View();
+        sourceCode_ = util::UString(sourceFile.source, Allocator()).View();
+        sourceFilePath_ = util::Path(sourceFile.filePath, Allocator());
+        sourceFileFolder_ = util::UString(sourceFile.fileFolder, Allocator()).View();
+        absoluteName_ = sourceFilePath_.GetAbsolutePath();
+        resolvedFilePath_ = util::UString(sourceFile.resolvedPath, Allocator()).View();
     }
 
     const util::StringView &GetPackageName() const
     {
-        return package_name_;
+        return packageName_;
     }
 
-    void SetPackageName(util::StringView package_name)
+    void SetPackageName(util::StringView packageName)
     {
-        package_name_ = package_name;
+        packageName_ = packageName;
     }
 
-    void SetFileName(util::StringView file_name)
+    void SetFileName(util::StringView fileName)
     {
-        file_name_ = util::UString(file_name, Allocator()).View();
+        fileName_ = util::UString(fileName, Allocator()).View();
     }
 
-    void SetAbsoluteName(util::StringView absoule_name)
+    void SetAbsoluteName(util::StringView absouleName)
     {
-        absolute_name_ = util::UString(absoule_name, Allocator()).View();
+        absoluteName_ = util::UString(absouleName, Allocator()).View();
     }
 
     const bool &IsEntryPoint() const
     {
-        return entry_point_;
+        return entryPoint_;
     }
 
     void MarkEntry()
     {
-        entry_point_ = true;
+        entryPoint_ = true;
     }
 
     varbinder::ClassScope *GlobalClassScope();
@@ -213,7 +213,7 @@ public:
     varbinder::GlobalScope *GlobalScope();
     const varbinder::GlobalScope *GlobalScope() const;
 
-    util::StringView PackageClassName(util::StringView class_name);
+    util::StringView PackageClassName(util::StringView className);
 
     std::string Dump() const;
 
@@ -223,18 +223,18 @@ private:
     ArenaAllocator *allocator_ {};
     varbinder::VarBinder *varbinder_ {};
     ir::BlockStatement *ast_ {};
-    ir::ClassDefinition *global_class_ {};
-    util::StringView source_code_ {};
-    util::Path source_file_path_ {};
-    util::StringView source_file_folder_ {};
-    util::StringView package_name_ {};
-    util::StringView file_name_ {};
-    util::StringView absolute_name_ {};
-    util::StringView resolved_file_path_ {};
-    ExternalSource external_sources_;
+    ir::ClassDefinition *globalClass_ {};
+    util::StringView sourceCode_ {};
+    util::Path sourceFilePath_ {};
+    util::StringView sourceFileFolder_ {};
+    util::StringView packageName_ {};
+    util::StringView fileName_ {};
+    util::StringView absoluteName_ {};
+    util::StringView resolvedFilePath_ {};
+    ExternalSource externalSources_;
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
-    bool entry_point_ {};
+    bool entryPoint_ {};
 };
 }  // namespace panda::es2panda::parser
 

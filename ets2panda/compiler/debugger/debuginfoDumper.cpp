@@ -92,11 +92,11 @@ void DebugInfoDumper::WriteIns(const pandasm::Ins &ins)
 {
     ss_ << "{";
     {
-        pandasm::Ins ins_copy;
-        ins_copy.opcode = ins.opcode;
-        ins_copy.set_label = ins.set_label;
-        ins_copy.label = ins.label;
-        WriteProperty("opcode", ins_copy.ToString());
+        pandasm::Ins insCopy;
+        insCopy.opcode = ins.opcode;
+        insCopy.setLabel = ins.setLabel;
+        insCopy.label = ins.label;
+        WriteProperty("opcode", insCopy.ToString());
     }
     indent_++;
     WrapArray("regs", ins.regs);
@@ -106,15 +106,15 @@ void DebugInfoDumper::WriteIns(const pandasm::Ins &ins)
     Indent();
     ss_ << "\"label\": "
         << "\"" << ins.label << "\",";
-    WritePosInfo(ins.ins_debug);
+    WritePosInfo(ins.insDebug);
     indent_--;
     Indent();
     ss_ << "}";
 }
 
-void DebugInfoDumper::WriteMetaData(const std::vector<pandasm::AnnotationData> &meta_data)
+void DebugInfoDumper::WriteMetaData(const std::vector<pandasm::AnnotationData> &metaData)
 {
-    for (const auto &it : meta_data) {
+    for (const auto &it : metaData) {
         for (const auto &elem : it.GetElements()) {
             pandasm::ScalarValue *value = elem.GetValue()->GetAsScalar();
             if (value->GetType() == pandasm::Value::Type::STRING) {
@@ -126,28 +126,28 @@ void DebugInfoDumper::WriteMetaData(const std::vector<pandasm::AnnotationData> &
     }
 }
 
-void DebugInfoDumper::WritePosInfo(const pandasm::debuginfo::Ins &pos_info)
+void DebugInfoDumper::WritePosInfo(const pandasm::debuginfo::Ins &posInfo)
 {
     ss_ << std::endl;
     Indent();
     ss_ << "\"debug_pos_info\": {";
-    WriteProperty("boundLeft", pos_info.bound_left);
-    WriteProperty("boundRight", pos_info.bound_right);
-    WriteProperty("sourceLineNum", static_cast<int32_t>(pos_info.line_number));
-    WriteProperty("wholeLine", pos_info.whole_line, false);
+    WriteProperty("boundLeft", posInfo.boundLeft);
+    WriteProperty("boundRight", posInfo.boundRight);
+    WriteProperty("sourceLineNum", static_cast<int32_t>(posInfo.lineNumber));
+    WriteProperty("wholeLine", posInfo.wholeLine, false);
     Indent();
     ss_ << "}" << std::endl;
 }
 
-void DebugInfoDumper::WriteVariableInfo(const pandasm::debuginfo::LocalVariable &local_variable_debug)
+void DebugInfoDumper::WriteVariableInfo(const pandasm::debuginfo::LocalVariable &localVariableDebug)
 {
     ss_ << "{";
-    WriteProperty("name", local_variable_debug.name);
-    WriteProperty("signature", local_variable_debug.signature);
-    WriteProperty("signatureType", local_variable_debug.signature_type);
-    WriteProperty("reg", local_variable_debug.reg);
-    WriteProperty("start", static_cast<size_t>(local_variable_debug.start));
-    WriteProperty("length", static_cast<size_t>(local_variable_debug.length), false);
+    WriteProperty("name", localVariableDebug.name);
+    WriteProperty("signature", localVariableDebug.signature);
+    WriteProperty("signatureType", localVariableDebug.signatureType);
+    WriteProperty("reg", localVariableDebug.reg);
+    WriteProperty("start", static_cast<size_t>(localVariableDebug.start));
+    WriteProperty("length", static_cast<size_t>(localVariableDebug.length), false);
     Indent();
     ss_ << "}";
 }
@@ -159,9 +159,9 @@ void DebugInfoDumper::Dump()
     Indent();
     ss_ << "\"functions\": [" << std::endl;
 
-    auto iter = prog_->function_table.begin();
+    auto iter = prog_->functionTable.begin();
 
-    for (; iter != prog_->function_table.end(); ++iter) {
+    for (; iter != prog_->functionTable.end(); ++iter) {
         indent_++;
         Indent();
         ss_ << "{";
@@ -171,7 +171,7 @@ void DebugInfoDumper::Dump()
         indent_++;
         Indent();
         ss_ << "\"signature\": {";
-        WriteProperty("retType", iter->second.return_type.GetName());
+        WriteProperty("retType", iter->second.returnType.GetName());
         indent_++;
         WrapArray("params", iter->second.params, false);
         indent_ -= 2U;
@@ -180,9 +180,9 @@ void DebugInfoDumper::Dump()
         ss_ << "},";
 
         WrapArray("ins", iter->second.ins);
-        WrapArray("variables", iter->second.local_variable_debug);
-        WriteProperty("sourceFile", iter->second.source_file);
-        WriteProperty("sourceCode", iter->second.source_code);
+        WrapArray("variables", iter->second.localVariableDebug);
+        WriteProperty("sourceFile", iter->second.sourceFile);
+        WriteProperty("sourceCode", iter->second.sourceCode);
         // icSize - parameterLength - funcName
         WriteMetaData(iter->second.metadata->GetAnnotations());
 
@@ -190,7 +190,7 @@ void DebugInfoDumper::Dump()
         Indent();
         ss_ << "}";
 
-        if (std::next(iter) != prog_->function_table.end()) {
+        if (std::next(iter) != prog_->functionTable.end()) {
             ss_ << ",";
         }
 

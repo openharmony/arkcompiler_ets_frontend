@@ -38,15 +38,15 @@ public:
     {
     }
 
-    explicit Property(PropertyKind const kind, Expression *const key, Expression *const value, bool const is_method,
-                      bool const is_computed)
+    explicit Property(PropertyKind const kind, Expression *const key, Expression *const value, bool const isMethod,
+                      bool const isComputed)
         : Expression(AstNodeType::PROPERTY),
           kind_(kind),
           key_(key),
           value_(value),
-          is_method_(is_method),
-          is_shorthand_(false),
-          is_computed_(is_computed)
+          isMethod_(isMethod),
+          isShorthand_(false),
+          isComputed_(isComputed)
     {
     }
 
@@ -79,17 +79,17 @@ public:
 
     [[nodiscard]] bool IsMethod() const noexcept
     {
-        return is_method_;
+        return isMethod_;
     }
 
     [[nodiscard]] bool IsShorthand() const noexcept
     {
-        return is_shorthand_;
+        return isShorthand_;
     }
 
     [[nodiscard]] bool IsComputed() const noexcept
     {
-        return is_computed_;
+        return isComputed_;
     }
 
     [[nodiscard]] bool IsAccessor() const noexcept
@@ -126,18 +126,18 @@ protected:
     Property(Property const &other) : Expression(static_cast<Expression const &>(other))
     {
         kind_ = other.kind_;
-        is_method_ = other.is_method_;
-        is_shorthand_ = other.is_shorthand_;
-        is_computed_ = other.is_computed_;
+        isMethod_ = other.isMethod_;
+        isShorthand_ = other.isShorthand_;
+        isComputed_ = other.isComputed_;
     }
 
 private:
     PropertyKind kind_;
     Expression *key_ = nullptr;
     Expression *value_ = nullptr;
-    bool is_method_ = false;
-    bool is_shorthand_ = true;
-    bool is_computed_ = false;
+    bool isMethod_ = false;
+    bool isShorthand_ = true;
+    bool isComputed_ = false;
 };
 }  // namespace panda::es2panda::ir
 

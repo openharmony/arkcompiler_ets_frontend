@@ -56,12 +56,12 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"id", key_},
                  {"members", members_},
-                 {"const", is_const_}});
+                 {"const", isConst_}});
 }
 
 void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(is_const_ == false);
+    ASSERT(isConst_ == false);
     ASSERT(key_ != nullptr);
     dumper->Add("enum ");
     key_->Dump(dumper);
@@ -85,7 +85,7 @@ void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
 
 // NOTE (csabahurton): this method has not been moved to TSAnalyizer.cpp, because it is not used.
 varbinder::EnumMemberResult EvaluateMemberExpression(checker::TSChecker *checker,
-                                                     [[maybe_unused]] varbinder::EnumVariable *enum_var,
+                                                     [[maybe_unused]] varbinder::EnumVariable *enumVar,
                                                      ir::MemberExpression *expr)
 {
     if (checker::TSChecker::IsConstantMemberAccess(expr->AsExpression())) {

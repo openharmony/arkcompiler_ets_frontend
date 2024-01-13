@@ -31,14 +31,14 @@ class TSEnumMember;
 class TSEnumDeclaration : public TypedStatement {
 public:
     explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
-                               bool is_const, bool is_static = false)
+                               bool isConst, bool isStatic = false)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
           members_(std::move(members)),
-          is_const_(is_const)
+          isConst_(isConst)
     {
-        if (is_static) {
+        if (isStatic) {
             AddModifier(ModifierFlags::STATIC);
         }
     }
@@ -75,17 +75,17 @@ public:
 
     const util::StringView &InternalName() const
     {
-        return internal_name_;
+        return internalName_;
     }
 
-    void SetInternalName(util::StringView internal_name)
+    void SetInternalName(util::StringView internalName)
     {
-        internal_name_ = internal_name;
+        internalName_ = internalName;
     }
 
     bool IsConst() const
     {
-        return is_const_;
+        return isConst_;
     }
 
     const ArenaVector<Decorator *> &Decorators() const
@@ -103,13 +103,13 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
-        return !in_ts;
+        return !inTs;
     }
 
-    static varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker,
-                                                          varbinder::EnumVariable *enum_var, const ir::AstNode *expr);
+    static varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
+                                                          const ir::AstNode *expr);
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -129,8 +129,8 @@ private:
     ArenaVector<ir::Decorator *> decorators_;
     Identifier *key_;
     ArenaVector<AstNode *> members_;
-    util::StringView internal_name_;
-    bool is_const_;
+    util::StringView internalName_;
+    bool isConst_;
 };
 }  // namespace panda::es2panda::ir
 

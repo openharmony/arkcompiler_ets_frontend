@@ -48,9 +48,9 @@ class ScopeFindResultT {
 public:
     ScopeFindResultT() = default;
     ScopeFindResultT(util::StringView n, ScopeT s, uint32_t l, Variable *v) : ScopeFindResultT(n, s, l, l, v) {}
-    ScopeFindResultT(ScopeT s, uint32_t l, uint32_t ll, Variable *v) : scope(s), level(l), lex_level(ll), variable(v) {}
+    ScopeFindResultT(ScopeT s, uint32_t l, uint32_t ll, Variable *v) : scope(s), level(l), lexLevel(ll), variable(v) {}
     ScopeFindResultT(util::StringView n, ScopeT s, uint32_t l, uint32_t ll, Variable *v)
-        : name(n), scope(s), level(l), lex_level(ll), variable(v)
+        : name(n), scope(s), level(l), lexLevel(ll), variable(v)
     {
     }
 
@@ -58,7 +58,7 @@ public:
     util::StringView name {};
     ScopeT scope {};
     uint32_t level {};
-    uint32_t lex_level {};
+    uint32_t lexLevel {};
     Variable *variable {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
@@ -176,22 +176,22 @@ public:
 
     const compiler::IRNode *ScopeStart() const
     {
-        return start_ins_;
+        return startIns_;
     }
 
     const compiler::IRNode *ScopeEnd() const
     {
-        return end_ins_;
+        return endIns_;
     }
 
     void SetScopeStart(const compiler::IRNode *ins)
     {
-        start_ins_ = ins;
+        startIns_ = ins;
     }
 
     void SetScopeEnd(const compiler::IRNode *ins)
     {
-        end_ins_ = ins;
+        endIns_ = ins;
     }
 
     ir::AstNode *Node()
@@ -245,7 +245,7 @@ public:
         return bindings_;
     }
 
-    virtual Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    virtual Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                  [[maybe_unused]] ScriptExtension extension) = 0;
 
     virtual Variable *FindLocal(const util::StringView &name, ResolveBindingOptions options) const;
@@ -286,10 +286,10 @@ protected:
      */
     std::tuple<Scope *, bool> IterateShadowedVariables(const util::StringView &name, const VariableVisitor &visitor);
 
-    Variable *AddLocal(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                        [[maybe_unused]] ScriptExtension extension);
 
-    Variable *AddLocalVar(ArenaAllocator *allocator, Decl *new_decl);
+    Variable *AddLocalVar(ArenaAllocator *allocator, Decl *newDecl);
 
 private:
     template <
@@ -301,7 +301,7 @@ private:
     static ResultT FindImpl(ScopeT &&scope, const util::StringView &name, const ResolveBindingOptions options)
     {
         uint32_t level = 0;
-        uint32_t lex_level = 0;
+        uint32_t lexLevel = 0;
         // iter will be the EXACT type of scope with cv-qualifiers
         auto &&iter = scope;
 
@@ -309,14 +309,14 @@ private:
             auto *const v = iter->FindLocal(name, options);
 
             if (v != nullptr) {
-                return {name, iter, level, lex_level, v};
+                return {name, iter, level, lexLevel, v};
             }
 
             level++;
-            const auto *const func_variable_scope = iter->AsFunctionParamScope()->GetFunctionScope();
+            const auto *const funcVariableScope = iter->AsFunctionParamScope()->GetFunctionScope();
 
-            if (func_variable_scope != nullptr && func_variable_scope->NeedLexEnv()) {
-                lex_level++;
+            if (funcVariableScope != nullptr && funcVariableScope->NeedLexEnv()) {
+                lexLevel++;
             }
 
             iter = iter->Parent();
@@ -326,14 +326,14 @@ private:
             auto *const v = iter->FindLocal(name, options);
 
             if (v != nullptr) {
-                return {name, iter, level, lex_level, v};
+                return {name, iter, level, lexLevel, v};
             }
 
             if (iter->IsVariableScope()) {
                 level++;
 
                 if (iter->AsVariableScope()->NeedLexEnv()) {
-                    lex_level++;
+                    lexLevel++;
                 }
             }
 
@@ -348,8 +348,8 @@ private:
     VariableMap bindings_;
     ir::AstNode *node_ {};
     ScopeFlags flags_ {};
-    const compiler::IRNode *start_ins_ {};
-    const compiler::IRNode *end_ins_ {};
+    const compiler::IRNode *startIns_ {};
+    const compiler::IRNode *endIns_ {};
 };
 
 class VariableScope : public Scope {
@@ -360,22 +360,22 @@ public:
 
     uint32_t NextSlot()
     {
-        return slot_index_++;
+        return slotIndex_++;
     }
 
     uint32_t LexicalSlots() const
     {
-        return slot_index_;
+        return slotIndex_;
     }
 
     bool NeedLexEnv() const
     {
-        return slot_index_ != 0;
+        return slotIndex_ != 0;
     }
 
     uint32_t EvalBindings() const
     {
-        return eval_bindings_;
+        return evalBindings_;
     }
 
     void CheckDirectEval(compiler::CompilerContext *ctx);
@@ -384,21 +384,21 @@ protected:
     explicit VariableScope(ArenaAllocator *allocator, Scope *parent) : Scope(allocator, parent) {}
 
     template <typename T>
-    Variable *AddVar(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl);
+    Variable *AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
 
     template <typename T>
-    Variable *AddFunction(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddFunction(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                           [[maybe_unused]] ScriptExtension extension);
 
     template <typename T>
-    Variable *AddTSBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl, VariableFlags flags);
+    Variable *AddTSBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags);
 
     template <typename T>
-    Variable *AddLexical(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl);
+    Variable *AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    uint32_t eval_bindings_ {};
-    uint32_t slot_index_ {};
+    uint32_t evalBindings_ {};
+    uint32_t slotIndex_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -427,7 +427,7 @@ protected:
     {
     }
 
-    Variable *AddParam(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl, VariableFlags flags);
+    Variable *AddParam(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags);
 
     // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
     ArenaVector<LocalVariable *> params_;
@@ -441,17 +441,17 @@ public:
 
     FunctionScope *GetFunctionScope() const
     {
-        return function_scope_;
+        return functionScope_;
     }
 
-    void BindFunctionScope(FunctionScope *func_scope)
+    void BindFunctionScope(FunctionScope *funcScope)
     {
-        function_scope_ = func_scope;
+        functionScope_ = funcScope;
     }
 
     LocalVariable *NameVar() const
     {
-        return name_var_;
+        return nameVar_;
     }
 
     void BindName(ArenaAllocator *allocator, util::StringView name);
@@ -461,7 +461,7 @@ public:
         return ScopeType::FUNCTION_PARAM;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 
     friend class FunctionScope;
@@ -469,8 +469,8 @@ public:
     friend class ScopeWithParamScope;
 
 private:
-    FunctionScope *function_scope_ {};
-    LocalVariable *name_var_ {};
+    FunctionScope *functionScope_ {};
+    LocalVariable *nameVar_ {};
 };
 
 template <typename E, typename T>
@@ -478,33 +478,33 @@ class ScopeWithParamScope : public E {
 public:
     explicit ScopeWithParamScope(ArenaAllocator *allocator, Scope *parent) : E(allocator, parent) {}
 
-    void BindParamScope(T *param_scope)
+    void BindParamScope(T *paramScope)
     {
-        AssignParamScope(param_scope);
-        this->ReplaceBindings(param_scope->Bindings());
+        AssignParamScope(paramScope);
+        this->ReplaceBindings(paramScope->Bindings());
     }
 
-    void AssignParamScope(T *param_scope)
+    void AssignParamScope(T *paramScope)
     {
-        ASSERT(this->Parent() == param_scope);
+        ASSERT(this->Parent() == paramScope);
         ASSERT(this->Bindings().empty());
 
-        param_scope_ = param_scope;
+        paramScope_ = paramScope;
     }
 
     T *ParamScope()
     {
-        return param_scope_;
+        return paramScope_;
     }
 
     const T *ParamScope() const
     {
-        return param_scope_;
+        return paramScope_;
     }
 
 protected:
     // NOLINTNEXTLINE(misc-non-private-member-variables-in-classes)
-    T *param_scope_;
+    T *paramScope_;
 };
 
 class FunctionScope : public ScopeWithParamScope<VariableScope, FunctionParamScope> {
@@ -521,9 +521,9 @@ public:
         name_ = name;
     }
 
-    void BindInternalName(util::StringView internal_name)
+    void BindInternalName(util::StringView internalName)
     {
-        internal_name_ = internal_name;
+        internalName_ = internalName;
     }
 
     const util::StringView &Name() const
@@ -533,15 +533,15 @@ public:
 
     const util::StringView &InternalName() const
     {
-        return internal_name_;
+        return internalName_;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 
 private:
     util::StringView name_ {};
-    util::StringView internal_name_ {};
+    util::StringView internalName_ {};
 };
 
 class LocalScope : public Scope {
@@ -554,7 +554,7 @@ public:
         return ScopeType::LOCAL;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 };
 
@@ -562,15 +562,13 @@ class ClassScope : public LocalScope {
 public:
     explicit ClassScope(ArenaAllocator *allocator, Scope *parent)
         : LocalScope(allocator, parent),
-          type_alias_scope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::TYPE_ALIAS)),
-          static_decl_scope_(allocator->New<LocalScope>(allocator, type_alias_scope_, ScopeFlags::STATIC_DECL_SCOPE)),
-          static_field_scope_(
-              allocator->New<LocalScope>(allocator, static_decl_scope_, ScopeFlags::STATIC_FIELD_SCOPE)),
-          static_method_scope_(
-              allocator->New<LocalScope>(allocator, static_field_scope_, ScopeFlags::STATIC_METHOD_SCOPE)),
-          instance_decl_scope_(allocator->New<LocalScope>(allocator, static_method_scope_, ScopeFlags::DECL_SCOPE)),
-          instance_field_scope_(allocator->New<LocalScope>(allocator, instance_decl_scope_, ScopeFlags::FIELD_SCOPE)),
-          instance_method_scope_(allocator->New<LocalScope>(allocator, instance_field_scope_, ScopeFlags::METHOD_SCOPE))
+          typeAliasScope_(allocator->New<LocalScope>(allocator, this, ScopeFlags::TYPE_ALIAS)),
+          staticDeclScope_(allocator->New<LocalScope>(allocator, typeAliasScope_, ScopeFlags::STATIC_DECL_SCOPE)),
+          staticFieldScope_(allocator->New<LocalScope>(allocator, staticDeclScope_, ScopeFlags::STATIC_FIELD_SCOPE)),
+          staticMethodScope_(allocator->New<LocalScope>(allocator, staticFieldScope_, ScopeFlags::STATIC_METHOD_SCOPE)),
+          instanceDeclScope_(allocator->New<LocalScope>(allocator, staticMethodScope_, ScopeFlags::DECL_SCOPE)),
+          instanceFieldScope_(allocator->New<LocalScope>(allocator, instanceDeclScope_, ScopeFlags::FIELD_SCOPE)),
+          instanceMethodScope_(allocator->New<LocalScope>(allocator, instanceFieldScope_, ScopeFlags::METHOD_SCOPE))
     {
     }
 
@@ -581,92 +579,92 @@ public:
 
     LocalScope *StaticDeclScope()
     {
-        return static_decl_scope_;
+        return staticDeclScope_;
     }
 
     const LocalScope *StaticDeclScope() const
     {
-        return static_decl_scope_;
+        return staticDeclScope_;
     }
 
     LocalScope *StaticFieldScope()
     {
-        return static_field_scope_;
+        return staticFieldScope_;
     }
 
     const LocalScope *StaticFieldScope() const
     {
-        return static_field_scope_;
+        return staticFieldScope_;
     }
 
     LocalScope *StaticMethodScope()
     {
-        return static_method_scope_;
+        return staticMethodScope_;
     }
 
     const LocalScope *StaticMethodScope() const
     {
-        return static_method_scope_;
+        return staticMethodScope_;
     }
 
     LocalScope *InstanceFieldScope()
     {
-        return instance_field_scope_;
+        return instanceFieldScope_;
     }
 
     const LocalScope *InstanceFieldScope() const
     {
-        return instance_field_scope_;
+        return instanceFieldScope_;
     }
 
     LocalScope *InstanceMethodScope()
     {
-        return instance_method_scope_;
+        return instanceMethodScope_;
     }
 
     const LocalScope *InstanceMethodScope() const
     {
-        return instance_method_scope_;
+        return instanceMethodScope_;
     }
 
     LocalScope *InstanceDeclScope()
     {
-        return instance_decl_scope_;
+        return instanceDeclScope_;
     }
 
     const LocalScope *InstanceDeclScope() const
     {
-        return instance_decl_scope_;
+        return instanceDeclScope_;
     }
 
     const LocalScope *TypeAliasScope() const
     {
-        return type_alias_scope_;
+        return typeAliasScope_;
     }
 
     uint32_t GetAndIncrementAnonymousClassIdx() const
     {
-        return anonymous_class_idx_++;
+        return anonymousClassIdx_++;
     }
 
     Variable *FindLocal(const util::StringView &name, ResolveBindingOptions options) const override;
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 
     class BindingProps {
     public:
         BindingProps() = default;
 
-        void SetFlagsType(VariableFlags flags_type)
+        void SetFlagsType(VariableFlags flagsType)
         {
-            flags_ |= flags_type;
+            flags_ |= flagsType;
         }
-        void SetBindingProps(VariableFlags flags, ir::Identifier *ident, LocalScope *target_scope)
+        void SetBindingProps(VariableFlags flags, ir::Identifier *ident, LocalScope *targetScope)
         {
             flags_ |= flags;
             ident_ = ident;
-            target_scope_ = target_scope;
+            targetScope_ = targetScope;
         }
         VariableFlags GetFlags() const
         {
@@ -678,26 +676,26 @@ public:
         }
         LocalScope *GetTargetScope()
         {
-            return target_scope_;
+            return targetScope_;
         }
 
     private:
         VariableFlags flags_ = VariableFlags::NONE;
         ir::Identifier *ident_ {};
-        LocalScope *target_scope_ {};
+        LocalScope *targetScope_ {};
     };
 
-    void SetBindingProps(Decl *new_decl, BindingProps *props, bool is_static);
+    void SetBindingProps(Decl *newDecl, BindingProps *props, bool isStatic);
 
 private:
-    LocalScope *type_alias_scope_;
-    LocalScope *static_decl_scope_;
-    LocalScope *static_field_scope_;
-    LocalScope *static_method_scope_;
-    LocalScope *instance_decl_scope_;
-    LocalScope *instance_field_scope_;
-    LocalScope *instance_method_scope_;
-    mutable uint32_t anonymous_class_idx_ {1};
+    LocalScope *typeAliasScope_;
+    LocalScope *staticDeclScope_;
+    LocalScope *staticFieldScope_;
+    LocalScope *staticMethodScope_;
+    LocalScope *instanceDeclScope_;
+    LocalScope *instanceFieldScope_;
+    LocalScope *instanceMethodScope_;
+    mutable uint32_t anonymousClassIdx_ {1};
 };
 
 class CatchParamScope : public ParamScope {
@@ -709,7 +707,7 @@ public:
         return ScopeType::CATCH_PARAM;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 
     friend class CatchScope;
@@ -724,7 +722,7 @@ public:
         return ScopeType::CATCH;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 };
 
@@ -736,19 +734,19 @@ public:
 
     ScopeType Type() const override
     {
-        return loop_type_;
+        return loopType_;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override
     {
-        return AddLocal(allocator, current_variable, new_decl, extension);
+        return AddLocal(allocator, currentVariable, newDecl, extension);
     }
 
     Scope *InitScope()
     {
         if (NeedLexEnv()) {
-            return init_scope_;
+            return initScope_;
         }
 
         return this;
@@ -758,9 +756,9 @@ public:
 
 private:
     friend class LoopScope;
-    LoopScope *loop_scope_ {};
-    LocalScope *init_scope_ {};
-    ScopeType loop_type_ {ScopeType::LOCAL};
+    LoopScope *loopScope_ {};
+    LocalScope *initScope_ {};
+    ScopeType loopType_ {ScopeType::LOCAL};
 };
 
 class LoopScope : public VariableScope {
@@ -769,43 +767,43 @@ public:
 
     LoopDeclarationScope *DeclScope()
     {
-        return decl_scope_;
+        return declScope_;
     }
 
-    void BindDecls(LoopDeclarationScope *decl_scope)
+    void BindDecls(LoopDeclarationScope *declScope)
     {
-        decl_scope_ = decl_scope;
-        decl_scope_->loop_scope_ = this;
+        declScope_ = declScope;
+        declScope_->loopScope_ = this;
     }
 
     ScopeType Type() const override
     {
-        return loop_type_;
+        return loopType_;
     }
 
     void ConvertToVariableScope(ArenaAllocator *allocator);
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override
     {
-        return AddLocal(allocator, current_variable, new_decl, extension);
+        return AddLocal(allocator, currentVariable, newDecl, extension);
     }
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    LoopDeclarationScope *decl_scope_ {};
-    ScopeType loop_type_ {ScopeType::LOCAL};
+    LoopDeclarationScope *declScope_ {};
+    ScopeType loopType_ {ScopeType::LOCAL};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class GlobalScope : public FunctionScope {
 public:
     explicit GlobalScope(ArenaAllocator *allocator)
-        : FunctionScope(allocator, nullptr), foreign_bindings_(allocator->Adapter())
+        : FunctionScope(allocator, nullptr), foreignBindings_(allocator->Adapter())
     {
-        auto *param_scope = allocator->New<FunctionParamScope>(allocator, this);
-        param_scope_ = param_scope;
-        param_scope_->BindFunctionScope(this);
+        auto *paramScope = allocator->New<FunctionParamScope>(allocator, this);
+        paramScope_ = paramScope;
+        paramScope_->BindFunctionScope(this);
     }
 
     ScopeType Type() const override
@@ -813,7 +811,7 @@ public:
         return ScopeType::GLOBAL;
     }
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 
     InsertResult InsertBinding(const util::StringView &name, Variable *var) override;
@@ -827,9 +825,9 @@ public:
     InsertResult InsertDynamicBinding(const util::StringView &name, Variable *var);
 
 private:
-    InsertResult InsertImpl(const util::StringView &name, Variable *var, bool is_foreign, bool is_dynamic);
+    InsertResult InsertImpl(const util::StringView &name, Variable *var, bool isForeign, bool isDynamic);
 
-    ArenaUnorderedMap<util::StringView, bool> foreign_bindings_;
+    ArenaUnorderedMap<util::StringView, bool> foreignBindings_;
 };
 
 class ModuleScope : public GlobalScope {
@@ -845,7 +843,7 @@ public:
           allocator_(allocator),
           imports_(allocator_->Adapter()),
           exports_(allocator_->Adapter()),
-          local_exports_(allocator_->Adapter())
+          localExports_(allocator_->Adapter())
     {
     }
 
@@ -866,44 +864,44 @@ public:
 
     const LocalExportNameMap &LocalExports() const
     {
-        return local_exports_;
+        return localExports_;
     }
 
-    void AddImportDecl(ir::ImportDeclaration *import_decl, ImportDeclList &&decls);
+    void AddImportDecl(ir::ImportDeclaration *importDecl, ImportDeclList &&decls);
 
-    void AddExportDecl(ir::AstNode *export_decl, ExportDecl *decl);
+    void AddExportDecl(ir::AstNode *exportDecl, ExportDecl *decl);
 
-    void AddExportDecl(ir::AstNode *export_decl, ExportDeclList &&decls);
+    void AddExportDecl(ir::AstNode *exportDecl, ExportDeclList &&decls);
 
-    Variable *AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+    Variable *AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                          [[maybe_unused]] ScriptExtension extension) override;
 
     bool ExportAnalysis();
 
 private:
-    Variable *AddImport(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl);
+    Variable *AddImport(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
 
     ArenaAllocator *allocator_;
     ModuleEntry<ir::ImportDeclaration *, ImportDeclList> imports_;
     ModuleEntry<ir::AstNode *, ExportDeclList> exports_;
-    LocalExportNameMap local_exports_;
+    LocalExportNameMap localExports_;
 };
 
 template <typename T>
-Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl)
+Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
 {
-    if (!current_variable) {
-        return InsertBinding(new_decl->Name(), allocator->New<T>(new_decl, VariableFlags::HOIST_VAR)).first->second;
+    if (!currentVariable) {
+        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::HOIST_VAR)).first->second;
     }
 
-    switch (current_variable->Declaration()->Type()) {
+    switch (currentVariable->Declaration()->Type()) {
         case DeclType::VAR: {
-            current_variable->Reset(new_decl, VariableFlags::HOIST_VAR);
+            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
             [[fallthrough]];
         }
         case DeclType::PARAM:
         case DeclType::FUNC: {
-            return current_variable;
+            return currentVariable;
         }
         default: {
             return nullptr;
@@ -912,24 +910,24 @@ Variable *VariableScope::AddVar(ArenaAllocator *allocator, Variable *current_var
 }
 
 template <typename T>
-Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
+Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                      [[maybe_unused]] ScriptExtension extension)
 {
     VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
 
-    if (!current_variable) {
-        return InsertBinding(new_decl->Name(), allocator->New<T>(new_decl, flags)).first->second;
+    if (!currentVariable) {
+        return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
     }
 
     if (extension != ScriptExtension::JS || IsModuleScope()) {
         return nullptr;
     }
 
-    switch (current_variable->Declaration()->Type()) {
+    switch (currentVariable->Declaration()->Type()) {
         case DeclType::VAR:
         case DeclType::FUNC: {
-            current_variable->Reset(new_decl, VariableFlags::HOIST_VAR);
-            return current_variable;
+            currentVariable->Reset(newDecl, VariableFlags::HOIST_VAR);
+            return currentVariable;
         }
         default: {
             return nullptr;
@@ -938,21 +936,21 @@ Variable *VariableScope::AddFunction(ArenaAllocator *allocator, Variable *curren
 }
 
 template <typename T>
-Variable *VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *current_variable,
-                                      Decl *new_decl, VariableFlags flags)
+Variable *VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *currentVariable,
+                                      Decl *newDecl, VariableFlags flags)
 {
-    ASSERT(!current_variable);
-    return InsertBinding(new_decl->Name(), allocator->New<T>(new_decl, flags)).first->second;
+    ASSERT(!currentVariable);
+    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, flags)).first->second;
 }
 
 template <typename T>
-Variable *VariableScope::AddLexical(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl)
+Variable *VariableScope::AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
 {
-    if (current_variable) {
+    if (currentVariable) {
         return nullptr;
     }
 
-    return InsertBinding(new_decl->Name(), allocator->New<T>(new_decl, VariableFlags::NONE)).first->second;
+    return InsertBinding(newDecl->Name(), allocator->New<T>(newDecl, VariableFlags::NONE)).first->second;
 }
 
 template <typename T, typename... Args>

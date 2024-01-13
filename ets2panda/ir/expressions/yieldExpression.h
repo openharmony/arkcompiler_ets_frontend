@@ -31,8 +31,8 @@ public:
     NO_COPY_SEMANTIC(YieldExpression);
     NO_MOVE_SEMANTIC(YieldExpression);
 
-    explicit YieldExpression(Expression *const argument, bool const is_delegate)
-        : Expression(AstNodeType::YIELD_EXPRESSION), argument_(argument), delegate_(is_delegate)
+    explicit YieldExpression(Expression *const argument, bool const isDelegate)
+        : Expression(AstNodeType::YIELD_EXPRESSION), argument_(argument), delegate_(isDelegate)
     {
     }
 

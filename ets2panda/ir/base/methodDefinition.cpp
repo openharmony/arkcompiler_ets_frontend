@@ -34,17 +34,17 @@ const ScriptFunction *MethodDefinition::Function() const
     return value_->IsFunctionExpression() ? value_->AsFunctionExpression()->Function() : nullptr;
 }
 
-PrivateFieldKind MethodDefinition::ToPrivateFieldKind(bool const is_static) const
+PrivateFieldKind MethodDefinition::ToPrivateFieldKind(bool const isStatic) const
 {
     switch (kind_) {
         case MethodDefinitionKind::METHOD: {
-            return is_static ? PrivateFieldKind::STATIC_METHOD : PrivateFieldKind::METHOD;
+            return isStatic ? PrivateFieldKind::STATIC_METHOD : PrivateFieldKind::METHOD;
         }
         case MethodDefinitionKind::GET: {
-            return is_static ? PrivateFieldKind::STATIC_GET : PrivateFieldKind::GET;
+            return isStatic ? PrivateFieldKind::STATIC_GET : PrivateFieldKind::GET;
         }
         case MethodDefinitionKind::SET: {
-            return is_static ? PrivateFieldKind::STATIC_SET : PrivateFieldKind::SET;
+            return isStatic ? PrivateFieldKind::STATIC_SET : PrivateFieldKind::SET;
         }
         default: {
             UNREACHABLE();
@@ -116,7 +116,7 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"accessibility", AstDumper::Optional(AstDumper::ModifierToString(flags_))},
                  {"static", IsStatic()},
                  {"optional", IsOptionalDeclaration()},
-                 {"computed", is_computed_},
+                 {"computed", isComputed_},
                  {"value", value_},
                  {"overloads", overloads_},
                  {"decorators", decorators_}});
@@ -198,7 +198,7 @@ MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNo
     auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
     auto *const value = value_ != nullptr ? value_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<MethodDefinition>(kind_, key, value, flags_, allocator, is_computed_);
+    if (auto *const clone = allocator->New<MethodDefinition>(kind_, key, value, flags_, allocator, isComputed_);
         clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);

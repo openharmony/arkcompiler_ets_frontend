@@ -29,21 +29,21 @@
 namespace panda::es2panda::ir {
 void TSTupleType::TransformChildren(const NodeTransformer &cb)
 {
-    for (auto *&it : element_types_) {
+    for (auto *&it : elementTypes_) {
         it = static_cast<TypeNode *>(cb(it));
     }
 }
 
 void TSTupleType::Iterate(const NodeTraverser &cb) const
 {
-    for (auto *it : element_types_) {
+    for (auto *it : elementTypes_) {
         cb(it);
     }
 }
 
 void TSTupleType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSTupleType"}, {"elementTypes", element_types_}});
+    dumper->Add({{"type", "TSTupleType"}, {"elementTypes", elementTypes_}});
 }
 
 void TSTupleType::Dump(ir::SrcDumper *dumper) const
@@ -68,67 +68,67 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
     }
 
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    checker::NamedTupleMemberPool named_members(checker->Allocator()->Adapter());
-    ArenaVector<checker::ElementFlags> element_flags(checker->Allocator()->Adapter());
-    checker::ElementFlags combined_flags = checker::ElementFlags::NO_OPTS;
-    uint32_t min_length = 0;
+    checker::NamedTupleMemberPool namedMembers(checker->Allocator()->Adapter());
+    ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
+    checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;
+    uint32_t minLength = 0;
     uint32_t index = 0;
-    ArenaVector<checker::Type *> number_index_types(checker->Allocator()->Adapter());
-    for (auto *it : element_types_) {
-        util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index);
+    ArenaVector<checker::Type *> numberIndexTypes(checker->Allocator()->Adapter());
+    for (auto *it : elementTypes_) {
+        util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
 
-        auto *member_var =
-            varbinder::Scope::CreateVar(checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, it);
+        auto *memberVar =
+            varbinder::Scope::CreateVar(checker->Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY, it);
 
-        checker::ElementFlags member_flag = checker::ElementFlags::NO_OPTS;
+        checker::ElementFlags memberFlag = checker::ElementFlags::NO_OPTS;
         if (it->IsTSNamedTupleMember()) {
-            auto *named_member = it->AsTSNamedTupleMember();
-            checker::Type *member_type = named_member->ElementType()->GetType(checker);
+            auto *namedMember = it->AsTSNamedTupleMember();
+            checker::Type *memberType = namedMember->ElementType()->GetType(checker);
 
-            if (named_member->IsOptional()) {
-                member_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
-                member_flag = checker::ElementFlags::OPTIONAL;
+            if (namedMember->IsOptional()) {
+                memberVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
+                memberFlag = checker::ElementFlags::OPTIONAL;
             } else {
-                member_flag = checker::ElementFlags::REQUIRED;
-                min_length++;
+                memberFlag = checker::ElementFlags::REQUIRED;
+                minLength++;
             }
 
-            member_type->SetVariable(member_var);
-            member_var->SetTsType(member_type);
-            number_index_types.push_back(member_type);
-            named_members.insert({member_var, named_member->Label()->AsIdentifier()->Name()});
+            memberType->SetVariable(memberVar);
+            memberVar->SetTsType(memberType);
+            numberIndexTypes.push_back(memberType);
+            namedMembers.insert({memberVar, namedMember->Label()->AsIdentifier()->Name()});
         } else {
-            checker::Type *member_type = it->GetType(checker);
-            member_type->SetVariable(member_var);
-            member_var->SetTsType(member_type);
-            member_flag = checker::ElementFlags::REQUIRED;
-            number_index_types.push_back(member_type);
-            min_length++;
+            checker::Type *memberType = it->GetType(checker);
+            memberType->SetVariable(memberVar);
+            memberVar->SetTsType(memberType);
+            memberFlag = checker::ElementFlags::REQUIRED;
+            numberIndexTypes.push_back(memberType);
+            minLength++;
         }
 
-        combined_flags |= member_flag;
+        combinedFlags |= memberFlag;
 
-        element_flags.push_back(member_flag);
-        desc->properties.push_back(member_var);
+        elementFlags.push_back(memberFlag);
+        desc->properties.push_back(memberVar);
         index++;
     }
 
-    uint32_t fixed_length = desc->properties.size();
+    uint32_t fixedLength = desc->properties.size();
 
-    checker::Type *number_index_type = nullptr;
+    checker::Type *numberIndexType = nullptr;
 
-    if (number_index_types.empty()) {
-        number_index_type = checker->GlobalNeverType();
-    } else if (number_index_types.size() == 1) {
-        number_index_type = number_index_types[0];
+    if (numberIndexTypes.empty()) {
+        numberIndexType = checker->GlobalNeverType();
+    } else if (numberIndexTypes.size() == 1) {
+        numberIndexType = numberIndexTypes[0];
     } else {
-        number_index_type = checker->CreateUnionType(std::move(number_index_types));
+        numberIndexType = checker->CreateUnionType(std::move(numberIndexTypes));
     }
 
-    desc->number_index_info = checker->Allocator()->New<checker::IndexInfo>(number_index_type, "x", false);
+    desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(numberIndexType, "x", false);
 
-    SetTsType(checker->CreateTupleType(desc, std::move(element_flags), combined_flags, min_length, fixed_length, false,
-                                       std::move(named_members)));
+    SetTsType(checker->CreateTupleType(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, false,
+                                       std::move(namedMembers)));
     return TsType();
 }
 

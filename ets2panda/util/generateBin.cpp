@@ -30,27 +30,27 @@ int GenerateProgram(panda::pandasm::Program *prog, const util::Options *options,
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
     if (options->OptLevel() != 0) {
-        panda::Logger::ComponentMask component_mask;
-        component_mask.set(panda::Logger::Component::ASSEMBLER);
-        component_mask.set(panda::Logger::Component::COMPILER);
-        component_mask.set(panda::Logger::Component::BYTECODE_OPTIMIZER);
+        panda::Logger::ComponentMask componentMask;
+        componentMask.set(panda::Logger::Component::ASSEMBLER);
+        componentMask.set(panda::Logger::Component::COMPILER);
+        componentMask.set(panda::Logger::Component::BYTECODE_OPTIMIZER);
 
-        panda::Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), component_mask);
+        panda::Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), componentMask);
 
         if (!panda::pandasm::AsmEmitter::Emit(options->CompilerOutput(), *prog, statp, mapsp, true)) {
             reporter("Failed to emit binary data: " + panda::pandasm::AsmEmitter::GetLastError());
             return 1;
         }
 
-        panda::bytecodeopt::OPTIONS.SetOptLevel(options->OptLevel());
+        panda::bytecodeopt::g_options.SetOptLevel(options->OptLevel());
         // Set default value instead of maximum set in panda::bytecodeopt::SetCompilerOptions()
         panda::compiler::CompilerLogger::Init({"all"});
-        panda::compiler::OPTIONS.SetCompilerMaxBytecodeSize(panda::compiler::OPTIONS.GetCompilerMaxBytecodeSize());
+        panda::compiler::g_options.SetCompilerMaxBytecodeSize(panda::compiler::g_options.GetCompilerMaxBytecodeSize());
         panda::bytecodeopt::OptimizeBytecode(prog, mapsp, options->CompilerOutput(), options->IsDynamic(), true);
     }
 #endif
 
-    if (options->CompilerOptions().dump_asm) {
+    if (options->CompilerOptions().dumpAsm) {
         es2panda::Compiler::DumpAsm(prog);
     }
 
@@ -65,7 +65,7 @@ int GenerateProgram(panda::pandasm::Program *prog, const util::Options *options,
     }
 
     if (options->SizeStat()) {
-        size_t total_size = 0;
+        size_t totalSize = 0;
         std::cout << "Panda file size statistic:" << std::endl;
         constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
 
@@ -74,14 +74,14 @@ int GenerateProgram(panda::pandasm::Program *prog, const util::Options *options,
                 continue;
             }
             std::cout << name << " section: " << size << std::endl;
-            total_size += size;
+            totalSize += size;
         }
 
         for (const auto &name : INFO_STATS) {
             std::cout << name << ": " << stat.at(std::string(name)) << std::endl;
         }
 
-        std::cout << "total: " << total_size << std::endl;
+        std::cout << "total: " << totalSize << std::endl;
     }
 
     return 0;

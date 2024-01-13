@@ -25,24 +25,24 @@ namespace panda::es2panda::checker {
 class ETSFunctionType : public Type {
 public:
     explicit ETSFunctionType(util::StringView name, Signature *signature, ArenaAllocator *allocator)
-        : Type(TypeFlag::FUNCTION), call_signatures_(allocator->Adapter()), name_(name)
+        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name)
     {
-        call_signatures_.push_back(signature);
+        callSignatures_.push_back(signature);
     }
 
     explicit ETSFunctionType(util::StringView name, ArenaAllocator *allocator)
-        : Type(TypeFlag::FUNCTION), call_signatures_(allocator->Adapter()), name_(name)
+        : Type(TypeFlag::FUNCTION), callSignatures_(allocator->Adapter()), name_(name)
     {
     }
 
     ArenaVector<Signature *> &CallSignatures()
     {
-        return call_signatures_;
+        return callSignatures_;
     }
 
     const ArenaVector<Signature *> &CallSignatures() const
     {
-        return call_signatures_;
+        return callSignatures_;
     }
 
     util::StringView Name() const
@@ -57,22 +57,22 @@ public:
         } else if (signature->Function()->IsSetter()) {
             AddTypeFlag(TypeFlag::SETTER);
         }
-        call_signatures_.push_back(signature);
+        callSignatures_.push_back(signature);
     }
 
-    void SetReferencedSignature(Signature *ref_signature)
+    void SetReferencedSignature(Signature *refSignature)
     {
-        ref_signature_ = ref_signature;
+        refSignature_ = refSignature;
     }
 
     Signature *GetReferencedSignature() const
     {
-        return ref_signature_;
+        return refSignature_;
     }
 
     Signature *FindSignature(const ir::ScriptFunction *func) const
     {
-        for (auto *it : call_signatures_) {
+        for (auto *it : callSignatures_) {
             if (it->Function() == func) {
                 return it;
             }
@@ -83,7 +83,7 @@ public:
 
     Signature *FindGetter() const
     {
-        for (auto *sig : call_signatures_) {
+        for (auto *sig : callSignatures_) {
             if (sig->Function()->IsGetter()) {
                 return sig;
             }
@@ -93,7 +93,7 @@ public:
 
     Signature *FindSetter() const
     {
-        for (auto *sig : call_signatures_) {
+        for (auto *sig : callSignatures_) {
             if (sig->Function()->IsSetter()) {
                 return sig;
             }
@@ -116,15 +116,15 @@ public:
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     ETSFunctionType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     checker::RelationResult CastFunctionParams(TypeRelation *relation, Type *target);
 
 private:
-    ArenaVector<Signature *> call_signatures_;
+    ArenaVector<Signature *> callSignatures_;
     util::StringView name_;
-    Signature *ref_signature_ {};
+    Signature *refSignature_ {};
 };
 }  // namespace panda::es2panda::checker
 

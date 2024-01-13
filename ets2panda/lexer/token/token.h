@@ -67,7 +67,7 @@ public:
 
     TokenType KeywordType() const
     {
-        return keyword_type_;
+        return keywordType_;
     }
 
     const SourcePosition &Start() const
@@ -136,7 +136,7 @@ public:
 private:
     friend class KeywordsUtil;
     TokenType type_ {TokenType::EOS};
-    TokenType keyword_type_ {TokenType::EOS};
+    TokenType keywordType_ {TokenType::EOS};
     TokenFlags flags_ {TokenFlags::NONE};
     SourceRange loc_ {};
     Number number_ {};

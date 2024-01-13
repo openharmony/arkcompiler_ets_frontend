@@ -56,8 +56,8 @@ public:
     {
     }
 
-    explicit Identifier(util::StringView const name, TypeNode *const type_annotation, ArenaAllocator *const allocator)
-        : AnnotatedExpression(AstNodeType::IDENTIFIER, type_annotation), name_(name), decorators_(allocator->Adapter())
+    explicit Identifier(util::StringView const name, TypeNode *const typeAnnotation, ArenaAllocator *const allocator)
+        : AnnotatedExpression(AstNodeType::IDENTIFIER, typeAnnotation), name_(name), decorators_(allocator->Adapter())
     {
     }
 
@@ -73,9 +73,9 @@ public:
         return name_;
     }
 
-    void SetName(const util::StringView &new_name) noexcept
+    void SetName(const util::StringView &newName) noexcept
     {
-        name_ = new_name;
+        name_ = newName;
     }
 
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
@@ -107,9 +107,9 @@ public:
         return (flags_ & IdentifierFlags::REFERENCE) != 0;
     }
 
-    void SetReference(bool const is_reference = true) noexcept
+    void SetReference(bool const isReference = true) noexcept
     {
-        if (is_reference) {
+        if (isReference) {
             flags_ |= IdentifierFlags::REFERENCE;
         } else {
             flags_ &= ~IdentifierFlags::REFERENCE;
@@ -151,9 +151,9 @@ public:
         return (flags_ & IdentifierFlags::PRIVATE) != 0;
     }
 
-    void SetPrivate(bool const is_private) noexcept
+    void SetPrivate(bool const isPrivate) noexcept
     {
-        if (is_private) {
+        if (isPrivate) {
             flags_ |= IdentifierFlags::PRIVATE;
         } else {
             flags_ &= ~IdentifierFlags::PRIVATE;
@@ -193,7 +193,7 @@ public:
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }

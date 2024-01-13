@@ -23,7 +23,7 @@ namespace panda::es2panda::compiler {
 class SavedBindingsContext {
 public:
     explicit SavedBindingsContext(varbinder::VarBinder *varbinder)
-        : varbinder_(varbinder), saved_bindings_(varbinder_->GetScope()->Bindings())
+        : varbinder_(varbinder), savedBindings_(varbinder_->GetScope()->Bindings())
     {
     }
     NO_COPY_SEMANTIC(SavedBindingsContext);
@@ -43,12 +43,12 @@ protected:
 
     const varbinder::Scope::VariableMap &SavedBindings() const
     {
-        return saved_bindings_;
+        return savedBindings_;
     }
 
 private:
     varbinder::VarBinder *varbinder_;
-    varbinder::Scope::VariableMap saved_bindings_;
+    varbinder::Scope::VariableMap savedBindings_;
 };
 
 class ExportDeclarationContext : public SavedBindingsContext {
@@ -58,7 +58,7 @@ public:
     NO_MOVE_SEMANTIC(ExportDeclarationContext);
     ~ExportDeclarationContext() = default;
 
-    void BindExportDecl(ir::AstNode *export_decl);
+    void BindExportDecl(ir::AstNode *exportDecl);
 
 protected:
     static constexpr std::string_view DEFAULT_EXPORT = "*default*";
@@ -73,7 +73,7 @@ public:
 
     ~ImportDeclarationContext() = default;
 
-    void BindImportDecl(ir::ImportDeclaration *import_decl);
+    void BindImportDecl(ir::ImportDeclaration *importDecl);
 
 private:
 };

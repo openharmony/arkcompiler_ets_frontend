@@ -28,7 +28,7 @@ std::size_t ScriptFunction::FormalParamsLength() const noexcept
 {
     std::size_t length = 0U;
 
-    for (const auto *param : ir_signature_.Params()) {
+    for (const auto *param : irSignature_.Params()) {
         if (param->IsRestElement() || param->IsAssignmentPattern()) {
             break;
         }
@@ -44,7 +44,7 @@ void ScriptFunction::TransformChildren(const NodeTransformer &cb)
     if (id_ != nullptr) {
         id_ = cb(id_)->AsIdentifier();
     }
-    ir_signature_.TransformChildren(cb);
+    irSignature_.TransformChildren(cb);
     if (body_ != nullptr) {
         body_ = cb(body_);
     }
@@ -55,7 +55,7 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
     if (id_ != nullptr) {
         cb(id_);
     }
-    ir_signature_.Iterate(cb);
+    irSignature_.Iterate(cb);
     if (body_ != nullptr) {
         cb(body_);
     }
@@ -67,10 +67,10 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"id", AstDumper::Nullish(id_)},
                  {"generator", IsGenerator()},
                  {"async", IsAsyncFunc()},
-                 {"expression", ((func_flags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0)},
-                 {"params", ir_signature_.Params()},
-                 {"returnType", AstDumper::Optional(ir_signature_.ReturnType())},
-                 {"typeParameters", AstDumper::Optional(ir_signature_.TypeParams())},
+                 {"expression", ((funcFlags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0)},
+                 {"params", irSignature_.Params()},
+                 {"returnType", AstDumper::Optional(irSignature_.ReturnType())},
+                 {"typeParameters", AstDumper::Optional(irSignature_.TypeParams())},
                  {"declare", AstDumper::Optional(declare_)},
                  {"body", AstDumper::Optional(body_)}});
 

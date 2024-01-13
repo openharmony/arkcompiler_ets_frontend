@@ -28,8 +28,8 @@
 #include "ir/expressions/objectExpression.h"
 
 namespace panda::es2panda::compiler {
-static void GenRestElement(PandaGen *pg, const ir::SpreadElement *rest_element,
-                           const DestructuringIterator &dest_iterator, bool is_declaration)
+static void GenRestElement(PandaGen *pg, const ir::SpreadElement *restElement,
+                           const DestructuringIterator &destIterator, bool isDeclaration)
 {
     VReg array = pg->AllocReg();
     VReg index = pg->AllocReg();
@@ -37,33 +37,33 @@ static void GenRestElement(PandaGen *pg, const ir::SpreadElement *rest_element,
     auto *next = pg->AllocLabel();
     auto *done = pg->AllocLabel();
 
-    DestructuringRestIterator iterator(dest_iterator);
+    DestructuringRestIterator iterator(destIterator);
 
     // create left reference for rest element
-    auto lref = JSLReference::Create(pg, rest_element, is_declaration);
+    auto lref = JSLReference::Create(pg, restElement, isDeclaration);
 
     // create an empty array first
-    pg->CreateEmptyArray(rest_element);
-    pg->StoreAccumulator(rest_element, array);
+    pg->CreateEmptyArray(restElement);
+    pg->StoreAccumulator(restElement, array);
 
     // index = 0
-    pg->LoadAccumulatorInt(rest_element, 0);
-    pg->StoreAccumulator(rest_element, index);
+    pg->LoadAccumulatorInt(restElement, 0);
+    pg->StoreAccumulator(restElement, index);
 
-    pg->SetLabel(rest_element, next);
+    pg->SetLabel(restElement, next);
 
     iterator.Step(done);
-    pg->StoreObjByValue(rest_element, array, index);
+    pg->StoreObjByValue(restElement, array, index);
 
     // index++
-    pg->LoadAccumulatorInt(rest_element, 1);
-    pg->Binary(rest_element, lexer::TokenType::PUNCTUATOR_PLUS, index);
-    pg->StoreAccumulator(rest_element, index);
+    pg->LoadAccumulatorInt(restElement, 1);
+    pg->Binary(restElement, lexer::TokenType::PUNCTUATOR_PLUS, index);
+    pg->StoreAccumulator(restElement, index);
 
-    pg->Branch(rest_element, next);
+    pg->Branch(restElement, next);
 
-    pg->SetLabel(rest_element, done);
-    pg->LoadAccumulator(rest_element, array);
+    pg->SetLabel(restElement, done);
+    pg->LoadAccumulator(restElement, array);
 
     lref.SetValue();
 }
@@ -77,9 +77,9 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
         return;
     }
 
-    TryContext try_ctx(pg);
-    const auto &label_set = try_ctx.LabelSet();
-    pg->SetLabel(array, label_set.TryBegin());
+    TryContext tryCtx(pg);
+    const auto &labelSet = tryCtx.LabelSet();
+    pg->SetLabel(array, labelSet.TryBegin());
 
     for (const auto *element : array->Elements()) {
         RegScope ers(pg);
@@ -107,31 +107,31 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
         iterator.Step();
 
         if (init != nullptr) {
-            auto *assign_value = pg->AllocLabel();
-            auto *default_init = pg->AllocLabel();
-            pg->BranchIfUndefined(element, default_init);
+            auto *assignValue = pg->AllocLabel();
+            auto *defaultInit = pg->AllocLabel();
+            pg->BranchIfUndefined(element, defaultInit);
             pg->LoadAccumulator(element, iterator.Result());
-            pg->Branch(element, assign_value);
+            pg->Branch(element, assignValue);
 
-            pg->SetLabel(element, default_init);
+            pg->SetLabel(element, defaultInit);
             init->Compile(pg);
-            pg->SetLabel(element, assign_value);
+            pg->SetLabel(element, assignValue);
         }
 
         lref.SetValue();
     }
 
-    pg->SetLabel(array, label_set.TryEnd());
+    pg->SetLabel(array, labelSet.TryEnd());
 
     // Normal completion
     pg->LoadAccumulator(array, iterator.Done());
-    pg->BranchIfTrue(array, label_set.CatchEnd());
+    pg->BranchIfTrue(array, labelSet.CatchEnd());
     iterator.Close(false);
 
-    pg->Branch(array, label_set.CatchEnd());
+    pg->Branch(array, labelSet.CatchEnd());
 
     Label *end = pg->AllocLabel();
-    pg->SetLabel(array, label_set.CatchBegin());
+    pg->SetLabel(array, labelSet.CatchBegin());
     pg->StoreAccumulator(array, iterator.Result());
     pg->LoadAccumulator(array, iterator.Done());
 
@@ -141,13 +141,13 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
     pg->SetLabel(array, end);
     pg->LoadAccumulator(array, iterator.Result());
     pg->EmitThrow(array);
-    pg->SetLabel(array, label_set.CatchEnd());
+    pg->SetLabel(array, labelSet.CatchEnd());
 }
 
-static std::tuple<const ir::Expression *, const ir::Expression *> GetAssignmentTarget(const ir::Property *prop_expr)
+static std::tuple<const ir::Expression *, const ir::Expression *> GetAssignmentTarget(const ir::Property *propExpr)
 {
     const ir::Expression *init = nullptr;
-    const ir::Expression *target = prop_expr->Value();
+    const ir::Expression *target = propExpr->Value();
 
     if (target->IsAssignmentPattern()) {
         init = target->AsAssignmentPattern()->Right();
@@ -164,18 +164,18 @@ static void GenDefaultInitializer(PandaGen *pg, const ir::Expression *element, c
     }
 
     RegScope rs(pg);
-    VReg loaded_value = pg->AllocReg();
-    pg->StoreAccumulator(element, loaded_value);
+    VReg loadedValue = pg->AllocReg();
+    pg->StoreAccumulator(element, loadedValue);
 
-    auto *get_default = pg->AllocLabel();
+    auto *getDefault = pg->AllocLabel();
     auto *store = pg->AllocLabel();
 
-    pg->BranchIfUndefined(element, get_default);
-    pg->LoadAccumulator(element, loaded_value);
+    pg->BranchIfUndefined(element, getDefault);
+    pg->LoadAccumulator(element, loadedValue);
     pg->Branch(element, store);
 
     // load default value
-    pg->SetLabel(element, get_default);
+    pg->SetLabel(element, getDefault);
     init->Compile(pg);
 
     pg->SetLabel(element, store);
@@ -186,24 +186,24 @@ static void GenObjectWithRest(PandaGen *pg, const ir::ObjectExpression *object, 
     const auto &properties = object->Properties();
 
     RegScope rs(pg);
-    VReg prop_start = pg->NextReg();
+    VReg propStart = pg->NextReg();
 
     for (const auto *element : properties) {
         if (element->IsRestElement()) {
-            RegScope rest_scope(pg);
+            RegScope restScope(pg);
             auto lref = JSLReference::Create(pg, element, object->IsDeclaration());
-            pg->CreateObjectWithExcludedKeys(element, rhs, prop_start, properties.size() - 1);
+            pg->CreateObjectWithExcludedKeys(element, rhs, propStart, properties.size() - 1);
             lref.SetValue();
             break;
         }
 
-        VReg prop_reg = pg->AllocReg();
+        VReg propReg = pg->AllocReg();
 
-        RegScope prop_scope(pg);
+        RegScope propScope(pg);
 
-        const ir::Property *prop_expr = element->AsProperty();
-        const ir::Expression *key = prop_expr->Key();
-        const auto [init, target] = GetAssignmentTarget(prop_expr);
+        const ir::Property *propExpr = element->AsProperty();
+        const ir::Expression *key = propExpr->Key();
+        const auto [init, target] = GetAssignmentTarget(propExpr);
 
         if (key->IsIdentifier()) {
             pg->LoadAccumulatorString(key, key->AsIdentifier()->Name());
@@ -211,11 +211,11 @@ static void GenObjectWithRest(PandaGen *pg, const ir::ObjectExpression *object, 
             key->Compile(pg);
         }
 
-        pg->StoreAccumulator(key, prop_reg);
+        pg->StoreAccumulator(key, propReg);
 
         auto lref = JSLReference::Create(pg, target, object->IsDeclaration());
 
-        pg->LoadAccumulator(element, prop_reg);
+        pg->LoadAccumulator(element, propReg);
         pg->LoadObjByValue(element, rhs);
 
         GenDefaultInitializer(pg, element, init);
@@ -229,13 +229,13 @@ static void GenObject(PandaGen *pg, const ir::ObjectExpression *object, VReg rhs
     const auto &properties = object->Properties();
 
     if (properties.empty() || properties.back()->IsRestElement()) {
-        auto *not_nullish = pg->AllocLabel();
+        auto *notNullish = pg->AllocLabel();
 
         pg->LoadAccumulator(object, rhs);
-        pg->BranchIfCoercible(object, not_nullish);
+        pg->BranchIfCoercible(object, notNullish);
         pg->ThrowObjectNonCoercible(object);
 
-        pg->SetLabel(object, not_nullish);
+        pg->SetLabel(object, notNullish);
 
         if (!properties.empty()) {
             return GenObjectWithRest(pg, object, rhs);
@@ -243,22 +243,22 @@ static void GenObject(PandaGen *pg, const ir::ObjectExpression *object, VReg rhs
     }
 
     for (const auto *element : properties) {
-        RegScope prop_scope(pg);
+        RegScope propScope(pg);
 
-        const ir::Property *prop_expr = element->AsProperty();
-        const ir::Expression *key = prop_expr->Key();
-        const auto [init, target] = GetAssignmentTarget(prop_expr);
+        const ir::Property *propExpr = element->AsProperty();
+        const ir::Expression *key = propExpr->Key();
+        const auto [init, target] = GetAssignmentTarget(propExpr);
 
-        Operand prop_operand = pg->ToOwnPropertyKey(key, prop_expr->IsComputed());
+        Operand propOperand = pg->ToOwnPropertyKey(key, propExpr->IsComputed());
 
         auto lref = JSLReference::Create(pg, target, object->IsDeclaration());
 
-        if (std::holds_alternative<VReg>(prop_operand)) {
-            pg->LoadAccumulator(element, std::get<VReg>(prop_operand));
+        if (std::holds_alternative<VReg>(propOperand)) {
+            pg->LoadAccumulator(element, std::get<VReg>(propOperand));
             pg->LoadObjByValue(element, rhs);
         } else {
             pg->LoadAccumulator(element, rhs);
-            pg->LoadObjProperty(element, prop_operand);
+            pg->LoadObjProperty(element, propOperand);
         }
 
         GenDefaultInitializer(pg, element, init);

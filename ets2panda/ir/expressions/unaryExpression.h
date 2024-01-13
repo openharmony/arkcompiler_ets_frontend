@@ -40,8 +40,8 @@ public:
     NO_COPY_SEMANTIC(UnaryExpression);
     NO_MOVE_SEMANTIC(UnaryExpression);
 
-    explicit UnaryExpression(Expression *const argument, lexer::TokenType const unary_operator)
-        : Expression(AstNodeType::UNARY_EXPRESSION), argument_(argument), operator_(unary_operator)
+    explicit UnaryExpression(Expression *const argument, lexer::TokenType const unaryOperator)
+        : Expression(AstNodeType::UNARY_EXPRESSION), argument_(argument), operator_(unaryOperator)
     {
     }
     // NOTE (somasimon): these friend relationships can be removed once there are getters for private fields

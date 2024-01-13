@@ -77,29 +77,29 @@ template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typen
 static CompilerContext::CodeGenCb MakeCompileJob()
 {
     return [](CompilerContext *context, varbinder::FunctionScope *scope,
-              compiler::ProgramElement *program_element) -> void {
-        RegSpiller reg_spiller;
+              compiler::ProgramElement *programElement) -> void {
+        RegSpiller regSpiller;
         ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         AstCompiler astcompiler;
-        CodeGen cg(&allocator, &reg_spiller, context, scope, program_element, &astcompiler);
-        FunctionEmitter func_emitter(&cg, program_element);
-        func_emitter.Generate();
+        CodeGen cg(&allocator, &regSpiller, context, scope, programElement, &astcompiler);
+        FunctionEmitter funcEmitter(&cg, programElement);
+        funcEmitter.Generate();
     };
 }
 
-static void SetupPublicContext(public_lib::Context *context, const SourceFile *source_file, ArenaAllocator *allocator,
+static void SetupPublicContext(public_lib::Context *context, const SourceFile *sourceFile, ArenaAllocator *allocator,
                                CompileQueue *queue, std::vector<util::Plugin> const *plugins,
-                               parser::ParserImpl *parser, CompilerContext *compiler_context)
+                               parser::ParserImpl *parser, CompilerContext *compilerContext)
 {
-    context->source_file = source_file;
+    context->sourceFile = sourceFile;
     context->allocator = allocator;
     context->queue = queue;
     context->plugins = plugins;
     context->parser = parser;
-    context->checker = compiler_context->Checker();
+    context->checker = compilerContext->Checker();
     context->analyzer = context->checker->GetAnalyzer();
-    context->compiler_context = compiler_context;
-    context->emitter = compiler_context->GetEmitter();
+    context->compilerContext = compilerContext;
+    context->emitter = compilerContext->GetEmitter();
 }
 
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
@@ -107,13 +107,13 @@ using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExten
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const PhaseListGetter &get_phases,
-                                        CompilerImpl *compiler_impl)
+static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const PhaseListGetter &getPhases,
+                                        CompilerImpl *compilerImpl)
 {
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
     program.MarkEntry();
-    auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.raw_parser_status));
+    auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
     auto checker = Checker();
     auto analyzer = Analyzer(&checker);
     checker.SetAnalyzer(&analyzer);
@@ -129,24 +129,24 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     context.SetEmitter(&emitter);
     context.SetParser(&parser);
 
-    public_lib::Context public_context;
-    SetupPublicContext(&public_context, &unit.input, &allocator, compiler_impl->Queue(), &compiler_impl->Plugins(),
+    public_lib::Context publicContext;
+    SetupPublicContext(&publicContext, &unit.input, &allocator, compilerImpl->Queue(), &compilerImpl->Plugins(),
                        &parser, &context);
 
-    parser.ParseScript(unit.input, unit.options.compilation_mode == CompilationMode::GEN_STD_LIB);
+    parser.ParseScript(unit.input, unit.options.compilationMode == CompilationMode::GEN_STD_LIB);
     if constexpr (std::is_same_v<Parser, parser::ETSParser> && std::is_same_v<VarBinder, varbinder::ETSBinder>) {
         reinterpret_cast<varbinder::ETSBinder *>(varbinder)->FillResolvedImportPathes(parser.ResolvedParsedSourcesMap(),
                                                                                       &allocator);
     }
-    for (auto *phase : get_phases(unit.ext)) {
-        if (!phase->Apply(&public_context, &program)) {
+    for (auto *phase : getPhases(unit.ext)) {
+        if (!phase->Apply(&publicContext, &program)) {
             return nullptr;
         }
     }
 
     emitter.GenAnnotation();
 
-    return compiler_impl->Emit(&context);
+    return compilerImpl->Emit(&context);
 }
 
 pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)

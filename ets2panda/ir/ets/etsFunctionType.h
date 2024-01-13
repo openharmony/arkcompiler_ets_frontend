@@ -28,8 +28,8 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags func_flags)
-        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), func_flags_(func_flags)
+    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags funcFlags)
+        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), funcFlags_(funcFlags)
     {
     }
 
@@ -70,27 +70,27 @@ public:
 
     ir::TSInterfaceDeclaration *FunctionalInterface()
     {
-        return functional_interface_;
+        return functionalInterface_;
     }
 
     const ir::TSInterfaceDeclaration *FunctionalInterface() const
     {
-        return functional_interface_;
+        return functionalInterface_;
     }
 
-    void SetFunctionalInterface(ir::TSInterfaceDeclaration *functional_interface)
+    void SetFunctionalInterface(ir::TSInterfaceDeclaration *functionalInterface)
     {
-        functional_interface_ = functional_interface;
+        functionalInterface_ = functionalInterface;
     }
 
     ir::ScriptFunctionFlags Flags()
     {
-        return func_flags_;
+        return funcFlags_;
     }
 
     bool IsThrowing() const
     {
-        return (func_flags_ & ir::ScriptFunctionFlags::THROWS) != 0;
+        return (funcFlags_ & ir::ScriptFunctionFlags::THROWS) != 0;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -115,8 +115,8 @@ public:
 private:
     varbinder::Scope *scope_ {};
     FunctionSignature signature_;
-    ir::TSInterfaceDeclaration *functional_interface_ {};
-    ir::ScriptFunctionFlags func_flags_;
+    ir::TSInterfaceDeclaration *functionalInterface_ {};
+    ir::ScriptFunctionFlags funcFlags_;
 };
 }  // namespace panda::es2panda::ir
 

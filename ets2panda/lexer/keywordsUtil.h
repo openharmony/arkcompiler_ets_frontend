@@ -46,7 +46,7 @@ public:
 
     const parser::ParserContext *GetParserContext() const
     {
-        return lexer_->parser_context_;
+        return lexer_->parserContext_;
     }
 
     [[noreturn]] void ThrowError(std::string_view msg) const
@@ -85,7 +85,7 @@ public:
     {
         lexer_->GetToken().src_ = util::StringView(kws.Str());
         lexer_->GetToken().type_ = kws.GetTokenType();
-        lexer_->GetToken().keyword_type_ = kws.GetKeywordType();
+        lexer_->GetToken().keywordType_ = kws.GetKeywordType();
     }
 
     inline util::StringView::Iterator &Iterator()

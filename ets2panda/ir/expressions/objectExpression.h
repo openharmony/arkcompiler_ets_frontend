@@ -38,12 +38,12 @@ public:
     NO_COPY_SEMANTIC(ObjectExpression);
     NO_MOVE_SEMANTIC(ObjectExpression);
 
-    explicit ObjectExpression(AstNodeType node_type, ArenaAllocator *allocator, ArenaVector<Expression *> &&properties,
-                              bool trailing_comma)
-        : AnnotatedExpression(node_type),
+    explicit ObjectExpression(AstNodeType nodeType, ArenaAllocator *allocator, ArenaVector<Expression *> &&properties,
+                              bool trailingComma)
+        : AnnotatedExpression(nodeType),
           decorators_(allocator->Adapter()),
           properties_(std::move(properties)),
-          trailing_comma_(trailing_comma)
+          trailingComma_(trailingComma)
     {
     }
     explicit ObjectExpression(Tag tag, ObjectExpression const &other, ArenaAllocator *allocator);
@@ -58,7 +58,7 @@ public:
 
     [[nodiscard]] bool IsDeclaration() const noexcept
     {
-        return is_declaration_;
+        return isDeclaration_;
     }
 
     [[nodiscard]] bool IsOptional() const noexcept
@@ -66,14 +66,14 @@ public:
         return optional_;
     }
 
-    void SetPreferredType(checker::Type *const preferred_type) noexcept
+    void SetPreferredType(checker::Type *const preferredType) noexcept
     {
-        preferred_type_ = preferred_type;
+        preferredType_ = preferredType;
     }
 
     [[nodiscard]] checker::Type *PreferredType() const noexcept
     {
-        return preferred_type_;
+        return preferredType_;
     }
 
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
@@ -91,7 +91,7 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }
@@ -121,9 +121,9 @@ public:
 private:
     ArenaVector<Decorator *> decorators_;
     ArenaVector<Expression *> properties_;
-    checker::Type *preferred_type_ {};
-    bool is_declaration_ {};
-    bool trailing_comma_ {};
+    checker::Type *preferredType_ {};
+    bool isDeclaration_ {};
+    bool trailingComma_ {};
     bool optional_ {};
 };
 }  // namespace panda::es2panda::ir

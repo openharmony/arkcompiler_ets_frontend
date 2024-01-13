@@ -23,9 +23,9 @@
 #include "ir/expressions/unaryExpression.h"
 
 namespace panda::es2panda::compiler {
-bool Condition::CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_expr, Label *false_label)
+bool Condition::CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
-    switch (bin_expr->OperatorType()) {
+    switch (binExpr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
@@ -42,33 +42,33 @@ bool Condition::CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_
             RegScope rs(pg);
             VReg lhs = pg->AllocReg();
 
-            bin_expr->Left()->Compile(pg);
-            pg->StoreAccumulator(bin_expr, lhs);
-            bin_expr->Right()->Compile(pg);
-            pg->Condition(bin_expr, bin_expr->OperatorType(), lhs, false_label);
+            binExpr->Left()->Compile(pg);
+            pg->StoreAccumulator(binExpr, lhs);
+            binExpr->Right()->Compile(pg);
+            pg->Condition(binExpr, binExpr->OperatorType(), lhs, falseLabel);
             return true;
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            bin_expr->Left()->Compile(pg);
-            pg->ToBoolean(bin_expr);
-            pg->BranchIfFalse(bin_expr, false_label);
+            binExpr->Left()->Compile(pg);
+            pg->ToBoolean(binExpr);
+            pg->BranchIfFalse(binExpr, falseLabel);
 
-            bin_expr->Right()->Compile(pg);
-            pg->ToBoolean(bin_expr);
-            pg->BranchIfFalse(bin_expr, false_label);
+            binExpr->Right()->Compile(pg);
+            pg->ToBoolean(binExpr);
+            pg->BranchIfFalse(binExpr, falseLabel);
             return true;
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            auto *end_label = pg->AllocLabel();
+            auto *endLabel = pg->AllocLabel();
 
-            bin_expr->Left()->Compile(pg);
-            pg->ToBoolean(bin_expr);
-            pg->BranchIfTrue(bin_expr, end_label);
+            binExpr->Left()->Compile(pg);
+            pg->ToBoolean(binExpr);
+            pg->BranchIfTrue(binExpr, endLabel);
 
-            bin_expr->Right()->Compile(pg);
-            pg->ToBoolean(bin_expr);
-            pg->BranchIfFalse(bin_expr, false_label);
-            pg->SetLabel(bin_expr, end_label);
+            binExpr->Right()->Compile(pg);
+            pg->ToBoolean(binExpr);
+            pg->BranchIfFalse(binExpr, falseLabel);
+            pg->SetLabel(binExpr, endLabel);
             return true;
         }
         default: {
@@ -78,10 +78,10 @@ bool Condition::CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_
     return false;
 }
 
-void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *false_label)
+void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLabel)
 {
     if (expr->IsBinaryExpression()) {
-        if (CompileBinaryExpr(pg, expr->AsBinaryExpression(), false_label)) {
+        if (CompileBinaryExpr(pg, expr->AsBinaryExpression(), falseLabel)) {
             return;
         }
     } else if (expr->IsUnaryExpression() &&
@@ -89,19 +89,19 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *false_l
         expr->AsUnaryExpression()->Argument()->Compile(pg);
 
         pg->Negate(expr);
-        pg->BranchIfFalse(expr, false_label);
+        pg->BranchIfFalse(expr, falseLabel);
         return;
     }
 
     // General case including some binExpr i.E.(a+b)
     expr->Compile(pg);
     pg->ToBoolean(expr);
-    pg->BranchIfFalse(expr, false_label);
+    pg->BranchIfFalse(expr, falseLabel);
 }
 
 Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr)
 {
-    const auto resulting_expression = [](const ir::Expression *e) {
+    const auto resultingExpression = [](const ir::Expression *e) {
         if (e->IsBinaryExpression() && e->AsBinaryExpression()->IsLogicalExtended()) {
             return e->AsBinaryExpression()->Result();
         }
@@ -110,86 +110,86 @@ Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expressio
         }
         return e;
     }(expr);
-    if (resulting_expression == nullptr) {
+    if (resultingExpression == nullptr) {
         return Result::UNKNOWN;
     }
 
-    if (etsg->Checker()->IsNullLikeOrVoidExpression(resulting_expression)) {
+    if (etsg->Checker()->IsNullLikeOrVoidExpression(resultingExpression)) {
         return Result::CONST_FALSE;
     }
 
-    auto expr_res = resulting_expression->TsType()->ResolveConditionExpr();
-    if (std::get<0>(expr_res)) {
-        return std::get<1>(expr_res) ? Result::CONST_TRUE : Result::CONST_FALSE;
+    auto exprRes = resultingExpression->TsType()->ResolveConditionExpr();
+    if (std::get<0>(exprRes)) {
+        return std::get<1>(exprRes) ? Result::CONST_TRUE : Result::CONST_FALSE;
     }
 
     return Result::UNKNOWN;
 }
 
-void Condition::CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
+void Condition::CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
-    auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
+    auto ttctx = TargetTypeContext(etsg, binExpr->OperationType());
     RegScope rs(etsg);
     VReg lhs = etsg->AllocReg();
     VReg rhs = etsg->AllocReg();
-    auto *return_left_label = etsg->AllocLabel();
-    auto *return_right_true_label = etsg->AllocLabel();
-    auto *return_right_false_label = etsg->AllocLabel();
+    auto *returnLeftLabel = etsg->AllocLabel();
+    auto *returnRightTrueLabel = etsg->AllocLabel();
+    auto *returnRightFalseLabel = etsg->AllocLabel();
 
-    bin_expr->Left()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
-    etsg->ResolveConditionalResultIfTrue(bin_expr->Left(), return_left_label);
-    etsg->BranchIfTrue(bin_expr, return_left_label);
+    binExpr->Left()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(binExpr->Left(), lhs, binExpr->OperationType());
+    etsg->ResolveConditionalResultIfTrue(binExpr->Left(), returnLeftLabel);
+    etsg->BranchIfTrue(binExpr, returnLeftLabel);
 
-    bin_expr->Right()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Right(), rhs, bin_expr->OperationType());
-    etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), return_right_false_label);
-    etsg->BranchIfFalse(bin_expr, return_right_false_label);
-    etsg->LoadAccumulator(bin_expr, rhs);
-    etsg->Branch(bin_expr, return_right_true_label);
+    binExpr->Right()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(binExpr->Right(), rhs, binExpr->OperationType());
+    etsg->ResolveConditionalResultIfFalse(binExpr->Right(), returnRightFalseLabel);
+    etsg->BranchIfFalse(binExpr, returnRightFalseLabel);
+    etsg->LoadAccumulator(binExpr, rhs);
+    etsg->Branch(binExpr, returnRightTrueLabel);
 
-    etsg->SetLabel(bin_expr, return_right_false_label);
-    etsg->LoadAccumulator(bin_expr, rhs);
-    etsg->Branch(bin_expr, false_label);
-    etsg->SetLabel(bin_expr, return_left_label);
-    etsg->LoadAccumulator(bin_expr, lhs);
-    etsg->SetLabel(bin_expr, return_right_true_label);
+    etsg->SetLabel(binExpr, returnRightFalseLabel);
+    etsg->LoadAccumulator(binExpr, rhs);
+    etsg->Branch(binExpr, falseLabel);
+    etsg->SetLabel(binExpr, returnLeftLabel);
+    etsg->LoadAccumulator(binExpr, lhs);
+    etsg->SetLabel(binExpr, returnRightTrueLabel);
 }
 
-void Condition::CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
+void Condition::CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
-    auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
+    auto ttctx = TargetTypeContext(etsg, binExpr->OperationType());
     RegScope rs(etsg);
     VReg lhs = etsg->AllocReg();
     VReg rhs = etsg->AllocReg();
-    auto *return_left_label = etsg->AllocLabel();
-    auto *return_right_true_label = etsg->AllocLabel();
-    auto *return_right_false_label = etsg->AllocLabel();
+    auto *returnLeftLabel = etsg->AllocLabel();
+    auto *returnRightTrueLabel = etsg->AllocLabel();
+    auto *returnRightFalseLabel = etsg->AllocLabel();
 
-    bin_expr->Left()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
-    etsg->ResolveConditionalResultIfFalse(bin_expr->Left(), return_left_label);
-    etsg->BranchIfFalse(bin_expr, return_left_label);
+    binExpr->Left()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(binExpr->Left(), lhs, binExpr->OperationType());
+    etsg->ResolveConditionalResultIfFalse(binExpr->Left(), returnLeftLabel);
+    etsg->BranchIfFalse(binExpr, returnLeftLabel);
 
-    bin_expr->Right()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Right(), rhs, bin_expr->OperationType());
-    etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), return_right_false_label);
-    etsg->BranchIfFalse(bin_expr, return_right_false_label);
-    etsg->LoadAccumulator(bin_expr, rhs);
-    etsg->Branch(bin_expr, return_right_true_label);
+    binExpr->Right()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(binExpr->Right(), rhs, binExpr->OperationType());
+    etsg->ResolveConditionalResultIfFalse(binExpr->Right(), returnRightFalseLabel);
+    etsg->BranchIfFalse(binExpr, returnRightFalseLabel);
+    etsg->LoadAccumulator(binExpr, rhs);
+    etsg->Branch(binExpr, returnRightTrueLabel);
 
-    etsg->SetLabel(bin_expr, return_left_label);
-    etsg->LoadAccumulator(bin_expr, lhs);
-    etsg->Branch(bin_expr, false_label);
-    etsg->SetLabel(bin_expr, return_right_false_label);
-    etsg->LoadAccumulator(bin_expr, rhs);
-    etsg->Branch(bin_expr, false_label);
-    etsg->SetLabel(bin_expr, return_right_true_label);
+    etsg->SetLabel(binExpr, returnLeftLabel);
+    etsg->LoadAccumulator(binExpr, lhs);
+    etsg->Branch(binExpr, falseLabel);
+    etsg->SetLabel(binExpr, returnRightFalseLabel);
+    etsg->LoadAccumulator(binExpr, rhs);
+    etsg->Branch(binExpr, falseLabel);
+    etsg->SetLabel(binExpr, returnRightTrueLabel);
 }
 
-bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
+bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
-    switch (bin_expr->OperatorType()) {
+    switch (binExpr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
@@ -197,24 +197,24 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
         case lexer::TokenType::KEYW_INSTANCEOF: {
-            auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
+            auto ttctx = TargetTypeContext(etsg, binExpr->OperationType());
 
             RegScope rs(etsg);
             VReg lhs = etsg->AllocReg();
 
-            bin_expr->Left()->Compile(etsg);
-            etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
-            bin_expr->Right()->Compile(etsg);
-            etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
-            etsg->Condition(bin_expr, bin_expr->OperatorType(), lhs, false_label);
+            binExpr->Left()->Compile(etsg);
+            etsg->ApplyConversionAndStoreAccumulator(binExpr->Left(), lhs, binExpr->OperationType());
+            binExpr->Right()->Compile(etsg);
+            etsg->ApplyConversion(binExpr->Right(), binExpr->OperationType());
+            etsg->Condition(binExpr, binExpr->OperatorType(), lhs, falseLabel);
             return true;
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            CompileLogicalAndExpr(etsg, bin_expr, false_label);
+            CompileLogicalAndExpr(etsg, binExpr, falseLabel);
             return true;
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            CompileLogicalOrExpr(etsg, bin_expr, false_label);
+            CompileLogicalOrExpr(etsg, binExpr, falseLabel);
             return true;
         }
         default: {
@@ -224,24 +224,24 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_
     return false;
 }
 
-void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_label)
+void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLabel)
 {
     if (expr->IsBinaryExpression()) {
-        if (CompileBinaryExpr(etsg, expr->AsBinaryExpression(), false_label)) {
+        if (CompileBinaryExpr(etsg, expr->AsBinaryExpression(), falseLabel)) {
             return;
         }
     } else if (expr->IsUnaryExpression() &&
                expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
         expr->AsUnaryExpression()->Argument()->Compile(etsg);
         etsg->ApplyConversion(expr->AsUnaryExpression()->Argument(), etsg->Checker()->GlobalETSBooleanType());
-        etsg->ResolveConditionalResultIfTrue(expr, false_label);
-        etsg->BranchIfTrue(expr, false_label);
+        etsg->ResolveConditionalResultIfTrue(expr, falseLabel);
+        etsg->BranchIfTrue(expr, falseLabel);
         return;
     }
     ASSERT(expr->TsType()->IsConditionalExprType());
     expr->Compile(etsg);
     etsg->ApplyConversion(expr, etsg->Checker()->GlobalETSBooleanType());
-    etsg->ResolveConditionalResultIfFalse(expr, false_label);
-    etsg->BranchIfFalse(expr, false_label);
+    etsg->ResolveConditionalResultIfFalse(expr, falseLabel);
+    etsg->BranchIfFalse(expr, falseLabel);
 }
 }  // namespace panda::es2panda::compiler

@@ -68,7 +68,7 @@ public:
 
 %   desc['all_words'].select { |kw| kw&.custom_handler&.include? extension_name}.each do |kw|
     // NOLINTNEXTLINE(readability-identifier-naming)
-    static KeywordString Handle_<%= kw.name%>(const KeywordsUtil& util, std::string_view src, TokenType token_type);
+    static KeywordString Handle_<%= kw.name%>(const KeywordsUtil& util, std::string_view src, TokenType tokenType);
 %   end
 
 private:

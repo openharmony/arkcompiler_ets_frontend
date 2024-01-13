@@ -25,42 +25,40 @@ namespace panda::es2panda::ir {
 
 class ETSReExportDeclaration {
 public:
-    explicit ETSReExportDeclaration(ETSImportDeclaration *const ets_import_declarations,
-                                    std::vector<std::string> const &user_paths, util::StringView program_path,
+    explicit ETSReExportDeclaration(ETSImportDeclaration *const etsImportDeclarations,
+                                    std::vector<std::string> const &userPaths, util::StringView programPath,
                                     ArenaAllocator *allocator)
-        : ets_import_declarations_(ets_import_declarations),
-          user_paths_(allocator->Adapter()),
-          program_path_(program_path)
+        : etsImportDeclarations_(etsImportDeclarations), userPaths_(allocator->Adapter()), programPath_(programPath)
     {
-        for (const auto &path : user_paths) {
-            user_paths_.emplace_back(util::UString(path, allocator).View());
+        for (const auto &path : userPaths) {
+            userPaths_.emplace_back(util::UString(path, allocator).View());
         }
     }
 
     ETSImportDeclaration *GetETSImportDeclarations() const
     {
-        return ets_import_declarations_;
+        return etsImportDeclarations_;
     }
 
     ETSImportDeclaration *GetETSImportDeclarations()
     {
-        return ets_import_declarations_;
+        return etsImportDeclarations_;
     }
 
     const ArenaVector<util::StringView> &GetUserPaths() const
     {
-        return user_paths_;
+        return userPaths_;
     }
 
     util::StringView const &GetProgramPath() const
     {
-        return program_path_;
+        return programPath_;
     }
 
 private:
-    ETSImportDeclaration *ets_import_declarations_;
-    ArenaVector<util::StringView> user_paths_;
-    util::StringView program_path_;
+    ETSImportDeclaration *etsImportDeclarations_;
+    ArenaVector<util::StringView> userPaths_;
+    util::StringView programPath_;
 };
 }  // namespace panda::es2panda::ir
 

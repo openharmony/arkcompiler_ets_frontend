@@ -78,37 +78,37 @@ struct SourceFile {
     SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    std::string_view file_path {};
-    std::string_view file_folder {};
+    std::string_view filePath {};
+    std::string_view fileFolder {};
     std::string_view source {};
-    std::string_view resolved_path {};
-    bool is_module {};
+    std::string_view resolvedPath {};
+    bool isModule {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 struct CompilerOptions {
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    bool is_debug {};
-    bool is_ets_module {};
-    bool is_eval {};
-    bool is_direct_eval {};
-    bool is_function_eval {};
-    bool dump_ast {};
-    bool op_dump_ast_only_silent {};
-    bool dump_checked_ast {};
-    bool dump_asm {};
-    bool dump_debug_info {};
-    bool parse_only {};
-    std::string std_lib {};
-    std::string ts_decl_out {};
+    bool isDebug {};
+    bool isEtsModule {};
+    bool isEval {};
+    bool isDirectEval {};
+    bool isFunctionEval {};
+    bool dumpAst {};
+    bool opDumpAstOnlySilent {};
+    bool dumpCheckedAst {};
+    bool dumpAsm {};
+    bool dumpDebugInfo {};
+    bool parseOnly {};
+    std::string stdLib {};
+    std::string tsDeclOut {};
     std::vector<std::string> plugins {};
-    std::unordered_set<std::string> skip_phases {};
-    std::unordered_set<std::string> dump_before_phases {};
-    std::unordered_set<std::string> dump_ets_src_before_phases {};
-    std::unordered_set<std::string> dump_after_phases {};
-    std::unordered_set<std::string> dump_ets_src_after_phases {};
-    std::shared_ptr<ArkTsConfig> arkts_config {};
-    CompilationMode compilation_mode {};
+    std::unordered_set<std::string> skipPhases {};
+    std::unordered_set<std::string> dumpBeforePhases {};
+    std::unordered_set<std::string> dumpEtsSrcBeforePhases {};
+    std::unordered_set<std::string> dumpAfterPhases {};
+    std::unordered_set<std::string> dumpEtsSrcAfterPhases {};
+    std::shared_ptr<ArkTsConfig> arktsConfig {};
+    CompilationMode compilationMode {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -160,7 +160,7 @@ public:
 
     int ErrorCode() const noexcept
     {
-        return error_code_;
+        return errorCode_;
     }
 
     const std::string &Message() const noexcept
@@ -189,19 +189,19 @@ private:
     std::string message_;
     size_t line_ {};
     size_t col_ {};
-    int error_code_ {1};
+    int errorCode_ {1};
 };
 
 class Compiler {
 public:
     explicit Compiler(ScriptExtension ext);
-    explicit Compiler(ScriptExtension ext, size_t thread_count);
-    explicit Compiler(ScriptExtension ext, size_t thread_count, std::vector<util::Plugin> &&plugins);
+    explicit Compiler(ScriptExtension ext, size_t threadCount);
+    explicit Compiler(ScriptExtension ext, size_t threadCount, std::vector<util::Plugin> &&plugins);
     ~Compiler();
     NO_COPY_SEMANTIC(Compiler);
     NO_MOVE_SEMANTIC(Compiler);
 
-    pandasm::Program *Compile(const SourceFile &input, const CompilerOptions &options, uint32_t parse_status = 0);
+    pandasm::Program *Compile(const SourceFile &input, const CompilerOptions &options, uint32_t parseStatus = 0);
 
     inline pandasm::Program *Compile(const SourceFile &input)
     {

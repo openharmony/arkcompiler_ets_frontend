@@ -25,10 +25,10 @@ class ETSAnalyzer;
 namespace panda::es2panda::ir {
 class BlockStatement : public Statement {
 public:
-    explicit BlockStatement(ArenaAllocator *allocator, ArenaVector<Statement *> &&statement_list)
+    explicit BlockStatement(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList)
         : Statement(AstNodeType::BLOCK_STATEMENT),
-          statements_(std::move(statement_list)),
-          trailing_blocks_(allocator->Adapter())
+          statements_(std::move(statementList)),
+          trailingBlocks_(allocator->Adapter())
     {
     }
 
@@ -60,9 +60,9 @@ public:
         return statements_;
     }
 
-    void AddTrailingBlock(AstNode *stmt, BlockStatement *trailing_block)
+    void AddTrailingBlock(AstNode *stmt, BlockStatement *trailingBlock)
     {
-        trailing_blocks_.emplace(stmt, trailing_block);
+        trailingBlocks_.emplace(stmt, trailingBlock);
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -91,7 +91,7 @@ public:
 private:
     varbinder::Scope *scope_ {};
     ArenaVector<Statement *> statements_;
-    ArenaUnorderedMap<AstNode *, BlockStatement *> trailing_blocks_;
+    ArenaUnorderedMap<AstNode *, BlockStatement *> trailingBlocks_;
 };
 }  // namespace panda::es2panda::ir
 

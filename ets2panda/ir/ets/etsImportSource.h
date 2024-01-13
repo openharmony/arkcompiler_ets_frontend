@@ -26,9 +26,9 @@ namespace panda::es2panda::ir {
 
 class ImportSource {
 public:
-    explicit ImportSource(ir::StringLiteral *source, ir::StringLiteral *resolved_source, Language lang, bool has_decl,
+    explicit ImportSource(ir::StringLiteral *source, ir::StringLiteral *resolvedSource, Language lang, bool hasDecl,
                           ir::StringLiteral *module = nullptr)
-        : source_(source), resolved_source_(resolved_source), lang_(lang), has_decl_(has_decl), module_(module)
+        : source_(source), resolvedSource_(resolvedSource), lang_(lang), hasDecl_(hasDecl), module_(module)
     {
     }
     NO_COPY_SEMANTIC(ImportSource);
@@ -47,12 +47,12 @@ public:
 
     const ir::StringLiteral *ResolvedSource() const
     {
-        return resolved_source_;
+        return resolvedSource_;
     }
 
     ir::StringLiteral *ResolvedSource()
     {
-        return resolved_source_;
+        return resolvedSource_;
     }
 
     const ir::StringLiteral *Module() const
@@ -72,14 +72,14 @@ public:
 
     bool HasDecl() const
     {
-        return has_decl_;
+        return hasDecl_;
     }
 
 private:
     ir::StringLiteral *source_ {};
-    ir::StringLiteral *resolved_source_ {};
+    ir::StringLiteral *resolvedSource_ {};
     es2panda::Language lang_;
-    bool has_decl_;
+    bool hasDecl_;
     ir::StringLiteral *module_ {};
 };
 

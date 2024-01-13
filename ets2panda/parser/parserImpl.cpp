@@ -60,22 +60,22 @@ ParserImpl::ParserImpl(Program *program, const CompilerOptions &options, ParserS
 {
 }
 
-std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const SourceFile &source_file)
+std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const SourceFile &sourceFile)
 {
-    program_->SetSource(source_file);
+    program_->SetSource(sourceFile);
     std::unique_ptr<lexer::Lexer> lexer = std::make_unique<lexer::Lexer>(&context_);
     lexer_ = lexer.get();
     return lexer;
 }
 
-void ParserImpl::ParseScript(const SourceFile &source_file, bool gen_std_lib)
+void ParserImpl::ParseScript(const SourceFile &sourceFile, bool genStdLib)
 {
-    auto lexer = InitLexer(source_file);
+    auto lexer = InitLexer(sourceFile);
 
-    if (source_file.is_module) {
+    if (sourceFile.isModule) {
         context_.Status() |= (ParserStatus::MODULE);
         ParseProgram(ScriptKind::MODULE);
-    } else if (gen_std_lib) {
+    } else if (genStdLib) {
         ParseProgram(ScriptKind::STDLIB);
     } else {
         ParseProgram(ScriptKind::SCRIPT);
@@ -84,17 +84,17 @@ void ParserImpl::ParseScript(const SourceFile &source_file, bool gen_std_lib)
 
 void ParserImpl::ParseProgram(ScriptKind kind)
 {
-    lexer::SourcePosition start_loc = lexer_->GetToken().Start();
+    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
     program_->SetKind(kind);
     program_->VarBinder()->InitTopScope();
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
 
-    auto *block_stmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
-    block_stmt->SetRange({start_loc, lexer_->GetToken().End()});
+    auto *blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    blockStmt->SetRange({startLoc, lexer_->GetToken().End()});
 
-    program_->SetAst(block_stmt);
+    program_->SetAst(blockStmt);
 }
 
 bool ParserImpl::InAmbientContext()
@@ -149,32 +149,32 @@ bool ParserImpl::IsModifierKind(const lexer::Token &token)
 
 ir::ModifierFlags ParserImpl::ParseModifiers()
 {
-    ir::ModifierFlags result_status = ir::ModifierFlags::NONE;
-    ir::ModifierFlags prev_status = ir::ModifierFlags::ALL;
+    ir::ModifierFlags resultStatus = ir::ModifierFlags::NONE;
+    ir::ModifierFlags prevStatus = ir::ModifierFlags::ALL;
 
     while (IsModifierKind(lexer_->GetToken())) {
-        char32_t next_cp = lexer_->Lookahead();
-        if (next_cp == lexer::LEX_CHAR_LEFT_PAREN) {
-            return result_status;
+        char32_t nextCp = lexer_->Lookahead();
+        if (nextCp == lexer::LEX_CHAR_LEFT_PAREN) {
+            return resultStatus;
         }
 
-        lexer::TokenFlags token_flags = lexer_->GetToken().Flags();
-        if ((token_flags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
+        lexer::TokenFlags tokenFlags = lexer_->GetToken().Flags();
+        if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
             ThrowSyntaxError("Keyword must not contain escaped characters");
         }
 
-        ir::ModifierFlags actual_status = ir::ModifierFlags::NONE;
-        ir::ModifierFlags next_status = ir::ModifierFlags::NONE;
+        ir::ModifierFlags actualStatus = ir::ModifierFlags::NONE;
+        ir::ModifierFlags nextStatus = ir::ModifierFlags::NONE;
 
         switch (lexer_->GetToken().KeywordType()) {
             case lexer::TokenType::KEYW_STATIC: {
-                actual_status = ir::ModifierFlags::STATIC;
-                next_status = ir::ModifierFlags::ASYNC;
+                actualStatus = ir::ModifierFlags::STATIC;
+                nextStatus = ir::ModifierFlags::ASYNC;
                 break;
             }
             case lexer::TokenType::KEYW_ASYNC: {
-                actual_status = ir::ModifierFlags::ASYNC;
-                next_status = ir::ModifierFlags::NONE;
+                actualStatus = ir::ModifierFlags::ASYNC;
+                nextStatus = ir::ModifierFlags::NONE;
                 break;
             }
             default: {
@@ -191,86 +191,86 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
         auto pos = lexer_->Save();
         lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
-        if ((prev_status & actual_status) == 0) {
+        if ((prevStatus & actualStatus) == 0) {
             lexer_->Rewind(pos);
             ThrowSyntaxError("Unexpected modifier");
         }
 
-        if ((result_status & actual_status) != 0) {
+        if ((resultStatus & actualStatus) != 0) {
             lexer_->Rewind(pos);
             ThrowSyntaxError("Duplicated modifier is not allowed");
         }
 
-        result_status |= actual_status;
-        prev_status = next_status;
+        resultStatus |= actualStatus;
+        prevStatus = nextStatus;
     }
 
-    return result_status;
+    return resultStatus;
 }
 
-void ParserImpl::CheckAccessorPair(const ArenaVector<ir::AstNode *> &properties, const ir::Expression *prop_name,
-                                   ir::MethodDefinitionKind method_kind, ir::ModifierFlags access)
+void ParserImpl::CheckAccessorPair(const ArenaVector<ir::AstNode *> &properties, const ir::Expression *propName,
+                                   ir::MethodDefinitionKind methodKind, ir::ModifierFlags access)
 {
     for (const auto &it : properties) {
-        if (!it->IsMethodDefinition() || it->AsMethodDefinition()->Kind() != method_kind) {
+        if (!it->IsMethodDefinition() || it->AsMethodDefinition()->Kind() != methodKind) {
             continue;
         }
 
         const ir::Expression *key = it->AsMethodDefinition()->Key();
 
-        if (key->Type() != prop_name->Type()) {
+        if (key->Type() != propName->Type()) {
             continue;
         }
 
-        bool key_is_same = false;
+        bool keyIsSame = false;
 
         if (key->IsIdentifier()) {
-            const util::StringView &str_name = prop_name->AsIdentifier()->Name();
-            const util::StringView &compare_name = (key->AsIdentifier()->Name());
+            const util::StringView &strName = propName->AsIdentifier()->Name();
+            const util::StringView &compareName = (key->AsIdentifier()->Name());
 
-            key_is_same = str_name == compare_name;
+            keyIsSame = strName == compareName;
         } else if (key->IsNumberLiteral()) {
-            key_is_same =
-                key->AsNumberLiteral()->Number().GetDouble() == prop_name->AsNumberLiteral()->Number().GetDouble();
+            keyIsSame =
+                key->AsNumberLiteral()->Number().GetDouble() == propName->AsNumberLiteral()->Number().GetDouble();
         } else if (key->IsStringLiteral()) {
-            key_is_same = *key->AsStringLiteral() == *prop_name->AsStringLiteral();
+            keyIsSame = *key->AsStringLiteral() == *propName->AsStringLiteral();
         }
 
-        if (!key_is_same) {
+        if (!keyIsSame) {
             continue;
         }
 
-        ir::ModifierFlags get_access = ir::ModifierFlags::NONE;
-        ir::ModifierFlags set_access = ir::ModifierFlags::NONE;
+        ir::ModifierFlags getAccess = ir::ModifierFlags::NONE;
+        ir::ModifierFlags setAccess = ir::ModifierFlags::NONE;
 
-        if (method_kind == ir::MethodDefinitionKind::GET) {
-            set_access = access;
-            get_access = GetAccessability(it->Modifiers());
+        if (methodKind == ir::MethodDefinitionKind::GET) {
+            setAccess = access;
+            getAccess = GetAccessability(it->Modifiers());
         } else {
-            get_access = access;
-            set_access = GetAccessability(it->Modifiers());
+            getAccess = access;
+            setAccess = GetAccessability(it->Modifiers());
         }
 
-        if ((set_access == ir::ModifierFlags::NONE && get_access > ir::ModifierFlags::PUBLIC) ||
-            (set_access != ir::ModifierFlags::NONE && get_access > set_access)) {
+        if ((setAccess == ir::ModifierFlags::NONE && getAccess > ir::ModifierFlags::PUBLIC) ||
+            (setAccess != ir::ModifierFlags::NONE && getAccess > setAccess)) {
             ThrowSyntaxError("A get accessor must be at least as accessible as the setter", key->Start());
         }
     }
 }
 
-void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next_cp)
+void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *nextCp)
 {
-    ConsumeClassPrivateIdentifier(desc, next_cp);
+    ConsumeClassPrivateIdentifier(desc, nextCp);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         return;
     }
 
-    auto keyword_type = lexer_->GetToken().KeywordType();
-    if ((keyword_type != lexer::TokenType::KEYW_GET && keyword_type != lexer::TokenType::KEYW_SET) ||
-        (*next_cp == lexer::LEX_CHAR_EQUALS || *next_cp == lexer::LEX_CHAR_SEMICOLON ||
-         *next_cp == lexer::LEX_CHAR_LEFT_PAREN || *next_cp == lexer::LEX_CHAR_COLON ||
-         *next_cp == lexer::LEX_CHAR_LESS_THAN)) {
+    auto keywordType = lexer_->GetToken().KeywordType();
+    if ((keywordType != lexer::TokenType::KEYW_GET && keywordType != lexer::TokenType::KEYW_SET) ||
+        (*nextCp == lexer::LEX_CHAR_EQUALS || *nextCp == lexer::LEX_CHAR_SEMICOLON ||
+         *nextCp == lexer::LEX_CHAR_LEFT_PAREN || *nextCp == lexer::LEX_CHAR_COLON ||
+         *nextCp == lexer::LEX_CHAR_LESS_THAN)) {
         return;
     }
 
@@ -280,17 +280,17 @@ void ParserImpl::ParseClassAccessor(ClassElementDescriptor *desc, char32_t *next
         ThrowSyntaxError("Keyword must not contain escaped characters");
     }
 
-    desc->method_kind =
-        keyword_type == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET : ir::MethodDefinitionKind::SET;
-    desc->method_start = lexer_->GetToken().Start();
+    desc->methodKind =
+        keywordType == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET : ir::MethodDefinitionKind::SET;
+    desc->methodStart = lexer_->GetToken().Start();
 
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-    ConsumeClassPrivateIdentifier(desc, next_cp);
+    ConsumeClassPrivateIdentifier(desc, nextCp);
 }
 
 void ParserImpl::ThrowIfPrivateIdent(ClassElementDescriptor *desc, const char *msg)
 {
-    if (desc->is_private_ident) {
+    if (desc->isPrivateIdent) {
         ThrowSyntaxError(msg);
     }
 }
@@ -299,14 +299,14 @@ void ParserImpl::ThrowErrorIfStaticConstructor([[maybe_unused]] ir::ModifierFlag
 
 void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
 {
-    if (((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 || desc->is_generator) &&
-        (desc->method_kind == ir::MethodDefinitionKind::GET || desc->method_kind == ir::MethodDefinitionKind::SET)) {
+    if (((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 || desc->isGenerator) &&
+        (desc->methodKind == ir::MethodDefinitionKind::GET || desc->methodKind == ir::MethodDefinitionKind::SET)) {
         ThrowSyntaxError("Invalid accessor");
     }
 
-    const util::StringView &prop_name_str = lexer_->GetToken().Ident();
+    const util::StringView &propNameStr = lexer_->GetToken().Ident();
 
-    if (prop_name_str.Is("constructor")) {
+    if (propNameStr.Is("constructor")) {
         if (lexer_->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN) {
             ThrowSyntaxError("Classes may not have a field named 'constructor'");
         }
@@ -315,31 +315,31 @@ void ParserImpl::ValidateClassKey(ClassElementDescriptor *desc)
 
         if ((desc->modifiers & ir::ModifierFlags::STATIC) == 0) {
             if ((desc->modifiers & ir::ModifierFlags::ASYNC) != 0 ||
-                desc->method_kind == ir::MethodDefinitionKind::GET ||
-                desc->method_kind == ir::MethodDefinitionKind::SET || desc->is_generator) {
+                desc->methodKind == ir::MethodDefinitionKind::GET ||
+                desc->methodKind == ir::MethodDefinitionKind::SET || desc->isGenerator) {
                 ThrowSyntaxError("Constructor can not be special method");
             }
 
-            desc->method_kind = ir::MethodDefinitionKind::CONSTRUCTOR;
-            desc->method_start = lexer_->GetToken().Start();
-            desc->new_status |= ParserStatus::CONSTRUCTOR_FUNCTION;
+            desc->methodKind = ir::MethodDefinitionKind::CONSTRUCTOR;
+            desc->methodStart = lexer_->GetToken().Start();
+            desc->newStatus |= ParserStatus::CONSTRUCTOR_FUNCTION;
 
-            if (desc->has_super_class) {
-                desc->new_status |= ParserStatus::ALLOW_SUPER_CALL;
+            if (desc->hasSuperClass) {
+                desc->newStatus |= ParserStatus::ALLOW_SUPER_CALL;
             }
         }
 
         ThrowErrorIfStaticConstructor(desc->modifiers);
-    } else if (prop_name_str.Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
+    } else if (propNameStr.Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC) != 0) {
         ThrowSyntaxError("Classes may not have static property named prototype");
     }
 }
 
-std::tuple<bool, bool, bool> ParserImpl::ParseComputedClassFieldOrIndexSignature(ir::Expression **prop_name)
+std::tuple<bool, bool, bool> ParserImpl::ParseComputedClassFieldOrIndexSignature(ir::Expression **propName)
 {
     lexer_->NextToken();  // eat left square bracket
 
-    *prop_name = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    *propName = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         ThrowSyntaxError("Unexpected token, expected ']'");
@@ -350,7 +350,7 @@ std::tuple<bool, bool, bool> ParserImpl::ParseComputedClassFieldOrIndexSignature
 
 ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
 {
-    ir::Expression *prop_name = nullptr;
+    ir::Expression *propName = nullptr;
     if (lexer_->GetToken().IsKeyword()) {
         lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
     }
@@ -359,9 +359,9 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
         case lexer::TokenType::LITERAL_IDENT: {
             ValidateClassKey(desc);
 
-            prop_name = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-            prop_name->SetRange(lexer_->GetToken().Loc());
-            prop_name->AsIdentifier()->SetPrivate(desc->is_private_ident);
+            propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            propName->SetRange(lexer_->GetToken().Loc());
+            propName->AsIdentifier()->SetPrivate(desc->isPrivateIdent);
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
@@ -375,29 +375,29 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
                 ThrowSyntaxError("Classes may not have a static property named 'prototype'");
             }
 
-            prop_name = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
-            prop_name->SetRange(lexer_->GetToken().Loc());
+            propName = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
+            propName->SetRange(lexer_->GetToken().Loc());
             break;
         }
         case lexer::TokenType::LITERAL_NUMBER: {
             ThrowIfPrivateIdent(desc, "Private identifier name can not be number");
 
             if ((lexer_->GetToken().Flags() & lexer::TokenFlags::NUMBER_BIGINT) != 0) {
-                prop_name = AllocNode<ir::BigIntLiteral>(lexer_->GetToken().BigInt());
+                propName = AllocNode<ir::BigIntLiteral>(lexer_->GetToken().BigInt());
             } else {
-                prop_name = AllocNode<ir::NumberLiteral>(lexer_->GetToken().GetNumber());
+                propName = AllocNode<ir::NumberLiteral>(lexer_->GetToken().GetNumber());
             }
 
-            prop_name->SetRange(lexer_->GetToken().Loc());
+            propName->SetRange(lexer_->GetToken().Loc());
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
             ThrowIfPrivateIdent(desc, "Unexpected character in private identifier");
             auto [isComputed, invalidComputedProperty, isIndexSignature] =
-                ParseComputedClassFieldOrIndexSignature(&prop_name);
-            desc->is_computed = isComputed;
-            desc->invalid_computed_property = invalidComputedProperty;
-            desc->is_index_signature = isIndexSignature;
+                ParseComputedClassFieldOrIndexSignature(&propName);
+            desc->isComputed = isComputed;
+            desc->invalidComputedProperty = invalidComputedProperty;
+            desc->isIndexSignature = isIndexSignature;
             break;
         }
         default: {
@@ -407,28 +407,28 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
 
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
-    return prop_name;
+    return propName;
 }
 
-void ParserImpl::ValidateClassMethodStart(ClassElementDescriptor *desc, [[maybe_unused]] ir::TypeNode *type_annotation)
+void ParserImpl::ValidateClassMethodStart(ClassElementDescriptor *desc, [[maybe_unused]] ir::TypeNode *typeAnnotation)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         return;
     }
-    desc->class_method = true;
+    desc->classMethod = true;
 
     if ((desc->modifiers & ir::ModifierFlags::ASYNC) != 0) {
-        desc->new_status |= ParserStatus::ASYNC_FUNCTION;
+        desc->newStatus |= ParserStatus::ASYNC_FUNCTION;
     }
 
-    if (desc->is_generator) {
-        desc->new_status |= ParserStatus::GENERATOR_FUNCTION;
+    if (desc->isGenerator) {
+        desc->newStatus |= ParserStatus::GENERATOR_FUNCTION;
     }
 }
 
 void ParserImpl::ValidateClassSetter([[maybe_unused]] ClassElementDescriptor *desc,
                                      [[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
-                                     [[maybe_unused]] ir::Expression *prop_name, ir::ScriptFunction *func)
+                                     [[maybe_unused]] ir::Expression *propName, ir::ScriptFunction *func)
 {
     if (func->Params().size() != 1) {
         ThrowSyntaxError("Setter must have exactly one formal parameter");
@@ -437,7 +437,7 @@ void ParserImpl::ValidateClassSetter([[maybe_unused]] ClassElementDescriptor *de
 
 void ParserImpl::ValidateClassGetter([[maybe_unused]] ClassElementDescriptor *desc,
                                      [[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
-                                     [[maybe_unused]] ir::Expression *prop_name, ir::ScriptFunction *func)
+                                     [[maybe_unused]] ir::Expression *propName, ir::ScriptFunction *func)
 {
     if (!func->Params().empty()) {
         ThrowSyntaxError("Getter must not have formal parameters");
@@ -446,47 +446,47 @@ void ParserImpl::ValidateClassGetter([[maybe_unused]] ClassElementDescriptor *de
 
 ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElementDescriptor *desc,
                                                    const ArenaVector<ir::AstNode *> &properties,
-                                                   ir::Expression *prop_name, lexer::SourcePosition *prop_end)
+                                                   ir::Expression *propName, lexer::SourcePosition *propEnd)
 {
-    if (desc->method_kind != ir::MethodDefinitionKind::SET &&
-        (desc->new_status & ParserStatus::CONSTRUCTOR_FUNCTION) == 0) {
-        desc->new_status |= ParserStatus::NEED_RETURN_TYPE;
+    if (desc->methodKind != ir::MethodDefinitionKind::SET &&
+        (desc->newStatus & ParserStatus::CONSTRUCTOR_FUNCTION) == 0) {
+        desc->newStatus |= ParserStatus::NEED_RETURN_TYPE;
     }
 
-    ir::ScriptFunction *func = ParseFunction(desc->new_status);
+    ir::ScriptFunction *func = ParseFunction(desc->newStatus);
 
-    auto *func_expr = AllocNode<ir::FunctionExpression>(func);
-    func_expr->SetRange(func->Range());
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    funcExpr->SetRange(func->Range());
 
-    if (desc->method_kind == ir::MethodDefinitionKind::SET) {
-        ValidateClassSetter(desc, properties, prop_name, func);
-    } else if (desc->method_kind == ir::MethodDefinitionKind::GET) {
-        ValidateClassGetter(desc, properties, prop_name, func);
+    if (desc->methodKind == ir::MethodDefinitionKind::SET) {
+        ValidateClassSetter(desc, properties, propName, func);
+    } else if (desc->methodKind == ir::MethodDefinitionKind::GET) {
+        ValidateClassGetter(desc, properties, propName, func);
     }
 
-    *prop_end = func->End();
+    *propEnd = func->End();
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-    auto *method = AllocNode<ir::MethodDefinition>(desc->method_kind, prop_name, func_expr, desc->modifiers,
-                                                   Allocator(), desc->is_computed);
-    method->SetRange(func_expr->Range());
+    auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
+                                                   desc->isComputed);
+    method->SetRange(funcExpr->Range());
 
     return method;
 }
 
 ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
-                                                 const ArenaVector<ir::AstNode *> &properties,
-                                                 ir::Expression *prop_name, ir::TypeNode *type_annotation)
+                                                 const ArenaVector<ir::AstNode *> &properties, ir::Expression *propName,
+                                                 ir::TypeNode *typeAnnotation)
 {
-    lexer::SourcePosition prop_end = prop_name->End();
+    lexer::SourcePosition propEnd = propName->End();
     ir::ClassElement *property = nullptr;
 
-    if (desc->class_method) {
+    if (desc->classMethod) {
         if ((desc->modifiers & ir::ModifierFlags::DECLARE) != 0) {
             ThrowSyntaxError("'declare modifier cannot appear on class elements of this kind.");
         }
 
-        property = ParseClassMethod(desc, properties, prop_name, &prop_end);
-        property->SetRange({desc->prop_start, prop_end});
+        property = ParseClassMethod(desc, properties, propName, &propEnd);
+        property->SetRange({desc->propStart, propEnd});
         return property;
     }
 
@@ -500,60 +500,60 @@ ir::ClassElement *ParserImpl::ParseClassProperty(ClassElementDescriptor *desc,
         }
 
         value = ParseExpression();
-        prop_end = value->End();
+        propEnd = value->End();
     }
 
-    property = AllocNode<ir::ClassProperty>(prop_name, value, type_annotation, desc->modifiers, Allocator(),
-                                            desc->is_computed);
+    property =
+        AllocNode<ir::ClassProperty>(propName, value, typeAnnotation, desc->modifiers, Allocator(), desc->isComputed);
 
-    property->SetRange({desc->prop_start, prop_end});
+    property->SetRange({desc->propStart, propEnd});
 
     return property;
 }
 
-void ParserImpl::CheckClassGeneratorMethod(ClassElementDescriptor *desc, char32_t *next_cp)
+void ParserImpl::CheckClassGeneratorMethod(ClassElementDescriptor *desc, char32_t *nextCp)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_MULTIPLY) {
         return;
     }
 
-    desc->is_generator = true;
+    desc->isGenerator = true;
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
-    *next_cp = lexer_->Lookahead();
+    *nextCp = lexer_->Lookahead();
 }
 
 void ParserImpl::ValidatePrivateIdentifier()
 {
-    size_t iter_idx = lexer_->GetToken().Start().index;
+    size_t iterIdx = lexer_->GetToken().Start().index;
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT ||
-        (lexer_->GetToken().Start().index - iter_idx > 1)) {
+        (lexer_->GetToken().Start().index - iterIdx > 1)) {
         ThrowSyntaxError("Unexpected token in private field");
     }
 }
 
-void ParserImpl::ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *next_cp)
+void ParserImpl::ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *nextCp)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_HASH_MARK) {
         return;
     }
 
-    desc->is_private_ident = true;
+    desc->isPrivateIdent = true;
     ValidatePrivateIdentifier();
-    *next_cp = lexer_->Lookahead();
+    *nextCp = lexer_->Lookahead();
 }
 
 void ParserImpl::AddPrivateElement(const ir::ClassElement *elem)
 {
-    if (!class_private_context_.AddElement(elem)) {
+    if (!classPrivateContext_.AddElement(elem)) {
         ThrowSyntaxError("Private field has already been declared");
     }
 }
 
 ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 {
-    const lexer::SourcePosition &start_pos = lexer_->GetToken().Start();
+    const lexer::SourcePosition &startPos = lexer_->GetToken().Start();
 
     lexer_->NextToken();  // eat 'static'
 
@@ -572,20 +572,20 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
                                       ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
                                       ir::ModifierFlags::STATIC, false, context_.GetLanguge());
 
-    auto *func_expr = AllocNode<ir::FunctionExpression>(func);
-    auto *static_block = AllocNode<ir::ClassStaticBlock>(func_expr, Allocator());
-    static_block->SetRange({start_pos, lexer_->GetToken().End()});
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    auto *staticBlock = AllocNode<ir::ClassStaticBlock>(funcExpr, Allocator());
+    staticBlock->SetRange({startPos, lexer_->GetToken().End()});
 
     lexer_->NextToken();  // eat '}'
 
-    return static_block;
+    return staticBlock;
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                            [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
                                            [[maybe_unused]] ir::ModifierFlags flags,
-                                           [[maybe_unused]] ir::Identifier *ident_node)
+                                           [[maybe_unused]] ir::Identifier *identNode)
 {
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
         lexer_->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
@@ -594,23 +594,23 @@ ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &pro
 
     ClassElementDescriptor desc(Allocator());
 
-    desc.method_kind = ir::MethodDefinitionKind::METHOD;
-    desc.new_status = ParserStatus::ALLOW_SUPER;
-    desc.has_super_class = (modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U;
-    desc.prop_start = lexer_->GetToken().Start();
+    desc.methodKind = ir::MethodDefinitionKind::METHOD;
+    desc.newStatus = ParserStatus::ALLOW_SUPER;
+    desc.hasSuperClass = (modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U;
+    desc.propStart = lexer_->GetToken().Start();
     desc.modifiers = ParseModifiers();
 
-    char32_t next_cp = lexer_->Lookahead();
-    CheckClassGeneratorMethod(&desc, &next_cp);
-    ParseClassAccessor(&desc, &next_cp);
+    char32_t nextCp = lexer_->Lookahead();
+    CheckClassGeneratorMethod(&desc, &nextCp);
+    ParseClassAccessor(&desc, &nextCp);
 
     if ((desc.modifiers & ir::ModifierFlags::STATIC) == 0) {
         context_.Status() |= ParserStatus::ALLOW_THIS_TYPE;
     }
 
-    ir::Expression *prop_name = ParseClassKey(&desc);
+    ir::Expression *propName = ParseClassKey(&desc);
     ValidateClassMethodStart(&desc, nullptr);
-    ir::ClassElement *property = ParseClassProperty(&desc, properties, prop_name, nullptr);
+    ir::ClassElement *property = ParseClassProperty(&desc, properties, propName, nullptr);
 
     if (property != nullptr && lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON &&
         lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
@@ -626,7 +626,7 @@ ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &pro
 
     context_.Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
 
-    if (desc.is_private_ident) {
+    if (desc.isPrivateIdent) {
         AddPrivateElement(property);
     }
 
@@ -634,22 +634,22 @@ ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &pro
 }
 
 ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionModifiers modifiers,
-                                                           const lexer::SourcePosition &start_loc)
+                                                           const lexer::SourcePosition &startLoc)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
     if ((modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U) {
-        util::StringView args_str = "args";
+        util::StringView argsStr = "args";
         params.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, Allocator(),
-                                                      AllocNode<ir::Identifier>(args_str, Allocator())));
-        ArenaVector<ir::Expression *> call_args(Allocator()->Adapter());
-        auto *super_expr = AllocNode<ir::SuperExpression>();
-        call_args.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, Allocator(),
-                                                         AllocNode<ir::Identifier>(args_str, Allocator())));
+                                                      AllocNode<ir::Identifier>(argsStr, Allocator())));
+        ArenaVector<ir::Expression *> callArgs(Allocator()->Adapter());
+        auto *superExpr = AllocNode<ir::SuperExpression>();
+        callArgs.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, Allocator(),
+                                                        AllocNode<ir::Identifier>(argsStr, Allocator())));
 
-        auto *call_expr = AllocNode<ir::CallExpression>(super_expr, std::move(call_args), nullptr, false);
-        statements.push_back(AllocNode<ir::ExpressionStatement>(call_expr));
+        auto *callExpr = AllocNode<ir::CallExpression>(superExpr, std::move(callArgs), nullptr, false);
+        statements.push_back(AllocNode<ir::ExpressionStatement>(callExpr));
     }
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
@@ -658,17 +658,17 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
                                                    ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
                                                false, context_.GetLanguge());
 
-    auto *func_expr = AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
 
     if ((modifiers & ir::ClassDefinitionModifiers::SET_CTOR_ID) != 0U) {
         func->SetIdent(key);
     }
 
-    auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, func_expr,
+    auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
                                                  ir::ModifierFlags::NONE, Allocator(), false);
 
-    ctor->SetRange({start_loc, lexer_->GetToken().End()});
+    ctor->SetRange({startLoc, lexer_->GetToken().End()});
 
     return ctor;
 }
@@ -676,13 +676,13 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
 void ParserImpl::CreateImplicitConstructor(ir::MethodDefinition *&ctor,
                                            [[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
                                            ir::ClassDefinitionModifiers modifiers,
-                                           const lexer::SourcePosition &start_loc)
+                                           const lexer::SourcePosition &startLoc)
 {
     if (ctor != nullptr) {
         return;
     }
 
-    ctor = BuildImplicitConstructor(modifiers, start_loc);
+    ctor = BuildImplicitConstructor(modifiers, startLoc);
 }
 
 ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifiers)
@@ -691,10 +691,10 @@ ir::Identifier *ParserImpl::ParseClassIdent(ir::ClassDefinitionModifiers modifie
         return ExpectIdentifier();
     }
 
-    auto id_required =
+    auto idRequired =
         static_cast<ir::ClassDefinitionModifiers>(modifiers & ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED);
 
-    if (id_required == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
+    if (idRequired == ir::ClassDefinitionModifiers::DECLARATION_ID_REQUIRED) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }
 
@@ -741,13 +741,13 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
 {
     lexer_->NextToken();
 
-    ir::Identifier *ident_node = ParseClassIdent(modifiers);
+    ir::Identifier *identNode = ParseClassIdent(modifiers);
 
-    if (ident_node == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
+    if (identNode == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }
 
-    varbinder::PrivateBinding private_binding(Allocator(), class_id_++);
+    varbinder::PrivateBinding privateBinding(Allocator(), classId_++);
 
     // Parse SuperClass
     auto [superClass, superTypeParams] = ParseSuperClass();
@@ -761,27 +761,27 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags);
 
     ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
-    auto *class_definition = AllocNode<ir::ClassDefinition>(
-        private_binding.View(), ident_node, nullptr, superTypeParams, std::move(implements), ctor, superClass,
+    auto *classDefinition = AllocNode<ir::ClassDefinition>(
+        privateBinding.View(), identNode, nullptr, superTypeParams, std::move(implements), ctor, superClass,
         std::move(properties), modifiers, flags, GetContext().GetLanguge());
 
-    class_definition->SetRange(bodyRange);
+    classDefinition->SetRange(bodyRange);
 
-    return class_definition;
+    return classDefinition;
 }
 
 ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
-                                                 ir::Identifier *ident_node)
+                                                 ir::Identifier *identNode)
 {
-    auto saved_ctx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&context_);
+    auto savedCtx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&context_);
 
-    lexer::SourcePosition start_loc = lexer_->GetToken().Start();
+    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
 
     ir::MethodDefinition *ctor = nullptr;
     ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
 
-    SavedClassPrivateContext class_context(this);
+    SavedClassPrivateContext classContext(this);
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -789,7 +789,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
             continue;
         }
 
-        ir::AstNode *property = ParseClassElement(properties, modifiers, flags, ident_node);
+        ir::AstNode *property = ParseClassElement(properties, modifiers, flags, identNode);
 
         if (CheckClassElement(property, ctor, properties)) {
             continue;
@@ -798,11 +798,11 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
         properties.push_back(property);
     }
 
-    lexer::SourcePosition end_loc = lexer_->GetToken().End();
-    CreateImplicitConstructor(ctor, properties, modifiers, end_loc);
+    lexer::SourcePosition endLoc = lexer_->GetToken().End();
+    CreateImplicitConstructor(ctor, properties, modifiers, endLoc);
     lexer_->NextToken();
 
-    return {ctor, std::move(properties), lexer::SourceRange {start_loc, end_loc}};
+    return {ctor, std::move(properties), lexer::SourceRange {startLoc, endLoc}};
 }
 
 void ParserImpl::ValidateRestParameter(ir::Expression *param)
@@ -845,14 +845,14 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
     return params;
 }
 
-ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringView class_name)
+ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringView className)
 {
-    ThrowSyntaxError({"Unexpected token: ", class_name.Utf8()});
+    ThrowSyntaxError({"Unexpected token: ", className.Utf8()});
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
-    [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus new_status,
-    [[maybe_unused]] ParserStatus context_status)
+    [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus newStatus,
+    [[maybe_unused]] ParserStatus contextStatus)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Unexpected token, expected '{'");
@@ -863,70 +863,70 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
     return {true, body, body->End(), false};
 }
 
-FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name)
+FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *className)
 {
-    ir::TSTypeParameterDeclaration *type_param_decl = ParseFunctionTypeParameters();
+    ir::TSTypeParameterDeclaration *typeParamDecl = ParseFunctionTypeParameters();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         ThrowSyntaxError("Unexpected token, expected '('");
     }
 
-    FunctionParameterContext func_param_context(&context_);
+    FunctionParameterContext funcParamContext(&context_);
 
-    ir::Expression *parameter_this = nullptr;
-    if (class_name != nullptr) {
-        const auto saved_pos = Lexer()->Save();
+    ir::Expression *parameterThis = nullptr;
+    if (className != nullptr) {
+        const auto savedPos = Lexer()->Save();
         lexer_->NextToken();  // eat '('
-        parameter_this = CreateParameterThis(class_name->Name());
-        Lexer()->Rewind(saved_pos);
+        parameterThis = CreateParameterThis(className->Name());
+        Lexer()->Rewind(savedPos);
     }
 
     auto params = ParseFunctionParams();
 
-    if (class_name != nullptr) {
-        params.emplace(params.begin(), parameter_this);
+    if (className != nullptr) {
+        params.emplace(params.begin(), parameterThis);
     }
 
-    ir::TypeNode *return_type_annotation = ParseFunctionReturnType(status);
-    ir::ScriptFunctionFlags throw_marker = ParseFunctionThrowMarker(true);
+    ir::TypeNode *returnTypeAnnotation = ParseFunctionReturnType(status);
+    ir::ScriptFunctionFlags throwMarker = ParseFunctionThrowMarker(true);
 
-    auto res = ir::FunctionSignature(type_param_decl, std::move(params), return_type_annotation);
-    return {std::move(res), throw_marker};
+    auto res = ir::FunctionSignature(typeParamDecl, std::move(params), returnTypeAnnotation);
+    return {std::move(res), throwMarker};
 }
 
-ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus new_status)
+ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
 {
-    FunctionContext function_context(this, new_status | ParserStatus::FUNCTION | ParserStatus::ALLOW_NEW_TARGET);
+    FunctionContext functionContext(this, newStatus | ParserStatus::FUNCTION | ParserStatus::ALLOW_NEW_TARGET);
 
-    bool is_declare = InAmbientContext();
+    bool isDeclare = InAmbientContext();
 
-    lexer::SourcePosition start_loc = lexer_->GetToken().Start();
+    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
-    auto [signature, throw_marker] = ParseFunctionSignature(new_status);
+    auto [signature, throw_marker] = ParseFunctionSignature(newStatus);
 
-    auto [letDeclare, body, endLoc, isOverload] = ParseFunctionBody(signature.Params(), new_status, context_.Status());
+    auto [letDeclare, body, endLoc, isOverload] = ParseFunctionBody(signature.Params(), newStatus, context_.Status());
 
     if (isOverload) {
-        function_context.AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+        functionContext.AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     }
 
-    function_context.AddFlag(throw_marker);
-    auto *func_node = AllocNode<ir::ScriptFunction>(std::move(signature), body, function_context.Flags(),
-                                                    is_declare && letDeclare, context_.GetLanguge());
-    func_node->SetRange({start_loc, endLoc});
+    functionContext.AddFlag(throw_marker);
+    auto *funcNode = AllocNode<ir::ScriptFunction>(std::move(signature), body, functionContext.Flags(),
+                                                   isDeclare && letDeclare, context_.GetLanguge());
+    funcNode->SetRange({startLoc, endLoc});
 
-    return func_node;
+    return funcNode;
 }
 
 ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD);
-    lexer::SourcePosition start_location = lexer_->GetToken().Start();
-    bool in_pattern = (flags & ExpressionParseFlags::MUST_BE_PATTERN) != 0;
+    lexer::SourcePosition startLocation = lexer_->GetToken().Start();
+    bool inPattern = (flags & ExpressionParseFlags::MUST_BE_PATTERN) != 0;
     lexer_->NextToken();
 
     ir::Expression *argument {};
-    if (in_pattern) {
+    if (inPattern) {
         argument = ParsePatternElement(ExpressionParseFlags::IN_REST);
         if ((flags & ExpressionParseFlags::OBJECT_PATTERN) != 0 && !argument->IsIdentifier()) {
             ThrowSyntaxError("RestParameter must be followed by an identifier in declaration contexts");
@@ -935,14 +935,14 @@ ir::SpreadElement *ParserImpl::ParseSpreadElement(ExpressionParseFlags flags)
         argument = ParseExpression(flags);
     }
 
-    if (in_pattern && argument->IsAssignmentExpression()) {
+    if (inPattern && argument->IsAssignmentExpression()) {
         ThrowSyntaxError("RestParameter does not support an initializer");
     }
 
-    auto node_type = in_pattern ? ir::AstNodeType::REST_ELEMENT : ir::AstNodeType::SPREAD_ELEMENT;
-    auto *spread_element_node = AllocNode<ir::SpreadElement>(node_type, Allocator(), argument);
-    spread_element_node->SetRange({start_location, argument->End()});
-    return spread_element_node;
+    auto nodeType = inPattern ? ir::AstNodeType::REST_ELEMENT : ir::AstNodeType::SPREAD_ELEMENT;
+    auto *spreadElementNode = AllocNode<ir::SpreadElement>(nodeType, Allocator(), argument);
+    spreadElementNode->SetRange({startLocation, argument->End()});
+    return spreadElementNode;
 }
 
 void ParserImpl::CheckRestrictedBinding()
@@ -951,9 +951,9 @@ void ParserImpl::CheckRestrictedBinding()
     CheckRestrictedBinding(lexer_->GetToken().KeywordType());
 }
 
-void ParserImpl::CheckRestrictedBinding(lexer::TokenType keyword_type)
+void ParserImpl::CheckRestrictedBinding(lexer::TokenType keywordType)
 {
-    if (keyword_type == lexer::TokenType::KEYW_ARGUMENTS || keyword_type == lexer::TokenType::KEYW_EVAL) {
+    if (keywordType == lexer::TokenType::KEYW_ARGUMENTS || keywordType == lexer::TokenType::KEYW_EVAL) {
         ThrowSyntaxError(
             "'eval' or 'arguments' can't be defined or assigned to "
             "in strict mode code",
@@ -1072,13 +1072,13 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
                      lexer_->GetToken().Start());
 }
 
-ir::Identifier *ParserImpl::ExpectIdentifier(bool is_reference, bool is_user_defined_type)
+ir::Identifier *ParserImpl::ExpectIdentifier(bool isReference, bool isUserDefinedType)
 {
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
         return ParseIdentifierFormatPlaceholder();
     }
 
-    if (lexer_->GetToken().IsDefinableTypeName() && is_user_defined_type) {
+    if (lexer_->GetToken().IsDefinableTypeName() && isUserDefinedType) {
         ThrowSyntaxError("Cannot be used as user-defined type.");
     }
 
@@ -1087,7 +1087,7 @@ ir::Identifier *ParserImpl::ExpectIdentifier(bool is_reference, bool is_user_def
     }
 
     auto *ident = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-    ident->SetReference(is_reference);
+    ident->SetReference(isReference);
     ident->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -1095,30 +1095,30 @@ ir::Identifier *ParserImpl::ExpectIdentifier(bool is_reference, bool is_user_def
     return ident;
 }
 
-void ParserImpl::ExpectToken(lexer::TokenType token_type, bool consume_token)
+void ParserImpl::ExpectToken(lexer::TokenType tokenType, bool consumeToken)
 {
-    if (lexer_->GetToken().Type() == token_type) {
-        if (consume_token) {
+    if (lexer_->GetToken().Type() == tokenType) {
+        if (consumeToken) {
             lexer_->NextToken();
         }
         return;
     }
-    ThrowExpectedToken(token_type);
+    ThrowExpectedToken(tokenType);
 }
 
-void ParserImpl::ThrowUnexpectedToken(lexer::TokenType const token_type) const
+void ParserImpl::ThrowUnexpectedToken(lexer::TokenType const tokenType) const
 {
-    ThrowSyntaxError("Unexpected token: '"s + TokenToString(token_type) + "'."s);
+    ThrowSyntaxError("Unexpected token: '"s + TokenToString(tokenType) + "'."s);
 }
 
-void ParserImpl::ThrowExpectedToken(lexer::TokenType const token_type) const
+void ParserImpl::ThrowExpectedToken(lexer::TokenType const tokenType) const
 {
-    ThrowSyntaxError("Unexpected token, expected: '"s + TokenToString(token_type) + "'."s);
+    ThrowSyntaxError("Unexpected token, expected: '"s + TokenToString(tokenType) + "'."s);
 }
 
-void ParserImpl::ThrowSyntaxError(std::string_view const error_message) const
+void ParserImpl::ThrowSyntaxError(std::string_view const errorMessage) const
 {
-    ThrowSyntaxError(error_message, lexer_->GetToken().Start());
+    ThrowSyntaxError(errorMessage, lexer_->GetToken().Start());
 }
 
 void ParserImpl::ThrowSyntaxError(std::initializer_list<std::string_view> list) const
@@ -1139,12 +1139,12 @@ void ParserImpl::ThrowSyntaxError(std::initializer_list<std::string_view> list, 
     ThrowSyntaxError(std::string_view {err}, pos);
 }
 
-void ParserImpl::ThrowSyntaxError(std::string_view error_message, const lexer::SourcePosition &pos) const
+void ParserImpl::ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), error_message, loc.line, loc.col};
+    throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
 }
 
 void ParserImpl::ThrowAllocationError(std::string_view message) const

@@ -23,58 +23,58 @@
 #include "generated/signatures.h"
 
 namespace panda::es2panda::varbinder {
-BoundContext::BoundContext(RecordTable *record_table, ir::ClassDefinition *class_def)
-    : prev_(record_table->bound_ctx_), record_table_(record_table), saved_record_(record_table->record_)
+BoundContext::BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef)
+    : prev_(recordTable->boundCtx_), recordTable_(recordTable), savedRecord_(recordTable->record_)
 {
-    if (class_def == nullptr || !record_table_->class_definitions_.insert(class_def).second) {
+    if (classDef == nullptr || !recordTable_->classDefinitions_.insert(classDef).second) {
         return;
     }
 
-    record_table_->bound_ctx_ = this;
-    record_table_->record_ = class_def;
-    record_ident_ = class_def->Ident();
-    class_def->SetInternalName(FormRecordName());
+    recordTable_->boundCtx_ = this;
+    recordTable_->record_ = classDef;
+    recordIdent_ = classDef->Ident();
+    classDef->SetInternalName(FormRecordName());
 }
 
-BoundContext::BoundContext(RecordTable *record_table, ir::TSInterfaceDeclaration *interface_decl)
-    : prev_(record_table->bound_ctx_), record_table_(record_table), saved_record_(record_table->record_)
+BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl)
+    : prev_(recordTable->boundCtx_), recordTable_(recordTable), savedRecord_(recordTable->record_)
 {
-    if (interface_decl == nullptr || !record_table_->interface_declarations_.insert(interface_decl).second) {
+    if (interfaceDecl == nullptr || !recordTable_->interfaceDeclarations_.insert(interfaceDecl).second) {
         return;
     }
 
-    record_table_->bound_ctx_ = this;
-    record_table_->record_ = interface_decl;
-    record_ident_ = interface_decl->Id();
-    interface_decl->SetInternalName(FormRecordName());
+    recordTable_->boundCtx_ = this;
+    recordTable_->record_ = interfaceDecl;
+    recordIdent_ = interfaceDecl->Id();
+    interfaceDecl->SetInternalName(FormRecordName());
 }
 
 BoundContext::~BoundContext()
 {
-    record_table_->record_ = saved_record_;
-    record_table_->bound_ctx_ = prev_;
+    recordTable_->record_ = savedRecord_;
+    recordTable_->boundCtx_ = prev_;
 }
 
 util::StringView BoundContext::FormRecordName() const
 {
-    const auto &package_name = record_table_->program_->GetPackageName();
+    const auto &packageName = recordTable_->program_->GetPackageName();
     if (prev_ == nullptr) {
-        if (package_name.Empty()) {
-            return record_ident_->Name();
+        if (packageName.Empty()) {
+            return recordIdent_->Name();
         }
 
-        util::UString record_name(record_table_->program_->Allocator());
-        record_name.Append(package_name);
-        record_name.Append(compiler::Signatures::METHOD_SEPARATOR);
-        record_name.Append(record_ident_->Name());
-        return record_name.View();
+        util::UString recordName(recordTable_->program_->Allocator());
+        recordName.Append(packageName);
+        recordName.Append(compiler::Signatures::METHOD_SEPARATOR);
+        recordName.Append(recordIdent_->Name());
+        return recordName.View();
     }
 
-    util::UString record_name(record_table_->program_->Allocator());
-    record_name.Append(prev_->FormRecordName());
-    record_name.Append(compiler::Signatures::METHOD_SEPARATOR);
-    record_name.Append(record_ident_->Name());
-    return record_name.View();
+    util::UString recordName(recordTable_->program_->Allocator());
+    recordName.Append(prev_->FormRecordName());
+    recordName.Append(compiler::Signatures::METHOD_SEPARATOR);
+    recordName.Append(recordIdent_->Name());
+    return recordName.View();
 }
 
 util::StringView RecordTable::RecordName() const

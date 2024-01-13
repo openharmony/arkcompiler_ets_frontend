@@ -97,12 +97,12 @@ public:
 
     [[nodiscard]] varbinder::LocalVariable *PropVar() noexcept
     {
-        return prop_var_;
+        return propVar_;
     }
 
     [[nodiscard]] const varbinder::LocalVariable *PropVar() const noexcept
     {
-        return prop_var_;
+        return propVar_;
     }
 
     [[nodiscard]] bool IsComputed() const noexcept
@@ -132,42 +132,42 @@ public:
 
     [[nodiscard]] checker::ETSObjectType *ObjType() const noexcept
     {
-        return obj_type_;
+        return objType_;
     }
 
-    void SetPropVar(varbinder::LocalVariable *prop_var) noexcept
+    void SetPropVar(varbinder::LocalVariable *propVar) noexcept
     {
-        prop_var_ = prop_var;
+        propVar_ = propVar;
     }
 
-    void SetObjectType(checker::ETSObjectType *obj_type) noexcept
+    void SetObjectType(checker::ETSObjectType *objType) noexcept
     {
-        obj_type_ = obj_type;
+        objType_ = objType;
     }
 
     [[nodiscard]] bool IsIgnoreBox() const noexcept
     {
-        return ignore_box_;
+        return ignoreBox_;
     }
 
     void SetIgnoreBox() noexcept
     {
-        ignore_box_ = true;
+        ignoreBox_ = true;
     }
 
     [[nodiscard]] checker::Type *UncheckedType() const noexcept
     {
-        return unchecked_type_;
+        return uncheckedType_;
     }
 
     checker::Type *GetTupleConvertedType() const noexcept
     {
-        return tuple_converted_type_;
+        return tupleConvertedType_;
     }
 
-    void SetTupleConvertedType(checker::Type *conv_type) noexcept
+    void SetTupleConvertedType(checker::Type *convType) noexcept
     {
-        tuple_converted_type_ = conv_type;
+        tupleConvertedType_ = convType;
     }
 
     [[nodiscard]] bool IsPrivateReference() const noexcept;
@@ -182,7 +182,7 @@ public:
     bool CompileComputed(compiler::ETSGen *etsg) const;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
-    void CompileToReg(compiler::PandaGen *pg, compiler::VReg obj_reg) const;
+    void CompileToReg(compiler::PandaGen *pg, compiler::VReg objReg) const;
     void CompileToRegs(compiler::PandaGen *pg, compiler::VReg object, compiler::VReg property) const;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
@@ -197,10 +197,10 @@ protected:
     {
         kind_ = other.kind_;
         computed_ = other.computed_;
-        ignore_box_ = other.ignore_box_;
-        prop_var_ = other.prop_var_;
+        ignoreBox_ = other.ignoreBox_;
+        propVar_ = other.propVar_;
         // Note! Probably, we need to do 'Instantiate(...)' but we haven't access to 'Relation()' here...
-        obj_type_ = other.obj_type_;
+        objType_ = other.objType_;
     }
 
 private:
@@ -209,12 +209,12 @@ private:
     std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
 
     checker::Type *AdjustType(checker::ETSChecker *checker, checker::Type *type);
-    checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *base_type);
-    checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type);
+    checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *baseType);
+    checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType);
 
     void CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
-    checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *base_type);
+    checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType);
 
     void LoadRhs(compiler::PandaGen *pg) const;
 
@@ -222,11 +222,11 @@ private:
     Expression *property_ = nullptr;
     MemberExpressionKind kind_;
     bool computed_;
-    bool ignore_box_ {false};
-    checker::Type *unchecked_type_ {};
-    varbinder::LocalVariable *prop_var_ {};
-    checker::ETSObjectType *obj_type_ {};
-    checker::Type *tuple_converted_type_ {};
+    bool ignoreBox_ {false};
+    checker::Type *uncheckedType_ {};
+    varbinder::LocalVariable *propVar_ {};
+    checker::ETSObjectType *objType_ {};
+    checker::Type *tupleConvertedType_ {};
 };
 }  // namespace panda::es2panda::ir
 

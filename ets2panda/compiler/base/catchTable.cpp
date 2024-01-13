@@ -23,8 +23,8 @@ TryLabelSet::TryLabelSet(CodeGen *cg)
 {
 }
 
-TryLabelSet::TryLabelSet(CodeGen *cg, LabelPair try_label_pair)
-    : try_(try_label_pair), catch_(cg->AllocLabel(), cg->AllocLabel())
+TryLabelSet::TryLabelSet(CodeGen *cg, LabelPair tryLabelPair)
+    : try_(tryLabelPair), catch_(cg->AllocLabel(), cg->AllocLabel())
 {
 }
 }  // namespace panda::es2panda::compiler

@@ -59,7 +59,7 @@ void JSCompiler::Compile(const ir::CatchClause *st) const
 
 static compiler::VReg CompileHeritageClause(compiler::PandaGen *pg, const ir::ClassDefinition *node)
 {
-    compiler::VReg base_reg = pg->AllocReg();
+    compiler::VReg baseReg = pg->AllocReg();
 
     if (node->Super() != nullptr) {
         node->Super()->Compile(pg);
@@ -67,8 +67,8 @@ static compiler::VReg CompileHeritageClause(compiler::PandaGen *pg, const ir::Cl
         pg->LoadConst(node, compiler::Constant::JS_HOLE);
     }
 
-    pg->StoreAccumulator(node, base_reg);
-    return base_reg;
+    pg->StoreAccumulator(node, baseReg);
+    return baseReg;
 }
 
 // NOLINTNEXTLINE(google-runtime-references)
@@ -76,11 +76,11 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
     compiler::PandaGen *pg, util::BitSet &compiled, const ArenaVector<ir::AstNode *> &properties)
 {
     compiler::LiteralBuffer buf {};
-    compiler::LiteralBuffer private_buf {};
-    compiler::LiteralBuffer static_buf {};
-    bool seen_computed = false;
-    std::unordered_map<util::StringView, size_t> prop_name_map;
-    std::unordered_map<util::StringView, size_t> static_prop_name_map;
+    compiler::LiteralBuffer privateBuf {};
+    compiler::LiteralBuffer staticBuf {};
+    bool seenComputed = false;
+    std::unordered_map<util::StringView, size_t> propNameMap;
+    std::unordered_map<util::StringView, size_t> staticPropNameMap;
 
     for (size_t i = 0; i < properties.size(); i++) {
         const ir::ClassElement *prop = properties[i]->AsClassElement();
@@ -90,33 +90,33 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
         }
 
         if (prop->IsClassProperty()) {
-            bool is_static = prop->IsStatic();
+            bool isStatic = prop->IsStatic();
             if (prop->IsPrivateElement()) {
-                private_buf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(is_static)));
-                private_buf.emplace_back(prop->Id()->Name());
+                privateBuf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(isStatic)));
+                privateBuf.emplace_back(prop->Id()->Name());
                 continue;
             }
             continue;
         }
 
         ASSERT(prop->IsMethodDefinition());
-        const ir::MethodDefinition *prop_method = prop->AsMethodDefinition();
+        const ir::MethodDefinition *propMethod = prop->AsMethodDefinition();
 
-        if (!util::Helpers::IsConstantPropertyKey(prop_method->Key(), prop_method->IsComputed()) ||
-            (prop_method->IsComputed() && util::Helpers::IsSpecialPropertyKey(prop_method->Key()))) {
-            seen_computed = true;
+        if (!util::Helpers::IsConstantPropertyKey(propMethod->Key(), propMethod->IsComputed()) ||
+            (propMethod->IsComputed() && util::Helpers::IsSpecialPropertyKey(propMethod->Key()))) {
+            seenComputed = true;
             continue;
         }
 
         util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
-        compiler::LiteralBuffer &literal_buf = prop->IsStatic() ? static_buf : buf;
-        auto &name_map = prop->IsStatic() ? static_prop_name_map : prop_name_map;
+        compiler::LiteralBuffer &literalBuf = prop->IsStatic() ? staticBuf : buf;
+        auto &nameMap = prop->IsStatic() ? staticPropNameMap : propNameMap;
 
         if (prop->IsPrivateElement()) {
-            private_buf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(prop_method->IsStatic())));
-            private_buf.emplace_back(name);
+            privateBuf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(propMethod->IsStatic())));
+            privateBuf.emplace_back(name);
 
-            const ir::ScriptFunction *func = prop_method->Value()->AsFunctionExpression()->Function();
+            const ir::ScriptFunction *func = propMethod->Value()->AsFunctionExpression()->Function();
 
             compiler::LiteralTag tag = compiler::LiteralTag::METHOD;
             if (func->IsAsyncFunc()) {
@@ -129,32 +129,32 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
                 tag = compiler::LiteralTag::GENERATOR_METHOD;
             }
 
-            private_buf.emplace_back(tag, func->Scope()->InternalName());
+            privateBuf.emplace_back(tag, func->Scope()->InternalName());
             compiled.Set(i);
             continue;
         }
 
-        size_t buffer_pos = literal_buf.size();
-        auto res = name_map.insert({name, buffer_pos});
+        size_t bufferPos = literalBuf.size();
+        auto res = nameMap.insert({name, bufferPos});
         if (res.second) {
-            if (seen_computed) {
+            if (seenComputed) {
                 break;
             }
 
-            literal_buf.emplace_back(name);
-            literal_buf.emplace_back();
+            literalBuf.emplace_back(name);
+            literalBuf.emplace_back();
         } else {
-            buffer_pos = res.first->second;
+            bufferPos = res.first->second;
         }
 
         compiler::Literal value {};
 
-        switch (prop_method->Kind()) {
+        switch (propMethod->Kind()) {
             case ir::MethodDefinitionKind::METHOD: {
-                const ir::FunctionExpression *func = prop_method->Value()->AsFunctionExpression();
-                const util::StringView &internal_name = func->Function()->Scope()->InternalName();
+                const ir::FunctionExpression *func = propMethod->Value()->AsFunctionExpression();
+                const util::StringView &internalName = func->Function()->Scope()->InternalName();
 
-                value = compiler::Literal(compiler::LiteralTag::METHOD, internal_name);
+                value = compiler::Literal(compiler::LiteralTag::METHOD, internalName);
                 compiled.Set(i);
                 break;
             }
@@ -168,30 +168,30 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
             }
         }
 
-        literal_buf[buffer_pos + 1] = std::move(value);
+        literalBuf[bufferPos + 1] = std::move(value);
     }
 
-    uint32_t lit_pairs = buf.size() / 2;
+    uint32_t litPairs = buf.size() / 2;
 
     /* Static items are stored at the end of the buffer */
-    buf.insert(buf.end(), static_buf.begin(), static_buf.end());
+    buf.insert(buf.end(), staticBuf.begin(), staticBuf.end());
 
     /* The last literal item represents the offset of the first static property. The regular property literal count
      * is divided by 2 as key/value pairs count as one. */
-    buf.emplace_back(lit_pairs);
+    buf.emplace_back(litPairs);
 
-    return {pg->AddLiteralBuffer(std::move(buf)), private_buf};
+    return {pg->AddLiteralBuffer(std::move(buf)), privateBuf};
 }
 
-static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg class_reg,
-                                           const std::vector<compiler::VReg> &static_computed_field_keys,
+static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
+                                           const std::vector<compiler::VReg> &staticComputedFieldKeys,
                                            const ir::ClassDefinition *node)
 {
     const auto &properties = node->Body();
-    auto iter = static_computed_field_keys.begin();
+    auto iter = staticComputedFieldKeys.begin();
 
     if (node->HasPrivateMethod()) {
-        pg->ClassPrivateMethodOrAccessorAdd(node, class_reg, class_reg);
+        pg->ClassPrivateMethodOrAccessorAdd(node, classReg, classReg);
     }
 
     for (const auto *it : properties) {
@@ -200,15 +200,15 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
         if (it->IsClassStaticBlock()) {
             const auto *func = it->AsClassStaticBlock()->Value()->AsFunctionExpression()->Function();
 
-            compiler::VReg func_reg = pg->AllocReg();
-            compiler::VReg this_reg = pg->AllocReg();
+            compiler::VReg funcReg = pg->AllocReg();
+            compiler::VReg thisReg = pg->AllocReg();
 
-            pg->LoadAccumulator(it, class_reg);
-            pg->StoreAccumulator(it, this_reg);
+            pg->LoadAccumulator(it, classReg);
+            pg->StoreAccumulator(it, thisReg);
             pg->DefineMethod(it, func->Scope()->InternalName());
-            pg->StoreAccumulator(it, func_reg);
+            pg->StoreAccumulator(it, funcReg);
 
-            pg->Call0This(node, func_reg, this_reg);
+            pg->Call0This(node, funcReg, thisReg);
             continue;
         }
 
@@ -223,13 +223,13 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
             continue;
         }
 
-        compiler::VReg key_reg {};
+        compiler::VReg keyReg {};
 
         if (prop->IsComputed()) {
-            ASSERT(iter != static_computed_field_keys.end());
-            key_reg = *iter++;
+            ASSERT(iter != staticComputedFieldKeys.end());
+            keyReg = *iter++;
         } else if (!prop->IsPrivateElement()) {
-            key_reg = pg->LoadPropertyKey(prop->Key(), false);
+            keyReg = pg->LoadPropertyKey(prop->Key(), false);
         }
 
         if (prop->Value() == nullptr) {
@@ -240,30 +240,30 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
         }
 
         if (prop->IsPrivateElement()) {
-            pg->ClassPrivateFieldAdd(prop, class_reg, class_reg, prop->Id()->Name());
+            pg->ClassPrivateFieldAdd(prop, classReg, classReg, prop->Id()->Name());
             continue;
         }
 
-        pg->ClassFieldAdd(prop, class_reg, key_reg);
+        pg->ClassFieldAdd(prop, classReg, keyReg);
     }
 }
 
-static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled, compiler::VReg class_reg,
+static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled, compiler::VReg classReg,
                                      const ir::ClassDefinition *node)
 {
     const auto &properties = node->Body();
-    std::vector<compiler::VReg> static_computed_field_keys;
-    compiler::VReg proto_reg = pg->AllocReg();
-    compiler::VReg computed_instance_fields_array {};
-    uint32_t computed_instance_fields_index = 0;
+    std::vector<compiler::VReg> staticComputedFieldKeys;
+    compiler::VReg protoReg = pg->AllocReg();
+    compiler::VReg computedInstanceFieldsArray {};
+    uint32_t computedInstanceFieldsIndex = 0;
 
     pg->LoadObjByName(node, "prototype");
-    pg->StoreAccumulator(node, proto_reg);
+    pg->StoreAccumulator(node, protoReg);
 
     if (node->HasComputedInstanceField()) {
         pg->CreateEmptyArray(node);
-        computed_instance_fields_array = pg->AllocReg();
-        pg->StoreAccumulator(node, computed_instance_fields_array);
+        computedInstanceFieldsArray = pg->AllocReg();
+        pg->StoreAccumulator(node, computedInstanceFieldsArray);
     }
 
     for (size_t i = 0; i < properties.size(); i++) {
@@ -277,7 +277,7 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
 
         if (properties[i]->IsMethodDefinition()) {
             const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
-            compiler::VReg dest = prop->IsStatic() ? class_reg : proto_reg;
+            compiler::VReg dest = prop->IsStatic() ? classReg : protoReg;
             compiler::RegScope rs(pg);
 
             switch (prop->Kind()) {
@@ -293,7 +293,7 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
                 }
                 case ir::MethodDefinitionKind::GET:
                 case ir::MethodDefinitionKind::SET: {
-                    compiler::VReg key_reg = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+                    compiler::VReg keyReg = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
 
                     compiler::VReg undef = pg->AllocReg();
                     pg->LoadConst(node, compiler::Constant::JS_UNDEFINED);
@@ -314,7 +314,7 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
                         setter = accessor;
                     }
 
-                    pg->DefineGetterSetterByValue(node, dest, key_reg, getter, setter, prop->IsComputed());
+                    pg->DefineGetterSetterByValue(node, dest, keyReg, getter, setter, prop->IsComputed());
                     break;
                 }
                 default: {
@@ -333,20 +333,20 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
         }
 
         if (prop->IsStatic()) {
-            compiler::VReg key_reg = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
-            static_computed_field_keys.push_back(key_reg);
+            compiler::VReg keyReg = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+            staticComputedFieldKeys.push_back(keyReg);
             continue;
         }
 
         pg->LoadPropertyKeyAcc(prop->Key(), prop->IsComputed());
-        pg->StOwnByIndex(node, computed_instance_fields_array, computed_instance_fields_index++);
+        pg->StOwnByIndex(node, computedInstanceFieldsArray, computedInstanceFieldsIndex++);
     }
 
-    if (computed_instance_fields_index != 0) {
-        pg->SetClassComputedFields(node, class_reg, computed_instance_fields_array);
+    if (computedInstanceFieldsIndex != 0) {
+        pg->SetClassComputedFields(node, classReg, computedInstanceFieldsArray);
     }
 
-    CompileStaticFieldInitializers(pg, class_reg, static_computed_field_keys, node);
+    CompileStaticFieldInitializers(pg, classReg, staticComputedFieldKeys, node);
 }
 
 static void InitializeClassName(compiler::PandaGen *pg, const ir::ClassDefinition *node)
@@ -363,19 +363,19 @@ void JSCompiler::Compile(const ir::ClassDefinition *node) const
 {
     PandaGen *pg = GetPandaGen();
     compiler::RegScope rs(pg);
-    compiler::VReg class_reg = pg->AllocReg();
+    compiler::VReg classReg = pg->AllocReg();
     compiler::VReg lexenv = pg->LexEnv();
 
     compiler::LocalRegScope lrs(pg, node->Scope());
 
-    compiler::VReg base_reg = CompileHeritageClause(pg, node);
-    util::StringView ctor_id = node->Ctor()->Function()->Scope()->InternalName();
+    compiler::VReg baseReg = CompileHeritageClause(pg, node);
+    util::StringView ctorId = node->Ctor()->Function()->Scope()->InternalName();
     util::BitSet compiled(node->Body().size());
 
     auto [bufIdx, privateBuf] = CreateClassStaticProperties(pg, compiled, node->Body());
 
-    pg->DefineClassWithBuffer(node, ctor_id, bufIdx, lexenv, base_reg);
-    pg->StoreAccumulator(node, class_reg);
+    pg->DefineClassWithBuffer(node, ctorId, bufIdx, lexenv, baseReg);
+    pg->StoreAccumulator(node, classReg);
 
     if (!privateBuf.empty()) {
         pg->DefineClassPrivateFields(node, pg->AddLiteralBuffer(std::move(privateBuf)));
@@ -385,14 +385,14 @@ void JSCompiler::Compile(const ir::ClassDefinition *node) const
     ASSERT(res.variable);
 
     if (res.variable->AsLocalVariable()->LexicalBound()) {
-        pg->StoreLexicalVar(node, res.lex_level, res.variable->AsLocalVariable()->LexIdx());
+        pg->StoreLexicalVar(node, res.lexLevel, res.variable->AsLocalVariable()->LexIdx());
     }
 
     InitializeClassName(pg, node);
 
-    CompileMissingProperties(pg, compiled, class_reg, node);
+    CompileMissingProperties(pg, compiled, classReg, node);
 
-    pg->LoadAccumulator(node, class_reg);
+    pg->LoadAccumulator(node, classReg);
 }
 
 void JSCompiler::Compile([[maybe_unused]] const ir::ClassProperty *st) const
@@ -561,9 +561,9 @@ void JSCompiler::Compile(const ir::ArrayExpression *expr) const
 {
     PandaGen *pg = GetPandaGen();
     compiler::RegScope rs(pg);
-    compiler::VReg array_obj = pg->AllocReg();
+    compiler::VReg arrayObj = pg->AllocReg();
 
-    pg->CreateArray(expr, expr->Elements(), array_obj);
+    pg->CreateArray(expr, expr->Elements(), arrayObj);
 }
 
 void JSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
@@ -589,12 +589,12 @@ void JSCompiler::Compile(const ir::AssignmentExpression *expr) const
         return;
     }
 
-    compiler::VReg lhs_reg = pg->AllocReg();
+    compiler::VReg lhsReg = pg->AllocReg();
 
     lref.GetValue();
-    pg->StoreAccumulator(expr->Left(), lhs_reg);
+    pg->StoreAccumulator(expr->Left(), lhsReg);
     expr->Right()->Compile(pg);
-    pg->Binary(expr, expr->OperatorType(), lhs_reg);
+    pg->Binary(expr, expr->OperatorType(), lhsReg);
 
     lref.SetValue();
 }
@@ -622,8 +622,8 @@ static void CompileLogical(compiler::PandaGen *pg, const ir::BinaryExpression *e
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
 
-    auto *skip_right = pg->AllocLabel();
-    auto *end_label = pg->AllocLabel();
+    auto *skipRight = pg->AllocLabel();
+    auto *endLabel = pg->AllocLabel();
 
     // left -> acc -> lhs -> toboolean -> acc -> bool_lhs
     expr->Left()->Compile(pg);
@@ -631,22 +631,22 @@ static void CompileLogical(compiler::PandaGen *pg, const ir::BinaryExpression *e
 
     if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
         pg->ToBoolean(expr);
-        pg->BranchIfFalse(expr, skip_right);
+        pg->BranchIfFalse(expr, skipRight);
     } else if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
         pg->ToBoolean(expr);
-        pg->BranchIfTrue(expr, skip_right);
+        pg->BranchIfTrue(expr, skipRight);
     } else if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
-        pg->BranchIfCoercible(expr, skip_right);
+        pg->BranchIfCoercible(expr, skipRight);
     }
 
     // left is true/false(and/or) then right -> acc
     expr->Right()->Compile(pg);
-    pg->Branch(expr, end_label);
+    pg->Branch(expr, endLabel);
 
     // left is false/true(and/or) then lhs -> acc
-    pg->SetLabel(expr, skip_right);
+    pg->SetLabel(expr, skipRight);
     pg->LoadAccumulator(expr, lhs);
-    pg->SetLabel(expr, end_label);
+    pg->SetLabel(expr, endLabel);
 }
 
 void JSCompiler::Compile(const ir::BinaryExpression *expr) const
@@ -680,10 +680,10 @@ void JSCompiler::Compile(const ir::BinaryExpression *expr) const
 
 static compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg, const ir::CallExpression *expr)
 {
-    compiler::VReg args_obj = pg->AllocReg();
-    pg->CreateArray(expr, expr->Arguments(), args_obj);
+    compiler::VReg argsObj = pg->AllocReg();
+    pg->CreateArray(expr, expr->Arguments(), argsObj);
 
-    return args_obj;
+    return argsObj;
 }
 
 void JSCompiler::Compile(const ir::BlockExpression *expr) const
@@ -694,14 +694,14 @@ void JSCompiler::Compile(const ir::BlockExpression *expr) const
 
 void CompileSuperExprWithoutSpread(PandaGen *pg, const ir::CallExpression *expr)
 {
-    compiler::RegScope param_scope(pg);
-    compiler::VReg arg_start {};
+    compiler::RegScope paramScope(pg);
+    compiler::VReg argStart {};
 
     if (expr->Arguments().empty()) {
-        arg_start = pg->AllocReg();
-        pg->StoreConst(expr, arg_start, compiler::Constant::JS_UNDEFINED);
+        argStart = pg->AllocReg();
+        pg->StoreConst(expr, argStart, compiler::Constant::JS_UNDEFINED);
     } else {
-        arg_start = pg->NextReg();
+        argStart = pg->NextReg();
     }
 
     for (const auto *it : expr->Arguments()) {
@@ -711,33 +711,33 @@ void CompileSuperExprWithoutSpread(PandaGen *pg, const ir::CallExpression *expr)
     }
 
     pg->GetFunctionObject(expr);
-    pg->SuperCall(expr, arg_start, expr->Arguments().size());
+    pg->SuperCall(expr, argStart, expr->Arguments().size());
 }
 
 void JSCompiler::Compile(const ir::CallExpression *expr) const
 {
     PandaGen *pg = GetPandaGen();
     compiler::RegScope rs(pg);
-    bool contains_spread = util::Helpers::ContainSpreadElement(expr->Arguments());
+    bool containsSpread = util::Helpers::ContainSpreadElement(expr->Arguments());
 
     if (expr->Callee()->IsSuperExpression()) {
-        if (contains_spread) {
-            compiler::RegScope param_scope(pg);
-            compiler::VReg args_obj = CreateSpreadArguments(pg, expr);
+        if (containsSpread) {
+            compiler::RegScope paramScope(pg);
+            compiler::VReg argsObj = CreateSpreadArguments(pg, expr);
 
             pg->GetFunctionObject(expr);
-            pg->SuperCallSpread(expr, args_obj);
+            pg->SuperCallSpread(expr, argsObj);
         } else {
             CompileSuperExprWithoutSpread(pg, expr);
         }
 
-        compiler::VReg new_this = pg->AllocReg();
-        pg->StoreAccumulator(expr, new_this);
+        compiler::VReg newThis = pg->AllocReg();
+        pg->StoreAccumulator(expr, newThis);
 
         pg->GetThis(expr);
         pg->ThrowIfSuperNotCorrectCall(expr, 1);
 
-        pg->LoadAccumulator(expr, new_this);
+        pg->LoadAccumulator(expr, newThis);
         pg->SetThis(expr);
 
         compiler::Function::CompileInstanceFields(pg, pg->RootNode()->AsScriptFunction());
@@ -745,18 +745,18 @@ void JSCompiler::Compile(const ir::CallExpression *expr) const
     }
 
     compiler::VReg callee = pg->AllocReg();
-    compiler::VReg this_reg = compiler::VReg::Invalid();
+    compiler::VReg thisReg = compiler::VReg::Invalid();
 
     if (expr->Callee()->IsMemberExpression()) {
-        this_reg = pg->AllocReg();
+        thisReg = pg->AllocReg();
 
         compiler::RegScope mrs(pg);
-        expr->Callee()->AsMemberExpression()->CompileToReg(pg, this_reg);
+        expr->Callee()->AsMemberExpression()->CompileToReg(pg, thisReg);
     } else if (expr->Callee()->IsChainExpression()) {
-        this_reg = pg->AllocReg();
+        thisReg = pg->AllocReg();
 
         compiler::RegScope mrs(pg);
-        expr->Callee()->AsChainExpression()->CompileToReg(pg, this_reg);
+        expr->Callee()->AsChainExpression()->CompileToReg(pg, thisReg);
     } else {
         expr->Callee()->Compile(pg);
     }
@@ -764,16 +764,16 @@ void JSCompiler::Compile(const ir::CallExpression *expr) const
     pg->StoreAccumulator(expr, callee);
     pg->OptionalChainCheck(expr->IsOptional(), callee);
 
-    if (contains_spread || expr->Arguments().size() >= compiler::PandaGen::MAX_RANGE_CALL_ARG) {
-        if (this_reg.IsInvalid()) {
-            this_reg = pg->AllocReg();
-            pg->StoreConst(expr, this_reg, compiler::Constant::JS_UNDEFINED);
+    if (containsSpread || expr->Arguments().size() >= compiler::PandaGen::MAX_RANGE_CALL_ARG) {
+        if (thisReg.IsInvalid()) {
+            thisReg = pg->AllocReg();
+            pg->StoreConst(expr, thisReg, compiler::Constant::JS_UNDEFINED);
         }
 
-        compiler::VReg args_obj = CreateSpreadArguments(pg, expr);
-        pg->CallSpread(expr, callee, this_reg, args_obj);
+        compiler::VReg argsObj = CreateSpreadArguments(pg, expr);
+        pg->CallSpread(expr, callee, thisReg, argsObj);
     } else {
-        pg->Call(expr, callee, this_reg, expr->Arguments());
+        pg->Call(expr, callee, thisReg, expr->Arguments());
     }
 }
 
@@ -793,15 +793,15 @@ void JSCompiler::Compile(const ir::ClassExpression *expr) const
 template <typename CodeGen>
 static void CompileImpl(const ir::ConditionalExpression *self, CodeGen *cg)
 {
-    auto *false_label = cg->AllocLabel();
-    auto *end_label = cg->AllocLabel();
+    auto *falseLabel = cg->AllocLabel();
+    auto *endLabel = cg->AllocLabel();
 
-    compiler::Condition::Compile(cg, self->Test(), false_label);
+    compiler::Condition::Compile(cg, self->Test(), falseLabel);
     self->Consequent()->Compile(cg);
-    cg->Branch(self, end_label);
-    cg->SetLabel(self, false_label);
+    cg->Branch(self, endLabel);
+    cg->SetLabel(self, falseLabel);
     self->Alternate()->Compile(cg);
-    cg->SetLabel(self, end_label);
+    cg->SetLabel(self, endLabel);
 }
 
 void JSCompiler::Compile(const ir::ConditionalExpression *expr) const
@@ -819,9 +819,9 @@ void JSCompiler::Compile(const ir::DirectEvalExpression *expr) const
     }
 
     compiler::RegScope rs(pg);
-    bool contains_spread = util::Helpers::ContainSpreadElement(expr->Arguments());
-    if (contains_spread) {
-        [[maybe_unused]] compiler::VReg args_obj = CreateSpreadArguments(pg, expr);
+    bool containsSpread = util::Helpers::ContainSpreadElement(expr->Arguments());
+    if (containsSpread) {
+        [[maybe_unused]] compiler::VReg argsObj = CreateSpreadArguments(pg, expr);
         pg->LoadObjByIndex(expr, 0);
     } else {
         compiler::VReg arg0 = pg->AllocReg();
@@ -836,7 +836,7 @@ void JSCompiler::Compile(const ir::DirectEvalExpression *expr) const
         pg->LoadAccumulator(expr, arg0);
     }
 
-    pg->DirectEval(expr, expr->parser_status_);
+    pg->DirectEval(expr, expr->parserStatus_);
 }
 
 void JSCompiler::Compile(const ir::FunctionExpression *expr) const
@@ -901,13 +901,13 @@ void JSCompiler::Compile(const ir::NewExpression *expr) const
     PandaGen *pg = GetPandaGen();
     compiler::RegScope rs(pg);
     compiler::VReg ctor = pg->AllocReg();
-    compiler::VReg new_target = pg->AllocReg();
+    compiler::VReg newTarget = pg->AllocReg();
 
     expr->Callee()->Compile(pg);
     pg->StoreAccumulator(expr, ctor);
 
     // new.Target will be the same as ctor
-    pg->StoreAccumulator(expr, new_target);
+    pg->StoreAccumulator(expr, newTarget);
 
     if (!util::Helpers::ContainSpreadElement(expr->Arguments()) &&
         expr->Arguments().size() < compiler::PandaGen::MAX_RANGE_CALL_ARG) {
@@ -917,12 +917,12 @@ void JSCompiler::Compile(const ir::NewExpression *expr) const
             pg->StoreAccumulator(expr, arg);
         }
 
-        pg->NewObject(expr, ctor, expr->Arguments().size() + 2);
+        pg->NewObject(expr, ctor, expr->Arguments().size() + 2U);
     } else {
-        compiler::VReg args_obj = pg->AllocReg();
+        compiler::VReg argsObj = pg->AllocReg();
 
-        pg->CreateArray(expr, expr->Arguments(), args_obj);
-        pg->NewObjSpread(expr, ctor, new_target);
+        pg->CreateArray(expr, expr->Arguments(), argsObj);
+        pg->NewObjSpread(expr, ctor, newTarget);
     }
 }
 
@@ -942,11 +942,11 @@ void JSCompiler::Compile(const ir::ObjectExpression *expr) const
     }
 }
 
-static compiler::Literal CreateLiteral(const ir::Property *prop, util::BitSet *compiled, size_t prop_index)
+static compiler::Literal CreateLiteral(const ir::Property *prop, util::BitSet *compiled, size_t propIndex)
 {
     compiler::Literal lit = util::Helpers::ToConstantLiteral(prop->Value());
     if (!lit.IsInvalid()) {
-        compiled->Set(prop_index);
+        compiled->Set(propIndex);
         return lit;
     }
 
@@ -971,7 +971,7 @@ static compiler::Literal CreateLiteral(const ir::Property *prop, util::BitSet *c
         }
     }
 
-    compiled->Set(prop_index);
+    compiled->Set(propIndex);
     return compiler::Literal(tag, method->Scope()->InternalName());
 }
 
@@ -993,39 +993,39 @@ static bool IsLiteralBufferCompatible(const ir::Expression *expr)
 void JSCompiler::CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *compiled,
                                          const ir::ObjectExpression *expr) const
 {
-    bool has_method = false;
-    bool seen_computed = false;
+    bool hasMethod = false;
+    bool seenComputed = false;
     compiler::LiteralBuffer buf;
-    std::unordered_map<util::StringView, size_t> prop_name_map;
+    std::unordered_map<util::StringView, size_t> propNameMap;
 
     for (size_t i = 0; i < expr->Properties().size(); i++) {
         if (!IsLiteralBufferCompatible(expr->Properties()[i])) {
-            seen_computed = true;
+            seenComputed = true;
             continue;
         }
 
         const ir::Property *prop = expr->Properties()[i]->AsProperty();
 
         util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
-        size_t buffer_pos = buf.size();
-        auto res = prop_name_map.insert({name, buffer_pos});
+        size_t bufferPos = buf.size();
+        auto res = propNameMap.insert({name, bufferPos});
         if (res.second) {
-            if (seen_computed) {
+            if (seenComputed) {
                 break;
             }
 
             buf.emplace_back(name);
             buf.emplace_back();
         } else {
-            buffer_pos = res.first->second;
+            bufferPos = res.first->second;
         }
 
         compiler::Literal lit = CreateLiteral(prop, compiled, i);
         if (lit.IsTagMethod()) {
-            has_method = true;
+            hasMethod = true;
         }
 
-        buf[buffer_pos + 1] = std::move(lit);
+        buf[bufferPos + 1] = std::move(lit);
     }
 
     if (buf.empty()) {
@@ -1033,12 +1033,12 @@ void JSCompiler::CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *c
         return;
     }
 
-    uint32_t buf_idx = pg->AddLiteralBuffer(std::move(buf));
+    uint32_t bufIdx = pg->AddLiteralBuffer(std::move(buf));
 
-    if (has_method) {
-        pg->CreateObjectHavingMethod(expr, buf_idx);
+    if (hasMethod) {
+        pg->CreateObjectHavingMethod(expr, bufIdx);
     } else {
-        pg->CreateObjectWithBuffer(expr, buf_idx);
+        pg->CreateObjectWithBuffer(expr, bufIdx);
     }
 }
 
@@ -1046,9 +1046,9 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
                                             const ir::ObjectExpression *expr) const
 {
     compiler::RegScope rs(pg);
-    compiler::VReg obj_reg = pg->AllocReg();
+    compiler::VReg objReg = pg->AllocReg();
 
-    pg->StoreAccumulator(expr, obj_reg);
+    pg->StoreAccumulator(expr, objReg);
 
     for (size_t i = 0; i < expr->Properties().size(); i++) {
         if (compiled->Test(i)) {
@@ -1058,13 +1058,13 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
         compiler::RegScope prs(pg);
 
         if (expr->Properties()[i]->IsSpreadElement()) {
-            compiler::VReg src_obj = pg->AllocReg();
+            compiler::VReg srcObj = pg->AllocReg();
             auto const *const spread = expr->Properties()[i]->AsSpreadElement();
 
             spread->Argument()->Compile(pg);
-            pg->StoreAccumulator(spread, src_obj);
+            pg->StoreAccumulator(spread, srcObj);
 
-            pg->CopyDataProperties(spread, obj_reg, src_obj);
+            pg->CopyDataProperties(spread, objReg, srcObj);
             continue;
         }
 
@@ -1083,7 +1083,7 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
                 compiler::VReg setter = undef;
 
                 compiler::VReg accessor = pg->AllocReg();
-                pg->LoadAccumulator(prop->Value(), obj_reg);
+                pg->LoadAccumulator(prop->Value(), objReg);
                 prop->Value()->Compile(pg);
                 pg->StoreAccumulator(prop->Value(), accessor);
 
@@ -1093,18 +1093,18 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
                     setter = accessor;
                 }
 
-                pg->DefineGetterSetterByValue(expr, obj_reg, key, getter, setter, prop->IsComputed());
+                pg->DefineGetterSetterByValue(expr, objReg, key, getter, setter, prop->IsComputed());
                 break;
             }
             case ir::PropertyKind::INIT: {
                 compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
 
                 if (prop->IsMethod()) {
-                    pg->LoadAccumulator(prop->Value(), obj_reg);
+                    pg->LoadAccumulator(prop->Value(), objReg);
                 }
 
                 prop->Value()->Compile(pg);
-                pg->StoreOwnProperty(expr, obj_reg, key);
+                pg->StoreOwnProperty(expr, objReg, key);
                 break;
             }
             case ir::PropertyKind::PROTO: {
@@ -1112,7 +1112,7 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
                 compiler::VReg proto = pg->AllocReg();
                 pg->StoreAccumulator(expr, proto);
 
-                pg->SetObjectWithProto(expr, proto, obj_reg);
+                pg->SetObjectWithProto(expr, proto, objReg);
                 break;
             }
             default: {
@@ -1121,7 +1121,7 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
         }
     }
 
-    pg->LoadAccumulator(expr, obj_reg);
+    pg->LoadAccumulator(expr, objReg);
 }
 
 void JSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
@@ -1159,30 +1159,30 @@ void JSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
     PandaGen *pg = GetPandaGen();
     compiler::RegScope rs(pg);
     compiler::VReg callee = pg->AllocReg();
-    compiler::VReg this_reg = compiler::VReg::Invalid();
+    compiler::VReg thisReg = compiler::VReg::Invalid();
 
     if (expr->Tag()->IsMemberExpression()) {
-        this_reg = pg->AllocReg();
+        thisReg = pg->AllocReg();
         compiler::RegScope mrs(pg);
-        expr->Tag()->AsMemberExpression()->CompileToReg(pg, this_reg);
+        expr->Tag()->AsMemberExpression()->CompileToReg(pg, thisReg);
     } else {
         expr->Tag()->Compile(pg);
     }
 
-    pg->CallTagged(expr, callee, this_reg, expr->Quasi()->Expressions());
+    pg->CallTagged(expr, callee, thisReg, expr->Quasi()->Expressions());
 }
 
 void JSCompiler::Compile(const ir::TemplateLiteral *expr) const
 {
     PandaGen *pg = GetPandaGen();
-    auto quasis_it = expr->Quasis().begin();
-    auto expression_it = expr->Expressions().begin();
+    auto quasisIt = expr->Quasis().begin();
+    auto expressionIt = expr->Expressions().begin();
 
-    pg->LoadAccumulatorString(expr, (*quasis_it)->Raw());
+    pg->LoadAccumulatorString(expr, (*quasisIt)->Raw());
 
-    quasis_it++;
+    quasisIt++;
 
-    bool is_quais = false;
+    bool isQuais = false;
     size_t total = expr->Quasis().size() + expr->Expressions().size();
 
     compiler::RegScope rs(pg);
@@ -1191,25 +1191,25 @@ void JSCompiler::Compile(const ir::TemplateLiteral *expr) const
     while (total != 1) {
         const ir::AstNode *node = nullptr;
 
-        if (is_quais) {
-            pg->StoreAccumulator(*quasis_it, lhs);
-            pg->LoadAccumulatorString(expr, (*quasis_it)->Raw());
+        if (isQuais) {
+            pg->StoreAccumulator(*quasisIt, lhs);
+            pg->LoadAccumulatorString(expr, (*quasisIt)->Raw());
 
-            node = *quasis_it;
-            quasis_it++;
+            node = *quasisIt;
+            quasisIt++;
         } else {
-            const ir::Expression *element = *expression_it;
+            const ir::Expression *element = *expressionIt;
             pg->StoreAccumulator(element, lhs);
 
             element->Compile(pg);
 
             node = element;
-            expression_it++;
+            expressionIt++;
         }
 
         pg->Binary(node, lexer::TokenType::PUNCTUATOR_PLUS, lhs);
 
-        is_quais = !is_quais;
+        isQuais = !isQuais;
         total--;
     }
 }
@@ -1296,9 +1296,9 @@ void JSCompiler::Compile(const ir::UnaryExpression *expr) const
             expr->Argument()->Compile(pg);
 
             compiler::RegScope rs(pg);
-            compiler::VReg operand_reg = pg->AllocReg();
-            pg->StoreAccumulator(expr, operand_reg);
-            pg->Unary(expr, expr->OperatorType(), operand_reg);
+            compiler::VReg operandReg = pg->AllocReg();
+            pg->StoreAccumulator(expr, operandReg);
+            pg->Unary(expr, expr->OperatorType(), operandReg);
             break;
         }
     }
@@ -1308,18 +1308,18 @@ void JSCompiler::Compile(const ir::UpdateExpression *expr) const
 {
     PandaGen *pg = GetPandaGen();
     compiler::RegScope rs(pg);
-    compiler::VReg operand_reg = pg->AllocReg();
+    compiler::VReg operandReg = pg->AllocReg();
 
     auto lref = compiler::JSLReference::Create(pg, expr->Argument(), false);
     lref.GetValue();
 
-    pg->StoreAccumulator(expr, operand_reg);
-    pg->Unary(expr, expr->OperatorType(), operand_reg);
+    pg->StoreAccumulator(expr, operandReg);
+    pg->Unary(expr, expr->OperatorType(), operandReg);
 
     lref.SetValue();
 
     if (!expr->IsPrefix()) {
-        pg->ToNumber(expr, operand_reg);
+        pg->ToNumber(expr, operandReg);
     }
 }
 
@@ -1491,22 +1491,22 @@ void JSCompiler::Compile([[maybe_unused]] const ir::DebuggerStatement *st) const
 
 static void CompileImpl(const ir::DoWhileStatement *self, PandaGen *cg)
 {
-    auto *start_label = cg->AllocLabel();
-    compiler::LabelTarget label_target(cg);
+    auto *startLabel = cg->AllocLabel();
+    compiler::LabelTarget labelTarget(cg);
 
-    cg->SetLabel(self, start_label);
+    cg->SetLabel(self, startLabel);
 
     {
-        compiler::LocalRegScope reg_scope(cg, self->Scope());
-        compiler::LabelContext label_ctx(cg, label_target);
+        compiler::LocalRegScope regScope(cg, self->Scope());
+        compiler::LabelContext labelCtx(cg, labelTarget);
         self->Body()->Compile(cg);
     }
 
-    cg->SetLabel(self, label_target.ContinueTarget());
-    compiler::Condition::Compile(cg, self->Test(), label_target.BreakTarget());
+    cg->SetLabel(self, labelTarget.ContinueTarget());
+    compiler::Condition::Compile(cg, self->Test(), labelTarget.BreakTarget());
 
-    cg->Branch(self, start_label);
-    cg->SetLabel(self, label_target.BreakTarget());
+    cg->Branch(self, startLabel);
+    cg->SetLabel(self, labelTarget.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::DoWhileStatement *st) const
@@ -1526,56 +1526,56 @@ void JSCompiler::Compile(const ir::ExpressionStatement *st) const
 void JSCompiler::Compile(const ir::ForInStatement *st) const
 {
     PandaGen *pg = GetPandaGen();
-    compiler::LabelTarget label_target(pg);
+    compiler::LabelTarget labelTarget(pg);
 
     compiler::RegScope rs(pg);
     compiler::VReg iter = pg->AllocReg();
-    compiler::VReg prop_name = pg->AllocReg();
+    compiler::VReg propName = pg->AllocReg();
 
     // create enumerator
     st->Right()->Compile(pg);
     pg->GetPropIterator(st);
     pg->StoreAccumulator(st, iter);
 
-    pg->SetLabel(st, label_target.ContinueTarget());
+    pg->SetLabel(st, labelTarget.ContinueTarget());
 
     // get next prop of enumerator
     pg->GetNextPropName(st, iter);
-    pg->StoreAccumulator(st, prop_name);
-    pg->BranchIfUndefined(st, label_target.BreakTarget());
+    pg->StoreAccumulator(st, propName);
+    pg->BranchIfUndefined(st, labelTarget.BreakTarget());
 
-    compiler::LocalRegScope decl_reg_scope(pg, st->Scope()->DeclScope()->InitScope());
+    compiler::LocalRegScope declRegScope(pg, st->Scope()->DeclScope()->InitScope());
     auto lref = compiler::JSLReference::Create(pg, st->Left(), false);
-    pg->LoadAccumulator(st, prop_name);
+    pg->LoadAccumulator(st, propName);
     lref.SetValue();
 
-    compiler::LoopEnvScope decl_env_scope(pg, st->Scope()->DeclScope());
+    compiler::LoopEnvScope declEnvScope(pg, st->Scope()->DeclScope());
 
     {
-        compiler::LoopEnvScope env_scope(pg, st->Scope(), label_target);
+        compiler::LoopEnvScope envScope(pg, st->Scope(), labelTarget);
         st->Body()->Compile(pg);
     }
 
-    pg->Branch(st, label_target.ContinueTarget());
-    pg->SetLabel(st, label_target.BreakTarget());
+    pg->Branch(st, labelTarget.ContinueTarget());
+    pg->SetLabel(st, labelTarget.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::ForOfStatement *st) const
 {
     PandaGen *pg = GetPandaGen();
-    compiler::LocalRegScope decl_reg_scope(pg, st->Scope()->DeclScope()->InitScope());
+    compiler::LocalRegScope declRegScope(pg, st->Scope()->DeclScope()->InitScope());
 
     st->Right()->Compile(pg);
 
-    compiler::LabelTarget label_target(pg);
-    auto iterator_type = st->IsAwait() ? compiler::IteratorType::ASYNC : compiler::IteratorType::SYNC;
-    compiler::Iterator iterator(pg, st, iterator_type);
+    compiler::LabelTarget labelTarget(pg);
+    auto iteratorType = st->IsAwait() ? compiler::IteratorType::ASYNC : compiler::IteratorType::SYNC;
+    compiler::Iterator iterator(pg, st, iteratorType);
 
-    pg->SetLabel(st, label_target.ContinueTarget());
+    pg->SetLabel(st, labelTarget.ContinueTarget());
 
     iterator.Next();
     iterator.Complete();
-    pg->BranchIfTrue(st, label_target.BreakTarget());
+    pg->BranchIfTrue(st, labelTarget.BreakTarget());
 
     iterator.Value();
     pg->StoreAccumulator(st, iterator.NextResult());
@@ -1583,54 +1583,54 @@ void JSCompiler::Compile(const ir::ForOfStatement *st) const
     auto lref = compiler::JSLReference::Create(pg, st->Left(), false);
 
     {
-        compiler::IteratorContext for_of_ctx(pg, iterator, label_target);
+        compiler::IteratorContext forOfCtx(pg, iterator, labelTarget);
         pg->LoadAccumulator(st, iterator.NextResult());
         lref.SetValue();
 
-        compiler::LoopEnvScope decl_env_scope(pg, st->Scope()->DeclScope());
-        compiler::LoopEnvScope env_scope(pg, st->Scope(), {});
+        compiler::LoopEnvScope declEnvScope(pg, st->Scope()->DeclScope());
+        compiler::LoopEnvScope envScope(pg, st->Scope(), {});
         st->Body()->Compile(pg);
     }
 
-    pg->Branch(st, label_target.ContinueTarget());
-    pg->SetLabel(st, label_target.BreakTarget());
+    pg->Branch(st, labelTarget.ContinueTarget());
+    pg->SetLabel(st, labelTarget.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::ForUpdateStatement *st) const
 {
     PandaGen *pg = GetPandaGen();
-    compiler::LocalRegScope decl_reg_scope(pg, st->Scope()->DeclScope()->InitScope());
+    compiler::LocalRegScope declRegScope(pg, st->Scope()->DeclScope()->InitScope());
 
     if (st->Init() != nullptr) {
         ASSERT(st->Init()->IsVariableDeclaration() || st->Init()->IsExpression());
         st->Init()->Compile(pg);
     }
 
-    auto *start_label = pg->AllocLabel();
-    compiler::LabelTarget label_target(pg);
+    auto *startLabel = pg->AllocLabel();
+    compiler::LabelTarget labelTarget(pg);
 
-    compiler::LoopEnvScope decl_env_scope(pg, st->Scope()->DeclScope());
-    compiler::LoopEnvScope env_scope(pg, label_target, st->Scope());
-    pg->SetLabel(st, start_label);
+    compiler::LoopEnvScope declEnvScope(pg, st->Scope()->DeclScope());
+    compiler::LoopEnvScope envScope(pg, labelTarget, st->Scope());
+    pg->SetLabel(st, startLabel);
 
     {
-        compiler::LocalRegScope reg_scope(pg, st->Scope());
+        compiler::LocalRegScope regScope(pg, st->Scope());
 
         if (st->Test() != nullptr) {
-            compiler::Condition::Compile(pg, st->Test(), label_target.BreakTarget());
+            compiler::Condition::Compile(pg, st->Test(), labelTarget.BreakTarget());
         }
 
         st->Body()->Compile(pg);
-        pg->SetLabel(st, label_target.ContinueTarget());
-        env_scope.CopyPetIterationCtx();
+        pg->SetLabel(st, labelTarget.ContinueTarget());
+        envScope.CopyPetIterationCtx();
     }
 
     if (st->Update() != nullptr) {
         st->Update()->Compile(pg);
     }
 
-    pg->Branch(st, start_label);
-    pg->SetLabel(st, label_target.BreakTarget());
+    pg->Branch(st, startLabel);
+    pg->SetLabel(st, labelTarget.BreakTarget());
 }
 
 void JSCompiler::Compile([[maybe_unused]] const ir::FunctionDeclaration *st) const {}
@@ -1638,26 +1638,26 @@ void JSCompiler::Compile([[maybe_unused]] const ir::FunctionDeclaration *st) con
 void JSCompiler::Compile(const ir::IfStatement *st) const
 {
     PandaGen *pg = GetPandaGen();
-    auto *consequent_end = pg->AllocLabel();
-    compiler::Label *statement_end = consequent_end;
+    auto *consequentEnd = pg->AllocLabel();
+    compiler::Label *statementEnd = consequentEnd;
 
-    compiler::Condition::Compile(pg, st->Test(), consequent_end);
+    compiler::Condition::Compile(pg, st->Test(), consequentEnd);
     st->Consequent()->Compile(pg);
 
     if (st->Alternate() != nullptr) {
-        statement_end = pg->AllocLabel();
-        pg->Branch(pg->Insns().back()->Node(), statement_end);
+        statementEnd = pg->AllocLabel();
+        pg->Branch(pg->Insns().back()->Node(), statementEnd);
 
-        pg->SetLabel(st, consequent_end);
+        pg->SetLabel(st, consequentEnd);
         st->Alternate()->Compile(pg);
     }
 
-    pg->SetLabel(st, statement_end);
+    pg->SetLabel(st, statementEnd);
 }
 
 void CompileImpl(const ir::LabelledStatement *self, PandaGen *cg)
 {
-    compiler::LabelContext label_ctx(cg, self);
+    compiler::LabelContext labelCtx(cg, self);
     self->Body()->Compile(cg);
 }
 
@@ -1705,21 +1705,21 @@ static void CompileImpl(const ir::SwitchStatement *self, PandaGen *cg)
     compiler::VReg tag = cg->AllocReg();
 
     builder.CompileTagOfSwitch(tag);
-    uint32_t default_index = 0;
+    uint32_t defaultIndex = 0;
 
     for (size_t i = 0; i < self->Cases().size(); i++) {
         const auto *clause = self->Cases()[i];
 
         if (clause->Test() == nullptr) {
-            default_index = i;
+            defaultIndex = i;
             continue;
         }
 
         builder.JumpIfCase(tag, i);
     }
 
-    if (default_index > 0) {
-        builder.JumpToDefault(default_index);
+    if (defaultIndex > 0) {
+        builder.JumpToDefault(defaultIndex);
     } else {
         builder.Break();
     }
@@ -1748,39 +1748,39 @@ static void CompileTryCatch(compiler::PandaGen *pg, const ir::TryStatement *st)
     ASSERT(st->CatchClauses().size() == 1);
     ASSERT(st->CatchClauses().front() && !st->FinallyBlock());
 
-    compiler::TryContext try_ctx(pg, st);
-    const auto &label_set = try_ctx.LabelSet();
+    compiler::TryContext tryCtx(pg, st);
+    const auto &labelSet = tryCtx.LabelSet();
 
-    pg->SetLabel(st, label_set.TryBegin());
+    pg->SetLabel(st, labelSet.TryBegin());
     st->Block()->Compile(pg);
-    pg->SetLabel(st, label_set.TryEnd());
+    pg->SetLabel(st, labelSet.TryEnd());
 
-    pg->Branch(st, label_set.CatchEnd());
+    pg->Branch(st, labelSet.CatchEnd());
 
-    pg->SetLabel(st, label_set.CatchBegin());
+    pg->SetLabel(st, labelSet.CatchBegin());
     st->CatchClauses().front()->Compile(pg);
-    pg->SetLabel(st, label_set.CatchEnd());
+    pg->SetLabel(st, labelSet.CatchEnd());
 }
 
-static void CompileFinally(compiler::PandaGen *pg, compiler::TryContext *try_ctx,
-                           const compiler::TryLabelSet &label_set, const ir::TryStatement *st)
+static void CompileFinally(compiler::PandaGen *pg, compiler::TryContext *tryCtx, const compiler::TryLabelSet &labelSet,
+                           const ir::TryStatement *st)
 {
     compiler::RegScope rs(pg);
     compiler::VReg exception = pg->AllocReg();
     pg->StoreConst(st, exception, compiler::Constant::JS_HOLE);
-    pg->Branch(st, label_set.CatchEnd());
+    pg->Branch(st, labelSet.CatchEnd());
 
-    pg->SetLabel(st, label_set.CatchBegin());
+    pg->SetLabel(st, labelSet.CatchBegin());
     pg->StoreAccumulator(st, exception);
 
-    pg->SetLabel(st, label_set.CatchEnd());
+    pg->SetLabel(st, labelSet.CatchEnd());
 
     compiler::Label *label = pg->AllocLabel();
-    pg->LoadAccumulator(st, try_ctx->FinalizerRun());
+    pg->LoadAccumulator(st, tryCtx->FinalizerRun());
 
     pg->BranchIfNotUndefined(st, label);
-    pg->StoreAccumulator(st, try_ctx->FinalizerRun());
-    try_ctx->EmitFinalizer();
+    pg->StoreAccumulator(st, tryCtx->FinalizerRun());
+    tryCtx->EmitFinalizer();
     pg->SetLabel(st, label);
 
     pg->LoadAccumulator(st, exception);
@@ -1792,54 +1792,54 @@ static void CompileTryCatchFinally(compiler::PandaGen *pg, const ir::TryStatemen
     ASSERT(st->CatchClauses().size() == 1);
     ASSERT(st->CatchClauses().front() && st->FinallyBlock());
 
-    compiler::TryContext try_ctx(pg, st);
-    const auto &label_set = try_ctx.LabelSet();
+    compiler::TryContext tryCtx(pg, st);
+    const auto &labelSet = tryCtx.LabelSet();
 
-    pg->SetLabel(st, label_set.TryBegin());
+    pg->SetLabel(st, labelSet.TryBegin());
     {
-        compiler::TryContext inner_try_ctx(pg, st, false);
-        const auto &inner_label_set = inner_try_ctx.LabelSet();
+        compiler::TryContext innerTryCtx(pg, st, false);
+        const auto &innerLabelSet = innerTryCtx.LabelSet();
 
-        pg->SetLabel(st, inner_label_set.TryBegin());
+        pg->SetLabel(st, innerLabelSet.TryBegin());
         st->Block()->Compile(pg);
-        pg->SetLabel(st, inner_label_set.TryEnd());
+        pg->SetLabel(st, innerLabelSet.TryEnd());
 
-        pg->Branch(st, inner_label_set.CatchEnd());
+        pg->Branch(st, innerLabelSet.CatchEnd());
 
-        pg->SetLabel(st, inner_label_set.CatchBegin());
+        pg->SetLabel(st, innerLabelSet.CatchBegin());
         st->CatchClauses().front()->Compile(pg);
-        pg->SetLabel(st, inner_label_set.CatchEnd());
+        pg->SetLabel(st, innerLabelSet.CatchEnd());
     }
-    pg->SetLabel(st, label_set.TryEnd());
+    pg->SetLabel(st, labelSet.TryEnd());
 
-    CompileFinally(pg, &try_ctx, label_set, st);
+    CompileFinally(pg, &tryCtx, labelSet, st);
 }
 
 static void CompileTryFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
 {
     ASSERT(st->CatchClauses().empty() && st->FinallyBlock());
 
-    compiler::TryContext try_ctx(pg, st);
-    const auto &label_set = try_ctx.LabelSet();
+    compiler::TryContext tryCtx(pg, st);
+    const auto &labelSet = tryCtx.LabelSet();
 
-    pg->SetLabel(st, label_set.TryBegin());
+    pg->SetLabel(st, labelSet.TryBegin());
     {
-        compiler::TryContext inner_try_ctx(pg, st, false);
-        const auto &inner_label_set = inner_try_ctx.LabelSet();
+        compiler::TryContext innerTryCtx(pg, st, false);
+        const auto &innerLabelSet = innerTryCtx.LabelSet();
 
-        pg->SetLabel(st, inner_label_set.TryBegin());
+        pg->SetLabel(st, innerLabelSet.TryBegin());
         st->Block()->Compile(pg);
-        pg->SetLabel(st, inner_label_set.TryEnd());
+        pg->SetLabel(st, innerLabelSet.TryEnd());
 
-        pg->Branch(st, inner_label_set.CatchEnd());
+        pg->Branch(st, innerLabelSet.CatchEnd());
 
-        pg->SetLabel(st, inner_label_set.CatchBegin());
+        pg->SetLabel(st, innerLabelSet.CatchBegin());
         pg->EmitThrow(st);
-        pg->SetLabel(st, inner_label_set.CatchEnd());
+        pg->SetLabel(st, innerLabelSet.CatchEnd());
     }
-    pg->SetLabel(st, label_set.TryEnd());
+    pg->SetLabel(st, labelSet.TryEnd());
 
-    CompileFinally(pg, &try_ctx, label_set, st);
+    CompileFinally(pg, &tryCtx, labelSet, st);
 }
 
 void JSCompiler::Compile(const ir::TryStatement *st) const
@@ -1885,21 +1885,21 @@ void JSCompiler::Compile(const ir::VariableDeclaration *st) const
 }
 
 template <typename CodeGen>
-void CompileImpl(const ir::WhileStatement *while_stmt, [[maybe_unused]] CodeGen *cg)
+void CompileImpl(const ir::WhileStatement *whileStmt, [[maybe_unused]] CodeGen *cg)
 {
-    compiler::LabelTarget label_target(cg);
+    compiler::LabelTarget labelTarget(cg);
 
-    cg->SetLabel(while_stmt, label_target.ContinueTarget());
-    compiler::Condition::Compile(cg, while_stmt->Test(), label_target.BreakTarget());
+    cg->SetLabel(whileStmt, labelTarget.ContinueTarget());
+    compiler::Condition::Compile(cg, whileStmt->Test(), labelTarget.BreakTarget());
 
     {
-        compiler::LocalRegScope reg_scope(cg, while_stmt->Scope());
-        compiler::LabelContext label_ctx(cg, label_target);
-        while_stmt->Body()->Compile(cg);
+        compiler::LocalRegScope regScope(cg, whileStmt->Scope());
+        compiler::LabelContext labelCtx(cg, labelTarget);
+        whileStmt->Body()->Compile(cg);
     }
 
-    cg->Branch(while_stmt, label_target.ContinueTarget());
-    cg->SetLabel(while_stmt, label_target.BreakTarget());
+    cg->Branch(whileStmt, labelTarget.ContinueTarget());
+    cg->SetLabel(whileStmt, labelTarget.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::WhileStatement *st) const

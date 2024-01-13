@@ -206,46 +206,46 @@ void KeywordsUtil::ScanIdentifierStart(const Keywords *kws, char32_t cp)
 void KeywordsUtil::ScanIdContinue()
 {
     util::UString ident(lexer_->Allocator());
-    size_t start_pos = lexer_->GetToken().Start().index;
+    size_t startPos = lexer_->GetToken().Start().index;
 
     if (HasEscape()) {
         ident.Append(cp_);
-        start_pos = Iterator().Index();
+        startPos = Iterator().Index();
     }
 
-    auto escape_end = start_pos;
+    auto escapeEnd = startPos;
 
     while (true) {
         if (Iterator().Peek() == LEX_CHAR_BACKSLASH) {
-            ident.Append(lexer_->SourceView(escape_end, Iterator().Index()));
+            ident.Append(lexer_->SourceView(escapeEnd, Iterator().Index()));
 
             auto cp = ScanUnicodeEscapeSequence();
             if (!IsIdentifierPart(cp)) {
                 lexer_->ThrowError("Invalid identifier part");
             }
 
-            escape_end = Iterator().Index();
+            escapeEnd = Iterator().Index();
             ident.Append(cp);
             continue;
         }
 
-        size_t cp_size {};
-        auto cp = Iterator().PeekCp(&cp_size);
+        size_t cpSize {};
+        auto cp = Iterator().PeekCp(&cpSize);
         if (!IsIdentifierPart(cp)) {
             break;
         }
 
-        Iterator().Forward(cp_size);
+        Iterator().Forward(cpSize);
     }
 
     lexer_->GetToken().type_ = TokenType::LITERAL_IDENT;
-    lexer_->GetToken().keyword_type_ = TokenType::LITERAL_IDENT;
+    lexer_->GetToken().keywordType_ = TokenType::LITERAL_IDENT;
 
     if (HasEscape()) {
-        ident.Append(lexer_->SourceView(escape_end, Iterator().Index()));
+        ident.Append(lexer_->SourceView(escapeEnd, Iterator().Index()));
         lexer_->GetToken().src_ = ident.View();
     } else {
-        lexer_->GetToken().src_ = lexer_->SourceView(start_pos, Iterator().Index());
+        lexer_->GetToken().src_ = lexer_->SourceView(startPos, Iterator().Index());
     }
 }
 

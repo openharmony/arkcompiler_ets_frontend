@@ -25,7 +25,7 @@ class PandaGen;
 
 class AsyncGeneratorFunctionBuilder : public FunctionBuilder {
 public:
-    explicit AsyncGeneratorFunctionBuilder(PandaGen *pg, CatchTable *catch_table) : FunctionBuilder(pg, catch_table) {}
+    explicit AsyncGeneratorFunctionBuilder(PandaGen *pg, CatchTable *catchTable) : FunctionBuilder(pg, catchTable) {}
     ~AsyncGeneratorFunctionBuilder() override = default;
     NO_COPY_SEMANTIC(AsyncGeneratorFunctionBuilder);
     NO_MOVE_SEMANTIC(AsyncGeneratorFunctionBuilder);

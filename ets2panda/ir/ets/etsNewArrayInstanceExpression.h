@@ -37,10 +37,10 @@ public:
     NO_COPY_SEMANTIC(ETSNewArrayInstanceExpression);
     NO_MOVE_SEMANTIC(ETSNewArrayInstanceExpression);
 
-    explicit ETSNewArrayInstanceExpression(ArenaAllocator *allocator, ir::TypeNode *const type_reference,
+    explicit ETSNewArrayInstanceExpression(ArenaAllocator *allocator, ir::TypeNode *const typeReference,
                                            ir::Expression *const dimension)
         : Expression(AstNodeType::ETS_NEW_ARRAY_INSTANCE_EXPRESSION),
-          type_reference_(type_reference),
+          typeReference_(typeReference),
           dimension_(dimension),
           allocator_(allocator)
     {
@@ -51,12 +51,12 @@ public:
 
     ir::TypeNode *TypeReference()
     {
-        return type_reference_;
+        return typeReference_;
     }
 
     ir::TypeNode const *TypeReference() const
     {
-        return type_reference_;
+        return typeReference_;
     }
 
     ir::Expression *Dimension()
@@ -92,9 +92,9 @@ public:
     }
 
 private:
-    ir::TypeNode *type_reference_;
+    ir::TypeNode *typeReference_;
     ir::Expression *dimension_;
-    checker::Signature *default_constructor_signature_ {};
+    checker::Signature *defaultConstructorSignature_ {};
     ArenaAllocator *allocator_;
 };
 }  // namespace panda::es2panda::ir

@@ -82,8 +82,8 @@ BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNo
     auto *const right = right_ != nullptr ? right_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<BinaryExpression>(left, right, operator_); clone != nullptr) {
-        if (operation_type_ != nullptr) {
-            clone->SetOperationType(operation_type_);
+        if (operationType_ != nullptr) {
+            clone->SetOperationType(operationType_);
         }
         if (right != nullptr) {
             right->SetParent(clone);

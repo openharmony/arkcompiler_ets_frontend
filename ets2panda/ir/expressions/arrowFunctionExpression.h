@@ -34,7 +34,7 @@ public:
     NO_MOVE_SEMANTIC(ArrowFunctionExpression);
 
     explicit ArrowFunctionExpression(ArenaAllocator *const allocator, ScriptFunction *const func)
-        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func), captured_vars_(allocator->Adapter())
+        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func), capturedVars_(allocator->Adapter())
     {
     }
 
@@ -55,32 +55,32 @@ public:
 
     [[nodiscard]] const ClassDefinition *ResolvedLambda() const noexcept
     {
-        return resolved_lambda_;
+        return resolvedLambda_;
     }
 
     [[nodiscard]] ClassDefinition *ResolvedLambda() noexcept
     {
-        return resolved_lambda_;
+        return resolvedLambda_;
     }
 
     [[nodiscard]] ArenaVector<varbinder::Variable *> &CapturedVars() noexcept
     {
-        return captured_vars_;
+        return capturedVars_;
     }
 
     [[nodiscard]] const ArenaVector<varbinder::Variable *> &CapturedVars() const noexcept
     {
-        return captured_vars_;
+        return capturedVars_;
     }
 
     void SetResolvedLambda(ClassDefinition *const lambda) noexcept
     {
-        resolved_lambda_ = lambda;
+        resolvedLambda_ = lambda;
     }
 
     void SetPropagateThis() noexcept
     {
-        propagate_this_ = true;
+        propagateThis_ = true;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -95,7 +95,7 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
-    ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *return_type);
+    ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType);
 
     void Accept(ASTVisitorT *v) override
     {
@@ -104,9 +104,9 @@ public:
 
 private:
     ScriptFunction *func_;
-    ArenaVector<varbinder::Variable *> captured_vars_;
-    ir::ClassDefinition *resolved_lambda_ {nullptr};
-    bool propagate_this_ {false};
+    ArenaVector<varbinder::Variable *> capturedVars_;
+    ir::ClassDefinition *resolvedLambda_ {nullptr};
+    bool propagateThis_ {false};
 };
 }  // namespace panda::es2panda::ir
 

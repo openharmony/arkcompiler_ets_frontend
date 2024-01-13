@@ -22,9 +22,9 @@
 #include <iostream>
 
 namespace panda::es2panda::ir {
-AstDumper::AstDumper(const ir::AstNode *node, util::StringView source_code) : index_(source_code)
+AstDumper::AstDumper(const ir::AstNode *node, util::StringView sourceCode) : index_(sourceCode)
 {
-    is_src_empty_ = source_code.Empty();
+    isSrcEmpty_ = sourceCode.Empty();
     SerializeObject(node);
 }
 
@@ -59,17 +59,17 @@ const char *AstDumper::ModifierToString(ModifierFlags flags)
     return nullptr;
 }
 
-const char *AstDumper::TypeOperatorToString(TSOperatorType operator_type)
+const char *AstDumper::TypeOperatorToString(TSOperatorType operatorType)
 {
-    if (operator_type == TSOperatorType::KEYOF) {
+    if (operatorType == TSOperatorType::KEYOF) {
         return "keyof";
     }
 
-    if (operator_type == TSOperatorType::READONLY) {
+    if (operatorType == TSOperatorType::READONLY) {
         return "readonly";
     }
 
-    if (operator_type == TSOperatorType::UNIQUE) {
+    if (operatorType == TSOperatorType::UNIQUE) {
         return "unique";
     }
 
@@ -219,22 +219,22 @@ void AstDumper::SerializeObject(const ir::AstNode *object)
 {
     Wrap([this, object]() -> void {
         object->Dump(this);
-        if (!is_src_empty_) {
+        if (!isSrcEmpty_) {
             SerializeLoc(object->Range());
         }
     });
 }
 
-void AstDumper::Wrap(const WrapperCb &cb, char delim_start, char delim_end)
+void AstDumper::Wrap(const WrapperCb &cb, char delimStart, char delimEnd)
 {
-    ss_ << delim_start;
+    ss_ << delimStart;
     indent_++;
 
     cb();
     ss_ << std::endl;
     indent_--;
     Indent();
-    ss_ << delim_end;
+    ss_ << delimEnd;
 }
 
 void AstDumper::SerializeLoc(const lexer::SourceRange &loc)

@@ -21,7 +21,7 @@
 namespace panda::es2panda::lexer {
 class ETSLexer final : public Lexer {
 public:
-    explicit ETSLexer(const parser::ParserContext *parser_context) : Lexer(parser_context, false)
+    explicit ETSLexer(const parser::ParserContext *parserContext) : Lexer(parserContext, false)
     {
         SkipWhiteSpaces();
     }
@@ -39,11 +39,11 @@ public:
 
     void ScanNumberLeadingZero() override
     {
-        const auto saved_lexer_position = Save();
+        const auto savedLexerPosition = Save();
         try {
             ScanNumberLeadingZeroImpl<uint32_t, uint32_t>();
         } catch (...) {
-            Rewind(saved_lexer_position);
+            Rewind(savedLexerPosition);
             ScanNumberLeadingZeroImpl<uint64_t, uint64_t>();
         }
     }

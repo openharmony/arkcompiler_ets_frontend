@@ -56,7 +56,7 @@ Property *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent
 bool Property::ConvertibleToPatternProperty()
 {
     // Object pattern can't contain getter or setter
-    if (IsAccessor() || is_method_) {
+    if (IsAccessor() || isMethod_) {
         return false;
     }
 
@@ -78,7 +78,7 @@ bool Property::ConvertibleToPatternProperty()
             break;
         }
         default: {
-            if (is_shorthand_) {
+            if (isShorthand_) {
                 break;
             }
 
@@ -94,15 +94,15 @@ ValidationInfo Property::ValidateExpression()
     ValidationInfo info;
 
     if (!IsComputed() && !IsMethod() && !IsAccessor() && !IsShorthand()) {
-        bool current_is_proto = false;
+        bool currentIsProto = false;
 
         if (key_->IsIdentifier()) {
-            current_is_proto = key_->AsIdentifier()->Name().Is("__proto__");
+            currentIsProto = key_->AsIdentifier()->Name().Is("__proto__");
         } else if (key_->IsStringLiteral()) {
-            current_is_proto = key_->AsStringLiteral()->Str().Is("__proto__");
+            currentIsProto = key_->AsStringLiteral()->Str().Is("__proto__");
         }
 
-        if (current_is_proto) {
+        if (currentIsProto) {
             kind_ = PropertyKind::PROTO;
         }
     }
@@ -161,9 +161,9 @@ void Property::Dump(ir::AstDumper *dumper) const
     }
 
     dumper->Add({{"type", "Property"},
-                 {"method", is_method_},
-                 {"shorthand", is_shorthand_},
-                 {"computed", is_computed_},
+                 {"method", isMethod_},
+                 {"shorthand", isShorthand_},
+                 {"computed", isComputed_},
                  {"key", key_},
                  {"value", value_},
                  {"kind", kind}});

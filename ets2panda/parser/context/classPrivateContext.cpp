@@ -23,30 +23,30 @@
 namespace panda::es2panda::parser {
 bool ClassPrivateContext::AddElement(const ir::ClassElement *elem)
 {
-    bool new_prop_is_static = elem->IsStatic();
-    util::StringView new_prop_name = elem->Id()->Name();
-    ir::MethodDefinitionKind new_prop_method_kind = ir::MethodDefinitionKind::METHOD;
+    bool newPropIsStatic = elem->IsStatic();
+    util::StringView newPropName = elem->Id()->Name();
+    ir::MethodDefinitionKind newPropMethodKind = ir::MethodDefinitionKind::METHOD;
 
     if (elem->IsMethodDefinition()) {
-        new_prop_method_kind = elem->AsMethodDefinition()->Kind();
+        newPropMethodKind = elem->AsMethodDefinition()->Kind();
     }
 
     for (const auto *prop : elements_) {
         const ir::Identifier *ident = prop->Id();
-        ir::MethodDefinitionKind method_kind = ir::MethodDefinitionKind::METHOD;
-        bool is_static = prop->IsStatic();
+        ir::MethodDefinitionKind methodKind = ir::MethodDefinitionKind::METHOD;
+        bool isStatic = prop->IsStatic();
 
         if (prop->IsMethodDefinition()) {
-            method_kind = prop->AsMethodDefinition()->Kind();
+            methodKind = prop->AsMethodDefinition()->Kind();
         }
 
-        if (ident == nullptr || !ident->IsPrivateIdent() || ident->Name() != new_prop_name ||
-            is_static != new_prop_is_static) {
+        if (ident == nullptr || !ident->IsPrivateIdent() || ident->Name() != newPropName ||
+            isStatic != newPropIsStatic) {
             continue;
         }
 
-        if ((new_prop_method_kind == ir::MethodDefinitionKind::GET && method_kind == ir::MethodDefinitionKind::SET) ||
-            (new_prop_method_kind == ir::MethodDefinitionKind::SET && method_kind == ir::MethodDefinitionKind::GET)) {
+        if ((newPropMethodKind == ir::MethodDefinitionKind::GET && methodKind == ir::MethodDefinitionKind::SET) ||
+            (newPropMethodKind == ir::MethodDefinitionKind::SET && methodKind == ir::MethodDefinitionKind::GET)) {
             continue;
         }
 

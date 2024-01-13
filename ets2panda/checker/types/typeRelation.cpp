@@ -32,8 +32,8 @@ RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target,
         return result_;
     }
 
-    RelationKey relation_key {source->Id(), target->Id()};
-    auto res = holder.cached.find(relation_key);
+    RelationKey relationKey {source->Id(), target->Id()};
+    auto res = holder.cached.find(relationKey);
     if (res == holder.cached.end()) {
         return RelationResult::CACHE_MISS;
     }
@@ -173,9 +173,9 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
     return result_ == RelationResult::TRUE;
 }
 
-void TypeRelation::RaiseError(const std::string &err_msg, const lexer::SourcePosition &loc) const
+void TypeRelation::RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const
 {
-    checker_->ThrowTypeError(err_msg, loc);
+    checker_->ThrowTypeError(errMsg, loc);
 }
 
 void TypeRelation::RaiseError(std::initializer_list<TypeErrorMessageElement> list,

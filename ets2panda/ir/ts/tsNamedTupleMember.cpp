@@ -26,19 +26,19 @@ namespace panda::es2panda::ir {
 void TSNamedTupleMember::TransformChildren(const NodeTransformer &cb)
 {
     label_ = cb(label_)->AsExpression();
-    element_type_ = static_cast<TypeNode *>(cb(element_type_));
+    elementType_ = static_cast<TypeNode *>(cb(elementType_));
 }
 
 void TSNamedTupleMember::Iterate(const NodeTraverser &cb) const
 {
     cb(label_);
-    cb(element_type_);
+    cb(elementType_);
 }
 
 void TSNamedTupleMember::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSNamedTupleMember"},
-                 {"elementType", element_type_},
+                 {"elementType", elementType_},
                  {"label", label_},
                  {"optional", AstDumper::Optional(optional_)}});
 }

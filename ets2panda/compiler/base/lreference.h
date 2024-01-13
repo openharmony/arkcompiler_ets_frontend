@@ -55,12 +55,12 @@ public:
 
     ReferenceKind Kind() const
     {
-        return ref_kind_;
+        return refKind_;
     }
 
-    void SetKind(ReferenceKind ref_kind)
+    void SetKind(ReferenceKind refKind)
     {
-        ref_kind_ = ref_kind;
+        refKind_ = refKind;
     }
 
     varbinder::Variable *Variable() const
@@ -85,31 +85,31 @@ public:
 
     bool IsDeclaration() const
     {
-        return is_declaration_;
+        return isDeclaration_;
     }
 
 protected:
     using LReferenceBase =
         std::tuple<CodeGen *, const ir::AstNode *, ReferenceKind, varbinder::ConstScopeFindResult, bool>;
-    static LReferenceBase CreateBase(CodeGen *cg, const ir::AstNode *node, bool is_declaration);
+    static LReferenceBase CreateBase(CodeGen *cg, const ir::AstNode *node, bool isDeclaration);
 
-    explicit LReference(const ir::AstNode *node, ReferenceKind ref_kind, varbinder::ConstScopeFindResult res,
-                        bool is_declaration)
-        : node_(node), ref_kind_(ref_kind), res_(res), is_declaration_(is_declaration)
+    explicit LReference(const ir::AstNode *node, ReferenceKind refKind, varbinder::ConstScopeFindResult res,
+                        bool isDeclaration)
+        : node_(node), refKind_(refKind), res_(res), isDeclaration_(isDeclaration)
     {
     }
 
 private:
     const ir::AstNode *node_;
-    ReferenceKind ref_kind_;
+    ReferenceKind refKind_;
     varbinder::ConstScopeFindResult res_;
-    bool is_declaration_;
+    bool isDeclaration_;
 };
 
 class JSLReference : public LReference {
 public:
-    JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind, varbinder::ConstScopeFindResult res,
-                 bool is_declaration);
+    JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind refKind, varbinder::ConstScopeFindResult res,
+                 bool isDeclaration);
     ~JSLReference() = default;
     NO_COPY_SEMANTIC(JSLReference);
     NO_MOVE_SEMANTIC(JSLReference);
@@ -117,22 +117,22 @@ public:
     void GetValue() const;
     void SetValue() const;
 
-    static JSLReference Create(CodeGen *cg, const ir::AstNode *node, bool is_declaration)
+    static JSLReference Create(CodeGen *cg, const ir::AstNode *node, bool isDeclaration)
     {
-        return std::make_from_tuple<JSLReference>(CreateBase(cg, node, is_declaration));
+        return std::make_from_tuple<JSLReference>(CreateBase(cg, node, isDeclaration));
     }
 
 private:
     PandaGen *pg_;
     VReg obj_;
-    VReg private_ctor_ {};
+    VReg privateCtor_ {};
     Operand prop_;
 };
 
 class ETSLReference : public LReference {
 public:
-    ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind, varbinder::ConstScopeFindResult res,
-                  bool is_declaration);
+    ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind refKind, varbinder::ConstScopeFindResult res,
+                  bool isDeclaration);
     ~ETSLReference() = default;
     NO_COPY_SEMANTIC(ETSLReference);
     NO_MOVE_SEMANTIC(ETSLReference);
@@ -140,17 +140,17 @@ public:
     void GetValue() const;
     void SetValue() const;
 
-    static ETSLReference Create(CodeGen *cg, const ir::AstNode *node, bool is_declaration);
+    static ETSLReference Create(CodeGen *cg, const ir::AstNode *node, bool isDeclaration);
     static ReferenceKind ResolveReferenceKind(const varbinder::Variable *variable);
 
 private:
-    void SetValueComputed(const ir::MemberExpression *member_expr) const;
-    void SetValueGetterSetter(const ir::MemberExpression *member_expr) const;
+    void SetValueComputed(const ir::MemberExpression *memberExpr) const;
+    void SetValueGetterSetter(const ir::MemberExpression *memberExpr) const;
 
     ETSGen *etsg_;
-    const checker::Type *static_obj_ref_ {};
-    VReg base_reg_ {};
-    VReg prop_reg_ {};
+    const checker::Type *staticObjRef_ {};
+    VReg baseReg_ {};
+    VReg propReg_ {};
 };
 }  // namespace panda::es2panda::compiler
 

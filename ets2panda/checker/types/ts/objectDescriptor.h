@@ -35,8 +35,8 @@ class ObjectDescriptor {
 public:
     explicit ObjectDescriptor(ArenaAllocator *allocator)
         : properties(allocator->Adapter()),
-          call_signatures(allocator->Adapter()),
-          construct_signatures(allocator->Adapter())
+          callSignatures(allocator->Adapter()),
+          constructSignatures(allocator->Adapter())
     {
     }
 
@@ -45,15 +45,15 @@ public:
     NO_MOVE_SEMANTIC(ObjectDescriptor);
 
     varbinder::LocalVariable *FindProperty(const util::StringView &name) const;
-    void Copy(ArenaAllocator *allocator, ObjectDescriptor *copied_desc, TypeRelation *relation,
-              GlobalTypesHolder *global_types);
+    void Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedDesc, TypeRelation *relation,
+              GlobalTypesHolder *globalTypes);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     ArenaVector<varbinder::LocalVariable *> properties;
-    ArenaVector<Signature *> call_signatures;
-    ArenaVector<Signature *> construct_signatures;
-    IndexInfo *string_index_info {};
-    IndexInfo *number_index_info {};
+    ArenaVector<Signature *> callSignatures;
+    ArenaVector<Signature *> constructSignatures;
+    IndexInfo *stringIndexInfo {};
+    IndexInfo *numberIndexInfo {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 }  // namespace panda::es2panda::checker

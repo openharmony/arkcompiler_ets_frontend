@@ -34,21 +34,21 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::checker {
-void TSChecker::CheckTruthinessOfType(Type *type, lexer::SourcePosition line_info)
+void TSChecker::CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo)
 {
     if (type->IsVoidType()) {
-        ThrowTypeError("An expression of type void cannot be tested for truthiness", line_info);
+        ThrowTypeError("An expression of type void cannot be tested for truthiness", lineInfo);
     }
 }
 
-Type *TSChecker::CheckNonNullType(Type *type, lexer::SourcePosition line_info)
+Type *TSChecker::CheckNonNullType(Type *type, lexer::SourcePosition lineInfo)
 {
     if (type->IsNullType()) {
-        ThrowTypeError("Object is possibly 'null'.", line_info);
+        ThrowTypeError("Object is possibly 'null'.", lineInfo);
     }
 
     if (type->IsUndefinedType()) {
-        ThrowTypeError("Object is possibly 'undefined'.", line_info);
+        ThrowTypeError("Object is possibly 'undefined'.", lineInfo);
     }
 
     return type;
@@ -77,22 +77,22 @@ Type *TSChecker::GetBaseTypeOfLiteralType(Type *type)
     }
 
     if (type->IsUnionType()) {
-        auto &constituent_types = type->AsUnionType()->ConstituentTypes();
-        ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
 
-        new_constituent_types.reserve(constituent_types.size());
-        for (auto *it : constituent_types) {
-            new_constituent_types.push_back(GetBaseTypeOfLiteralType(it));
+        newConstituentTypes.reserve(constituentTypes.size());
+        for (auto *it : constituentTypes) {
+            newConstituentTypes.push_back(GetBaseTypeOfLiteralType(it));
         }
 
-        return CreateUnionType(std::move(new_constituent_types));
+        return CreateUnionType(std::move(newConstituentTypes));
     }
 
     return type;
 }
 
-void TSChecker::CheckReferenceExpression(ir::Expression *expr, const char *invalid_reference_msg,
-                                         const char *invalid_optional_chain_msg)
+void TSChecker::CheckReferenceExpression(ir::Expression *expr, const char *invalidReferenceMsg,
+                                         const char *invalidOptionalChainMsg)
 {
     if (expr->IsIdentifier()) {
         const util::StringView &name = expr->AsIdentifier()->Name();
@@ -104,14 +104,14 @@ void TSChecker::CheckReferenceExpression(ir::Expression *expr, const char *inval
         }
     } else if (!expr->IsMemberExpression()) {
         if (expr->IsChainExpression()) {
-            ThrowTypeError(invalid_optional_chain_msg, expr->Start());
+            ThrowTypeError(invalidOptionalChainMsg, expr->Start());
         }
 
-        ThrowTypeError(invalid_reference_msg, expr->Start());
+        ThrowTypeError(invalidReferenceMsg, expr->Start());
     }
 }
 
-void TSChecker::CheckTestingKnownTruthyCallableOrAwaitableType([[maybe_unused]] ir::Expression *cond_expr,
+void TSChecker::CheckTestingKnownTruthyCallableOrAwaitableType([[maybe_unused]] ir::Expression *condExpr,
                                                                [[maybe_unused]] Type *type,
                                                                [[maybe_unused]] ir::AstNode *body)
 {
@@ -141,15 +141,15 @@ Type *TSChecker::ExtractDefinitelyFalsyTypes(Type *type)
     }
 
     if (type->IsUnionType()) {
-        auto &constituent_types = type->AsUnionType()->ConstituentTypes();
-        ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
 
-        new_constituent_types.reserve(constituent_types.size());
-        for (auto &it : constituent_types) {
-            new_constituent_types.push_back(ExtractDefinitelyFalsyTypes(it));
+        newConstituentTypes.reserve(constituentTypes.size());
+        for (auto &it : constituentTypes) {
+            newConstituentTypes.push_back(ExtractDefinitelyFalsyTypes(it));
         }
 
-        return CreateUnionType(std::move(new_constituent_types));
+        return CreateUnionType(std::move(newConstituentTypes));
     }
 
     return GlobalNeverType();
@@ -159,25 +159,25 @@ Type *TSChecker::RemoveDefinitelyFalsyTypes(Type *type)
 {
     if ((static_cast<uint64_t>(GetFalsyFlags(type)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY)) != 0U) {
         if (type->IsUnionType()) {
-            auto &constituent_types = type->AsUnionType()->ConstituentTypes();
-            ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
+            auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+            ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
 
-            for (auto &it : constituent_types) {
+            for (auto &it : constituentTypes) {
                 if ((static_cast<uint64_t>(GetFalsyFlags(it)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY)) ==
                     0U) {
-                    new_constituent_types.push_back(it);
+                    newConstituentTypes.push_back(it);
                 }
             }
 
-            if (new_constituent_types.empty()) {
+            if (newConstituentTypes.empty()) {
                 return GlobalNeverType();
             }
 
-            if (new_constituent_types.size() == 1) {
-                return new_constituent_types[0];
+            if (newConstituentTypes.size() == 1) {
+                return newConstituentTypes[0];
             }
 
-            return CreateUnionType(std::move(new_constituent_types));
+            return CreateUnionType(std::move(newConstituentTypes));
         }
 
         return GlobalNeverType();
@@ -205,69 +205,69 @@ TypeFlag TSChecker::GetFalsyFlags(Type *type)
     }
 
     if (type->IsUnionType()) {
-        auto &constituent_types = type->AsUnionType()->ConstituentTypes();
-        TypeFlag return_flag = TypeFlag::NONE;
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        TypeFlag returnFlag = TypeFlag::NONE;
 
-        for (auto &it : constituent_types) {
-            return_flag |= GetFalsyFlags(it);
+        for (auto &it : constituentTypes) {
+            returnFlag |= GetFalsyFlags(it);
         }
 
-        return return_flag;
+        return returnFlag;
     }
 
     return static_cast<TypeFlag>(type->TypeFlags() & TypeFlag::POSSIBLY_FALSY);
 }
 
-bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *search_var)
+bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *searchVar)
 {
     bool found = false;
 
-    parent->Iterate([this, search_var, &found](ir::AstNode *child_node) -> void {
-        varbinder::Variable *result_var = nullptr;
-        if (child_node->IsIdentifier()) {
-            auto result = Scope()->Find(child_node->AsIdentifier()->Name());
+    parent->Iterate([this, searchVar, &found](ir::AstNode *childNode) -> void {
+        varbinder::Variable *resultVar = nullptr;
+        if (childNode->IsIdentifier()) {
+            auto result = Scope()->Find(childNode->AsIdentifier()->Name());
             ASSERT(result.variable);
-            result_var = result.variable;
+            resultVar = result.variable;
         }
 
-        if (search_var == result_var) {
+        if (searchVar == resultVar) {
             found = true;
             return;
         }
 
-        if (!child_node->IsMemberExpression()) {
-            IsVariableUsedInConditionBody(child_node, search_var);
+        if (!childNode->IsMemberExpression()) {
+            IsVariableUsedInConditionBody(childNode, searchVar);
         }
     });
 
     return found;
 }
 
-bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var)
+bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar)
 {
     bool found = false;
 
-    parent->Iterate([this, search_var, &found](ir::AstNode *child_node) -> void {
-        if (child_node->IsIdentifier()) {
-            auto result = Scope()->Find(child_node->AsIdentifier()->Name());
+    parent->Iterate([this, searchVar, &found](ir::AstNode *childNode) -> void {
+        if (childNode->IsIdentifier()) {
+            auto result = Scope()->Find(childNode->AsIdentifier()->Name());
             ASSERT(result.variable);
-            if (result.variable == search_var) {
+            if (result.variable == searchVar) {
                 found = true;
                 return;
             }
         }
 
-        FindVariableInBinaryExpressionChain(child_node, search_var);
+        FindVariableInBinaryExpressionChain(childNode, searchVar);
     });
 
     return found;
 }
 
-bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var)
+bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *searchVar)
 {
     while (parent->IsBinaryExpression() &&
            parent->AsBinaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-        if (FindVariableInBinaryExpressionChain(parent, search_var)) {
+        if (FindVariableInBinaryExpressionChain(parent, searchVar)) {
             return true;
         }
 
@@ -277,32 +277,31 @@ bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbi
     return false;
 }
 
-void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *left_type, Type *right_type,
-                                     lexer::SourcePosition line_info)
+void TSChecker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
+                                     lexer::SourcePosition lineInfo)
 {
     if (!HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
-        ThrowTypeError({"operator ", op, " cannot be applied to types ", left_type, " and ", AsSrc(right_type)},
-                       line_info);
+        ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", AsSrc(rightType)},
+                       lineInfo);
     }
 
-    ThrowTypeError({"operator ", op, " cannot be applied to types ", left_type, " and ", right_type}, line_info);
+    ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", rightType}, lineInfo);
 }
 
-void TSChecker::ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition line_info,
-                                     bool is_as_src_left_type)
+void TSChecker::ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo, bool isAsSrcLeftType)
 {
-    if (is_as_src_left_type || !target->HasTypeFlag(TypeFlag::LITERAL)) {
-        ThrowTypeError({"Type '", AsSrc(source), "' is not assignable to type '", target, "'."}, line_info);
+    if (isAsSrcLeftType || !target->HasTypeFlag(TypeFlag::LITERAL)) {
+        ThrowTypeError({"Type '", AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
     }
 
-    ThrowTypeError({"Type '", source, "' is not assignable to type '", target, "'."}, line_info);
+    ThrowTypeError({"Type '", source, "' is not assignable to type '", target, "'."}, lineInfo);
 }
 
-Type *TSChecker::GetUnaryResultType(Type *operand_type)
+Type *TSChecker::GetUnaryResultType(Type *operandType)
 {
-    if (checker::TSChecker::MaybeTypeOfKind(operand_type, checker::TypeFlag::BIGINT_LIKE)) {
-        if (operand_type->HasTypeFlag(checker::TypeFlag::UNION_OR_INTERSECTION) &&
-            checker::TSChecker::MaybeTypeOfKind(operand_type, checker::TypeFlag::NUMBER_LIKE)) {
+    if (checker::TSChecker::MaybeTypeOfKind(operandType, checker::TypeFlag::BIGINT_LIKE)) {
+        if (operandType->HasTypeFlag(checker::TypeFlag::UNION_OR_INTERSECTION) &&
+            checker::TSChecker::MaybeTypeOfKind(operandType, checker::TypeFlag::NUMBER_LIKE)) {
             return GlobalNumberOrBigintType();
         }
 
@@ -312,27 +311,27 @@ Type *TSChecker::GetUnaryResultType(Type *operand_type)
     return GlobalNumberType();
 }
 
-void TSChecker::ElaborateElementwise(Type *target_type, ir::Expression *source_node, const lexer::SourcePosition &pos)
+void TSChecker::ElaborateElementwise(Type *targetType, ir::Expression *sourceNode, const lexer::SourcePosition &pos)
 {
-    auto saved_context = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE | CheckerStatus::KEEP_LITERAL_TYPE);
+    auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE | CheckerStatus::KEEP_LITERAL_TYPE);
 
-    Type *source_type = CheckTypeCached(source_node);
+    Type *sourceType = CheckTypeCached(sourceNode);
 
-    if (IsTypeAssignableTo(source_type, target_type)) {
+    if (IsTypeAssignableTo(sourceType, targetType)) {
         return;
     }
 
-    if (target_type->IsArrayType() && source_node->IsArrayExpression()) {
-        ArrayElaborationContext(this, target_type, source_type, source_node, pos).Start();
-    } else if (target_type->IsObjectType() || target_type->IsUnionType()) {
-        if (source_node->IsObjectExpression()) {
-            ObjectElaborationContext(this, target_type, source_type, source_node, pos).Start();
-        } else if (source_node->IsArrayExpression()) {
-            ArrayElaborationContext(this, target_type, source_type, source_node, pos).Start();
+    if (targetType->IsArrayType() && sourceNode->IsArrayExpression()) {
+        ArrayElaborationContext(this, targetType, sourceType, sourceNode, pos).Start();
+    } else if (targetType->IsObjectType() || targetType->IsUnionType()) {
+        if (sourceNode->IsObjectExpression()) {
+            ObjectElaborationContext(this, targetType, sourceType, sourceNode, pos).Start();
+        } else if (sourceNode->IsArrayExpression()) {
+            ArrayElaborationContext(this, targetType, sourceType, sourceNode, pos).Start();
         }
     }
 
-    ThrowAssignmentError(source_type, target_type, pos);
+    ThrowAssignmentError(sourceType, targetType, pos);
 }
 
 void TSChecker::InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declarator)
@@ -399,13 +398,13 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
             break;
         }
         case varbinder::DeclType::METHOD: {
-            auto *signature_info = Allocator()->New<checker::SignatureInfo>(Allocator());
-            auto *call_signature = Allocator()->New<checker::Signature>(signature_info, GlobalAnyType());
-            var->SetTsType(CreateFunctionTypeWithSignature(call_signature));
+            auto *signatureInfo = Allocator()->New<checker::SignatureInfo>(Allocator());
+            auto *callSignature = Allocator()->New<checker::Signature>(signatureInfo, GlobalAnyType());
+            var->SetTsType(CreateFunctionTypeWithSignature(callSignature));
             break;
         }
         case varbinder::DeclType::FUNC: {
-            checker::ScopeContext scope_ctx(this, decl->Node()->AsScriptFunction()->Scope());
+            checker::ScopeContext scopeCtx(this, decl->Node()->AsScriptFunction()->Scope());
             InferFunctionDeclarationType(decl->AsFunctionDecl(), var);
             break;
         }
@@ -440,9 +439,9 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
         }
         case varbinder::DeclType::ENUM: {
             ASSERT(var->IsEnumVariable());
-            varbinder::EnumVariable *enum_var = var->AsEnumVariable();
+            varbinder::EnumVariable *enumVar = var->AsEnumVariable();
 
-            if (std::holds_alternative<bool>(enum_var->Value())) {
+            if (std::holds_alternative<bool>(enumVar->Value())) {
                 ThrowTypeError(
                     "A member initializer in a enum declaration cannot reference members declared after it, "
                     "including "
@@ -450,7 +449,7 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
                     decl->Node()->Start());
             }
 
-            var->SetTsType(std::holds_alternative<double>(enum_var->Value()) ? GlobalNumberType() : GlobalStringType());
+            var->SetTsType(std::holds_alternative<double>(enumVar->Value()) ? GlobalNumberType() : GlobalStringType());
             break;
         }
         case varbinder::DeclType::ENUM_LITERAL: {
@@ -467,34 +466,34 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
 Type *TSChecker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] ir::TSTypeReference *node,
                                                       varbinder::Variable *var)
 {
-    Type *resolved_type = var->TsType();
+    Type *resolvedType = var->TsType();
 
-    if (resolved_type == nullptr) {
+    if (resolvedType == nullptr) {
         ObjectDescriptor *desc = Allocator()->New<ObjectDescriptor>(Allocator());
-        resolved_type = Allocator()->New<InterfaceType>(Allocator(), var->Name(), desc);
-        resolved_type->SetVariable(var);
-        var->SetTsType(resolved_type);
+        resolvedType = Allocator()->New<InterfaceType>(Allocator(), var->Name(), desc);
+        resolvedType->SetVariable(var);
+        var->SetTsType(resolvedType);
     }
 
-    return resolved_type;
+    return resolvedType;
 }
 
 Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbinder::Variable *var)
 {
-    Type *resolved_type = var->TsType();
+    Type *resolvedType = var->TsType();
 
-    if (resolved_type != nullptr) {
-        return resolved_type;
+    if (resolvedType != nullptr) {
+        return resolvedType;
     }
 
     TypeStackElement tse(this, var, {"Type alias ", var->Name(), " circularly refences itself"}, node->Start());
 
     ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
     ir::TSTypeAliasDeclaration *declaration = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
-    resolved_type = declaration->TypeAnnotation()->GetType(this);
-    var->SetTsType(resolved_type);
+    resolvedType = declaration->TypeAnnotation()->GetType(this);
+    var->SetTsType(resolvedType);
 
-    return resolved_type;
+    return resolvedType;
 }
 
 Type *TSChecker::GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Variable *var)

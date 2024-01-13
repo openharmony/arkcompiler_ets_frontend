@@ -47,7 +47,7 @@ public:
         panda::mem::MemConfig::Finalize();
     };
 
-    static panda::pandasm::Program *GetProgram(int argc, const char **argv, std::string_view file_name,
+    static panda::pandasm::Program *GetProgram(int argc, const char **argv, std::string_view fileName,
                                                std::string_view src)
     {
         auto options = std::make_unique<panda::es2panda::util::Options>();
@@ -61,7 +61,7 @@ public:
         panda::Logger::InitializeStdLogging(panda::Logger::LevelFromString(options->LogLevel()), mask);
 
         panda::es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-        panda::es2panda::SourceFile input(file_name, src, options->ParseModule());
+        panda::es2panda::SourceFile input(fileName, src, options->ParseModule());
 
         return compiler.Compile(input, options->CompilerOptions());
     }
@@ -91,9 +91,9 @@ TEST_F(ASTDumperTest, DumpJsonSimple)
 
     ASSERT_NE(program, nullptr);
 
-    auto dump_str = program->JsonDump();
+    auto dumpStr = program->JsonDump();
 
-    ASSERT_FALSE(dump_str.empty());
+    ASSERT_FALSE(dumpStr.empty());
 }
 
 TEST_F(ASTDumperTest, DumpJsonUTF16Char)
@@ -117,9 +117,9 @@ TEST_F(ASTDumperTest, DumpJsonUTF16Char)
 
     ASSERT_NE(program, nullptr);
 
-    auto dump_str = program->JsonDump();
+    auto dumpStr = program->JsonDump();
 
-    ASSERT_FALSE(dump_str.empty());
+    ASSERT_FALSE(dumpStr.empty());
 }
 
 TEST_F(ASTDumperTest, DumpEtsSrcSimple)
@@ -144,7 +144,7 @@ TEST_F(ASTDumperTest, DumpEtsSrcSimple)
 
     ASSERT_NE(program, nullptr);
 
-    auto dump_str = program->JsonDump();
+    auto dumpStr = program->JsonDump();
 
-    ASSERT_FALSE(dump_str.empty());
+    ASSERT_FALSE(dumpStr.empty());
 }

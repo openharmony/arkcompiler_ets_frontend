@@ -30,9 +30,8 @@ public:
     NO_COPY_SEMANTIC(TaggedTemplateExpression);
     NO_MOVE_SEMANTIC(TaggedTemplateExpression);
 
-    explicit TaggedTemplateExpression(Expression *tag, TemplateLiteral *quasi,
-                                      TSTypeParameterInstantiation *type_params)
-        : Expression(AstNodeType::TAGGED_TEMPLATE_EXPRESSION), tag_(tag), quasi_(quasi), type_params_(type_params)
+    explicit TaggedTemplateExpression(Expression *tag, TemplateLiteral *quasi, TSTypeParameterInstantiation *typeParams)
+        : Expression(AstNodeType::TAGGED_TEMPLATE_EXPRESSION), tag_(tag), quasi_(quasi), typeParams_(typeParams)
     {
     }
 
@@ -48,7 +47,7 @@ public:
 
     [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept
     {
-        return type_params_;
+        return typeParams_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -71,7 +70,7 @@ public:
 private:
     Expression *tag_;
     TemplateLiteral *quasi_;
-    TSTypeParameterInstantiation *type_params_;
+    TSTypeParameterInstantiation *typeParams_;
 };
 }  // namespace panda::es2panda::ir
 

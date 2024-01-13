@@ -49,24 +49,24 @@ Type *TSChecker::HandleFunctionReturn(ir::ScriptFunction *func)
 {
     if (func->ReturnTypeAnnotation() != nullptr) {
         func->ReturnTypeAnnotation()->Check(this);
-        Type *return_type = func->ReturnTypeAnnotation()->GetType(this);
+        Type *returnType = func->ReturnTypeAnnotation()->GetType(this);
 
         if (func->IsArrow() && func->Body()->IsExpression()) {
-            ElaborateElementwise(return_type, func->Body()->AsExpression(), func->Body()->Start());
+            ElaborateElementwise(returnType, func->Body()->AsExpression(), func->Body()->Start());
         }
 
-        if (return_type->IsNeverType()) {
+        if (returnType->IsNeverType()) {
             ThrowTypeError("A function returning 'never' cannot have a reachable end point.",
                            func->ReturnTypeAnnotation()->Start());
         }
 
-        if (!MaybeTypeOfKind(return_type, TypeFlag::ANY_OR_VOID)) {
+        if (!MaybeTypeOfKind(returnType, TypeFlag::ANY_OR_VOID)) {
             CheckAllCodePathsInNonVoidFunctionReturnOrThrow(
                 func, func->ReturnTypeAnnotation()->Start(),
                 "A function whose declared type is neither 'void' nor 'any' must return a value.");
         }
 
-        return return_type;
+        return returnType;
     }
 
     if (func->Declare()) {
@@ -77,24 +77,24 @@ Type *TSChecker::HandleFunctionReturn(ir::ScriptFunction *func)
         return func->Body()->Check(this);
     }
 
-    ArenaVector<Type *> return_types(Allocator()->Adapter());
-    CollectTypesFromReturnStatements(func->Body(), &return_types);
+    ArenaVector<Type *> returnTypes(Allocator()->Adapter());
+    CollectTypesFromReturnStatements(func->Body(), &returnTypes);
 
-    if (return_types.empty()) {
+    if (returnTypes.empty()) {
         return GlobalVoidType();
     }
 
-    if (return_types.size() == 1 && return_types[0] == GlobalResolvingReturnType()) {
+    if (returnTypes.size() == 1 && returnTypes[0] == GlobalResolvingReturnType()) {
         ThrowReturnTypeCircularityError(func);
     }
 
-    for (auto *it : return_types) {
+    for (auto *it : returnTypes) {
         if (it == GlobalResolvingReturnType()) {
             ThrowReturnTypeCircularityError(func);
         }
     }
 
-    return CreateUnionType(std::move(return_types));
+    return CreateUnionType(std::move(returnTypes));
 }
 
 void TSChecker::ThrowReturnTypeCircularityError(ir::ScriptFunction *func)
@@ -120,182 +120,179 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
     ir::Identifier *param)
 {
     ASSERT(param->Variable());
-    varbinder::Variable *param_var = param->Variable();
-    bool is_optional = param->IsOptional();
+    varbinder::Variable *paramVar = param->Variable();
+    bool isOptional = param->IsOptional();
 
     if (param->TypeAnnotation() == nullptr) {
         ThrowTypeError({"Parameter ", param->Name(), " implicitly has any type."}, param->Start());
     }
 
-    if (is_optional) {
-        param_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
+    if (isOptional) {
+        paramVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
     }
 
     param->TypeAnnotation()->Check(this);
-    param_var->SetTsType(param->TypeAnnotation()->GetType(this));
-    return {param_var->AsLocalVariable(), nullptr, is_optional};
+    paramVar->SetTsType(param->TypeAnnotation()->GetType(this));
+    return {paramVar->AsLocalVariable(), nullptr, isOptional};
 }
 
-Type *TSChecker::CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpression *array_pattern, Type *inferred_type)
+Type *TSChecker::CreateParameterTypeForArrayAssignmentPattern(ir::ArrayExpression *arrayPattern, Type *inferredType)
 {
-    if (!inferred_type->IsObjectType()) {
-        return inferred_type;
+    if (!inferredType->IsObjectType()) {
+        return inferredType;
     }
 
-    ASSERT(inferred_type->AsObjectType()->IsTupleType());
-    TupleType *inferred_tuple = inferred_type->AsObjectType()->AsTupleType();
+    ASSERT(inferredType->AsObjectType()->IsTupleType());
+    TupleType *inferredTuple = inferredType->AsObjectType()->AsTupleType();
 
-    if (inferred_tuple->FixedLength() > array_pattern->Elements().size()) {
-        return inferred_type;
+    if (inferredTuple->FixedLength() > arrayPattern->Elements().size()) {
+        return inferredType;
     }
 
-    TupleType *new_tuple =
-        inferred_tuple->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsObjectType()->AsTupleType();
+    TupleType *newTuple =
+        inferredTuple->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsObjectType()->AsTupleType();
 
-    for (uint32_t index = inferred_tuple->FixedLength(); index < array_pattern->Elements().size(); index++) {
-        util::StringView member_index = util::Helpers::ToStringView(Allocator(), index);
-        varbinder::LocalVariable *new_member = varbinder::Scope::CreateVar(
-            Allocator(), member_index, varbinder::VariableFlags::PROPERTY | varbinder::VariableFlags::OPTIONAL,
-            nullptr);
-        new_member->SetTsType(GlobalAnyType());
-        new_tuple->AddProperty(new_member);
+    for (uint32_t index = inferredTuple->FixedLength(); index < arrayPattern->Elements().size(); index++) {
+        util::StringView memberIndex = util::Helpers::ToStringView(Allocator(), index);
+        varbinder::LocalVariable *newMember = varbinder::Scope::CreateVar(
+            Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY | varbinder::VariableFlags::OPTIONAL, nullptr);
+        newMember->SetTsType(GlobalAnyType());
+        newTuple->AddProperty(newMember);
     }
 
-    return new_tuple;
+    return newTuple;
 }
 
-Type *TSChecker::CreateParameterTypeForObjectAssignmentPattern(ir::ObjectExpression *object_pattern,
-                                                               Type *inferred_type)
+Type *TSChecker::CreateParameterTypeForObjectAssignmentPattern(ir::ObjectExpression *objectPattern, Type *inferredType)
 {
-    if (!inferred_type->IsObjectType()) {
-        return inferred_type;
+    if (!inferredType->IsObjectType()) {
+        return inferredType;
     }
 
-    ObjectType *new_object =
-        inferred_type->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsObjectType();
+    ObjectType *newObject = inferredType->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsObjectType();
 
-    for (auto *it : object_pattern->Properties()) {
+    for (auto *it : objectPattern->Properties()) {
         if (it->IsRestElement()) {
             continue;
         }
 
         ir::Property *prop = it->AsProperty();
-        varbinder::LocalVariable *found_var = new_object->GetProperty(prop->Key()->AsIdentifier()->Name(), true);
+        varbinder::LocalVariable *foundVar = newObject->GetProperty(prop->Key()->AsIdentifier()->Name(), true);
 
-        if (found_var != nullptr) {
+        if (foundVar != nullptr) {
             if (prop->Value()->IsAssignmentPattern()) {
-                found_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
+                foundVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
             }
 
             continue;
         }
 
         ASSERT(prop->Value()->IsAssignmentPattern());
-        ir::AssignmentExpression *assignment_pattern = prop->Value()->AsAssignmentPattern();
+        ir::AssignmentExpression *assignmentPattern = prop->Value()->AsAssignmentPattern();
 
-        varbinder::LocalVariable *new_prop = varbinder::Scope::CreateVar(
+        varbinder::LocalVariable *newProp = varbinder::Scope::CreateVar(
             Allocator(), prop->Key()->AsIdentifier()->Name(),
             varbinder::VariableFlags::PROPERTY | varbinder::VariableFlags::OPTIONAL, nullptr);
-        new_prop->SetTsType(GetBaseTypeOfLiteralType(CheckTypeCached(assignment_pattern->Right())));
-        new_object->AddProperty(new_prop);
+        newProp->SetTsType(GetBaseTypeOfLiteralType(CheckTypeCached(assignmentPattern->Right())));
+        newObject->AddProperty(newProp);
     }
 
-    new_object->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
-    return new_object;
+    newObject->AddObjectFlag(ObjectFlags::RESOLVED_MEMBERS);
+    return newObject;
 }
 
 using ReturnedVariable = std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool>;
 ReturnedVariable TSChecker::CheckFunctionAssignmentPatternParameter(ir::AssignmentExpression *param)
 {
     if (param->Left()->IsIdentifier()) {
-        ir::Identifier *param_ident = param->Left()->AsIdentifier();
-        varbinder::Variable *param_var = param_ident->Variable();
-        ASSERT(param_var);
+        ir::Identifier *paramIdent = param->Left()->AsIdentifier();
+        varbinder::Variable *paramVar = paramIdent->Variable();
+        ASSERT(paramVar);
 
-        if (param_ident->TypeAnnotation() != nullptr) {
-            param_ident->TypeAnnotation()->Check(this);
-            Type *param_type = param_ident->TypeAnnotation()->GetType(this);
-            param_var->SetTsType(param_type);
-            ElaborateElementwise(param_type, param->Right(), param_ident->Start());
-            return {param_var->AsLocalVariable(), nullptr, true};
+        if (paramIdent->TypeAnnotation() != nullptr) {
+            paramIdent->TypeAnnotation()->Check(this);
+            Type *paramType = paramIdent->TypeAnnotation()->GetType(this);
+            paramVar->SetTsType(paramType);
+            ElaborateElementwise(paramType, param->Right(), paramIdent->Start());
+            return {paramVar->AsLocalVariable(), nullptr, true};
         }
 
-        param_var->SetTsType(GetBaseTypeOfLiteralType(param->Right()->Check(this)));
-        param_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
-        return {param_var->AsLocalVariable(), nullptr, true};
+        paramVar->SetTsType(GetBaseTypeOfLiteralType(param->Right()->Check(this)));
+        paramVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
+        return {paramVar->AsLocalVariable(), nullptr, true};
     }
 
-    Type *param_type = nullptr;
+    Type *paramType = nullptr;
     std::stringstream ss;
 
-    auto saved_context = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE | CheckerStatus::IN_PARAMETER);
+    auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE | CheckerStatus::IN_PARAMETER);
 
     if (param->Left()->IsArrayPattern()) {
-        ir::ArrayExpression *array_pattern = param->Left()->AsArrayPattern();
-        auto context = ArrayDestructuringContext(this, array_pattern, false, true, array_pattern->TypeAnnotation(),
-                                                 param->Right());
+        ir::ArrayExpression *arrayPattern = param->Left()->AsArrayPattern();
+        auto context =
+            ArrayDestructuringContext(this, arrayPattern, false, true, arrayPattern->TypeAnnotation(), param->Right());
         context.Start();
-        param_type = CreateParameterTypeForArrayAssignmentPattern(array_pattern, context.InferredType());
+        paramType = CreateParameterTypeForArrayAssignmentPattern(arrayPattern, context.InferredType());
         CreatePatternParameterName(param->Left(), ss);
     } else {
-        ir::ObjectExpression *object_pattern = param->Left()->AsObjectPattern();
-        auto context = ObjectDestructuringContext(this, object_pattern, false, true, object_pattern->TypeAnnotation(),
+        ir::ObjectExpression *objectPattern = param->Left()->AsObjectPattern();
+        auto context = ObjectDestructuringContext(this, objectPattern, false, true, objectPattern->TypeAnnotation(),
                                                   param->Right());
         context.Start();
-        param_type = CreateParameterTypeForObjectAssignmentPattern(object_pattern, context.InferredType());
+        paramType = CreateParameterTypeForObjectAssignmentPattern(objectPattern, context.InferredType());
         CreatePatternParameterName(param->Left(), ss);
     }
 
     util::UString pn(ss.str(), Allocator());
-    varbinder::LocalVariable *pattern_var =
+    varbinder::LocalVariable *patternVar =
         varbinder::Scope::CreateVar(Allocator(), pn.View(), varbinder::VariableFlags::NONE, param);
-    pattern_var->SetTsType(param_type);
-    pattern_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
-    return {pattern_var->AsLocalVariable(), nullptr, true};
+    patternVar->SetTsType(paramType);
+    patternVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
+    return {patternVar->AsLocalVariable(), nullptr, true};
 }
 
 std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSChecker::CheckFunctionRestParameter(
-    ir::SpreadElement *param, SignatureInfo *signature_info)
+    ir::SpreadElement *param, SignatureInfo *signatureInfo)
 {
-    ir::TypeNode *type_annotation = nullptr;
+    ir::TypeNode *typeAnnotation = nullptr;
     if (param->Argument() != nullptr) {
-        type_annotation = param->Argument()->AsAnnotatedExpression()->TypeAnnotation();
+        typeAnnotation = param->Argument()->AsAnnotatedExpression()->TypeAnnotation();
     }
 
-    Type *rest_type = Allocator()->New<ArrayType>(GlobalAnyType());
+    Type *restType = Allocator()->New<ArrayType>(GlobalAnyType());
 
-    if (type_annotation != nullptr) {
-        type_annotation->Check(this);
-        rest_type = type_annotation->GetType(this);
-        if (!rest_type->IsArrayType()) {
+    if (typeAnnotation != nullptr) {
+        typeAnnotation->Check(this);
+        restType = typeAnnotation->GetType(this);
+        if (!restType->IsArrayType()) {
             ThrowTypeError("A rest parameter must be of an array type", param->Start());
         }
     }
 
     switch (param->Argument()->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            ir::Identifier *rest_ident = param->Argument()->AsIdentifier();
-            ASSERT(rest_ident->Variable());
-            rest_ident->Variable()->SetTsType(rest_type->AsArrayType()->ElementType());
-            return {nullptr, rest_ident->Variable()->AsLocalVariable(), false};
+            ir::Identifier *restIdent = param->Argument()->AsIdentifier();
+            ASSERT(restIdent->Variable());
+            restIdent->Variable()->SetTsType(restType->AsArrayType()->ElementType());
+            return {nullptr, restIdent->Variable()->AsLocalVariable(), false};
         }
         case ir::AstNodeType::OBJECT_PATTERN: {
             ASSERT(param->Argument()->IsObjectPattern());
-            auto saved_context = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
-            auto destructuring_context =
+            auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
+            auto destructuringContext =
                 ObjectDestructuringContext(this, param->Argument(), false, false, nullptr, nullptr);
-            destructuring_context.SetInferredType(rest_type);
-            destructuring_context.SetSignatureInfo(signature_info);
-            destructuring_context.Start();
+            destructuringContext.SetInferredType(restType);
+            destructuringContext.SetSignatureInfo(signatureInfo);
+            destructuringContext.Start();
             return {nullptr, nullptr, false};
         }
         case ir::AstNodeType::ARRAY_PATTERN: {
-            auto saved_context = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
-            auto destructuring_context =
+            auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
+            auto destructuringContext =
                 ArrayDestructuringContext(this, param->Argument(), false, false, nullptr, nullptr);
-            destructuring_context.SetInferredType(rest_type);
-            destructuring_context.SetSignatureInfo(signature_info);
-            destructuring_context.Start();
+            destructuringContext.SetInferredType(restType);
+            destructuringContext.SetSignatureInfo(signatureInfo);
+            destructuringContext.Start();
             return {nullptr, nullptr, false};
         }
         default: {
@@ -310,20 +307,20 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
     std::stringstream ss;
     CreatePatternParameterName(param, ss);
     util::UString pn(ss.str(), Allocator());
-    varbinder::LocalVariable *pattern_var =
+    varbinder::LocalVariable *patternVar =
         varbinder::Scope::CreateVar(Allocator(), pn.View(), varbinder::VariableFlags::NONE, param);
 
     if (param->TypeAnnotation() != nullptr) {
-        auto saved_context = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
-        auto destructuring_context =
+        auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
+        auto destructuringContext =
             ArrayDestructuringContext(this, param->AsArrayPattern(), false, false, param->TypeAnnotation(), nullptr);
-        destructuring_context.Start();
-        pattern_var->SetTsType(destructuring_context.InferredType());
-        return {pattern_var->AsLocalVariable(), nullptr, false};
+        destructuringContext.Start();
+        patternVar->SetTsType(destructuringContext.InferredType());
+        return {patternVar->AsLocalVariable(), nullptr, false};
     }
 
-    pattern_var->SetTsType(param->CheckPattern(this));
-    return {pattern_var->AsLocalVariable(), nullptr, false};
+    patternVar->SetTsType(param->CheckPattern(this));
+    return {patternVar->AsLocalVariable(), nullptr, false};
 }
 
 std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSChecker::CheckFunctionObjectPatternParameter(
@@ -332,24 +329,24 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
     std::stringstream ss;
     CreatePatternParameterName(param, ss);
     util::UString pn(ss.str(), Allocator());
-    varbinder::LocalVariable *pattern_var =
+    varbinder::LocalVariable *patternVar =
         varbinder::Scope::CreateVar(Allocator(), pn.View(), varbinder::VariableFlags::NONE, param);
 
     if (param->TypeAnnotation() != nullptr) {
-        auto saved_context = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
-        auto destructuring_context =
+        auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
+        auto destructuringContext =
             ObjectDestructuringContext(this, param->AsObjectPattern(), false, false, param->TypeAnnotation(), nullptr);
-        destructuring_context.Start();
-        pattern_var->SetTsType(destructuring_context.InferredType());
-        return {pattern_var->AsLocalVariable(), nullptr, false};
+        destructuringContext.Start();
+        patternVar->SetTsType(destructuringContext.InferredType());
+        return {patternVar->AsLocalVariable(), nullptr, false};
     }
 
-    pattern_var->SetTsType(param->CheckPattern(this));
-    return {pattern_var->AsLocalVariable(), nullptr, false};
+    patternVar->SetTsType(param->CheckPattern(this));
+    return {patternVar->AsLocalVariable(), nullptr, false};
 }
 
 std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSChecker::CheckFunctionParameter(
-    ir::Expression *param, SignatureInfo *signature_info)
+    ir::Expression *param, SignatureInfo *signatureInfo)
 {
     if (param->TsType() != nullptr) {
         ASSERT(param->TsType()->Variable());
@@ -370,7 +367,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
             break;
         }
         case ir::AstNodeType::REST_ELEMENT: {
-            result = CheckFunctionRestParameter(param->AsRestElement(), signature_info);
+            result = CheckFunctionRestParameter(param->AsRestElement(), signatureInfo);
             cache = false;
             break;
         }
@@ -397,16 +394,16 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
 }
 
 void TSChecker::CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params,
-                                                   SignatureInfo *signature_info)
+                                                   SignatureInfo *signatureInfo)
 {
-    signature_info->rest_var = nullptr;
-    signature_info->min_arg_count = 0;
+    signatureInfo->restVar = nullptr;
+    signatureInfo->minArgCount = 0;
 
     for (auto it = params.rbegin(); it != params.rend(); it++) {
-        auto [paramVar, restVar, isOptional] = CheckFunctionParameter(*it, signature_info);
+        auto [paramVar, restVar, isOptional] = CheckFunctionParameter(*it, signatureInfo);
 
         if (restVar != nullptr) {
-            signature_info->rest_var = restVar;
+            signatureInfo->restVar = restVar;
             continue;
         }
 
@@ -414,19 +411,19 @@ void TSChecker::CheckFunctionParameterDeclarations(const ArenaVector<ir::Express
             continue;
         }
 
-        signature_info->params.insert(signature_info->params.begin(), paramVar);
+        signatureInfo->params.insert(signatureInfo->params.begin(), paramVar);
 
         if (!isOptional) {
-            signature_info->min_arg_count++;
+            signatureInfo->minArgCount++;
         }
     }
 }
 
-bool ShouldCreatePropertyValueName(ir::Expression *prop_value)
+bool ShouldCreatePropertyValueName(ir::Expression *propValue)
 {
-    return prop_value->IsArrayPattern() || prop_value->IsObjectPattern() ||
-           (prop_value->IsAssignmentPattern() && (prop_value->AsAssignmentPattern()->Left()->IsArrayPattern() ||
-                                                  prop_value->AsAssignmentPattern()->Left()->IsObjectPattern()));
+    return propValue->IsArrayPattern() || propValue->IsObjectPattern() ||
+           (propValue->IsAssignmentPattern() && (propValue->AsAssignmentPattern()->Left()->IsArrayPattern() ||
+                                                 propValue->AsAssignmentPattern()->Left()->IsObjectPattern()));
 }
 
 void TSChecker::CreatePatternParameterName(ir::AstNode *node, std::stringstream &ss)
@@ -470,23 +467,23 @@ void TSChecker::CreatePatternParameterName(ir::AstNode *node, std::stringstream 
         }
         case ir::AstNodeType::PROPERTY: {
             ir::Property *prop = node->AsProperty();
-            util::StringView prop_name;
+            util::StringView propName;
 
             if (prop->Key()->IsIdentifier()) {
-                prop_name = prop->Key()->AsIdentifier()->Name();
+                propName = prop->Key()->AsIdentifier()->Name();
             } else {
                 switch (prop->Key()->Type()) {
                     case ir::AstNodeType::NUMBER_LITERAL: {
-                        prop_name = util::Helpers::ToStringView(Allocator(),
-                                                                prop->Key()->AsNumberLiteral()->Number().GetDouble());
+                        propName = util::Helpers::ToStringView(Allocator(),
+                                                               prop->Key()->AsNumberLiteral()->Number().GetDouble());
                         break;
                     }
                     case ir::AstNodeType::BIGINT_LITERAL: {
-                        prop_name = prop->Key()->AsBigIntLiteral()->Str();
+                        propName = prop->Key()->AsBigIntLiteral()->Str();
                         break;
                     }
                     case ir::AstNodeType::STRING_LITERAL: {
-                        prop_name = prop->Key()->AsStringLiteral()->Str();
+                        propName = prop->Key()->AsStringLiteral()->Str();
                         break;
                     }
                     default: {
@@ -496,7 +493,7 @@ void TSChecker::CreatePatternParameterName(ir::AstNode *node, std::stringstream 
                 }
             }
 
-            ss << prop_name;
+            ss << propName;
 
             if (ShouldCreatePropertyValueName(prop->Value())) {
                 ss << ": ";
@@ -527,81 +524,79 @@ ir::Statement *FindSubsequentFunctionNode(ir::BlockStatement *block, ir::ScriptF
     return nullptr;
 }
 
-void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *func_var)
+void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *funcVar)
 {
-    ir::ScriptFunction *body_declaration = decl->Decls().back();
+    ir::ScriptFunction *bodyDeclaration = decl->Decls().back();
 
-    if (body_declaration->IsOverload()) {
+    if (bodyDeclaration->IsOverload()) {
         ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
-                       body_declaration->Id()->Start());
+                       bodyDeclaration->Id()->Start());
     }
 
-    ObjectDescriptor *desc_with_overload = Allocator()->New<ObjectDescriptor>(Allocator());
+    ObjectDescriptor *descWithOverload = Allocator()->New<ObjectDescriptor>(Allocator());
 
     for (auto it = decl->Decls().begin(); it != decl->Decls().end() - 1; it++) {
         ir::ScriptFunction *func = *it;
         ASSERT(func->IsOverload() && (*it)->Parent()->Parent()->IsBlockStatement());
-        ir::Statement *subsequent_node =
-            FindSubsequentFunctionNode((*it)->Parent()->Parent()->AsBlockStatement(), func);
-        ASSERT(subsequent_node);
+        ir::Statement *subsequentNode = FindSubsequentFunctionNode((*it)->Parent()->Parent()->AsBlockStatement(), func);
+        ASSERT(subsequentNode);
 
-        if (!subsequent_node->IsFunctionDeclaration()) {
+        if (!subsequentNode->IsFunctionDeclaration()) {
             ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
                            func->Id()->Start());
         }
 
-        ir::ScriptFunction *subsequent_func = subsequent_node->AsFunctionDeclaration()->Function();
+        ir::ScriptFunction *subsequentFunc = subsequentNode->AsFunctionDeclaration()->Function();
 
-        if (subsequent_func->Id()->Name() != func->Id()->Name()) {
+        if (subsequentFunc->Id()->Name() != func->Id()->Name()) {
             ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
                            func->Id()->Start());
         }
 
-        if (subsequent_func->Declare() != func->Declare()) {
+        if (subsequentFunc->Declare() != func->Declare()) {
             ThrowTypeError("Overload signatures must all be ambient or non-ambient.", func->Id()->Start());
         }
 
-        ScopeContext scope_ctx(this, func->Scope());
+        ScopeContext scopeCtx(this, func->Scope());
 
-        auto *overload_signature_info = Allocator()->New<checker::SignatureInfo>(Allocator());
-        CheckFunctionParameterDeclarations(func->Params(), overload_signature_info);
+        auto *overloadSignatureInfo = Allocator()->New<checker::SignatureInfo>(Allocator());
+        CheckFunctionParameterDeclarations(func->Params(), overloadSignatureInfo);
 
-        Type *return_type = GlobalAnyType();
+        Type *returnType = GlobalAnyType();
 
         if (func->ReturnTypeAnnotation() != nullptr) {
             func->ReturnTypeAnnotation()->Check(this);
-            return_type = func->ReturnTypeAnnotation()->GetType(this);
+            returnType = func->ReturnTypeAnnotation()->GetType(this);
         }
 
-        Signature *overload_signature =
-            Allocator()->New<checker::Signature>(overload_signature_info, return_type, func);
-        desc_with_overload->call_signatures.push_back(overload_signature);
+        Signature *overloadSignature = Allocator()->New<checker::Signature>(overloadSignatureInfo, returnType, func);
+        descWithOverload->callSignatures.push_back(overloadSignature);
     }
 
-    ScopeContext scope_ctx(this, body_declaration->Scope());
+    ScopeContext scopeCtx(this, bodyDeclaration->Scope());
 
-    auto *signature_info = Allocator()->New<checker::SignatureInfo>(Allocator());
-    CheckFunctionParameterDeclarations(body_declaration->Params(), signature_info);
-    auto *body_call_signature = Allocator()->New<checker::Signature>(signature_info, GlobalResolvingReturnType());
+    auto *signatureInfo = Allocator()->New<checker::SignatureInfo>(Allocator());
+    CheckFunctionParameterDeclarations(bodyDeclaration->Params(), signatureInfo);
+    auto *bodyCallSignature = Allocator()->New<checker::Signature>(signatureInfo, GlobalResolvingReturnType());
 
-    if (desc_with_overload->call_signatures.empty()) {
-        Type *func_type = CreateFunctionTypeWithSignature(body_call_signature);
-        func_type->SetVariable(func_var);
-        func_var->SetTsType(func_type);
+    if (descWithOverload->callSignatures.empty()) {
+        Type *funcType = CreateFunctionTypeWithSignature(bodyCallSignature);
+        funcType->SetVariable(funcVar);
+        funcVar->SetTsType(funcType);
     }
 
-    body_call_signature->SetReturnType(HandleFunctionReturn(body_declaration));
+    bodyCallSignature->SetReturnType(HandleFunctionReturn(bodyDeclaration));
 
-    if (!desc_with_overload->call_signatures.empty()) {
-        Type *func_type = Allocator()->New<FunctionType>(desc_with_overload);
-        func_type->SetVariable(func_var);
-        func_var->SetTsType(func_type);
+    if (!descWithOverload->callSignatures.empty()) {
+        Type *funcType = Allocator()->New<FunctionType>(descWithOverload);
+        funcType->SetVariable(funcVar);
+        funcVar->SetTsType(funcType);
 
-        for (auto *iter : desc_with_overload->call_signatures) {
-            if (body_call_signature->ReturnType()->IsVoidType() ||
-                IsTypeAssignableTo(body_call_signature->ReturnType(), iter->ReturnType()) ||
-                IsTypeAssignableTo(iter->ReturnType(), body_call_signature->ReturnType())) {
-                body_call_signature->AssignmentTarget(Relation(), iter);
+        for (auto *iter : descWithOverload->callSignatures) {
+            if (bodyCallSignature->ReturnType()->IsVoidType() ||
+                IsTypeAssignableTo(bodyCallSignature->ReturnType(), iter->ReturnType()) ||
+                IsTypeAssignableTo(iter->ReturnType(), bodyCallSignature->ReturnType())) {
+                bodyCallSignature->AssignmentTarget(Relation(), iter);
 
                 if (Relation()->IsTrue()) {
                     continue;
@@ -615,25 +610,25 @@ void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl
     }
 }
 
-void TSChecker::CollectTypesFromReturnStatements(ir::AstNode *parent, ArenaVector<Type *> *return_types)
+void TSChecker::CollectTypesFromReturnStatements(ir::AstNode *parent, ArenaVector<Type *> *returnTypes)
 {
-    parent->Iterate([this, return_types](ir::AstNode *child_node) -> void {
-        if (child_node->IsScriptFunction()) {
+    parent->Iterate([this, returnTypes](ir::AstNode *childNode) -> void {
+        if (childNode->IsScriptFunction()) {
             return;
         }
 
-        if (child_node->IsReturnStatement()) {
-            ir::ReturnStatement *return_stmt = child_node->AsReturnStatement();
+        if (childNode->IsReturnStatement()) {
+            ir::ReturnStatement *returnStmt = childNode->AsReturnStatement();
 
-            if (return_stmt->Argument() == nullptr) {
+            if (returnStmt->Argument() == nullptr) {
                 return;
             }
 
-            return_types->push_back(
-                GetBaseTypeOfLiteralType(CheckTypeCached(child_node->AsReturnStatement()->Argument())));
+            returnTypes->push_back(
+                GetBaseTypeOfLiteralType(CheckTypeCached(childNode->AsReturnStatement()->Argument())));
         }
 
-        CollectTypesFromReturnStatements(child_node, return_types);
+        CollectTypesFromReturnStatements(childNode, returnTypes);
     });
 }
 
@@ -641,90 +636,89 @@ static bool SearchForReturnOrThrow(ir::AstNode *parent)
 {
     bool found = false;
 
-    parent->Iterate([&found](ir::AstNode *child_node) -> void {
-        if (child_node->IsThrowStatement() || child_node->IsReturnStatement()) {
+    parent->Iterate([&found](ir::AstNode *childNode) -> void {
+        if (childNode->IsThrowStatement() || childNode->IsReturnStatement()) {
             found = true;
             return;
         }
 
-        if (child_node->IsScriptFunction()) {
+        if (childNode->IsScriptFunction()) {
             return;
         }
 
-        SearchForReturnOrThrow(child_node);
+        SearchForReturnOrThrow(childNode);
     });
 
     return found;
 }
 
 void TSChecker::CheckAllCodePathsInNonVoidFunctionReturnOrThrow(ir::ScriptFunction *func,
-                                                                lexer::SourcePosition line_info, const char *err_msg)
+                                                                lexer::SourcePosition lineInfo, const char *errMsg)
 {
     if (!SearchForReturnOrThrow(func->Body())) {
-        ThrowTypeError(err_msg, line_info);
+        ThrowTypeError(errMsg, lineInfo);
     }
     // NOTE: aszilagyi. this function is not fully implement the TSC one, in the future if we will have a
     // noImplicitReturn compiler option for TypeScript we should update this function
 }
 
 ArgRange TSChecker::GetArgRange(const ArenaVector<Signature *> &signatures,
-                                ArenaVector<Signature *> *potential_signatures, uint32_t call_args_size,
-                                bool *have_signature_with_rest)
+                                ArenaVector<Signature *> *potentialSignatures, uint32_t callArgsSize,
+                                bool *haveSignatureWithRest)
 {
-    uint32_t min_arg = UINT32_MAX;
-    uint32_t max_arg = 0;
+    uint32_t minArg = UINT32_MAX;
+    uint32_t maxArg = 0;
 
     for (auto *it : signatures) {
         if (it->RestVar() != nullptr) {
-            *have_signature_with_rest = true;
+            *haveSignatureWithRest = true;
         }
 
-        if (it->MinArgCount() < min_arg) {
-            min_arg = it->MinArgCount();
+        if (it->MinArgCount() < minArg) {
+            minArg = it->MinArgCount();
         }
 
-        if (it->Params().size() > max_arg) {
-            max_arg = it->Params().size();
+        if (it->Params().size() > maxArg) {
+            maxArg = it->Params().size();
         }
 
-        if (call_args_size >= it->MinArgCount() &&
-            (call_args_size <= it->Params().size() || it->RestVar() != nullptr)) {
-            potential_signatures->push_back(it);
+        if (callArgsSize >= it->MinArgCount() && (callArgsSize <= it->Params().size() || it->RestVar() != nullptr)) {
+            potentialSignatures->push_back(it);
         }
     }
 
-    return {min_arg, max_arg};
+    return {minArg, maxArg};
 }
 
-bool TSChecker::CallMatchesSignature(const ArenaVector<ir::Expression *> &args, Signature *signature, bool throw_error)
+bool TSChecker::CallMatchesSignature(const ArenaVector<ir::Expression *> &args, Signature *signature, bool throwError)
 {
     for (size_t index = 0; index < args.size(); index++) {
-        checker::Type *sig_arg_type = nullptr;
-        bool validate_rest_arg = false;
+        checker::Type *sigArgType = nullptr;
+        bool validateRestArg = false;
 
         if (index >= signature->Params().size()) {
             ASSERT(signature->RestVar());
-            validate_rest_arg = true;
-            sig_arg_type = signature->RestVar()->TsType();
+            validateRestArg = true;
+            sigArgType = signature->RestVar()->TsType();
         } else {
-            sig_arg_type = signature->Params()[index]->TsType();
+            sigArgType = signature->Params()[index]->TsType();
         }
 
-        if (validate_rest_arg || !throw_error) {
-            checker::Type *call_arg_type = GetBaseTypeOfLiteralType(args[index]->Check(this));
-            if (IsTypeAssignableTo(call_arg_type, sig_arg_type)) {
+        if (validateRestArg || !throwError) {
+            checker::Type *callArgType = GetBaseTypeOfLiteralType(args[index]->Check(this));
+            if (IsTypeAssignableTo(callArgType, sigArgType)) {
                 continue;
             }
 
-            if (throw_error) {
-                ThrowTypeError({"Argument of type '", call_arg_type, "' is not assignable to parameter of type '",
-                                sig_arg_type, "'."},
-                               args[index]->Start());
+            if (throwError) {
+                ThrowTypeError(
+                    {"Argument of type '", callArgType, "' is not assignable to parameter of type '", sigArgType, "'."},
+                    args[index]->Start());
             }
             return false;
         }
 
-        ElaborateElementwise(sig_arg_type, args[index], args[index]->Start());
+        ElaborateElementwise(sigArgType, args[index], args[index]->Start());
     }
 
     return true;
@@ -732,45 +726,45 @@ bool TSChecker::CallMatchesSignature(const ArenaVector<ir::Expression *> &args, 
 
 Type *TSChecker::ResolveCallOrNewExpression(const ArenaVector<Signature *> &signatures,
                                             ArenaVector<ir::Expression *> arguments,
-                                            const lexer::SourcePosition &err_pos)
+                                            const lexer::SourcePosition &errPos)
 {
     if (signatures.empty()) {
-        ThrowTypeError("This expression is not callable.", err_pos);
+        ThrowTypeError("This expression is not callable.", errPos);
     }
 
-    ArenaVector<checker::Signature *> potential_signatures(Allocator()->Adapter());
-    bool have_signature_with_rest = false;
+    ArenaVector<checker::Signature *> potentialSignatures(Allocator()->Adapter());
+    bool haveSignatureWithRest = false;
 
-    auto arg_range = GetArgRange(signatures, &potential_signatures, arguments.size(), &have_signature_with_rest);
+    auto argRange = GetArgRange(signatures, &potentialSignatures, arguments.size(), &haveSignatureWithRest);
 
-    if (potential_signatures.empty()) {
-        if (have_signature_with_rest) {
-            ThrowTypeError({"Expected at least ", arg_range.first, " arguments, but got ", arguments.size(), "."},
-                           err_pos);
+    if (potentialSignatures.empty()) {
+        if (haveSignatureWithRest) {
+            ThrowTypeError({"Expected at least ", argRange.first, " arguments, but got ", arguments.size(), "."},
+                           errPos);
         }
 
-        if (signatures.size() == 1 && arg_range.first == arg_range.second) {
+        if (signatures.size() == 1 && argRange.first == argRange.second) {
             lexer::SourcePosition loc =
-                (arg_range.first > arguments.size()) ? err_pos : arguments[arg_range.second]->Start();
-            ThrowTypeError({"Expected ", arg_range.first, " arguments, but got ", arguments.size(), "."}, loc);
+                (argRange.first > arguments.size()) ? errPos : arguments[argRange.second]->Start();
+            ThrowTypeError({"Expected ", argRange.first, " arguments, but got ", arguments.size(), "."}, loc);
         }
 
-        ThrowTypeError({"Expected ", arg_range.first, "-", arg_range.second, " arguments, but got ", arguments.size()},
-                       err_pos);
+        ThrowTypeError({"Expected ", argRange.first, "-", argRange.second, " arguments, but got ", arguments.size()},
+                       errPos);
     }
 
-    checker::Type *return_type = nullptr;
-    for (auto *it : potential_signatures) {
-        if (CallMatchesSignature(arguments, it, potential_signatures.size() == 1)) {
-            return_type = it->ReturnType();
+    checker::Type *returnType = nullptr;
+    for (auto *it : potentialSignatures) {
+        if (CallMatchesSignature(arguments, it, potentialSignatures.size() == 1)) {
+            returnType = it->ReturnType();
             break;
         }
     }
 
-    if (return_type == nullptr) {
-        ThrowTypeError("No overload matches this call.", err_pos);
+    if (returnType == nullptr) {
+        ThrowTypeError("No overload matches this call.", errPos);
     }
 
-    return return_type;
+    return returnType;
 }
 }  // namespace panda::es2panda::checker

@@ -68,21 +68,21 @@ public:
 
 class Range {
 public:
-    explicit Range(size_t b_s) noexcept : byte_size(b_s) {}
+    explicit Range(size_t bS) noexcept : byteSize(bS) {}
 
     DEFAULT_COPY_SEMANTIC(Range);
     DEFAULT_MOVE_SEMANTIC(Range);
     ~Range() = default;
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    size_t byte_size {};
+    size_t byteSize {};
     size_t cnt {1};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class OffsetEntry {
 public:
-    explicit OffsetEntry(size_t l) : line_start(l), offset_(l) {};
+    explicit OffsetEntry(size_t l) : lineStart(l), offset_(l) {};
 
     DEFAULT_COPY_SEMANTIC(OffsetEntry);
     DEFAULT_MOVE_SEMANTIC(OffsetEntry);
@@ -92,7 +92,7 @@ public:
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::vector<Range> ranges {};
-    size_t line_start {};
+    size_t lineStart {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:

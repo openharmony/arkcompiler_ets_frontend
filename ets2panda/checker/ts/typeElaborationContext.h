@@ -31,38 +31,38 @@ class Type;
 
 class ElaborationContext {
 public:
-    ElaborationContext(TSChecker *checker, Type *target_type, Type *source_type, ir::Expression *source_node,
-                       const lexer::SourcePosition &start_pos)
+    ElaborationContext(TSChecker *checker, Type *targetType, Type *sourceType, ir::Expression *sourceNode,
+                       const lexer::SourcePosition &startPos)
         : checker_(checker),
-          target_type_(target_type),
-          source_type_(source_type),
-          source_node_(source_node),
-          start_pos_(start_pos),
-          potential_types_(checker->Allocator()->Adapter())
+          targetType_(targetType),
+          sourceType_(sourceType),
+          sourceNode_(sourceNode),
+          startPos_(startPos),
+          potentialTypes_(checker->Allocator()->Adapter())
     {
     }
 
     virtual void Start() = 0;
     virtual void RemoveUnnecessaryTypes() = 0;
 
-    Type *GetBestMatchingType(Type *index_type, ir::Expression *source_node);
+    Type *GetBestMatchingType(Type *indexType, ir::Expression *sourceNode);
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     TSChecker *checker_;
-    Type *target_type_;
-    Type *source_type_;
-    ir::Expression *source_node_;
-    const lexer::SourcePosition start_pos_;
-    ArenaVector<Type *> potential_types_;
+    Type *targetType_;
+    Type *sourceType_;
+    ir::Expression *sourceNode_;
+    const lexer::SourcePosition startPos_;
+    ArenaVector<Type *> potentialTypes_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class ArrayElaborationContext : public ElaborationContext {
 public:
-    ArrayElaborationContext(TSChecker *checker, Type *target_type, Type *source_type, ir::Expression *source_node,
-                            const lexer::SourcePosition &start_pos)
-        : ElaborationContext(checker, target_type, source_type, source_node, start_pos)
+    ArrayElaborationContext(TSChecker *checker, Type *targetType, Type *sourceType, ir::Expression *sourceNode,
+                            const lexer::SourcePosition &startPos)
+        : ElaborationContext(checker, targetType, sourceType, sourceNode, startPos)
     {
     }
 
@@ -75,9 +75,9 @@ private:
 
 class ObjectElaborationContext : public ElaborationContext {
 public:
-    ObjectElaborationContext(TSChecker *checker, Type *target_type, Type *source_type, ir::Expression *source_node,
-                             const lexer::SourcePosition &start_pos)
-        : ElaborationContext(checker, target_type, source_type, source_node, start_pos)
+    ObjectElaborationContext(TSChecker *checker, Type *targetType, Type *sourceType, ir::Expression *sourceNode,
+                             const lexer::SourcePosition &startPos)
+        : ElaborationContext(checker, targetType, sourceType, sourceNode, startPos)
     {
     }
 

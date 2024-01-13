@@ -40,7 +40,7 @@ public:
     explicit LabelTarget(CodeGen *cg);
     explicit LabelTarget(const util::StringView &label) : LabelTarget(nullptr, label) {}
     explicit LabelTarget(Label *target, const util::StringView &label)
-        : LabelPair(target, nullptr), break_label_(label), continue_label_(label)
+        : LabelPair(target, nullptr), breakLabel_(label), continueLabel_(label)
     {
     }
     LabelTarget() : LabelPair(nullptr, nullptr) {};
@@ -51,7 +51,7 @@ public:
 
     const util::StringView &BreakLabel() const
     {
-        return break_label_;
+        return breakLabel_;
     }
 
     Label *BreakTarget() const
@@ -66,7 +66,7 @@ public:
 
     const util::StringView &ContinueLabel() const
     {
-        return continue_label_;
+        return continueLabel_;
     }
 
     Label *ContinueTarget() const
@@ -78,8 +78,8 @@ public:
     static constexpr std::string_view CONTINUE_LABEL = "#c";
 
 private:
-    util::StringView break_label_ {};
-    util::StringView continue_label_ {};
+    util::StringView breakLabel_ {};
+    util::StringView continueLabel_ {};
 };
 }  // namespace panda::es2panda::compiler
 

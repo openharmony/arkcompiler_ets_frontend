@@ -33,15 +33,15 @@ public:
         UNKNOWN,
     };
 
-    static void Compile(PandaGen *pg, const ir::Expression *expr, Label *false_label);
-    static void Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_label);
+    static void Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLabel);
+    static void Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLabel);
     static Result CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr);
 
 private:
-    static bool CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_expr, Label *false_label);
-    static bool CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
-    static void CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
-    static void CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
+    static bool CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *binExpr, Label *falseLabel);
+    static bool CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
+    static void CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
+    static void CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
 };
 }  // namespace panda::es2panda::compiler
 

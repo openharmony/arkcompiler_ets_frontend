@@ -21,13 +21,13 @@
 namespace panda::es2panda::checker {
 class IndexInfo {
 public:
-    IndexInfo(Type *type, util::StringView param_name, bool readonly)
-        : type_(type), param_name_(param_name), readonly_(readonly)
+    IndexInfo(Type *type, util::StringView paramName, bool readonly)
+        : type_(type), paramName_(paramName), readonly_(readonly)
     {
     }
 
-    IndexInfo(Type *type, util::StringView param_name, bool readonly, const lexer::SourcePosition &pos)
-        : type_(type), param_name_(param_name), readonly_(readonly), pos_(pos)
+    IndexInfo(Type *type, util::StringView paramName, bool readonly, const lexer::SourcePosition &pos)
+        : type_(type), paramName_(paramName), readonly_(readonly), pos_(pos)
     {
     }
 
@@ -52,7 +52,7 @@ public:
 
     const util::StringView &ParamName()
     {
-        return param_name_;
+        return paramName_;
     }
 
     bool Readonly() const
@@ -65,14 +65,14 @@ public:
         return pos_;
     }
 
-    void ToString(std::stringstream &ss, bool num_index = true) const;
+    void ToString(std::stringstream &ss, bool numIndex = true) const;
     void Identical(TypeRelation *relation, IndexInfo *other);
     void AssignmentTarget(TypeRelation *relation, IndexInfo *source);
-    IndexInfo *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types);
+    IndexInfo *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
 
 private:
     Type *type_;
-    util::StringView param_name_;
+    util::StringView paramName_;
     bool readonly_;
     const lexer::SourcePosition pos_ {};
 };

@@ -39,7 +39,7 @@ public:
     UnionNormalizationTest()
     {
         allocator_ = std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER);
-        public_context_ = std::make_unique<public_lib::Context>();
+        publicContext_ = std::make_unique<public_lib::Context>();
     }
 
     ~UnionNormalizationTest() override = default;
@@ -56,30 +56,30 @@ public:
         return allocator_.get();
     }
 
-    void InitializeChecker(const char **argv, std::string_view file_name, std::string_view src,
+    void InitializeChecker(const char **argv, std::string_view fileName, std::string_view src,
                            checker::ETSChecker *checker, parser::Program *program)
     {
         InitializeChecker<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                           compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
-                          compiler::ETSFunctionEmitter, compiler::ETSEmitter>(argv, file_name, src, checker, program);
+                          compiler::ETSFunctionEmitter, compiler::ETSEmitter>(argv, fileName, src, checker, program);
     }
 
     template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
     compiler::CompilerContext::CodeGenCb MakeCompileJob()
     {
         return [this](compiler::CompilerContext *context, varbinder::FunctionScope *scope,
-                      compiler::ProgramElement *program_element) -> void {
-            RegSpiller reg_spiller;
+                      compiler::ProgramElement *programElement) -> void {
+            RegSpiller regSpiller;
             AstCompiler astcompiler;
-            CodeGen cg(allocator_.get(), &reg_spiller, context, scope, program_element, &astcompiler);
-            FunctionEmitter func_emitter(&cg, program_element);
-            func_emitter.Generate();
+            CodeGen cg(allocator_.get(), &regSpiller, context, scope, programElement, &astcompiler);
+            FunctionEmitter funcEmitter(&cg, programElement);
+            funcEmitter.Generate();
         };
     }
 
     template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
               typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
-    void InitializeChecker(const char **argv, std::string_view file_name, std::string_view src,
+    void InitializeChecker(const char **argv, std::string_view fileName, std::string_view src,
                            checker::ETSChecker *checker, parser::Program *program)
     {
         auto options = std::make_unique<panda::es2panda::util::Options>();
@@ -93,12 +93,12 @@ public:
         panda::Logger::InitializeStdLogging(panda::Logger::LevelFromString(options->LogLevel()), mask);
 
         Compiler compiler(options->Extension(), options->ThreadCount());
-        SourceFile input(file_name, src, options->ParseModule());
+        SourceFile input(fileName, src, options->ParseModule());
         compiler::CompilationUnit unit {input, options->CompilerOptions(), 0, options->Extension()};
-        auto get_phases = compiler::GetPhaseList(ScriptExtension::ETS);
+        auto getPhases = compiler::GetPhaseList(ScriptExtension::ETS);
 
         program->MarkEntry();
-        auto parser = Parser(program, unit.options, static_cast<parser::ParserStatus>(unit.raw_parser_status));
+        auto parser = Parser(program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
         checker->SetAnalyzer(&analyzer);
 
@@ -113,46 +113,46 @@ public:
         context.SetEmitter(&emitter);
         context.SetParser(&parser);
 
-        public_context_->source_file = &unit.input;
-        public_context_->allocator = allocator_.get();
-        public_context_->parser = &parser;
-        public_context_->checker = context.Checker();
-        public_context_->analyzer = public_context_->checker->GetAnalyzer();
-        public_context_->compiler_context = &context;
-        public_context_->emitter = context.GetEmitter();
+        publicContext_->sourceFile = &unit.input;
+        publicContext_->allocator = allocator_.get();
+        publicContext_->parser = &parser;
+        publicContext_->checker = context.Checker();
+        publicContext_->analyzer = publicContext_->checker->GetAnalyzer();
+        publicContext_->compilerContext = &context;
+        publicContext_->emitter = context.GetEmitter();
 
-        parser.ParseScript(unit.input, unit.options.compilation_mode == CompilationMode::GEN_STD_LIB);
+        parser.ParseScript(unit.input, unit.options.compilationMode == CompilationMode::GEN_STD_LIB);
         if constexpr (std::is_same_v<Parser, parser::ETSParser> && std::is_same_v<VarBinder, varbinder::ETSBinder>) {
             reinterpret_cast<varbinder::ETSBinder *>(varbinder)->FillResolvedImportPathes(
                 parser.ResolvedParsedSourcesMap(), allocator_.get());
         }
-        for (auto *phase : get_phases) {
-            if (!phase->Apply(public_context_.get(), program)) {
+        for (auto *phase : getPhases) {
+            if (!phase->Apply(publicContext_.get(), program)) {
                 return;
             }
         }
     }
 
-    static checker::Type *FindClassType(varbinder::ETSBinder *varbinder, std::string_view class_name)
+    static checker::Type *FindClassType(varbinder::ETSBinder *varbinder, std::string_view className)
     {
-        auto class_defs = varbinder->AsETSBinder()->GetRecordTable()->ClassDefinitions();
-        auto base_class = std::find_if(class_defs.begin(), class_defs.end(), [class_name](ir::ClassDefinition *cdef) {
-            return cdef->Ident()->Name().Is(class_name);
+        auto classDefs = varbinder->AsETSBinder()->GetRecordTable()->ClassDefinitions();
+        auto baseClass = std::find_if(classDefs.begin(), classDefs.end(), [className](ir::ClassDefinition *cdef) {
+            return cdef->Ident()->Name().Is(className);
         });
-        if (base_class == class_defs.end()) {
+        if (baseClass == classDefs.end()) {
             return nullptr;
         }
-        return (*base_class)->TsType();
+        return (*baseClass)->TsType();
     }
 
-    static checker::Type *FindTypeAlias(checker::ETSChecker *checker, std::string_view alias_name)
+    static checker::Type *FindTypeAlias(checker::ETSChecker *checker, std::string_view aliasName)
     {
-        auto *found_var =
-            checker->Scope()->FindLocal(alias_name, varbinder::ResolveBindingOptions::ALL)->AsLocalVariable();
-        if (found_var == nullptr) {
+        auto *foundVar =
+            checker->Scope()->FindLocal(aliasName, varbinder::ResolveBindingOptions::ALL)->AsLocalVariable();
+        if (foundVar == nullptr) {
             return nullptr;
         }
-        return found_var->Declaration()->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation()->TsType();
+        return foundVar->Declaration()->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation()->TsType();
     }
 
     NO_COPY_SEMANTIC(UnionNormalizationTest);
@@ -167,7 +167,7 @@ protected:
 
 private:
     std::unique_ptr<ArenaAllocator> allocator_;
-    std::unique_ptr<public_lib::Context> public_context_;
+    std::unique_ptr<public_lib::Context> publicContext_;
 };
 
 TEST_F(UnionNormalizationTest, UnionWithObject)
@@ -179,16 +179,16 @@ TEST_F(UnionNormalizationTest, UnionWithObject)
     auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
     InitializeChecker(&argv, "_.ets", "", &checker, &program);
 
-    ArenaVector<checker::Type *> union_constituents(checker.Allocator()->Adapter());
-    union_constituents.emplace_back(checker.GlobalIntType());
-    union_constituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalETSObjectType());
-    union_constituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalETSStringBuiltinType());
+    ArenaVector<checker::Type *> unionConstituents(checker.Allocator()->Adapter());
+    unionConstituents.emplace_back(checker.GlobalIntType());
+    unionConstituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalETSObjectType());
+    unionConstituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalETSStringBuiltinType());
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type = checker.CreateETSUnionType(std::move(union_constituents));
-    ASSERT_NE(normalized_type, nullptr);
-    ASSERT_TRUE(normalized_type->IsETSObjectType());
-    ASSERT_EQ(normalized_type, checker.GlobalETSObjectType());
+    auto *const normalizedType = checker.CreateETSUnionType(std::move(unionConstituents));
+    ASSERT_NE(normalizedType, nullptr);
+    ASSERT_TRUE(normalizedType->IsETSObjectType());
+    ASSERT_EQ(normalizedType, checker.GlobalETSObjectType());
 }
 
 TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes1)
@@ -200,24 +200,24 @@ TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes1)
     auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
     InitializeChecker(&argv, "_.ets", "class Base {}", &checker, &program);
 
-    auto *const base_type = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
-    ASSERT_NE(base_type, nullptr);
+    auto *const baseType = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
+    ASSERT_NE(baseType, nullptr);
 
-    ArenaVector<checker::Type *> union_constituents(checker.Allocator()->Adapter());
-    union_constituents.emplace_back(checker.GlobalDoubleType());
-    union_constituents.emplace_back(base_type);
-    union_constituents.emplace_back(checker.GlobalBuiltinETSStringType());
-    union_constituents.emplace_back(checker.GlobalDoubleType());
+    ArenaVector<checker::Type *> unionConstituents(checker.Allocator()->Adapter());
+    unionConstituents.emplace_back(checker.GlobalDoubleType());
+    unionConstituents.emplace_back(baseType);
+    unionConstituents.emplace_back(checker.GlobalBuiltinETSStringType());
+    unionConstituents.emplace_back(checker.GlobalDoubleType());
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type = checker.CreateETSUnionType(std::move(union_constituents));
-    ASSERT_NE(normalized_type, nullptr);
-    ASSERT_TRUE(normalized_type->IsETSUnionType());
-    auto *const union_type = normalized_type->AsETSUnionType();
-    ASSERT_EQ(union_type->ConstituentTypes().size(), SIZE3);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX0), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX1), base_type);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX2), checker.GlobalBuiltinETSStringType());
+    auto *const normalizedType = checker.CreateETSUnionType(std::move(unionConstituents));
+    ASSERT_NE(normalizedType, nullptr);
+    ASSERT_TRUE(normalizedType->IsETSUnionType());
+    auto *const unionType = normalizedType->AsETSUnionType();
+    ASSERT_EQ(unionType->ConstituentTypes().size(), SIZE3);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX0), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX1), baseType);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX2), checker.GlobalBuiltinETSStringType());
 }
 
 TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes2)
@@ -229,25 +229,25 @@ TEST_F(UnionNormalizationTest, UnionWithIdenticalTypes2)
     auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
     InitializeChecker(&argv, "_.ets", "class Base {}", &checker, &program);
 
-    auto *const base_type = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
-    ASSERT_NE(base_type, nullptr);
+    auto *const baseType = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
+    ASSERT_NE(baseType, nullptr);
 
-    ArenaVector<checker::Type *> union_constituents(checker.Allocator()->Adapter());
-    union_constituents.emplace_back(base_type);
-    union_constituents.emplace_back(checker.GlobalIntType());
-    union_constituents.emplace_back(base_type);
-    union_constituents.emplace_back(checker.GlobalDoubleType());
-    union_constituents.emplace_back(checker.GlobalShortType());
-    union_constituents.emplace_back(checker.GlobalDoubleType());
+    ArenaVector<checker::Type *> unionConstituents(checker.Allocator()->Adapter());
+    unionConstituents.emplace_back(baseType);
+    unionConstituents.emplace_back(checker.GlobalIntType());
+    unionConstituents.emplace_back(baseType);
+    unionConstituents.emplace_back(checker.GlobalDoubleType());
+    unionConstituents.emplace_back(checker.GlobalShortType());
+    unionConstituents.emplace_back(checker.GlobalDoubleType());
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type = checker.CreateETSUnionType(std::move(union_constituents));
-    ASSERT_NE(normalized_type, nullptr);
-    ASSERT_TRUE(normalized_type->IsETSUnionType());
-    auto *const union_type = normalized_type->AsETSUnionType();
-    ASSERT_EQ(union_type->ConstituentTypes().size(), SIZE2);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX0), base_type);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX1), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+    auto *const normalizedType = checker.CreateETSUnionType(std::move(unionConstituents));
+    ASSERT_NE(normalizedType, nullptr);
+    ASSERT_TRUE(normalizedType->IsETSUnionType());
+    auto *const unionType = normalizedType->AsETSUnionType();
+    ASSERT_EQ(unionType->ConstituentTypes().size(), SIZE2);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX0), baseType);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX1), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 }
 
 TEST_F(UnionNormalizationTest, UnionWithNumeric1)
@@ -259,20 +259,20 @@ TEST_F(UnionNormalizationTest, UnionWithNumeric1)
     auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
     InitializeChecker(&argv, "_.ets", "", &checker, &program);
 
-    ArenaVector<checker::Type *> union_constituents(checker.Allocator()->Adapter());
-    union_constituents.emplace_back(checker.GlobalETSBooleanType());
-    union_constituents.emplace_back(checker.GlobalIntType());
-    union_constituents.emplace_back(checker.GlobalDoubleType());
-    union_constituents.emplace_back(checker.GlobalShortType());
+    ArenaVector<checker::Type *> unionConstituents(checker.Allocator()->Adapter());
+    unionConstituents.emplace_back(checker.GlobalETSBooleanType());
+    unionConstituents.emplace_back(checker.GlobalIntType());
+    unionConstituents.emplace_back(checker.GlobalDoubleType());
+    unionConstituents.emplace_back(checker.GlobalShortType());
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type = checker.CreateETSUnionType(std::move(union_constituents));
-    ASSERT_NE(normalized_type, nullptr);
-    ASSERT_TRUE(normalized_type->IsETSUnionType());
-    auto *const union_type = normalized_type->AsETSUnionType();
-    ASSERT_EQ(union_type->ConstituentTypes().size(), SIZE2);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX0), checker.GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType());
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX1), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+    auto *const normalizedType = checker.CreateETSUnionType(std::move(unionConstituents));
+    ASSERT_NE(normalizedType, nullptr);
+    ASSERT_TRUE(normalizedType->IsETSUnionType());
+    auto *const unionType = normalizedType->AsETSUnionType();
+    ASSERT_EQ(unionType->ConstituentTypes().size(), SIZE2);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX0), checker.GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType());
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX1), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 }
 
 TEST_F(UnionNormalizationTest, UnionWithNumeric2)
@@ -284,25 +284,25 @@ TEST_F(UnionNormalizationTest, UnionWithNumeric2)
     auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
     InitializeChecker(&argv, "_.ets", "class Base {}", &checker, &program);
 
-    auto *const base_type = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
-    ASSERT_NE(base_type, nullptr);
+    auto *const baseType = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
+    ASSERT_NE(baseType, nullptr);
 
-    ArenaVector<checker::Type *> union_constituents(checker.Allocator()->Adapter());
-    union_constituents.emplace_back(checker.GlobalBuiltinETSStringType());
-    union_constituents.emplace_back(checker.GlobalIntType());
-    union_constituents.emplace_back(base_type);
-    union_constituents.emplace_back(checker.GlobalDoubleType());
-    union_constituents.emplace_back(checker.GlobalShortType());
+    ArenaVector<checker::Type *> unionConstituents(checker.Allocator()->Adapter());
+    unionConstituents.emplace_back(checker.GlobalBuiltinETSStringType());
+    unionConstituents.emplace_back(checker.GlobalIntType());
+    unionConstituents.emplace_back(baseType);
+    unionConstituents.emplace_back(checker.GlobalDoubleType());
+    unionConstituents.emplace_back(checker.GlobalShortType());
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type = checker.CreateETSUnionType(std::move(union_constituents));
-    ASSERT_NE(normalized_type, nullptr);
-    ASSERT_TRUE(normalized_type->IsETSUnionType());
-    auto *const union_type = normalized_type->AsETSUnionType();
-    ASSERT_EQ(union_type->ConstituentTypes().size(), SIZE3);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX0), checker.GlobalBuiltinETSStringType());
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX1), base_type);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX2), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+    auto *const normalizedType = checker.CreateETSUnionType(std::move(unionConstituents));
+    ASSERT_NE(normalizedType, nullptr);
+    ASSERT_TRUE(normalizedType->IsETSUnionType());
+    auto *const unionType = normalizedType->AsETSUnionType();
+    ASSERT_EQ(unionType->ConstituentTypes().size(), SIZE3);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX0), checker.GlobalBuiltinETSStringType());
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX1), baseType);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX2), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 }
 
 TEST_F(UnionNormalizationTest, UnionWithSubTypes)
@@ -320,59 +320,59 @@ TEST_F(UnionNormalizationTest, UnionWithSubTypes)
         ";
     InitializeChecker(&argv, "_.ets", SRC, &checker, &program);
 
-    auto *const base_type = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
-    ASSERT_NE(base_type, nullptr);
-    auto *const derived1_type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived1");
-    ASSERT_NE(derived1_type, nullptr);
-    auto *const derived2_type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived2");
-    ASSERT_NE(derived2_type, nullptr);
+    auto *const baseType = FindClassType(program.VarBinder()->AsETSBinder(), "Base");
+    ASSERT_NE(baseType, nullptr);
+    auto *const derived1Type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived1");
+    ASSERT_NE(derived1Type, nullptr);
+    auto *const derived2Type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived2");
+    ASSERT_NE(derived2Type, nullptr);
 
     // Test normalization: Derived1 | Base ==> Base
-    ArenaVector<checker::Type *> union_constituents1(checker.Allocator()->Adapter());
-    union_constituents1.emplace_back(derived1_type);
-    union_constituents1.emplace_back(base_type);
+    ArenaVector<checker::Type *> unionConstituents1(checker.Allocator()->Adapter());
+    unionConstituents1.emplace_back(derived1Type);
+    unionConstituents1.emplace_back(baseType);
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type1 = checker.CreateETSUnionType(std::move(union_constituents1));
-    ASSERT_NE(normalized_type1, nullptr);
-    ASSERT_TRUE(normalized_type1->IsETSObjectType());
-    ASSERT_EQ(normalized_type1, base_type);
+    auto *const normalizedType1 = checker.CreateETSUnionType(std::move(unionConstituents1));
+    ASSERT_NE(normalizedType1, nullptr);
+    ASSERT_TRUE(normalizedType1->IsETSObjectType());
+    ASSERT_EQ(normalizedType1, baseType);
 
     // Test normalization: Base | Derived2 ==> Base
-    ArenaVector<checker::Type *> union_constituents2(checker.Allocator()->Adapter());
-    union_constituents2.emplace_back(base_type);
-    union_constituents2.emplace_back(derived2_type);
+    ArenaVector<checker::Type *> unionConstituents2(checker.Allocator()->Adapter());
+    unionConstituents2.emplace_back(baseType);
+    unionConstituents2.emplace_back(derived2Type);
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type2 = checker.CreateETSUnionType(std::move(union_constituents2));
-    ASSERT_NE(normalized_type2, nullptr);
-    ASSERT_TRUE(normalized_type2->IsETSObjectType());
-    ASSERT_EQ(normalized_type2, base_type);
+    auto *const normalizedType2 = checker.CreateETSUnionType(std::move(unionConstituents2));
+    ASSERT_NE(normalizedType2, nullptr);
+    ASSERT_TRUE(normalizedType2->IsETSObjectType());
+    ASSERT_EQ(normalizedType2, baseType);
 
     // Test normalization: Derived1 | Derived2 ==> Derived1 | Derived2
-    ArenaVector<checker::Type *> union_constituents3(checker.Allocator()->Adapter());
-    union_constituents3.emplace_back(derived1_type);
-    union_constituents3.emplace_back(derived2_type);
+    ArenaVector<checker::Type *> unionConstituents3(checker.Allocator()->Adapter());
+    unionConstituents3.emplace_back(derived1Type);
+    unionConstituents3.emplace_back(derived2Type);
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type3 = checker.CreateETSUnionType(std::move(union_constituents3));
-    ASSERT_NE(normalized_type3, nullptr);
-    auto *const union_type = normalized_type3->AsETSUnionType();
-    ASSERT_EQ(union_type->ConstituentTypes().size(), SIZE2);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX0), derived1_type);
-    ASSERT_EQ(union_type->ConstituentTypes().at(IDX1), derived2_type);
+    auto *const normalizedType3 = checker.CreateETSUnionType(std::move(unionConstituents3));
+    ASSERT_NE(normalizedType3, nullptr);
+    auto *const unionType = normalizedType3->AsETSUnionType();
+    ASSERT_EQ(unionType->ConstituentTypes().size(), SIZE2);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX0), derived1Type);
+    ASSERT_EQ(unionType->ConstituentTypes().at(IDX1), derived2Type);
 
     // Test normalization: Derived2 | Base | Derived1 ==> Base
-    ArenaVector<checker::Type *> union_constituents4(checker.Allocator()->Adapter());
-    union_constituents4.emplace_back(derived1_type);
-    union_constituents4.emplace_back(base_type);
-    union_constituents4.emplace_back(derived2_type);
+    ArenaVector<checker::Type *> unionConstituents4(checker.Allocator()->Adapter());
+    unionConstituents4.emplace_back(derived1Type);
+    unionConstituents4.emplace_back(baseType);
+    unionConstituents4.emplace_back(derived2Type);
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type4 = checker.CreateETSUnionType(std::move(union_constituents4));
-    ASSERT_NE(normalized_type4, nullptr);
-    ASSERT_TRUE(normalized_type4->IsETSObjectType());
-    ASSERT_EQ(normalized_type4, base_type);
+    auto *const normalizedType4 = checker.CreateETSUnionType(std::move(unionConstituents4));
+    ASSERT_NE(normalizedType4, nullptr);
+    ASSERT_TRUE(normalizedType4->IsETSObjectType());
+    ASSERT_EQ(normalizedType4, baseType);
 }
 
 TEST_F(UnionNormalizationTest, UnionLinearization)
@@ -396,39 +396,39 @@ TEST_F(UnionNormalizationTest, UnionLinearization)
     InitializeChecker(&argv, "_.ets", SRC, &checker, &program);
 
     auto *varbinder = program.VarBinder()->AsETSBinder();
-    auto *const base_type = FindClassType(varbinder, "Base");
-    ASSERT_NE(base_type, nullptr);
-    auto *const derived1_type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived1");
-    ASSERT_NE(derived1_type, nullptr);
-    auto *const derived2_type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived2");
-    ASSERT_NE(derived2_type, nullptr);
+    auto *const baseType = FindClassType(varbinder, "Base");
+    ASSERT_NE(baseType, nullptr);
+    auto *const derived1Type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived1");
+    ASSERT_NE(derived1Type, nullptr);
+    auto *const derived2Type = FindClassType(program.VarBinder()->AsETSBinder(), "Derived2");
+    ASSERT_NE(derived2Type, nullptr);
 
     // Test normalization: int | (int | string) | number ==> string | number
-    auto *const ut1_type = FindTypeAlias(&checker, "UT1");
-    ASSERT_NE(ut1_type, nullptr);
-    ASSERT_TRUE(ut1_type->IsETSUnionType());
-    auto *ut1 = ut1_type->AsETSUnionType();
+    auto *const ut1Type = FindTypeAlias(&checker, "UT1");
+    ASSERT_NE(ut1Type, nullptr);
+    ASSERT_TRUE(ut1Type->IsETSUnionType());
+    auto *ut1 = ut1Type->AsETSUnionType();
     ASSERT_EQ(ut1->ConstituentTypes().size(), SIZE2);
     ASSERT_EQ(ut1->ConstituentTypes().at(IDX0), checker.GlobalBuiltinETSStringType());
     ASSERT_EQ(ut1->ConstituentTypes().at(IDX1), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 
     // Test normalization: int | UT | number ==> string | number
-    auto *const ut2_type = FindTypeAlias(&checker, "UT2");
-    ASSERT_NE(ut2_type, nullptr);
-    ASSERT_TRUE(ut2_type->IsETSUnionType());
-    auto *ut2 = ut2_type->AsETSUnionType();
+    auto *const ut2Type = FindTypeAlias(&checker, "UT2");
+    ASSERT_NE(ut2Type, nullptr);
+    ASSERT_TRUE(ut2Type->IsETSUnionType());
+    auto *ut2 = ut2Type->AsETSUnionType();
     ASSERT_EQ(ut2->ConstituentTypes().size(), SIZE2);
     ASSERT_EQ(ut2->ConstituentTypes().at(IDX0), checker.GlobalBuiltinETSStringType());
     ASSERT_EQ(ut2->ConstituentTypes().at(IDX1), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 
     // Test normalization:
     // int | (Derived2 | Base) | Derived1 | (string | number | short) | (int | string) ==> Base | string | number
-    auto *const ut3_type = FindTypeAlias(&checker, "UT3");
-    ASSERT_NE(ut3_type, nullptr);
-    ASSERT_TRUE(ut3_type->IsETSUnionType());
-    auto *ut3 = ut3_type->AsETSUnionType();
+    auto *const ut3Type = FindTypeAlias(&checker, "UT3");
+    ASSERT_NE(ut3Type, nullptr);
+    ASSERT_TRUE(ut3Type->IsETSUnionType());
+    auto *ut3 = ut3Type->AsETSUnionType();
     ASSERT_EQ(ut3->ConstituentTypes().size(), SIZE3);
-    ASSERT_EQ(ut3->ConstituentTypes().at(IDX0), base_type);
+    ASSERT_EQ(ut3->ConstituentTypes().at(IDX0), baseType);
     ASSERT_EQ(ut3->ConstituentTypes().at(IDX1), checker.GlobalBuiltinETSStringType());
     ASSERT_EQ(ut3->ConstituentTypes().at(IDX2), checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 }
@@ -442,16 +442,16 @@ TEST_F(UnionNormalizationTest, UnionWithNever)
     auto program = parser::Program::NewProgram<varbinder::ETSBinder>(Allocator());
     InitializeChecker(&argv, "_.ets", "", &checker, &program);
 
-    ArenaVector<checker::Type *> union_constituents(checker.Allocator()->Adapter());
-    union_constituents.emplace_back(checker.GlobalIntType());
-    union_constituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalBuiltinNeverType());
-    union_constituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+    ArenaVector<checker::Type *> unionConstituents(checker.Allocator()->Adapter());
+    unionConstituents.emplace_back(checker.GlobalIntType());
+    unionConstituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalBuiltinNeverType());
+    unionConstituents.emplace_back(checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 
     // Create union type, which will be normalized inside creation function
-    auto *const normalized_type = checker.CreateETSUnionType(std::move(union_constituents));
-    ASSERT_NE(normalized_type, nullptr);
-    ASSERT_TRUE(normalized_type->IsETSObjectType());
-    ASSERT_EQ(normalized_type, checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+    auto *const normalizedType = checker.CreateETSUnionType(std::move(unionConstituents));
+    ASSERT_NE(normalizedType, nullptr);
+    ASSERT_TRUE(normalizedType->IsETSObjectType());
+    ASSERT_EQ(normalizedType, checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 }
 
 }  // namespace panda::es2panda

@@ -30,20 +30,20 @@ TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const noexcept
 void TSIndexSignature::TransformChildren(const NodeTransformer &cb)
 {
     param_ = cb(param_)->AsExpression();
-    type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    typeAnnotation_ = static_cast<TypeNode *>(cb(typeAnnotation_));
 }
 
 void TSIndexSignature::Iterate(const NodeTraverser &cb) const
 {
     cb(param_);
-    cb(type_annotation_);
+    cb(typeAnnotation_);
 }
 
 void TSIndexSignature::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSIndexSignature"},
                  {"parameters", param_},
-                 {"typeAnnotation", type_annotation_},
+                 {"typeAnnotation", typeAnnotation_},
                  {"readonly", readonly_}});
 }
 
@@ -76,16 +76,16 @@ checker::Type *TSIndexSignature::Check(checker::ETSChecker *checker)
 TSIndexSignature *TSIndexSignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const param = param_ != nullptr ? param_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const type_annotation = type_annotation_->Clone(allocator);
+    auto *const typeAnnotation = typeAnnotation_->Clone(allocator);
 
-    if (auto *const clone = allocator->New<TSIndexSignature>(param, type_annotation, readonly_); clone != nullptr) {
+    if (auto *const clone = allocator->New<TSIndexSignature>(param, typeAnnotation, readonly_); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
         if (param != nullptr) {
             param->SetParent(clone);
         }
-        type_annotation->SetParent(clone);
+        typeAnnotation->SetParent(clone);
         return clone;
     }
 

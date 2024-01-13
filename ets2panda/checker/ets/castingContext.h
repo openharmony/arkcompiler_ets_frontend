@@ -24,13 +24,13 @@ class CastingContext {
 public:
     CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
                    const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
-                   TypeRelationFlag extra_flags = TypeRelationFlag::NONE);
+                   TypeRelationFlag extraFlags = TypeRelationFlag::NONE);
 
     [[nodiscard]] bool UncheckedCast() const noexcept;
 
 private:
     TypeRelationFlag flags_ {TypeRelationFlag::CASTING_CONTEXT | TypeRelationFlag::IN_CASTING_CONTEXT};
-    bool unchecked_cast_ {true};
+    bool uncheckedCast_ {true};
 };
 
 }  // namespace panda::es2panda::checker

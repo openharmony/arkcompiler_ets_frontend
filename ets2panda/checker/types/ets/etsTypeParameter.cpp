@@ -22,7 +22,7 @@
 namespace panda::es2panda::checker {
 void ETSTypeParameter::ToString(std::stringstream &ss) const
 {
-    ss << decl_node_->Name()->Name();
+    ss << declNode_->Name()->Name();
 
     if (IsNullish()) {
         if (ContainsNull()) {
@@ -114,17 +114,17 @@ void ETSTypeParameter::IsSupertypeOf([[maybe_unused]] TypeRelation *relation, [[
 }
 
 Type *ETSTypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                                    [[maybe_unused]] GlobalTypesHolder *global_types)
+                                    [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
 
-    auto *const copied_type = checker->CreateTypeParameter();
-    copied_type->AddTypeFlag(TypeFlag::GENERIC);
-    copied_type->SetDeclNode(GetDeclNode());
-    copied_type->SetDefaultType(GetDefaultType());
-    copied_type->SetConstraintType(GetConstraintType());
-    copied_type->SetVariable(Variable());
-    return copied_type;
+    auto *const copiedType = checker->CreateTypeParameter();
+    copiedType->AddTypeFlag(TypeFlag::GENERIC);
+    copiedType->SetDeclNode(GetDeclNode());
+    copiedType->SetDefaultType(GetDefaultType());
+    copiedType->SetConstraintType(GetConstraintType());
+    copiedType->SetVariable(Variable());
+    return copiedType;
 }
 
 Type *ETSTypeParameter::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -135,23 +135,23 @@ Type *ETSTypeParameter::Substitute(TypeRelation *relation, const Substitution *s
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *original = GetOriginal();
     if (auto repl = substitution->find(original); repl != substitution->end()) {
-        auto *repl_type = repl->second;
+        auto *replType = repl->second;
         /* Any other flags we need to copy? */
 
         /* The check this != base is a kludge to distinguish bare type parameter T
            with a nullish constraint (like the default Object?) from explicitly nullish T?
         */
-        if (this != original && ((ContainsNull() && !repl_type->ContainsNull()) ||
-                                 (ContainsUndefined() && !repl_type->ContainsUndefined()))) {
+        if (this != original && ((ContainsNull() && !replType->ContainsNull()) ||
+                                 (ContainsUndefined() && !replType->ContainsUndefined()))) {
             // this type is explicitly marked as nullish
-            ASSERT(repl_type->IsETSObjectType() || repl_type->IsETSArrayType() || repl_type->IsETSFunctionType() ||
-                   repl_type->IsETSTypeParameter());
-            auto nullish_flags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
-            auto *new_repl_type = checker->CreateNullishType(repl_type, nullish_flags, checker->Allocator(), relation,
-                                                             checker->GetGlobalTypesHolder());
-            repl_type = new_repl_type;
+            ASSERT(replType->IsETSObjectType() || replType->IsETSArrayType() || replType->IsETSFunctionType() ||
+                   replType->IsETSTypeParameter());
+            auto nullishFlags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
+            auto *newReplType = checker->CreateNullishType(replType, nullishFlags, checker->Allocator(), relation,
+                                                           checker->GetGlobalTypesHolder());
+            replType = newReplType;
         }
-        return repl_type;
+        return replType;
     }
 
     return this;

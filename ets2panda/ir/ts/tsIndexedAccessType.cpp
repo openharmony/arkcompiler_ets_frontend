@@ -25,19 +25,19 @@
 namespace panda::es2panda::ir {
 void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb)
 {
-    object_type_ = static_cast<TypeNode *>(cb(object_type_));
-    index_type_ = static_cast<TypeNode *>(cb(index_type_));
+    objectType_ = static_cast<TypeNode *>(cb(objectType_));
+    indexType_ = static_cast<TypeNode *>(cb(indexType_));
 }
 
 void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const
 {
-    cb(object_type_);
-    cb(index_type_);
+    cb(objectType_);
+    cb(indexType_);
 }
 
 void TSIndexedAccessType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSIndexedAccessType"}, {"objectType", object_type_}, {"indexType", index_type_}});
+    dumper->Add({{"type", "TSIndexedAccessType"}, {"objectType", objectType_}, {"indexType", indexType_}});
 }
 
 void TSIndexedAccessType::Dump(ir::SrcDumper *dumper) const
@@ -65,9 +65,9 @@ checker::Type *TSIndexedAccessType::GetType([[maybe_unused]] checker::TSChecker 
         return TsType();
     }
 
-    checker::Type *base_type = object_type_->GetType(checker);
-    checker::Type *index_type = index_type_->GetType(checker);
-    checker::Type *resolved = checker->GetPropertyTypeForIndexType(base_type, index_type);
+    checker::Type *baseType = objectType_->GetType(checker);
+    checker::Type *indexType = indexType_->GetType(checker);
+    checker::Type *resolved = checker->GetPropertyTypeForIndexType(baseType, indexType);
 
     SetTsType(resolved);
     return TsType();

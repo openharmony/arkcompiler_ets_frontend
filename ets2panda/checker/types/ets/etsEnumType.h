@@ -38,8 +38,8 @@ class ETSEnumInterface : public Type {
 public:
     using UType = std::int32_t;
 
-    explicit ETSEnumInterface(const ir::TSEnumDeclaration *enum_decl, UType ordinal, const ir::TSEnumMember *member,
-                              TypeFlag type_flag);
+    explicit ETSEnumInterface(const ir::TSEnumDeclaration *enumDecl, UType ordinal, const ir::TSEnumMember *member,
+                              TypeFlag typeFlag);
 
     NO_COPY_SEMANTIC(ETSEnumInterface);
     NO_MOVE_SEMANTIC(ETSEnumInterface);
@@ -53,7 +53,7 @@ public:
 
     void Cast(TypeRelation *relation, Type *target) override;
 
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
     void Identical(TypeRelation *relation, Type *other) override;
 
@@ -98,44 +98,44 @@ public:
     static constexpr std::string_view const FROM_INT_METHOD_NAME {"fromInt"};
 
     struct Method {
-        Signature *global_signature;
-        ETSFunctionType *member_proxy_type;
+        Signature *globalSignature;
+        ETSFunctionType *memberProxyType;
     };
 
     [[nodiscard]] Method ToStringMethod() const noexcept;
     void SetToStringMethod(Method const &method) noexcept
     {
-        to_string_method_ = method;
+        toStringMethod_ = method;
     }
 
     [[nodiscard]] Method GetValueMethod() const noexcept;
     void SetGetValueMethod(Method const &method) noexcept
     {
-        get_value_method_ = method;
+        getValueMethod_ = method;
     }
 
     [[nodiscard]] Method GetNameMethod() const noexcept;
     void SetGetNameMethod(Method const &method) noexcept
     {
-        get_name_method_ = method;
+        getNameMethod_ = method;
     }
 
     [[nodiscard]] Method ValueOfMethod() const noexcept;
     void SetValueOfMethod(Method const &method) noexcept
     {
-        value_of_method_ = method;
+        valueOfMethod_ = method;
     }
 
     [[nodiscard]] Method ValuesMethod() const noexcept;
     void SetValuesMethod(Method const &method) noexcept
     {
-        values_method_ = method;
+        valuesMethod_ = method;
     }
 
     [[nodiscard]] Method FromIntMethod() const noexcept;
     void SetFromIntMethod(Method const &method) noexcept
     {
-        from_int_method_ = method;
+        fromIntMethod_ = method;
     }
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
@@ -148,12 +148,12 @@ private:
     const UType ordinal_;
     const ir::TSEnumMember *member_;
 
-    Method to_string_method_ {};
-    Method get_value_method_ {};
-    Method get_name_method_ {};
-    Method value_of_method_ {};
-    Method values_method_ {};
-    Method from_int_method_ {};
+    Method toStringMethod_ {};
+    Method getValueMethod_ {};
+    Method getNameMethod_ {};
+    Method valueOfMethod_ {};
+    Method valuesMethod_ {};
+    Method fromIntMethod_ {};
 
     [[nodiscard]] ir::TSEnumMember *FindMember(const util::StringView &name) const noexcept;
 
@@ -188,9 +188,8 @@ private:
 
 class ETSEnumType : public ETSEnumInterface, public ETSEnumValueType<std::int32_t> {
 public:
-    explicit ETSEnumType(const ir::TSEnumDeclaration *enum_decl, UType ordinal,
-                         const ir::TSEnumMember *member = nullptr)
-        : ETSEnumInterface(enum_decl, ordinal, member, TypeFlag::ETS_ENUM)
+    explicit ETSEnumType(const ir::TSEnumDeclaration *enumDecl, UType ordinal, const ir::TSEnumMember *member = nullptr)
+        : ETSEnumInterface(enumDecl, ordinal, member, TypeFlag::ETS_ENUM)
     {
     }
 
@@ -203,9 +202,9 @@ public:
 
 class ETSStringEnumType : public ETSEnumInterface, public ETSEnumValueType<std::string> {
 public:
-    explicit ETSStringEnumType(const ir::TSEnumDeclaration *enum_decl, UType ordinal,
+    explicit ETSStringEnumType(const ir::TSEnumDeclaration *enumDecl, UType ordinal,
                                const ir::TSEnumMember *member = nullptr)
-        : ETSEnumInterface(enum_decl, ordinal, member, TypeFlag::ETS_STRING_ENUM)
+        : ETSEnumInterface(enumDecl, ordinal, member, TypeFlag::ETS_STRING_ENUM)
     {
     }
 

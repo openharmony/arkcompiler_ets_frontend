@@ -19,7 +19,7 @@
 
 namespace panda::es2panda::compiler {
 LabelTarget::LabelTarget(CodeGen *cg)
-    : LabelPair(cg->AllocLabel(), cg->AllocLabel()), break_label_(BREAK_LABEL), continue_label_(CONTINUE_LABEL)
+    : LabelPair(cg->AllocLabel(), cg->AllocLabel()), breakLabel_(BREAK_LABEL), continueLabel_(CONTINUE_LABEL)
 {
 }
 }  // namespace panda::es2panda::compiler

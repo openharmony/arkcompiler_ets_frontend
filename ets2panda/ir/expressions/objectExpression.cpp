@@ -51,9 +51,9 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
       decorators_(allocator->Adapter()),
       properties_(allocator->Adapter())
 {
-    preferred_type_ = other.preferred_type_;
-    is_declaration_ = other.is_declaration_;
-    trailing_comma_ = other.trailing_comma_;
+    preferredType_ = other.preferredType_;
+    isDeclaration_ = other.isDeclaration_;
+    trailingComma_ = other.trailingComma_;
     optional_ = other.optional_;
 
     for (auto *property : other.properties_) {
@@ -88,7 +88,7 @@ ValidationInfo ObjectExpression::ValidateExpression()
     }
 
     ValidationInfo info;
-    bool found_proto = false;
+    bool foundProto = false;
 
     for (auto *it : properties_) {
         switch (it->Type()) {
@@ -105,11 +105,11 @@ ValidationInfo ObjectExpression::ValidateExpression()
                 info = prop->ValidateExpression();
 
                 if (prop->Kind() == PropertyKind::PROTO) {
-                    if (found_proto) {
+                    if (foundProto) {
                         return {"Duplicate __proto__ fields are not allowed in object literals", prop->Key()->Start()};
                     }
 
-                    found_proto = true;
+                    foundProto = true;
                 }
 
                 break;
@@ -130,41 +130,41 @@ ValidationInfo ObjectExpression::ValidateExpression()
 bool ObjectExpression::ConvertibleToObjectPattern()
 {
     // NOTE: rsipka. throw more precise messages in case of false results
-    bool rest_found = false;
-    bool conv_result = true;
+    bool restFound = false;
+    bool convResult = true;
 
     for (auto *it : properties_) {
         switch (it->Type()) {
             case AstNodeType::ARRAY_EXPRESSION: {
-                conv_result = it->AsArrayExpression()->ConvertibleToArrayPattern();
+                convResult = it->AsArrayExpression()->ConvertibleToArrayPattern();
                 break;
             }
             case AstNodeType::SPREAD_ELEMENT: {
-                if (!rest_found && it == properties_.back() && !trailing_comma_) {
-                    conv_result = it->AsSpreadElement()->ConvertibleToRest(is_declaration_, false);
+                if (!restFound && it == properties_.back() && !trailingComma_) {
+                    convResult = it->AsSpreadElement()->ConvertibleToRest(isDeclaration_, false);
                 } else {
-                    conv_result = false;
+                    convResult = false;
                 }
 
-                rest_found = true;
+                restFound = true;
                 break;
             }
             case AstNodeType::OBJECT_EXPRESSION: {
-                conv_result = it->AsObjectExpression()->ConvertibleToObjectPattern();
+                convResult = it->AsObjectExpression()->ConvertibleToObjectPattern();
                 break;
             }
             case AstNodeType::ASSIGNMENT_EXPRESSION: {
-                conv_result = it->AsAssignmentExpression()->ConvertibleToAssignmentPattern();
+                convResult = it->AsAssignmentExpression()->ConvertibleToAssignmentPattern();
                 break;
             }
             case AstNodeType::META_PROPERTY_EXPRESSION:
             case AstNodeType::CHAIN_EXPRESSION:
             case AstNodeType::SEQUENCE_EXPRESSION: {
-                conv_result = false;
+                convResult = false;
                 break;
             }
             case AstNodeType::PROPERTY: {
-                conv_result = it->AsProperty()->ConvertibleToPatternProperty();
+                convResult = it->AsProperty()->ConvertibleToPatternProperty();
                 break;
             }
             default: {
@@ -172,18 +172,18 @@ bool ObjectExpression::ConvertibleToObjectPattern()
             }
         }
 
-        if (!conv_result) {
+        if (!convResult) {
             break;
         }
     }
 
     SetType(AstNodeType::OBJECT_PATTERN);
-    return conv_result;
+    return convResult;
 }
 
 void ObjectExpression::SetDeclaration()
 {
-    is_declaration_ = true;
+    isDeclaration_ = true;
 }
 
 void ObjectExpression::SetOptional(bool optional)
@@ -244,15 +244,15 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
 {
     checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
 
-    bool is_optional = false;
+    bool isOptional = false;
 
     for (auto it = properties_.rbegin(); it != properties_.rend(); it++) {
         if ((*it)->IsRestElement()) {
             ASSERT((*it)->AsRestElement()->Argument()->IsIdentifier());
-            util::StringView index_info_name("x");
-            auto *new_index_info =
-                checker->Allocator()->New<checker::IndexInfo>(checker->GlobalAnyType(), index_info_name, false);
-            desc->string_index_info = new_index_info;
+            util::StringView indexInfoName("x");
+            auto *newIndexInfo =
+                checker->Allocator()->New<checker::IndexInfo>(checker->GlobalAnyType(), indexInfoName, false);
+            desc->stringIndexInfo = newIndexInfo;
             continue;
         }
 
@@ -263,24 +263,24 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
             continue;
         }
 
-        varbinder::LocalVariable *found_var = desc->FindProperty(prop->Key()->AsIdentifier()->Name());
-        checker::Type *pattern_param_type = checker->GlobalAnyType();
-        varbinder::Variable *binding_var = nullptr;
+        varbinder::LocalVariable *foundVar = desc->FindProperty(prop->Key()->AsIdentifier()->Name());
+        checker::Type *patternParamType = checker->GlobalAnyType();
+        varbinder::Variable *bindingVar = nullptr;
 
         if (prop->IsShorthand()) {
             switch (prop->Value()->Type()) {
                 case ir::AstNodeType::IDENTIFIER: {
                     const ir::Identifier *ident = prop->Value()->AsIdentifier();
                     ASSERT(ident->Variable());
-                    binding_var = ident->Variable();
+                    bindingVar = ident->Variable();
                     break;
                 }
                 case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                    auto *assignment_pattern = prop->Value()->AsAssignmentPattern();
-                    pattern_param_type = assignment_pattern->Right()->Check(checker);
-                    ASSERT(assignment_pattern->Left()->AsIdentifier()->Variable());
-                    binding_var = assignment_pattern->Left()->AsIdentifier()->Variable();
-                    is_optional = true;
+                    auto *assignmentPattern = prop->Value()->AsAssignmentPattern();
+                    patternParamType = assignmentPattern->Right()->Check(checker);
+                    ASSERT(assignmentPattern->Left()->AsIdentifier()->Variable());
+                    bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
+                    isOptional = true;
                     break;
                 }
                 default: {
@@ -290,59 +290,59 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
         } else {
             switch (prop->Value()->Type()) {
                 case ir::AstNodeType::IDENTIFIER: {
-                    binding_var = prop->Value()->AsIdentifier()->Variable();
+                    bindingVar = prop->Value()->AsIdentifier()->Variable();
                     break;
                 }
                 case ir::AstNodeType::ARRAY_PATTERN: {
-                    pattern_param_type = prop->Value()->AsArrayPattern()->CheckPattern(checker);
+                    patternParamType = prop->Value()->AsArrayPattern()->CheckPattern(checker);
                     break;
                 }
                 case ir::AstNodeType::OBJECT_PATTERN: {
-                    pattern_param_type = prop->Value()->AsObjectPattern()->CheckPattern(checker);
+                    patternParamType = prop->Value()->AsObjectPattern()->CheckPattern(checker);
                     break;
                 }
                 case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                    auto *assignment_pattern = prop->Value()->AsAssignmentPattern();
+                    auto *assignmentPattern = prop->Value()->AsAssignmentPattern();
 
-                    if (assignment_pattern->Left()->IsIdentifier()) {
-                        binding_var = assignment_pattern->Left()->AsIdentifier()->Variable();
-                        pattern_param_type =
-                            checker->GetBaseTypeOfLiteralType(assignment_pattern->Right()->Check(checker));
-                        is_optional = true;
+                    if (assignmentPattern->Left()->IsIdentifier()) {
+                        bindingVar = assignmentPattern->Left()->AsIdentifier()->Variable();
+                        patternParamType =
+                            checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
+                        isOptional = true;
                         break;
                     }
 
-                    if (assignment_pattern->Left()->IsArrayPattern()) {
-                        auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-                        auto destructuring_context =
-                            checker::ArrayDestructuringContext(checker, assignment_pattern->Left()->AsArrayPattern(),
-                                                               false, true, nullptr, assignment_pattern->Right());
+                    if (assignmentPattern->Left()->IsArrayPattern()) {
+                        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+                        auto destructuringContext =
+                            checker::ArrayDestructuringContext(checker, assignmentPattern->Left()->AsArrayPattern(),
+                                                               false, true, nullptr, assignmentPattern->Right());
 
-                        if (found_var != nullptr) {
-                            destructuring_context.SetInferredType(
-                                checker->CreateUnionType({found_var->TsType(), destructuring_context.InferredType()}));
+                        if (foundVar != nullptr) {
+                            destructuringContext.SetInferredType(
+                                checker->CreateUnionType({foundVar->TsType(), destructuringContext.InferredType()}));
                         }
 
-                        destructuring_context.Start();
-                        pattern_param_type = destructuring_context.InferredType();
-                        is_optional = true;
+                        destructuringContext.Start();
+                        patternParamType = destructuringContext.InferredType();
+                        isOptional = true;
                         break;
                     }
 
-                    ASSERT(assignment_pattern->Left()->IsObjectPattern());
-                    auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-                    auto destructuring_context =
-                        checker::ObjectDestructuringContext(checker, assignment_pattern->Left()->AsObjectPattern(),
-                                                            false, true, nullptr, assignment_pattern->Right());
+                    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+                    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+                    auto destructuringContext =
+                        checker::ObjectDestructuringContext(checker, assignmentPattern->Left()->AsObjectPattern(),
+                                                            false, true, nullptr, assignmentPattern->Right());
 
-                    if (found_var != nullptr) {
-                        destructuring_context.SetInferredType(
-                            checker->CreateUnionType({found_var->TsType(), destructuring_context.InferredType()}));
+                    if (foundVar != nullptr) {
+                        destructuringContext.SetInferredType(
+                            checker->CreateUnionType({foundVar->TsType(), destructuringContext.InferredType()}));
                     }
 
-                    destructuring_context.Start();
-                    pattern_param_type = destructuring_context.InferredType();
-                    is_optional = true;
+                    destructuringContext.Start();
+                    patternParamType = destructuringContext.InferredType();
+                    isOptional = true;
                     break;
                 }
                 default: {
@@ -351,28 +351,28 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
             }
         }
 
-        if (binding_var != nullptr) {
-            binding_var->SetTsType(pattern_param_type);
+        if (bindingVar != nullptr) {
+            bindingVar->SetTsType(patternParamType);
         }
 
-        if (found_var != nullptr) {
+        if (foundVar != nullptr) {
             continue;
         }
 
-        varbinder::LocalVariable *pattern_var = varbinder::Scope::CreateVar(
+        varbinder::LocalVariable *patternVar = varbinder::Scope::CreateVar(
             checker->Allocator(), prop->Key()->AsIdentifier()->Name(), varbinder::VariableFlags::PROPERTY, *it);
-        pattern_var->SetTsType(pattern_param_type);
+        patternVar->SetTsType(patternParamType);
 
-        if (is_optional) {
-            pattern_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
+        if (isOptional) {
+            patternVar->AddFlag(varbinder::VariableFlags::OPTIONAL);
         }
 
-        desc->properties.insert(desc->properties.begin(), pattern_var);
+        desc->properties.insert(desc->properties.begin(), patternVar);
     }
 
-    checker::Type *return_type = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-    return_type->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS);
-    return return_type;
+    checker::Type *returnType = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+    returnType->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS);
+    return returnType;
 }
 
 checker::Type *ObjectExpression::Check(checker::TSChecker *checker)

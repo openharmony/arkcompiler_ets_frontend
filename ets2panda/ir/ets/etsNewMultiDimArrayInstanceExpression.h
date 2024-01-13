@@ -37,10 +37,10 @@ public:
     NO_COPY_SEMANTIC(ETSNewMultiDimArrayInstanceExpression);
     NO_MOVE_SEMANTIC(ETSNewMultiDimArrayInstanceExpression);
 
-    explicit ETSNewMultiDimArrayInstanceExpression(ir::TypeNode *const type_reference,
+    explicit ETSNewMultiDimArrayInstanceExpression(ir::TypeNode *const typeReference,
                                                    ArenaVector<ir::Expression *> &&dimensions)
         : Expression(AstNodeType::ETS_NEW_MULTI_DIM_ARRAY_INSTANCE_EXPRESSION),
-          type_reference_(type_reference),
+          typeReference_(typeReference),
           dimensions_(std::move(dimensions))
     {
     }
@@ -53,12 +53,12 @@ public:
 
     ir::TypeNode *TypeReference()
     {
-        return type_reference_;
+        return typeReference_;
     }
 
     ir::TypeNode const *TypeReference() const
     {
-        return type_reference_;
+        return typeReference_;
     }
 
     ArenaVector<ir::Expression *> &Dimensions()
@@ -101,7 +101,7 @@ public:
     }
 
 private:
-    ir::TypeNode *type_reference_;
+    ir::TypeNode *typeReference_;
     ArenaVector<ir::Expression *> dimensions_;
     checker::Signature *signature_ {};
 };

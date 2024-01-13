@@ -25,7 +25,7 @@
 namespace panda::es2panda::ir {
 void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
 {
-    type_reference_ = static_cast<TypeNode *>(cb(type_reference_));
+    typeReference_ = static_cast<TypeNode *>(cb(typeReference_));
     for (auto *&dim : dimensions_) {
         dim = cb(dim)->AsExpression();
     }
@@ -33,7 +33,7 @@ void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransfor
 
 void ETSNewMultiDimArrayInstanceExpression::Iterate(const NodeTraverser &cb) const
 {
-    cb(type_reference_);
+    cb(typeReference_);
     for (auto *dim : dimensions_) {
         cb(dim);
     }
@@ -42,15 +42,15 @@ void ETSNewMultiDimArrayInstanceExpression::Iterate(const NodeTraverser &cb) con
 void ETSNewMultiDimArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSNewMultiDimArrayInstanceExpression"},
-                 {"typeReference", type_reference_},
+                 {"typeReference", typeReference_},
                  {"dimensions", dimensions_}});
 }
 
 void ETSNewMultiDimArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    ASSERT(type_reference_);
-    type_reference_->Dump(dumper);
+    ASSERT(typeReference_);
+    typeReference_->Dump(dumper);
     for (auto dim : dimensions_) {
         dumper->Add("[");
         dim->Dump(dumper);
@@ -83,7 +83,7 @@ ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
       dimensions_(allocator->Adapter()),
       signature_(other.signature_)
 {
-    type_reference_ = other.type_reference_->Clone(allocator, this);
+    typeReference_ = other.typeReference_->Clone(allocator, this);
 
     for (auto *const dimension : other.dimensions_) {
         dimensions_.emplace_back(dimension->Clone(allocator, this)->AsExpression());

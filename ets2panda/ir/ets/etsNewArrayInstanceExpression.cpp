@@ -26,27 +26,27 @@
 namespace panda::es2panda::ir {
 void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
 {
-    type_reference_ = static_cast<TypeNode *>(cb(type_reference_));
+    typeReference_ = static_cast<TypeNode *>(cb(typeReference_));
     dimension_ = cb(dimension_)->AsExpression();
 }
 
 void ETSNewArrayInstanceExpression::Iterate(const NodeTraverser &cb) const
 {
-    cb(type_reference_);
+    cb(typeReference_);
     cb(dimension_);
 }
 
 void ETSNewArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
-        {{"type", "ETSNewArrayInstanceExpression"}, {"typeReference", type_reference_}, {"dimension", dimension_}});
+        {{"type", "ETSNewArrayInstanceExpression"}, {"typeReference", typeReference_}, {"dimension", dimension_}});
 }
 
 void ETSNewArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    ASSERT(type_reference_);
-    type_reference_->Dump(dumper);
+    ASSERT(typeReference_);
+    typeReference_->Dump(dumper);
     ASSERT(dimension_);
     dumper->Add("[");
     dimension_->Dump(dumper);
@@ -76,13 +76,13 @@ checker::Type *ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker
 ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
                                                                     AstNode *const parent)
 {
-    auto *const type_ref = type_reference_ != nullptr ? type_reference_->Clone(allocator) : nullptr;
+    auto *const typeRef = typeReference_ != nullptr ? typeReference_->Clone(allocator) : nullptr;
     auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(allocator, type_ref, dimension);
+    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(allocator, typeRef, dimension);
         clone != nullptr) {
-        if (type_ref != nullptr) {
-            type_ref->SetParent(clone);
+        if (typeRef != nullptr) {
+            typeRef->SetParent(clone);
         }
         if (dimension != nullptr) {
             dimension->SetParent(clone);

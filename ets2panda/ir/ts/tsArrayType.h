@@ -26,11 +26,11 @@ class TSAnalyzer;
 namespace panda::es2panda::ir {
 class TSArrayType : public TypeNode {
 public:
-    explicit TSArrayType(TypeNode *element_type) : TypeNode(AstNodeType::TS_ARRAY_TYPE), element_type_(element_type) {}
+    explicit TSArrayType(TypeNode *elementType) : TypeNode(AstNodeType::TS_ARRAY_TYPE), elementType_(elementType) {}
 
     const TypeNode *ElementType() const
     {
-        return element_type_;
+        return elementType_;
     }
 
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
@@ -57,7 +57,7 @@ public:
     [[nodiscard]] TSArrayType *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
 private:
-    TypeNode *element_type_;
+    TypeNode *elementType_;
 };
 }  // namespace panda::es2panda::ir
 

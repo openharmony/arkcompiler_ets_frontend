@@ -18,9 +18,9 @@
 #include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
-OptionalChain::OptionalChain(PandaGen *pg, const ir::AstNode *node) : pg_(pg), node_(node), prev_(pg->optional_chain_)
+OptionalChain::OptionalChain(PandaGen *pg, const ir::AstNode *node) : pg_(pg), node_(node), prev_(pg->optionalChain_)
 {
-    pg->optional_chain_ = this;
+    pg->optionalChain_ = this;
 }
 
 OptionalChain::~OptionalChain()
@@ -29,7 +29,7 @@ OptionalChain::~OptionalChain()
         pg_->SetLabel(node_, label_);
     }
 
-    pg_->optional_chain_ = prev_;
+    pg_->optionalChain_ = prev_;
 }
 
 void OptionalChain::Check(compiler::VReg obj)
@@ -45,14 +45,14 @@ void OptionalChain::Check(compiler::VReg obj)
         pg_->StoreAccumulator(node_, obj);
     }
 
-    auto *coercible_label = pg_->AllocLabel();
+    auto *coercibleLabel = pg_->AllocLabel();
 
-    pg_->BranchIfCoercible(node_, coercible_label);
+    pg_->BranchIfCoercible(node_, coercibleLabel);
 
     pg_->LoadConst(node_, compiler::Constant::JS_UNDEFINED);
     pg_->Branch(node_, label_);
 
-    pg_->SetLabel(node_, coercible_label);
+    pg_->SetLabel(node_, coercibleLabel);
     pg_->LoadAccumulator(node_, obj);
 }
 }  // namespace panda::es2panda::compiler

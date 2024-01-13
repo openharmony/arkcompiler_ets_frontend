@@ -45,8 +45,8 @@ public:
         std::function<void(compiler::CompilerContext *context, varbinder::FunctionScope *, compiler::ProgramElement *)>;
 
     CompilerContext(varbinder::VarBinder *varbinder, checker::Checker *checker, CompilerOptions options,
-                    CodeGenCb code_gen_cb)
-        : varbinder_(varbinder), checker_(checker), options_(std::move(options)), code_gen_cb_(std::move(code_gen_cb))
+                    CodeGenCb codeGenCb)
+        : varbinder_(varbinder), checker_(checker), options_(std::move(options)), codeGenCb_(std::move(codeGenCb))
     {
     }
 
@@ -87,18 +87,18 @@ public:
 
     [[nodiscard]] const CodeGenCb &GetCodeGenCb() const noexcept
     {
-        return code_gen_cb_;
+        return codeGenCb_;
     }
 
     [[nodiscard]] int32_t AddContextLiteral(LiteralBuffer &&literals)
     {
-        buff_storage_.emplace_back(std::move(literals));
-        return buff_storage_.size() - 1;
+        buffStorage_.emplace_back(std::move(literals));
+        return buffStorage_.size() - 1;
     }
 
     [[nodiscard]] const std::vector<LiteralBuffer> &ContextLiterals() const noexcept
     {
-        return buff_storage_;
+        return buffStorage_;
     }
 
     [[nodiscard]] const CompilerOptions *Options() const noexcept
@@ -108,27 +108,27 @@ public:
 
     [[nodiscard]] bool IsDebug() const noexcept
     {
-        return options_.is_debug;
+        return options_.isDebug;
     }
 
     [[nodiscard]] bool DumpDebugInfo() const noexcept
     {
-        return options_.dump_debug_info;
+        return options_.dumpDebugInfo;
     }
 
     [[nodiscard]] bool IsDirectEval() const noexcept
     {
-        return options_.is_direct_eval;
+        return options_.isDirectEval;
     }
 
     [[nodiscard]] bool IsFunctionEval() const noexcept
     {
-        return options_.is_function_eval;
+        return options_.isFunctionEval;
     }
 
     [[nodiscard]] bool IsEval() const noexcept
     {
-        return options_.is_eval;
+        return options_.isEval;
     }
 
 private:
@@ -136,9 +136,9 @@ private:
     checker::Checker *checker_;
     parser::ParserImpl *parser_ = nullptr;
     Emitter *emitter_ {};
-    std::vector<LiteralBuffer> buff_storage_;
+    std::vector<LiteralBuffer> buffStorage_;
     CompilerOptions options_;
-    CodeGenCb code_gen_cb_ {};
+    CodeGenCb codeGenCb_ {};
 };
 }  // namespace panda::es2panda::compiler
 

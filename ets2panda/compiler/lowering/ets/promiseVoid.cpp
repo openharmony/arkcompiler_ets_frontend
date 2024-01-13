@@ -43,14 +43,14 @@ static ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *ch
     (void)checker;
     body->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsReturnStatement()) {
-            auto *return_stmt = ast->AsReturnStatement();
-            const auto *arg = return_stmt->Argument();
+            auto *returnStmt = ast->AsReturnStatement();
+            const auto *arg = returnStmt->Argument();
             if (arg == nullptr) {
-                auto *void_id =
+                auto *voidId =
                     checker->AllocNode<ir::Identifier>(compiler::Signatures::VOID_OBJECT, checker->Allocator());
-                const auto &return_loc = return_stmt->Range();
-                void_id->SetRange({return_loc.end, return_loc.end});
-                return_stmt->SetArgument(void_id);
+                const auto &returnLoc = returnStmt->Range();
+                voidId->SetRange({returnLoc.end, returnLoc.end});
+                returnStmt->SetArgument(voidId);
             }
         }
         return ast;
@@ -69,29 +69,29 @@ static void SetRangeRecursively(ir::TypeNode *node, const lexer::SourceRange &lo
 
 static ir::TypeNode *CreatePromiseVoidType(checker::ETSChecker *checker, const lexer::SourceRange &loc)
 {
-    auto *void_param = [checker]() {
-        auto params_vector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
-        auto *void_id =
+    auto *voidParam = [checker]() {
+        auto paramsVector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
+        auto *voidId =
             checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_VOID_CLASS, checker->Allocator());
-        void_id->SetReference();
-        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(void_id);
-        params_vector.push_back(checker->AllocNode<ir::ETSTypeReference>(part));
-        auto *params = checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(params_vector));
+        voidId->SetReference();
+        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(voidId);
+        paramsVector.push_back(checker->AllocNode<ir::ETSTypeReference>(part));
+        auto *params = checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(paramsVector));
         return params;
     }();
 
-    auto *promise_void_type = [checker, void_param]() {
-        auto *promise_id =
+    auto *promiseVoidType = [checker, voidParam]() {
+        auto *promiseId =
             checker->AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_PROMISE_CLASS, checker->Allocator());
-        promise_id->SetReference();
-        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(promise_id, void_param, nullptr);
+        promiseId->SetReference();
+        auto *part = checker->AllocNode<ir::ETSTypeReferencePart>(promiseId, voidParam, nullptr);
         auto *type = checker->AllocNode<ir::ETSTypeReference>(part);
         return type;
     }();
 
-    SetRangeRecursively(promise_void_type, loc);
+    SetRangeRecursively(promiseVoidType, loc);
 
-    return promise_void_type;
+    return promiseVoidType;
 }
 
 static bool CheckForPromiseVoid(const ir::TypeNode *type)
@@ -100,13 +100,13 @@ static bool CheckForPromiseVoid(const ir::TypeNode *type)
         return false;
     }
 
-    auto *type_ref = type->AsETSTypeReference();
-    auto *type_part = type_ref->Part();
-    if (type_part->Previous() != nullptr) {
+    auto *typeRef = type->AsETSTypeReference();
+    auto *typePart = typeRef->Part();
+    if (typePart->Previous() != nullptr) {
         return false;
     }
 
-    const auto &params = type_part->TypeParams()->Params();
+    const auto &params = typePart->TypeParams()->Params();
     if (params.size() != 1) {
         return false;
     }
@@ -116,24 +116,23 @@ static bool CheckForPromiseVoid(const ir::TypeNode *type)
         return false;
     }
 
-    const auto *param_ref = param->AsETSTypeReference();
-    const auto *param_part = param_ref->Part();
-    if (param_part->Previous() != nullptr) {
+    const auto *paramRef = param->AsETSTypeReference();
+    const auto *paramPart = paramRef->Part();
+    if (paramPart->Previous() != nullptr) {
         return false;
     }
 
-    const auto is_type_promise =
-        type_part->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_PROMISE_CLASS;
-    const auto is_param_void = param_part->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_VOID_CLASS;
+    const auto isTypePromise = typePart->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_PROMISE_CLASS;
+    const auto isParamVoid = paramPart->Name()->AsIdentifier()->Name() == compiler::Signatures::BUILTIN_VOID_CLASS;
 
-    return is_type_promise && is_param_void;
+    return isTypePromise && isParamVoid;
 }
 
 bool PromiseVoidLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
-    auto gen_type_location = [](ir::ScriptFunction *function) -> lexer::SourceRange {
+    auto genTypeLocation = [](ir::ScriptFunction *function) -> lexer::SourceRange {
         const auto &params = function->Params();
         const auto &id = function->Id();
         const auto &body = function->Body();
@@ -157,21 +156,21 @@ bool PromiseVoidLowering::Perform(public_lib::Context *ctx, parser::Program *pro
         return {loc.end, loc.end};
     };
 
-    program->Ast()->TransformChildrenRecursively([checker, gen_type_location](ir::AstNode *ast) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([checker, genTypeLocation](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc()) {
             auto *function = ast->AsScriptFunction();
-            auto *return_ann = function->ReturnTypeAnnotation();
-            const auto has_return_ann = return_ann != nullptr;
-            const auto has_promise_void = CheckForPromiseVoid(return_ann);
+            auto *returnAnn = function->ReturnTypeAnnotation();
+            const auto hasReturnAnn = returnAnn != nullptr;
+            const auto hasPromiseVoid = CheckForPromiseVoid(returnAnn);
 
-            if (!has_return_ann) {
-                const auto &loc = gen_type_location(function);
+            if (!hasReturnAnn) {
+                const auto &loc = genTypeLocation(function);
                 function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
 
                 if (function->HasBody()) {
                     HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
                 }
-            } else if (has_promise_void && function->HasBody()) {
+            } else if (hasPromiseVoid && function->HasBody()) {
                 HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
             }
         }
@@ -186,10 +185,10 @@ bool PromiseVoidLowering::Postcondition(public_lib::Context *ctx, const parser::
 {
     (void)ctx;
 
-    auto check_function_body = [](const ir::BlockStatement *body) -> bool {
+    auto checkFunctionBody = [](const ir::BlockStatement *body) -> bool {
         if (body->IsReturnStatement()) {
-            auto *return_stmt = body->AsReturnStatement();
-            const auto *arg = return_stmt->Argument();
+            auto *returnStmt = body->AsReturnStatement();
+            const auto *arg = returnStmt->Argument();
 
             if (!arg->IsIdentifier()) {
                 return false;
@@ -202,17 +201,17 @@ bool PromiseVoidLowering::Postcondition(public_lib::Context *ctx, const parser::
         return true;
     };
 
-    auto is_ok = true;
-    program->Ast()->IterateRecursively([check_function_body, &is_ok](ir::AstNode *ast) {
+    auto isOk = true;
+    program->Ast()->IterateRecursively([checkFunctionBody, &isOk](ir::AstNode *ast) {
         if (ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc()) {
             auto *function = ast->AsScriptFunction();
-            auto *return_ann = function->ReturnTypeAnnotation();
-            if (!CheckForPromiseVoid(return_ann)) {
+            auto *returnAnn = function->ReturnTypeAnnotation();
+            if (!CheckForPromiseVoid(returnAnn)) {
                 return;
             }
             if (function->HasBody()) {
-                if (!check_function_body(function->Body()->AsBlockStatement())) {
-                    is_ok = false;
+                if (!checkFunctionBody(function->Body()->AsBlockStatement())) {
+                    isOk = false;
                     return;
                 }
             }
@@ -220,6 +219,6 @@ bool PromiseVoidLowering::Postcondition(public_lib::Context *ctx, const parser::
         return;
     });
 
-    return is_ok;
+    return isOk;
 }
 }  // namespace panda::es2panda::compiler

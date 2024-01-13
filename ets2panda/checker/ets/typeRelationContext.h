@@ -37,7 +37,7 @@ public:
         flags_ |= ((flags & TypeRelationFlag::NO_UNBOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::UNBOXING;
         flags_ |= ((flags & TypeRelationFlag::NO_WIDENING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::WIDENING;
 
-        auto *const ets_checker = relation->GetChecker()->AsETSChecker();
+        auto *const etsChecker = relation->GetChecker()->AsETSChecker();
 
         if (target->IsETSArrayType() && node->IsArrayExpression()) {
             ValidateArrayTypeInitializerByElement(relation, node->AsArrayExpression(), target->AsETSArrayType());
@@ -56,10 +56,10 @@ public:
         if (!relation->IsAssignableTo(source, target)) {
             if (((flags_ & TypeRelationFlag::UNBOXING) != 0) && !relation->IsTrue() && source->IsETSObjectType() &&
                 !target->IsETSObjectType()) {
-                ets_checker->CheckUnboxedTypesAssignable(relation, source, target);
+                etsChecker->CheckUnboxedTypesAssignable(relation, source, target);
             }
             if (((flags_ & TypeRelationFlag::BOXING) != 0) && target->IsETSObjectType() && !relation->IsTrue()) {
-                ets_checker->CheckBoxedSourceTypeAssignable(relation, source, target);
+                etsChecker->CheckBoxedSourceTypeAssignable(relation, source, target);
             }
         }
 
@@ -88,25 +88,25 @@ class InvocationContext {
 public:
     InvocationContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
                       const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
-                      TypeRelationFlag initial_flags = TypeRelationFlag::NONE)
+                      TypeRelationFlag initialFlags = TypeRelationFlag::NONE)
     {
         flags_ |=
-            ((initial_flags & TypeRelationFlag::NO_BOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::BOXING;
-        flags_ |= ((initial_flags & TypeRelationFlag::NO_UNBOXING) != 0) ? TypeRelationFlag::NONE
-                                                                         : TypeRelationFlag::UNBOXING;
+            ((initialFlags & TypeRelationFlag::NO_BOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::BOXING;
+        flags_ |=
+            ((initialFlags & TypeRelationFlag::NO_UNBOXING) != 0) ? TypeRelationFlag::NONE : TypeRelationFlag::UNBOXING;
 
-        auto *const ets_checker = relation->GetChecker()->AsETSChecker();
+        auto *const etsChecker = relation->GetChecker()->AsETSChecker();
 
         relation->SetNode(node);
-        relation->SetFlags(flags_ | initial_flags);
+        relation->SetFlags(flags_ | initialFlags);
 
         if (!relation->IsAssignableTo(source, target)) {
             if (((flags_ & TypeRelationFlag::UNBOXING) != 0U) && !relation->IsTrue() && source->IsETSObjectType() &&
                 !target->IsETSObjectType()) {
-                ets_checker->CheckUnboxedSourceTypeWithWideningAssignable(relation, source, target);
+                etsChecker->CheckUnboxedSourceTypeWithWideningAssignable(relation, source, target);
             }
             if (((flags_ & TypeRelationFlag::BOXING) != 0) && target->IsETSObjectType() && !relation->IsTrue()) {
-                ets_checker->CheckBoxedSourceTypeAssignable(relation, source, target);
+                etsChecker->CheckBoxedSourceTypeAssignable(relation, source, target);
             }
         }
 
@@ -114,7 +114,7 @@ public:
         relation->SetFlags(TypeRelationFlag::NONE);
 
         if (!relation->IsTrue()) {
-            if ((initial_flags & TypeRelationFlag::NO_THROW) == 0) {
+            if ((initialFlags & TypeRelationFlag::NO_THROW) == 0) {
                 relation->RaiseError(list, pos);
             }
             return;
@@ -135,24 +135,24 @@ private:
 
 class InstantiationContext {
 public:
-    InstantiationContext(ETSChecker *checker, ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args,
+    InstantiationContext(ETSChecker *checker, ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                          const lexer::SourcePosition &pos)
         : checker_(checker)
     {
-        if (ValidateTypeArguments(type, type_args, pos)) {
+        if (ValidateTypeArguments(type, typeArgs, pos)) {
             return;
         }
-        InstantiateType(type, type_args);
+        InstantiateType(type, typeArgs);
     }
 
-    InstantiationContext(ETSChecker *checker, ETSObjectType *type, ArenaVector<Type *> &type_args,
+    InstantiationContext(ETSChecker *checker, ETSObjectType *type, ArenaVector<Type *> &typeArgs,
                          const lexer::SourcePosition &pos)
         : checker_(checker)
     {
         if (type->HasObjectFlag(ETSObjectFlags::ENUM)) {
             return;
         }
-        InstantiateType(type, type_args, pos);
+        InstantiateType(type, typeArgs, pos);
     }
 
     ETSObjectType *Result()
@@ -161,15 +161,15 @@ public:
     }
 
 private:
-    bool ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args,
+    bool ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                const lexer::SourcePosition &pos);
 
-    bool ValidateTypeArg(Type *constraint_type, Type *type_arg);
+    bool ValidateTypeArg(Type *constraintType, Type *typeArg);
 
-    void InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args);
+    void InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs);
 
-    void InstantiateType(ETSObjectType *type, ArenaVector<Type *> &type_arg_types, const lexer::SourcePosition &pos);
-    util::StringView GetHashFromTypeArguments(ArenaVector<Type *> &type_arg_types);
+    void InstantiateType(ETSObjectType *type, ArenaVector<Type *> &typeArgTypes, const lexer::SourcePosition &pos);
+    util::StringView GetHashFromTypeArguments(ArenaVector<Type *> &typeArgTypes);
 
     ETSChecker *checker_;
     ETSObjectType *result_ {};

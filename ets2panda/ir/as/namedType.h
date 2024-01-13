@@ -33,7 +33,7 @@ public:
 
     const TSTypeParameterInstantiation *TypeParams() const
     {
-        return type_params_;
+        return typeParams_;
     }
 
     bool IsNullable() const
@@ -51,9 +51,9 @@ public:
         next_ = next;
     }
 
-    void SetTypeParams(TSTypeParameterInstantiation *type_params)
+    void SetTypeParams(TSTypeParameterInstantiation *typeParams)
     {
-        type_params_ = type_params;
+        typeParams_ = typeParams;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -73,7 +73,7 @@ public:
 
 private:
     Identifier *name_;
-    TSTypeParameterInstantiation *type_params_ {};
+    TSTypeParameterInstantiation *typeParams_ {};
     NamedType *next_ {};
     bool nullable_ {};
 };

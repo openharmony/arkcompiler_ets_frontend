@@ -31,8 +31,8 @@ public:
     NO_COPY_SEMANTIC(SpreadElement);
     NO_MOVE_SEMANTIC(SpreadElement);
 
-    explicit SpreadElement(AstNodeType const node_type, ArenaAllocator *const allocator, Expression *const argument)
-        : AnnotatedExpression(node_type), decorators_(allocator->Adapter()), argument_(argument)
+    explicit SpreadElement(AstNodeType const nodeType, ArenaAllocator *const allocator, Expression *const argument)
+        : AnnotatedExpression(nodeType), decorators_(allocator->Adapter()), argument_(argument)
     {
     }
 
@@ -68,7 +68,7 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
     }
@@ -82,7 +82,7 @@ public:
     [[nodiscard]] SpreadElement *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     ValidationInfo ValidateExpression();
-    [[nodiscard]] bool ConvertibleToRest(bool is_declaration, bool allow_pattern = true);
+    [[nodiscard]] bool ConvertibleToRest(bool isDeclaration, bool allowPattern = true);
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

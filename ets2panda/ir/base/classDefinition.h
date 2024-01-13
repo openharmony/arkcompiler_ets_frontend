@@ -57,19 +57,19 @@ public:
     NO_COPY_SEMANTIC(ClassDefinition);
     NO_MOVE_SEMANTIC(ClassDefinition);
 
-    explicit ClassDefinition(const util::StringView &private_id, Identifier *ident,
-                             TSTypeParameterDeclaration *type_params, TSTypeParameterInstantiation *super_type_params,
+    explicit ClassDefinition(const util::StringView &privateId, Identifier *ident,
+                             TSTypeParameterDeclaration *typeParams, TSTypeParameterInstantiation *superTypeParams,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
-                             Expression *super_class, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
+                             Expression *superClass, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
-          private_id_(private_id),
+          privateId_(privateId),
           ident_(ident),
-          type_params_(type_params),
-          super_type_params_(super_type_params),
+          typeParams_(typeParams),
+          superTypeParams_(superTypeParams),
           implements_(std::move(implements)),
           ctor_(ctor),
-          super_class_(super_class),
+          superClass_(superClass),
           body_(std::move(body)),
           modifiers_(modifiers),
           lang_(lang)
@@ -130,32 +130,32 @@ public:
 
     [[nodiscard]] const util::StringView &PrivateId() const noexcept
     {
-        return private_id_;
+        return privateId_;
     }
 
     [[nodiscard]] const util::StringView &InternalName() const noexcept
     {
-        return private_id_;
+        return privateId_;
     }
 
-    void SetInternalName(util::StringView internal_name) noexcept
+    void SetInternalName(util::StringView internalName) noexcept
     {
-        private_id_ = internal_name;
+        privateId_ = internalName;
     }
 
     [[nodiscard]] Expression *Super() noexcept
     {
-        return super_class_;
+        return superClass_;
     }
 
     [[nodiscard]] const Expression *Super() const noexcept
     {
-        return super_class_;
+        return superClass_;
     }
 
-    void SetSuper(Expression *super_class)
+    void SetSuper(Expression *superClass)
     {
-        super_class_ = super_class;
+        superClass_ = superClass;
     }
 
     [[nodiscard]] bool IsGlobal() const noexcept
@@ -243,27 +243,27 @@ public:
 
     [[nodiscard]] const ir::TSTypeParameterDeclaration *TypeParams() const noexcept
     {
-        return type_params_;
+        return typeParams_;
     }
 
     [[nodiscard]] ir::TSTypeParameterDeclaration *TypeParams() noexcept
     {
-        return type_params_;
+        return typeParams_;
     }
 
-    void SetTypeParams(ir::TSTypeParameterDeclaration *type_params)
+    void SetTypeParams(ir::TSTypeParameterDeclaration *typeParams)
     {
-        type_params_ = type_params;
+        typeParams_ = typeParams;
     }
 
     const TSTypeParameterInstantiation *SuperTypeParams() const
     {
-        return super_type_params_;
+        return superTypeParams_;
     }
 
     TSTypeParameterInstantiation *SuperTypeParams()
     {
-        return super_type_params_;
+        return superTypeParams_;
     }
 
     const FunctionExpression *Ctor() const;
@@ -287,17 +287,17 @@ public:
     }
 
 private:
-    void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg class_reg,
-                                        const std::vector<compiler::VReg> &static_computed_field_keys) const;
+    void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,
+                                        const std::vector<compiler::VReg> &staticComputedFieldKeys) const;
 
     varbinder::LocalScope *scope_ {nullptr};
-    util::StringView private_id_ {};
+    util::StringView privateId_ {};
     Identifier *ident_ {};
-    TSTypeParameterDeclaration *type_params_ {};
-    TSTypeParameterInstantiation *super_type_params_ {};
+    TSTypeParameterDeclaration *typeParams_ {};
+    TSTypeParameterInstantiation *superTypeParams_ {};
     ArenaVector<TSClassImplements *> implements_;
     MethodDefinition *ctor_ {};
-    Expression *super_class_ {};
+    Expression *superClass_ {};
     ArenaVector<AstNode *> body_;
     ClassDefinitionModifiers modifiers_;
     es2panda::Language lang_;

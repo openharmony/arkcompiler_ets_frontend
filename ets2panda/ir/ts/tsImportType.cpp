@@ -28,8 +28,8 @@ void TSImportType::TransformChildren(const NodeTransformer &cb)
 {
     param_ = cb(param_)->AsExpression();
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
     }
 
     if (qualifier_ != nullptr) {
@@ -41,8 +41,8 @@ void TSImportType::Iterate(const NodeTraverser &cb) const
 {
     cb(param_);
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     if (qualifier_ != nullptr) {
@@ -55,8 +55,8 @@ void TSImportType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSImportType"},
                  {"parameter", param_},
                  {"qualifier", AstDumper::Optional(qualifier_)},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
-                 {"isTypeOf", is_typeof_}});
+                 {"typeParameters", AstDumper::Optional(typeParams_)},
+                 {"isTypeOf", isTypeof_}});
 }
 
 void TSImportType::Dump(ir::SrcDumper *dumper) const

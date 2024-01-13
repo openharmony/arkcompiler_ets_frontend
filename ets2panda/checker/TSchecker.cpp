@@ -25,16 +25,16 @@ bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, c
     Initialize(varbinder);
     varbinder->IdentifierAnalysis();
 
-    if (options.dump_ast) {
+    if (options.dumpAst) {
         std::cout << Program()->Dump() << std::endl;
     }
 
-    if (options.op_dump_ast_only_silent) {
+    if (options.opDumpAstOnlySilent) {
         Program()->DumpSilent();
         return false;
     }
 
-    if (options.parse_only) {
+    if (options.parseOnly) {
         return false;
     }
 

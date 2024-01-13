@@ -26,25 +26,25 @@
 namespace panda::es2panda::ir {
 void TSMappedType::TransformChildren(const NodeTransformer &cb)
 {
-    type_parameter_ = cb(type_parameter_)->AsTSTypeParameter();
-    if (type_annotation_ != nullptr) {
-        type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    typeParameter_ = cb(typeParameter_)->AsTSTypeParameter();
+    if (typeAnnotation_ != nullptr) {
+        typeAnnotation_ = static_cast<TypeNode *>(cb(typeAnnotation_));
     }
 }
 
 void TSMappedType::Iterate(const NodeTraverser &cb) const
 {
-    cb(type_parameter_);
-    if (type_annotation_ != nullptr) {
-        cb(type_annotation_);
+    cb(typeParameter_);
+    if (typeAnnotation_ != nullptr) {
+        cb(typeAnnotation_);
     }
 }
 
 void TSMappedType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSMappedType"},
-                 {"typeParameter", type_parameter_},
-                 {"typeAnnotation", AstDumper::Optional(type_annotation_)},
+                 {"typeParameter", typeParameter_},
+                 {"typeAnnotation", AstDumper::Optional(typeAnnotation_)},
                  {"readonly", readonly_ == MappedOption::NO_OPTS ? AstDumper::Optional(false)
                               : readonly_ == MappedOption::PLUS  ? AstDumper::Optional("+")
                                                                  : AstDumper::Optional("-")},

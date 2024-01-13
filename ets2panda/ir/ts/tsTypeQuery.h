@@ -23,13 +23,13 @@ class TSAnalyzer;
 namespace panda::es2panda::ir {
 class TSTypeQuery : public TypeNode {
 public:
-    explicit TSTypeQuery(Expression *expr_name) : TypeNode(AstNodeType::TS_TYPE_QUERY), expr_name_(expr_name) {}
+    explicit TSTypeQuery(Expression *exprName) : TypeNode(AstNodeType::TS_TYPE_QUERY), exprName_(exprName) {}
 
     friend class checker::TSAnalyzer;
 
     const Expression *ExprName() const
     {
-        return expr_name_;
+        return exprName_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -48,7 +48,7 @@ public:
     }
 
 private:
-    Expression *expr_name_;
+    Expression *exprName_;
 };
 }  // namespace panda::es2panda::ir
 

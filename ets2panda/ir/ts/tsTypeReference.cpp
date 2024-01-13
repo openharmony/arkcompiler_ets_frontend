@@ -33,26 +33,26 @@
 namespace panda::es2panda::ir {
 void TSTypeReference::TransformChildren(const NodeTransformer &cb)
 {
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
     }
 
-    type_name_ = cb(type_name_)->AsExpression();
+    typeName_ = cb(typeName_)->AsExpression();
 }
 
 void TSTypeReference::Iterate(const NodeTraverser &cb) const
 {
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
-    cb(type_name_);
+    cb(typeName_);
 }
 
 void TSTypeReference::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
-        {{"type", "TSTypeReference"}, {"typeName", type_name_}, {"typeParameters", AstDumper::Optional(type_params_)}});
+        {{"type", "TSTypeReference"}, {"typeName", typeName_}, {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
 void TSTypeReference::Dump(ir::SrcDumper *dumper) const
@@ -71,11 +71,11 @@ void TSTypeReference::Compile(compiler::ETSGen *etsg) const
 
 ir::Identifier *TSTypeReference::BaseName() const
 {
-    if (type_name_->IsIdentifier()) {
-        return type_name_->AsIdentifier();
+    if (typeName_->IsIdentifier()) {
+        return typeName_->AsIdentifier();
     }
 
-    ir::TSQualifiedName *iter = type_name_->AsTSQualifiedName();
+    ir::TSQualifiedName *iter = typeName_->AsTSQualifiedName();
 
     while (iter->Left()->IsTSQualifiedName()) {
         iter = iter->Left()->AsTSQualifiedName();
@@ -95,15 +95,15 @@ checker::Type *TSTypeReference::GetType([[maybe_unused]] checker::TSChecker *che
         return TsType();
     }
 
-    if (type_name_->IsTSQualifiedName()) {
+    if (typeName_->IsTSQualifiedName()) {
         return checker->GlobalAnyType();
     }
 
-    ASSERT(type_name_->IsIdentifier());
-    varbinder::Variable *var = type_name_->AsIdentifier()->Variable();
+    ASSERT(typeName_->IsIdentifier());
+    varbinder::Variable *var = typeName_->AsIdentifier()->Variable();
 
     if (var == nullptr) {
-        checker->ThrowTypeError({"Cannot find name ", type_name_->AsIdentifier()->Name()}, Start());
+        checker->ThrowTypeError({"Cannot find name ", typeName_->AsIdentifier()->Name()}, Start());
     }
 
     SetTsType(checker->GetTypeReferenceType(this, var));

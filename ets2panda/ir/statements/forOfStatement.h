@@ -27,8 +27,8 @@ class Expression;
 
 class ForOfStatement : public LoopStatement {
 public:
-    explicit ForOfStatement(AstNode *left, Expression *right, Statement *body, bool is_await)
-        : LoopStatement(AstNodeType::FOR_OF_STATEMENT), left_(left), right_(right), body_(body), is_await_(is_await)
+    explicit ForOfStatement(AstNode *left, Expression *right, Statement *body, bool isAwait)
+        : LoopStatement(AstNodeType::FOR_OF_STATEMENT), left_(left), right_(right), body_(body), isAwait_(isAwait)
     {
     }
 
@@ -64,7 +64,7 @@ public:
 
     bool IsAwait() const
     {
-        return is_await_;
+        return isAwait_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -92,7 +92,7 @@ private:
     AstNode *left_;
     Expression *right_;
     Statement *body_;
-    bool is_await_;
+    bool isAwait_;
 };
 }  // namespace panda::es2panda::ir
 

@@ -23,9 +23,9 @@ namespace panda::es2panda::compiler {
 
 class PluginPhase : public Phase {
 public:
-    constexpr PluginPhase(char const *name, es2panda_ContextState context_state,
-                          void (util::Plugin::*method_call)(es2panda_Context *) const) noexcept
-        : name_(name), context_state_(context_state), method_call_(method_call)
+    constexpr PluginPhase(char const *name, es2panda_ContextState contextState,
+                          void (util::Plugin::*methodCall)(es2panda_Context *) const) noexcept
+        : name_(name), contextState_(contextState), methodCall_(methodCall)
     {
     }
 
@@ -38,8 +38,8 @@ public:
 
 private:
     char const *name_;
-    es2panda_ContextState context_state_;
-    void (util::Plugin::*method_call_)(es2panda_Context *) const;
+    es2panda_ContextState contextState_;
+    void (util::Plugin::*methodCall_)(es2panda_Context *) const;
 };
 
 }  // namespace panda::es2panda::compiler

@@ -82,38 +82,38 @@ protected:
     }
 
     void CallFuncParams(const ArenaVector<ir::Expression *> &params);
-    void IterateNoTParams(ir::ClassDefinition *class_def);
+    void IterateNoTParams(ir::ClassDefinition *classDef);
 
 protected:
-    void ThrowSyntaxError(std::string_view error_message, const lexer::SourcePosition &pos) const;
+    void ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
 
-    void VisitFunctionExpression(ir::FunctionExpression *func_expr) override;
-    void VisitScriptFunction(ir::ScriptFunction *script_function) override;
-    void VisitBlockStatement(ir::BlockStatement *block_stmt) override;
-    void VisitImportDeclaration(ir::ImportDeclaration *import_declaration) override;
-    void VisitClassStaticBlock(ir::ClassStaticBlock *static_block) override;
-    void VisitClassDefinition(ir::ClassDefinition *class_def) override;
-    void VisitMethodDefinition(ir::MethodDefinition *method_definition) override;
-    void VisitForUpdateStatement(ir::ForUpdateStatement *for_update_stmt) override;
-    void VisitForInStatement(ir::ForInStatement *for_in_stmt) override;
-    void VisitForOfStatement(ir::ForOfStatement *for_of_stmt) override;
-    void VisitCatchClause(ir::CatchClause *catch_clause) override;
-    void VisitVariableDeclarator(ir::VariableDeclarator *var_decl) override;
-    void VisitSwitchStatement(ir::SwitchStatement *switch_stmt) override;
-    void VisitWhileStatement(ir::WhileStatement *while_stmt) override;
-    void VisitETSStructDeclaration(ir::ETSStructDeclaration *struct_decl) override;
-    void VisitClassDeclaration(ir::ClassDeclaration *class_decl) override;
-    void VisitDoWhileStatement(ir::DoWhileStatement *do_while_stmt) override;
-    void VisitFunctionDeclaration(ir::FunctionDeclaration *func_decl) override;
-    void VisitExportAllDeclaration(ir::ExportAllDeclaration *export_all_decl) override;
-    void VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *import_spec) override;
-    void VisitImportSpecifier(ir::ImportSpecifier *import_spec) override;
-    void VisitImportDefaultSpecifier(ir::ImportDefaultSpecifier *import_spec) override;
-    void VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *export_decl) override;
-    void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *export_decl) override;
-    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrow_expr) override;
-    void VisitDirectEvalExpression(ir::DirectEvalExpression *direct_call_expr) override;
-    void VisitTSFunctionType(ir::TSFunctionType *func_type) override;
+    void VisitFunctionExpression(ir::FunctionExpression *funcExpr) override;
+    void VisitScriptFunction(ir::ScriptFunction *scriptFunction) override;
+    void VisitBlockStatement(ir::BlockStatement *blockStmt) override;
+    void VisitImportDeclaration(ir::ImportDeclaration *importDeclaration) override;
+    void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
+    void VisitClassDefinition(ir::ClassDefinition *classDef) override;
+    void VisitMethodDefinition(ir::MethodDefinition *methodDefinition) override;
+    void VisitForUpdateStatement(ir::ForUpdateStatement *forUpdateStmt) override;
+    void VisitForInStatement(ir::ForInStatement *forInStmt) override;
+    void VisitForOfStatement(ir::ForOfStatement *forOfStmt) override;
+    void VisitCatchClause(ir::CatchClause *catchClause) override;
+    void VisitVariableDeclarator(ir::VariableDeclarator *varDecl) override;
+    void VisitSwitchStatement(ir::SwitchStatement *switchStmt) override;
+    void VisitWhileStatement(ir::WhileStatement *whileStmt) override;
+    void VisitETSStructDeclaration(ir::ETSStructDeclaration *structDecl) override;
+    void VisitClassDeclaration(ir::ClassDeclaration *classDecl) override;
+    void VisitDoWhileStatement(ir::DoWhileStatement *doWhileStmt) override;
+    void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
+    void VisitExportAllDeclaration(ir::ExportAllDeclaration *exportAllDecl) override;
+    void VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec) override;
+    void VisitImportSpecifier(ir::ImportSpecifier *importSpec) override;
+    void VisitImportDefaultSpecifier(ir::ImportDefaultSpecifier *importSpec) override;
+    void VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *exportDecl) override;
+    void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
+    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr) override;
+    void VisitDirectEvalExpression(ir::DirectEvalExpression *directCallExpr) override;
+    void VisitTSFunctionType(ir::TSFunctionType *funcType) override;
 
 protected:
     varbinder::Scope *GetScope()
@@ -145,9 +145,9 @@ protected:
     virtual void CreateFuncDecl(ir::ScriptFunction *func);
     virtual util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id);
     void HandleFunction(ir::ScriptFunction *function);
-    varbinder::FunctionParamScope *HandleFunctionSig(ir::TSTypeParameterDeclaration *type_params,
+    varbinder::FunctionParamScope *HandleFunctionSig(ir::TSTypeParameterDeclaration *typeParams,
                                                      const ir::FunctionSignature::FunctionParams &params,
-                                                     ir::TypeNode *return_type);
+                                                     ir::TypeNode *returnType);
 
     /**
      * Handle block from existing scope
@@ -155,15 +155,15 @@ protected:
     void HandleBlockStmt(ir::BlockStatement *block, varbinder::Scope *scope);
 
     template <typename ForT>
-    void HandleFor(varbinder::LoopDeclarationScope *decl_scope, varbinder::LoopScope *loop_scope, ForT *for_stmt)
+    void HandleFor(varbinder::LoopDeclarationScope *declScope, varbinder::LoopScope *loopScope, ForT *forStmt)
     {
-        loop_scope->BindDecls(decl_scope);
-        BindScopeNode(loop_scope, for_stmt);
-        loop_scope->DeclScope()->BindNode(for_stmt);
+        loopScope->BindDecls(declScope);
+        BindScopeNode(loopScope, forStmt);
+        loopScope->DeclScope()->BindNode(forStmt);
     }
 
 protected:
-    virtual varbinder::Decl *BindClassName(ir::ClassDefinition *class_def);
+    virtual varbinder::Decl *BindClassName(ir::ClassDefinition *classDef);
 
     template <class Scope, class Node>
     static void BindScopeNode(Scope *scope, Node *node)
@@ -172,12 +172,12 @@ protected:
         node->SetScope(scope);
     }
 
-    static void BindFunctionScopes(varbinder::FunctionScope *scope, varbinder::FunctionParamScope *param_scope);
+    static void BindFunctionScopes(varbinder::FunctionScope *scope, varbinder::FunctionParamScope *paramScope);
 
-    void BindClassDefinition(ir::ClassDefinition *class_def);
+    void BindClassDefinition(ir::ClassDefinition *classDef);
 
     std::tuple<varbinder::Decl *, varbinder::Variable *> AddVarDecl(ir::VariableDeclaratorFlag flag,
-                                                                    lexer::SourcePosition start_loc,
+                                                                    lexer::SourcePosition startLoc,
                                                                     const util::StringView &name);
 
     virtual void BindVarDecl([[maybe_unused]] ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
@@ -194,11 +194,11 @@ private:
 class ScopeInitTyped : public ScopesInitPhase {
 protected:
 public:
-    void VisitTSModuleDeclaration(ir::TSModuleDeclaration *module_decl) override;
+    void VisitTSModuleDeclaration(ir::TSModuleDeclaration *moduleDecl) override;
 
     void VisitTSModuleBlock(ir::TSModuleBlock *block) override;
 
-    void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *type_alias_decl) override;
+    void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl) override;
 
     util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id) override;
 
@@ -207,17 +207,17 @@ public:
         return false;
     }
 
-    void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interf_decl) override;
+    void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfDecl) override;
 
-    void VisitTSEnumMember(ir::TSEnumMember *enum_member) override;
+    void VisitTSEnumMember(ir::TSEnumMember *enumMember) override;
 
-    void VisitTSEnumDeclaration(ir::TSEnumDeclaration *enum_decl) override;
+    void VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl) override;
 
-    void VisitTSTypeParameter(ir::TSTypeParameter *type_param) override;
+    void VisitTSTypeParameter(ir::TSTypeParameter *typeParam) override;
 
-    void VisitTSTypeParameterDeclaration(ir::TSTypeParameterDeclaration *param_decl) override;
+    void VisitTSTypeParameterDeclaration(ir::TSTypeParameterDeclaration *paramDecl) override;
 
-    void VisitClassDefinition(ir::ClassDefinition *class_def) override;
+    void VisitClassDefinition(ir::ClassDefinition *classDef) override;
 };
 
 class ScopesInitPhaseJs : public ScopesInitPhase {
@@ -238,14 +238,14 @@ protected:
 
     void VisitTSMappedType([[maybe_unused]] ir::TSMappedType *mapped) override {}
     void VisitTSInferType([[maybe_unused]] ir::TSInferType *infer) override {}
-    void VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *export_decl) override;
-    void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *export_decl) override;
-    void VisitImportDeclaration(ir::ImportDeclaration *import_declaration) override;
-    void VisitTSFunctionType(ir::TSFunctionType *constr_type) override;
-    void VisitTSConstructorType(ir::TSConstructorType *constr_t) override;
-    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrow_f_expr) override;
-    void VisitTSSignatureDeclaration(ir::TSSignatureDeclaration *sign_decl) override;
-    void VisitTSMethodSignature(ir::TSMethodSignature *method_sign) override;
+    void VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *exportDecl) override;
+    void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
+    void VisitImportDeclaration(ir::ImportDeclaration *importDeclaration) override;
+    void VisitTSFunctionType(ir::TSFunctionType *constrType) override;
+    void VisitTSConstructorType(ir::TSConstructorType *constrT) override;
+    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowFExpr) override;
+    void VisitTSSignatureDeclaration(ir::TSSignatureDeclaration *signDecl) override;
+    void VisitTSMethodSignature(ir::TSMethodSignature *methodSign) override;
 
     void CreateFuncDecl(ir::ScriptFunction *func) override;
 };
@@ -318,7 +318,7 @@ private:
 
     void AddGlobalDeclaration(ir::AstNode *node);
 
-    varbinder::Decl *BindClassName([[maybe_unused]] ir::ClassDefinition *ident_node) override
+    varbinder::Decl *BindClassName([[maybe_unused]] ir::ClassDefinition *identNode) override
     {
         return nullptr;
     }
@@ -327,26 +327,26 @@ private:
                      varbinder::Variable *var) override;
     void DeclareClassMethod(ir::MethodDefinition *method);
 
-    void VisitClassStaticBlock(ir::ClassStaticBlock *static_block) override;
-    void VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *import_spec) override;
-    void VisitImportSpecifier([[maybe_unused]] ir::ImportSpecifier *import_spec) override {};
-    void VisitImportDefaultSpecifier([[maybe_unused]] ir::ImportDefaultSpecifier *import_spec) override {};
-    void VisitETSParameterExpression(ir::ETSParameterExpression *param_expr) override;
-    void VisitETSImportDeclaration(ir::ETSImportDeclaration *import_decl) override;
-    void VisitTSEnumMember(ir::TSEnumMember *enum_member) override;
+    void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
+    void VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec) override;
+    void VisitImportSpecifier([[maybe_unused]] ir::ImportSpecifier *importSpec) override {};
+    void VisitImportDefaultSpecifier([[maybe_unused]] ir::ImportDefaultSpecifier *importSpec) override {};
+    void VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr) override;
+    void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
+    void VisitTSEnumMember(ir::TSEnumMember *enumMember) override;
     void VisitMethodDefinition(ir::MethodDefinition *method) override;
-    void VisitETSFunctionType(ir::ETSFunctionType *func_type) override;
-    void VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *new_class_expr) override;
-    void VisitTSTypeParameter(ir::TSTypeParameter *type_param) override;
-    void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interface_decl) override;
-    void VisitTSEnumDeclaration(ir::TSEnumDeclaration *enum_decl) override;
-    void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *type_alias) override;
-    void VisitClassDefinition(ir::ClassDefinition *class_def) override;
-    void VisitTSInterfaceBody(ir::TSInterfaceBody *interf_body) override;
-    void VisitClassProperty(ir::ClassProperty *class_prop) override;
-    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrow_expr) override
+    void VisitETSFunctionType(ir::ETSFunctionType *funcType) override;
+    void VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *newClassExpr) override;
+    void VisitTSTypeParameter(ir::TSTypeParameter *typeParam) override;
+    void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl) override;
+    void VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl) override;
+    void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias) override;
+    void VisitClassDefinition(ir::ClassDefinition *classDef) override;
+    void VisitTSInterfaceBody(ir::TSInterfaceBody *interfBody) override;
+    void VisitClassProperty(ir::ClassProperty *classProp) override;
+    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr) override
     {
-        Iterate(arrow_expr);
+        Iterate(arrowExpr);
     }
 
     util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id) override
@@ -369,8 +369,8 @@ public:
     ~ScopesInitPhaseAS() override = default;
 
 private:
-    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrow_expr) override;
-    void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *export_decl) override;
+    void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr) override;
+    void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
 };
 }  // namespace panda::es2panda::compiler
 

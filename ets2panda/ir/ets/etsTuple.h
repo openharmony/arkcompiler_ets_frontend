@@ -25,18 +25,18 @@ public:
     using TupleSizeType = uint32_t;
 
     explicit ETSTuple(ArenaAllocator *const allocator)
-        : TypeNode(AstNodeType::ETS_TUPLE), type_annotation_list_(allocator->Adapter())
+        : TypeNode(AstNodeType::ETS_TUPLE), typeAnnotationList_(allocator->Adapter())
     {
     }
 
     explicit ETSTuple(ArenaAllocator *const allocator, const TupleSizeType size)
-        : TypeNode(AstNodeType::ETS_TUPLE), type_annotation_list_(allocator->Adapter()), size_(size)
+        : TypeNode(AstNodeType::ETS_TUPLE), typeAnnotationList_(allocator->Adapter()), size_(size)
     {
     }
-    explicit ETSTuple(const ArenaVector<ir::TypeNode *> &type_list)
+    explicit ETSTuple(const ArenaVector<ir::TypeNode *> &typeList)
         : TypeNode(AstNodeType::ETS_TUPLE),
-          type_annotation_list_(type_list),
-          size_(static_cast<TupleSizeType>(type_list.size()))
+          typeAnnotationList_(typeList),
+          size_(static_cast<TupleSizeType>(typeList.size()))
     {
     }
 
@@ -47,22 +47,22 @@ public:
 
     [[nodiscard]] ArenaVector<ir::TypeNode *> GetTupleTypeAnnotationsList() const
     {
-        return type_annotation_list_;
+        return typeAnnotationList_;
     }
 
     [[nodiscard]] bool HasSpreadType() const
     {
-        return spread_type_ != nullptr;
+        return spreadType_ != nullptr;
     }
 
-    void SetSpreadType(TypeNode *const new_spread_type)
+    void SetSpreadType(TypeNode *const newSpreadType)
     {
-        spread_type_ = new_spread_type;
+        spreadType_ = newSpreadType;
     }
 
-    void SetTypeAnnotationsList(const ArenaVector<TypeNode *> &type_node_list)
+    void SetTypeAnnotationsList(const ArenaVector<TypeNode *> &typeNodeList)
     {
-        type_annotation_list_ = type_node_list;
+        typeAnnotationList_ = typeNodeList;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -75,8 +75,8 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
-    checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &type_list,
-                                        checker::Type *spread_type);
+    checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
+                                        checker::Type *spreadType);
 
     void Accept(ASTVisitorT *v) override
     {
@@ -84,8 +84,8 @@ public:
     }
 
 private:
-    ArenaVector<TypeNode *> type_annotation_list_;
-    TypeNode *spread_type_ {};
+    ArenaVector<TypeNode *> typeAnnotationList_;
+    TypeNode *spreadType_ {};
     TupleSizeType size_ {0};
 };
 

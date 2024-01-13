@@ -37,32 +37,32 @@ T DirName(T const &path, T const &delims = panda::os::file::File::GetPathDelim()
         return delims;
     }
 
-    std::string_view dir_path = path.substr(0, pos);
-    if (dir_path.compare(".") == 0 || dir_path.compare("..") == 0) {
+    std::string_view dirPath = path.substr(0, pos);
+    if (dirPath.compare(".") == 0 || dirPath.compare("..") == 0) {
         return path.substr(0, pos + 1);
     }
 
     return path.substr(0, pos);
 }
 
-SourceFile::SourceFile(std::string_view fn, std::string_view s) : file_path(fn), file_folder(DirName(fn)), source(s) {}
+SourceFile::SourceFile(std::string_view fn, std::string_view s) : filePath(fn), fileFolder(DirName(fn)), source(s) {}
 
 SourceFile::SourceFile(std::string_view fn, std::string_view s, bool m)
-    : file_path(fn), file_folder(DirName(fn)), source(s), is_module(m)
+    : filePath(fn), fileFolder(DirName(fn)), source(s), isModule(m)
 {
 }
 
 SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m)
-    : file_path(fn), file_folder(DirName(fn)), source(s), resolved_path(DirName(rp)), is_module(m)
+    : filePath(fn), fileFolder(DirName(fn)), source(s), resolvedPath(DirName(rp)), isModule(m)
 {
 }
 
 Compiler::Compiler(ScriptExtension ext) : Compiler(ext, DEFAULT_THREAD_COUNT, {}) {}
 
-Compiler::Compiler(ScriptExtension ext, size_t thread_count) : Compiler(ext, thread_count, {}) {}
+Compiler::Compiler(ScriptExtension ext, size_t threadCount) : Compiler(ext, threadCount, {}) {}
 
-Compiler::Compiler(ScriptExtension ext, size_t thread_count, std::vector<util::Plugin> &&plugins)
-    : plugins_(std::move(plugins)), compiler_(new compiler::CompilerImpl(thread_count, &plugins_)), ext_(ext)
+Compiler::Compiler(ScriptExtension ext, size_t threadCount, std::vector<util::Plugin> &&plugins)
+    : plugins_(std::move(plugins)), compiler_(new compiler::CompilerImpl(threadCount, &plugins_)), ext_(ext)
 {
 }
 
@@ -71,10 +71,10 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options, uint32_t parse_status)
+pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options, uint32_t parseStatus)
 {
     try {
-        return compiler_->Compile(compiler::CompilationUnit {input, options, parse_status, ext_});
+        return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_});
     } catch (const class Error &e) {
         error_ = e;
         return nullptr;

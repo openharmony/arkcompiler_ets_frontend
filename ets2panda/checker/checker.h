@@ -111,32 +111,32 @@ public:
 
     GlobalTypesHolder *GetGlobalTypesHolder() const
     {
-        return global_types_;
+        return globalTypes_;
     }
 
     RelationHolder &IdenticalResults()
     {
-        return identical_results_;
+        return identicalResults_;
     }
 
     RelationHolder &AssignableResults()
     {
-        return assignable_results_;
+        return assignableResults_;
     }
 
     RelationHolder &ComparableResults()
     {
-        return comparable_results_;
+        return comparableResults_;
     }
 
     [[nodiscard]] RelationHolder &UncheckedCastableResult() noexcept
     {
-        return unchecked_castable_results_;
+        return uncheckedCastableResults_;
     }
 
     std::unordered_set<const void *> &TypeStack()
     {
-        return type_stack_;
+        return typeStack_;
     }
 
     virtual bool IsETSChecker()
@@ -167,20 +167,17 @@ public:
     void ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
-    bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &err_msg,
-                           const lexer::SourcePosition &err_pos);
+    bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
     bool IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                           const lexer::SourcePosition &err_pos);
+                           const lexer::SourcePosition &errPos);
     bool IsTypeAssignableTo(Type *source, Type *target);
-    bool IsTypeAssignableTo(Type *source, Type *target, const std::string &err_msg,
-                            const lexer::SourcePosition &err_pos);
+    bool IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
     bool IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                            const lexer::SourcePosition &err_pos);
+                            const lexer::SourcePosition &errPos);
     bool IsTypeComparableTo(Type *source, Type *target);
-    bool IsTypeComparableTo(Type *source, Type *target, const std::string &err_msg,
-                            const lexer::SourcePosition &err_pos);
+    bool IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
     bool IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                            const lexer::SourcePosition &err_pos);
+                            const lexer::SourcePosition &errPos);
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
     bool IsAllTypesAssignableTo(Type *source, Type *target);
@@ -201,19 +198,19 @@ protected:
 private:
     ArenaAllocator allocator_;
     CheckerContext context_;
-    GlobalTypesHolder *global_types_;
+    GlobalTypesHolder *globalTypes_;
     TypeRelation *relation_;
     SemanticAnalyzer *analyzer_ {};
     varbinder::VarBinder *varbinder_ {};
     parser::Program *program_ {};
     varbinder::Scope *scope_ {};
 
-    RelationHolder identical_results_;
-    RelationHolder assignable_results_;
-    RelationHolder comparable_results_;
-    RelationHolder unchecked_castable_results_;
+    RelationHolder identicalResults_;
+    RelationHolder assignableResults_;
+    RelationHolder comparableResults_;
+    RelationHolder uncheckedCastableResults_;
 
-    std::unordered_set<const void *> type_stack_;
+    std::unordered_set<const void *> typeStack_;
 };
 
 class TypeStackElement {
@@ -222,7 +219,7 @@ public:
                               const lexer::SourcePosition &pos)
         : checker_(checker), element_(element)
     {
-        if (!checker->type_stack_.insert(element).second) {
+        if (!checker->typeStack_.insert(element).second) {
             checker_->ThrowTypeError(list, pos);
         }
     }
@@ -230,14 +227,14 @@ public:
     explicit TypeStackElement(Checker *checker, void *element, std::string_view err, const lexer::SourcePosition &pos)
         : checker_(checker), element_(element)
     {
-        if (!checker->type_stack_.insert(element).second) {
+        if (!checker->typeStack_.insert(element).second) {
             checker_->ThrowTypeError(err, pos);
         }
     }
 
     ~TypeStackElement()
     {
-        checker_->type_stack_.erase(element_);
+        checker_->typeStack_.erase(element_);
     }
 
     NO_COPY_SEMANTIC(TypeStackElement);
@@ -250,15 +247,15 @@ private:
 
 class ScopeContext {
 public:
-    explicit ScopeContext(Checker *checker, varbinder::Scope *new_scope)
-        : checker_(checker), prev_scope_(checker_->scope_)
+    explicit ScopeContext(Checker *checker, varbinder::Scope *newScope)
+        : checker_(checker), prevScope_(checker_->scope_)
     {
-        checker_->scope_ = new_scope;
+        checker_->scope_ = newScope;
     }
 
     ~ScopeContext()
     {
-        checker_->scope_ = prev_scope_;
+        checker_->scope_ = prevScope_;
     }
 
     NO_COPY_SEMANTIC(ScopeContext);
@@ -266,26 +263,26 @@ public:
 
 private:
     Checker *checker_;
-    varbinder::Scope *prev_scope_;
+    varbinder::Scope *prevScope_;
 };
 
 class SavedCheckerContext {
 public:
-    explicit SavedCheckerContext(Checker *checker, CheckerStatus new_status)
-        : SavedCheckerContext(checker, new_status, nullptr)
+    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus)
+        : SavedCheckerContext(checker, newStatus, nullptr)
     {
     }
 
-    explicit SavedCheckerContext(Checker *checker, CheckerStatus new_status, ETSObjectType *containing_class)
-        : SavedCheckerContext(checker, new_status, containing_class, nullptr)
+    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus, ETSObjectType *containingClass)
+        : SavedCheckerContext(checker, newStatus, containingClass, nullptr)
     {
     }
 
-    explicit SavedCheckerContext(Checker *checker, CheckerStatus new_status, ETSObjectType *containing_class,
-                                 Signature *containing_signature)
+    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus, ETSObjectType *containingClass,
+                                 Signature *containingSignature)
         : checker_(checker), prev_(checker->context_)
     {
-        checker_->context_ = CheckerContext(checker->Allocator(), new_status, containing_class, containing_signature);
+        checker_->context_ = CheckerContext(checker->Allocator(), newStatus, containingClass, containingSignature);
     }
 
     NO_COPY_SEMANTIC(SavedCheckerContext);

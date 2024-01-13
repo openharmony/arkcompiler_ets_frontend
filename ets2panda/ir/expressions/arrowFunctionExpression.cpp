@@ -72,17 +72,17 @@ checker::Type *ArrowFunctionExpression::Check(checker::ETSChecker *checker)
 
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)),
-      captured_vars_(allocator->Adapter()),
-      propagate_this_(other.propagate_this_)
+      capturedVars_(allocator->Adapter()),
+      propagateThis_(other.propagateThis_)
 {
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
 
-    for (auto *const variable : other.captured_vars_) {
-        captured_vars_.emplace_back(variable);
+    for (auto *const variable : other.capturedVars_) {
+        capturedVars_.emplace_back(variable);
     }
 
-    if (other.resolved_lambda_ != nullptr) {
-        resolved_lambda_ = other.resolved_lambda_->Clone(allocator, this)->AsClassDefinition();
+    if (other.resolvedLambda_ != nullptr) {
+        resolvedLambda_ = other.resolvedLambda_->Clone(allocator, this)->AsClassDefinition();
     }
 }
 
@@ -99,25 +99,24 @@ ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const al
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChecker *checker,
-                                                                checker::Type *return_type)
+ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType)
 {
     /*
     Construct a synthetic Node with the correct ts_type_.
     */
-    ASSERT(return_type != nullptr);
-    ir::TypeNode *return_node = nullptr;
+    ASSERT(returnType != nullptr);
+    ir::TypeNode *returnNode = nullptr;
     auto *ident = checker->Allocator()->New<ir::Identifier>(util::StringView(""), checker->Allocator());
     ir::ETSTypeReferencePart *part = checker->Allocator()->New<ir::ETSTypeReferencePart>(ident);
-    return_node = checker->Allocator()->New<ir::ETSTypeReference>(part);
-    part->SetParent(return_node);
-    return_node->SetTsType(return_type);
-    return return_node;
+    returnNode = checker->Allocator()->New<ir::ETSTypeReference>(part);
+    part->SetParent(returnNode);
+    returnNode->SetTsType(returnType);
+    return returnNode;
 }
 
 ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker *checker)
 {
-    ir::TypeNode *return_node = nullptr;
+    ir::TypeNode *returnNode = nullptr;
     /*
     There are two scenarios for lambda type inference: defined or undefined return type.
     example code:
@@ -134,16 +133,16 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
         When lambda expression does not declare a return type, we need to construct the
         declaration node of lambda according to the Function()->Signature()->ReturnType().
         */
-        return_node = CreateReturnNodeFromType(checker, Function()->Signature()->ReturnType());
+        returnNode = CreateReturnNodeFromType(checker, Function()->Signature()->ReturnType());
     } else {
-        return_node = Function()->ReturnTypeAnnotation();
+        returnNode = Function()->ReturnTypeAnnotation();
     }
 
-    auto orig_params = Function()->Params();
-    auto signature = ir::FunctionSignature(nullptr, std::move(orig_params), return_node);
-    auto *func_type =
+    auto origParams = Function()->Params();
+    auto signature = ir::FunctionSignature(nullptr, std::move(origParams), returnNode);
+    auto *funcType =
         checker->Allocator()->New<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
-    return_node->SetParent(func_type);
-    return func_type;
+    returnNode->SetParent(funcType);
+    return funcType;
 }
 }  // namespace panda::es2panda::ir

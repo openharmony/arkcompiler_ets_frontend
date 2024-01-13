@@ -32,7 +32,7 @@ class PandaGen;
 
 class ScopeContext {
 public:
-    explicit ScopeContext(CodeGen *cg, varbinder::Scope *new_scope);
+    explicit ScopeContext(CodeGen *cg, varbinder::Scope *newScope);
     ~ScopeContext();
 
     NO_COPY_SEMANTIC(ScopeContext);
@@ -40,7 +40,7 @@ public:
 
 private:
     CodeGen *cg_;
-    varbinder::Scope *prev_scope_;
+    varbinder::Scope *prevScope_;
 };
 
 class EnvScope {
@@ -51,11 +51,11 @@ public:
     NO_MOVE_SEMANTIC(EnvScope);
     ~EnvScope();
 
-    void Initialize(PandaGen *pg, VReg lex_env);
+    void Initialize(PandaGen *pg, VReg lexEnv);
 
     VReg LexEnv() const
     {
-        return lex_env_;
+        return lexEnv_;
     }
 
     EnvScope *Prev() const
@@ -69,26 +69,26 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     PandaGen *pg_ {};
     EnvScope *prev_ {};
-    VReg lex_env_ {};
+    VReg lexEnv_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class LoopEnvScope : public EnvScope {
 public:
     explicit LoopEnvScope(PandaGen *pg, varbinder::LoopScope *scope, LabelTarget target)
-        : scope_(NeedEnv(scope) ? scope : nullptr), reg_scope_(pg, scope), lex_env_ctx_(this, pg, target)
+        : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg, scope), lexEnvCtx_(this, pg, target)
     {
         CopyBindings(pg, scope, varbinder::VariableFlags::PER_ITERATION);
     }
 
     explicit LoopEnvScope(PandaGen *pg, LabelTarget target, varbinder::LoopScope *scope)
-        : scope_(NeedEnv(scope) ? scope : nullptr), reg_scope_(pg), lex_env_ctx_(this, pg, target)
+        : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg), lexEnvCtx_(this, pg, target)
     {
         CopyBindings(pg, scope, varbinder::VariableFlags::PER_ITERATION);
     }
 
     explicit LoopEnvScope(PandaGen *pg, varbinder::LoopDeclarationScope *scope)
-        : scope_(NeedEnv(scope) ? scope : nullptr), reg_scope_(pg), lex_env_ctx_(this, pg, {})
+        : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg), lexEnvCtx_(this, pg, {})
     {
         CopyBindings(pg, scope, varbinder::VariableFlags::LOOP_DECL);
     }
@@ -115,8 +115,8 @@ private:
     void CopyBindings(PandaGen *pg, varbinder::VariableScope *scope, varbinder::VariableFlags flag);
 
     varbinder::VariableScope *scope_ {};
-    LocalRegScope reg_scope_;
-    LexEnvContext lex_env_ctx_;
+    LocalRegScope regScope_;
+    LexEnvContext lexEnvCtx_;
 };
 }  // namespace panda::es2panda::compiler
 

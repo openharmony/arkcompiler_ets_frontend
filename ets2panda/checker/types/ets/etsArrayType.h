@@ -21,7 +21,7 @@
 namespace panda::es2panda::checker {
 class ETSArrayType : public Type {
 public:
-    explicit ETSArrayType(Type *element_type) : Type(TypeFlag::ETS_ARRAY), element_(element_type) {}
+    explicit ETSArrayType(Type *elementType) : Type(TypeFlag::ETS_ARRAY), element_(elementType) {}
 
     Type *ElementType()
     {
@@ -48,7 +48,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
 
 private:

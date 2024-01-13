@@ -66,29 +66,29 @@ static constexpr std::array<Conversion, 16> OP_TRANSLATION {
      {lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL, lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING},
      {lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL, lexer::TokenType::PUNCTUATOR_EXPONENTIATION}}};
 
-static lexer::TokenType OpEqualToOp(const lexer::TokenType op_equal)
+static lexer::TokenType OpEqualToOp(const lexer::TokenType opEqual)
 {
     for (const auto &conv : OP_TRANSLATION) {
-        if (conv.from == op_equal) {
+        if (conv.from == opEqual) {
             return conv.to;
         }
     }
     UNREACHABLE();
 }
 
-void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *old_expr)
+void AdjustBoxingUnboxingFlags(ir::Expression *newExpr, const ir::Expression *oldExpr)
 {
     // NOTE: gogabr. make sure that the checker never puts both a boxing and an unboxing flag on the same node.
     // Then this function will become unnecessary.
-    const ir::BoxingUnboxingFlags old_boxing_flag {old_expr->GetBoxingUnboxingFlags() &
-                                                   ir::BoxingUnboxingFlags::BOXING_FLAG};
-    const ir::BoxingUnboxingFlags old_unboxing_flag {old_expr->GetBoxingUnboxingFlags() &
-                                                     ir::BoxingUnboxingFlags::UNBOXING_FLAG};
+    const ir::BoxingUnboxingFlags oldBoxingFlag {oldExpr->GetBoxingUnboxingFlags() &
+                                                 ir::BoxingUnboxingFlags::BOXING_FLAG};
+    const ir::BoxingUnboxingFlags oldUnboxingFlag {oldExpr->GetBoxingUnboxingFlags() &
+                                                   ir::BoxingUnboxingFlags::UNBOXING_FLAG};
 
-    if (new_expr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        new_expr->SetBoxingUnboxingFlags(old_boxing_flag);
-    } else if (new_expr->TsType()->IsETSObjectType()) {
-        new_expr->SetBoxingUnboxingFlags(old_unboxing_flag);
+    if (newExpr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        newExpr->SetBoxingUnboxingFlags(oldBoxingFlag);
+    } else if (newExpr->TsType()->IsETSObjectType()) {
+        newExpr->SetBoxingUnboxingFlags(oldUnboxingFlag);
     }
 }
 
@@ -99,8 +99,8 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
         return assignment;
     }
 
-    const auto op_equal = assignment->OperatorType();
-    ASSERT(op_equal != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    const auto opEqual = assignment->OperatorType();
+    ASSERT(opEqual != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     ASSERT(parser != nullptr);
 
     auto *const allocator = checker->Allocator();
@@ -109,7 +109,7 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     auto *const right = assignment->Right();
     auto *const scope = NearestScope(assignment);
 
-    std::string new_assignment_statements {};
+    std::string newAssignmentStatements {};
 
     ir::Identifier *ident1;
     ir::Identifier *ident2 = nullptr;
@@ -122,101 +122,101 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     if (left->IsIdentifier()) {
         ident1 = left->AsIdentifier();
     } else if (left->IsMemberExpression()) {
-        auto *const member_expression = left->AsMemberExpression();
+        auto *const memberExpression = left->AsMemberExpression();
 
-        if (object = member_expression->Object(); object->IsIdentifier()) {
+        if (object = memberExpression->Object(); object->IsIdentifier()) {
             ident1 = object->AsIdentifier();
         } else {
             ident1 = Gensym(allocator);
-            new_assignment_statements = "let @@I1 = (@@E2); ";
+            newAssignmentStatements = "let @@I1 = (@@E2); ";
         }
 
-        if (property = member_expression->Property(); property->IsIdentifier()) {
+        if (property = memberExpression->Property(); property->IsIdentifier()) {
             ident2 = property->AsIdentifier();
         } else {
             ident2 = Gensym(allocator);
-            new_assignment_statements += "let @@I3 = (@@E4); ";
+            newAssignmentStatements += "let @@I3 = (@@E4); ";
         }
     } else {
         UNREACHABLE();
     }
 
     // Create proxy TypeNode for left hand of assignment expression
-    auto *lc_type = left->TsType();
-    if (auto *lc_type_as_primitive = checker->ETSBuiltinTypeAsPrimitiveType(lc_type); lc_type_as_primitive != nullptr) {
-        lc_type = lc_type_as_primitive;
+    auto *lcType = left->TsType();
+    if (auto *lcTypeAsPrimitive = checker->ETSBuiltinTypeAsPrimitiveType(lcType); lcTypeAsPrimitive != nullptr) {
+        lcType = lcTypeAsPrimitive;
     }
-    auto *expr_type = checker->AllocNode<ir::OpaqueTypeNode>(lc_type);
+    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(lcType);
 
     // Generate ArkTS code string for new lowered assignment expression:
-    std::string left_hand = "@@I5";
-    std::string right_hand = "@@I7";
+    std::string leftHand = "@@I5";
+    std::string rightHand = "@@I7";
 
     if (ident2 != nullptr) {
         if (auto const kind = left->AsMemberExpression()->Kind(); kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
-            left_hand += ".@@I6";
-            right_hand += ".@@I8";
+            leftHand += ".@@I6";
+            rightHand += ".@@I8";
         } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            left_hand += "[@@I6]";
-            right_hand += "[@@I8]";
+            leftHand += "[@@I6]";
+            rightHand += "[@@I8]";
         } else {
             UNREACHABLE();
         }
     }
 
-    new_assignment_statements += left_hand + " = (" + right_hand + ' ' +
-                                 std::string {lexer::TokenToString(OpEqualToOp(op_equal))} + " (@@E9)) as @@T10";
+    newAssignmentStatements += leftHand + " = (" + rightHand + ' ' +
+                               std::string {lexer::TokenToString(OpEqualToOp(opEqual))} + " (@@E9)) as @@T10";
     // std::cout << "Lowering statements: " << new_assignment_statements << std::endl;
 
     // Parse ArkTS code string and create and process corresponding AST node(s)
-    auto expression_ctx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
-    auto *lowering_result = parser->CreateFormattedExpression(
-        new_assignment_statements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2, property,
+    auto *loweringResult = parser->CreateFormattedExpression(
+        newAssignmentStatements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2, property,
         ident1->Clone(allocator), ident2 != nullptr ? ident2->Clone(allocator) : nullptr, ident1->Clone(allocator),
-        ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, expr_type);
-    lowering_result->SetParent(assignment->Parent());
-    ScopesInitPhaseETS::RunExternalNode(lowering_result, ctx->compiler_context->VarBinder());
+        ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, exprType);
+    loweringResult->SetParent(assignment->Parent());
+    ScopesInitPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 
-    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(lowering_result, scope);
-    lowering_result->Check(checker);
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, scope);
+    loweringResult->Check(checker);
 
     // Adjust [un]boxing flag
-    ir::AssignmentExpression *new_assignment;
-    if (lowering_result->IsAssignmentExpression()) {
-        new_assignment = lowering_result->AsAssignmentExpression();
-    } else if (lowering_result->IsBlockExpression() && !lowering_result->AsBlockExpression()->Statements().empty() &&
-               lowering_result->AsBlockExpression()->Statements().back()->IsExpressionStatement() &&
-               lowering_result->AsBlockExpression()
+    ir::AssignmentExpression *newAssignment;
+    if (loweringResult->IsAssignmentExpression()) {
+        newAssignment = loweringResult->AsAssignmentExpression();
+    } else if (loweringResult->IsBlockExpression() && !loweringResult->AsBlockExpression()->Statements().empty() &&
+               loweringResult->AsBlockExpression()->Statements().back()->IsExpressionStatement() &&
+               loweringResult->AsBlockExpression()
                    ->Statements()
                    .back()
                    ->AsExpressionStatement()
                    ->GetExpression()
                    ->IsAssignmentExpression()) {
-        new_assignment = lowering_result->AsBlockExpression()
-                             ->Statements()
-                             .back()
-                             ->AsExpressionStatement()
-                             ->GetExpression()
-                             ->AsAssignmentExpression();
+        newAssignment = loweringResult->AsBlockExpression()
+                            ->Statements()
+                            .back()
+                            ->AsExpressionStatement()
+                            ->GetExpression()
+                            ->AsAssignmentExpression();
     } else {
         UNREACHABLE();
     }
 
     // NOTE(gogabr): make sure that the checker never puts both a boxing and an unboxing flag on the same node.
     // Then this code will become unnecessary.
-    AdjustBoxingUnboxingFlags(new_assignment, assignment);
+    AdjustBoxingUnboxingFlags(newAssignment, assignment);
 
-    return lowering_result;
+    return loweringResult;
 }
 
 bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
-            for (auto *ext_prog : ext_programs) {
-                Perform(ctx, ext_prog);
+            for (auto *extProg : ext_programs) {
+                Perform(ctx, extProg);
             }
         }
     }
@@ -238,11 +238,11 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
 
 bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
-            for (auto *ext_prog : ext_programs) {
-                if (!Postcondition(ctx, ext_prog)) {
+            for (auto *extProg : ext_programs) {
+                if (!Postcondition(ctx, extProg)) {
                     return false;
                 }
             }

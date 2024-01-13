@@ -48,10 +48,10 @@ using Substitution = ArenaMap<ETSTypeParameter *, Type *>;
 
 class Type {
 public:
-    explicit Type(TypeFlag flag) : type_flags_(flag)
+    explicit Type(TypeFlag flag) : typeFlags_(flag)
     {
-        static uint64_t type_id = 0;
-        id_ = ++type_id;
+        static uint64_t typeId = 0;
+        id_ = ++typeId;
     }
 
     NO_COPY_SEMANTIC(Type);
@@ -163,22 +163,22 @@ public:
 
     TypeFlag TypeFlags() const
     {
-        return type_flags_;
+        return typeFlags_;
     }
 
-    bool HasTypeFlag(TypeFlag type_flag) const
+    bool HasTypeFlag(TypeFlag typeFlag) const
     {
-        return (type_flags_ & type_flag) != 0;
+        return (typeFlags_ & typeFlag) != 0;
     }
 
-    void AddTypeFlag(TypeFlag type_flag)
+    void AddTypeFlag(TypeFlag typeFlag)
     {
-        type_flags_ |= type_flag;
+        typeFlags_ |= typeFlag;
     }
 
-    void RemoveTypeFlag(TypeFlag type_flag)
+    void RemoveTypeFlag(TypeFlag typeFlag)
     {
-        type_flags_ &= ~type_flag;
+        typeFlags_ &= ~typeFlag;
     }
 
     uint64_t Id() const
@@ -243,14 +243,14 @@ public:
     virtual void Cast(TypeRelation *relation, Type *target);
     virtual void CastTarget(TypeRelation *relation, Type *source);
     virtual void IsSupertypeOf(TypeRelation *relation, Type *source);
-    virtual Type *AsSuper(Checker *checker, varbinder::Variable *source_var);
+    virtual Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar);
 
-    virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types);
+    virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
     virtual Type *Substitute(TypeRelation *relation, const Substitution *substitution);
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    TypeFlag type_flags_;
+    TypeFlag typeFlags_;
     varbinder::Variable *variable_ {};  // Variable associated with the type if any
     uint64_t id_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)

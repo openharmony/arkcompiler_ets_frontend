@@ -25,7 +25,7 @@ class CodeGen;
 class TryLabelSet {
 public:
     explicit TryLabelSet(CodeGen *cg);
-    explicit TryLabelSet(CodeGen *cg, LabelPair try_label_pair);
+    explicit TryLabelSet(CodeGen *cg, LabelPair tryLabelPair);
 
     ~TryLabelSet() = default;
     DEFAULT_COPY_SEMANTIC(TryLabelSet);
@@ -68,12 +68,12 @@ private:
 
 class CatchTable {
 public:
-    CatchTable(CodeGen *cg, uint32_t depth, util::StringView exception_type)
-        : label_set_(cg), depth_(depth), exception_type_(exception_type)
+    CatchTable(CodeGen *cg, uint32_t depth, util::StringView exceptionType)
+        : labelSet_(cg), depth_(depth), exceptionType_(exceptionType)
     {
     }
-    CatchTable(CodeGen *cg, uint32_t depth, LabelPair try_label_pair, util::StringView exception_type)
-        : label_set_(cg, try_label_pair), depth_(depth), exception_type_(exception_type)
+    CatchTable(CodeGen *cg, uint32_t depth, LabelPair tryLabelPair, util::StringView exceptionType)
+        : labelSet_(cg, tryLabelPair), depth_(depth), exceptionType_(exceptionType)
     {
     }
 
@@ -83,7 +83,7 @@ public:
 
     const TryLabelSet &LabelSet() const
     {
-        return label_set_;
+        return labelSet_;
     }
 
     uint32_t Depth() const
@@ -93,13 +93,13 @@ public:
 
     std::string Exception() const
     {
-        return exception_type_.Mutf8();
+        return exceptionType_.Mutf8();
     }
 
 private:
-    TryLabelSet label_set_;
+    TryLabelSet labelSet_;
     uint32_t depth_;
-    util::StringView exception_type_ {};
+    util::StringView exceptionType_ {};
 };
 }  // namespace panda::es2panda::compiler
 

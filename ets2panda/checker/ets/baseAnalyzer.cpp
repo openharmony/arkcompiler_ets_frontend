@@ -21,27 +21,27 @@
 namespace panda::es2panda::checker {
 void BaseAnalyzer::ClearPendingExits()
 {
-    pending_exits_.clear();
+    pendingExits_.clear();
 }
 
 PendingExitsVector &BaseAnalyzer::PendingExits()
 {
-    return pending_exits_;
+    return pendingExits_;
 }
 
-void BaseAnalyzer::SetPendingExits(const PendingExitsVector &pending_exits)
+void BaseAnalyzer::SetPendingExits(const PendingExitsVector &pendingExits)
 {
-    pending_exits_ = pending_exits;
+    pendingExits_ = pendingExits;
 }
 
 PendingExitsVector &BaseAnalyzer::OldPendingExits()
 {
-    return old_pending_exits_;
+    return oldPendingExits_;
 }
 
-void BaseAnalyzer::SetOldPendingExits(const PendingExitsVector &old_pending_exits)
+void BaseAnalyzer::SetOldPendingExits(const PendingExitsVector &oldPendingExits)
 {
-    old_pending_exits_ = old_pending_exits;
+    oldPendingExits_ = oldPendingExits;
 }
 
 const ir::AstNode *BaseAnalyzer::GetJumpTarget(const ir::AstNode *node) const
@@ -54,18 +54,18 @@ const ir::AstNode *BaseAnalyzer::GetJumpTarget(const ir::AstNode *node) const
     return node->AsContinueStatement()->Target();
 }
 
-LivenessStatus BaseAnalyzer::ResolveJump(const ir::AstNode *node, ir::AstNodeType jump_kind)
+LivenessStatus BaseAnalyzer::ResolveJump(const ir::AstNode *node, ir::AstNodeType jumpKind)
 {
     bool resolved = false;
-    PendingExitsVector exits = pending_exits_;
-    pending_exits_ = old_pending_exits_;
+    PendingExitsVector exits = pendingExits_;
+    pendingExits_ = oldPendingExits_;
 
     for (auto &it : exits) {
-        if (it.Node()->Type() == jump_kind && node == GetJumpTarget(it.Node())) {
+        if (it.Node()->Type() == jumpKind && node == GetJumpTarget(it.Node())) {
             it.ResolveJump();
             resolved = true;
         } else {
-            pending_exits_.push_back(it);
+            pendingExits_.push_back(it);
         }
     }
 
@@ -74,7 +74,7 @@ LivenessStatus BaseAnalyzer::ResolveJump(const ir::AstNode *node, ir::AstNodeTyp
 
 LivenessStatus BaseAnalyzer::ResolveContinues(const ir::AstNode *node)
 {
-    old_pending_exits_.clear();
+    oldPendingExits_.clear();
     return ResolveJump(node, ir::AstNodeType::CONTINUE_STATEMENT);
 }
 

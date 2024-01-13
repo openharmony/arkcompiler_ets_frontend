@@ -25,8 +25,8 @@ class TSAnalyzer;
 namespace panda::es2panda::ir {
 class TSIndexedAccessType : public TypeNode {
 public:
-    explicit TSIndexedAccessType(TypeNode *object_type, TypeNode *index_type)
-        : TypeNode(AstNodeType::TS_INDEXED_ACCESS_TYPE), object_type_(object_type), index_type_(index_type)
+    explicit TSIndexedAccessType(TypeNode *objectType, TypeNode *indexType)
+        : TypeNode(AstNodeType::TS_INDEXED_ACCESS_TYPE), objectType_(objectType), indexType_(indexType)
     {
     }
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
@@ -34,12 +34,12 @@ public:
 
     const TypeNode *ObjectType() const
     {
-        return object_type_;
+        return objectType_;
     }
 
     const TypeNode *IndexType() const
     {
-        return index_type_;
+        return indexType_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -58,8 +58,8 @@ public:
     }
 
 private:
-    TypeNode *object_type_;
-    TypeNode *index_type_;
+    TypeNode *objectType_;
+    TypeNode *indexType_;
 };
 }  // namespace panda::es2panda::ir
 

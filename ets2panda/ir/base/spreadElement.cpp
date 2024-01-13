@@ -75,27 +75,27 @@ ValidationInfo SpreadElement::ValidateExpression()
     return info;
 }
 
-bool SpreadElement::ConvertibleToRest(bool is_declaration, bool allow_pattern)
+bool SpreadElement::ConvertibleToRest(bool isDeclaration, bool allowPattern)
 {
-    bool conv_result = true;
+    bool convResult = true;
 
     switch (argument_->Type()) {
         case AstNodeType::ARRAY_EXPRESSION: {
-            conv_result = allow_pattern && argument_->AsArrayExpression()->ConvertibleToArrayPattern();
+            convResult = allowPattern && argument_->AsArrayExpression()->ConvertibleToArrayPattern();
             break;
         }
         case AstNodeType::OBJECT_EXPRESSION: {
-            conv_result = allow_pattern && argument_->AsObjectExpression()->ConvertibleToObjectPattern();
+            convResult = allowPattern && argument_->AsObjectExpression()->ConvertibleToObjectPattern();
             break;
         }
         case AstNodeType::META_PROPERTY_EXPRESSION:
         case AstNodeType::CHAIN_EXPRESSION:
         case AstNodeType::ASSIGNMENT_EXPRESSION: {
-            conv_result = false;
+            convResult = false;
             break;
         }
         case AstNodeType::MEMBER_EXPRESSION: {
-            conv_result = !is_declaration;
+            convResult = !isDeclaration;
             break;
         }
         default: {
@@ -104,7 +104,7 @@ bool SpreadElement::ConvertibleToRest(bool is_declaration, bool allow_pattern)
     }
 
     SetType(AstNodeType::REST_ELEMENT);
-    return conv_result;
+    return convResult;
 }
 
 void SpreadElement::TransformChildren(const NodeTransformer &cb)

@@ -21,34 +21,34 @@
 namespace panda::es2panda::ir {
 class TSConditionalType : public TypeNode {
 public:
-    explicit TSConditionalType(Expression *check_type, Expression *extends_type, Expression *true_type,
-                               Expression *false_type)
+    explicit TSConditionalType(Expression *checkType, Expression *extendsType, Expression *trueType,
+                               Expression *falseType)
         : TypeNode(AstNodeType::TS_CONDITIONAL_TYPE),
-          check_type_(check_type),
-          extends_type_(extends_type),
-          true_type_(true_type),
-          false_type_(false_type)
+          checkType_(checkType),
+          extendsType_(extendsType),
+          trueType_(trueType),
+          falseType_(falseType)
     {
     }
 
     const Expression *CheckType() const
     {
-        return check_type_;
+        return checkType_;
     }
 
     const Expression *ExtendsType() const
     {
-        return extends_type_;
+        return extendsType_;
     }
 
     const Expression *TrueType() const
     {
-        return true_type_;
+        return trueType_;
     }
 
     const Expression *FalseType() const
     {
-        return false_type_;
+        return falseType_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -67,10 +67,10 @@ public:
     }
 
 private:
-    Expression *check_type_;
-    Expression *extends_type_;
-    Expression *true_type_;
-    Expression *false_type_;
+    Expression *checkType_;
+    Expression *extendsType_;
+    Expression *trueType_;
+    Expression *falseType_;
 };
 }  // namespace panda::es2panda::ir
 

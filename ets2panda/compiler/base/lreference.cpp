@@ -36,7 +36,7 @@
 
 namespace panda::es2panda::compiler {
 
-LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode *node, bool is_declaration)
+LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode *node, bool isDeclaration)
 {
     switch (node->Type()) {
         // NOTE: This case is never reached in case of ETS
@@ -48,7 +48,7 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
                 res.variable = node->AsIdentifier()->Variable();
             }
 
-            return {cg, node, ReferenceKind::VAR_OR_GLOBAL, res, is_declaration};
+            return {cg, node, ReferenceKind::VAR_OR_GLOBAL, res, isDeclaration};
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
             return {cg, node, ReferenceKind::MEMBER, {}, false};
@@ -62,7 +62,7 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
         }
         case ir::AstNodeType::ARRAY_PATTERN:
         case ir::AstNodeType::OBJECT_PATTERN: {
-            return {cg, node, ReferenceKind::DESTRUCTURING, {}, is_declaration};
+            return {cg, node, ReferenceKind::DESTRUCTURING, {}, isDeclaration};
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
             return CreateBase(cg, node->AsAssignmentPattern()->Left(), true);
@@ -76,29 +76,29 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
     }
 }
 
-JSLReference::JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind,
-                           varbinder::ConstScopeFindResult res, bool is_declaration)
-    : LReference(node, ref_kind, res, is_declaration), pg_(static_cast<PandaGen *>(cg))
+JSLReference::JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind refKind,
+                           varbinder::ConstScopeFindResult res, bool isDeclaration)
+    : LReference(node, refKind, res, isDeclaration), pg_(static_cast<PandaGen *>(cg))
 {
     if (Kind() != ReferenceKind::MEMBER) {
         return;
     }
 
-    const auto *member_expr = Node()->AsMemberExpression();
+    const auto *memberExpr = Node()->AsMemberExpression();
 
-    if (member_expr->Object()->IsSuperExpression()) {
+    if (memberExpr->Object()->IsSuperExpression()) {
         SetKind(ReferenceKind::SUPER);
-    } else if (member_expr->IsPrivateReference()) {
+    } else if (memberExpr->IsPrivateReference()) {
         SetKind(ReferenceKind::PRIVATE);
-        private_ctor_ = pg_->AllocReg();
-        Function::LoadClassContexts(Node(), pg_, private_ctor_, member_expr->Property()->AsIdentifier()->Name());
+        privateCtor_ = pg_->AllocReg();
+        Function::LoadClassContexts(Node(), pg_, privateCtor_, memberExpr->Property()->AsIdentifier()->Name());
     }
 
     obj_ = pg_->AllocReg();
-    member_expr->Object()->Compile(pg_);
+    memberExpr->Object()->Compile(pg_);
     pg_->StoreAccumulator(Node(), obj_);
 
-    prop_ = pg_->ToNamedPropertyKey(member_expr->Property(), member_expr->IsComputed());
+    prop_ = pg_->ToNamedPropertyKey(memberExpr->Property(), memberExpr->IsComputed());
     if (std::holds_alternative<util::StringView>(prop_)) {
         return;
     }
@@ -107,11 +107,11 @@ JSLReference::JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind r
         return;
     }
 
-    member_expr->Property()->Compile(pg_);
+    memberExpr->Property()->Compile(pg_);
 
-    VReg prop_reg = pg_->AllocReg();
-    pg_->StoreAccumulator(Node(), prop_reg);
-    prop_ = prop_reg;
+    VReg propReg = pg_->AllocReg();
+    pg_->StoreAccumulator(Node(), propReg);
+    prop_ = propReg;
 }
 
 void JSLReference::GetValue() const
@@ -133,7 +133,7 @@ void JSLReference::GetValue() const
             break;
         }
         case ReferenceKind::PRIVATE: {
-            pg_->ClassPrivateFieldGet(Node(), private_ctor_, obj_, std::get<util::StringView>(prop_));
+            pg_->ClassPrivateFieldGet(Node(), privateCtor_, obj_, std::get<util::StringView>(prop_));
             break;
         }
         default: {
@@ -160,7 +160,7 @@ void JSLReference::SetValue() const
             break;
         }
         case ReferenceKind::PRIVATE: {
-            pg_->ClassPrivateFieldSet(Node(), private_ctor_, obj_, std::get<util::StringView>(prop_));
+            pg_->ClassPrivateFieldSet(Node(), privateCtor_, obj_, std::get<util::StringView>(prop_));
             break;
         }
         case ReferenceKind::DESTRUCTURING: {
@@ -173,39 +173,39 @@ void JSLReference::SetValue() const
     }
 }
 
-ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind,
-                             varbinder::ConstScopeFindResult res, bool is_declaration)
-    : LReference(node, ref_kind, res, is_declaration), etsg_(static_cast<ETSGen *>(cg))
+ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind refKind,
+                             varbinder::ConstScopeFindResult res, bool isDeclaration)
+    : LReference(node, refKind, res, isDeclaration), etsg_(static_cast<ETSGen *>(cg))
 {
     if (Kind() != ReferenceKind::MEMBER) {
         SetKind(ResolveReferenceKind(res.variable));
         return;
     }
 
-    const auto *member_expr = Node()->AsMemberExpression();
-    static_obj_ref_ = member_expr->Object()->TsType();
+    const auto *memberExpr = Node()->AsMemberExpression();
+    staticObjRef_ = memberExpr->Object()->TsType();
 
-    if (!member_expr->IsComputed() && etsg_->Checker()->IsVariableStatic(member_expr->PropVar()) &&
-        !static_obj_ref_->IsETSDynamicType()) {
+    if (!memberExpr->IsComputed() && etsg_->Checker()->IsVariableStatic(memberExpr->PropVar()) &&
+        !staticObjRef_->IsETSDynamicType()) {
         return;
     }
 
-    TargetTypeContext ttctx(etsg_, member_expr->Object()->TsType());
-    member_expr->Object()->Compile(etsg_);
-    base_reg_ = etsg_->AllocReg();
-    etsg_->StoreAccumulator(node, base_reg_);
+    TargetTypeContext ttctx(etsg_, memberExpr->Object()->TsType());
+    memberExpr->Object()->Compile(etsg_);
+    baseReg_ = etsg_->AllocReg();
+    etsg_->StoreAccumulator(node, baseReg_);
 
-    if (member_expr->IsComputed()) {
-        TargetTypeContext pttctx(etsg_, member_expr->Property()->TsType());
-        member_expr->Property()->Compile(etsg_);
-        etsg_->ApplyConversion(member_expr->Property());
+    if (memberExpr->IsComputed()) {
+        TargetTypeContext pttctx(etsg_, memberExpr->Property()->TsType());
+        memberExpr->Property()->Compile(etsg_);
+        etsg_->ApplyConversion(memberExpr->Property());
         ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
-        prop_reg_ = etsg_->AllocReg();
-        etsg_->StoreAccumulator(node, prop_reg_);
+        propReg_ = etsg_->AllocReg();
+        etsg_->StoreAccumulator(node, propReg_);
     }
 }
 
-ETSLReference ETSLReference::Create(CodeGen *const cg, const ir::AstNode *const node, const bool is_declaration)
+ETSLReference ETSLReference::Create(CodeGen *const cg, const ir::AstNode *const node, const bool isDeclaration)
 {
     if (node->Type() == ir::AstNodeType::IDENTIFIER) {
         const auto &name = node->AsIdentifier()->Name();
@@ -218,9 +218,9 @@ ETSLReference ETSLReference::Create(CodeGen *const cg, const ir::AstNode *const 
             }
         }
 
-        return {cg, node, ReferenceKind::VAR_OR_GLOBAL, res, is_declaration};
+        return {cg, node, ReferenceKind::VAR_OR_GLOBAL, res, isDeclaration};
     }
-    return std::make_from_tuple<ETSLReference>(CreateBase(cg, node, is_declaration));
+    return std::make_from_tuple<ETSLReference>(CreateBase(cg, node, isDeclaration));
 }
 
 ReferenceKind ETSLReference::ResolveReferenceKind(const varbinder::Variable *variable)
@@ -232,16 +232,16 @@ ReferenceKind ETSLReference::ResolveReferenceKind(const varbinder::Variable *var
         return ReferenceKind::LOCAL;
     }
 
-    auto *decl_node = variable->Declaration()->Node();
+    auto *declNode = variable->Declaration()->Node();
 
-    switch (decl_node->Type()) {
+    switch (declNode->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY: {
-            auto *class_field = decl_node->AsClassProperty();
-            return class_field->IsStatic() ? ReferenceKind::STATIC_FIELD : ReferenceKind::FIELD;
+            auto *classField = declNode->AsClassProperty();
+            return classField->IsStatic() ? ReferenceKind::STATIC_FIELD : ReferenceKind::FIELD;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
-            auto *class_def = decl_node->AsClassDefinition();
-            return class_def->IsStatic() ? ReferenceKind::STATIC_CLASS : ReferenceKind::CLASS;
+            auto *classDef = declNode->AsClassDefinition();
+            return classDef->IsStatic() ? ReferenceKind::STATIC_CLASS : ReferenceKind::CLASS;
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
             return ReferenceKind::METHOD;
@@ -271,41 +271,40 @@ void ETSLReference::GetValue() const
     }
 }
 
-void ETSLReference::SetValueComputed(const ir::MemberExpression *member_expr) const
+void ETSLReference::SetValueComputed(const ir::MemberExpression *memberExpr) const
 {
-    const auto *const object_type = member_expr->Object()->TsType();
+    const auto *const objectType = memberExpr->Object()->TsType();
 
-    if (object_type->IsETSDynamicType()) {
-        etsg_->StoreElementDynamic(Node(), base_reg_, prop_reg_);
+    if (objectType->IsETSDynamicType()) {
+        etsg_->StoreElementDynamic(Node(), baseReg_, propReg_);
         return;
     }
 
     // Same bypass for tuples, as at MemberExpression::Compile
-    const auto *const saved_vreg_type = etsg_->GetVRegType(base_reg_);
+    const auto *const savedVregType = etsg_->GetVRegType(baseReg_);
 
-    if (object_type->IsETSTupleType()) {
-        etsg_->SetVRegType(base_reg_, object_type);
+    if (objectType->IsETSTupleType()) {
+        etsg_->SetVRegType(baseReg_, objectType);
     }
 
-    etsg_->StoreArrayElement(Node(), base_reg_, prop_reg_,
-                             etsg_->GetVRegType(base_reg_)->AsETSArrayType()->ElementType());
+    etsg_->StoreArrayElement(Node(), baseReg_, propReg_, etsg_->GetVRegType(baseReg_)->AsETSArrayType()->ElementType());
 
-    if (object_type->IsETSTupleType()) {
-        etsg_->SetVRegType(base_reg_, saved_vreg_type);
+    if (objectType->IsETSTupleType()) {
+        etsg_->SetVRegType(baseReg_, savedVregType);
     }
 }
 
-void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *member_expr) const
+void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr) const
 {
-    const auto *sig = member_expr->PropVar()->TsType()->AsETSFunctionType()->FindSetter();
+    const auto *sig = memberExpr->PropVar()->TsType()->AsETSFunctionType()->FindSetter();
 
-    auto arg_reg = etsg_->AllocReg();
-    etsg_->StoreAccumulator(Node(), arg_reg);
+    auto argReg = etsg_->AllocReg();
+    etsg_->StoreAccumulator(Node(), argReg);
 
     if (sig->Function()->IsStatic()) {
-        etsg_->CallThisStatic0(Node(), arg_reg, sig->InternalName());
+        etsg_->CallThisStatic0(Node(), argReg, sig->InternalName());
     } else {
-        etsg_->CallThisVirtual1(Node(), base_reg_, sig->InternalName(), arg_reg);
+        etsg_->CallThisVirtual1(Node(), baseReg_, sig->InternalName(), argReg);
     }
 }
 
@@ -316,53 +315,53 @@ void ETSLReference::SetValue() const
         return;
     }
 
-    const auto *const member_expr = Node()->AsMemberExpression();
-    const auto *const member_expr_ts_type = member_expr->Object()->TsType()->IsETSTupleType()
-                                                ? member_expr->Object()->TsType()->AsETSTupleType()->ElementType()
-                                                : member_expr->TsType();
+    const auto *const memberExpr = Node()->AsMemberExpression();
+    const auto *const memberExprTsType = memberExpr->Object()->TsType()->IsETSTupleType()
+                                             ? memberExpr->Object()->TsType()->AsETSTupleType()->ElementType()
+                                             : memberExpr->TsType();
 
-    if (!member_expr->IsIgnoreBox()) {
-        etsg_->ApplyConversion(Node(), member_expr_ts_type);
+    if (!memberExpr->IsIgnoreBox()) {
+        etsg_->ApplyConversion(Node(), memberExprTsType);
     }
 
-    if (member_expr->IsComputed()) {
-        SetValueComputed(member_expr);
+    if (memberExpr->IsComputed()) {
+        SetValueComputed(memberExpr);
         return;
     }
 
-    if (member_expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-        SetValueGetterSetter(member_expr);
+    if (memberExpr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+        SetValueGetterSetter(memberExpr);
         return;
     }
 
-    const auto &prop_name = member_expr->Property()->AsIdentifier()->Name();
-    if (member_expr->PropVar()->HasFlag(varbinder::VariableFlags::STATIC)) {
-        const util::StringView full_name = etsg_->FormClassPropReference(static_obj_ref_->AsETSObjectType(), prop_name);
+    const auto &propName = memberExpr->Property()->AsIdentifier()->Name();
+    if (memberExpr->PropVar()->HasFlag(varbinder::VariableFlags::STATIC)) {
+        const util::StringView fullName = etsg_->FormClassPropReference(staticObjRef_->AsETSObjectType(), propName);
 
-        if (static_obj_ref_->IsETSDynamicType()) {
-            etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name);
+        if (staticObjRef_->IsETSDynamicType()) {
+            etsg_->StorePropertyDynamic(Node(), memberExprTsType, baseReg_, propName);
         } else {
-            etsg_->StoreStaticProperty(Node(), member_expr_ts_type, full_name);
+            etsg_->StoreStaticProperty(Node(), memberExprTsType, fullName);
         }
 
         return;
     }
 
-    auto const *object_type = member_expr->Object()->TsType();
+    auto const *objectType = memberExpr->Object()->TsType();
 
-    if (object_type->IsETSDynamicType()) {
-        etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name);
+    if (objectType->IsETSDynamicType()) {
+        etsg_->StorePropertyDynamic(Node(), memberExprTsType, baseReg_, propName);
         return;
     }
 
-    if (object_type->IsETSUnionType()) {
-        etsg_->StoreUnionProperty(Node(), base_reg_, prop_name);
+    if (objectType->IsETSUnionType()) {
+        etsg_->StoreUnionProperty(Node(), baseReg_, propName);
         return;
     }
 
-    const auto *type = etsg_->Checker()->MaybeBoxedType(member_expr->PropVar(), etsg_->Allocator());
+    const auto *type = etsg_->Checker()->MaybeBoxedType(memberExpr->PropVar(), etsg_->Allocator());
 
-    etsg_->StoreProperty(Node(), type, base_reg_, prop_name);
+    etsg_->StoreProperty(Node(), type, baseReg_, propName);
 }
 
 }  // namespace panda::es2panda::compiler

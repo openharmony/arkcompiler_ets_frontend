@@ -22,9 +22,9 @@ namespace panda::es2panda::ir {
 
 class ETSTypeReferencePart : public TypeNode {
 public:
-    explicit ETSTypeReferencePart(ir::Expression *name, ir::TSTypeParameterInstantiation *type_params,
+    explicit ETSTypeReferencePart(ir::Expression *name, ir::TSTypeParameterInstantiation *typeParams,
                                   ir::ETSTypeReferencePart *prev)
-        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART), name_(name), type_params_(type_params), prev_(prev)
+        : TypeNode(AstNodeType::ETS_TYPE_REFERENCE_PART), name_(name), typeParams_(typeParams), prev_(prev)
     {
     }
 
@@ -47,7 +47,7 @@ public:
 
     ir::TSTypeParameterInstantiation *TypeParams()
     {
-        return type_params_;
+        return typeParams_;
     }
 
     const ir::Expression *Name() const
@@ -75,7 +75,7 @@ public:
 
 private:
     ir::Expression *name_;
-    ir::TSTypeParameterInstantiation *type_params_ {};
+    ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};
 };
 }  // namespace panda::es2panda::ir

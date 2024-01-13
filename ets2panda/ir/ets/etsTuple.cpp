@@ -28,7 +28,7 @@ void ETSTuple::TransformChildren([[maybe_unused]] const NodeTransformer &cb)
     }
 
     if (HasSpreadType()) {
-        cb(spread_type_);
+        cb(spreadType_);
     }
 }
 
@@ -39,29 +39,29 @@ void ETSTuple::Iterate([[maybe_unused]] const NodeTraverser &cb) const
     }
 
     if (HasSpreadType()) {
-        cb(spread_type_);
+        cb(spreadType_);
     }
 }
 
 void ETSTuple::Dump(ir::AstDumper *const dumper) const
 {
     dumper->Add({{"type", "ETSTuple"},
-                 {"types", AstDumper::Optional(type_annotation_list_)},
-                 {"spreadType", AstDumper::Nullish(spread_type_)}});
+                 {"types", AstDumper::Optional(typeAnnotationList_)},
+                 {"spreadType", AstDumper::Nullish(spreadType_)}});
 }
 
 void ETSTuple::Dump(ir::SrcDumper *const dumper) const
 {
     dumper->Add("[");
-    for (auto type_annot : type_annotation_list_) {
-        type_annot->Dump(dumper);
-        if (type_annot != type_annotation_list_.back() || spread_type_ != nullptr) {
+    for (auto typeAnnot : typeAnnotationList_) {
+        typeAnnot->Dump(dumper);
+        if (typeAnnot != typeAnnotationList_.back() || spreadType_ != nullptr) {
             dumper->Add(", ");
         }
     }
-    if (spread_type_ != nullptr) {
+    if (spreadType_ != nullptr) {
         dumper->Add("...");
-        spread_type_->Dump(dumper);
+        spreadType_->Dump(dumper);
     }
     dumper->Add(("]"));
 }
@@ -80,18 +80,18 @@ checker::Type *ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const check
 }
 
 checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker,
-                                              ArenaVector<checker::Type *> &type_list, checker::Type *const spread_type)
+                                              ArenaVector<checker::Type *> &typeList, checker::Type *const spreadType)
 {
-    if (type_list.empty()) {
-        return spread_type == nullptr ? checker->GlobalETSObjectType() : spread_type;
+    if (typeList.empty()) {
+        return spreadType == nullptr ? checker->GlobalETSObjectType() : spreadType;
     }
 
-    bool all_elements_are_same = std::all_of(type_list.begin(), type_list.end(), [&checker, &type_list](auto *element) {
-        return checker->Relation()->IsIdenticalTo(type_list[0], element);
+    bool allElementsAreSame = std::all_of(typeList.begin(), typeList.end(), [&checker, &typeList](auto *element) {
+        return checker->Relation()->IsIdenticalTo(typeList[0], element);
     });
 
-    if (spread_type != nullptr) {
-        all_elements_are_same = all_elements_are_same && checker->Relation()->IsIdenticalTo(type_list[0], spread_type);
+    if (spreadType != nullptr) {
+        allElementsAreSame = allElementsAreSame && checker->Relation()->IsIdenticalTo(typeList[0], spreadType);
     }
 
     // If only one type present in the tuple, that will be the holder array type. If any two not identical types
@@ -99,31 +99,31 @@ checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker
     // That makes it possible to assign eg. `[int, int, ...int[]]` tuple type to `int[]` array type. Because a `short[]`
     // array already isn't assignable to `int[]` array, that preserve that the `[int, short, ...int[]]` tuple type's
     // element type will be calculated to `Object[]`, which is not assignable to `int[]` array either.
-    if (all_elements_are_same) {
-        return type_list[0];
+    if (allElementsAreSame) {
+        return typeList[0];
     }
 
-    auto *const saved_relation_node = checker->Relation()->GetNode();
+    auto *const savedRelationNode = checker->Relation()->GetNode();
     checker->Relation()->SetNode(this);
 
-    auto get_boxed_type_or_type = [&checker](checker::Type *const type) {
-        auto *const boxed_type = checker->PrimitiveTypeAsETSBuiltinType(type);
-        return boxed_type == nullptr ? type : boxed_type;
+    auto getBoxedTypeOrType = [&checker](checker::Type *const type) {
+        auto *const boxedType = checker->PrimitiveTypeAsETSBuiltinType(type);
+        return boxedType == nullptr ? type : boxedType;
     };
 
-    checker::Type *lub_type = get_boxed_type_or_type(type_list[0]);
+    checker::Type *lubType = getBoxedTypeOrType(typeList[0]);
 
-    for (std::size_t idx = 1; idx < type_list.size(); ++idx) {
-        lub_type = checker->FindLeastUpperBound(lub_type, get_boxed_type_or_type(type_list[idx]));
+    for (std::size_t idx = 1; idx < typeList.size(); ++idx) {
+        lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(typeList[idx]));
     }
 
-    if (spread_type != nullptr) {
-        lub_type = checker->FindLeastUpperBound(lub_type, get_boxed_type_or_type(spread_type));
+    if (spreadType != nullptr) {
+        lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(spreadType));
     }
 
-    checker->Relation()->SetNode(saved_relation_node);
+    checker->Relation()->SetNode(savedRelationNode);
 
-    return lub_type;
+    return lubType;
 }
 
 checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
@@ -132,26 +132,26 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
         return TsType();
     }
 
-    ArenaVector<checker::Type *> type_list(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> typeList(checker->Allocator()->Adapter());
 
-    for (auto *const type_annotation : GetTupleTypeAnnotationsList()) {
-        auto *const checked_type = checker->GetTypeFromTypeAnnotation(type_annotation);
-        type_list.emplace_back(checked_type);
+    for (auto *const typeAnnotation : GetTupleTypeAnnotationsList()) {
+        auto *const checkedType = checker->GetTypeFromTypeAnnotation(typeAnnotation);
+        typeList.emplace_back(checkedType);
     }
 
     if (HasSpreadType()) {
-        ASSERT(spread_type_->IsTSArrayType());
-        auto *const array_type = spread_type_->GetType(checker);
-        ASSERT(array_type->IsETSArrayType());
-        spread_type_->SetTsType(array_type->AsETSArrayType()->ElementType());
+        ASSERT(spreadType_->IsTSArrayType());
+        auto *const arrayType = spreadType_->GetType(checker);
+        ASSERT(arrayType->IsETSArrayType());
+        spreadType_->SetTsType(arrayType->AsETSArrayType()->ElementType());
     }
 
-    auto *const spread_element_type = spread_type_ != nullptr ? spread_type_->TsType() : nullptr;
+    auto *const spreadElementType = spreadType_ != nullptr ? spreadType_->TsType() : nullptr;
 
-    auto *const tuple_type = checker->Allocator()->New<checker::ETSTupleType>(
-        type_list, CalculateLUBForTuple(checker, type_list, spread_element_type), spread_element_type);
+    auto *const tupleType = checker->Allocator()->New<checker::ETSTupleType>(
+        typeList, CalculateLUBForTuple(checker, typeList, spreadElementType), spreadElementType);
 
-    SetTsType(tuple_type);
+    SetTsType(tupleType);
     return TsType();
 }
 

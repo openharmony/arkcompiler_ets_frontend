@@ -23,11 +23,11 @@
 #include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
-CompileQueue::CompileQueue(size_t thread_count)
+CompileQueue::CompileQueue(size_t threadCount)
 {
-    threads_.reserve(thread_count);
+    threads_.reserve(threadCount);
 
-    for (size_t i = 0; i < thread_count; i++) {
+    for (size_t i = 0; i < threadCount; i++) {
         threads_.push_back(os::thread::ThreadStart(Worker, this));
     }
 }
@@ -39,35 +39,35 @@ CompileQueue::~CompileQueue()
     std::unique_lock<std::mutex> lock(m_);
     terminate_ = true;
     lock.unlock();
-    jobs_available_.notify_all();
+    jobsAvailable_.notify_all();
 
-    for (const auto handle_id : threads_) {
-        os::thread::ThreadJoin(handle_id, &retval);
+    for (const auto handleId : threads_) {
+        os::thread::ThreadJoin(handleId, &retval);
     }
 }
 
 void CompileQueue::Schedule(CompilerContext *context)
 {
-    ASSERT(jobs_count_ == 0);
+    ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
     const auto &functions = context->VarBinder()->Functions();
     jobs_ = new CompileJob[functions.size()]();
 
     for (auto *function : functions) {
-        jobs_[jobs_count_++].SetContext(context, function);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        jobs_[jobsCount_++].SetContext(context, function);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
 
-    total_jobs_count_ = jobs_count_;
+    totalJobsCount_ = jobsCount_;
 
     lock.unlock();
-    jobs_available_.notify_all();
+    jobsAvailable_.notify_all();
 }
 
 void CompileQueue::Worker(CompileQueue *queue)
 {
     while (true) {
         std::unique_lock<std::mutex> lock(queue->m_);
-        queue->jobs_available_.wait(lock, [queue]() { return queue->terminate_ || queue->jobs_count_ != 0; });
+        queue->jobsAvailable_.wait(lock, [queue]() { return queue->terminate_ || queue->jobsCount_ != 0; });
 
         if (queue->terminate_) {
             return;
@@ -76,18 +76,18 @@ void CompileQueue::Worker(CompileQueue *queue)
         lock.unlock();
 
         queue->Consume();
-        queue->jobs_finished_.notify_one();
+        queue->jobsFinished_.notify_one();
     }
 }
 
 void CompileQueue::Consume()
 {
     std::unique_lock<std::mutex> lock(m_);
-    active_workers_++;
+    activeWorkers_++;
 
-    while (jobs_count_ > 0) {
-        --jobs_count_;
-        auto &job = jobs_[jobs_count_];  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    while (jobsCount_ > 0) {
+        --jobsCount_;
+        auto &job = jobs_[jobsCount_];  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 
         lock.unlock();
 
@@ -102,13 +102,13 @@ void CompileQueue::Consume()
         lock.lock();
     }
 
-    active_workers_--;
+    activeWorkers_--;
 }
 
-void CompileQueue::Wait(const JobsFinishedCb &on_finished_cb)
+void CompileQueue::Wait(const JobsFinishedCb &onFinishedCb)
 {
     std::unique_lock<std::mutex> lock(m_);
-    jobs_finished_.wait(lock, [this]() { return active_workers_ == 0 && jobs_count_ == 0; });
+    jobsFinished_.wait(lock, [this]() { return activeWorkers_ == 0 && jobsCount_ == 0; });
 
     if (!errors_.empty()) {
         delete[] jobs_;
@@ -116,8 +116,8 @@ void CompileQueue::Wait(const JobsFinishedCb &on_finished_cb)
         throw errors_.front();
     }
 
-    for (uint32_t i = 0; i < total_jobs_count_; i++) {
-        on_finished_cb(jobs_ + i);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    for (uint32_t i = 0; i < totalJobsCount_; i++) {
+        onFinishedCb(jobs_ + i);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     }
 
     delete[] jobs_;

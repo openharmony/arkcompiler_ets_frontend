@@ -29,10 +29,8 @@ class ETSCompiler;
 namespace panda::es2panda::ir {
 class TSAsExpression : public AnnotatedExpression {
 public:
-    explicit TSAsExpression(Expression *expression, TypeNode *type_annotation, bool is_const)
-        : AnnotatedExpression(AstNodeType::TS_AS_EXPRESSION, type_annotation),
-          expression_(expression),
-          is_const_(is_const)
+    explicit TSAsExpression(Expression *expression, TypeNode *typeAnnotation, bool isConst)
+        : AnnotatedExpression(AstNodeType::TS_AS_EXPRESSION, typeAnnotation), expression_(expression), isConst_(isConst)
     {
     }
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
@@ -48,7 +46,7 @@ public:
 
     bool IsConst() const
     {
-        return is_const_;
+        return isConst_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -67,8 +65,8 @@ public:
 
 private:
     Expression *expression_;
-    bool is_unchecked_cast_ {true};
-    bool is_const_;
+    bool isUncheckedCast_ {true};
+    bool isConst_;
 };
 }  // namespace panda::es2panda::ir
 

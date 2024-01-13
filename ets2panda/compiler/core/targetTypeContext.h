@@ -27,7 +27,7 @@ class ETSGen;
 
 class TargetTypeContext {
 public:
-    explicit TargetTypeContext(ETSGen *etsg, const checker::Type *target_type);
+    explicit TargetTypeContext(ETSGen *etsg, const checker::Type *targetType);
     NO_COPY_SEMANTIC(TargetTypeContext);
     NO_MOVE_SEMANTIC(TargetTypeContext);
 

@@ -63,13 +63,13 @@ namespace panda::es2panda::varbinder {
 void VarBinder::InitTopScope()
 {
     if (program_->Kind() == parser::ScriptKind::MODULE) {
-        top_scope_ = Allocator()->New<ModuleScope>(Allocator());
+        topScope_ = Allocator()->New<ModuleScope>(Allocator());
     } else {
-        top_scope_ = Allocator()->New<GlobalScope>(Allocator());
+        topScope_ = Allocator()->New<GlobalScope>(Allocator());
     }
 
-    scope_ = top_scope_;
-    var_scope_ = top_scope_;
+    scope_ = topScope_;
+    varScope_ = topScope_;
 }
 
 std::tuple<ParameterDecl *, Variable *> VarBinder::AddParamDecl(ir::AstNode *param)
@@ -138,14 +138,14 @@ void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_v
 void VarBinder::IdentifierAnalysis()
 {
     ASSERT(program_->Ast());
-    ASSERT(scope_ == top_scope_);
-    ASSERT(var_scope_ == top_scope_);
+    ASSERT(scope_ == topScope_);
+    ASSERT(varScope_ == topScope_);
 
-    function_scopes_.push_back(top_scope_);
-    top_scope_->BindName(MAIN);
-    top_scope_->BindInternalName(BuildFunctionName(MAIN, 0));
+    functionScopes_.push_back(topScope_);
+    topScope_->BindName(MAIN);
+    topScope_->BindInternalName(BuildFunctionName(MAIN, 0));
 
-    top_scope_->CheckDirectEval(compiler_ctx_);
+    topScope_->CheckDirectEval(compilerCtx_);
 
     ResolveReferences(program_->Ast());
     AddMandatoryParams();
@@ -167,15 +167,15 @@ bool VarBinder::InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::A
     if (node->AsScriptFunction()->IsArrow()) {
         return false;
     }
-    auto *arguments_variable =
+    auto *argumentsVariable =
         (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
     if (iter->IsFunctionParamScope()) {
-        if (arguments_variable == nullptr) {
+        if (argumentsVariable == nullptr) {
             return true;
         }
 
         *scope = iter->AsFunctionParamScope()->GetFunctionScope();
-        (*scope)->InsertBinding(arguments_variable->Name(), arguments_variable);
+        (*scope)->InsertBinding(argumentsVariable->Name(), argumentsVariable);
     }
 
     (*scope)->AddFlag(ScopeFlags::USE_ARGS);
@@ -222,22 +222,22 @@ void VarBinder::PropagateDirectEval() const
 
 void VarBinder::InstantiatePrivateContext(const ir::Identifier *ident) const
 {
-    auto *class_def = util::Helpers::GetContainingClassDefinition(ident);
+    auto *classDef = util::Helpers::GetContainingClassDefinition(ident);
 
-    while (class_def != nullptr) {
-        auto *scope = class_def->Scope();
-        Variable *variable = scope->FindLocal(class_def->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
+    while (classDef != nullptr) {
+        auto *scope = classDef->Scope();
+        Variable *variable = scope->FindLocal(classDef->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
 
         if (!variable->HasFlag(VariableFlags::INITIALIZED)) {
             break;
         }
 
-        if (class_def->HasMatchingPrivateKey(ident->Name())) {
+        if (classDef->HasMatchingPrivateKey(ident->Name())) {
             variable->SetLexical(scope);
             return;
         }
 
-        class_def = util::Helpers::GetContainingClassDefinition(class_def->Parent());
+        classDef = util::Helpers::GetContainingClassDefinition(classDef->Parent());
     }
 
     ThrowPrivateFieldMismatch(ident->Start(), ident->Name());
@@ -279,28 +279,28 @@ util::StringView VarBinder::BuildFunctionName(util::StringView name, uint32_t id
 {
     std::stringstream ss;
     ss << "func_" << name << "_" << std::to_string(idx);
-    util::UString internal_name(ss.str(), Allocator());
+    util::UString internalName(ss.str(), Allocator());
 
-    return internal_name.View();
+    return internalName.View();
 }
 
-bool VarBinder::BuildInternalName(ir::ScriptFunction *script_func)
+bool VarBinder::BuildInternalName(ir::ScriptFunction *scriptFunc)
 {
-    auto *func_scope = script_func->Scope();
-    auto name = util::Helpers::FunctionName(Allocator(), script_func);
+    auto *funcScope = scriptFunc->Scope();
+    auto name = util::Helpers::FunctionName(Allocator(), scriptFunc);
 
-    uint32_t idx = function_scopes_.size();
-    func_scope->BindName(name);
-    func_scope->BindInternalName(BuildFunctionName(name, idx));
+    uint32_t idx = functionScopes_.size();
+    funcScope->BindName(name);
+    funcScope->BindInternalName(BuildFunctionName(name, idx));
 
-    return !script_func->IsOverload();
+    return !scriptFunc->IsOverload();
 }
 
-void VarBinder::BuildVarDeclaratorId(ir::AstNode *child_node)
+void VarBinder::BuildVarDeclaratorId(ir::AstNode *childNode)
 {
-    switch (child_node->Type()) {
+    switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            auto *ident = child_node->AsIdentifier();
+            auto *ident = childNode->AsIdentifier();
             const auto &name = ident->Name();
 
             if (util::Helpers::IsGlobalIdentifier(name)) {
@@ -314,37 +314,37 @@ void VarBinder::BuildVarDeclaratorId(ir::AstNode *child_node)
             break;
         }
         case ir::AstNodeType::OBJECT_PATTERN: {
-            auto *obj_pattern = child_node->AsObjectPattern();
+            auto *objPattern = childNode->AsObjectPattern();
 
-            for (auto *prop : obj_pattern->Properties()) {
+            for (auto *prop : objPattern->Properties()) {
                 BuildVarDeclaratorId(prop);
             }
 
-            BuildSignatureDeclarationBaseParams(obj_pattern->TypeAnnotation());
+            BuildSignatureDeclarationBaseParams(objPattern->TypeAnnotation());
             break;
         }
         case ir::AstNodeType::ARRAY_PATTERN: {
-            auto *array_pattern = child_node->AsArrayPattern();
+            auto *arrayPattern = childNode->AsArrayPattern();
 
-            for (auto *element : child_node->AsArrayPattern()->Elements()) {
+            for (auto *element : childNode->AsArrayPattern()->Elements()) {
                 BuildVarDeclaratorId(element);
             }
 
-            BuildSignatureDeclarationBaseParams(array_pattern->TypeAnnotation());
+            BuildSignatureDeclarationBaseParams(arrayPattern->TypeAnnotation());
             break;
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-            ResolveReference(child_node->AsAssignmentPattern()->Right());
-            BuildVarDeclaratorId(child_node->AsAssignmentPattern()->Left());
+            ResolveReference(childNode->AsAssignmentPattern()->Right());
+            BuildVarDeclaratorId(childNode->AsAssignmentPattern()->Left());
             break;
         }
         case ir::AstNodeType::PROPERTY: {
-            ResolveReference(child_node->AsProperty()->Key());
-            BuildVarDeclaratorId(child_node->AsProperty()->Value());
+            ResolveReference(childNode->AsProperty()->Key());
+            BuildVarDeclaratorId(childNode->AsProperty()->Value());
             break;
         }
         case ir::AstNodeType::REST_ELEMENT: {
-            BuildVarDeclaratorId(child_node->AsRestElement()->Argument());
+            BuildVarDeclaratorId(childNode->AsRestElement()->Argument());
             break;
         }
         default:
@@ -352,151 +352,151 @@ void VarBinder::BuildVarDeclaratorId(ir::AstNode *child_node)
     }
 }
 
-void VarBinder::BuildVarDeclarator(ir::VariableDeclarator *var_decl)
+void VarBinder::BuildVarDeclarator(ir::VariableDeclarator *varDecl)
 {
-    if (var_decl->Parent()->AsVariableDeclaration()->Kind() == ir::VariableDeclaration::VariableDeclarationKind::VAR) {
-        ResolveReferences(var_decl);
+    if (varDecl->Parent()->AsVariableDeclaration()->Kind() == ir::VariableDeclaration::VariableDeclarationKind::VAR) {
+        ResolveReferences(varDecl);
         return;
     }
 
-    if (var_decl->Init() != nullptr) {
-        ResolveReference(var_decl->Init());
+    if (varDecl->Init() != nullptr) {
+        ResolveReference(varDecl->Init());
     }
 
-    BuildVarDeclaratorId(var_decl->Id());
+    BuildVarDeclaratorId(varDecl->Id());
 }
 
 void VarBinder::BuildClassProperty(const ir::ClassProperty *prop)
 {
     const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(prop);
-    auto scope_ctx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
+    auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
 
     ResolveReferences(prop);
 }
 
-void VarBinder::InitializeClassBinding(ir::ClassDefinition *class_def)
+void VarBinder::InitializeClassBinding(ir::ClassDefinition *classDef)
 {
-    auto res = scope_->Find(class_def->Ident()->Name());
+    auto res = scope_->Find(classDef->Ident()->Name());
 
     ASSERT(res.variable && res.variable->Declaration()->IsLetDecl());
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
-void VarBinder::InitializeClassIdent(ir::ClassDefinition *class_def)
+void VarBinder::InitializeClassIdent(ir::ClassDefinition *classDef)
 {
-    auto res = scope_->Find(class_def->Ident()->Name());
+    auto res = scope_->Find(classDef->Ident()->Name());
 
     ASSERT(res.variable && res.variable->Declaration()->IsConstDecl());
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
-void VarBinder::BuildClassDefinition(ir::ClassDefinition *class_def)
+void VarBinder::BuildClassDefinition(ir::ClassDefinition *classDef)
 {
-    if (class_def->Parent()->IsClassDeclaration() || class_def->Parent()->IsETSStructDeclaration()) {
-        InitializeClassBinding(class_def);
+    if (classDef->Parent()->IsClassDeclaration() || classDef->Parent()->IsETSStructDeclaration()) {
+        InitializeClassBinding(classDef);
     }
 
-    auto scope_ctx = LexicalScope<LocalScope>::Enter(this, class_def->Scope());
+    auto scopeCtx = LexicalScope<LocalScope>::Enter(this, classDef->Scope());
 
-    if (class_def->Super() != nullptr) {
-        ResolveReference(class_def->Super());
+    if (classDef->Super() != nullptr) {
+        ResolveReference(classDef->Super());
     }
 
-    Variable *variable = scope_->FindLocal(class_def->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
+    Variable *variable = scope_->FindLocal(classDef->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
     variable->AddFlag(VariableFlags::INITIALIZED);
 
-    if (class_def->Ident() != nullptr) {
-        InitializeClassIdent(class_def);
+    if (classDef->Ident() != nullptr) {
+        InitializeClassIdent(classDef);
     }
 
-    ResolveReference(class_def->Ctor());
+    ResolveReference(classDef->Ctor());
 
-    for (auto *stmt : class_def->Body()) {
+    for (auto *stmt : classDef->Body()) {
         ResolveReference(stmt);
     }
 }
 
-void VarBinder::BuildForUpdateLoop(ir::ForUpdateStatement *for_update_stmt)
+void VarBinder::BuildForUpdateLoop(ir::ForUpdateStatement *forUpdateStmt)
 {
-    auto *loop_scope = for_update_stmt->Scope();
+    auto *loopScope = forUpdateStmt->Scope();
 
-    auto decl_scope_ctx = LexicalScope<LoopDeclarationScope>::Enter(this, loop_scope->DeclScope());
+    auto declScopeCtx = LexicalScope<LoopDeclarationScope>::Enter(this, loopScope->DeclScope());
 
-    if (for_update_stmt->Init() != nullptr) {
-        ResolveReference(for_update_stmt->Init());
+    if (forUpdateStmt->Init() != nullptr) {
+        ResolveReference(forUpdateStmt->Init());
     }
 
-    if (for_update_stmt->Update() != nullptr) {
-        ResolveReference(for_update_stmt->Update());
+    if (forUpdateStmt->Update() != nullptr) {
+        ResolveReference(forUpdateStmt->Update());
     }
 
-    auto loop_ctx = LexicalScope<LoopScope>::Enter(this, loop_scope);
+    auto loopCtx = LexicalScope<LoopScope>::Enter(this, loopScope);
 
-    if (for_update_stmt->Test() != nullptr) {
-        ResolveReference(for_update_stmt->Test());
+    if (forUpdateStmt->Test() != nullptr) {
+        ResolveReference(forUpdateStmt->Test());
     }
 
-    ResolveReference(for_update_stmt->Body());
+    ResolveReference(forUpdateStmt->Body());
 
-    loop_ctx.GetScope()->ConvertToVariableScope(Allocator());
+    loopCtx.GetScope()->ConvertToVariableScope(Allocator());
 }
 
-void VarBinder::BuildForInOfLoop(varbinder::LoopScope *loop_scope, ir::AstNode *left, ir::Expression *right,
+void VarBinder::BuildForInOfLoop(varbinder::LoopScope *loopScope, ir::AstNode *left, ir::Expression *right,
                                  ir::Statement *body)
 {
-    auto decl_scope_ctx = LexicalScope<LoopDeclarationScope>::Enter(this, loop_scope->DeclScope());
+    auto declScopeCtx = LexicalScope<LoopDeclarationScope>::Enter(this, loopScope->DeclScope());
 
     ResolveReference(right);
     ResolveReference(left);
 
-    auto loop_ctx = LexicalScope<LoopScope>::Enter(this, loop_scope);
+    auto loopCtx = LexicalScope<LoopScope>::Enter(this, loopScope);
 
     ResolveReference(body);
-    loop_ctx.GetScope()->ConvertToVariableScope(Allocator());
+    loopCtx.GetScope()->ConvertToVariableScope(Allocator());
 }
 
-void VarBinder::BuildCatchClause(ir::CatchClause *catch_clause_stmt)
+void VarBinder::BuildCatchClause(ir::CatchClause *catchClauseStmt)
 {
-    if (catch_clause_stmt->Param() != nullptr) {
-        auto param_scope_ctx = LexicalScope<CatchParamScope>::Enter(this, catch_clause_stmt->Scope()->ParamScope());
-        ResolveReference(catch_clause_stmt->Param());
+    if (catchClauseStmt->Param() != nullptr) {
+        auto paramScopeCtx = LexicalScope<CatchParamScope>::Enter(this, catchClauseStmt->Scope()->ParamScope());
+        ResolveReference(catchClauseStmt->Param());
     }
 
-    auto scope_ctx = LexicalScope<CatchScope>::Enter(this, catch_clause_stmt->Scope());
-    ResolveReference(catch_clause_stmt->Body());
+    auto scopeCtx = LexicalScope<CatchScope>::Enter(this, catchClauseStmt->Scope());
+    ResolveReference(catchClauseStmt->Body());
 }
 
-void VarBinder::BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *const type_alias_decl)
+void VarBinder::BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *const typeAliasDecl)
 {
-    if (type_alias_decl->TypeParams() != nullptr) {
-        const auto type_alias_scope = LexicalScope<LocalScope>::Enter(this, type_alias_decl->TypeParams()->Scope());
-        ResolveReferences(type_alias_decl);
+    if (typeAliasDecl->TypeParams() != nullptr) {
+        const auto typeAliasScope = LexicalScope<LocalScope>::Enter(this, typeAliasDecl->TypeParams()->Scope());
+        ResolveReferences(typeAliasDecl);
         return;
     }
 
-    ResolveReferences(type_alias_decl);
+    ResolveReferences(typeAliasDecl);
 }
 
 void VarBinder::AddCompilableFunction(ir::ScriptFunction *func)
 {
     if (func->IsArrow()) {
-        VariableScope *outer_var_scope = scope_->EnclosingVariableScope();
-        outer_var_scope->AddFlag(ScopeFlags::INNER_ARROW);
+        VariableScope *outerVarScope = scope_->EnclosingVariableScope();
+        outerVarScope->AddFlag(ScopeFlags::INNER_ARROW);
     }
 
     AddCompilableFunctionScope(func->Scope());
 }
 
-void VarBinder::AddCompilableFunctionScope(varbinder::FunctionScope *func_scope)
+void VarBinder::AddCompilableFunctionScope(varbinder::FunctionScope *funcScope)
 {
-    function_scopes_.push_back(func_scope);
+    functionScopes_.push_back(funcScope);
 }
 
 void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 {
-    auto *func_scope = func->Scope();
+    auto *funcScope = func->Scope();
     {
-        auto param_scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, func_scope->ParamScope());
+        auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, funcScope->ParamScope());
 
         for (auto *param : func->Params()) {
             ResolveReference(param);
@@ -513,7 +513,7 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 
     AddCompilableFunction(func);
 
-    auto scope_ctx = LexicalScope<FunctionScope>::Enter(this, func_scope);
+    auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
 
     if (func->Body() != nullptr) {
         ResolveReference(func->Body());
@@ -523,7 +523,7 @@ void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 void VarBinder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func)
 {
     if (func->TypeParams() != nullptr) {
-        auto type_param_scope_ctx = LexicalScope<Scope>::Enter(this, func->TypeParams()->Scope());
+        auto typeParamScopeCtx = LexicalScope<Scope>::Enter(this, func->TypeParams()->Scope());
         VisitScriptFunction(func);
         return;
     }
@@ -531,95 +531,95 @@ void VarBinder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *f
     VisitScriptFunction(func);
 }
 
-void VarBinder::ResolveReference(ir::AstNode *child_node)
+void VarBinder::ResolveReference(ir::AstNode *childNode)
 {
-    switch (child_node->Type()) {
+    switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            auto *ident = child_node->AsIdentifier();
+            auto *ident = childNode->AsIdentifier();
 
             LookupIdentReference(ident);
-            ResolveReferences(child_node);
+            ResolveReferences(childNode);
             break;
         }
         case ir::AstNodeType::SUPER_EXPRESSION: {
-            VariableScope *var_scope = scope_->EnclosingVariableScope();
-            var_scope->AddFlag(ScopeFlags::USE_SUPER);
-            ResolveReferences(child_node);
+            VariableScope *varScope = scope_->EnclosingVariableScope();
+            varScope->AddFlag(ScopeFlags::USE_SUPER);
+            ResolveReferences(childNode);
             break;
         }
         case ir::AstNodeType::SCRIPT_FUNCTION: {
-            VisitScriptFunctionWithPotentialTypeParams(child_node->AsScriptFunction());
+            VisitScriptFunctionWithPotentialTypeParams(childNode->AsScriptFunction());
             break;
         }
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
-            BuildVarDeclarator(child_node->AsVariableDeclarator());
+            BuildVarDeclarator(childNode->AsVariableDeclarator());
             break;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
-            BuildClassDefinition(child_node->AsClassDefinition());
+            BuildClassDefinition(childNode->AsClassDefinition());
             break;
         }
         case ir::AstNodeType::CLASS_PROPERTY: {
-            BuildClassProperty(child_node->AsClassProperty());
+            BuildClassProperty(childNode->AsClassProperty());
             break;
         }
         case ir::AstNodeType::BLOCK_STATEMENT: {
-            auto scope_ctx = LexicalScope<Scope>::Enter(this, child_node->AsBlockStatement()->Scope());
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockStatement()->Scope());
 
-            ResolveReferences(child_node);
+            ResolveReferences(childNode);
             break;
         }
         case ir::AstNodeType::SWITCH_STATEMENT: {
-            auto scope_ctx = LexicalScope<LocalScope>::Enter(this, child_node->AsSwitchStatement()->Scope());
+            auto scopeCtx = LexicalScope<LocalScope>::Enter(this, childNode->AsSwitchStatement()->Scope());
 
-            ResolveReferences(child_node);
+            ResolveReferences(childNode);
             break;
         }
         case ir::AstNodeType::DO_WHILE_STATEMENT: {
-            auto *do_while_statement = child_node->AsDoWhileStatement();
+            auto *doWhileStatement = childNode->AsDoWhileStatement();
 
             {
-                auto loop_scope_ctx = LexicalScope<LoopScope>::Enter(this, do_while_statement->Scope());
-                ResolveReference(do_while_statement->Body());
+                auto loopScopeCtx = LexicalScope<LoopScope>::Enter(this, doWhileStatement->Scope());
+                ResolveReference(doWhileStatement->Body());
             }
 
-            ResolveReference(do_while_statement->Test());
+            ResolveReference(doWhileStatement->Test());
             break;
         }
         case ir::AstNodeType::WHILE_STATEMENT: {
-            auto *while_statement = child_node->AsWhileStatement();
-            ResolveReference(while_statement->Test());
+            auto *whileStatement = childNode->AsWhileStatement();
+            ResolveReference(whileStatement->Test());
 
-            auto loop_scope_ctx = LexicalScope<LoopScope>::Enter(this, while_statement->Scope());
-            ResolveReference(while_statement->Body());
+            auto loopScopeCtx = LexicalScope<LoopScope>::Enter(this, whileStatement->Scope());
+            ResolveReference(whileStatement->Body());
 
             break;
         }
         case ir::AstNodeType::FOR_UPDATE_STATEMENT: {
-            BuildForUpdateLoop(child_node->AsForUpdateStatement());
+            BuildForUpdateLoop(childNode->AsForUpdateStatement());
             break;
         }
         case ir::AstNodeType::FOR_IN_STATEMENT: {
-            auto *for_in_stmt = child_node->AsForInStatement();
-            BuildForInOfLoop(for_in_stmt->Scope(), for_in_stmt->Left(), for_in_stmt->Right(), for_in_stmt->Body());
+            auto *forInStmt = childNode->AsForInStatement();
+            BuildForInOfLoop(forInStmt->Scope(), forInStmt->Left(), forInStmt->Right(), forInStmt->Body());
 
             break;
         }
         case ir::AstNodeType::FOR_OF_STATEMENT: {
-            auto *for_of_stmt = child_node->AsForOfStatement();
-            BuildForInOfLoop(for_of_stmt->Scope(), for_of_stmt->Left(), for_of_stmt->Right(), for_of_stmt->Body());
+            auto *forOfStmt = childNode->AsForOfStatement();
+            BuildForInOfLoop(forOfStmt->Scope(), forOfStmt->Left(), forOfStmt->Right(), forOfStmt->Body());
             break;
         }
         case ir::AstNodeType::CATCH_CLAUSE: {
-            BuildCatchClause(child_node->AsCatchClause());
+            BuildCatchClause(childNode->AsCatchClause());
             break;
         }
         case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {
-            BuildTypeAliasDeclaration(child_node->AsTSTypeAliasDeclaration());
+            BuildTypeAliasDeclaration(childNode->AsTSTypeAliasDeclaration());
             break;
         }
         default: {
-            HandleCustomNodes(child_node);
+            HandleCustomNodes(childNode);
             break;
         }
     }
@@ -627,7 +627,7 @@ void VarBinder::ResolveReference(ir::AstNode *child_node)
 
 void VarBinder::ResolveReferences(const ir::AstNode *parent)
 {
-    parent->Iterate([this](auto *child_node) { ResolveReference(child_node); });
+    parent->Iterate([this](auto *childNode) { ResolveReference(childNode); });
 }
 
 LocalVariable *VarBinder::AddMandatoryParam(const std::string_view &name)
@@ -637,78 +637,78 @@ LocalVariable *VarBinder::AddMandatoryParam(const std::string_view &name)
     auto *decl = Allocator()->New<ParameterDecl>(name);
     auto *param = Allocator()->New<LocalVariable>(decl, VariableFlags::VAR);
 
-    auto &func_params = scope_->AsFunctionParamScope()->Params();
+    auto &funcParams = scope_->AsFunctionParamScope()->Params();
 
-    func_params.insert(func_params.begin(), param);
+    funcParams.insert(funcParams.begin(), param);
     scope_->AsFunctionParamScope()->GetFunctionScope()->InsertBinding(decl->Name(), param);
     scope_->InsertBinding(decl->Name(), param);
 
     return param;
 }
 
-void VarBinder::LookUpMandatoryReferences(const FunctionScope *func_scope, bool need_lexical_func_obj)
+void VarBinder::LookUpMandatoryReferences(const FunctionScope *funcScope, bool needLexicalFuncObj)
 {
     LookupReference(MANDATORY_PARAM_NEW_TARGET);
     LookupReference(MANDATORY_PARAM_THIS);
 
-    if (func_scope->HasFlag(ScopeFlags::USE_ARGS)) {
+    if (funcScope->HasFlag(ScopeFlags::USE_ARGS)) {
         LookupReference(FUNCTION_ARGUMENTS);
     }
 
-    if (need_lexical_func_obj) {
+    if (needLexicalFuncObj) {
         LookupReference(MANDATORY_PARAM_FUNC);
     }
 }
 
 void VarBinder::AddMandatoryParams()
 {
-    ASSERT(scope_ == top_scope_);
-    ASSERT(!function_scopes_.empty());
-    auto iter = function_scopes_.begin();
-    [[maybe_unused]] auto *func_scope = *iter++;
+    ASSERT(scope_ == topScope_);
+    ASSERT(!functionScopes_.empty());
+    auto iter = functionScopes_.begin();
+    [[maybe_unused]] auto *funcScope = *iter++;
 
-    ASSERT(func_scope->IsGlobalScope() || func_scope->IsModuleScope());
+    ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
 
-    if (compiler_ctx_->IsDirectEval()) {
+    if (compilerCtx_->IsDirectEval()) {
         AddMandatoryParams(EVAL_SCRIPT_MANDATORY_PARAMS);
-        top_scope_->ParamScope()->Params().back()->SetLexical(top_scope_);
+        topScope_->ParamScope()->Params().back()->SetLexical(topScope_);
     } else {
         AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
     }
 
-    if (compiler_ctx_->IsFunctionEval()) {
-        ASSERT(iter != function_scopes_.end());
-        func_scope = *iter++;
-        auto scope_ctx = LexicalScope<FunctionScope>::Enter(this, func_scope);
+    if (compilerCtx_->IsFunctionEval()) {
+        ASSERT(iter != functionScopes_.end());
+        funcScope = *iter++;
+        auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
         AddMandatoryParams(ARROW_MANDATORY_PARAMS);
-        LookUpMandatoryReferences(func_scope, false);
+        LookUpMandatoryReferences(funcScope, false);
     }
 
-    for (; iter != function_scopes_.end(); iter++) {
-        func_scope = *iter;
-        const auto *script_func = func_scope->Node()->AsScriptFunction();
+    for (; iter != functionScopes_.end(); iter++) {
+        funcScope = *iter;
+        const auto *scriptFunc = funcScope->Node()->AsScriptFunction();
 
-        auto scope_ctx = LexicalScope<FunctionScope>::Enter(this, func_scope);
+        auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
 
-        if (!script_func->IsArrow()) {
+        if (!scriptFunc->IsArrow()) {
             AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
             continue;
         }
 
-        const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(script_func);
-        bool lexical_function_object {};
+        const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(scriptFunc);
+        bool lexicalFunctionObject {};
 
         if (ctor != nullptr && util::Helpers::GetClassDefiniton(ctor)->Super() != nullptr &&
-            func_scope->HasFlag(ScopeFlags::USE_SUPER)) {
+            funcScope->HasFlag(ScopeFlags::USE_SUPER)) {
             ASSERT(ctor->Scope()->HasFlag(ScopeFlags::INNER_ARROW));
             ctor->Scope()->AddFlag(ScopeFlags::SET_LEXICAL_FUNCTION);
-            lexical_function_object = true;
+            lexicalFunctionObject = true;
             AddMandatoryParams(CTOR_ARROW_MANDATORY_PARAMS);
         } else {
             AddMandatoryParams(ARROW_MANDATORY_PARAMS);
         }
 
-        LookUpMandatoryReferences(func_scope, lexical_function_object);
+        LookUpMandatoryReferences(funcScope, lexicalFunctionObject);
     }
 }
 }  // namespace panda::es2panda::varbinder

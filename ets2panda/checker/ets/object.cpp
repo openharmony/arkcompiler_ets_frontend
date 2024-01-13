@@ -64,9 +64,9 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
     }
 
     ASSERT(type->Variable() && type->GetDeclNode()->IsClassDefinition());
-    auto *class_def = type->GetDeclNode()->AsClassDefinition();
+    auto *classDef = type->GetDeclNode()->AsClassDefinition();
 
-    if (class_def->Super() == nullptr) {
+    if (classDef->Super() == nullptr) {
         type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
         if (type != GlobalETSObjectType()) {
             type->SetSuperType(GlobalETSObjectType());
@@ -74,41 +74,41 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
         return GlobalETSObjectType();
     }
 
-    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, class_def->Ident()->Start());
+    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, classDef->Ident()->Start());
 
-    Type *super_type = class_def->Super()->AsTypeNode()->GetType(this);
+    Type *superType = classDef->Super()->AsTypeNode()->GetType(this);
 
-    if (!super_type->IsETSObjectType() || !super_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
-        ThrowTypeError({"The super type of '", class_def->Ident()->Name(), "' class is not extensible."},
-                       class_def->Super()->Start());
+    if (!superType->IsETSObjectType() || !superType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS)) {
+        ThrowTypeError({"The super type of '", classDef->Ident()->Name(), "' class is not extensible."},
+                       classDef->Super()->Start());
     }
 
-    ETSObjectType *super_obj = super_type->AsETSObjectType();
+    ETSObjectType *superObj = superType->AsETSObjectType();
 
     // struct node has class defination, too
-    if (super_obj->GetDeclNode()->Parent()->IsETSStructDeclaration()) {
-        ThrowTypeError({"struct ", class_def->Ident()->Name(), " is not extensible."}, class_def->Super()->Start());
+    if (superObj->GetDeclNode()->Parent()->IsETSStructDeclaration()) {
+        ThrowTypeError({"struct ", classDef->Ident()->Name(), " is not extensible."}, classDef->Super()->Start());
     }
 
-    if (super_obj->GetDeclNode()->IsFinal()) {
-        ThrowTypeError("Cannot inherit with 'final' modifier.", class_def->Super()->Start());
+    if (superObj->GetDeclNode()->IsFinal()) {
+        ThrowTypeError("Cannot inherit with 'final' modifier.", classDef->Super()->Start());
     }
 
-    type->SetSuperType(super_obj);
-    GetSuperType(super_obj);
+    type->SetSuperType(superObj);
+    GetSuperType(superObj);
 
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
     return type->SuperType();
 }
 
 void ETSChecker::ValidateImplementedInterface(ETSObjectType *type, Type *interface,
-                                              std::unordered_set<Type *> *extends_set, const lexer::SourcePosition &pos)
+                                              std::unordered_set<Type *> *extendsSet, const lexer::SourcePosition &pos)
 {
     if (!interface->IsETSObjectType() || !interface->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         ThrowTypeError("Interface expected here.", pos);
     }
 
-    if (!extends_set->insert(interface).second) {
+    if (!extendsSet->insert(interface).second) {
         ThrowTypeError("Repeated interface.", pos);
     }
 
@@ -122,11 +122,11 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfClass(ETSObjectType *typ
         return type->Interfaces();
     }
 
-    const auto *decl_node = type->GetDeclNode()->AsClassDefinition();
+    const auto *declNode = type->GetDeclNode()->AsClassDefinition();
 
-    std::unordered_set<Type *> extends_set;
-    for (auto *it : decl_node->Implements()) {
-        ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extends_set, it->Start());
+    std::unordered_set<Type *> extendsSet;
+    for (auto *it : declNode->Implements()) {
+        ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extendsSet, it->Start());
     }
 
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
@@ -139,13 +139,13 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfInterface(ETSObjectType 
         return type->Interfaces();
     }
 
-    const auto *decl_node = type->GetDeclNode()->AsTSInterfaceDeclaration();
+    const auto *declNode = type->GetDeclNode()->AsTSInterfaceDeclaration();
 
-    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, decl_node->Id()->Start());
+    TypeStackElement tse(this, type, {"Cyclic inheritance involving ", type->Name(), "."}, declNode->Id()->Start());
 
-    std::unordered_set<Type *> extends_set;
-    for (auto *it : decl_node->Extends()) {
-        ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extends_set, it->Start());
+    std::unordered_set<Type *> extendsSet;
+    for (auto *it : declNode->Extends()) {
+        ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extendsSet, it->Start());
     }
 
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
@@ -165,28 +165,28 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfaces(ETSObjectType *type)
     return type->Interfaces();
 }
 
-ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *type_params)
+ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *typeParams)
 {
     ArenaVector<Type *> result {Allocator()->Adapter()};
-    checker::ScopeContext scope_ctx(this, type_params->Scope());
+    checker::ScopeContext scopeCtx(this, typeParams->Scope());
 
     // Note: we have to run pure check loop first to avoid endless loop because of possible circular dependencies
     Type2TypeMap extends {};
-    for (auto *const type_param : type_params->Params()) {
-        if (auto *const constraint = type_param->Constraint();
+    for (auto *const typeParam : typeParams->Params()) {
+        if (auto *const constraint = typeParam->Constraint();
             constraint != nullptr && constraint->IsETSTypeReference() &&
             constraint->AsETSTypeReference()->Part()->Name()->IsIdentifier()) {
-            CheckTypeParameterConstraint(type_param, extends);
+            CheckTypeParameterConstraint(typeParam, extends);
         }
     }
 
-    for (auto *const type_param : type_params->Params()) {
-        result.emplace_back(SetUpParameterType(type_param));
+    for (auto *const typeParam : typeParams->Params()) {
+        result.emplace_back(SetUpParameterType(typeParam));
     }
 
     // The type parameter might be used in the constraint, like 'K extend Comparable<K>',
     // so we need to create their type first, then set up the constraint
-    for (auto *const param : type_params->Params()) {
+    for (auto *const param : typeParams->Params()) {
         SetUpTypeParameterConstraint(param);
     }
 
@@ -195,77 +195,77 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
 
 void ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends)
 {
-    const auto type_param_name = param->Name()->Name().Utf8();
-    const auto constraint_name =
+    const auto typeParamName = param->Name()->Name().Utf8();
+    const auto constraintName =
         param->Constraint()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Utf8();
-    if (type_param_name == constraint_name) {
-        ThrowTypeError({"Type parameter '", type_param_name, "' cannot extend/implement itself."},
+    if (typeParamName == constraintName) {
+        ThrowTypeError({"Type parameter '", typeParamName, "' cannot extend/implement itself."},
                        param->Constraint()->Start());
     }
 
-    auto it = extends.find(type_param_name);
+    auto it = extends.find(typeParamName);
     if (it != extends.cend()) {
-        ThrowTypeError({"Type parameter '", type_param_name, "' is duplicated in the list."},
+        ThrowTypeError({"Type parameter '", typeParamName, "' is duplicated in the list."},
                        param->Constraint()->Start());
     }
 
-    it = extends.find(constraint_name);
+    it = extends.find(constraintName);
     while (it != extends.cend()) {
-        if (it->second == type_param_name) {
-            ThrowTypeError({"Type parameter '", type_param_name, "' has circular constraint dependency."},
+        if (it->second == typeParamName) {
+            ThrowTypeError({"Type parameter '", typeParamName, "' has circular constraint dependency."},
                            param->Constraint()->Start());
         }
         it = extends.find(it->second);
     }
 
-    extends.emplace(type_param_name, constraint_name);
+    extends.emplace(typeParamName, constraintName);
 }
 
 void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 {
-    ETSTypeParameter *const param_type = [this, param]() {
+    ETSTypeParameter *const paramType = [this, param]() {
         auto *const type = param->Name()->Variable()->TsType();
         return type != nullptr ? type->AsETSTypeParameter() : SetUpParameterType(param);
     }();
 
-    auto const traverse_referenced =
-        [this, scope = param->Parent()->AsTSTypeParameterDeclaration()->Scope()](ir::TypeNode *type_node) {
-            if (!type_node->IsETSTypeReference()) {
+    auto const traverseReferenced =
+        [this, scope = param->Parent()->AsTSTypeParameterDeclaration()->Scope()](ir::TypeNode *typeNode) {
+            if (!typeNode->IsETSTypeReference()) {
                 return;
             }
-            const auto type_name = type_node->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
-            auto *const found = scope->FindLocal(type_name, varbinder::ResolveBindingOptions::BINDINGS);
+            const auto typeName = typeNode->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
+            auto *const found = scope->FindLocal(typeName, varbinder::ResolveBindingOptions::BINDINGS);
             if (found != nullptr) {
                 SetUpTypeParameterConstraint(found->Declaration()->Node()->AsTSTypeParameter());
             }
         };
 
     if (param->Constraint() != nullptr) {
-        traverse_referenced(param->Constraint());
+        traverseReferenced(param->Constraint());
         auto *const constraint = param->Constraint()->GetType(this);
         if (!constraint->IsETSObjectType() && !constraint->IsETSTypeParameter() && !constraint->IsETSUnionType()) {
             ThrowTypeError("Extends constraint must be an object", param->Constraint()->Start());
         }
-        param_type->SetConstraintType(constraint);
+        paramType->SetConstraintType(constraint);
     }
     if (param->DefaultType() != nullptr) {
-        traverse_referenced(param->DefaultType());
+        traverseReferenced(param->DefaultType());
         auto *const dflt = param->DefaultType()->GetType(this);
         // NOTE: #14993 ensure default matches constraint
-        param_type->SetDefaultType(dflt);
+        paramType->SetDefaultType(dflt);
     }
 }
 
 ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
 {
-    auto *const param_type = CreateTypeParameter();
+    auto *const paramType = CreateTypeParameter();
 
-    param_type->AddTypeFlag(TypeFlag::GENERIC);
-    param_type->SetDeclNode(param);
-    param_type->SetVariable(param->Variable());
+    paramType->AddTypeFlag(TypeFlag::GENERIC);
+    paramType->SetDeclNode(param);
+    paramType->SetVariable(param->Variable());
 
-    param->Name()->Variable()->SetTsType(param_type);
-    return param_type;
+    param->Name()->Variable()->SetTsType(paramType);
+    return paramType;
 }
 
 void ETSChecker::CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type)
@@ -274,114 +274,114 @@ void ETSChecker::CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type
         return;
     }
 
-    ir::TSTypeParameterDeclaration *type_params = type->GetDeclNode()->IsClassDefinition()
-                                                      ? type->GetDeclNode()->AsClassDefinition()->TypeParams()
-                                                      : type->GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
-    type->SetTypeArguments(CreateTypeForTypeParameters(type_params));
+    ir::TSTypeParameterDeclaration *typeParams = type->GetDeclNode()->IsClassDefinition()
+                                                     ? type->GetDeclNode()->AsClassDefinition()->TypeParams()
+                                                     : type->GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
+    type->SetTypeArguments(CreateTypeForTypeParameters(typeParams));
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_TYPE_PARAMS);
 }
 
-ETSObjectType *ETSChecker::BuildInterfaceProperties(ir::TSInterfaceDeclaration *interface_decl)
+ETSObjectType *ETSChecker::BuildInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
 {
-    auto *var = interface_decl->Id()->Variable();
+    auto *var = interfaceDecl->Id()->Variable();
     ASSERT(var);
 
-    checker::ETSObjectType *interface_type {};
+    checker::ETSObjectType *interfaceType {};
     if (var->TsType() == nullptr) {
-        interface_type = CreateETSObjectType(var->Name(), interface_decl,
-                                             checker::ETSObjectFlags::INTERFACE | checker::ETSObjectFlags::ABSTRACT);
-        interface_type->SetVariable(var);
-        var->SetTsType(interface_type);
+        interfaceType = CreateETSObjectType(var->Name(), interfaceDecl,
+                                            checker::ETSObjectFlags::INTERFACE | checker::ETSObjectFlags::ABSTRACT);
+        interfaceType->SetVariable(var);
+        var->SetTsType(interfaceType);
     } else {
-        interface_type = var->TsType()->AsETSObjectType();
+        interfaceType = var->TsType()->AsETSObjectType();
     }
 
-    if (interface_decl->TypeParams() != nullptr) {
-        interface_type->AddTypeFlag(TypeFlag::GENERIC);
-        CreateTypeForClassOrInterfaceTypeParameters(interface_type);
+    if (interfaceDecl->TypeParams() != nullptr) {
+        interfaceType->AddTypeFlag(TypeFlag::GENERIC);
+        CreateTypeForClassOrInterfaceTypeParameters(interfaceType);
     }
 
-    GetInterfacesOfInterface(interface_type);
+    GetInterfacesOfInterface(interfaceType);
 
-    checker::ScopeContext scope_ctx(this, interface_decl->Scope());
-    auto saved_context = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_INTERFACE, interface_type);
+    checker::ScopeContext scopeCtx(this, interfaceDecl->Scope());
+    auto savedContext = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_INTERFACE, interfaceType);
 
-    ResolveDeclaredMembersOfObject(interface_type);
+    ResolveDeclaredMembersOfObject(interfaceType);
 
-    return interface_type;
+    return interfaceType;
 }
 
-ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *class_def)
+ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *classDef)
 {
-    if (class_def->IsFinal() && class_def->IsAbstract()) {
-        ThrowTypeError("Cannot use both 'final' and 'abstract' modifiers.", class_def->Start());
+    if (classDef->IsFinal() && classDef->IsAbstract()) {
+        ThrowTypeError("Cannot use both 'final' and 'abstract' modifiers.", classDef->Start());
     }
 
-    auto *var = class_def->Ident()->Variable();
+    auto *var = classDef->Ident()->Variable();
     ASSERT(var);
 
-    const util::StringView &class_name = class_def->Ident()->Name();
-    auto *class_scope = class_def->Scope();
+    const util::StringView &className = classDef->Ident()->Name();
+    auto *classScope = classDef->Scope();
 
-    checker::ETSObjectType *class_type {};
+    checker::ETSObjectType *classType {};
     if (var->TsType() == nullptr) {
-        class_type = CreateETSObjectType(class_name, class_def, checker::ETSObjectFlags::CLASS);
-        class_type->SetVariable(var);
-        var->SetTsType(class_type);
-        if (class_def->IsAbstract()) {
-            class_type->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
+        classType = CreateETSObjectType(className, classDef, checker::ETSObjectFlags::CLASS);
+        classType->SetVariable(var);
+        var->SetTsType(classType);
+        if (classDef->IsAbstract()) {
+            classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
         }
     } else {
-        class_type = var->TsType()->AsETSObjectType();
+        classType = var->TsType()->AsETSObjectType();
     }
 
-    class_def->SetTsType(class_type);
+    classDef->SetTsType(classType);
 
-    if (class_def->TypeParams() != nullptr) {
-        class_type->AddTypeFlag(TypeFlag::GENERIC);
-        CreateTypeForClassOrInterfaceTypeParameters(class_type);
+    if (classDef->TypeParams() != nullptr) {
+        classType->AddTypeFlag(TypeFlag::GENERIC);
+        CreateTypeForClassOrInterfaceTypeParameters(classType);
     }
 
-    auto *enclosing_class = Context().ContainingClass();
-    class_type->SetEnclosingType(enclosing_class);
-    CheckerStatus new_status = CheckerStatus::IN_CLASS;
+    auto *enclosingClass = Context().ContainingClass();
+    classType->SetEnclosingType(enclosingClass);
+    CheckerStatus newStatus = CheckerStatus::IN_CLASS;
 
-    if (class_def->IsInner()) {
-        new_status |= CheckerStatus::INNER_CLASS;
-        class_type->AddObjectFlag(checker::ETSObjectFlags::INNER);
+    if (classDef->IsInner()) {
+        newStatus |= CheckerStatus::INNER_CLASS;
+        classType->AddObjectFlag(checker::ETSObjectFlags::INNER);
     }
 
-    auto saved_context = checker::SavedCheckerContext(this, new_status, class_type);
+    auto savedContext = checker::SavedCheckerContext(this, newStatus, classType);
 
-    if (!class_type->HasObjectFlag(ETSObjectFlags::RESOLVED_SUPER)) {
-        GetSuperType(class_type);
-        GetInterfacesOfClass(class_type);
+    if (!classType->HasObjectFlag(ETSObjectFlags::RESOLVED_SUPER)) {
+        GetSuperType(classType);
+        GetInterfacesOfClass(classType);
     }
 
-    if (class_type->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
-        return class_type;
+    if (classType->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
+        return classType;
     }
 
-    checker::ScopeContext scope_ctx(this, class_scope);
+    checker::ScopeContext scopeCtx(this, classScope);
 
-    ResolveDeclaredMembersOfObject(class_type);
+    ResolveDeclaredMembersOfObject(classType);
 
-    return class_type;
+    return classType;
 }
 
-ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *class_def, ETSObjectType *super_type)
+ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType)
 {
-    auto class_type = CreateETSObjectType(class_def->Ident()->Name(), class_def, checker::ETSObjectFlags::CLASS);
-    class_def->SetTsType(class_type);
-    class_type->SetSuperType(super_type);
-    class_type->AddObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER);
+    auto classType = CreateETSObjectType(classDef->Ident()->Name(), classDef, checker::ETSObjectFlags::CLASS);
+    classDef->SetTsType(classType);
+    classType->SetSuperType(superType);
+    classType->AddObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER);
 
-    checker::ScopeContext scope_ctx(this, class_def->Scope());
-    auto saved_context = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_CLASS, class_type);
+    checker::ScopeContext scopeCtx(this, classDef->Scope());
+    auto savedContext = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_CLASS, classType);
 
-    ResolveDeclaredMembersOfObject(class_type);
+    ResolveDeclaredMembersOfObject(classType);
 
-    return class_type;
+    return classType;
 }
 
 void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
@@ -390,19 +390,19 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
         return;
     }
 
-    auto *decl_node = type->GetDeclNode();
-    varbinder::ClassScope *scope = decl_node->IsTSInterfaceDeclaration()
-                                       ? decl_node->AsTSInterfaceDeclaration()->Scope()->AsClassScope()
-                                       : decl_node->AsClassDefinition()->Scope()->AsClassScope();
+    auto *declNode = type->GetDeclNode();
+    varbinder::ClassScope *scope = declNode->IsTSInterfaceDeclaration()
+                                       ? declNode->AsTSInterfaceDeclaration()->Scope()->AsClassScope()
+                                       : declNode->AsClassDefinition()->Scope()->AsClassScope();
 
     for (auto &[_, it] : scope->InstanceFieldScope()->Bindings()) {
         (void)_;
         ASSERT(it->Declaration()->Node()->IsClassProperty());
-        auto *class_prop = it->Declaration()->Node()->AsClassProperty();
-        it->AddFlag(GetAccessFlagFromNode(class_prop));
+        auto *classProp = it->Declaration()->Node()->AsClassProperty();
+        it->AddFlag(GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::INSTANCE_FIELD>(it->AsLocalVariable());
 
-        if (class_prop->TypeAnnotation() != nullptr && class_prop->TypeAnnotation()->IsETSFunctionType()) {
+        if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
             type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
             it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
         }
@@ -411,11 +411,11 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
     for (auto &[_, it] : scope->StaticFieldScope()->Bindings()) {
         (void)_;
         ASSERT(it->Declaration()->Node()->IsClassProperty());
-        auto *class_prop = it->Declaration()->Node()->AsClassProperty();
-        it->AddFlag(GetAccessFlagFromNode(class_prop));
+        auto *classProp = it->Declaration()->Node()->AsClassProperty();
+        it->AddFlag(GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::STATIC_FIELD>(it->AsLocalVariable());
 
-        if (class_prop->TypeAnnotation() != nullptr && class_prop->TypeAnnotation()->IsETSFunctionType()) {
+        if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
             type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
             it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
         }
@@ -430,10 +430,10 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
         }
 
         it->AddFlag(GetAccessFlagFromNode(node));
-        auto *func_type = BuildMethodSignature(node);
-        it->SetTsType(func_type);
-        func_type->SetVariable(it);
-        node->SetTsType(func_type);
+        auto *funcType = BuildMethodSignature(node);
+        it->SetTsType(funcType);
+        funcType->SetVariable(it);
+        node->SetTsType(funcType);
         type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
     }
 
@@ -445,13 +445,13 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
         }
         auto *node = it->Declaration()->Node()->AsMethodDefinition();
         it->AddFlag(GetAccessFlagFromNode(node));
-        auto *func_type = BuildMethodSignature(node);
-        it->SetTsType(func_type);
-        func_type->SetVariable(it);
-        node->SetTsType(func_type);
+        auto *funcType = BuildMethodSignature(node);
+        it->SetTsType(funcType);
+        funcType->SetVariable(it);
+        node->SetTsType(funcType);
 
         if (node->IsConstructor()) {
-            type->AddConstructSignature(func_type->CallSignatures());
+            type->AddConstructSignature(funcType->CallSignatures());
             continue;
         }
 
@@ -473,10 +473,10 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS);
 }
 
-std::vector<Signature *> ETSChecker::CollectAbstractSignaturesFromObject(const ETSObjectType *obj_type)
+std::vector<Signature *> ETSChecker::CollectAbstractSignaturesFromObject(const ETSObjectType *objType)
 {
     std::vector<Signature *> abstracts;
-    for (const auto &prop : obj_type->Methods()) {
+    for (const auto &prop : objType->Methods()) {
         GetTypeOfVariable(prop);
 
         if (!prop->TsType()->IsETSFunctionType()) {
@@ -510,171 +510,171 @@ void ETSChecker::CreateFunctionTypesFromAbstracts(const std::vector<Signature *>
     }
 }
 
-void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interface_type)
+void ETSChecker::ComputeAbstractsFromInterface(ETSObjectType *interfaceType)
 {
-    auto cached = cached_computed_abstracts_.find(interface_type);
-    if (cached != cached_computed_abstracts_.end()) {
+    auto cached = cachedComputedAbstracts_.find(interfaceType);
+    if (cached != cachedComputedAbstracts_.end()) {
         return;
     }
 
-    for (auto *it : interface_type->Interfaces()) {
+    for (auto *it : interfaceType->Interfaces()) {
         ComputeAbstractsFromInterface(it);
     }
 
     ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
-    CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(interface_type), &merged);
-    std::unordered_set<ETSObjectType *> abstract_inheritance_target;
+    CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(interfaceType), &merged);
+    std::unordered_set<ETSObjectType *> abstractInheritanceTarget;
 
-    for (auto *interface : interface_type->Interfaces()) {
-        auto found = cached_computed_abstracts_.find(interface);
-        ASSERT(found != cached_computed_abstracts_.end());
+    for (auto *interface : interfaceType->Interfaces()) {
+        auto found = cachedComputedAbstracts_.find(interface);
+        ASSERT(found != cachedComputedAbstracts_.end());
 
-        if (!abstract_inheritance_target.insert(found->first).second) {
+        if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
         }
 
         MergeComputedAbstracts(merged, found->second.first);
 
         for (auto *base : found->second.second) {
-            abstract_inheritance_target.insert(base);
+            abstractInheritanceTarget.insert(base);
         }
     }
 
-    cached_computed_abstracts_.insert({interface_type, {merged, abstract_inheritance_target}});
+    cachedComputedAbstracts_.insert({interfaceType, {merged, abstractInheritanceTarget}});
 }
 
-ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *class_type)
+ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *classType)
 {
     ArenaVector<ETSFunctionType *> merged(Allocator()->Adapter());
-    CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(class_type), &merged);
+    CreateFunctionTypesFromAbstracts(CollectAbstractSignaturesFromObject(classType), &merged);
 
-    std::unordered_set<ETSObjectType *> abstract_inheritance_target;
-    if (class_type->SuperType() != nullptr) {
-        auto base = cached_computed_abstracts_.find(class_type->SuperType());
-        ASSERT(base != cached_computed_abstracts_.end());
+    std::unordered_set<ETSObjectType *> abstractInheritanceTarget;
+    if (classType->SuperType() != nullptr) {
+        auto base = cachedComputedAbstracts_.find(classType->SuperType());
+        ASSERT(base != cachedComputedAbstracts_.end());
         MergeComputedAbstracts(merged, base->second.first);
 
-        abstract_inheritance_target.insert(base->first);
+        abstractInheritanceTarget.insert(base->first);
         for (auto *it : base->second.second) {
-            abstract_inheritance_target.insert(it);
+            abstractInheritanceTarget.insert(it);
         }
     }
 
-    for (auto *it : class_type->Interfaces()) {
+    for (auto *it : classType->Interfaces()) {
         ComputeAbstractsFromInterface(it);
-        auto found = cached_computed_abstracts_.find(it);
-        ASSERT(found != cached_computed_abstracts_.end());
+        auto found = cachedComputedAbstracts_.find(it);
+        ASSERT(found != cachedComputedAbstracts_.end());
 
-        if (!abstract_inheritance_target.insert(found->first).second) {
+        if (!abstractInheritanceTarget.insert(found->first).second) {
             continue;
         }
 
         MergeComputedAbstracts(merged, found->second.first);
 
         for (auto *interface : found->second.second) {
-            abstract_inheritance_target.insert(interface);
+            abstractInheritanceTarget.insert(interface);
         }
     }
 
-    return cached_computed_abstracts_.insert({class_type, {merged, abstract_inheritance_target}}).first->second.first;
+    return cachedComputedAbstracts_.insert({classType, {merged, abstractInheritanceTarget}}).first->second.first;
 }
 
-void ETSChecker::ValidateOverriding(ETSObjectType *class_type, const lexer::SourcePosition &pos)
+void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos)
 {
-    if (class_type->HasObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS)) {
+    if (classType->HasObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS)) {
         return;
     }
 
-    bool throw_error = true;
-    if (class_type->HasObjectFlag(ETSObjectFlags::ABSTRACT)) {
-        throw_error = false;
+    bool throwError = true;
+    if (classType->HasObjectFlag(ETSObjectFlags::ABSTRACT)) {
+        throwError = false;
     }
 
-    if (class_type->SuperType() != nullptr) {
-        ValidateOverriding(class_type->SuperType(), class_type->SuperType()->GetDeclNode()->Start());
+    if (classType->SuperType() != nullptr) {
+        ValidateOverriding(classType->SuperType(), classType->SuperType()->GetDeclNode()->Start());
     }
 
-    auto &abstracts_to_be_implemented = GetAbstractsForClass(class_type);
-    std::vector<Signature *> implemented_signatures;
+    auto &abstractsToBeImplemented = GetAbstractsForClass(classType);
+    std::vector<Signature *> implementedSignatures;
 
-    auto *super_iter = class_type;
+    auto *superIter = classType;
     do {
-        for (auto &it : abstracts_to_be_implemented) {
-            for (const auto &prop : super_iter->Methods()) {
+        for (auto &it : abstractsToBeImplemented) {
+            for (const auto &prop : superIter->Methods()) {
                 GetTypeOfVariable(prop);
-                AddImplementedSignature(&implemented_signatures, prop, it);
+                AddImplementedSignature(&implementedSignatures, prop, it);
             }
         }
-        super_iter = super_iter->SuperType();
-    } while (super_iter != nullptr);
+        superIter = superIter->SuperType();
+    } while (superIter != nullptr);
 
-    SavedTypeRelationFlagsContext saved_flags_ctx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
-    for (auto it = abstracts_to_be_implemented.begin(); it != abstracts_to_be_implemented.end();) {
-        bool function_overridden = false;
-        bool is_getter_setter = false;
-        for (auto abstract_signature = (*it)->CallSignatures().begin();
-             abstract_signature != (*it)->CallSignatures().end();) {
-            bool found_signature = false;
-            is_getter_setter = (*abstract_signature)->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
-            for (auto *const implemented : implemented_signatures) {
-                Signature *subst_implemented = AdjustForTypeParameters(*abstract_signature, implemented);
+    SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
+    for (auto it = abstractsToBeImplemented.begin(); it != abstractsToBeImplemented.end();) {
+        bool functionOverridden = false;
+        bool isGetterSetter = false;
+        for (auto abstractSignature = (*it)->CallSignatures().begin();
+             abstractSignature != (*it)->CallSignatures().end();) {
+            bool foundSignature = false;
+            isGetterSetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+            for (auto *const implemented : implementedSignatures) {
+                Signature *substImplemented = AdjustForTypeParameters(*abstractSignature, implemented);
 
-                if (subst_implemented == nullptr) {
+                if (substImplemented == nullptr) {
                     continue;
                 }
 
-                if (!AreOverrideEquivalent(*abstract_signature, subst_implemented) ||
-                    !IsReturnTypeSubstitutable(subst_implemented, *abstract_signature)) {
+                if (!AreOverrideEquivalent(*abstractSignature, substImplemented) ||
+                    !IsReturnTypeSubstitutable(substImplemented, *abstractSignature)) {
                     continue;
                 }
 
                 if ((*it)->CallSignatures().size() > 1) {
-                    abstract_signature = (*it)->CallSignatures().erase(abstract_signature);
-                    found_signature = true;
+                    abstractSignature = (*it)->CallSignatures().erase(abstractSignature);
+                    foundSignature = true;
                 } else {
-                    it = abstracts_to_be_implemented.erase(it);
-                    function_overridden = true;
+                    it = abstractsToBeImplemented.erase(it);
+                    functionOverridden = true;
                 }
 
                 break;
             }
 
-            if (function_overridden) {
+            if (functionOverridden) {
                 break;
             }
 
-            if (!found_signature) {
-                abstract_signature++;
+            if (!foundSignature) {
+                abstractSignature++;
             }
         }
 
-        if (is_getter_setter && !function_overridden) {
-            for (auto *field : class_type->Fields()) {
+        if (isGetterSetter && !functionOverridden) {
+            for (auto *field : classType->Fields()) {
                 if (field->Name() == (*it)->Name()) {
-                    it = abstracts_to_be_implemented.erase(it);
-                    function_overridden = true;
+                    it = abstractsToBeImplemented.erase(it);
+                    functionOverridden = true;
                     break;
                 }
             }
         }
 
-        if (!function_overridden) {
+        if (!functionOverridden) {
             it++;
         }
     }
 
-    if (!abstracts_to_be_implemented.empty() && throw_error) {
-        auto unimplemented_signature = abstracts_to_be_implemented.front()->CallSignatures().front();
-        ThrowTypeError({class_type->Name(), " is not abstract and does not override abstract method ",
-                        unimplemented_signature->Function()->Id()->Name(), unimplemented_signature, " in ",
-                        GetContainingObjectNameFromSignature(unimplemented_signature)},
+    if (!abstractsToBeImplemented.empty() && throwError) {
+        auto unimplementedSignature = abstractsToBeImplemented.front()->CallSignatures().front();
+        ThrowTypeError({classType->Name(), " is not abstract and does not override abstract method ",
+                        unimplementedSignature->Function()->Id()->Name(), unimplementedSignature, " in ",
+                        GetContainingObjectNameFromSignature(unimplementedSignature)},
                        pos);
     }
 
-    class_type->AddObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS);
+    classType->AddObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS);
 }
 
-void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implemented_signatures,
+void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implementedSignatures,
                                          varbinder::LocalVariable *function, ETSFunctionType *it)
 {
     if (!function->TsType()->IsETSFunctionType()) {
@@ -687,68 +687,68 @@ void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implemented_s
         }
 
         if (signature->Function()->Id()->Name() == it->Name()) {
-            implemented_signatures->emplace_back(signature);
+            implementedSignatures->emplace_back(signature);
         }
     }
 }
 
-void ETSChecker::CheckClassDefinition(ir::ClassDefinition *class_def)
+void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
-    auto *class_type = class_def->TsType()->AsETSObjectType();
-    auto *enclosing_class = Context().ContainingClass();
-    auto new_status = checker::CheckerStatus::IN_CLASS;
-    class_type->SetEnclosingType(enclosing_class);
+    auto *classType = classDef->TsType()->AsETSObjectType();
+    auto *enclosingClass = Context().ContainingClass();
+    auto newStatus = checker::CheckerStatus::IN_CLASS;
+    classType->SetEnclosingType(enclosingClass);
 
-    if (class_def->IsInner()) {
-        new_status |= CheckerStatus::INNER_CLASS;
-        class_type->AddObjectFlag(checker::ETSObjectFlags::INNER);
+    if (classDef->IsInner()) {
+        newStatus |= CheckerStatus::INNER_CLASS;
+        classType->AddObjectFlag(checker::ETSObjectFlags::INNER);
     }
 
-    if (class_def->IsGlobal()) {
-        class_type->AddObjectFlag(checker::ETSObjectFlags::GLOBAL);
+    if (classDef->IsGlobal()) {
+        classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL);
     }
 
-    checker::ScopeContext scope_ctx(this, class_def->Scope());
-    auto saved_context = SavedCheckerContext(this, new_status, class_type);
+    checker::ScopeContext scopeCtx(this, classDef->Scope());
+    auto savedContext = SavedCheckerContext(this, newStatus, classType);
 
-    if (class_def->IsAbstract()) {
+    if (classDef->IsAbstract()) {
         AddStatus(checker::CheckerStatus::IN_ABSTRACT);
-        class_type->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
+        classType->AddObjectFlag(checker::ETSObjectFlags::ABSTRACT);
     }
 
-    if (class_def->IsStatic() && !Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL)) {
+    if (classDef->IsStatic() && !Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL)) {
         AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
     }
 
-    for (auto *it : class_def->Body()) {
+    for (auto *it : classDef->Body()) {
         if (it->IsClassProperty()) {
             it->Check(this);
         }
     }
 
-    for (auto *it : class_def->Body()) {
+    for (auto *it : classDef->Body()) {
         if (!it->IsClassProperty()) {
             it->Check(this);
         }
     }
-    CreateAsyncProxyMethods(class_def);
+    CreateAsyncProxyMethods(classDef);
 
-    if (class_def->IsGlobal()) {
+    if (classDef->IsGlobal()) {
         return;
     }
 
-    if (!class_def->IsDeclare()) {
-        for (auto *it : class_type->ConstructSignatures()) {
+    if (!classDef->IsDeclare()) {
+        for (auto *it : classType->ConstructSignatures()) {
             CheckCyclicConstructorCall(it);
-            CheckImplicitSuper(class_type, it);
+            CheckImplicitSuper(classType, it);
         }
     }
 
-    ValidateOverriding(class_type, class_def->Start());
-    CheckValidInheritance(class_type, class_def);
-    CheckConstFields(class_type);
-    CheckGetterSetterProperties(class_type);
-    CheckInvokeMethodsLegitimacy(class_type);
+    ValidateOverriding(classType, classDef->Start());
+    CheckValidInheritance(classType, classDef);
+    CheckConstFields(classType);
+    CheckGetterSetterProperties(classType);
+    CheckInvokeMethodsLegitimacy(classType);
 }
 
 static bool IsAsyncMethod(ir::AstNode *node)
@@ -760,97 +760,97 @@ static bool IsAsyncMethod(ir::AstNode *node)
     return method->Function()->IsAsyncFunc() && !method->Function()->IsProxy();
 }
 
-void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *class_def)
+void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
 {
-    ArenaVector<ir::MethodDefinition *> async_impls(Allocator()->Adapter());
-    for (auto *it : class_def->Body()) {
+    ArenaVector<ir::MethodDefinition *> asyncImpls(Allocator()->Adapter());
+    for (auto *it : classDef->Body()) {
         if (IsAsyncMethod(it)) {
             auto *method = it->AsMethodDefinition();
-            async_impls.push_back(CreateAsyncProxy(method, class_def));
-            auto *proxy = async_impls.back();
+            asyncImpls.push_back(CreateAsyncProxy(method, classDef));
+            auto *proxy = asyncImpls.back();
             for (auto *overload : method->Overloads()) {
-                auto *impl = CreateAsyncProxy(overload, class_def, false);
+                auto *impl = CreateAsyncProxy(overload, classDef, false);
                 impl->Function()->Id()->SetVariable(proxy->Function()->Id()->Variable());
                 proxy->AddOverload(impl);
             }
         }
     }
-    for (auto *it : async_impls) {
+    for (auto *it : asyncImpls) {
         it->Check(this);
-        class_def->Body().push_back(it);
+        classDef->Body().push_back(it);
     }
 }
 
-void ETSChecker::CheckImplicitSuper(ETSObjectType *class_type, Signature *ctor_sig)
+void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig)
 {
-    if (class_type == GlobalETSObjectType()) {
+    if (classType == GlobalETSObjectType()) {
         return;
     }
 
-    auto &stmts = ctor_sig->Function()->Body()->AsBlockStatement()->Statements();
-    const auto this_call = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
+    auto &stmts = ctorSig->Function()->Body()->AsBlockStatement()->Statements();
+    const auto thisCall = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
                stmt->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsThisExpression();
     });
 
     // There is an alternate constructor invocation, no need for super constructor invocation
-    if (this_call != stmts.end()) {
+    if (thisCall != stmts.end()) {
         return;
     }
 
-    const auto super_expr = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
+    const auto superExpr = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
                stmt->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression();
     });
 
     // There is no super expression
-    if (super_expr == stmts.end()) {
-        const auto super_type_ctor_sigs = class_type->SuperType()->ConstructSignatures();
-        const auto super_type_ctor_sig = std::find_if(super_type_ctor_sigs.begin(), super_type_ctor_sigs.end(),
-                                                      [](const Signature *sig) { return sig->Params().empty(); });
+    if (superExpr == stmts.end()) {
+        const auto superTypeCtorSigs = classType->SuperType()->ConstructSignatures();
+        const auto superTypeCtorSig = std::find_if(superTypeCtorSigs.begin(), superTypeCtorSigs.end(),
+                                                   [](const Signature *sig) { return sig->Params().empty(); });
 
         // Super type has no parameterless ctor
-        if (super_type_ctor_sig == super_type_ctor_sigs.end()) {
-            ThrowTypeError("Must call super constructor", ctor_sig->Function()->Start());
+        if (superTypeCtorSig == superTypeCtorSigs.end()) {
+            ThrowTypeError("Must call super constructor", ctorSig->Function()->Start());
         }
 
-        ctor_sig->Function()->AddFlag(ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED);
+        ctorSig->Function()->AddFlag(ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED);
     }
 }
 
-void ETSChecker::CheckConstFields(const ETSObjectType *class_type)
+void ETSChecker::CheckConstFields(const ETSObjectType *classType)
 {
-    for (const auto &prop : class_type->Fields()) {
+    for (const auto &prop : classType->Fields()) {
         if (!prop->Declaration()->IsConstDecl() || !prop->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
             continue;
         }
-        CheckConstFieldInitialized(class_type, prop);
+        CheckConstFieldInitialized(classType, prop);
     }
 }
 
-void ETSChecker::CheckConstFieldInitialized(const ETSObjectType *class_type, varbinder::LocalVariable *class_var)
+void ETSChecker::CheckConstFieldInitialized(const ETSObjectType *classType, varbinder::LocalVariable *classVar)
 {
-    const bool class_var_static = class_var->Declaration()->Node()->AsClassProperty()->IsStatic();
-    for (const auto &prop : class_type->Methods()) {
+    const bool classVarStatic = classVar->Declaration()->Node()->AsClassProperty()->IsStatic();
+    for (const auto &prop : classType->Methods()) {
         if (!prop->TsType()->IsETSFunctionType()) {
             continue;
         }
 
-        const auto &call_sigs = prop->TsType()->AsETSFunctionType()->CallSignatures();
-        for (const auto *signature : call_sigs) {
-            if ((signature->Function()->IsConstructor() && !class_var_static) ||
-                (signature->Function()->IsStaticBlock() && class_var_static)) {
-                CheckConstFieldInitialized(signature, class_var);
+        const auto &callSigs = prop->TsType()->AsETSFunctionType()->CallSignatures();
+        for (const auto *signature : callSigs) {
+            if ((signature->Function()->IsConstructor() && !classVarStatic) ||
+                (signature->Function()->IsStaticBlock() && classVarStatic)) {
+                CheckConstFieldInitialized(signature, classVar);
             }
         }
     }
 }
 
-void ETSChecker::FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *class_var, bool &initialized)
+void ETSChecker::FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized)
 {
-    if (node->IsAssignmentExpression() && node->AsAssignmentExpression()->Target() == class_var) {
+    if (node->IsAssignmentExpression() && node->AsAssignmentExpression()->Target() == classVar) {
         if (initialized) {
-            ThrowTypeError({"Variable '", class_var->Declaration()->Name(), "' might already have been initialized"},
+            ThrowTypeError({"Variable '", classVar->Declaration()->Name(), "' might already have been initialized"},
                            node->Start());
         }
 
@@ -858,17 +858,16 @@ void ETSChecker::FindAssignment(const ir::AstNode *node, const varbinder::LocalV
         return;
     }
 
-    FindAssignments(node, class_var, initialized);
+    FindAssignments(node, classVar, initialized);
 }
 
-void ETSChecker::FindAssignments(const ir::AstNode *node, const varbinder::LocalVariable *class_var, bool &initialized)
+void ETSChecker::FindAssignments(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized)
 {
-    node->Iterate([this, class_var, &initialized](ir::AstNode *child_node) {
-        FindAssignment(child_node, class_var, initialized);
-    });
+    node->Iterate(
+        [this, classVar, &initialized](ir::AstNode *childNode) { FindAssignment(childNode, classVar, initialized); });
 }
 
-void ETSChecker::CheckConstFieldInitialized(const Signature *signature, varbinder::LocalVariable *class_var)
+void ETSChecker::CheckConstFieldInitialized(const Signature *signature, varbinder::LocalVariable *classVar)
 {
     bool initialized = false;
     const auto &stmts = signature->Function()->Body()->AsBlockStatement()->Statements();
@@ -883,23 +882,23 @@ void ETSChecker::CheckConstFieldInitialized(const Signature *signature, varbinde
     }
 
     // NOTE: szd. control flow
-    FindAssignments(signature->Function()->Body(), class_var, initialized);
+    FindAssignments(signature->Function()->Body(), classVar, initialized);
     if (!initialized) {
-        ThrowTypeError({"Variable '", class_var->Declaration()->Name(), "' might not have been initialized"},
+        ThrowTypeError({"Variable '", classVar->Declaration()->Name(), "' might not have been initialized"},
                        signature->Function()->End());
     }
 
-    class_var->RemoveFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED);
+    classVar->RemoveFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED);
 }
 
-void ETSChecker::CheckInnerClassMembers(const ETSObjectType *class_type)
+void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 {
-    for (const auto &[_, it] : class_type->StaticMethods()) {
+    for (const auto &[_, it] : classType->StaticMethods()) {
         (void)_;
         ThrowTypeError("Inner class cannot have static methods", it->Declaration()->Node()->Start());
     }
 
-    for (const auto &[_, it] : class_type->StaticFields()) {
+    for (const auto &[_, it] : classType->StaticFields()) {
         (void)_;
         if (!it->Declaration()->IsConstDecl()) {
             ThrowTypeError("Inner class cannot have non-const static properties", it->Declaration()->Node()->Start());
@@ -909,16 +908,16 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *class_type)
 
 void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 {
-    auto *const expression_type = expr->Check(this);
-    auto const *const unboxed_expression_type = ETSBuiltinTypeAsPrimitiveType(expression_type);
+    auto *const expressionType = expr->Check(this);
+    auto const *const unboxedExpressionType = ETSBuiltinTypeAsPrimitiveType(expressionType);
 
-    Type const *const index_type = ApplyUnaryOperatorPromotion(expression_type);
+    Type const *const indexType = ApplyUnaryOperatorPromotion(expressionType);
 
-    if (expression_type->IsETSObjectType() && (unboxed_expression_type != nullptr)) {
-        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxed_expression_type));
+    if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
+        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
     }
 
-    if (relaxed && index_type != nullptr && index_type->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT)) {
+    if (relaxed && indexType != nullptr && indexType->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT)) {
         if (!expr->IsNumberLiteral()) {
             return;
         }
@@ -933,12 +932,12 @@ void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
         return;
     }
 
-    if (index_type == nullptr || !index_type->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
+    if (indexType == nullptr || !indexType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
         std::stringstream message("");
-        if (expression_type->IsNonPrimitiveType()) {
-            message << expression_type->Variable()->Name();
+        if (expressionType->IsNonPrimitiveType()) {
+            message << expressionType->Variable()->Name();
         } else {
-            expression_type->ToString(message);
+            expressionType->ToString(message);
         }
 
         ThrowTypeError(
@@ -970,27 +969,27 @@ int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type) const
 
 void ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, const ir::MemberExpression *const expr)
 {
-    const auto *const expr_type = expr->Property()->TsType();
-    ASSERT(expr_type != nullptr);
+    const auto *const exprType = expr->Property()->TsType();
+    ASSERT(exprType != nullptr);
 
-    if (!expr_type->HasTypeFlag(TypeFlag::CONSTANT) && !tuple->HasSpreadType()) {
+    if (!exprType->HasTypeFlag(TypeFlag::CONSTANT) && !tuple->HasSpreadType()) {
         ThrowTypeError("Only constant expression allowed for element access on tuples.", expr->Property()->Start());
     }
 
-    if (!expr_type->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
+    if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
         ThrowTypeError("Only integer type allowed for element access on tuples.", expr->Property()->Start());
     }
 
-    const int32_t expr_value = GetTupleElementAccessValue(expr_type);
-    if (((expr_value >= tuple->GetTupleSize()) && !tuple->HasSpreadType()) || (expr_value < 0)) {
+    const int32_t exprValue = GetTupleElementAccessValue(exprType);
+    if (((exprValue >= tuple->GetTupleSize()) && !tuple->HasSpreadType()) || (exprValue < 0)) {
         ThrowTypeError("Element accessor value is out of tuple size bounds.", expr->Property()->Start());
     }
 }
 
-ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg)
+ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg)
 {
     if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
-        return class_type;
+        return classType;
     }
 
     if (node->Parent()->IsCallExpression() && (node->Parent()->AsCallExpression()->Callee() == node)) {
@@ -1014,11 +1013,11 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
         ThrowTypeError({"'", msg, "' cannot be referenced from a static context"}, node->Start());
     }
 
-    if (class_type->GetDeclNode()->IsClassDefinition() && class_type->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
+    if (classType->GetDeclNode()->IsClassDefinition() && classType->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
         ThrowTypeError({"Cannot reference '", msg, "' in this context."}, node->Start());
     }
 
-    return class_type;
+    return classType;
 }
 
 void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
@@ -1029,22 +1028,21 @@ void ETSChecker::CheckCyclicConstructorCall(Signature *signature)
         return;
     }
 
-    auto *func_body = signature->Function()->Body()->AsBlockStatement();
+    auto *funcBody = signature->Function()->Body()->AsBlockStatement();
 
     TypeStackElement tse(this, signature, "Recursive constructor invocation", signature->Function()->Start());
 
-    if (!func_body->Statements().empty() && func_body->Statements()[0]->IsExpressionStatement() &&
-        func_body->Statements()[0]->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
-        func_body->Statements()[0]
+    if (!funcBody->Statements().empty() && funcBody->Statements()[0]->IsExpressionStatement() &&
+        funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
+        funcBody->Statements()[0]
             ->AsExpressionStatement()
             ->GetExpression()
             ->AsCallExpression()
             ->Callee()
             ->IsThisExpression()) {
-        auto *constructor_call =
-            func_body->Statements()[0]->AsExpressionStatement()->GetExpression()->AsCallExpression();
-        ASSERT(constructor_call->Signature());
-        CheckCyclicConstructorCall(constructor_call->Signature());
+        auto *constructorCall = funcBody->Statements()[0]->AsExpressionStatement()->GetExpression()->AsCallExpression();
+        ASSERT(constructorCall->Signature());
+        CheckCyclicConstructorCall(constructorCall->Signature());
     }
 }
 
@@ -1061,17 +1059,17 @@ ETSObjectType *ETSChecker::CheckExceptionOrErrorType(checker::Type *type, const 
 }
 
 Type *ETSChecker::TryToInstantiate(Type *const type, ArenaAllocator *const allocator, TypeRelation *const relation,
-                                   GlobalTypesHolder *const global_types)
+                                   GlobalTypesHolder *const globalTypes)
 {
     // NOTE: Handle generic functions
-    auto *return_type = type;
-    const bool is_incomplete =
+    auto *returnType = type;
+    const bool isIncomplete =
         type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION);
-    if (const bool is_function_type = type->IsETSFunctionType(); is_function_type || is_incomplete) {
-        return_type = type->Instantiate(allocator, relation, global_types);
+    if (const bool isFunctionType = type->IsETSFunctionType(); isFunctionType || isIncomplete) {
+        returnType = type->Instantiate(allocator, relation, globalTypes);
     }
 
-    return return_type;
+    return returnType;
 }
 
 void ETSChecker::ValidateResolvedProperty(const varbinder::LocalVariable *const property,
@@ -1089,57 +1087,58 @@ void ETSChecker::ValidateResolvedProperty(const varbinder::LocalVariable *const 
     static constexpr uint32_t CORRECT_PROPERTY_SEARCH_ORDER_STATIC = 56U;
     static_assert(static_cast<Utype>(PropertySearchFlags::SEARCH_STATIC) == CORRECT_PROPERTY_SEARCH_ORDER_STATIC,
                   "PropertySearchFlags order changed");
-    const auto flags_num = static_cast<Utype>(flags);
+    const auto flagsNum = static_cast<Utype>(flags);
     // This algorithm swaps the first 3 bits of a number with it's consecutive 3 bits, example: 0b110001 -> 0b001110
     // Effectively it changes PropertySearchFlags to search for the appropriate declarations
-    const Utype x = (flags_num ^ (flags_num >> 3U)) & 7U;
-    const auto new_flags = PropertySearchFlags {flags_num ^ (x | (x << 3U))};
+    const Utype x = (flagsNum ^ (flagsNum >> 3U)) & 7U;
+    const auto newFlags = PropertySearchFlags {flagsNum ^ (x | (x << 3U))};
 
-    const auto *const new_prop = target->GetProperty(ident->Name(), new_flags);
-    if (new_prop == nullptr) {
+    const auto *const newProp = target->GetProperty(ident->Name(), newFlags);
+    if (newProp == nullptr) {
         ThrowTypeError({"Property '", ident->Name(), "' does not exist on type '", target->Name(), "'"},
                        ident->Start());
     }
-    if (IsVariableStatic(new_prop)) {
+    if (IsVariableStatic(newProp)) {
         ThrowTypeError({"'", ident->Name(), "' is a static property of '", target->Name(), "'"}, ident->Start());
     } else {
         ThrowTypeError({"'", ident->Name(), "' is an instance property of '", target->Name(), "'"}, ident->Start());
     }
 }
 
-varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpression *const member_expr)
+varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpression *const memberExpr)
 {
-    auto *global_function_var = Scope()
-                                    ->FindInGlobal(member_expr->Property()->AsIdentifier()->Name(),
-                                                   varbinder::ResolveBindingOptions::STATIC_METHODS)
-                                    .variable;
+    // clang-format off
+    auto *globalFunctionVar = Scope()
+                                ->FindInGlobal(memberExpr->Property()->AsIdentifier()->Name(),
+                                                varbinder::ResolveBindingOptions::STATIC_METHODS)
+                                .variable;
+    // clang-format on
 
-    if (global_function_var == nullptr || !ExtensionETSFunctionType(this->GetTypeOfVariable(global_function_var))) {
+    if (globalFunctionVar == nullptr || !ExtensionETSFunctionType(this->GetTypeOfVariable(globalFunctionVar))) {
         return nullptr;
     }
 
-    return global_function_var;
+    return globalFunctionVar;
 }
 
-PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression *const member_expr)
+PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression *const memberExpr)
 {
     constexpr auto FUNCTIONAL_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_FUNCTIONAL;
     constexpr auto GETTER_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_GETTER;
     constexpr auto SETTER_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_SETTER;
 
-    switch (member_expr->Parent()->Type()) {
+    switch (memberExpr->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION: {
-            if (member_expr->Parent()->AsCallExpression()->Callee() == member_expr) {
+            if (memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
                 return FUNCTIONAL_FLAGS;
             }
 
             break;
         }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
-            if (member_expr->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == member_expr) {
+            if (memberExpr->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == memberExpr) {
                 return PropertySearchFlags::SEARCH_DECL;
             }
-
             break;
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
@@ -1151,19 +1150,18 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
             return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS;
         }
         case ir::AstNodeType::ASSIGNMENT_EXPRESSION: {
-            const auto *const assignment_expr = member_expr->Parent()->AsAssignmentExpression();
+            const auto *const assignmentExpr = memberExpr->Parent()->AsAssignmentExpression();
 
-            if (assignment_expr->Left() == member_expr) {
-                if (assignment_expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+            if (assignmentExpr->Left() == memberExpr) {
+                if (assignmentExpr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
                     return PropertySearchFlags::SEARCH_FIELD | SETTER_FLAGS;
                 }
                 return PropertySearchFlags::SEARCH_FIELD | GETTER_FLAGS | SETTER_FLAGS;
             }
 
-            auto const *target_type = assignment_expr->Left()->TsType();
-
-            if (target_type->IsETSObjectType() &&
-                target_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+            auto const *targetType = assignmentExpr->Left()->TsType();
+            if (targetType->IsETSObjectType() &&
+                targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
                 return FUNCTIONAL_FLAGS;
             }
 
@@ -1177,69 +1175,69 @@ PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression
     return PropertySearchFlags::SEARCH_FIELD | FUNCTIONAL_FLAGS | GETTER_FLAGS;
 }
 
-PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const member_expr,
-                                               const varbinder::Variable *target_ref)
+PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const memberExpr,
+                                               const varbinder::Variable *targetRef)
 {
-    auto search_flag = GetInitialSearchFlags(member_expr);
-    search_flag |= PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES;
+    auto searchFlag = GetInitialSearchFlags(memberExpr);
+    searchFlag |= PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES;
 
-    if (target_ref != nullptr && target_ref->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
-        search_flag &= ~(PropertySearchFlags::SEARCH_INSTANCE);
-    } else if (member_expr->Object()->IsThisExpression() ||
-               (member_expr->Object()->IsIdentifier() && member_expr->ObjType()->GetDeclNode() != nullptr &&
-                member_expr->ObjType()->GetDeclNode()->IsTSInterfaceDeclaration())) {
-        search_flag &= ~(PropertySearchFlags::SEARCH_STATIC);
+    if (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
+        searchFlag &= ~(PropertySearchFlags::SEARCH_INSTANCE);
+    } else if (memberExpr->Object()->IsThisExpression() ||
+               (memberExpr->Object()->IsIdentifier() && memberExpr->ObjType()->GetDeclNode() != nullptr &&
+                memberExpr->ObjType()->GetDeclNode()->IsTSInterfaceDeclaration())) {
+        searchFlag &= ~(PropertySearchFlags::SEARCH_STATIC);
     }
-    return search_flag;
+    return searchFlag;
 }
 
-const varbinder::Variable *ETSChecker::GetTargetRef(const ir::MemberExpression *const member_expr)
+const varbinder::Variable *ETSChecker::GetTargetRef(const ir::MemberExpression *const memberExpr)
 {
-    if (member_expr->Object()->IsIdentifier()) {
-        return member_expr->Object()->AsIdentifier()->Variable();
+    if (memberExpr->Object()->IsIdentifier()) {
+        return memberExpr->Object()->AsIdentifier()->Variable();
     }
-    if (member_expr->Object()->IsMemberExpression()) {
-        return member_expr->Object()->AsMemberExpression()->PropVar();
+    if (memberExpr->Object()->IsMemberExpression()) {
+        return memberExpr->Object()->AsMemberExpression()->PropVar();
     }
     return nullptr;
 }
 
-void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const member_expr,
-                                      const varbinder::LocalVariable *const prop, PropertySearchFlags search_flag)
+void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const memberExpr,
+                                      const varbinder::LocalVariable *const prop, PropertySearchFlags searchFlag)
 {
-    auto *prop_type = prop->TsType()->AsETSFunctionType();
-    ASSERT((prop_type->FindGetter() != nullptr) == prop_type->HasTypeFlag(TypeFlag::GETTER));
-    ASSERT((prop_type->FindSetter() != nullptr) == prop_type->HasTypeFlag(TypeFlag::SETTER));
+    auto *propType = prop->TsType()->AsETSFunctionType();
+    ASSERT((propType->FindGetter() != nullptr) == propType->HasTypeFlag(TypeFlag::GETTER));
+    ASSERT((propType->FindSetter() != nullptr) == propType->HasTypeFlag(TypeFlag::SETTER));
 
-    auto const &source_pos = member_expr->Property()->Start();
-    auto call_expr = member_expr->Parent()->IsCallExpression() ? member_expr->Parent()->AsCallExpression() : nullptr;
+    auto const &sourcePos = memberExpr->Property()->Start();
+    auto callExpr = memberExpr->Parent()->IsCallExpression() ? memberExpr->Parent()->AsCallExpression() : nullptr;
 
-    if ((search_flag & PropertySearchFlags::IS_GETTER) != 0) {
-        if (!prop_type->HasTypeFlag(TypeFlag::GETTER)) {
-            ThrowTypeError("Cannot read from this property because it is writeonly.", source_pos);
+    if ((searchFlag & PropertySearchFlags::IS_GETTER) != 0) {
+        if (!propType->HasTypeFlag(TypeFlag::GETTER)) {
+            ThrowTypeError("Cannot read from this property because it is writeonly.", sourcePos);
         }
-        ValidateSignatureAccessibility(member_expr->ObjType(), call_expr, prop_type->FindGetter(), source_pos);
+        ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindGetter(), sourcePos);
     }
 
-    if ((search_flag & PropertySearchFlags::IS_SETTER) != 0) {
-        if (!prop_type->HasTypeFlag(TypeFlag::SETTER)) {
-            ThrowTypeError("Cannot assign to this property because it is readonly.", source_pos);
+    if ((searchFlag & PropertySearchFlags::IS_SETTER) != 0) {
+        if (!propType->HasTypeFlag(TypeFlag::SETTER)) {
+            ThrowTypeError("Cannot assign to this property because it is readonly.", sourcePos);
         }
-        ValidateSignatureAccessibility(member_expr->ObjType(), call_expr, prop_type->FindSetter(), source_pos);
+        ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindSetter(), sourcePos);
     }
 }
 
-void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *const member_expr,
+void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *const memberExpr,
                                                       varbinder::LocalVariable *const prop)
 {
     const auto [target_ident,
-                type_annotation] = [member_expr]() -> std::pair<const ir::Identifier *, const ir::TypeNode *> {
-        if (member_expr->Parent()->IsVariableDeclarator()) {
-            const auto *const ident = member_expr->Parent()->AsVariableDeclarator()->Id()->AsIdentifier();
+                type_annotation] = [memberExpr]() -> std::pair<const ir::Identifier *, const ir::TypeNode *> {
+        if (memberExpr->Parent()->IsVariableDeclarator()) {
+            const auto *const ident = memberExpr->Parent()->AsVariableDeclarator()->Id()->AsIdentifier();
             return {ident, ident->TypeAnnotation()};
         }
-        return {member_expr->Parent()->AsClassProperty()->Key()->AsIdentifier(),
-                member_expr->Parent()->AsClassProperty()->TypeAnnotation()};
+        return {memberExpr->Parent()->AsClassProperty()->Key()->AsIdentifier(),
+                memberExpr->Parent()->AsClassProperty()->TypeAnnotation()};
     }();
 
     GetTypeOfVariable(prop);
@@ -1251,48 +1249,46 @@ void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression
                            target_ident->Start());
         }
 
-        auto *target_type = GetTypeOfVariable(target_ident->Variable());
-        ASSERT(target_type != nullptr);
+        auto *targetType = GetTypeOfVariable(target_ident->Variable());
+        ASSERT(targetType != nullptr);
 
-        if (!target_type->IsETSObjectType() ||
-            !target_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            ThrowTypeError(
-                {"Method ", member_expr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
-                member_expr->Property()->Start());
+        if (!targetType->IsETSObjectType() ||
+            !targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+            ThrowTypeError({"Method ", memberExpr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
+                           memberExpr->Property()->Start());
         }
     }
 }
 
 // NOLINTNEXTLINE(readability-function-size)
-std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::MemberExpression *const member_expr,
+std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::MemberExpression *const memberExpr,
                                                                 const ETSObjectType *const target)
 {
-    std::vector<ResolveResult *> resolve_res {};
+    std::vector<ResolveResult *> resolveRes {};
 
     if (target->IsETSDynamicType() && !target->AsETSDynamicType()->HasDecl()) {
-        auto prop_name = member_expr->Property()->AsIdentifier()->Name();
-        varbinder::LocalVariable *prop_var = target->AsETSDynamicType()->GetPropertyDynamic(prop_name, this);
-        resolve_res.emplace_back(Allocator()->New<ResolveResult>(prop_var, ResolvedKind::PROPERTY));
-        return resolve_res;
+        auto propName = memberExpr->Property()->AsIdentifier()->Name();
+        varbinder::LocalVariable *propVar = target->AsETSDynamicType()->GetPropertyDynamic(propName, this);
+        resolveRes.emplace_back(Allocator()->New<ResolveResult>(propVar, ResolvedKind::PROPERTY));
+        return resolveRes;
     }
 
-    const auto *const target_ref = GetTargetRef(member_expr);
-    auto search_flag = GetSearchFlags(member_expr, target_ref);
+    const auto *const targetRef = GetTargetRef(memberExpr);
+    auto searchFlag = GetSearchFlags(memberExpr, targetRef);
 
     if (target->HasTypeFlag(TypeFlag::GENERIC)) {
-        search_flag |= PropertySearchFlags::SEARCH_ALL;
+        searchFlag |= PropertySearchFlags::SEARCH_ALL;
     }
 
-    auto *const prop = target->GetProperty(member_expr->Property()->AsIdentifier()->Name(), search_flag);
-    varbinder::Variable *global_function_var = nullptr;
+    auto *const prop = target->GetProperty(memberExpr->Property()->AsIdentifier()->Name(), searchFlag);
+    varbinder::Variable *globalFunctionVar = nullptr;
 
-    if (member_expr->Parent()->IsCallExpression() &&
-        member_expr->Parent()->AsCallExpression()->Callee() == member_expr) {
-        global_function_var = ResolveInstanceExtension(member_expr);
+    if (memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
+        globalFunctionVar = ResolveInstanceExtension(memberExpr);
     }
 
-    if (global_function_var == nullptr ||
-        (target_ref != nullptr && target_ref->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE))) {
+    if (globalFunctionVar == nullptr ||
+        (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE))) {
         /*
             Instance extension function can only be called by class instance, if a property is accessed by
             CLASS or INTERFACE type, it couldn't be an instance extension function call
@@ -1306,70 +1302,70 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
             !NB: When supporting static extension function, the above code case would be supported
         */
-        ValidateResolvedProperty(prop, target, member_expr->Property()->AsIdentifier(), search_flag);
+        ValidateResolvedProperty(prop, target, memberExpr->Property()->AsIdentifier(), searchFlag);
     } else {
-        resolve_res.emplace_back(
-            Allocator()->New<ResolveResult>(global_function_var, ResolvedKind::INSTANCE_EXTENSION_FUNCTION));
+        resolveRes.emplace_back(
+            Allocator()->New<ResolveResult>(globalFunctionVar, ResolvedKind::INSTANCE_EXTENSION_FUNCTION));
 
         if (prop == nullptr) {
             // No matched property, but have possible matched global extension function
-            return resolve_res;
+            return resolveRes;
         }
     }
 
-    resolve_res.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
+    resolveRes.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
 
     if (prop->HasFlag(varbinder::VariableFlags::METHOD) && !IsVariableGetterSetter(prop) &&
-        (search_flag & PropertySearchFlags::IS_FUNCTIONAL) == 0) {
-        ThrowTypeError("Method used in wrong context", member_expr->Property()->Start());
+        (searchFlag & PropertySearchFlags::IS_FUNCTIONAL) == 0) {
+        ThrowTypeError("Method used in wrong context", memberExpr->Property()->Start());
     }
 
     if (IsVariableGetterSetter(prop)) {
-        ValidateGetterSetter(member_expr, prop, search_flag);
+        ValidateGetterSetter(memberExpr, prop, searchFlag);
     }
 
     // Before returning the computed property variable, we have to validate the special case where we are in a variable
     // declaration, and the properties type is a function type but the currently declared variable doesn't have a type
     // annotation
-    if (member_expr->Parent()->IsVariableDeclarator() || member_expr->Parent()->IsClassProperty()) {
-        ValidateVarDeclaratorOrClassProperty(member_expr, prop);
+    if (memberExpr->Parent()->IsVariableDeclarator() || memberExpr->Parent()->IsClassProperty()) {
+        ValidateVarDeclaratorOrClassProperty(memberExpr, prop);
     }
 
-    return resolve_res;
+    return resolveRes;
 }
 
-void ETSChecker::CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefinition *class_def)
+void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefinition *classDef)
 {
-    if (class_type->SuperType() == nullptr) {
+    if (classType->SuperType() == nullptr) {
         return;
     }
 
-    if (class_def->TypeParams() != nullptr &&
-        (Relation()->IsAssignableTo(class_type->SuperType(), GlobalBuiltinExceptionType()) ||
-         Relation()->IsAssignableTo(class_type->SuperType(), GlobalBuiltinErrorType()))) {
+    if (classDef->TypeParams() != nullptr &&
+        (Relation()->IsAssignableTo(classType->SuperType(), GlobalBuiltinExceptionType()) ||
+         Relation()->IsAssignableTo(classType->SuperType(), GlobalBuiltinErrorType()))) {
         ThrowTypeError({"Generics are not allowed as '", compiler::Signatures::BUILTIN_EXCEPTION_CLASS, "' or '",
                         compiler::Signatures::BUILTIN_ERROR_CLASS, "' subclasses."},
-                       class_def->TypeParams()->Start());
+                       classDef->TypeParams()->Start());
     }
 
-    const auto &all_props = class_type->GetAllProperties();
+    const auto &allProps = classType->GetAllProperties();
 
-    for (auto *it : all_props) {
-        const auto search_flag = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
-                                 PropertySearchFlags::SEARCH_IN_INTERFACES |
-                                 PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
-        auto *found = class_type->SuperType()->GetProperty(it->Name(), search_flag);
+    for (auto *it : allProps) {
+        const auto searchFlag = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
+                                PropertySearchFlags::SEARCH_IN_INTERFACES |
+                                PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
+        auto *found = classType->SuperType()->GetProperty(it->Name(), searchFlag);
 
-        ETSObjectType *interface_found = nullptr;
+        ETSObjectType *interfaceFound = nullptr;
         if (found == nullptr) {
-            auto interface_list = GetInterfacesOfClass(class_type);
-            for (auto *interface : interface_list) {
-                auto *property_found = interface->GetProperty(it->Name(), search_flag);
-                if (property_found == nullptr) {
+            auto interfaceList = GetInterfacesOfClass(classType);
+            for (auto *interface : interfaceList) {
+                auto *propertyFound = interface->GetProperty(it->Name(), searchFlag);
+                if (propertyFound == nullptr) {
                     continue;
                 }
-                found = property_found;
-                interface_found = interface;
+                found = propertyFound;
+                interfaceFound = interface;
                 break;
             }
         }
@@ -1378,70 +1374,70 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefin
         }
 
         if (!IsSameDeclarationType(it, found)) {
-            const char *target_type {};
+            const char *targetType {};
 
             if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
-                target_type = "field";
+                targetType = "field";
             } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
-                target_type = "method";
+                targetType = "method";
             } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
-                target_type = "class";
+                targetType = "class";
             } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
-                target_type = "interface";
+                targetType = "interface";
             } else {
-                target_type = "enum";
+                targetType = "enum";
             }
 
-            if (interface_found != nullptr) {
-                ThrowTypeError({"Cannot inherit from interface ", interface_found->Name(), " because ", target_type,
-                                " ", it->Name(), " is inherited with a different declaration type"},
-                               interface_found->GetDeclNode()->Start());
+            if (interfaceFound != nullptr) {
+                ThrowTypeError({"Cannot inherit from interface ", interfaceFound->Name(), " because ", targetType, " ",
+                                it->Name(), " is inherited with a different declaration type"},
+                               interfaceFound->GetDeclNode()->Start());
             }
-            ThrowTypeError({"Cannot inherit from class ", class_type->SuperType()->Name(), ", because ", target_type,
-                            " ", it->Name(), " is inherited with a different declaration type"},
-                           class_def->Super()->Start());
+            ThrowTypeError({"Cannot inherit from class ", classType->SuperType()->Name(), ", because ", targetType, " ",
+                            it->Name(), " is inherited with a different declaration type"},
+                           classDef->Super()->Start());
         }
     }
 }
 
-void ETSChecker::CheckGetterSetterProperties(ETSObjectType *class_type)
+void ETSChecker::CheckGetterSetterProperties(ETSObjectType *classType)
 {
-    auto const check_getter_setter = [this](varbinder::LocalVariable *var, util::StringView name) {
+    auto const checkGetterSetter = [this](varbinder::LocalVariable *var, util::StringView name) {
         auto const *type = var->TsType()->AsETSFunctionType();
-        auto const *sig_getter = type->FindGetter();
-        auto const *sig_setter = type->FindSetter();
+        auto const *sigGetter = type->FindGetter();
+        auto const *sigSetter = type->FindSetter();
 
         for (auto const *sig : type->CallSignatures()) {
             if (!sig->Function()->IsGetter() && !sig->Function()->IsSetter()) {
                 ThrowTypeError({"Method cannot use the same name as ", name, " accessor property"},
                                sig->Function()->Start());
             }
-            if (sig != sig_getter && sig != sig_setter) {
+            if (sig != sigGetter && sig != sigSetter) {
                 ThrowTypeError("Duplicate accessor definition", sig->Function()->Start());
             }
         }
 
-        if (((sig_getter->Function()->Modifiers() ^ sig_setter->Function()->Modifiers()) &
+        if (((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
              ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
             ThrowTypeError("Getter and setter methods must have the same accessor modifiers",
-                           sig_getter->Function()->Start());
+                           sigGetter->Function()->Start());
         }
     };
 
-    for (const auto &[name, var] : class_type->InstanceMethods()) {
+    for (const auto &[name, var] : classType->InstanceMethods()) {
         if (IsVariableGetterSetter(var)) {
-            check_getter_setter(var, name);
+            checkGetterSetter(var, name);
         }
     }
 
-    for (const auto &[name, var] : class_type->StaticMethods()) {
+    for (const auto &[name, var] : classType->StaticMethods()) {
         if (IsVariableGetterSetter(var)) {
-            check_getter_setter(var, name);
+            checkGetterSetter(var, name);
         }
     }
 }
 
-void ETSChecker::AddElementsToModuleObject(ETSObjectType *module_obj, const util::StringView &str)
+void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util::StringView &str)
 {
     for (const auto &[name, var] : VarBinder()->GetScope()->Bindings()) {
         if (name.Is(str.Mutf8()) || name.Is(compiler::Signatures::ETS_GLOBAL)) {
@@ -1449,11 +1445,11 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *module_obj, const util
         }
 
         if (var->HasFlag(varbinder::VariableFlags::METHOD)) {
-            module_obj->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());
+            moduleObj->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());
         } else if (var->HasFlag(varbinder::VariableFlags::PROPERTY)) {
-            module_obj->AddProperty<checker::PropertyType::STATIC_FIELD>(var->AsLocalVariable());
+            moduleObj->AddProperty<checker::PropertyType::STATIC_FIELD>(var->AsLocalVariable());
         } else {
-            module_obj->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
+            moduleObj->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
         }
     }
 }
@@ -1463,20 +1459,20 @@ Type *ETSChecker::FindLeastUpperBound(Type *source, Type *target)
     ASSERT(source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT));
 
     // GetCommonClass(GenA<A>, GenB<B>) => LUB(GenA, GenB)<T>
-    auto common_class = GetCommonClass(source, target);
+    auto commonClass = GetCommonClass(source, target);
 
-    if (!common_class->IsETSObjectType() || !common_class->HasTypeFlag(TypeFlag::GENERIC)) {
-        return common_class->HasTypeFlag(TypeFlag::CONSTANT) ? common_class->Variable()->TsType() : common_class;
+    if (!commonClass->IsETSObjectType() || !commonClass->HasTypeFlag(TypeFlag::GENERIC)) {
+        return commonClass->HasTypeFlag(TypeFlag::CONSTANT) ? commonClass->Variable()->TsType() : commonClass;
     }
 
     // GetRelevantArgumentedTypeFromChild(GenA<A>, LUB(GenA, GenB)<T>) => LUB(GenA, GenB)<A>
-    ETSObjectType *relevant_source_type =
-        GetRelevantArgumentedTypeFromChild(source->AsETSObjectType(), common_class->AsETSObjectType());
-    ETSObjectType *relevant_target_type =
-        GetRelevantArgumentedTypeFromChild(target->AsETSObjectType(), common_class->AsETSObjectType());
+    ETSObjectType *relevantSourceType =
+        GetRelevantArgumentedTypeFromChild(source->AsETSObjectType(), commonClass->AsETSObjectType());
+    ETSObjectType *relevantTargetType =
+        GetRelevantArgumentedTypeFromChild(target->AsETSObjectType(), commonClass->AsETSObjectType());
 
     // GetTypeargumentedLUB(LUB(GenA, GenB)<A>, LUB(GenA, GenB)<B>) => LUB(GenA, GenB)<LUB(A, B)>
-    return GetTypeargumentedLUB(relevant_source_type, relevant_target_type);
+    return GetTypeargumentedLUB(relevantSourceType, relevantTargetType);
 }
 
 Type *ETSChecker::GetApparentType(Type *type)
@@ -1499,7 +1495,7 @@ Type const *ETSChecker::GetApparentType(Type const *type)
 
 Type *ETSChecker::GetCommonClass(Type *source, Type *target)
 {
-    SavedTypeRelationFlagsContext checker_ctx(this->Relation(), TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
+    SavedTypeRelationFlagsContext checkerCtx(this->Relation(), TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
 
     if (IsTypeIdenticalTo(source, target)) {
         return source;
@@ -1538,19 +1534,19 @@ ETSObjectType *ETSChecker::GetClosestCommonAncestor(ETSObjectType *source, ETSOb
 {
     ASSERT(target->SuperType() != nullptr);
 
-    auto *target_base = GetOriginalBaseType(target->SuperType());
-    auto *target_type = target_base == nullptr ? target->SuperType() : target_base;
+    auto *targetBase = GetOriginalBaseType(target->SuperType());
+    auto *targetType = targetBase == nullptr ? target->SuperType() : targetBase;
 
-    auto *source_base = GetOriginalBaseType(source);
-    auto *source_type = source_base == nullptr ? source : source_base;
+    auto *sourceBase = GetOriginalBaseType(source);
+    auto *sourceType = sourceBase == nullptr ? source : sourceBase;
 
-    target_type->IsSupertypeOf(Relation(), source_type);
+    targetType->IsSupertypeOf(Relation(), sourceType);
     if (Relation()->IsTrue()) {
         // NOTE: TorokG. Extending the search to find intersection types
-        return target_type;
+        return targetType;
     }
 
-    return GetClosestCommonAncestor(source_type, target_type);
+    return GetClosestCommonAncestor(sourceType, targetType);
 }
 
 ETSObjectType *ETSChecker::GetTypeargumentedLUB(ETSObjectType *const source, ETSObjectType *const target)
@@ -1569,43 +1565,42 @@ ETSObjectType *ETSChecker::GetTypeargumentedLUB(ETSObjectType *const source, ETS
         return source;
     }
 
-    ETSObjectType *template_type = source->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType();
+    ETSObjectType *templateType = source->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType();
 
-    auto *lub_type = template_type->GetInstantiatedType(hash);
+    auto *lubType = templateType->GetInstantiatedType(hash);
 
-    if (lub_type == nullptr) {
-        lub_type = template_type->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
-        lub_type->SetTypeArguments(std::move(params));
+    if (lubType == nullptr) {
+        lubType = templateType->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
+        lubType->SetTypeArguments(std::move(params));
 
-        template_type->GetInstantiationMap().try_emplace(hash, lub_type);
+        templateType->GetInstantiationMap().try_emplace(hash, lubType);
     }
 
-    return lub_type;
+    return lubType;
 }
 
-void ETSChecker::CheckInvokeMethodsLegitimacy(ETSObjectType *const class_type)
+void ETSChecker::CheckInvokeMethodsLegitimacy(ETSObjectType *const classType)
 {
-    if (class_type->HasObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY)) {
+    if (classType->HasObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY)) {
         return;
     }
 
-    auto search_flag = PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::SEARCH_IN_BASE |
-                       PropertySearchFlags::SEARCH_STATIC_METHOD;
+    auto searchFlag = PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::SEARCH_IN_BASE |
+                      PropertySearchFlags::SEARCH_STATIC_METHOD;
 
-    auto *const invoke_method = class_type->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, search_flag);
-    if (invoke_method == nullptr) {
-        class_type->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+    auto *const invokeMethod = classType->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, searchFlag);
+    if (invokeMethod == nullptr) {
+        classType->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
         return;
     }
 
-    auto *const instantiate_method =
-        class_type->GetProperty(compiler::Signatures::STATIC_INSTANTIATE_METHOD, search_flag);
-    if (instantiate_method != nullptr) {
+    auto *const instantiateMethod = classType->GetProperty(compiler::Signatures::STATIC_INSTANTIATE_METHOD, searchFlag);
+    if (instantiateMethod != nullptr) {
         ThrowTypeError({"Static ", compiler::Signatures::STATIC_INVOKE_METHOD, " method and static ",
                         compiler::Signatures::STATIC_INSTANTIATE_METHOD, " method both exist in class/interface ",
-                        class_type->Name(), " is not allowed."},
-                       class_type->GetDeclNode()->Start());
+                        classType->Name(), " is not allowed."},
+                       classType->GetDeclNode()->Start());
     }
-    class_type->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+    classType->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
 }
 }  // namespace panda::es2panda::checker

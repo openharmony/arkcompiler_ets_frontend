@@ -24,43 +24,43 @@
 namespace panda::es2panda::ir {
 void ETSNewClassInstanceExpression::TransformChildren(const NodeTransformer &cb)
 {
-    type_reference_ = cb(type_reference_)->AsExpression();
+    typeReference_ = cb(typeReference_)->AsExpression();
 
     for (auto *&arg : arguments_) {
         arg = cb(arg)->AsExpression();
     }
 
-    if (class_def_ != nullptr) {
-        class_def_ = cb(class_def_)->AsClassDefinition();
+    if (classDef_ != nullptr) {
+        classDef_ = cb(classDef_)->AsClassDefinition();
     }
 }
 
 void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
-    cb(type_reference_);
+    cb(typeReference_);
 
     for (auto *arg : arguments_) {
         cb(arg);
     }
 
-    if (class_def_ != nullptr) {
-        cb(class_def_);
+    if (classDef_ != nullptr) {
+        cb(classDef_);
     }
 }
 
 void ETSNewClassInstanceExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSNewClassInstanceExpression"},
-                 {"typeReference", type_reference_},
+                 {"typeReference", typeReference_},
                  {"arguments", arguments_},
-                 {"classBody", AstDumper::Optional(class_def_)}});
+                 {"classBody", AstDumper::Optional(classDef_)}});
 }
 
 void ETSNewClassInstanceExpression::Dump(ir::SrcDumper *dumper) const
 {
     dumper->Add("new ");
-    if (type_reference_ != nullptr) {
-        type_reference_->Dump(dumper);
+    if (typeReference_ != nullptr) {
+        typeReference_->Dump(dumper);
     }
     dumper->Add("(");
     for (auto argument : arguments_) {
@@ -96,8 +96,8 @@ ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstance
                                                              ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)), arguments_(allocator->Adapter()), signature_(other.signature_)
 {
-    type_reference_ = other.type_reference_->Clone(allocator, this)->AsExpression();
-    class_def_ = other.class_def_->Clone(allocator, this)->AsClassDefinition();
+    typeReference_ = other.typeReference_->Clone(allocator, this)->AsExpression();
+    classDef_ = other.classDef_->Clone(allocator, this)->AsClassDefinition();
 
     for (auto *const argument : other.arguments_) {
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());

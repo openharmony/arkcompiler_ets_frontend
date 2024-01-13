@@ -257,9 +257,9 @@ using EcmaDirecteval = EcmaDisabled;
 #endif
 
 PandaGen::PandaGen(ArenaAllocator *const allocator, RegSpiller *const spiller, CompilerContext *const context,
-                   varbinder::FunctionScope *const scope, ProgramElement *const program_element,
+                   varbinder::FunctionScope *const scope, ProgramElement *const programElement,
                    AstCompiler *astcompiler)
-    : CodeGen(allocator, spiller, context, scope, program_element, astcompiler)
+    : CodeGen(allocator, spiller, context, scope, programElement, astcompiler)
 {
     Function::Compile(this);
 }
@@ -271,20 +271,20 @@ FunctionBuilder *PandaGen::FuncBuilder() const noexcept
 
 EnvScope *PandaGen::GetEnvScope() const noexcept
 {
-    return env_scope_;
+    return envScope_;
 }
 
 void PandaGen::OptionalChainCheck(const bool optional, const VReg obj) const
 {
-    if (optional && optional_chain_ != nullptr) {
-        optional_chain_->Check(obj);
+    if (optional && optionalChain_ != nullptr) {
+        optionalChain_->Check(obj);
     }
 }
 
-void PandaGen::FunctionInit(CatchTable *catch_table)
+void PandaGen::FunctionInit(CatchTable *catchTable)
 {
     if (RootNode()->IsProgram()) {
-        builder_ = Allocator()->New<FunctionBuilder>(this, catch_table);
+        builder_ = Allocator()->New<FunctionBuilder>(this, catchTable);
         return;
     }
 
@@ -292,20 +292,20 @@ void PandaGen::FunctionInit(CatchTable *catch_table)
 
     if (func->IsAsyncFunc()) {
         if (func->IsGenerator()) {
-            builder_ = Allocator()->New<AsyncGeneratorFunctionBuilder>(this, catch_table);
+            builder_ = Allocator()->New<AsyncGeneratorFunctionBuilder>(this, catchTable);
             return;
         }
 
-        builder_ = Allocator()->New<AsyncFunctionBuilder>(this, catch_table);
+        builder_ = Allocator()->New<AsyncFunctionBuilder>(this, catchTable);
         return;
     }
 
     if (func->IsGenerator()) {
-        builder_ = Allocator()->New<GeneratorFunctionBuilder>(this, catch_table);
+        builder_ = Allocator()->New<GeneratorFunctionBuilder>(this, catchTable);
         return;
     }
 
-    builder_ = Allocator()->New<FunctionBuilder>(this, catch_table);
+    builder_ = Allocator()->New<FunctionBuilder>(this, catchTable);
 }
 
 bool PandaGen::FunctionHasFinalizer() const
@@ -459,7 +459,7 @@ void PandaGen::LoadVar(const ir::Identifier *node, const varbinder::ConstScopeFi
     LoadAccFromLexEnv(node, result);
 }
 
-void PandaGen::StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool is_declaration)
+void PandaGen::StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool isDeclaration)
 {
     varbinder::Variable *var = result.variable;
 
@@ -483,7 +483,7 @@ void PandaGen::StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFind
     }
 
     ASSERT(var->IsLocalVariable());
-    StoreAccToLexEnv(node, result, is_declaration);
+    StoreAccToLexEnv(node, result, isDeclaration);
 }
 
 void PandaGen::LoadAccFromArgs(const ir::AstNode *node)
@@ -619,7 +619,7 @@ void PandaGen::StoreGlobalVar(const ir::AstNode *node, const util::StringView &n
 
 VReg PandaGen::LexEnv() const noexcept
 {
-    return env_scope_->LexEnv();
+    return envScope_->LexEnv();
 }
 
 void PandaGen::LoadAccFromLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result)
@@ -628,17 +628,17 @@ void PandaGen::LoadAccFromLexEnv(const ir::AstNode *node, const varbinder::Const
 }
 
 void PandaGen::StoreAccToLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
-                                bool is_declaration)
+                                bool isDeclaration)
 {
-    VirtualStoreVar::Expand(this, node, result, is_declaration);
+    VirtualStoreVar::Expand(this, node, result, isDeclaration);
 }
 
-void PandaGen::LoadAccumulatorBigInt(const ir::AstNode *node, const util::StringView &big_int)
+void PandaGen::LoadAccumulatorBigInt(const ir::AstNode *node, const util::StringView &bigInt)
 {
-    Sa().Emit<EcmaLdbigint>(node, big_int);
+    Sa().Emit<EcmaLdbigint>(node, bigInt);
 }
 
-void PandaGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *if_false)
+void PandaGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse)
 {
     switch (op) {
         case lexer::TokenType::PUNCTUATOR_EQUAL: {
@@ -678,7 +678,7 @@ void PandaGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs,
         }
     }
 
-    BranchIfFalse(node, if_false);
+    BranchIfFalse(node, ifFalse);
 }
 
 void PandaGen::Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand)
@@ -909,18 +909,18 @@ void PandaGen::ValidateClassDirectReturn(const ir::AstNode *node)
     VReg value = AllocReg();
     StoreAccumulator(node, value);
 
-    auto *not_undefined = AllocLabel();
-    auto *cond_end = AllocLabel();
+    auto *notUndefined = AllocLabel();
+    auto *condEnd = AllocLabel();
 
-    BranchIfNotUndefined(node, not_undefined);
+    BranchIfNotUndefined(node, notUndefined);
     GetThis(func);
     ThrowIfSuperNotCorrectCall(func, 0);
-    Branch(node, cond_end);
+    Branch(node, condEnd);
 
-    SetLabel(node, not_undefined);
+    SetLabel(node, notUndefined);
     LoadAccumulator(node, value);
 
-    SetLabel(node, cond_end);
+    SetLabel(node, condEnd);
 }
 
 void PandaGen::EmitAwait(const ir::AstNode *node)
@@ -928,26 +928,26 @@ void PandaGen::EmitAwait(const ir::AstNode *node)
     builder_->Await(node);
 }
 
-void PandaGen::Call0This(const ir::AstNode *node, VReg callee, VReg this_reg)
+void PandaGen::Call0This(const ir::AstNode *node, VReg callee, VReg thisReg)
 {
-    LoadAccumulator(node, this_reg);
+    LoadAccumulator(node, thisReg);
     Ra().Emit<EcmaCall0thisdyn>(node, callee);
 }
 
-void PandaGen::Call1This(const ir::AstNode *node, VReg callee, VReg this_reg, VReg arg0)
+void PandaGen::Call1This(const ir::AstNode *node, VReg callee, VReg thisReg, VReg arg0)
 {
     LoadAccumulator(node, arg0);
-    Ra().Emit<EcmaCall1thisdyn>(node, callee, this_reg);
+    Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
 }
 
-void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg this_reg, const ArenaVector<ir::Expression *> &arguments)
+void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg thisReg, const ArenaVector<ir::Expression *> &arguments)
 {
-    bool has_this = !this_reg.IsInvalid();
+    bool hasThis = !thisReg.IsInvalid();
 
     switch (arguments.size()) {
         case 0: {  // 0 args
-            if (has_this) {
-                Call0This(node, callee, this_reg);
+            if (hasThis) {
+                Call0This(node, callee, thisReg);
             } else {
                 Sa().Emit<EcmaCall0dyn>(node);
             }
@@ -957,8 +957,8 @@ void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg this_reg, const A
             const auto *arg0 = arguments[0];
             arg0->Compile(this);
 
-            if (has_this) {
-                Ra().Emit<EcmaCall1thisdyn>(node, callee, this_reg);
+            if (hasThis) {
+                Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
             } else {
                 Ra().Emit<EcmaCall1dyn>(node, callee);
             }
@@ -967,37 +967,37 @@ void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg this_reg, const A
         case 2: {  // 2 args
             const auto *arg0 = arguments[0];
             arg0->Compile(this);
-            compiler::VReg arg0_reg = AllocReg();
-            StoreAccumulator(arg0, arg0_reg);
+            compiler::VReg arg0Reg = AllocReg();
+            StoreAccumulator(arg0, arg0Reg);
 
             const auto *arg1 = arguments[1];
             arg1->Compile(this);
 
-            if (has_this) {
-                Ra().Emit<EcmaCall2thisdyn>(node, callee, this_reg, arg0_reg);
+            if (hasThis) {
+                Ra().Emit<EcmaCall2thisdyn>(node, callee, thisReg, arg0Reg);
             } else {
-                Ra().Emit<EcmaCall2dyn>(node, callee, arg0_reg);
+                Ra().Emit<EcmaCall2dyn>(node, callee, arg0Reg);
             }
             return;
         }
         case 3: {  // 3 args
             const auto *arg0 = arguments[0];
             arg0->Compile(this);
-            compiler::VReg arg0_reg = AllocReg();
-            StoreAccumulator(arg0, arg0_reg);
+            compiler::VReg arg0Reg = AllocReg();
+            StoreAccumulator(arg0, arg0Reg);
 
             const auto *arg1 = arguments[1];
             arg1->Compile(this);
-            compiler::VReg arg1_reg = AllocReg();
-            StoreAccumulator(arg1, arg1_reg);
+            compiler::VReg arg1Reg = AllocReg();
+            StoreAccumulator(arg1, arg1Reg);
 
             const auto *arg2 = arguments[2];
             arg2->Compile(this);
 
-            if (has_this) {
-                Ra().Emit<EcmaCall3thisdyn>(node, callee, this_reg, arg0_reg, arg1_reg);
+            if (hasThis) {
+                Ra().Emit<EcmaCall3thisdyn>(node, callee, thisReg, arg0Reg, arg1Reg);
             } else {
-                Ra().Emit<EcmaCall3dyn>(node, callee, arg0_reg, arg1_reg);
+                Ra().Emit<EcmaCall3dyn>(node, callee, arg0Reg, arg1Reg);
             }
             return;
         }
@@ -1012,62 +1012,61 @@ void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg this_reg, const A
         StoreAccumulator(it, arg);
     }
 
-    if (has_this) {
-        size_t arg_count = arguments.size() + 1;
+    if (hasThis) {
+        size_t argCount = arguments.size() + 1;
         auto constexpr EXTRA_ARGS = 2;
-        Rra().Emit<EcmaCallithisrangedyn>(node, callee, arg_count + EXTRA_ARGS, static_cast<int64_t>(arg_count),
-                                          callee);
+        Rra().Emit<EcmaCallithisrangedyn>(node, callee, argCount + EXTRA_ARGS, static_cast<int64_t>(argCount), callee);
     } else {
-        size_t arg_count = arguments.size();
-        Rra().Emit<EcmaCallirangedyn>(node, callee, arg_count + 1, static_cast<int64_t>(arg_count), callee);
+        size_t argCount = arguments.size();
+        Rra().Emit<EcmaCallirangedyn>(node, callee, argCount + 1, static_cast<int64_t>(argCount), callee);
     }
 }
 
-void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg this_reg,
+void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
                           const ArenaVector<ir::Expression *> &arguments)
 {
-    bool has_this = !this_reg.IsInvalid();
+    bool hasThis = !thisReg.IsInvalid();
 
     StoreAccumulator(node, callee);
     Literals::GetTemplateObject(this, node->AsTaggedTemplateExpression());
 
     if (arguments.empty()) {
-        if (has_this) {
-            Ra().Emit<EcmaCall1thisdyn>(node, callee, this_reg);
+        if (hasThis) {
+            Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
         } else {
             Sa().Emit<EcmaCall1dyn>(node, callee);
         }
         return;
     }
 
-    VReg arg0_reg = AllocReg();
-    StoreAccumulator(node, arg0_reg);
+    VReg arg0Reg = AllocReg();
+    StoreAccumulator(node, arg0Reg);
 
     switch (arguments.size()) {
         case 1: {
             const auto *arg = arguments[0];
             arg->Compile(this);
 
-            if (has_this) {
-                Ra().Emit<EcmaCall2thisdyn>(node, callee, this_reg, arg0_reg);
+            if (hasThis) {
+                Ra().Emit<EcmaCall2thisdyn>(node, callee, thisReg, arg0Reg);
             } else {
-                Ra().Emit<EcmaCall2dyn>(node, callee, arg0_reg);
+                Ra().Emit<EcmaCall2dyn>(node, callee, arg0Reg);
             }
             return;
         }
         case 2: {  // 2:2 args
             const auto *arg1 = arguments[0];
             arg1->Compile(this);
-            compiler::VReg arg1_reg = AllocReg();
-            StoreAccumulator(arg1, arg1_reg);
+            compiler::VReg arg1Reg = AllocReg();
+            StoreAccumulator(arg1, arg1Reg);
 
             const auto *arg2 = arguments[1];
             arg2->Compile(this);
 
-            if (has_this) {
-                Ra().Emit<EcmaCall3thisdyn>(node, callee, this_reg, arg0_reg, arg1_reg);
+            if (hasThis) {
+                Ra().Emit<EcmaCall3thisdyn>(node, callee, thisReg, arg0Reg, arg1Reg);
             } else {
-                Ra().Emit<EcmaCall3dyn>(node, callee, arg0_reg, arg1_reg);
+                Ra().Emit<EcmaCall3dyn>(node, callee, arg0Reg, arg1Reg);
             }
             return;
         }
@@ -1082,20 +1081,19 @@ void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg this_reg,
         StoreAccumulator(it, arg);
     }
 
-    if (has_this) {
+    if (hasThis) {
         auto constexpr EXTRA_ARGS = 2;
-        size_t arg_count = arguments.size() + EXTRA_ARGS;
-        Rra().Emit<EcmaCallithisrangedyn>(node, callee, arg_count + EXTRA_ARGS, static_cast<int64_t>(arg_count),
-                                          callee);
+        size_t argCount = arguments.size() + EXTRA_ARGS;
+        Rra().Emit<EcmaCallithisrangedyn>(node, callee, argCount + EXTRA_ARGS, static_cast<int64_t>(argCount), callee);
     } else {
-        size_t arg_count = arguments.size() + 1;
-        Rra().Emit<EcmaCallirangedyn>(node, callee, arg_count + 1, static_cast<int64_t>(arg_count), callee);
+        size_t argCount = arguments.size() + 1;
+        Rra().Emit<EcmaCallirangedyn>(node, callee, argCount + 1, static_cast<int64_t>(argCount), callee);
     }
 }
 
-void PandaGen::SuperCall(const ir::AstNode *node, VReg start_reg, size_t arg_count)
+void PandaGen::SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
-    Rra().Emit<EcmaSupercall>(node, start_reg, arg_count, static_cast<int64_t>(arg_count), start_reg);
+    Rra().Emit<EcmaSupercall>(node, startReg, argCount, static_cast<int64_t>(argCount), startReg);
 }
 
 void PandaGen::SuperCallSpread(const ir::AstNode *node, VReg vs)
@@ -1103,9 +1101,9 @@ void PandaGen::SuperCallSpread(const ir::AstNode *node, VReg vs)
     Ra().Emit<EcmaSupercallspread>(node, vs);
 }
 
-void PandaGen::NewObject(const ir::AstNode *node, VReg start_reg, size_t arg_count)
+void PandaGen::NewObject(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
-    Rra().Emit<EcmaNewobjdynrange>(node, start_reg, arg_count, static_cast<int64_t>(arg_count), start_reg);
+    Rra().Emit<EcmaNewobjdynrange>(node, startReg, argCount, static_cast<int64_t>(argCount), startReg);
 }
 
 void PandaGen::LoadHomeObject(const ir::AstNode *node)
@@ -1118,21 +1116,20 @@ void PandaGen::DefineMethod(const ir::AstNode *node, const util::StringView &nam
     Ra().Emit<EcmaDefinemethod>(node, name, LexEnv());
 }
 
-void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *real_node,
-                              const util::StringView &name)
+void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name)
 {
-    if (real_node->IsAsyncFunc()) {
-        if (real_node->IsGenerator()) {
+    if (realNode->IsAsyncFunc()) {
+        if (realNode->IsGenerator()) {
             Ra().Emit<EcmaDefineasyncgeneratorfunc>(node, name, LexEnv());
         } else {
             Ra().Emit<EcmaDefineasyncfunc>(node, name, LexEnv());
         }
-    } else if (real_node->IsGenerator()) {
+    } else if (realNode->IsGenerator()) {
         Ra().Emit<EcmaDefinegeneratorfunc>(node, name, LexEnv());
-    } else if (real_node->IsArrow()) {
+    } else if (realNode->IsArrow()) {
         LoadHomeObject(node);
         Ra().Emit<EcmaDefinencfuncdyn>(node, name, LexEnv());
-    } else if (real_node->IsMethod()) {
+    } else if (realNode->IsMethod()) {
         DefineMethod(node, name);
     } else {
         Ra().Emit<EcmaDefinefuncdyn>(node, name, LexEnv());
@@ -1144,9 +1141,9 @@ void PandaGen::TypeOf(const ir::AstNode *node)
     Sa().Emit<EcmaTypeofdyn>(node);
 }
 
-void PandaGen::CallSpread(const ir::AstNode *node, VReg func, VReg this_reg, VReg args)
+void PandaGen::CallSpread(const ir::AstNode *node, VReg func, VReg thisReg, VReg args)
 {
-    Ra().Emit<EcmaCallspreaddyn>(node, func, this_reg, args);
+    Ra().Emit<EcmaCallspreaddyn>(node, func, thisReg, args);
 }
 
 void PandaGen::NewObjSpread(const ir::AstNode *node, VReg obj, VReg target)
@@ -1179,14 +1176,14 @@ void PandaGen::GetMethod(const ir::AstNode *node, VReg obj, const util::StringVi
     Ra().Emit<EcmaGetmethod>(node, name, obj);
 }
 
-void PandaGen::CreateGeneratorObj(const ir::AstNode *node, VReg func_obj)
+void PandaGen::CreateGeneratorObj(const ir::AstNode *node, VReg funcObj)
 {
-    Ra().Emit<EcmaCreategeneratorobj>(node, func_obj);
+    Ra().Emit<EcmaCreategeneratorobj>(node, funcObj);
 }
 
-void PandaGen::CreateAsyncGeneratorObj(const ir::AstNode *node, VReg func_obj)
+void PandaGen::CreateAsyncGeneratorObj(const ir::AstNode *node, VReg funcObj)
 {
-    Ra().Emit<EcmaCreateasyncgeneratorobj>(node, func_obj);
+    Ra().Emit<EcmaCreateasyncgeneratorobj>(node, funcObj);
 }
 
 void PandaGen::CreateIterResultObject(const ir::AstNode *node, bool done)
@@ -1194,34 +1191,34 @@ void PandaGen::CreateIterResultObject(const ir::AstNode *node, bool done)
     Ra().Emit<EcmaCreateiterresultobj>(node, static_cast<int32_t>(done));
 }
 
-void PandaGen::SuspendGenerator(const ir::AstNode *node, VReg gen_obj)
+void PandaGen::SuspendGenerator(const ir::AstNode *node, VReg genObj)
 {
-    Ra().Emit<EcmaSuspendgenerator>(node, gen_obj);
+    Ra().Emit<EcmaSuspendgenerator>(node, genObj);
 }
 
-void PandaGen::SuspendAsyncGenerator(const ir::AstNode *node, VReg async_gen_obj)
+void PandaGen::SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj)
 {
-    Ra().Emit<EcmaSuspendasyncgenerator>(node, async_gen_obj);
+    Ra().Emit<EcmaSuspendasyncgenerator>(node, asyncGenObj);
 }
 
-void PandaGen::GeneratorYield(const ir::AstNode *node, VReg gen_obj)
+void PandaGen::GeneratorYield(const ir::AstNode *node, VReg genObj)
 {
-    Ra().Emit<EcmaSetgeneratorstate>(node, gen_obj, static_cast<int32_t>(GeneratorState::SUSPENDED_YIELD));
+    Ra().Emit<EcmaSetgeneratorstate>(node, genObj, static_cast<int32_t>(GeneratorState::SUSPENDED_YIELD));
 }
 
-void PandaGen::GeneratorComplete(const ir::AstNode *node, VReg gen_obj)
+void PandaGen::GeneratorComplete(const ir::AstNode *node, VReg genObj)
 {
-    Ra().Emit<EcmaSetgeneratorstate>(node, gen_obj, static_cast<int32_t>(GeneratorState::COMPLETED));
+    Ra().Emit<EcmaSetgeneratorstate>(node, genObj, static_cast<int32_t>(GeneratorState::COMPLETED));
 }
 
-void PandaGen::ResumeGenerator(const ir::AstNode *node, VReg gen_obj)
+void PandaGen::ResumeGenerator(const ir::AstNode *node, VReg genObj)
 {
-    Ra().Emit<EcmaResumegenerator>(node, gen_obj);
+    Ra().Emit<EcmaResumegenerator>(node, genObj);
 }
 
-void PandaGen::GetResumeMode(const ir::AstNode *node, VReg gen_obj)
+void PandaGen::GetResumeMode(const ir::AstNode *node, VReg genObj)
 {
-    Ra().Emit<EcmaGetresumemode>(node, gen_obj);
+    Ra().Emit<EcmaGetresumemode>(node, genObj);
 }
 
 void PandaGen::AsyncFunctionEnter(const ir::AstNode *node)
@@ -1229,29 +1226,29 @@ void PandaGen::AsyncFunctionEnter(const ir::AstNode *node)
     Sa().Emit<EcmaAsyncfunctionenter>(node);
 }
 
-void PandaGen::AsyncFunctionAwait(const ir::AstNode *node, VReg async_func_obj)
+void PandaGen::AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj)
 {
-    Ra().Emit<EcmaAsyncfunctionawait>(node, async_func_obj);
+    Ra().Emit<EcmaAsyncfunctionawait>(node, asyncFuncObj);
 }
 
-void PandaGen::AsyncFunctionResolve(const ir::AstNode *node, VReg async_func_obj)
+void PandaGen::AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj)
 {
-    Ra().Emit<EcmaAsyncfunctionresolve>(node, async_func_obj);
+    Ra().Emit<EcmaAsyncfunctionresolve>(node, asyncFuncObj);
 }
 
-void PandaGen::AsyncFunctionReject(const ir::AstNode *node, VReg async_func_obj)
+void PandaGen::AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj)
 {
-    Ra().Emit<EcmaAsyncfunctionreject>(node, async_func_obj);
+    Ra().Emit<EcmaAsyncfunctionreject>(node, asyncFuncObj);
 }
 
-void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg async_gen_obj)
+void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj)
 {
-    Ra().Emit<EcmaAsyncgeneratorresolve>(node, async_gen_obj);
+    Ra().Emit<EcmaAsyncgeneratorresolve>(node, asyncGenObj);
 }
 
-void PandaGen::AsyncGeneratorReject(const ir::AstNode *node, VReg async_gen_obj)
+void PandaGen::AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj)
 {
-    Ra().Emit<EcmaAsyncgeneratorreject>(node, async_gen_obj);
+    Ra().Emit<EcmaAsyncgeneratorreject>(node, asyncGenObj);
 }
 
 void PandaGen::GetTemplateObject(const ir::AstNode *node, VReg value)
@@ -1303,9 +1300,9 @@ void PandaGen::CopyDataProperties(const ir::AstNode *node, VReg dst, VReg src)
 }
 
 void PandaGen::DefineGetterSetterByValue(const ir::AstNode *node, VReg obj, VReg name, VReg getter, VReg setter,
-                                         bool set_name)
+                                         bool setName)
 {
-    LoadConst(node, set_name ? Constant::JS_TRUE : Constant::JS_FALSE);
+    LoadConst(node, setName ? Constant::JS_TRUE : Constant::JS_FALSE);
     Ra().Emit<EcmaDefinegettersetterbyvalue>(node, obj, name, getter, setter);
 }
 
@@ -1346,8 +1343,8 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
     if (buf.empty()) {
         CreateEmptyArray(node);
     } else {
-        uint32_t buf_idx = AddLiteralBuffer(std::move(buf));
-        CreateArrayWithBuffer(node, buf_idx);
+        uint32_t bufIdx = AddLiteralBuffer(std::move(buf));
+        CreateArrayWithBuffer(node, bufIdx);
     }
 
     StoreAccumulator(node, obj);
@@ -1356,7 +1353,7 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
         return;
     }
 
-    bool has_spread = false;
+    bool hasSpread = false;
 
     // This loop handles array elements until a spread element is encountered
     for (; i < elements.size(); i++) {
@@ -1368,7 +1365,7 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
 
         if (elem->IsSpreadElement()) {
             // The next loop will handle arrays that have a spread element
-            has_spread = true;
+            hasSpread = true;
             break;
         }
 
@@ -1377,12 +1374,12 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
     }
 
     RegScope rs(this);
-    VReg idx_reg {};
+    VReg idxReg {};
 
-    if (has_spread) {
-        idx_reg = AllocReg();
+    if (hasSpread) {
+        idxReg = AllocReg();
         LoadAccumulatorInt(node, i);
-        StoreAccumulator(node, idx_reg);
+        StoreAccumulator(node, idxReg);
     }
 
     // This loop handles arrays that contain spread elements
@@ -1392,24 +1389,24 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
         if (elem->IsSpreadElement()) {
             elem->AsSpreadElement()->Argument()->Compile(this);
 
-            StoreArraySpread(elem, obj, idx_reg);
-            StoreAccumulator(elem, idx_reg);
+            StoreArraySpread(elem, obj, idxReg);
+            StoreAccumulator(elem, idxReg);
             continue;
         }
 
         if (!elem->IsOmittedExpression()) {
             elem->Compile(this);
-            StOwnByValue(elem, obj, idx_reg);
+            StOwnByValue(elem, obj, idxReg);
         }
 
-        Unary(elem, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, idx_reg);
-        StoreAccumulator(elem, idx_reg);
+        Unary(elem, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, idxReg);
+        StoreAccumulator(elem, idxReg);
     }
 
     // If the last element is omitted, we also have to update the length property
     if (elements.back()->IsOmittedExpression()) {
         // if there was a spread value then acc already contains the length
-        if (!has_spread) {
+        if (!hasSpread) {
             LoadAccumulatorInt(node, i);
         }
 
@@ -1449,15 +1446,15 @@ void PandaGen::GetAsyncIterator(const ir::AstNode *node)
     Sa().Emit<EcmaGetasynciterator>(node);
 }
 
-void PandaGen::CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg arg_start, size_t arg_count)
+void PandaGen::CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg argStart, size_t argCount)
 {
-    ASSERT(arg_start.GetIndex() == obj.GetIndex() - 1);
-    if (arg_count == 0) {  // Do not emit undefined register
-        arg_start = obj;
+    ASSERT(argStart.GetIndex() == obj.GetIndex() - 1);
+    if (argCount == 0) {  // Do not emit undefined register
+        argStart = obj;
     }
 
-    Rra().Emit<EcmaCreateobjectwithexcludedkeys>(node, arg_start, arg_count, static_cast<int64_t>(arg_count), obj,
-                                                 arg_start);
+    Rra().Emit<EcmaCreateobjectwithexcludedkeys>(node, argStart, argCount, static_cast<int64_t>(argCount), obj,
+                                                 argStart);
 }
 
 void PandaGen::ThrowObjectNonCoercible(const ir::AstNode *node)
@@ -1475,15 +1472,15 @@ void PandaGen::ImportModule(const ir::AstNode *node, const util::StringView &nam
     Sa().Emit<EcmaImportmodule>(node, name);
 }
 
-void PandaGen::SetClassComputedFields(const ir::AstNode *node, VReg class_reg, VReg computed_instance_field_array)
+void PandaGen::SetClassComputedFields(const ir::AstNode *node, VReg classReg, VReg computedInstanceFieldArray)
 {
-    Ra().Emit<EcmaSetclasscomputedfields>(node, class_reg, computed_instance_field_array);
+    Ra().Emit<EcmaSetclasscomputedfields>(node, classReg, computedInstanceFieldArray);
 }
 
-void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctor_id, int32_t lit_idx,
+void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx,
                                      VReg lexenv, VReg base)
 {
-    Ra().Emit<EcmaDefineclasswithbuffer>(node, ctor_id, lit_idx, lexenv, base);
+    Ra().Emit<EcmaDefineclasswithbuffer>(node, ctorId, litIdx, lexenv, base);
 }
 
 void PandaGen::LoadClassComputedInstanceFields(const ir::AstNode *node, VReg ctor)
@@ -1491,9 +1488,9 @@ void PandaGen::LoadClassComputedInstanceFields(const ir::AstNode *node, VReg cto
     Sa().Emit<EcmaLoadclasscomputedinstancefields>(node, ctor);
 }
 
-void PandaGen::DefineClassPrivateFields(const ir::AstNode *node, int32_t private_buf_idx)
+void PandaGen::DefineClassPrivateFields(const ir::AstNode *node, int32_t privateBufIdx)
 {
-    Sa().Emit<EcmaDefineclassprivatefields>(node, util::Helpers::ToStringView(Allocator(), private_buf_idx), LexEnv());
+    Sa().Emit<EcmaDefineclassprivatefields>(node, util::Helpers::ToStringView(Allocator(), privateBufIdx), LexEnv());
 }
 
 void PandaGen::ClassFieldAdd(const ir::AstNode *node, VReg obj, VReg prop)
@@ -1638,11 +1635,11 @@ void PandaGen::LdLexEnv(const ir::AstNode *node)
     Sa().Emit<EcmaLdlexenvdyn>(node);
 }
 
-Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool is_computed)
+Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool isComputed)
 {
     VReg res {VReg::REG_START};
 
-    if (!is_computed) {
+    if (!isComputed) {
         if (prop->IsIdentifier()) {
             return prop->AsIdentifier()->Name();
         }
@@ -1677,27 +1674,27 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool is_compute
     return res;
 }
 
-Operand PandaGen::ToPropertyKey(const ir::Expression *prop, bool is_computed, bool is_super_expression)
+Operand PandaGen::ToPropertyKey(const ir::Expression *prop, bool isComputed, bool isSuperExpression)
 {
-    Operand op = ToNamedPropertyKey(prop, is_computed);
+    Operand op = ToNamedPropertyKey(prop, isComputed);
     if (std::holds_alternative<util::StringView>(op)) {
         return op;
     }
 
-    if (std::holds_alternative<int64_t>(op) && !is_super_expression) {
+    if (std::holds_alternative<int64_t>(op) && !isSuperExpression) {
         return op;
     }
 
-    VReg obj_reg = AllocReg();
-    StoreAccumulator(prop, obj_reg);
+    VReg objReg = AllocReg();
+    StoreAccumulator(prop, objReg);
     prop->Compile(this);
 
-    return obj_reg;
+    return objReg;
 }
 
-Operand PandaGen::ToOwnPropertyKey(const ir::Expression *prop, bool is_computed)
+Operand PandaGen::ToOwnPropertyKey(const ir::Expression *prop, bool isComputed)
 {
-    Operand op = ToNamedPropertyKey(prop, is_computed);
+    Operand op = ToNamedPropertyKey(prop, isComputed);
     if (std::holds_alternative<util::StringView>(op)) {
         ASSERT(std::holds_alternative<util::StringView>(op) || std::holds_alternative<int64_t>(op));
         return op;
@@ -1707,16 +1704,16 @@ Operand PandaGen::ToOwnPropertyKey(const ir::Expression *prop, bool is_computed)
         return op;
     }
 
-    VReg prop_reg = AllocReg();
+    VReg propReg = AllocReg();
     prop->Compile(this);
-    StoreAccumulator(prop, prop_reg);
+    StoreAccumulator(prop, propReg);
 
-    return prop_reg;
+    return propReg;
 }
 
-void PandaGen::LoadPropertyKeyAcc(const ir::Expression *prop, bool is_computed)
+void PandaGen::LoadPropertyKeyAcc(const ir::Expression *prop, bool isComputed)
 {
-    Operand op = ToNamedPropertyKey(prop, is_computed);
+    Operand op = ToNamedPropertyKey(prop, isComputed);
     if (std::holds_alternative<util::StringView>(op)) {
         LoadAccumulatorString(prop, std::get<util::StringView>(op));
     } else if (std::holds_alternative<int64_t>(op)) {
@@ -1726,14 +1723,14 @@ void PandaGen::LoadPropertyKeyAcc(const ir::Expression *prop, bool is_computed)
     }
 }
 
-VReg PandaGen::LoadPropertyKey(const ir::Expression *prop, bool is_computed)
+VReg PandaGen::LoadPropertyKey(const ir::Expression *prop, bool isComputed)
 {
-    LoadPropertyKeyAcc(prop, is_computed);
+    LoadPropertyKeyAcc(prop, isComputed);
 
-    VReg prop_reg = AllocReg();
-    StoreAccumulator(prop, prop_reg);
+    VReg propReg = AllocReg();
+    StoreAccumulator(prop, propReg);
 
-    return prop_reg;
+    return propReg;
 }
 
 void PandaGen::LoadEvalVariable(const ir::AstNode *node, const util::StringView &name)
@@ -1752,12 +1749,12 @@ void PandaGen::StoreEvalVariable(const ir::AstNode *node, const util::StringView
     Ra().Emit<EcmaStevalvar>(node, name, value);
 }
 
-void PandaGen::DirectEval(const ir::AstNode *node, uint32_t parser_status)
+void PandaGen::DirectEval(const ir::AstNode *node, uint32_t parserStatus)
 {
     RegScope rs(this);
 
     uint32_t index = 0;
-    uint32_t eval_bindings_index = 0;
+    uint32_t evalBindingsIndex = 0;
     VReg arg0 = AllocReg();
     StoreAccumulator(node, arg0);
     VReg bindings = AllocReg();
@@ -1771,20 +1768,20 @@ void PandaGen::DirectEval(const ir::AstNode *node, uint32_t parser_status)
     GetThis(node);
     StOwnByIndex(node, bindings, index++);
 
-    VReg eval_bindings = AllocReg();
+    VReg evalBindings = AllocReg();
     CreateEmptyArray(node);
-    StoreAccumulator(node, eval_bindings);
+    StoreAccumulator(node, evalBindings);
 
     LoadAccumulator(node, LexEnv());
-    StOwnByIndex(node, eval_bindings, eval_bindings_index++);
+    StOwnByIndex(node, evalBindings, evalBindingsIndex++);
 
     const auto *iter = Scope()->EnclosingVariableScope();
 
     while (true) {
-        uint32_t scope_bindings_buf = iter->EvalBindings();
-        if (scope_bindings_buf != INVALID_LITERAL_BUFFER_ID) {
-            Sa().Emit<EcmaLdevalbindings>(node, util::Helpers::ToStringView(Allocator(), scope_bindings_buf));
-            StOwnByIndex(node, eval_bindings, eval_bindings_index++);
+        uint32_t scopeBindingsBuf = iter->EvalBindings();
+        if (scopeBindingsBuf != INVALID_LITERAL_BUFFER_ID) {
+            Sa().Emit<EcmaLdevalbindings>(node, util::Helpers::ToStringView(Allocator(), scopeBindingsBuf));
+            StOwnByIndex(node, evalBindings, evalBindingsIndex++);
         }
 
         if (iter->Parent() == nullptr) {
@@ -1794,16 +1791,16 @@ void PandaGen::DirectEval(const ir::AstNode *node, uint32_t parser_status)
         iter = iter->Parent()->EnclosingVariableScope();
     }
 
-    LoadAccumulator(node, eval_bindings);
+    LoadAccumulator(node, evalBindings);
     StOwnByIndex(node, bindings, index++);
 
-    Sa().Emit<EcmaDirecteval>(node, static_cast<int64_t>(parser_status), arg0, bindings);
+    Sa().Emit<EcmaDirecteval>(node, static_cast<int64_t>(parserStatus), arg0, bindings);
 }
 
 void PandaGen::LoadLexicalContext(const ir::AstNode *node)
 {
     auto result = Scope()->Find(varbinder::VarBinder::LEXICAL_CONTEXT_PARAM);
-    LoadLexicalVar(node, result.lex_level, result.variable->AsLocalVariable()->LexIdx());
+    LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx());
 }
 
 bool PandaGen::IsDirectEval() const

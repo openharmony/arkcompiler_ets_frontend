@@ -40,8 +40,8 @@ public:
     using OverloadsT = ArenaVector<MethodDefinition *>;
 
     explicit MethodDefinition(MethodDefinitionKind const kind, Expression *const key, Expression *const value,
-                              ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
-        : ClassElement(AstNodeType::METHOD_DEFINITION, key, value, modifiers, allocator, is_computed),
+                              ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
+        : ClassElement(AstNodeType::METHOD_DEFINITION, key, value, modifiers, allocator, isComputed),
           kind_(kind),
           overloads_(allocator->Adapter())
     {
@@ -102,7 +102,7 @@ public:
 
     ScriptFunction *Function();
     const ScriptFunction *Function() const;
-    PrivateFieldKind ToPrivateFieldKind(bool is_static) const override;
+    PrivateFieldKind ToPrivateFieldKind(bool isStatic) const override;
 
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;

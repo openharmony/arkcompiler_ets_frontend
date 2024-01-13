@@ -21,8 +21,8 @@
 namespace panda::es2panda::checker {
 class TypeParameter : public Type {
 public:
-    TypeParameter(Type *constraint, Type *default_type)
-        : Type(TypeFlag::TYPE_PARAMETER), constraint_(constraint), default_(default_type)
+    TypeParameter(Type *constraint, Type *defaultType)
+        : Type(TypeFlag::TYPE_PARAMETER), constraint_(constraint), default_(defaultType)
     {
     }
 
@@ -50,7 +50,7 @@ public:
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
     Type *constraint_;

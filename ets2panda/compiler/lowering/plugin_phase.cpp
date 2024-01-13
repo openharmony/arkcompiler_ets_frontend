@@ -19,16 +19,16 @@ namespace panda::es2panda::compiler {
 
 bool PluginPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    ctx->state = context_state_;
+    ctx->state = contextState_;
 
     if (ctx->plugins == nullptr) {
         return true;
     }
 
     for (auto &plugin : *(ctx->plugins)) {
-        (plugin.*method_call_)(reinterpret_cast<es2panda_Context *>(ctx));
+        (plugin.*methodCall_)(reinterpret_cast<es2panda_Context *>(ctx));
         if (ctx->state == ES2PANDA_STATE_ERROR) {
-            ctx->checker->ThrowTypeError(ctx->error_message, ctx->error_pos);
+            ctx->checker->ThrowTypeError(ctx->errorMessage, ctx->errorPos);
         }
     }
 

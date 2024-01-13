@@ -26,8 +26,8 @@ void CallExpression::TransformChildren(const NodeTransformer &cb)
 {
     callee_ = cb(callee_)->AsExpression();
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
     }
 
     for (auto *&it : arguments_) {
@@ -39,16 +39,16 @@ void CallExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(callee_);
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     for (auto *it : arguments_) {
         cb(it);
     }
 
-    if (trailing_block_ != nullptr) {
-        cb(trailing_block_);
+    if (trailingBlock_ != nullptr) {
+        cb(trailingBlock_);
     }
 }
 
@@ -58,7 +58,7 @@ void CallExpression::Dump(ir::AstDumper *dumper) const
                  {"callee", callee_},
                  {"arguments", arguments_},
                  {"optional", IsOptional()},
-                 {"typeParameters", AstDumper::Optional(type_params_)}});
+                 {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
 void CallExpression::Dump(ir::SrcDumper *dumper) const
@@ -104,18 +104,18 @@ CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *cons
     : MaybeOptionalExpression(static_cast<MaybeOptionalExpression const &>(other)),
       arguments_(allocator->Adapter()),
       signature_(other.signature_),
-      trailing_comma_(other.trailing_comma_),
-      is_trailing_block_in_new_line_(other.is_trailing_block_in_new_line_)
+      trailingComma_(other.trailingComma_),
+      isTrailingBlockInNewLine_(other.isTrailingBlockInNewLine_)
 {
     callee_ = other.callee_->Clone(allocator, this)->AsExpression();
-    type_params_ = other.type_params_->Clone(allocator, this);
+    typeParams_ = other.typeParams_->Clone(allocator, this);
 
     for (auto *const argument : other.arguments_) {
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
     }
 
-    if (other.trailing_block_ != nullptr) {
-        trailing_block_ = other.trailing_block_->Clone(allocator, this)->AsBlockStatement();
+    if (other.trailingBlock_ != nullptr) {
+        trailingBlock_ = other.trailingBlock_->Clone(allocator, this)->AsBlockStatement();
     }
 }
 

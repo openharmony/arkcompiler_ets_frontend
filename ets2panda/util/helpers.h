@@ -116,14 +116,14 @@ public:
     static const ir::ScriptFunction *GetContainingFunction(const ir::AstNode *node);
     static const ir::ClassDefinition *GetClassDefiniton(const ir::ScriptFunction *node);
     static bool IsSpecialPropertyKey(const ir::Expression *expr);
-    static bool IsConstantPropertyKey(const ir::Expression *expr, bool is_computed);
+    static bool IsConstantPropertyKey(const ir::Expression *expr, bool isComputed);
     static compiler::Literal ToConstantLiteral(const ir::Expression *expr);
     static bool IsBindingPattern(const ir::AstNode *node);
     static bool IsPattern(const ir::AstNode *node);
     static std::vector<ir::Identifier *> CollectBindingNames(ir::AstNode *node);
     static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
     static void CheckImportedName(ArenaVector<ir::AstNode *> *specifiers, const ir::ImportSpecifier *specifier,
-                                  const std::string &file_name);
+                                  const std::string &fileName);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
 
@@ -169,9 +169,9 @@ template <typename T>
 bool Helpers::IsInteger(double number)
 {
     if (std::fabs(number) <= static_cast<double>(std::numeric_limits<T>::max())) {
-        T int_num = static_cast<T>(number);
+        T intNum = static_cast<T>(number);
 
-        if (static_cast<double>(int_num) == number) {
+        if (static_cast<double>(intNum) == number) {
             return true;
         }
     }
@@ -207,11 +207,11 @@ void Helpers::Log(Elements &&...elems)
     }();
 
 #ifndef NDEBUG
-    const bool is_message_suppressed = panda::Logger::IsMessageSuppressed(LOG_LEVEL, ES2PANDA);
+    const bool isMessageSuppressed = panda::Logger::IsMessageSuppressed(LOG_LEVEL, ES2PANDA);
 #else
-    const bool is_message_suppressed = false;
+    const bool isMessageSuppressed = false;
 #endif
-    if (!panda::Logger::IsLoggingOnOrAbort(LOG_LEVEL, ES2PANDA) || is_message_suppressed) {
+    if (!panda::Logger::IsLoggingOnOrAbort(LOG_LEVEL, ES2PANDA) || isMessageSuppressed) {
         return;
     }
 

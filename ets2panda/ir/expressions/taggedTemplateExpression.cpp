@@ -30,8 +30,8 @@
 namespace panda::es2panda::ir {
 void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb)
 {
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
     }
 
     tag_ = cb(tag_)->AsExpression();
@@ -40,8 +40,8 @@ void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb)
 
 void TaggedTemplateExpression::Iterate(const NodeTraverser &cb) const
 {
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     cb(tag_);
@@ -53,7 +53,7 @@ void TaggedTemplateExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TaggedTemplateExpression"},
                  {"tag", tag_},
                  {"quasi", quasi_},
-                 {"typeParameters", AstDumper::Optional(type_params_)}});
+                 {"typeParameters", AstDumper::Optional(typeParams_)}});
 }
 
 void TaggedTemplateExpression::Dump(ir::SrcDumper *dumper) const
@@ -86,17 +86,17 @@ TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const 
 {
     auto *const tag = tag_ != nullptr ? tag_->Clone(allocator)->AsExpression() : nullptr;
     auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator) : nullptr;
-    auto *const type_params = type_params_ != nullptr ? type_params_->Clone(allocator) : nullptr;
+    auto *const typeParams = typeParams_ != nullptr ? typeParams_->Clone(allocator) : nullptr;
 
-    if (auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, type_params); clone != nullptr) {
+    if (auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, typeParams); clone != nullptr) {
         if (tag != nullptr) {
             tag->SetParent(clone);
         }
         if (quasi != nullptr) {
             quasi->SetParent(clone);
         }
-        if (type_params != nullptr) {
-            type_params->SetParent(clone);
+        if (typeParams != nullptr) {
+            typeParams->SetParent(clone);
         }
         if (parent != nullptr) {
             clone->SetParent(parent);

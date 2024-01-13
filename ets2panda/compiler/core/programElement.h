@@ -40,8 +40,8 @@ public:
 
 private:
     std::set<std::string> strings_;
-    std::vector<pandasm::Ins *> literal_buffer_ins_;
-    std::vector<LiteralBuffer> buff_storage_;
+    std::vector<pandasm::Ins *> literalBufferIns_;
+    std::vector<LiteralBuffer> buffStorage_;
     pandasm::Function *func_ {};
 };
 }  // namespace panda::es2panda::compiler

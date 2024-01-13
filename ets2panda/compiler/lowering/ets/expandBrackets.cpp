@@ -35,39 +35,39 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
         if (!ast->IsETSNewArrayInstanceExpression()) {
             return ast;
         }
-        auto *new_expression = ast->AsETSNewArrayInstanceExpression();
-        auto *dimension = new_expression->Dimension();
-        auto *dim_type = dimension->TsType();
-        if (auto *unboxed = checker->ETSBuiltinTypeAsPrimitiveType(dim_type); unboxed != nullptr) {
-            dim_type = unboxed;
+        auto *newExpression = ast->AsETSNewArrayInstanceExpression();
+        auto *dimension = newExpression->Dimension();
+        auto *dimType = dimension->TsType();
+        if (auto *unboxed = checker->ETSBuiltinTypeAsPrimitiveType(dimType); unboxed != nullptr) {
+            dimType = unboxed;
         }
-        if (!dim_type->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+        if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
             return ast;
         }
 
-        auto *casted_dimension =
+        auto *castedDimension =
             parser->CreateFormattedExpression("@@E1 as int", parser::DEFAULT_SOURCE_FILE, dimension);
-        casted_dimension->Check(checker);
-        casted_dimension->SetParent(dimension->Parent());
-        new_expression->SetDimension(casted_dimension);
+        castedDimension->Check(checker);
+        castedDimension->SetParent(dimension->Parent());
+        newExpression->SetDimension(castedDimension);
 
-        auto *const scope = NearestScope(new_expression);
-        auto expression_ctx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+        auto *const scope = NearestScope(newExpression);
+        auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
         auto *ident = Gensym(allocator);
-        auto *expr_type = checker->AllocNode<ir::OpaqueTypeNode>(dim_type);
-        auto *sequence_expr = parser->CreateFormattedExpression(
+        auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+        auto *sequenceExpr = parser->CreateFormattedExpression(
             "let @@I1 = (@@E2) as @@T3;"
             "if (!isSafeInteger(@@I4)) {"
             "  throw new TypeError(\"Index fractional part should not be different from 0.0\");"
             "};"
             "(@@E5);",
-            parser::DEFAULT_SOURCE_FILE, ident, dimension, expr_type, ident->Clone(allocator), new_expression);
-        sequence_expr->SetParent(new_expression->Parent());
-        ScopesInitPhaseETS::RunExternalNode(sequence_expr, ctx->compiler_context->VarBinder());
-        checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(sequence_expr, scope);
-        sequence_expr->Check(checker);
+            parser::DEFAULT_SOURCE_FILE, ident, dimension, exprType, ident->Clone(allocator), newExpression);
+        sequenceExpr->SetParent(newExpression->Parent());
+        ScopesInitPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
+        checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(sequenceExpr, scope);
+        sequenceExpr->Check(checker);
 
-        return sequence_expr;
+        return sequenceExpr;
     });
     return true;
 }

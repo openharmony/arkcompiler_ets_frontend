@@ -36,7 +36,7 @@ namespace panda::es2panda::checker {
 Checker::Checker()
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
       context_(&allocator_, CheckerStatus::NO_OPTS),
-      global_types_(allocator_.New<GlobalTypesHolder>(&allocator_)),
+      globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
       relation_(allocator_.New<TypeRelation>(this))
 {
 }
@@ -94,9 +94,9 @@ void Checker::Warning(const std::string_view message, const lexer::SourcePositio
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     // NOTE: This should go to stderr but currently the test system does not handle stderr messages
-    auto file_name = program_->SourceFilePath().Utf8();
-    file_name = file_name.substr(file_name.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
-    std::cout << "Warning: " << message << " [" << file_name << ":" << loc.line << ":" << loc.col << "]" << std::endl;
+    auto fileName = program_->SourceFilePath().Utf8();
+    fileName = fileName.substr(fileName.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
+    std::cout << "Warning: " << message << " [" << fileName << ":" << loc.line << ":" << loc.col << "]" << std::endl;
 }
 
 void Checker::ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
@@ -121,21 +121,21 @@ bool Checker::IsTypeIdenticalTo(Type *source, Type *target)
     return relation_->IsIdenticalTo(source, target);
 }
 
-bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &err_msg,
-                                const lexer::SourcePosition &err_pos)
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg,
+                                const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
-        relation_->RaiseError(err_msg, err_pos);
+        relation_->RaiseError(errMsg, errPos);
     }
 
     return true;
 }
 
 bool Checker::IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                                const lexer::SourcePosition &err_pos)
+                                const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
-        relation_->RaiseError(list, err_pos);
+        relation_->RaiseError(list, errPos);
     }
 
     return true;
@@ -146,21 +146,21 @@ bool Checker::IsTypeAssignableTo(Type *source, Type *target)
     return relation_->IsAssignableTo(source, target);
 }
 
-bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &err_msg,
-                                 const lexer::SourcePosition &err_pos)
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg,
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
-        relation_->RaiseError(err_msg, err_pos);
+        relation_->RaiseError(errMsg, errPos);
     }
 
     return true;
 }
 
 bool Checker::IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                                 const lexer::SourcePosition &err_pos)
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
-        relation_->RaiseError(list, err_pos);
+        relation_->RaiseError(list, errPos);
     }
 
     return true;
@@ -171,21 +171,21 @@ bool Checker::IsTypeComparableTo(Type *source, Type *target)
     return relation_->IsComparableTo(source, target);
 }
 
-bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &err_msg,
-                                 const lexer::SourcePosition &err_pos)
+bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg,
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
-        relation_->RaiseError(err_msg, err_pos);
+        relation_->RaiseError(errMsg, errPos);
     }
 
     return true;
 }
 
 bool Checker::IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                                 const lexer::SourcePosition &err_pos)
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
-        relation_->RaiseError(list, err_pos);
+        relation_->RaiseError(list, errPos);
     }
 
     return true;

@@ -21,29 +21,29 @@
 namespace panda::es2panda::checker {
 class ETSExtensionFuncHelperType : public Type {
 public:
-    ETSExtensionFuncHelperType(ETSFunctionType *class_method_type, ETSFunctionType *extension_function_type)
+    ETSExtensionFuncHelperType(ETSFunctionType *classMethodType, ETSFunctionType *extensionFunctionType)
         : Type(TypeFlag::ETS_EXTENSION_FUNC_HELPER),
-          class_method_type_(class_method_type),
-          extension_function_type_(extension_function_type)
+          classMethodType_(classMethodType),
+          extensionFunctionType_(extensionFunctionType)
     {
     }
 
     ETSFunctionType *ClassMethodType()
     {
-        return class_method_type_;
+        return classMethodType_;
     }
 
     ETSFunctionType *ExtensionMethodType()
     {
-        return extension_function_type_;
+        return extensionFunctionType_;
     }
 
     void ToString(std::stringstream &ss) const override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
 
 private:
-    ETSFunctionType *class_method_type_ {};
-    ETSFunctionType *extension_function_type_ {};
+    ETSFunctionType *classMethodType_ {};
+    ETSFunctionType *extensionFunctionType_ {};
 };
 }  // namespace panda::es2panda::checker
 

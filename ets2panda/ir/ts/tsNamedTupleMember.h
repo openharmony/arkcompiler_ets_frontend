@@ -21,8 +21,8 @@
 namespace panda::es2panda::ir {
 class TSNamedTupleMember : public TypeNode {
 public:
-    explicit TSNamedTupleMember(Expression *label, TypeNode *element_type, bool optional)
-        : TypeNode(AstNodeType::TS_NAMED_TUPLE_MEMBER), label_(label), element_type_(element_type), optional_(optional)
+    explicit TSNamedTupleMember(Expression *label, TypeNode *elementType, bool optional)
+        : TypeNode(AstNodeType::TS_NAMED_TUPLE_MEMBER), label_(label), elementType_(elementType), optional_(optional)
     {
     }
 
@@ -33,12 +33,12 @@ public:
 
     TypeNode *ElementType()
     {
-        return element_type_;
+        return elementType_;
     }
 
     const TypeNode *ElementType() const
     {
-        return element_type_;
+        return elementType_;
     }
 
     bool IsOptional() const
@@ -62,7 +62,7 @@ public:
 
 private:
     Expression *label_;
-    TypeNode *element_type_;
+    TypeNode *elementType_;
     bool optional_;
 };
 }  // namespace panda::es2panda::ir

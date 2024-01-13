@@ -23,16 +23,16 @@ class Identifier;
 
 class TSTypeParameter : public Expression {
 public:
-    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *default_type)
-        : Expression(AstNodeType::TS_TYPE_PARAMETER), name_(name), constraint_(constraint), default_type_(default_type)
+    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *defaultType)
+        : Expression(AstNodeType::TS_TYPE_PARAMETER), name_(name), constraint_(constraint), defaultType_(defaultType)
     {
     }
 
-    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *default_type, ModifierFlags flags)
+    explicit TSTypeParameter(Identifier *name, TypeNode *constraint, TypeNode *defaultType, ModifierFlags flags)
         : Expression(AstNodeType::TS_TYPE_PARAMETER, flags),
           name_(name),
           constraint_(constraint),
-          default_type_(default_type)
+          defaultType_(defaultType)
     {
         ASSERT(flags == ModifierFlags::NONE || flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
     }
@@ -59,7 +59,7 @@ public:
 
     TypeNode *DefaultType() const
     {
-        return default_type_;
+        return defaultType_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -79,7 +79,7 @@ public:
 private:
     Identifier *name_;
     TypeNode *constraint_;
-    TypeNode *default_type_;
+    TypeNode *defaultType_;
 };
 }  // namespace panda::es2panda::ir
 

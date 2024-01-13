@@ -21,8 +21,8 @@
 namespace panda::es2panda::ir {
 class ExportDefaultDeclaration : public Statement {
 public:
-    explicit ExportDefaultDeclaration(AstNode *decl, bool export_equals)
-        : Statement(AstNodeType::EXPORT_DEFAULT_DECLARATION), decl_(decl), export_equals_(export_equals)
+    explicit ExportDefaultDeclaration(AstNode *decl, bool exportEquals)
+        : Statement(AstNodeType::EXPORT_DEFAULT_DECLARATION), decl_(decl), exportEquals_(exportEquals)
     {
     }
 
@@ -38,7 +38,7 @@ public:
 
     bool IsExportEquals() const
     {
-        return export_equals_;
+        return exportEquals_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -57,7 +57,7 @@ public:
 
 private:
     AstNode *decl_;
-    bool export_equals_;
+    bool exportEquals_;
 };
 }  // namespace panda::es2panda::ir
 

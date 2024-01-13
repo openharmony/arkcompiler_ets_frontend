@@ -46,18 +46,18 @@ Options::~Options()
 static std::vector<std::string> SplitToStringVector(std::string const &str)
 {
     std::vector<std::string> res;
-    std::string_view curr_str {str};
-    auto ix = curr_str.find(',');
+    std::string_view currStr {str};
+    auto ix = currStr.find(',');
     while (ix != std::string::npos) {
         if (ix != 0) {
-            res.emplace_back(curr_str.substr(0, ix));
+            res.emplace_back(currStr.substr(0, ix));
         }
-        curr_str = curr_str.substr(ix + 1);
-        ix = curr_str.find(',');
+        currStr = currStr.substr(ix + 1);
+        ix = currStr.find(',');
     }
 
-    if (!curr_str.empty()) {
-        res.emplace_back(curr_str);
+    if (!currStr.empty()) {
+        res.emplace_back(currStr);
     }
     return res;
 }
@@ -73,34 +73,34 @@ static std::unordered_set<std::string> SplitToStringSet(std::string const &str)
 }
 
 // NOLINTNEXTLINE(modernize-avoid-c-arrays, hicpp-avoid-c-arrays)
-static void SplitArgs(int argc, const char *argv[], std::vector<std::string> &es2panda_args,
-                      std::vector<std::string> &bco_compiler_args, std::vector<std::string> &bytecodeopt_args)
+static void SplitArgs(int argc, const char *argv[], std::vector<std::string> &es2pandaArgs,
+                      std::vector<std::string> &bcoCompilerArgs, std::vector<std::string> &bytecodeoptArgs)
 {
     constexpr std::string_view COMPILER_PREFIX = "--bco-compiler";
     constexpr std::string_view OPTIMIZER_PREFIX = "--bco-optimizer";
 
     enum class OptState { ES2PANDA, JIT_COMPILER, OPTIMIZER };
-    OptState opt_state = OptState::ES2PANDA;
+    OptState optState = OptState::ES2PANDA;
 
-    std::unordered_map<OptState, std::vector<std::string> *> args_map = {{OptState::ES2PANDA, &es2panda_args},
-                                                                         {OptState::JIT_COMPILER, &bco_compiler_args},
-                                                                         {OptState::OPTIMIZER, &bytecodeopt_args}};
+    std::unordered_map<OptState, std::vector<std::string> *> argsMap = {{OptState::ES2PANDA, &es2pandaArgs},
+                                                                        {OptState::JIT_COMPILER, &bcoCompilerArgs},
+                                                                        {OptState::OPTIMIZER, &bytecodeoptArgs}};
 
     for (int i = 1; i < argc; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        const char *arg_i = argv[i];
-        if (COMPILER_PREFIX == arg_i) {
-            opt_state = OptState::JIT_COMPILER;
+        const char *argI = argv[i];
+        if (COMPILER_PREFIX == argI) {
+            optState = OptState::JIT_COMPILER;
             continue;
         }
 
-        if (OPTIMIZER_PREFIX == arg_i) {
-            opt_state = OptState::OPTIMIZER;
+        if (OPTIMIZER_PREFIX == argI) {
+            optState = OptState::OPTIMIZER;
             continue;
         }
 
-        args_map[opt_state]->emplace_back(arg_i);
-        opt_state = OptState::ES2PANDA;
+        argsMap[optState]->emplace_back(argI);
+        optState = OptState::ES2PANDA;
     }
 }
 
@@ -115,22 +115,22 @@ static bool ParseComponentArgs(const std::vector<std::string> &args, T &options)
         return false;
     }
 
-    if (auto options_err = options.Validate(); options_err) {
-        std::cerr << "Error: " << options_err.value().GetMessage() << std::endl;
+    if (auto optionsErr = options.Validate(); optionsErr) {
+        std::cerr << "Error: " << optionsErr.value().GetMessage() << std::endl;
         return false;
     }
 
     return true;
 }
 
-static bool ParseBCOCompilerOptions([[maybe_unused]] const std::vector<std::string> &compiler_args,
-                                    [[maybe_unused]] const std::vector<std::string> &bytecodeopt_args)
+static bool ParseBCOCompilerOptions([[maybe_unused]] const std::vector<std::string> &compilerArgs,
+                                    [[maybe_unused]] const std::vector<std::string> &bytecodeoptArgs)
 {
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-    if (!ParseComponentArgs(compiler_args, panda::compiler::OPTIONS)) {
+    if (!ParseComponentArgs(compilerArgs, panda::compiler::g_options)) {
         return false;
     }
-    if (!ParseComponentArgs(bytecodeopt_args, panda::bytecodeopt::OPTIONS)) {
+    if (!ParseComponentArgs(bytecodeoptArgs, panda::bytecodeopt::g_options)) {
         return false;
     }
 #endif
@@ -141,55 +141,55 @@ static bool ParseBCOCompilerOptions([[maybe_unused]] const std::vector<std::stri
 // NOLINTNEXTLINE(readability-function-size)
 bool Options::Parse(int argc, const char **argv)
 {
-    std::vector<std::string> es2panda_args;
-    std::vector<std::string> bco_compiler_args;
-    std::vector<std::string> bytecodeopt_args;
+    std::vector<std::string> es2pandaArgs;
+    std::vector<std::string> bcoCompilerArgs;
+    std::vector<std::string> bytecodeoptArgs;
 
-    SplitArgs(argc, argv, es2panda_args, bco_compiler_args, bytecodeopt_args);
-    if (!ParseBCOCompilerOptions(bco_compiler_args, bytecodeopt_args)) {
+    SplitArgs(argc, argv, es2pandaArgs, bcoCompilerArgs, bytecodeoptArgs);
+    if (!ParseBCOCompilerOptions(bcoCompilerArgs, bytecodeoptArgs)) {
         return false;
     }
 
-    panda::PandArg<bool> op_help("help", false, "Print this message and exit");
+    panda::PandArg<bool> opHelp("help", false, "Print this message and exit");
 
     // parser
-    panda::PandArg<std::string> input_extension("extension", "",
-                                                "Parse the input as the given extension (options: js | ts | as | ets)");
-    panda::PandArg<bool> op_module("module", false, "Parse the input as module (JS only option)");
-    panda::PandArg<bool> op_parse_only("parse-only", false, "Parse the input only");
-    panda::PandArg<bool> op_dump_ast("dump-ast", false, "Dump the parsed AST");
-    panda::PandArg<bool> op_dump_ast_only_silent(
-        "dump-ast-only-silent", false, "Dump parsed AST with all dumpers available but don't print to stdout");
-    panda::PandArg<bool> op_dump_checked_ast("dump-dynamic-ast", false,
-                                             "Dump AST with synthetic nodes for dynamic languages");
-    panda::PandArg<bool> op_list_files("list-files", false, "Print names of files that are part of compilation");
+    panda::PandArg<std::string> inputExtension("extension", "",
+                                               "Parse the input as the given extension (options: js | ts | as | ets)");
+    panda::PandArg<bool> opModule("module", false, "Parse the input as module (JS only option)");
+    panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
+    panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
+    panda::PandArg<bool> opDumpAstOnlySilent("dump-ast-only-silent", false,
+                                             "Dump parsed AST with all dumpers available but don't print to stdout");
+    panda::PandArg<bool> opDumpCheckedAst("dump-dynamic-ast", false,
+                                          "Dump AST with synthetic nodes for dynamic languages");
+    panda::PandArg<bool> opListFiles("list-files", false, "Print names of files that are part of compilation");
 
     // compiler
-    panda::PandArg<bool> op_dump_assembly("dump-assembly", false, "Dump pandasm");
-    panda::PandArg<bool> op_debug_info("debug-info", false, "Compile with debug info");
-    panda::PandArg<bool> op_dump_debug_info("dump-debug-info", false, "Dump debug info");
-    panda::PandArg<int> op_opt_level("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
-    panda::PandArg<bool> op_ets_module("ets-module", false, "Compile the input as ets-module");
-    panda::PandArg<std::string> op_ts_decl_out("gen-ts-decl", "", "For given .ets file, generate .ts interop file");
+    panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
+    panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
+    panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
+    panda::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
+    panda::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
+    panda::PandArg<std::string> opTsDeclOut("gen-ts-decl", "", "For given .ets file, generate .ts interop file");
 
     auto constexpr DEFAULT_THREAD_COUNT = 0;
-    panda::PandArg<int> op_thread_count("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
-    panda::PandArg<bool> op_size_stat("dump-size-stat", false, "Dump size statistics");
-    panda::PandArg<std::string> output_file("output", "", "Compiler binary output (.abc)");
-    panda::PandArg<std::string> log_level("log-level", "error", "Log-level");
-    panda::PandArg<std::string> std_lib("stdlib", "", "Path to standard library");
-    panda::PandArg<bool> gen_std_lib("gen-stdlib", false, "Gen standard library");
+    panda::PandArg<int> opThreadCount("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
+    panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
+    panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
+    panda::PandArg<std::string> logLevel("log-level", "error", "Log-level");
+    panda::PandArg<std::string> stdLib("stdlib", "", "Path to standard library");
+    panda::PandArg<bool> genStdLib("gen-stdlib", false, "Gen standard library");
     panda::PandArg<std::string> plugins("plugins", "", "Plugins");
-    panda::PandArg<std::string> skip_phases("skip-phases", "", "Phases to skip");
-    panda::PandArg<std::string> dump_before_phases("dump-before-phases", "",
-                                                   "Generate program dump before running phases in the list");
-    panda::PandArg<std::string> dump_ets_src_before_phases(
+    panda::PandArg<std::string> skipPhases("skip-phases", "", "Phases to skip");
+    panda::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
+                                                 "Generate program dump before running phases in the list");
+    panda::PandArg<std::string> dumpEtsSrcBeforePhases(
         "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
-    panda::PandArg<std::string> dump_ets_src_after_phases(
+    panda::PandArg<std::string> dumpEtsSrcAfterPhases(
         "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list");
-    panda::PandArg<std::string> dump_after_phases("dump-after-phases", "",
-                                                  "Generate program dump after running phases in the list");
-    panda::PandArg<std::string> arkts_config(
+    panda::PandArg<std::string> dumpAfterPhases("dump-after-phases", "",
+                                                "Generate program dump after running phases in the list");
+    panda::PandArg<std::string> arktsConfig(
         "arktsconfig",
         panda::es2panda::JoinPaths(
             panda::es2panda::ParentPath(argv[0]),  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -197,43 +197,43 @@ bool Options::Parse(int argc, const char **argv)
         "Path to arkts configuration file");
 
     // tail arguments
-    panda::PandArg<std::string> input_file("input", "", "input file");
+    panda::PandArg<std::string> inputFile("input", "", "input file");
 
-    argparser_->Add(&op_help);
-    argparser_->Add(&op_module);
-    argparser_->Add(&op_dump_ast);
-    argparser_->Add(&op_dump_ast_only_silent);
-    argparser_->Add(&op_dump_checked_ast);
-    argparser_->Add(&op_parse_only);
-    argparser_->Add(&op_dump_assembly);
-    argparser_->Add(&op_debug_info);
-    argparser_->Add(&op_dump_debug_info);
+    argparser_->Add(&opHelp);
+    argparser_->Add(&opModule);
+    argparser_->Add(&opDumpAst);
+    argparser_->Add(&opDumpAstOnlySilent);
+    argparser_->Add(&opDumpCheckedAst);
+    argparser_->Add(&opParseOnly);
+    argparser_->Add(&opDumpAssembly);
+    argparser_->Add(&opDebugInfo);
+    argparser_->Add(&opDumpDebugInfo);
 
-    argparser_->Add(&op_opt_level);
-    argparser_->Add(&op_ets_module);
-    argparser_->Add(&op_thread_count);
-    argparser_->Add(&op_size_stat);
-    argparser_->Add(&op_list_files);
+    argparser_->Add(&opOptLevel);
+    argparser_->Add(&opEtsModule);
+    argparser_->Add(&opThreadCount);
+    argparser_->Add(&opSizeStat);
+    argparser_->Add(&opListFiles);
 
-    argparser_->Add(&input_extension);
-    argparser_->Add(&output_file);
-    argparser_->Add(&log_level);
-    argparser_->Add(&std_lib);
-    argparser_->Add(&gen_std_lib);
+    argparser_->Add(&inputExtension);
+    argparser_->Add(&outputFile);
+    argparser_->Add(&logLevel);
+    argparser_->Add(&stdLib);
+    argparser_->Add(&genStdLib);
     argparser_->Add(&plugins);
-    argparser_->Add(&skip_phases);
-    argparser_->Add(&dump_before_phases);
-    argparser_->Add(&dump_ets_src_before_phases);
-    argparser_->Add(&dump_after_phases);
-    argparser_->Add(&dump_ets_src_after_phases);
-    argparser_->Add(&arkts_config);
-    argparser_->Add(&op_ts_decl_out);
+    argparser_->Add(&skipPhases);
+    argparser_->Add(&dumpBeforePhases);
+    argparser_->Add(&dumpEtsSrcBeforePhases);
+    argparser_->Add(&dumpAfterPhases);
+    argparser_->Add(&dumpEtsSrcAfterPhases);
+    argparser_->Add(&arktsConfig);
+    argparser_->Add(&opTsDeclOut);
 
-    argparser_->PushBackTail(&input_file);
+    argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
     argparser_->EnableRemainder();
 
-    if (!argparser_->Parse(es2panda_args) || op_help.GetValue()) {
+    if (!argparser_->Parse(es2pandaArgs) || opHelp.GetValue()) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
@@ -250,63 +250,63 @@ bool Options::Parse(int argc, const char **argv)
               "prefix"
            << std::endl;
 
-        error_msg_ = ss.str();
+        errorMsg_ = ss.str();
         return false;
     }
 
     // Determine compilation mode
-    auto compilation_mode = gen_std_lib.GetValue()          ? CompilationMode::GEN_STD_LIB
-                            : input_file.GetValue().empty() ? CompilationMode::PROJECT
-                                                            : CompilationMode::SINGLE_FILE;
+    auto compilationMode = genStdLib.GetValue()           ? CompilationMode::GEN_STD_LIB
+                           : inputFile.GetValue().empty() ? CompilationMode::PROJECT
+                                                          : CompilationMode::SINGLE_FILE;
 
-    source_file_ = input_file.GetValue();
-    std::ifstream input_stream;
+    sourceFile_ = inputFile.GetValue();
+    std::ifstream inputStream;
 
-    if (compilation_mode == CompilationMode::SINGLE_FILE) {
-        input_stream.open(source_file_.c_str());
+    if (compilationMode == CompilationMode::SINGLE_FILE) {
+        inputStream.open(sourceFile_.c_str());
 
-        if (input_stream.fail()) {
-            error_msg_ = "Failed to open file: ";
-            error_msg_.append(source_file_);
+        if (inputStream.fail()) {
+            errorMsg_ = "Failed to open file: ";
+            errorMsg_.append(sourceFile_);
             return false;
         }
 
         std::stringstream ss;
-        ss << input_stream.rdbuf();
-        parser_input_ = ss.str();
-        input_stream.close();
+        ss << inputStream.rdbuf();
+        parserInput_ = ss.str();
+        inputStream.close();
     }
 
-    if (!output_file.GetValue().empty()) {
-        if (compilation_mode == CompilationMode::PROJECT) {
-            error_msg_ = "Error: When compiling in project mode --output key is not needed";
+    if (!outputFile.GetValue().empty()) {
+        if (compilationMode == CompilationMode::PROJECT) {
+            errorMsg_ = "Error: When compiling in project mode --output key is not needed";
             return false;
         }
-        compiler_output_ = output_file.GetValue();
+        compilerOutput_ = outputFile.GetValue();
     } else {
-        compiler_output_ = RemoveExtension(BaseName(source_file_)).append(".abc");
+        compilerOutput_ = RemoveExtension(BaseName(sourceFile_)).append(".abc");
     }
 
-    if (const auto log_level_str = log_level.GetValue(); !log_level_str.empty()) {
-        if (log_level_str == "debug") {
-            log_level_ = util::LogLevel::DEBUG;
-        } else if (log_level_str == "info") {
-            log_level_ = util::LogLevel::INFO;
-        } else if (log_level_str == "warning") {
-            log_level_ = util::LogLevel::WARNING;
-        } else if (log_level_str == "error") {
-            log_level_ = util::LogLevel::ERROR;
-        } else if (log_level_str == "fatal") {
-            log_level_ = util::LogLevel::FATAL;
+    if (const auto logLevelStr = logLevel.GetValue(); !logLevelStr.empty()) {
+        if (logLevelStr == "debug") {
+            logLevel_ = util::LogLevel::DEBUG;
+        } else if (logLevelStr == "info") {
+            logLevel_ = util::LogLevel::INFO;
+        } else if (logLevelStr == "warning") {
+            logLevel_ = util::LogLevel::WARNING;
+        } else if (logLevelStr == "error") {
+            logLevel_ = util::LogLevel::ERROR;
+        } else if (logLevelStr == "fatal") {
+            logLevel_ = util::LogLevel::FATAL;
         } else {
-            std::cerr << "Invalid log level: '" << log_level_str
+            std::cerr << "Invalid log level: '" << logLevelStr
                       << R"('. Possible values: ["debug", "info", "warning", "error", "fatal"])";
             return false;
         }
     }
 
-    std::string extension = input_extension.GetValue();
-    std::string source_file_extension = source_file_.substr(source_file_.find_last_of('.') + 1);
+    std::string extension = inputExtension.GetValue();
+    std::string sourceFileExtension = sourceFile_.substr(sourceFile_.find_last_of('.') + 1);
 
     if (!extension.empty()) {
         if (extension == "js") {
@@ -318,35 +318,35 @@ bool Options::Parse(int argc, const char **argv)
         } else if (extension == "ets") {
             extension_ = es2panda::ScriptExtension::ETS;
 
-            input_stream.open(arkts_config.GetValue());
-            if (input_stream.fail()) {
-                error_msg_ = "Failed to open arktsconfig: ";
-                error_msg_.append(arkts_config.GetValue());
+            inputStream.open(arktsConfig.GetValue());
+            if (inputStream.fail()) {
+                errorMsg_ = "Failed to open arktsconfig: ";
+                errorMsg_.append(arktsConfig.GetValue());
                 return false;
             }
-            input_stream.close();
+            inputStream.close();
         } else {
-            error_msg_ = "Invalid extension (available options: js, ts, as, ets)";
+            errorMsg_ = "Invalid extension (available options: js, ts, as, ets)";
             return false;
         }
 
-        if (!source_file_.empty() && extension != source_file_extension) {
-            std::cerr << "Warning: Not matching extensions! Sourcefile: " << source_file_extension
+        if (!sourceFile_.empty() && extension != sourceFileExtension) {
+            std::cerr << "Warning: Not matching extensions! Sourcefile: " << sourceFileExtension
                       << ", Manual(used): " << extension << std::endl;
         }
     } else {
-        if (compilation_mode == CompilationMode::PROJECT) {
+        if (compilationMode == CompilationMode::PROJECT) {
             extension_ = es2panda::ScriptExtension::ETS;
-        } else if (source_file_extension == "js") {
+        } else if (sourceFileExtension == "js") {
             extension_ = es2panda::ScriptExtension::JS;
-        } else if (source_file_extension == "ts") {
+        } else if (sourceFileExtension == "ts") {
             extension_ = es2panda::ScriptExtension::TS;
-        } else if (source_file_extension == "as") {
+        } else if (sourceFileExtension == "as") {
             extension_ = es2panda::ScriptExtension::AS;
-        } else if (source_file_extension == "ets") {
+        } else if (sourceFileExtension == "ets") {
             extension_ = es2panda::ScriptExtension::ETS;
         } else {
-            error_msg_ =
+            errorMsg_ =
                 "Unknown extension of sourcefile, set the extension manually or change the file format (available "
                 "options: js, ts, as, ets)";
             return false;
@@ -355,75 +355,75 @@ bool Options::Parse(int argc, const char **argv)
 
 #ifndef PANDA_WITH_ECMASCRIPT
     if (extension_ == es2panda::ScriptExtension::JS) {
-        error_msg_ = "js extension is not supported within current build";
+        errorMsg_ = "js extension is not supported within current build";
         return false;
     }
 #endif
 
-    if (extension_ != es2panda::ScriptExtension::JS && op_module.GetValue()) {
-        error_msg_ = "Error: --module is not supported for this extension.";
+    if (extension_ != es2panda::ScriptExtension::JS && opModule.GetValue()) {
+        errorMsg_ = "Error: --module is not supported for this extension.";
         return false;
     }
 
     if (extension_ != es2panda::ScriptExtension::ETS) {
-        if (compilation_mode == CompilationMode::PROJECT) {
-            error_msg_ = "Error: only --extension=ets is supported for project compilation mode.";
+        if (compilationMode == CompilationMode::PROJECT) {
+            errorMsg_ = "Error: only --extension=ets is supported for project compilation mode.";
             return false;
         }
-        if (!op_ts_decl_out.GetValue().empty()) {
-            error_msg_ = "Error: only --extension=ets is supported for --gen-ts-decl option";
+        if (!opTsDeclOut.GetValue().empty()) {
+            errorMsg_ = "Error: only --extension=ets is supported for --gen-ts-decl option";
             return false;
         }
     }
 
-    opt_level_ = op_opt_level.GetValue();
-    thread_count_ = op_thread_count.GetValue();
-    list_files_ = op_list_files.GetValue();
+    optLevel_ = opOptLevel.GetValue();
+    threadCount_ = opThreadCount.GetValue();
+    listFiles_ = opListFiles.GetValue();
 
-    if (op_parse_only.GetValue()) {
+    if (opParseOnly.GetValue()) {
         options_ |= OptionFlags::PARSE_ONLY;
     }
 
-    if (op_module.GetValue()) {
+    if (opModule.GetValue()) {
         options_ |= OptionFlags::PARSE_MODULE;
     }
 
-    if (op_size_stat.GetValue()) {
+    if (opSizeStat.GetValue()) {
         options_ |= OptionFlags::SIZE_STAT;
     }
 
-    compiler_options_.arkts_config = std::make_shared<panda::es2panda::ArkTsConfig>(arkts_config.GetValue());
+    compilerOptions_.arktsConfig = std::make_shared<panda::es2panda::ArkTsConfig>(arktsConfig.GetValue());
     if (extension_ == es2panda::ScriptExtension::ETS) {
-        if (!compiler_options_.arkts_config->Parse()) {
-            error_msg_ = "Invalid ArkTsConfig: ";
-            error_msg_.append(arkts_config.GetValue());
+        if (!compilerOptions_.arktsConfig->Parse()) {
+            errorMsg_ = "Invalid ArkTsConfig: ";
+            errorMsg_.append(arktsConfig.GetValue());
             return false;
         }
     }
 
-    if ((dump_ets_src_before_phases.GetValue().size() + dump_ets_src_after_phases.GetValue().size() > 0) &&
+    if ((dumpEtsSrcBeforePhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
         extension_ != es2panda::ScriptExtension::ETS) {
-        error_msg_ = "--dump-ets-src-* option is valid only with ETS extension";
+        errorMsg_ = "--dump-ets-src-* option is valid only with ETS extension";
         return false;
     }
 
-    compiler_options_.ts_decl_out = op_ts_decl_out.GetValue();
-    compiler_options_.dump_asm = op_dump_assembly.GetValue();
-    compiler_options_.dump_ast = op_dump_ast.GetValue();
-    compiler_options_.op_dump_ast_only_silent = op_dump_ast_only_silent.GetValue();
-    compiler_options_.dump_checked_ast = op_dump_checked_ast.GetValue();
-    compiler_options_.dump_debug_info = op_dump_debug_info.GetValue();
-    compiler_options_.is_debug = op_debug_info.GetValue();
-    compiler_options_.parse_only = op_parse_only.GetValue();
-    compiler_options_.std_lib = std_lib.GetValue();
-    compiler_options_.compilation_mode = compilation_mode;
-    compiler_options_.is_ets_module = op_ets_module.GetValue();
-    compiler_options_.plugins = SplitToStringVector(plugins.GetValue());
-    compiler_options_.skip_phases = SplitToStringSet(skip_phases.GetValue());
-    compiler_options_.dump_before_phases = SplitToStringSet(dump_before_phases.GetValue());
-    compiler_options_.dump_ets_src_before_phases = SplitToStringSet(dump_ets_src_before_phases.GetValue());
-    compiler_options_.dump_after_phases = SplitToStringSet(dump_after_phases.GetValue());
-    compiler_options_.dump_ets_src_after_phases = SplitToStringSet(dump_ets_src_after_phases.GetValue());
+    compilerOptions_.tsDeclOut = opTsDeclOut.GetValue();
+    compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
+    compilerOptions_.dumpAst = opDumpAst.GetValue();
+    compilerOptions_.opDumpAstOnlySilent = opDumpAstOnlySilent.GetValue();
+    compilerOptions_.dumpCheckedAst = opDumpCheckedAst.GetValue();
+    compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
+    compilerOptions_.isDebug = opDebugInfo.GetValue();
+    compilerOptions_.parseOnly = opParseOnly.GetValue();
+    compilerOptions_.stdLib = stdLib.GetValue();
+    compilerOptions_.compilationMode = compilationMode;
+    compilerOptions_.isEtsModule = opEtsModule.GetValue();
+    compilerOptions_.plugins = SplitToStringVector(plugins.GetValue());
+    compilerOptions_.skipPhases = SplitToStringSet(skipPhases.GetValue());
+    compilerOptions_.dumpBeforePhases = SplitToStringSet(dumpBeforePhases.GetValue());
+    compilerOptions_.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
+    compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
+    compilerOptions_.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
 
     return true;
 }

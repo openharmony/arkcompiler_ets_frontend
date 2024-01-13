@@ -49,8 +49,8 @@ DEFINE_BITOPS(RecordTableFlags)
 class RecordTable {
 public:
     explicit RecordTable(ArenaAllocator *allocator, parser::Program *program, RecordTableFlags flags)
-        : class_definitions_(allocator->Adapter()),
-          interface_declarations_(allocator->Adapter()),
+        : classDefinitions_(allocator->Adapter()),
+          interfaceDeclarations_(allocator->Adapter()),
           signatures_(allocator->Adapter()),
           program_(program),
           flags_(flags)
@@ -69,22 +69,22 @@ public:
 
     ArenaSet<ir::ClassDefinition *> &ClassDefinitions()
     {
-        return class_definitions_;
+        return classDefinitions_;
     }
 
     const ArenaSet<ir::ClassDefinition *> &ClassDefinitions() const
     {
-        return class_definitions_;
+        return classDefinitions_;
     }
 
     ArenaSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations()
     {
-        return interface_declarations_;
+        return interfaceDeclarations_;
     }
 
     const ArenaSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations() const
     {
-        return interface_declarations_;
+        return interfaceDeclarations_;
     }
 
     ArenaVector<FunctionScope *> &Signatures()
@@ -97,9 +97,9 @@ public:
         return signatures_;
     }
 
-    void SetClassDefinition(ir::ClassDefinition *class_definition)
+    void SetClassDefinition(ir::ClassDefinition *classDefinition)
     {
-        record_ = class_definition;
+        record_ = classDefinition;
     }
 
     ir::ClassDefinition *ClassDefinition()
@@ -114,9 +114,9 @@ public:
                                                                       : nullptr;
     }
 
-    void SetInterfaceDeclaration(ir::TSInterfaceDeclaration *interface_declaration)
+    void SetInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDeclaration)
     {
-        record_ = interface_declaration;
+        record_ = interfaceDeclaration;
     }
 
     ir::TSInterfaceDeclaration *InterfaceDeclaration()
@@ -154,19 +154,19 @@ private:
     friend class BoundContext;
     using RecordHolder = std::variant<ir::ClassDefinition *, ir::TSInterfaceDeclaration *, std::nullptr_t>;
 
-    ArenaSet<ir::ClassDefinition *> class_definitions_;
-    ArenaSet<ir::TSInterfaceDeclaration *> interface_declarations_;
+    ArenaSet<ir::ClassDefinition *> classDefinitions_;
+    ArenaSet<ir::TSInterfaceDeclaration *> interfaceDeclarations_;
     ArenaVector<varbinder::FunctionScope *> signatures_;
     RecordHolder record_ {nullptr};
     parser::Program *program_ {};
-    BoundContext *bound_ctx_ {};
+    BoundContext *boundCtx_ {};
     RecordTableFlags flags_ {};
 };
 
 class BoundContext {
 public:
-    explicit BoundContext(RecordTable *record_table, ir::ClassDefinition *class_def);
-    explicit BoundContext(RecordTable *record_table, ir::TSInterfaceDeclaration *interface_decl);
+    explicit BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef);
+    explicit BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl);
     ~BoundContext();
 
     NO_COPY_SEMANTIC(BoundContext);
@@ -179,9 +179,9 @@ public:
 
 private:
     BoundContext *prev_;
-    RecordTable *record_table_;
-    RecordTable::RecordHolder saved_record_ {nullptr};
-    ir::Identifier *record_ident_;
+    RecordTable *recordTable_;
+    RecordTable::RecordHolder savedRecord_ {nullptr};
+    ir::Identifier *recordIdent_;
 };
 
 }  // namespace panda::es2panda::varbinder

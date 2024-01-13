@@ -29,7 +29,7 @@ public:
     ~ScopesInitPhaseTest() override = default;
 
     ScopesInitPhaseTest()
-        : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER)), node_gen_(allocator_.get())
+        : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER)), nodeGen_(allocator_.get())
     {
     }
 
@@ -47,7 +47,7 @@ public:
 
     gtests::NodeGenerator &NodeGen()
     {
-        return node_gen_;
+        return nodeGen_;
     }
 
     /*
@@ -71,7 +71,7 @@ public:
 
 private:
     std::unique_ptr<ArenaAllocator> allocator_;
-    gtests::NodeGenerator node_gen_;
+    gtests::NodeGenerator nodeGen_;
 };
 
 TEST_F(ScopesInitPhaseTest, TestForUpdateLoop)
@@ -80,27 +80,27 @@ TEST_F(ScopesInitPhaseTest, TestForUpdateLoop)
      * for (int x = 0; x < 10; x++ ) { let x; }
      */
     auto varbinder = varbinder::VarBinder(Allocator());
-    auto for_node = NodeGen().CreateForUpdate();
-    compiler::ScopesInitPhaseETS::RunExternalNode(for_node, &varbinder);
+    auto forNode = NodeGen().CreateForUpdate();
+    compiler::ScopesInitPhaseETS::RunExternalNode(forNode, &varbinder);
 
-    auto block_scope = for_node->Body()->AsBlockStatement()->Scope();
-    auto loop_scope = for_node->Scope();
-    auto par_scope = loop_scope->Parent();
-    ASSERT_EQ(block_scope->Parent(), loop_scope);
+    auto blockScope = forNode->Body()->AsBlockStatement()->Scope();
+    auto loopScope = forNode->Scope();
+    auto parScope = loopScope->Parent();
+    ASSERT_EQ(blockScope->Parent(), loopScope);
 
-    const auto &scope_bindings = block_scope->Bindings();
-    const auto &par_bindings = par_scope->Bindings();
+    const auto &scopeBindings = blockScope->Bindings();
+    const auto &parBindings = parScope->Bindings();
 
-    ASSERT_EQ(scope_bindings.size(), 1);
-    ASSERT_EQ(par_bindings.size(), 1);
+    ASSERT_EQ(scopeBindings.size(), 1);
+    ASSERT_EQ(parBindings.size(), 1);
 
-    auto par_name = for_node->Init()->AsVariableDeclaration()->Declarators()[0]->Id()->AsIdentifier();
-    auto name = BodyToFirstName(for_node->Body());
-    ASSERT_EQ(scope_bindings.begin()->first, name->Name());
-    ASSERT_EQ(par_bindings.begin()->first, par_name->Name());
-    ASSERT_EQ(scope_bindings.begin()->second, name->Variable());
-    ASSERT_EQ(par_bindings.begin()->second, par_name->Variable());
-    ASSERT_NE(par_name->Variable(), name->Variable());
+    auto parName = forNode->Init()->AsVariableDeclaration()->Declarators()[0]->Id()->AsIdentifier();
+    auto name = BodyToFirstName(forNode->Body());
+    ASSERT_EQ(scopeBindings.begin()->first, name->Name());
+    ASSERT_EQ(parBindings.begin()->first, parName->Name());
+    ASSERT_EQ(scopeBindings.begin()->second, name->Variable());
+    ASSERT_EQ(parBindings.begin()->second, parName->Variable());
+    ASSERT_NE(parName->Variable(), name->Variable());
 }
 
 TEST_F(ScopesInitPhaseTest, CreateWhile)
@@ -109,19 +109,19 @@ TEST_F(ScopesInitPhaseTest, CreateWhile)
      * while (x < 10) { let x; }
      */
     auto varbinder = varbinder::VarBinder(Allocator());
-    auto while_node = NodeGen().CreateWhile();
+    auto whileNode = NodeGen().CreateWhile();
 
-    compiler::ScopesInitPhaseETS::RunExternalNode(while_node, &varbinder);
+    compiler::ScopesInitPhaseETS::RunExternalNode(whileNode, &varbinder);
 
-    auto while_scope = while_node->Scope();
-    auto body_scope = while_node->Body()->AsBlockStatement()->Scope();
-    ASSERT_EQ(body_scope->Parent(), while_scope);
+    auto whileScope = whileNode->Scope();
+    auto bodyScope = whileNode->Body()->AsBlockStatement()->Scope();
+    ASSERT_EQ(bodyScope->Parent(), whileScope);
 
-    const auto &body_bindings = body_scope->Bindings();
-    auto name = BodyToFirstName(while_node->Body());
-    ASSERT_EQ(body_bindings.size(), 1);
-    ASSERT_EQ(body_bindings.begin()->first, name->Name());
-    ASSERT_EQ(body_bindings.begin()->second, name->Variable());
+    const auto &bodyBindings = bodyScope->Bindings();
+    auto name = BodyToFirstName(whileNode->Body());
+    ASSERT_EQ(bodyBindings.size(), 1);
+    ASSERT_EQ(bodyBindings.begin()->first, name->Name());
+    ASSERT_EQ(bodyBindings.begin()->second, name->Variable());
 }
 
 }  // namespace panda::es2panda

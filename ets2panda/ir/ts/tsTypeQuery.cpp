@@ -25,17 +25,17 @@
 namespace panda::es2panda::ir {
 void TSTypeQuery::TransformChildren(const NodeTransformer &cb)
 {
-    expr_name_ = cb(expr_name_)->AsExpression();
+    exprName_ = cb(exprName_)->AsExpression();
 }
 
 void TSTypeQuery::Iterate(const NodeTraverser &cb) const
 {
-    cb(expr_name_);
+    cb(exprName_);
 }
 
 void TSTypeQuery::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSTypeQuery"}, {"exprName", expr_name_}});
+    dumper->Add({{"type", "TSTypeQuery"}, {"exprName", exprName_}});
 }
 
 void TSTypeQuery::Dump(ir::SrcDumper *dumper) const

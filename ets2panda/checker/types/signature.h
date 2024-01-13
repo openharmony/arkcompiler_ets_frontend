@@ -27,26 +27,25 @@ Type const *MaybeBoxedType(Checker *checker, varbinder::Variable const *var);
 
 class SignatureInfo {
 public:
-    explicit SignatureInfo(ArenaAllocator *allocator)
-        : type_params {allocator->Adapter()}, params {allocator->Adapter()}
+    explicit SignatureInfo(ArenaAllocator *allocator) : typeParams {allocator->Adapter()}, params {allocator->Adapter()}
     {
     }
 
     SignatureInfo(const SignatureInfo *other, ArenaAllocator *allocator)
-        : type_params(allocator->Adapter()), params(allocator->Adapter())
+        : typeParams(allocator->Adapter()), params(allocator->Adapter())
     {
-        for (auto *it : other->type_params) {
-            type_params.push_back(it);
+        for (auto *it : other->typeParams) {
+            typeParams.push_back(it);
         }
         for (auto *it : other->params) {
             params.push_back(it->Copy(allocator, it->Declaration()));
             params.back()->SetTsType(it->TsType());
         }
 
-        min_arg_count = other->min_arg_count;
+        minArgCount = other->minArgCount;
 
-        if (other->rest_var != nullptr) {
-            rest_var = other->rest_var->Copy(allocator, other->rest_var->Declaration());
+        if (other->restVar != nullptr) {
+            restVar = other->restVar->Copy(allocator, other->restVar->Declaration());
         }
     }
 
@@ -55,9 +54,9 @@ public:
     NO_MOVE_SEMANTIC(SignatureInfo);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    ArenaVector<Type *> type_params;
-    uint32_t min_arg_count {};
-    varbinder::LocalVariable *rest_var {};
+    ArenaVector<Type *> typeParams;
+    uint32_t minArgCount {};
+    varbinder::LocalVariable *restVar {};
     ArenaVector<varbinder::LocalVariable *> params;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
@@ -92,18 +91,17 @@ DEFINE_BITOPS(SignatureFlags)
 
 class Signature {
 public:
-    Signature(SignatureInfo *signature_info, Type *return_type)
-        : signature_info_(signature_info), return_type_(return_type)
+    Signature(SignatureInfo *signatureInfo, Type *returnType) : signatureInfo_(signatureInfo), returnType_(returnType)
     {
     }
 
-    Signature(SignatureInfo *signature_info, Type *return_type, util::StringView internal_name)
-        : signature_info_(signature_info), return_type_(return_type), internal_name_(internal_name)
+    Signature(SignatureInfo *signatureInfo, Type *returnType, util::StringView internalName)
+        : signatureInfo_(signatureInfo), returnType_(returnType), internalName_(internalName)
     {
     }
 
-    Signature(SignatureInfo *signature_info, Type *return_type, ir::ScriptFunction *func)
-        : signature_info_(signature_info), return_type_(return_type), func_(func)
+    Signature(SignatureInfo *signatureInfo, Type *returnType, ir::ScriptFunction *func)
+        : signatureInfo_(signatureInfo), returnType_(returnType), func_(func)
     {
     }
 
@@ -113,57 +111,57 @@ public:
 
     const SignatureInfo *GetSignatureInfo() const
     {
-        return signature_info_;
+        return signatureInfo_;
     }
 
     SignatureInfo *GetSignatureInfo()
     {
-        return signature_info_;
+        return signatureInfo_;
     }
 
     const ArenaVector<varbinder::LocalVariable *> &Params() const
     {
-        return signature_info_->params;
+        return signatureInfo_->params;
     }
 
     ArenaVector<varbinder::LocalVariable *> &Params()
     {
-        return signature_info_->params;
+        return signatureInfo_->params;
     }
 
     const Type *ReturnType() const
     {
-        return return_type_;
+        return returnType_;
     }
 
     Type *ReturnType()
     {
-        return return_type_;
+        return returnType_;
     }
 
     uint32_t MinArgCount() const
     {
-        return signature_info_->min_arg_count;
+        return signatureInfo_->minArgCount;
     }
 
     uint32_t OptionalArgCount() const
     {
-        return signature_info_->params.size() - signature_info_->min_arg_count;
+        return signatureInfo_->params.size() - signatureInfo_->minArgCount;
     }
 
     void SetReturnType(Type *type)
     {
-        return_type_ = type;
+        returnType_ = type;
     }
 
     void SetOwner(ETSObjectType *owner)
     {
-        owner_obj_ = owner;
+        ownerObj_ = owner;
     }
 
     void SetOwnerVar(varbinder::Variable *owner)
     {
-        owner_var_ = owner;
+        ownerVar_ = owner;
     }
 
     void SetFunction(ir::ScriptFunction *const function) noexcept
@@ -178,12 +176,12 @@ public:
 
     ETSObjectType *Owner()
     {
-        return owner_obj_;
+        return ownerObj_;
     }
 
     varbinder::Variable *OwnerVar()
     {
-        return owner_var_;
+        return ownerVar_;
     }
 
     const ir::ScriptFunction *Function() const
@@ -193,7 +191,7 @@ public:
 
     const varbinder::LocalVariable *RestVar() const
     {
-        return signature_info_->rest_var;
+        return signatureInfo_->restVar;
     }
 
     uint8_t ProtectionFlag() const
@@ -233,34 +231,34 @@ public:
     {
         ss << compiler::Signatures::MANGLE_BEGIN;
 
-        for (const auto *param : signature_info_->params) {
+        for (const auto *param : signatureInfo_->params) {
             MaybeBoxedType(context->Checker(), param)->ToAssemblerTypeWithRank(ss);
             ss << compiler::Signatures::MANGLE_SEPARATOR;
         }
 
-        return_type_->ToAssemblerTypeWithRank(ss);
+        returnType_->ToAssemblerTypeWithRank(ss);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
     util::StringView InternalName() const;
 
-    Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types);
+    Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
     Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
 
-    void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool print_as_method = false) const;
+    void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod = false) const;
     void Identical(TypeRelation *relation, Signature *other);
     bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
 
 private:
     bool IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2);
-    checker::SignatureInfo *signature_info_;
-    Type *return_type_;
+    checker::SignatureInfo *signatureInfo_;
+    Type *returnType_;
     ir::ScriptFunction *func_ {};
     SignatureFlags flags_ {SignatureFlags::NO_OPTS};
-    util::StringView internal_name_ {};
-    ETSObjectType *owner_obj_ {};
-    varbinder::Variable *owner_var_ {};
+    util::StringView internalName_ {};
+    ETSObjectType *ownerObj_ {};
+    varbinder::Variable *ownerVar_ {};
 };
 }  // namespace panda::es2panda::checker
 

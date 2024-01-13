@@ -23,8 +23,8 @@ namespace panda::es2panda::checker {
 
 checker::ETSObjectType *BoxingConverter::ETSTypeFromSource(ETSChecker const *checker, Type const *source)
 {
-    auto get_signature = [](checker::TypeFlag type_kind) {
-        switch (type_kind) {
+    auto getSignature = [](checker::TypeFlag typeKind) {
+        switch (typeKind) {
             case checker::TypeFlag::ETS_BOOLEAN: {
                 return compiler::Signatures::BUILTIN_BOOLEAN_CLASS;
             }
@@ -54,8 +54,8 @@ checker::ETSObjectType *BoxingConverter::ETSTypeFromSource(ETSChecker const *che
         }
     };
 
-    auto wrap_map = checker->PrimitiveWrapper();
-    return wrap_map.find(get_signature(checker::ETSChecker::TypeKind(source)))->second.first;
+    auto wrapMap = checker->PrimitiveWrapper();
+    return wrapMap.find(getSignature(checker::ETSChecker::TypeKind(source)))->second.first;
 }
 
 }  // namespace panda::es2panda::checker

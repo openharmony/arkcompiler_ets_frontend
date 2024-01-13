@@ -49,67 +49,67 @@
 namespace panda::es2panda::checker {
 
 namespace {
-void AppendParentNames(util::UString &qualified_name, const ir::AstNode *const node)
+void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const node)
 {
     if (node != nullptr && !node->IsProgram()) {
-        AppendParentNames(qualified_name, node->Parent());
+        AppendParentNames(qualifiedName, node->Parent());
         if (node->IsTSInterfaceDeclaration()) {
-            qualified_name.Append(node->AsTSInterfaceDeclaration()->Id()->Name());
+            qualifiedName.Append(node->AsTSInterfaceDeclaration()->Id()->Name());
         } else if (node->IsClassDefinition()) {
-            qualified_name.Append(node->AsClassDefinition()->Ident()->Name());
+            qualifiedName.Append(node->AsClassDefinition()->Ident()->Name());
         } else {
             ASSERT(node->IsClassDeclaration() || node->IsTSInterfaceBody());
             return;
         }
-        qualified_name.Append('#');
+        qualifiedName.Append('#');
     }
 }
 
 [[nodiscard]] ir::Identifier *MakeQualifiedIdentifier(panda::ArenaAllocator *const allocator,
-                                                      const ir::TSEnumDeclaration *const enum_decl,
+                                                      const ir::TSEnumDeclaration *const enumDecl,
                                                       const util::StringView &name)
 {
-    util::UString qualified_name(util::StringView("#"), allocator);
-    AppendParentNames(qualified_name, enum_decl->Parent());
-    qualified_name.Append(enum_decl->Key()->Name());
-    qualified_name.Append('#');
-    qualified_name.Append(name);
-    return allocator->New<ir::Identifier>(qualified_name.View(), allocator);
+    util::UString qualifiedName(util::StringView("#"), allocator);
+    AppendParentNames(qualifiedName, enumDecl->Parent());
+    qualifiedName.Append(enumDecl->Key()->Name());
+    qualifiedName.Append('#');
+    qualifiedName.Append(name);
+    return allocator->New<ir::Identifier>(qualifiedName.View(), allocator);
 }
 
 template <typename ElementMaker>
 [[nodiscard]] ir::Identifier *MakeArray(ETSChecker *const checker, varbinder::ETSBinder *const varbinder,
-                                        const ETSEnumInterface *const enum_type, const util::StringView &name,
-                                        Type *const element_type, ElementMaker &&element_maker)
+                                        const ETSEnumInterface *const enumType, const util::StringView &name,
+                                        Type *const elementType, ElementMaker &&elementMaker)
 {
     ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
-    elements.reserve(enum_type->GetMembers().size());
-    for (const auto *const member : enum_type->GetMembers()) {
-        elements.push_back(element_maker(member->AsTSEnumMember()));
+    elements.reserve(enumType->GetMembers().size());
+    for (const auto *const member : enumType->GetMembers()) {
+        elements.push_back(elementMaker(member->AsTSEnumMember()));
     }
 
-    auto *const array_expr = checker->Allocator()->New<ir::ArrayExpression>(std::move(elements), checker->Allocator());
-    array_expr->SetPreferredType(element_type);
-    array_expr->SetTsType(checker->CreateETSArrayType(element_type));
+    auto *const arrayExpr = checker->Allocator()->New<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+    arrayExpr->SetPreferredType(elementType);
+    arrayExpr->SetTsType(checker->CreateETSArrayType(elementType));
 
-    auto *const array_ident = MakeQualifiedIdentifier(checker->Allocator(), enum_type->GetDecl(), name);
+    auto *const arrayIdent = MakeQualifiedIdentifier(checker->Allocator(), enumType->GetDecl(), name);
 
-    auto *const array_class_prop = checker->Allocator()->New<ir::ClassProperty>(
-        array_ident, array_expr, nullptr,
+    auto *const arrayClassProp = checker->Allocator()->New<ir::ClassProperty>(
+        arrayIdent, arrayExpr, nullptr,
         ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC | ir::ModifierFlags::CONST, checker->Allocator(), false);
-    array_class_prop->SetTsType(array_expr->TsType());
-    array_class_prop->SetParent(varbinder->Program()->GlobalClass());
-    array_ident->SetTsType(array_class_prop->TsType());
-    varbinder->Program()->GlobalClass()->Body().push_back(array_class_prop);
+    arrayClassProp->SetTsType(arrayExpr->TsType());
+    arrayClassProp->SetParent(varbinder->Program()->GlobalClass());
+    arrayIdent->SetTsType(arrayClassProp->TsType());
+    varbinder->Program()->GlobalClass()->Body().push_back(arrayClassProp);
 
     auto [array_decl, array_var] =
-        varbinder->NewVarDecl<varbinder::ConstDecl>(array_ident->Start(), array_ident->Name(), array_class_prop);
-    array_ident->SetVariable(array_var);
-    array_var->SetTsType(array_class_prop->TsType());
+        varbinder->NewVarDecl<varbinder::ConstDecl>(arrayIdent->Start(), arrayIdent->Name(), arrayClassProp);
+    arrayIdent->SetVariable(array_var);
+    array_var->SetTsType(arrayClassProp->TsType());
     array_var->AddFlag(varbinder::VariableFlags::PUBLIC | varbinder::VariableFlags::STATIC |
                        varbinder::VariableFlags::PROPERTY);
     array_decl->Node()->SetParent(varbinder->Program()->GlobalClass());
-    return array_ident;
+    return arrayIdent;
 }
 
 [[nodiscard]] ir::ETSParameterExpression *MakeFunctionParam(ETSChecker *const checker,
@@ -117,12 +117,12 @@ template <typename ElementMaker>
                                                             varbinder::FunctionParamScope *const scope,
                                                             const util::StringView &name, Type *const type)
 {
-    const auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(varbinder, scope, false);
-    auto *const param_ident = checker->Allocator()->New<ir::Identifier>(name, checker->Allocator());
-    auto *const param = checker->Allocator()->New<ir::ETSParameterExpression>(param_ident, nullptr);
-    auto *const param_var = std::get<1>(varbinder->AddParamDecl(param));
-    param_var->SetTsType(type);
-    param->Ident()->SetVariable(param_var);
+    const auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(varbinder, scope, false);
+    auto *const paramIdent = checker->Allocator()->New<ir::Identifier>(name, checker->Allocator());
+    auto *const param = checker->Allocator()->New<ir::ETSParameterExpression>(paramIdent, nullptr);
+    auto *const paramVar = std::get<1>(varbinder->AddParamDecl(param));
+    paramVar->SetTsType(type);
+    param->Ident()->SetVariable(paramVar);
     param->Ident()->SetTsType(type);
     param->SetTsType(type);
     return param;
@@ -131,33 +131,32 @@ template <typename ElementMaker>
 [[nodiscard]] ir::ETSTypeReference *MakeTypeReference(panda::ArenaAllocator *allocator, const util::StringView &name)
 {
     auto *const ident = allocator->New<ir::Identifier>(name, allocator);
-    auto *const reference_part = allocator->New<ir::ETSTypeReferencePart>(ident);
-    return allocator->New<ir::ETSTypeReference>(reference_part);
+    auto *const referencePart = allocator->New<ir::ETSTypeReferencePart>(ident);
+    return allocator->New<ir::ETSTypeReference>(referencePart);
 }
 
 [[nodiscard]] ir::ScriptFunction *MakeFunction(ETSChecker *const checker, varbinder::ETSBinder *const varbinder,
-                                               varbinder::FunctionParamScope *const param_scope,
+                                               varbinder::FunctionParamScope *const paramScope,
                                                ArenaVector<ir::Expression *> &&params,
                                                ArenaVector<ir::Statement *> &&body,
-                                               ir::TypeNode *const return_type_annotation)
+                                               ir::TypeNode *const returnTypeAnnotation)
 {
-    auto *const function_scope =
-        varbinder->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), param_scope);
-    function_scope->BindParamScope(param_scope);
-    param_scope->BindFunctionScope(function_scope);
+    auto *const functionScope = varbinder->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), paramScope);
+    functionScope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(functionScope);
 
-    auto *const body_block = checker->Allocator()->New<ir::BlockStatement>(checker->Allocator(), std::move(body));
-    body_block->SetScope(function_scope);
+    auto *const bodyBlock = checker->Allocator()->New<ir::BlockStatement>(checker->Allocator(), std::move(body));
+    bodyBlock->SetScope(functionScope);
 
     auto *const function = checker->Allocator()->New<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), return_type_annotation), body_block,
+        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation), bodyBlock,
         ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC, false, Language(Language::Id::ETS));
-    function->SetScope(function_scope);
+    function->SetScope(functionScope);
 
     varbinder->AsETSBinder()->BuildInternalName(function);
     varbinder->AsETSBinder()->AddCompilableFunction(function);
-    param_scope->BindNode(function);
-    function_scope->BindNode(function);
+    paramScope->BindNode(function);
+    functionScope->BindNode(function);
 
     return function;
 }
@@ -165,47 +164,47 @@ template <typename ElementMaker>
 void MakeMethodDef(ETSChecker *const checker, varbinder::ETSBinder *const varbinder, ir::Identifier *const ident,
                    ir::ScriptFunction *const function)
 {
-    auto *const function_expr = checker->Allocator()->New<ir::FunctionExpression>(function);
-    function->SetParent(function_expr);
+    auto *const functionExpr = checker->Allocator()->New<ir::FunctionExpression>(function);
+    function->SetParent(functionExpr);
 
-    auto *const method_def = checker->Allocator()->New<ir::MethodDefinition>(
-        ir::MethodDefinitionKind::METHOD, ident, function_expr, ir::ModifierFlags::PUBLIC, checker->Allocator(), false);
-    method_def->SetParent(varbinder->Program()->GlobalClass());
-    function_expr->SetParent(method_def);
+    auto *const methodDef = checker->Allocator()->New<ir::MethodDefinition>(
+        ir::MethodDefinitionKind::METHOD, ident, functionExpr, ir::ModifierFlags::PUBLIC, checker->Allocator(), false);
+    methodDef->SetParent(varbinder->Program()->GlobalClass());
+    functionExpr->SetParent(methodDef);
 
-    auto *const method_var = std::get<1>(varbinder->NewVarDecl<varbinder::FunctionDecl>(
-        method_def->Start(), checker->Allocator(), method_def->Id()->Name(), method_def));
-    method_var->AddFlag(varbinder::VariableFlags::STATIC | varbinder::VariableFlags::SYNTHETIC |
-                        varbinder::VariableFlags::METHOD);
-    method_def->Function()->Id()->SetVariable(method_var);
+    auto *const methodVar = std::get<1>(varbinder->NewVarDecl<varbinder::FunctionDecl>(
+        methodDef->Start(), checker->Allocator(), methodDef->Id()->Name(), methodDef));
+    methodVar->AddFlag(varbinder::VariableFlags::STATIC | varbinder::VariableFlags::SYNTHETIC |
+                       varbinder::VariableFlags::METHOD);
+    methodDef->Function()->Id()->SetVariable(methodVar);
 }
 
 [[nodiscard]] ETSFunctionType *MakeProxyFunctionType(ETSChecker *const checker, const util::StringView &name,
                                                      const std::initializer_list<varbinder::LocalVariable *> &params,
-                                                     ir::ScriptFunction *const global_function, Type *const return_type)
+                                                     ir::ScriptFunction *const globalFunction, Type *const returnType)
 {
-    auto *const signature_info = checker->CreateSignatureInfo();
-    signature_info->params.insert(signature_info->params.end(), params);
-    signature_info->min_arg_count = signature_info->params.size();
+    auto *const signatureInfo = checker->CreateSignatureInfo();
+    signatureInfo->params.insert(signatureInfo->params.end(), params);
+    signatureInfo->minArgCount = signatureInfo->params.size();
 
-    auto *const signature = checker->CreateSignature(signature_info, return_type, name);
-    signature->SetFunction(global_function);
+    auto *const signature = checker->CreateSignature(signatureInfo, returnType, name);
+    signature->SetFunction(globalFunction);
     signature->AddSignatureFlag(SignatureFlags::PROXY);
 
     return checker->CreateETSFunctionType(signature, name);
 }
 
 [[nodiscard]] Signature *MakeGlobalSignature(ETSChecker *const checker, ir::ScriptFunction *const function,
-                                             Type *const return_type)
+                                             Type *const returnType)
 {
-    auto *const signature_info = checker->CreateSignatureInfo();
-    signature_info->params.reserve(function->Params().size());
+    auto *const signatureInfo = checker->CreateSignatureInfo();
+    signatureInfo->params.reserve(function->Params().size());
     for (const auto *const param : function->Params()) {
-        signature_info->params.push_back(param->AsETSParameterExpression()->Variable()->AsLocalVariable());
+        signatureInfo->params.push_back(param->AsETSParameterExpression()->Variable()->AsLocalVariable());
     }
-    signature_info->min_arg_count = signature_info->params.size();
+    signatureInfo->minArgCount = signatureInfo->params.size();
 
-    auto *const signature = checker->CreateSignature(signature_info, return_type, function);
+    auto *const signature = checker->CreateSignature(signatureInfo, returnType, function);
     signature->AddSignatureFlag(SignatureFlags::PUBLIC | SignatureFlags::STATIC);
     function->SetSignature(signature);
 
@@ -213,267 +212,266 @@ void MakeMethodDef(ETSChecker *const checker, varbinder::ETSBinder *const varbin
 }
 }  // namespace
 
-ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumInterface const *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumInterface const *const enumType)
 {
-    return MakeArray(this, VarBinder()->AsETSBinder(), enum_type, "NamesArray", GlobalBuiltinETSStringType(),
-                     [this](const ir::TSEnumMember *const member) {
-                         auto *const enum_name_string_literal =
-                             Allocator()->New<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
-                         enum_name_string_literal->SetTsType(GlobalBuiltinETSStringType());
-                         return enum_name_string_literal;
-                     });
+    // clang-format off
+    return MakeArray(this, VarBinder()->AsETSBinder(), enumType, "NamesArray", GlobalBuiltinETSStringType(),
+                    [this](const ir::TSEnumMember *const member) {
+                        auto *const enumNameStringLiteral =
+                            Allocator()->New<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
+                        enumNameStringLiteral->SetTsType(GlobalBuiltinETSStringType());
+                        return enumNameStringLiteral;
+                    });
+    // clang-format on
 }
 
-ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enumType)
 {
     return MakeArray(
-        this, VarBinder()->AsETSBinder(), enum_type, "ValuesArray", GlobalIntType(),
+        this, VarBinder()->AsETSBinder(), enumType, "ValuesArray", GlobalIntType(),
         [this](const ir::TSEnumMember *const member) {
-            auto *const enum_value_literal = Allocator()->New<ir::NumberLiteral>(lexer::Number(
+            auto *const enumValueLiteral = Allocator()->New<ir::NumberLiteral>(lexer::Number(
                 member->AsTSEnumMember()->Init()->AsNumberLiteral()->Number().GetValue<ETSEnumType::ValueType>()));
-            enum_value_literal->SetTsType(GlobalIntType());
-            return enum_value_literal;
+            enumValueLiteral->SetTsType(GlobalIntType());
+            return enumValueLiteral;
         });
 }
 
-ir::Identifier *ETSChecker::CreateEnumStringValuesArray(ETSEnumInterface *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumStringValuesArray(ETSEnumInterface *const enumType)
 {
-    return MakeArray(this, VarBinder()->AsETSBinder(), enum_type, "StringValuesArray", GlobalETSStringLiteralType(),
-                     [this, is_string_enum = enum_type->IsETSStringEnumType()](const ir::TSEnumMember *const member) {
-                         auto const string_value =
-                             is_string_enum ? member->AsTSEnumMember()->Init()->AsStringLiteral()->Str()
-                                            : util::UString(std::to_string(member->AsTSEnumMember()
-                                                                               ->Init()
-                                                                               ->AsNumberLiteral()
-                                                                               ->Number()
-                                                                               .GetValue<ETSEnumType::ValueType>()),
-                                                            Allocator())
-                                                  .View();
-                         auto *const enum_value_string_literal = Allocator()->New<ir::StringLiteral>(string_value);
-                         enum_value_string_literal->SetTsType(GlobalETSStringLiteralType());
-                         return enum_value_string_literal;
+    return MakeArray(this, VarBinder()->AsETSBinder(), enumType, "StringValuesArray", GlobalETSStringLiteralType(),
+                     [this, isStringEnum = enumType->IsETSStringEnumType()](const ir::TSEnumMember *const member) {
+                         auto const stringValue =
+                             isStringEnum ? member->AsTSEnumMember()->Init()->AsStringLiteral()->Str()
+                                          : util::UString(std::to_string(member->AsTSEnumMember()
+                                                                             ->Init()
+                                                                             ->AsNumberLiteral()
+                                                                             ->Number()
+                                                                             .GetValue<ETSEnumType::ValueType>()),
+                                                          Allocator())
+                                                .View();
+                         auto *const enumValueStringLiteral = Allocator()->New<ir::StringLiteral>(stringValue);
+                         enumValueStringLiteral->SetTsType(GlobalETSStringLiteralType());
+                         return enumValueStringLiteral;
                      });
 }
 
-ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumInterface *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumInterface *const enumType)
 {
-    auto *const enum_type_ident = Allocator()->New<ir::Identifier>(enum_type->GetName(), Allocator());
-    enum_type_ident->SetTsType(enum_type);
+    auto *const enumTypeIdent = Allocator()->New<ir::Identifier>(enumType->GetName(), Allocator());
+    enumTypeIdent->SetTsType(enumType);
 
     return MakeArray(
-        this, VarBinder()->AsETSBinder(), enum_type, "ItemsArray", enum_type,
-        [this, enum_type_ident](const ir::TSEnumMember *const member) {
-            auto *const enum_member_ident =
+        this, VarBinder()->AsETSBinder(), enumType, "ItemsArray", enumType,
+        [this, enumTypeIdent](const ir::TSEnumMember *const member) {
+            auto *const enumMemberIdent =
                 Allocator()->New<ir::Identifier>(member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
-            auto *const enum_member_expr = Allocator()->New<ir::MemberExpression>(
-                enum_type_ident, enum_member_ident, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            enum_member_expr->SetTsType(member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType());
-            return enum_member_expr;
+            auto *const enumMemberExpr = Allocator()->New<ir::MemberExpression>(
+                enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+            enumMemberExpr->SetTsType(member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType());
+            return enumMemberExpr;
         });
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const names_array_ident,
-                                                        ETSEnumInterface *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const namesArrayIdent,
+                                                        ETSEnumInterface *const enumType)
 {
-    auto *const param_scope =
+    auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const input_ordinal_ident =
-        MakeFunctionParam(this, VarBinder()->AsETSBinder(), param_scope, "ordinal", GlobalIntType());
+    auto *const inputOrdinalIdent =
+        MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "ordinal", GlobalIntType());
 
-    auto *const in_array_size_expr = [this, names_array_ident, input_ordinal_ident]() {
-        auto *const length_ident = Allocator()->New<ir::Identifier>("length", Allocator());
-        auto *const values_array_length_expr = Allocator()->New<ir::MemberExpression>(
-            names_array_ident, length_ident, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-        auto *const expr = Allocator()->New<ir::BinaryExpression>(input_ordinal_ident, values_array_length_expr,
+    auto *const inArraySizeExpr = [this, namesArrayIdent, inputOrdinalIdent]() {
+        auto *const lengthIdent = Allocator()->New<ir::Identifier>("length", Allocator());
+        auto *const valuesArrayLengthExpr = Allocator()->New<ir::MemberExpression>(
+            namesArrayIdent, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        auto *const expr = Allocator()->New<ir::BinaryExpression>(inputOrdinalIdent, valuesArrayLengthExpr,
                                                                   lexer::TokenType::PUNCTUATOR_LESS_THAN);
         expr->SetOperationType(GlobalIntType());
         expr->SetTsType(GlobalETSBooleanType());
         return expr;
     }();
 
-    auto *const return_enum_stmt = [this, input_ordinal_ident, enum_type]() {
-        input_ordinal_ident->SetTsType(enum_type);
-        return Allocator()->New<ir::ReturnStatement>(input_ordinal_ident);
+    auto *const returnEnumStmt = [this, inputOrdinalIdent, enumType]() {
+        inputOrdinalIdent->SetTsType(enumType);
+        return Allocator()->New<ir::ReturnStatement>(inputOrdinalIdent);
     }();
 
-    auto *const if_ordinal_exists_stmt =
-        Allocator()->New<ir::IfStatement>(in_array_size_expr, return_enum_stmt, nullptr);
+    auto *const ifOrdinalExistsStmt = Allocator()->New<ir::IfStatement>(inArraySizeExpr, returnEnumStmt, nullptr);
 
-    auto *const throw_no_enum_stmt = [this, input_ordinal_ident, enum_type]() {
-        auto *const exception_reference = MakeTypeReference(Allocator(), "Exception");
+    auto *const throwNoEnumStmt = [this, inputOrdinalIdent, enumType]() {
+        auto *const exceptionReference = MakeTypeReference(Allocator(), "Exception");
 
-        util::UString message_string(util::StringView("No enum constant in "), Allocator());
-        message_string.Append(enum_type->GetName());
-        message_string.Append(" with ordinal value ");
+        util::UString messageString(util::StringView("No enum constant in "), Allocator());
+        messageString.Append(enumType->GetName());
+        messageString.Append(" with ordinal value ");
 
-        auto *const message = Allocator()->New<ir::StringLiteral>(message_string.View());
-        auto *const new_expr_arg =
-            Allocator()->New<ir::BinaryExpression>(message, input_ordinal_ident, lexer::TokenType::PUNCTUATOR_PLUS);
-        ArenaVector<ir::Expression *> new_expr_args(Allocator()->Adapter());
-        new_expr_args.push_back(new_expr_arg);
+        auto *const message = Allocator()->New<ir::StringLiteral>(messageString.View());
+        auto *const newExprArg =
+            Allocator()->New<ir::BinaryExpression>(message, inputOrdinalIdent, lexer::TokenType::PUNCTUATOR_PLUS);
+        ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
+        newExprArgs.push_back(newExprArg);
 
-        auto *const new_expr = Allocator()->New<ir::ETSNewClassInstanceExpression>(
-            exception_reference, std::move(new_expr_args),
+        auto *const newExpr = Allocator()->New<ir::ETSNewClassInstanceExpression>(
+            exceptionReference, std::move(newExprArgs),
             GlobalBuiltinExceptionType()->GetDeclNode()->AsClassDefinition());
 
-        new_expr->SetSignature(
-            ResolveConstructExpression(GlobalBuiltinExceptionType(), new_expr->GetArguments(), new_expr->Start()));
-        new_expr->SetTsType(GlobalBuiltinExceptionType());
+        newExpr->SetSignature(
+            ResolveConstructExpression(GlobalBuiltinExceptionType(), newExpr->GetArguments(), newExpr->Start()));
+        newExpr->SetTsType(GlobalBuiltinExceptionType());
 
-        return Allocator()->New<ir::ThrowStatement>(new_expr);
+        return Allocator()->New<ir::ThrowStatement>(newExpr);
     }();
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(input_ordinal_ident);
+    params.push_back(inputOrdinalIdent);
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(if_ordinal_exists_stmt);
-    body.push_back(throw_no_enum_stmt);
-    body.push_back(return_enum_stmt);
+    body.push_back(ifOrdinalExistsStmt);
+    body.push_back(throwNoEnumStmt);
+    body.push_back(returnEnumStmt);
 
-    auto *const enum_type_annotation = MakeTypeReference(Allocator(), enum_type->GetName());
+    auto *const enumTypeAnnotation = MakeTypeReference(Allocator(), enumType->GetName());
 
-    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), param_scope, std::move(params),
-                                        std::move(body), enum_type_annotation);
+    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
+                                        std::move(body), enumTypeAnnotation);
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
 
-    auto *const ident = MakeQualifiedIdentifier(Allocator(), enum_type->GetDecl(), ETSEnumType::FROM_INT_METHOD_NAME);
+    auto *const ident = MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::FROM_INT_METHOD_NAME);
     function->SetIdent(ident);
     function->Scope()->BindInternalName(ident->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), ident, function);
 
-    return {MakeGlobalSignature(this, function, enum_type), nullptr};
+    return {MakeGlobalSignature(this, function, enumType), nullptr};
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumToStringMethod(ir::Identifier *const string_values_array_ident,
-                                                         ETSEnumInterface *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumToStringMethod(ir::Identifier *const stringValuesArrayIdent,
+                                                         ETSEnumInterface *const enumType)
 {
-    auto *const param_scope =
+    auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalClassScope());
 
-    auto *const input_enum_ident =
-        MakeFunctionParam(this, VarBinder()->AsETSBinder(), param_scope, "ordinal", enum_type);
+    auto *const inputEnumIdent = MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "ordinal", enumType);
 
-    auto *const return_stmt = [this, input_enum_ident, string_values_array_ident]() {
-        auto *const array_access_expr = Allocator()->New<ir::MemberExpression>(
-            string_values_array_ident, input_enum_ident, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-        array_access_expr->SetTsType(GlobalETSStringLiteralType());
+    auto *const returnStmt = [this, inputEnumIdent, stringValuesArrayIdent]() {
+        auto *const arrayAccessExpr = Allocator()->New<ir::MemberExpression>(
+            stringValuesArrayIdent, inputEnumIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+        arrayAccessExpr->SetTsType(GlobalETSStringLiteralType());
 
-        return Allocator()->New<ir::ReturnStatement>(array_access_expr);
+        return Allocator()->New<ir::ReturnStatement>(arrayAccessExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(return_stmt);
+    body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(input_enum_ident);
+    params.push_back(inputEnumIdent);
 
-    auto *const string_type_annotation = MakeTypeReference(Allocator(), GlobalBuiltinETSStringType()->Name());
-    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), param_scope, std::move(params),
-                                        std::move(body), string_type_annotation);
+    auto *const stringTypeAnnotation = MakeTypeReference(Allocator(), GlobalBuiltinETSStringType()->Name());
+    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
+                                        std::move(body), stringTypeAnnotation);
 
-    auto *const function_ident =
-        MakeQualifiedIdentifier(Allocator(), enum_type->GetDecl(), ETSEnumType::TO_STRING_METHOD_NAME);
-    function->SetIdent(function_ident);
-    function->Scope()->BindInternalName(function_ident->Name());
+    auto *const functionIdent =
+        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::TO_STRING_METHOD_NAME);
+    function->SetIdent(functionIdent);
+    function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(this, VarBinder()->AsETSBinder(), function_ident, function);
+    MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
     return {
         MakeGlobalSignature(this, function, GlobalETSStringLiteralType()),
         MakeProxyFunctionType(this, ETSEnumType::TO_STRING_METHOD_NAME, {}, function, GlobalETSStringLiteralType())};
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumGetValueMethod(ir::Identifier *const values_array_ident,
-                                                         ETSEnumType *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumGetValueMethod(ir::Identifier *const valuesArrayIdent,
+                                                         ETSEnumType *const enumType)
 {
-    auto *const param_scope =
+    auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalClassScope());
 
-    auto *const input_enum_ident = MakeFunctionParam(this, VarBinder()->AsETSBinder(), param_scope, "e", enum_type);
+    auto *const inputEnumIdent = MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "e", enumType);
 
-    auto *const return_stmt = [this, input_enum_ident, values_array_ident]() {
-        auto *const array_access_expr = Allocator()->New<ir::MemberExpression>(
-            values_array_ident, input_enum_ident, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-        array_access_expr->SetTsType(GlobalIntType());
+    auto *const returnStmt = [this, inputEnumIdent, valuesArrayIdent]() {
+        auto *const arrayAccessExpr = Allocator()->New<ir::MemberExpression>(
+            valuesArrayIdent, inputEnumIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+        arrayAccessExpr->SetTsType(GlobalIntType());
 
-        return Allocator()->New<ir::ReturnStatement>(array_access_expr);
+        return Allocator()->New<ir::ReturnStatement>(arrayAccessExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(return_stmt);
+    body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(input_enum_ident);
+    params.push_back(inputEnumIdent);
 
-    auto *const int_type_annotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
-    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), param_scope, std::move(params),
-                                        std::move(body), int_type_annotation);
+    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
+                                        std::move(body), intTypeAnnotation);
 
-    auto *const function_ident =
-        MakeQualifiedIdentifier(Allocator(), enum_type->GetDecl(), ETSEnumType::GET_VALUE_METHOD_NAME);
-    function->SetIdent(function_ident);
-    function->Scope()->BindInternalName(function_ident->Name());
+    auto *const functionIdent =
+        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::GET_VALUE_METHOD_NAME);
+    function->SetIdent(functionIdent);
+    function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(this, VarBinder()->AsETSBinder(), function_ident, function);
+    MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
     return {MakeGlobalSignature(this, function, GlobalIntType()),
             MakeProxyFunctionType(this, ETSEnumType::GET_VALUE_METHOD_NAME, {}, function, GlobalIntType())};
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumGetNameMethod(ir::Identifier *const names_array_ident,
-                                                        ETSEnumInterface *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumGetNameMethod(ir::Identifier *const namesArrayIdent,
+                                                        ETSEnumInterface *const enumType)
 {
-    auto *const param_scope =
+    auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const input_enum_ident =
-        MakeFunctionParam(this, VarBinder()->AsETSBinder(), param_scope, "ordinal", enum_type);
+    auto *const inputEnumIdent = MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "ordinal", enumType);
 
-    auto *const return_stmt = [this, input_enum_ident, names_array_ident]() {
-        auto *const array_access_expr = Allocator()->New<ir::MemberExpression>(
-            names_array_ident, input_enum_ident, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-        array_access_expr->SetTsType(GlobalBuiltinETSStringType());
+    auto *const returnStmt = [this, inputEnumIdent, namesArrayIdent]() {
+        auto *const arrayAccessExpr = Allocator()->New<ir::MemberExpression>(
+            namesArrayIdent, inputEnumIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+        arrayAccessExpr->SetTsType(GlobalBuiltinETSStringType());
 
-        return Allocator()->New<ir::ReturnStatement>(array_access_expr);
+        return Allocator()->New<ir::ReturnStatement>(arrayAccessExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(return_stmt);
+    body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(input_enum_ident);
+    params.push_back(inputEnumIdent);
 
-    auto *const string_type_annotation = MakeTypeReference(Allocator(), GlobalBuiltinETSStringType()->Name());
+    auto *const stringTypeAnnotation = MakeTypeReference(Allocator(), GlobalBuiltinETSStringType()->Name());
 
-    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), param_scope, std::move(params),
-                                        std::move(body), string_type_annotation);
+    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
+                                        std::move(body), stringTypeAnnotation);
 
-    auto *const function_ident =
-        MakeQualifiedIdentifier(Allocator(), enum_type->GetDecl(), ETSEnumType::GET_NAME_METHOD_NAME);
-    function->SetIdent(function_ident);
-    function->Scope()->BindInternalName(function_ident->Name());
+    auto *const functionIdent =
+        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::GET_NAME_METHOD_NAME);
+    function->SetIdent(functionIdent);
+    function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(this, VarBinder()->AsETSBinder(), function_ident, function);
+    MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
     return {MakeGlobalSignature(this, function, GlobalBuiltinETSStringType()),
             MakeProxyFunctionType(this, ETSEnumType::GET_NAME_METHOD_NAME, {}, function, GlobalBuiltinETSStringType())};
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const names_array_ident,
-                                                        ETSEnumInterface *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const namesArrayIdent,
+                                                        ETSEnumInterface *const enumType)
 {
-    auto *const param_scope =
+    auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const input_name_ident =
-        MakeFunctionParam(this, VarBinder()->AsETSBinder(), param_scope, "name", GlobalBuiltinETSStringType());
+    auto *const inputNameIdent =
+        MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "name", GlobalBuiltinETSStringType());
 
-    varbinder::LexicalScope<varbinder::LoopDeclarationScope> loop_decl_scope(VarBinder());
+    varbinder::LexicalScope<varbinder::LoopDeclarationScope> loopDeclScope(VarBinder());
 
-    auto *const for_loop_i_ident = [this]() {
+    auto *const forLoopIIdent = [this]() {
         auto *const ident = Allocator()->New<ir::Identifier>("i", Allocator());
         ident->SetTsType(GlobalIntType());
         auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
@@ -485,11 +483,11 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
         return ident;
     }();
 
-    auto *const for_loop_init_var_decl = [this, for_loop_i_ident]() {
+    auto *const forLoopInitVarDecl = [this, forLoopIIdent]() {
         auto *const init = Allocator()->New<ir::NumberLiteral>("0");
         init->SetTsType(GlobalIntType());
         auto *const decl =
-            Allocator()->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, for_loop_i_ident, init);
+            Allocator()->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, forLoopIIdent, init);
         decl->SetTsType(GlobalIntType());
         ArenaVector<ir::VariableDeclarator *> decls(Allocator()->Adapter());
         decls.push_back(decl);
@@ -497,124 +495,124 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
                                                          Allocator(), std::move(decls), false);
     }();
 
-    auto *const for_loop_test = [this, names_array_ident, for_loop_i_ident]() {
-        auto *const length_ident = Allocator()->New<ir::Identifier>("length", Allocator());
-        auto *const array_length_expr = Allocator()->New<ir::MemberExpression>(
-            names_array_ident, length_ident, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-        array_length_expr->SetTsType(GlobalIntType());
-        auto *const binary_expr = Allocator()->New<ir::BinaryExpression>(for_loop_i_ident, array_length_expr,
-                                                                         lexer::TokenType::PUNCTUATOR_LESS_THAN);
-        binary_expr->SetOperationType(GlobalIntType());
-        binary_expr->SetTsType(GlobalETSBooleanType());
-        return binary_expr;
+    auto *const forLoopTest = [this, namesArrayIdent, forLoopIIdent]() {
+        auto *const lengthIdent = Allocator()->New<ir::Identifier>("length", Allocator());
+        auto *const arrayLengthExpr = Allocator()->New<ir::MemberExpression>(
+            namesArrayIdent, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        arrayLengthExpr->SetTsType(GlobalIntType());
+        auto *const binaryExpr = Allocator()->New<ir::BinaryExpression>(forLoopIIdent, arrayLengthExpr,
+                                                                        lexer::TokenType::PUNCTUATOR_LESS_THAN);
+        binaryExpr->SetOperationType(GlobalIntType());
+        binaryExpr->SetTsType(GlobalETSBooleanType());
+        return binaryExpr;
     }();
 
-    auto *const for_loop_update = [this, for_loop_i_ident]() {
-        auto *const increment_expr =
-            Allocator()->New<ir::UpdateExpression>(for_loop_i_ident, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, true);
-        increment_expr->SetTsType(GlobalIntType());
-        return increment_expr;
+    auto *const forLoopUpdate = [this, forLoopIIdent]() {
+        auto *const incrementExpr =
+            Allocator()->New<ir::UpdateExpression>(forLoopIIdent, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, true);
+        incrementExpr->SetTsType(GlobalIntType());
+        return incrementExpr;
     }();
 
-    auto *const if_stmt = [this, names_array_ident, for_loop_i_ident, input_name_ident]() {
-        auto *const names_array_element_expr = Allocator()->New<ir::MemberExpression>(
-            names_array_ident, for_loop_i_ident, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
-        names_array_element_expr->SetTsType(GlobalBuiltinETSStringType());
+    auto *const ifStmt = [this, namesArrayIdent, forLoopIIdent, inputNameIdent]() {
+        auto *const namesArrayElementExpr = Allocator()->New<ir::MemberExpression>(
+            namesArrayIdent, forLoopIIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+        namesArrayElementExpr->SetTsType(GlobalBuiltinETSStringType());
 
-        auto *const names_equal_expr = Allocator()->New<ir::BinaryExpression>(
-            input_name_ident, names_array_element_expr, lexer::TokenType::PUNCTUATOR_EQUAL);
-        names_equal_expr->SetOperationType(GlobalBuiltinETSStringType());
-        names_equal_expr->SetTsType(GlobalETSBooleanType());
+        auto *const namesEqualExpr = Allocator()->New<ir::BinaryExpression>(inputNameIdent, namesArrayElementExpr,
+                                                                            lexer::TokenType::PUNCTUATOR_EQUAL);
+        namesEqualExpr->SetOperationType(GlobalBuiltinETSStringType());
+        namesEqualExpr->SetTsType(GlobalETSBooleanType());
 
-        auto *const return_stmt = Allocator()->New<ir::ReturnStatement>(for_loop_i_ident);
-        return Allocator()->New<ir::IfStatement>(names_equal_expr, return_stmt, nullptr);
+        auto *const returnStmt = Allocator()->New<ir::ReturnStatement>(forLoopIIdent);
+        return Allocator()->New<ir::IfStatement>(namesEqualExpr, returnStmt, nullptr);
     }();
 
-    varbinder::LexicalScope<varbinder::LoopScope> loop_scope(VarBinder());
-    loop_scope.GetScope()->BindDecls(loop_decl_scope.GetScope());
+    varbinder::LexicalScope<varbinder::LoopScope> loopScope(VarBinder());
+    loopScope.GetScope()->BindDecls(loopDeclScope.GetScope());
 
-    auto *const for_loop =
-        Allocator()->New<ir::ForUpdateStatement>(for_loop_init_var_decl, for_loop_test, for_loop_update, if_stmt);
-    loop_scope.GetScope()->BindNode(for_loop);
-    for_loop->SetScope(loop_scope.GetScope());
-    loop_scope.GetScope()->DeclScope()->BindNode(for_loop);
+    auto *const forLoop =
+        Allocator()->New<ir::ForUpdateStatement>(forLoopInitVarDecl, forLoopTest, forLoopUpdate, ifStmt);
+    loopScope.GetScope()->BindNode(forLoop);
+    forLoop->SetScope(loopScope.GetScope());
+    loopScope.GetScope()->DeclScope()->BindNode(forLoop);
 
-    auto *const throw_stmt = [this, input_name_ident, enum_type]() {
-        util::UString message_string(util::StringView("No enum constant "), Allocator());
-        message_string.Append(enum_type->GetName());
-        message_string.Append('.');
+    auto *const throwStmt = [this, inputNameIdent, enumType]() {
+        util::UString messageString(util::StringView("No enum constant "), Allocator());
+        messageString.Append(enumType->GetName());
+        messageString.Append('.');
 
-        auto *const message = Allocator()->New<ir::StringLiteral>(message_string.View());
-        auto *const new_expr_arg =
-            Allocator()->New<ir::BinaryExpression>(message, input_name_ident, lexer::TokenType::PUNCTUATOR_PLUS);
+        auto *const message = Allocator()->New<ir::StringLiteral>(messageString.View());
+        auto *const newExprArg =
+            Allocator()->New<ir::BinaryExpression>(message, inputNameIdent, lexer::TokenType::PUNCTUATOR_PLUS);
 
-        ArenaVector<ir::Expression *> new_expr_args(Allocator()->Adapter());
-        new_expr_args.push_back(new_expr_arg);
+        ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
+        newExprArgs.push_back(newExprArg);
 
-        auto *const exception_reference = MakeTypeReference(Allocator(), "Exception");
+        auto *const exceptionReference = MakeTypeReference(Allocator(), "Exception");
 
-        auto *const new_expr = Allocator()->New<ir::ETSNewClassInstanceExpression>(
-            exception_reference, std::move(new_expr_args),
+        auto *const newExpr = Allocator()->New<ir::ETSNewClassInstanceExpression>(
+            exceptionReference, std::move(newExprArgs),
             GlobalBuiltinExceptionType()->GetDeclNode()->AsClassDefinition());
-        new_expr->SetSignature(
-            ResolveConstructExpression(GlobalBuiltinExceptionType(), new_expr->GetArguments(), new_expr->Start()));
-        new_expr->SetTsType(GlobalBuiltinExceptionType());
+        newExpr->SetSignature(
+            ResolveConstructExpression(GlobalBuiltinExceptionType(), newExpr->GetArguments(), newExpr->Start()));
+        newExpr->SetTsType(GlobalBuiltinExceptionType());
 
-        return Allocator()->New<ir::ThrowStatement>(new_expr);
+        return Allocator()->New<ir::ThrowStatement>(newExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(for_loop);
-    body.push_back(throw_stmt);
+    body.push_back(forLoop);
+    body.push_back(throwStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(input_name_ident);
+    params.push_back(inputNameIdent);
 
-    auto *const enum_type_annotation = MakeTypeReference(Allocator(), enum_type->GetName());
+    auto *const enumTypeAnnotation = MakeTypeReference(Allocator(), enumType->GetName());
 
-    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), param_scope, std::move(params),
-                                        std::move(body), enum_type_annotation);
+    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
+                                        std::move(body), enumTypeAnnotation);
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
 
-    auto *const function_ident =
-        MakeQualifiedIdentifier(Allocator(), enum_type->GetDecl(), ETSEnumType::VALUE_OF_METHOD_NAME);
-    function->SetIdent(function_ident);
-    function->Scope()->BindInternalName(function_ident->Name());
+    auto *const functionIdent =
+        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::VALUE_OF_METHOD_NAME);
+    function->SetIdent(functionIdent);
+    function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(this, VarBinder()->AsETSBinder(), function_ident, function);
+    MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
-    return {MakeGlobalSignature(this, function, enum_type),
+    return {MakeGlobalSignature(this, function, enumType),
             MakeProxyFunctionType(this, ETSEnumType::VALUE_OF_METHOD_NAME,
                                   {function->Params()[0]->AsETSParameterExpression()->Variable()->AsLocalVariable()},
-                                  function, enum_type)};
+                                  function, enumType)};
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumValuesMethod(ir::Identifier *const items_array_ident,
-                                                       ETSEnumInterface *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumValuesMethod(ir::Identifier *const itemsArrayIdent,
+                                                       ETSEnumInterface *const enumType)
 {
-    auto *const param_scope =
+    auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const return_stmt = Allocator()->New<ir::ReturnStatement>(items_array_ident);
+    auto *const returnStmt = Allocator()->New<ir::ReturnStatement>(itemsArrayIdent);
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
-    body.push_back(return_stmt);
+    body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto *const enum_array_type_annotation =
-        Allocator()->New<ir::TSArrayType>(MakeTypeReference(Allocator(), enum_type->GetName()));
+    auto *const enumArrayTypeAnnotation =
+        Allocator()->New<ir::TSArrayType>(MakeTypeReference(Allocator(), enumType->GetName()));
 
-    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), param_scope, std::move(params),
-                                        std::move(body), enum_array_type_annotation);
+    auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
+                                        std::move(body), enumArrayTypeAnnotation);
 
-    auto *const function_ident =
-        MakeQualifiedIdentifier(Allocator(), enum_type->GetDecl(), ETSEnumType::VALUES_METHOD_NAME);
-    function->SetIdent(function_ident);
-    function->Scope()->BindInternalName(function_ident->Name());
+    auto *const functionIdent =
+        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::VALUES_METHOD_NAME);
+    function->SetIdent(functionIdent);
+    function->Scope()->BindInternalName(functionIdent->Name());
 
-    MakeMethodDef(this, VarBinder()->AsETSBinder(), function_ident, function);
+    MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
-    return {MakeGlobalSignature(this, function, CreateETSArrayType(enum_type)),
-            MakeProxyFunctionType(this, ETSEnumType::VALUES_METHOD_NAME, {}, function, CreateETSArrayType(enum_type))};
+    return {MakeGlobalSignature(this, function, CreateETSArrayType(enumType)),
+            MakeProxyFunctionType(this, ETSEnumType::VALUES_METHOD_NAME, {}, function, CreateETSArrayType(enumType))};
 }
 }  // namespace panda::es2panda::checker

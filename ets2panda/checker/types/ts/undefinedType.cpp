@@ -42,7 +42,7 @@ TypeFacts UndefinedType::GetTypeFacts() const
 }
 
 Type *UndefinedType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                                 [[maybe_unused]] GlobalTypesHolder *global_types)
+                                 [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     return this;
 }

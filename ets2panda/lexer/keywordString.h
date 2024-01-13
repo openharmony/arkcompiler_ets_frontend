@@ -23,18 +23,18 @@
 namespace panda::es2panda::lexer {
 struct KeywordString {
     constexpr KeywordString(std::string_view s, TokenType t) : KeywordString(s, t, t) {}
-    constexpr KeywordString(std::string_view s, TokenType t, TokenType k) : str_(s), token_type_(t), keyword_type_(k) {}
+    constexpr KeywordString(std::string_view s, TokenType t, TokenType k) : str_(s), tokenType_(t), keywordType_(k) {}
 
     explicit KeywordString(std::string_view &s) : str_(s) {}
 
     TokenType GetTokenType() const
     {
-        return token_type_;
+        return tokenType_;
     }
 
     TokenType GetKeywordType() const
     {
-        return keyword_type_;
+        return keywordType_;
     }
 
     std::string_view Str() const
@@ -44,8 +44,8 @@ struct KeywordString {
 
 private:
     std::string_view str_;
-    TokenType token_type_ {};
-    TokenType keyword_type_ {};
+    TokenType tokenType_ {};
+    TokenType keywordType_ {};
 };
 }  // namespace panda::es2panda::lexer
 

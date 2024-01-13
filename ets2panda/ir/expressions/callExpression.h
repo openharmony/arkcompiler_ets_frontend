@@ -43,13 +43,13 @@ public:
     NO_MOVE_SEMANTIC(CallExpression);
 
     explicit CallExpression(Expression *const callee, ArenaVector<Expression *> &&arguments,
-                            TSTypeParameterInstantiation *const type_params, bool const optional,
-                            bool const trailing_comma = false)
+                            TSTypeParameterInstantiation *const typeParams, bool const optional,
+                            bool const trailingComma = false)
         : MaybeOptionalExpression(AstNodeType::CALL_EXPRESSION, optional),
           callee_(callee),
           arguments_(std::move(arguments)),
-          type_params_(type_params),
-          trailing_comma_(trailing_comma)
+          typeParams_(typeParams),
+          trailingComma_(trailingComma)
     {
     }
 
@@ -78,12 +78,12 @@ public:
 
     [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept
     {
-        return type_params_;
+        return typeParams_;
     }
 
     [[nodiscard]] TSTypeParameterInstantiation *TypeParams() noexcept
     {
-        return type_params_;
+        return typeParams_;
     }
 
     [[nodiscard]] const ArenaVector<Expression *> &Arguments() const noexcept
@@ -98,7 +98,7 @@ public:
 
     [[nodiscard]] bool HasTrailingComma() const noexcept
     {
-        return trailing_comma_;
+        return trailingComma_;
     }
 
     [[nodiscard]] checker::Signature *Signature() noexcept
@@ -116,39 +116,39 @@ public:
         signature_ = signature;
     }
 
-    void SetTypeParams(TSTypeParameterInstantiation *const type_params) noexcept
+    void SetTypeParams(TSTypeParameterInstantiation *const typeParams) noexcept
     {
-        type_params_ = type_params;
+        typeParams_ = typeParams;
     }
 
     [[nodiscard]] checker::Type *UncheckedType() const noexcept
     {
-        return unchecked_type_;
+        return uncheckedType_;
     }
 
     void SetUncheckedType(checker::Type *type) noexcept
     {
-        unchecked_type_ = type;
+        uncheckedType_ = type;
     }
 
     void SetTrailingBlock(ir::BlockStatement *const block) noexcept
     {
-        trailing_block_ = block;
+        trailingBlock_ = block;
     }
 
     [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
-        return trailing_block_;
+        return trailingBlock_;
     }
 
-    void SetIsTrailingBlockInNewLine(bool const is_new_line) noexcept
+    void SetIsTrailingBlockInNewLine(bool const isNewLine) noexcept
     {
-        is_trailing_block_in_new_line_ = is_new_line;
+        isTrailingBlockInNewLine_ = isNewLine;
     }
 
     [[nodiscard]] bool IsTrailingBlockInNewLine() const noexcept
     {
-        return is_trailing_block_in_new_line_;
+        return isTrailingBlockInNewLine_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -173,19 +173,19 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *callee_;
     ArenaVector<Expression *> arguments_;
-    TSTypeParameterInstantiation *type_params_;
+    TSTypeParameterInstantiation *typeParams_;
     checker::Signature *signature_ {};
-    bool trailing_comma_;
+    bool trailingComma_;
     // for trailing lambda feature in ets
-    ir::BlockStatement *trailing_block_ {};
-    bool is_trailing_block_in_new_line_ {false};
-    checker::Type *unchecked_type_ {};
+    ir::BlockStatement *trailingBlock_ {};
+    bool isTrailingBlockInNewLine_ {false};
+    checker::Type *uncheckedType_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:
     bool IsETSConstructorCall() const;
     checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
-                                             checker::Type *callee_type);
+                                             checker::Type *calleeType);
 };
 }  // namespace panda::es2panda::ir
 

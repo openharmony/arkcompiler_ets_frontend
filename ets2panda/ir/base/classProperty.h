@@ -34,21 +34,21 @@ public:
     NO_COPY_SEMANTIC(ClassProperty);
     NO_MOVE_SEMANTIC(ClassProperty);
 
-    explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const type_annotation,
-                           ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
-        : ClassElement(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, is_computed),
-          type_annotation_(type_annotation)
+    explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const typeAnnotation,
+                           ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const isComputed)
+        : ClassElement(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, isComputed),
+          typeAnnotation_(typeAnnotation)
     {
     }
 
     [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
-        return type_annotation_;
+        return typeAnnotation_;
     }
 
-    [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool const is_static) const override
+    [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool const isStatic) const override
     {
-        return is_static ? PrivateFieldKind::STATIC_FIELD : PrivateFieldKind::FIELD;
+        return isStatic ? PrivateFieldKind::STATIC_FIELD : PrivateFieldKind::FIELD;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -70,7 +70,7 @@ public:
     }
 
 private:
-    TypeNode *type_annotation_;
+    TypeNode *typeAnnotation_;
 };
 }  // namespace panda::es2panda::ir
 

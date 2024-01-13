@@ -35,7 +35,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target) override;
     void Cast(TypeRelation *relation, Type *target) override;
-    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
     void ToString(std::stringstream &ss) const override
     {

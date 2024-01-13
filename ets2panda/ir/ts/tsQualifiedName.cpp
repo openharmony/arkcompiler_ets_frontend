@@ -67,7 +67,7 @@ checker::Type *TSQualifiedName::Check(checker::ETSChecker *checker)
 
 util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const
 {
-    util::UString package_name(allocator);
+    util::UString packageName(allocator);
 
     const auto *iter = this;
 
@@ -75,22 +75,22 @@ util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const
         iter = iter->Left()->AsTSQualifiedName();
     }
 
-    package_name.Append(iter->Left()->AsIdentifier()->Name());
+    packageName.Append(iter->Left()->AsIdentifier()->Name());
 
     const ir::AstNode *parent = iter;
 
     while (parent != nullptr && parent->IsTSQualifiedName()) {
-        package_name.Append('.');
-        package_name.Append(parent->AsTSQualifiedName()->Right()->AsIdentifier()->Name());
+        packageName.Append('.');
+        packageName.Append(parent->AsTSQualifiedName()->Right()->AsIdentifier()->Name());
         parent = parent->Parent();
     }
 
-    return package_name.View();
+    return packageName.View();
 }
 
 util::StringView TSQualifiedName::BaseToString(ArenaAllocator *allocator) const
 {
-    util::UString package_name(allocator);
+    util::UString packageName(allocator);
 
     const auto *iter = this;
 
@@ -98,17 +98,17 @@ util::StringView TSQualifiedName::BaseToString(ArenaAllocator *allocator) const
         iter = iter->Left()->AsTSQualifiedName();
     }
 
-    package_name.Append(iter->Left()->AsIdentifier()->Name());
+    packageName.Append(iter->Left()->AsIdentifier()->Name());
 
     const ir::AstNode *parent = iter->Parent();
 
     while (parent != nullptr && parent->IsTSQualifiedName()) {
-        package_name.Append('.');
-        package_name.Append(parent->AsTSQualifiedName()->Right()->AsIdentifier()->Name());
+        packageName.Append('.');
+        packageName.Append(parent->AsTSQualifiedName()->Right()->AsIdentifier()->Name());
         parent = parent->Parent();
     }
 
-    return package_name.View();
+    return packageName.View();
 }
 
 template <typename T>

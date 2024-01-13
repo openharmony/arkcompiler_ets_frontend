@@ -46,15 +46,15 @@
 
 namespace panda::es2panda::checker {
 
-ir::ETSParameterExpression *ETSChecker::AddParam(varbinder::FunctionParamScope *param_scope, util::StringView name,
+ir::ETSParameterExpression *ETSChecker::AddParam(varbinder::FunctionParamScope *paramScope, util::StringView name,
                                                  checker::Type *type)
 {
-    auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), param_scope, false);
-    auto *param_ident = AllocNode<ir::Identifier>(name, Allocator());
-    auto *param = AllocNode<ir::ETSParameterExpression>(param_ident, nullptr);
-    auto *param_var = std::get<1>(VarBinder()->AddParamDecl(param));
-    param_var->SetTsType(type);
-    param->Ident()->SetVariable(param_var);
+    auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), paramScope, false);
+    auto *paramIdent = AllocNode<ir::Identifier>(name, Allocator());
+    auto *param = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+    auto *paramVar = std::get<1>(VarBinder()->AddParamDecl(param));
+    paramVar->SetTsType(type);
+    param->Ident()->SetVariable(paramVar);
     param->Ident()->SetTsType(type);
     return param;
 }
@@ -86,35 +86,35 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
                                                            Language lang)
 {
     auto *name = AllocNode<ir::Identifier>("invoke", Allocator());
-    auto *param_scope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), nullptr);
-    auto *scope = Allocator()->New<varbinder::FunctionScope>(Allocator(), param_scope);
+    auto *paramScope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), nullptr);
+    auto *scope = Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
     auto *info = CreateSignatureInfo();
-    info->min_arg_count = arguments.size() + 2U;
+    info->minArgCount = arguments.size() + 2U;
 
-    auto dynamic_type = GlobalBuiltinDynamicType(lang);
+    auto dynamicType = GlobalBuiltinDynamicType(lang);
 
-    auto *obj_param = AddParam(param_scope, "obj", dynamic_type);
-    params.push_back(obj_param);
-    info->params.push_back(obj_param->Ident()->Variable()->AsLocalVariable());
+    auto *objParam = AddParam(paramScope, "obj", dynamicType);
+    params.push_back(objParam);
+    info->params.push_back(objParam->Ident()->Variable()->AsLocalVariable());
 
     ir::ETSParameterExpression *param2;
     if (!IsByValueCall(VarBinder()->AsETSBinder(), callee)) {
-        param2 = AddParam(param_scope, "qname", GlobalETSStringLiteralType());
+        param2 = AddParam(paramScope, "qname", GlobalETSStringLiteralType());
     } else {
-        param2 = AddParam(param_scope, "this", dynamic_type);
+        param2 = AddParam(paramScope, "this", dynamicType);
     }
 
     params.push_back(param2);
     info->params.push_back(param2->Ident()->Variable()->AsLocalVariable());
 
     for (size_t i = 0; i < arguments.size(); i++) {
-        util::UString param_name("p" + std::to_string(i), Allocator());
-        Type *param_type =
+        util::UString paramName("p" + std::to_string(i), Allocator());
+        Type *paramType =
             arguments[i]->TsType()->IsLambdaObject() ? GlobalBuiltinJSValueType() : arguments[i]->TsType();
-        ir::ETSParameterExpression *param = AddParam(param_scope, param_name.View(), param_type);
+        ir::ETSParameterExpression *param = AddParam(paramScope, paramName.View(), paramType);
         params.push_back(param);
         info->params.push_back(param->Ident()->Variable()->AsLocalVariable());
     }
@@ -125,13 +125,13 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
     func->SetScope(scope);
 
     scope->BindNode(func);
-    param_scope->BindNode(func);
-    scope->BindParamScope(param_scope);
-    param_scope->BindFunctionScope(scope);
+    paramScope->BindNode(func);
+    scope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(scope);
 
     func->SetIdent(name);
 
-    auto *signature = CreateSignature(info, dynamic_type, func);
+    auto *signature = CreateSignature(info, dynamicType, func);
     signature->AddSignatureFlag(SignatureFlags::STATIC);
 
     func->SetSignature(signature);
@@ -160,16 +160,16 @@ static void ToString([[maybe_unused]] ETSChecker *checker, const ArenaVector<var
 
 template <typename T>
 Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments,
-                                                    Language lang, bool is_construct)
+                                                    Language lang, bool isConstruct)
 {
-    auto &dynamic_intrinsics = *DynamicCallIntrinsics(is_construct);
+    auto &dynamicIntrinsics = *DynamicCallIntrinsics(isConstruct);
 
-    auto map_it = dynamic_intrinsics.find(lang);
-    if (map_it == dynamic_intrinsics.cend()) {
-        std::tie(map_it, std::ignore) = dynamic_intrinsics.emplace(lang, Allocator()->Adapter());
+    auto mapIt = dynamicIntrinsics.find(lang);
+    if (mapIt == dynamicIntrinsics.cend()) {
+        std::tie(mapIt, std::ignore) = dynamicIntrinsics.emplace(lang, Allocator()->Adapter());
     }
 
-    auto &map = map_it->second;
+    auto &map = mapIt->second;
 
     std::stringstream ss;
     ss << "dyncall";
@@ -198,20 +198,20 @@ template Signature *ETSChecker::ResolveDynamicCallExpression<varbinder::LocalVar
 
 template <bool IS_STATIC>
 std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> ETSChecker::CreateClassInitializer(
-    varbinder::ClassScope *class_scope, const ClassInitializerBuilder &builder, ETSObjectType *type)
+    varbinder::ClassScope *classScope, const ClassInitializerBuilder &builder, ETSObjectType *type)
 {
-    varbinder::LocalScope *method_scope = nullptr;
+    varbinder::LocalScope *methodScope = nullptr;
     if constexpr (IS_STATIC) {
-        method_scope = class_scope->StaticMethodScope();
+        methodScope = classScope->StaticMethodScope();
     } else {
-        method_scope = class_scope->InstanceMethodScope();
+        methodScope = classScope->InstanceMethodScope();
     }
-    auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), method_scope);
+    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), methodScope);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto *param_scope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), class_scope);
-    auto *scope = Allocator()->New<varbinder::FunctionScope>(Allocator(), param_scope);
+    auto *paramScope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), classScope);
+    auto *scope = Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
 
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
@@ -241,138 +241,137 @@ std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> ET
 
     scope->BindNode(func);
     func->SetIdent(id);
-    param_scope->BindNode(func);
-    scope->BindParamScope(param_scope);
-    param_scope->BindFunctionScope(scope);
+    paramScope->BindNode(func);
+    scope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(scope);
 
-    auto *signature_info = CreateSignatureInfo();
-    signature_info->rest_var = nullptr;
-    auto *signature = CreateSignature(signature_info, GlobalVoidType(), func);
+    auto *signatureInfo = CreateSignatureInfo();
+    signatureInfo->restVar = nullptr;
+    auto *signature = CreateSignature(signatureInfo, GlobalVoidType(), func);
     func->SetSignature(signature);
 
-    auto *func_expr = AllocNode<ir::FunctionExpression>(func);
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
 
     VarBinder()->AsETSBinder()->BuildInternalName(func);
     VarBinder()->AsETSBinder()->BuildFunctionName(func);
     VarBinder()->Functions().push_back(func->Scope());
 
     if constexpr (IS_STATIC) {
-        auto *static_block = AllocNode<ir::ClassStaticBlock>(func_expr, Allocator());
-        static_block->AddModifier(ir::ModifierFlags::STATIC);
-        return static_block;
+        auto *staticBlock = AllocNode<ir::ClassStaticBlock>(funcExpr, Allocator());
+        staticBlock->AddModifier(ir::ModifierFlags::STATIC);
+        return staticBlock;
     } else {
         type->AddConstructSignature(signature);
 
-        auto *ctor = Allocator()->New<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, id, func_expr,
+        auto *ctor = Allocator()->New<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, id, funcExpr,
                                                             ir::ModifierFlags::NONE, Allocator(), false);
-        auto *func_type = CreateETSFunctionType(signature, id->Name());
-        ctor->SetTsType(func_type);
-        func_expr->SetParent(class_scope->Node()->AsClassDeclaration()->Definition());
+        auto *funcType = CreateETSFunctionType(signature, id->Name());
+        ctor->SetTsType(funcType);
+        funcExpr->SetParent(classScope->Node()->AsClassDeclaration()->Definition());
         func->SetParent(ctor);
         return ctor;
     }
 }
 
-ir::ClassStaticBlock *ETSChecker::CreateDynamicCallClassInitializer(varbinder::ClassScope *class_scope, Language lang,
-                                                                    bool is_construct)
+ir::ClassStaticBlock *ETSChecker::CreateDynamicCallClassInitializer(varbinder::ClassScope *classScope, Language lang,
+                                                                    bool isConstruct)
 {
     return CreateClassInitializer<true>(
-        class_scope,
-        [this, lang, is_construct](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
-                                   [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
+        classScope, [this, lang, isConstruct](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
+                                              [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
             auto [builtin_class_name, builtin_method_name] =
-                util::Helpers::SplitSignature(is_construct ? compiler::Signatures::Dynamic::InitNewClassBuiltin(lang)
-                                                           : compiler::Signatures::Dynamic::InitCallClassBuiltin(lang));
-            auto *class_id = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
-            auto *method_id = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
-            auto *callee = AllocNode<ir::MemberExpression>(class_id, method_id,
-                                                           ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+                util::Helpers::SplitSignature(isConstruct ? compiler::Signatures::Dynamic::InitNewClassBuiltin(lang)
+                                                          : compiler::Signatures::Dynamic::InitCallClassBuiltin(lang));
+            auto *classId = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
+            auto *methodId = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
+            auto *callee = AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS,
+                                                           false, false);
 
-            ArenaVector<ir::Expression *> call_params(Allocator()->Adapter());
+            ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
 
             std::stringstream ss;
-            auto name = is_construct ? compiler::Signatures::Dynamic::NewClass(lang)
-                                     : compiler::Signatures::Dynamic::CallClass(lang);
+            auto name = isConstruct ? compiler::Signatures::Dynamic::NewClass(lang)
+                                    : compiler::Signatures::Dynamic::CallClass(lang);
             auto package = VarBinder()->Program()->GetPackageName();
 
             ss << compiler::Signatures::CLASS_REF_BEGIN;
             if (!package.Empty()) {
-                std::string package_str(package);
-                std::replace(package_str.begin(), package_str.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
+                std::string packageStr(package);
+                std::replace(packageStr.begin(), packageStr.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
                              *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
-                ss << package_str << compiler::Signatures::NAMESPACE_SEPARATOR;
+                ss << packageStr << compiler::Signatures::NAMESPACE_SEPARATOR;
             }
             ss << name << compiler::Signatures::MANGLE_SEPARATOR;
 
-            auto *class_name = AllocNode<ir::StringLiteral>(util::UString(ss.str(), Allocator()).View());
-            call_params.push_back(class_name);
+            auto *className = AllocNode<ir::StringLiteral>(util::UString(ss.str(), Allocator()).View());
+            callParams.push_back(className);
 
-            auto *init_call = AllocNode<ir::CallExpression>(callee, std::move(call_params), nullptr, false);
+            auto *initCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 
             {
                 ScopeContext ctx(this, scope);
-                init_call->Check(this);
+                initCall->Check(this);
             }
 
-            statements->push_back(AllocNode<ir::ExpressionStatement>(init_call));
+            statements->push_back(AllocNode<ir::ExpressionStatement>(initCall));
         });
 }
 
 void ETSChecker::BuildClass(util::StringView name, const ClassBuilder &builder)
 {
-    auto *class_id = AllocNode<ir::Identifier>(name, Allocator());
-    auto [decl, var] = VarBinder()->NewVarDecl<varbinder::ClassDecl>(class_id->Start(), class_id->Name());
-    class_id->SetVariable(var);
+    auto *classId = AllocNode<ir::Identifier>(name, Allocator());
+    auto [decl, var] = VarBinder()->NewVarDecl<varbinder::ClassDecl>(classId->Start(), classId->Name());
+    classId->SetVariable(var);
 
-    auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
+    auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
 
-    auto *class_def = AllocNode<ir::ClassDefinition>(Allocator(), class_id, ir::ClassDefinitionModifiers::DECLARATION,
-                                                     ir::ModifierFlags::NONE, Language(Language::Id::ETS));
-    class_def->SetScope(class_ctx.GetScope());
+    auto *classDef = AllocNode<ir::ClassDefinition>(Allocator(), classId, ir::ClassDefinitionModifiers::DECLARATION,
+                                                    ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+    classDef->SetScope(classCtx.GetScope());
 
-    auto *class_def_type = Allocator()->New<checker::ETSObjectType>(
-        Allocator(), class_def->Ident()->Name(), class_def->Ident()->Name(), class_def, checker::ETSObjectFlags::CLASS);
-    class_def->SetTsType(class_def_type);
+    auto *classDefType = Allocator()->New<checker::ETSObjectType>(
+        Allocator(), classDef->Ident()->Name(), classDef->Ident()->Name(), classDef, checker::ETSObjectFlags::CLASS);
+    classDef->SetTsType(classDefType);
 
-    auto *class_decl = AllocNode<ir::ClassDeclaration>(class_def, Allocator());
-    class_decl->SetParent(VarBinder()->TopScope()->Node());
-    class_def->Scope()->BindNode(class_decl);
-    decl->BindNode(class_def);
+    auto *classDecl = AllocNode<ir::ClassDeclaration>(classDef, Allocator());
+    classDecl->SetParent(VarBinder()->TopScope()->Node());
+    classDef->Scope()->BindNode(classDecl);
+    decl->BindNode(classDef);
 
-    VarBinder()->Program()->Ast()->Statements().push_back(class_decl);
+    VarBinder()->Program()->Ast()->Statements().push_back(classDecl);
 
-    varbinder::BoundContext bound_ctx(VarBinder()->AsETSBinder()->GetGlobalRecordTable(), class_def);
+    varbinder::BoundContext boundCtx(VarBinder()->AsETSBinder()->GetGlobalRecordTable(), classDef);
 
-    ArenaVector<ir::AstNode *> class_body(Allocator()->Adapter());
+    ArenaVector<ir::AstNode *> classBody(Allocator()->Adapter());
 
-    builder(class_ctx.GetScope(), &class_body);
+    builder(classCtx.GetScope(), &classBody);
 
-    class_def->AddProperties(std::move(class_body));
+    classDef->AddProperties(std::move(classBody));
 }
 
-void ETSChecker::BuildDynamicCallClass(bool is_construct)
+void ETSChecker::BuildDynamicCallClass(bool isConstruct)
 {
-    auto &dynamic_intrinsics = *DynamicCallIntrinsics(is_construct);
+    auto &dynamicIntrinsics = *DynamicCallIntrinsics(isConstruct);
 
-    if (dynamic_intrinsics.empty()) {
+    if (dynamicIntrinsics.empty()) {
         return;
     }
 
-    for (auto &entry : dynamic_intrinsics) {
+    for (auto &entry : dynamicIntrinsics) {
         auto lang = entry.first;
         auto &intrinsics = entry.second;
-        auto class_name = is_construct ? compiler::Signatures::Dynamic::NewClass(lang)
-                                       : compiler::Signatures::Dynamic::CallClass(lang);
-        BuildClass(class_name, [this, lang, &intrinsics, is_construct](varbinder::ClassScope *scope,
-                                                                       ArenaVector<ir::AstNode *> *class_body) {
+        auto className = isConstruct ? compiler::Signatures::Dynamic::NewClass(lang)
+                                     : compiler::Signatures::Dynamic::CallClass(lang);
+        BuildClass(className, [this, lang, &intrinsics, isConstruct](varbinder::ClassScope *scope,
+                                                                     ArenaVector<ir::AstNode *> *classBody) {
             for (auto &[_, func] : intrinsics) {
                 (void)_;
 
                 func->Scope()->ParamScope()->SetParent(scope);
 
-                auto *func_expr = AllocNode<ir::FunctionExpression>(func);
+                auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
 
-                auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, func->Id(), func_expr,
+                auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, func->Id(), funcExpr,
                                                                ir::ModifierFlags::PUBLIC | ir::ModifierFlags::NATIVE |
                                                                    ir::ModifierFlags::STATIC,
                                                                Allocator(), false);
@@ -380,42 +379,42 @@ void ETSChecker::BuildDynamicCallClass(bool is_construct)
                 VarBinder()->AsETSBinder()->BuildInternalName(func);
                 VarBinder()->AsETSBinder()->BuildFunctionName(func);
 
-                class_body->push_back(method);
+                classBody->push_back(method);
             }
 
-            class_body->push_back(CreateDynamicCallClassInitializer(scope, lang, is_construct));
+            classBody->push_back(CreateDynamicCallClassInitializer(scope, lang, isConstruct));
         });
     }
 }
 
 ir::ClassStaticBlock *ETSChecker::CreateDynamicModuleClassInitializer(
-    varbinder::ClassScope *class_scope, const std::vector<ir::ETSImportDeclaration *> &imports)
+    varbinder::ClassScope *classScope, const std::vector<ir::ETSImportDeclaration *> &imports)
 {
     return CreateClassInitializer<true>(
-        class_scope, [this, imports](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
-                                     [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
+        classScope, [this, imports](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
+                                    [[maybe_unused]] ArenaVector<ir::Expression *> *params) {
             for (auto *import : imports) {
                 auto builtin = compiler::Signatures::Dynamic::LoadModuleBuiltin(import->Language());
                 auto [builtin_class_name, builtin_method_name] = util::Helpers::SplitSignature(builtin);
 
-                auto *class_id = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
-                auto *method_id = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
-                auto *callee = AllocNode<ir::MemberExpression>(class_id, method_id,
+                auto *classId = AllocNode<ir::Identifier>(builtin_class_name, Allocator());
+                auto *methodId = AllocNode<ir::Identifier>(builtin_method_name, Allocator());
+                auto *callee = AllocNode<ir::MemberExpression>(classId, methodId,
                                                                ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
-                ArenaVector<ir::Expression *> call_params(Allocator()->Adapter());
-                call_params.push_back(import->ResolvedSource());
+                ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
+                callParams.push_back(import->ResolvedSource());
 
-                auto *load_call = AllocNode<ir::CallExpression>(callee, std::move(call_params), nullptr, false);
+                auto *loadCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 
-                auto *module_class_id =
+                auto *moduleClassId =
                     AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
-                auto *field_id = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
+                auto *fieldId = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
                 auto *property = AllocNode<ir::MemberExpression>(
-                    module_class_id, field_id, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+                    moduleClassId, fieldId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
                 auto *initializer =
-                    AllocNode<ir::AssignmentExpression>(property, load_call, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+                    AllocNode<ir::AssignmentExpression>(property, loadCall, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
                 {
                     ScopeContext ctx(this, scope);
@@ -428,47 +427,46 @@ ir::ClassStaticBlock *ETSChecker::CreateDynamicModuleClassInitializer(
 }
 
 template <bool IS_STATIC>
-ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *class_scope,
-                                                    const std::string_view method_name,
-                                                    panda::es2panda::ir::ModifierFlags modifier_flags,
+ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *classScope,
+                                                    const std::string_view methodName,
+                                                    panda::es2panda::ir::ModifierFlags modifierFlags,
                                                     const MethodBuilder &builder)
 {
-    auto class_ctx =
-        varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), class_scope->StaticMethodScope());
+    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), classScope->StaticMethodScope());
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    auto *param_scope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), class_scope);
-    auto *scope = Allocator()->New<varbinder::FunctionScope>(Allocator(), param_scope);
-    auto *id = AllocNode<ir::Identifier>(method_name, Allocator());
+    auto *paramScope = Allocator()->New<varbinder::FunctionParamScope>(Allocator(), classScope);
+    auto *scope = Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
+    auto *id = AllocNode<ir::Identifier>(methodName, Allocator());
 
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
-    Type *return_type = nullptr;
+    Type *returnType = nullptr;
 
-    builder(scope, &statements, &params, &return_type);
+    builder(scope, &statements, &params, &returnType);
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(scope);
 
     auto *func = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                               ir::ScriptFunctionFlags::METHOD, modifier_flags, false,
+                                               ir::ScriptFunctionFlags::METHOD, modifierFlags, false,
                                                Language(Language::Id::ETS));
     func->SetScope(scope);
     scope->BindNode(func);
     func->SetIdent(id);
-    param_scope->BindNode(func);
-    scope->BindParamScope(param_scope);
-    param_scope->BindFunctionScope(scope);
+    paramScope->BindNode(func);
+    scope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(scope);
 
-    auto *signature_info = CreateSignatureInfo();
-    signature_info->rest_var = nullptr;
-    auto *signature = CreateSignature(signature_info, return_type, func);
+    auto *signatureInfo = CreateSignatureInfo();
+    signatureInfo->restVar = nullptr;
+    auto *signature = CreateSignature(signatureInfo, returnType, func);
     if constexpr (IS_STATIC) {
         signature->AddSignatureFlag(SignatureFlags::STATIC);
     }
     func->SetSignature(signature);
 
-    auto *func_expr = AllocNode<ir::FunctionExpression>(func);
-    auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, func->Id(), func_expr,
-                                                   modifier_flags, Allocator(), false);
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, func->Id(), funcExpr,
+                                                   modifierFlags, Allocator(), false);
 
     VarBinder()->AsETSBinder()->BuildInternalName(func);
     VarBinder()->AsETSBinder()->BuildFunctionName(func);
@@ -477,185 +475,186 @@ ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *class
     auto *decl = Allocator()->New<varbinder::LetDecl>(id->Name());
     decl->BindNode(method);
 
-    auto *func_type = CreateETSFunctionType(signature, id->Name());
+    auto *funcType = CreateETSFunctionType(signature, id->Name());
     auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
-    var->SetTsType(func_type);
-    method->SetTsType(func_type);
+    var->SetTsType(funcType);
+    method->SetTsType(funcType);
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
     func->Id()->SetVariable(var);
 
-    auto *class_type = class_scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
+    auto *classType = classScope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
     if constexpr (IS_STATIC) {
-        class_type->AddProperty<PropertyType::STATIC_METHOD>(var->AsLocalVariable());
+        classType->AddProperty<PropertyType::STATIC_METHOD>(var->AsLocalVariable());
     } else {
-        class_type->AddProperty<PropertyType::INSTANCE_METHOD>(var->AsLocalVariable());
+        classType->AddProperty<PropertyType::INSTANCE_METHOD>(var->AsLocalVariable());
     }
 
     return method;
 }
 
-ir::MethodDefinition *ETSChecker::CreateDynamicModuleClassInitMethod(varbinder::ClassScope *class_scope)
+ir::MethodDefinition *ETSChecker::CreateDynamicModuleClassInitMethod(varbinder::ClassScope *classScope)
 {
-    return CreateClassMethod<true>(class_scope, compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT,
+    return CreateClassMethod<true>(classScope, compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT,
                                    ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC,
                                    [this]([[maybe_unused]] varbinder::FunctionScope *scope,
                                           [[maybe_unused]] ArenaVector<ir::Statement *> *statements,
                                           [[maybe_unused]] ArenaVector<ir::Expression *> *params,
-                                          Type **return_type) { *return_type = GlobalBuiltinVoidType(); });
+                                          Type **returnType) { *returnType = GlobalBuiltinVoidType(); });
 }
 
-ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInvokeMethod(varbinder::ClassScope *class_scope,
-                                                                      Signature *invoke_signature,
-                                                                      ir::TypeNode *ret_type_annotation)
+ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInvokeMethod(varbinder::ClassScope *classScope,
+                                                                      Signature *invokeSignature,
+                                                                      ir::TypeNode *retTypeAnnotation)
 {
     return CreateClassMethod<true>(
-        class_scope, compiler::Signatures::LAMBDA_OBJECT_INVOKE, ir::ModifierFlags::PUBLIC,
-        [this, class_scope, invoke_signature,
-         ret_type_annotation](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
-                              ArenaVector<ir::Expression *> *params, Type **return_type) {
-            util::UString this_param_name(std::string("this"), Allocator());
-            ir::ETSParameterExpression *this_param =
-                AddParam(scope->Parent()->AsFunctionParamScope(), this_param_name.View(),
-                         class_scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType());
-            params->push_back(this_param);
+        classScope, compiler::Signatures::LAMBDA_OBJECT_INVOKE, ir::ModifierFlags::PUBLIC,
+        [this, classScope, invokeSignature,
+         retTypeAnnotation](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
+                            ArenaVector<ir::Expression *> *params, Type **returnType) {
+            util::UString thisParamName(std::string("this"), Allocator());
+            ir::ETSParameterExpression *thisParam =
+                AddParam(scope->Parent()->AsFunctionParamScope(), thisParamName.View(),
+                         classScope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType());
+            params->push_back(thisParam);
 
-            ArenaVector<ir::Expression *> call_params(Allocator()->Adapter());
+            ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
             uint32_t idx = 0;
-            for (auto *invoke_param : invoke_signature->Params()) {
+            for (auto *invokeParam : invokeSignature->Params()) {
                 ir::ETSParameterExpression *param = AddParam(
                     scope->Parent()->AsFunctionParamScope(),
-                    util::UString(std::string("p") + std::to_string(idx), Allocator()).View(), invoke_param->TsType());
+                    util::UString(std::string("p") + std::to_string(idx), Allocator()).View(), invokeParam->TsType());
                 params->push_back(param);
-                call_params.push_back(param);
+                callParams.push_back(param);
                 ++idx;
             }
 
-            auto *propery_id = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
-            auto *callee = AllocNode<ir::MemberExpression>(this_param, propery_id,
+            auto *properyId = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
+            auto *callee = AllocNode<ir::MemberExpression>(thisParam, properyId,
                                                            ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-            auto *call_lambda = AllocNode<ir::CallExpression>(callee, std::move(call_params), nullptr, false);
+            auto *callLambda = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 
             {
                 ScopeContext ctx(this, scope);
-                call_lambda->Check(this);
+                callLambda->Check(this);
             }
 
-            auto *cast_to_ret_type_expr = Allocator()->New<ir::TSAsExpression>(call_lambda, ret_type_annotation, false);
-            cast_to_ret_type_expr->SetTsType(invoke_signature->ReturnType());
-            auto *ret_statement = Allocator()->New<ir::ReturnStatement>(cast_to_ret_type_expr);
-            statements->push_back(ret_statement);
+            auto *castToRetTypeExpr = Allocator()->New<ir::TSAsExpression>(callLambda, retTypeAnnotation, false);
+            castToRetTypeExpr->SetTsType(invokeSignature->ReturnType());
+            auto *retStatement = Allocator()->New<ir::ReturnStatement>(castToRetTypeExpr);
+            statements->push_back(retStatement);
 
-            *return_type = invoke_signature->ReturnType();
+            *returnType = invokeSignature->ReturnType();
         });
 }
 
 void ETSChecker::EmitDynamicModuleClassInitCall()
 {
-    auto *global_class = VarBinder()->Program()->GlobalClass();
-    auto &body = global_class->Body();
+    auto *globalClass = VarBinder()->Program()->GlobalClass();
+    auto &body = globalClass->Body();
     auto it = std::find_if(body.begin(), body.end(), [](ir::AstNode *node) { return node->IsClassStaticBlock(); });
 
     ASSERT(it != body.end());
 
-    auto *static_block = (*it)->AsClassStaticBlock();
-    auto *cctor_body = static_block->Function()->Body()->AsBlockStatement();
+    auto *staticBlock = (*it)->AsClassStaticBlock();
+    auto *cctorBody = staticBlock->Function()->Body()->AsBlockStatement();
 
-    auto *class_id = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
-    auto *method_id = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT, Allocator());
+    auto *classId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS, Allocator());
+    auto *methodId = AllocNode<ir::Identifier>(compiler::Signatures::DYNAMIC_MODULE_CLASS_INIT, Allocator());
     auto *callee =
-        AllocNode<ir::MemberExpression>(class_id, method_id, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
-    ArenaVector<ir::Expression *> call_params(Allocator()->Adapter());
-    auto *init_call = AllocNode<ir::CallExpression>(callee, std::move(call_params), nullptr, false);
+    ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
+    auto *initCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 
     {
-        ScopeContext ctx(this, cctor_body->Scope());
-        init_call->Check(this);
+        ScopeContext ctx(this, cctorBody->Scope());
+        initCall->Check(this);
     }
 
-    cctor_body->Statements().push_back(AllocNode<ir::ExpressionStatement>(init_call));
+    cctorBody->Statements().push_back(AllocNode<ir::ExpressionStatement>(initCall));
 }
 
 void ETSChecker::BuildDynamicImportClass()
 {
-    auto dynamic_imports = VarBinder()->AsETSBinder()->DynamicImports();
-    if (dynamic_imports.empty()) {
+    auto dynamicImports = VarBinder()->AsETSBinder()->DynamicImports();
+    if (dynamicImports.empty()) {
         return;
     }
 
+    // clang-format off
     BuildClass(compiler::Signatures::DYNAMIC_MODULE_CLASS,
-               [this, dynamic_imports](varbinder::ClassScope *scope, ArenaVector<ir::AstNode *> *class_body) {
-                   std::unordered_set<util::StringView> fields;
-                   std::vector<ir::ETSImportDeclaration *> imports;
+                [this, dynamicImports](varbinder::ClassScope *scope, ArenaVector<ir::AstNode *> *classBody) {
+                    std::unordered_set<util::StringView> fields;
+                    std::vector<ir::ETSImportDeclaration *> imports;
 
-                   auto *class_type = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
+                    auto *classType = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
 
-                   for (auto *import : dynamic_imports) {
-                       auto source = import->Source()->Str();
-                       if (fields.find(source) != fields.cend()) {
-                           continue;
-                       }
+                    for (auto *import : dynamicImports) {
+                        auto source = import->Source()->Str();
+                        if (fields.find(source) != fields.cend()) {
+                            continue;
+                        }
 
-                       auto assembly_name = std::string(source);
-                       std::replace_if(
-                           assembly_name.begin(), assembly_name.end(), [](char c) { return std::isalnum(c) == 0; },
-                           '_');
-                       assembly_name.append(std::to_string(fields.size()));
+                        auto assemblyName = std::string(source);
+                        std::replace_if(
+                            assemblyName.begin(), assemblyName.end(), [](char c) { return std::isalnum(c) == 0; }, '_');
+                        assemblyName.append(std::to_string(fields.size()));
 
-                       import->AssemblerName() = util::UString(assembly_name, Allocator()).View();
-                       fields.insert(import->AssemblerName());
-                       imports.push_back(import);
+                        import->AssemblerName() = util::UString(assemblyName, Allocator()).View();
+                        fields.insert(import->AssemblerName());
+                        imports.push_back(import);
 
-                       auto *field_ident = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
-                       auto *field = AllocNode<ir::ClassProperty>(field_ident, nullptr, nullptr,
-                                                                  ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC,
-                                                                  Allocator(), false);
-                       field->SetTsType(GlobalBuiltinDynamicType(import->Language()));
+                        auto *fieldIdent = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
+                        auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr,
+                                                                   ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC,
+                                                                   Allocator(), false);
+                        field->SetTsType(GlobalBuiltinDynamicType(import->Language()));
 
-                       auto *decl = Allocator()->New<varbinder::LetDecl>(field_ident->Name());
-                       decl->BindNode(field);
+                        auto *decl = Allocator()->New<varbinder::LetDecl>(fieldIdent->Name());
+                        decl->BindNode(field);
 
-                       auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
-                       var->AddFlag(varbinder::VariableFlags::PROPERTY);
-                       field_ident->SetVariable(var);
-                       var->SetTsType(GlobalBuiltinDynamicType(import->Language()));
+                        auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
+                        var->AddFlag(varbinder::VariableFlags::PROPERTY);
+                        fieldIdent->SetVariable(var);
+                        var->SetTsType(GlobalBuiltinDynamicType(import->Language()));
 
-                       class_type->AddProperty<PropertyType::STATIC_FIELD>(var->AsLocalVariable());
+                        classType->AddProperty<PropertyType::STATIC_FIELD>(var->AsLocalVariable());
 
-                       class_body->push_back(field);
-                   }
+                        classBody->push_back(field);
+                    }
 
-                   class_body->push_back(CreateDynamicModuleClassInitializer(scope, imports));
-                   class_body->push_back(CreateDynamicModuleClassInitMethod(scope));
-               });
+                    classBody->push_back(CreateDynamicModuleClassInitializer(scope, imports));
+                    classBody->push_back(CreateDynamicModuleClassInitMethod(scope));
+                });
+    // clang-format on
 
     EmitDynamicModuleClassInitCall();
 }
 
-ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(varbinder::ClassScope *class_scope,
-                                                                     ETSObjectType *functional_interface)
+ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(varbinder::ClassScope *classScope,
+                                                                     ETSObjectType *functionalInterface)
 {
     return CreateClassInitializer<false>(
-        class_scope,
-        [this, class_scope](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
-                            ArenaVector<ir::Expression *> *params) {
-            util::UString this_param_name(std::string("this"), Allocator());
-            ir::ETSParameterExpression *this_param =
-                AddParam(scope->Parent()->AsFunctionParamScope(), this_param_name.View(),
-                         class_scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType());
-            params->push_back(this_param);
+        classScope,
+        [this, classScope](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
+                           ArenaVector<ir::Expression *> *params) {
+            util::UString thisParamName(std::string("this"), Allocator());
+            ir::ETSParameterExpression *thisParam =
+                AddParam(scope->Parent()->AsFunctionParamScope(), thisParamName.View(),
+                         classScope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType());
+            params->push_back(thisParam);
 
-            util::UString jsvalue_param_name(std::string("jsvalue_param"), Allocator());
-            ir::ETSParameterExpression *jsvalue_param = AddParam(scope->Parent()->AsFunctionParamScope(),
-                                                                 jsvalue_param_name.View(), GlobalBuiltinJSValueType());
-            params->push_back(jsvalue_param);
+            util::UString jsvalueParamName(std::string("jsvalue_param"), Allocator());
+            ir::ETSParameterExpression *jsvalueParam =
+                AddParam(scope->Parent()->AsFunctionParamScope(), jsvalueParamName.View(), GlobalBuiltinJSValueType());
+            params->push_back(jsvalueParam);
 
-            auto *module_class_id = AllocNode<ir::Identifier>("this", Allocator());
-            auto *field_id = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
-            auto *property = AllocNode<ir::MemberExpression>(module_class_id, field_id,
+            auto *moduleClassId = AllocNode<ir::Identifier>("this", Allocator());
+            auto *fieldId = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
+            auto *property = AllocNode<ir::MemberExpression>(moduleClassId, fieldId,
                                                              ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
             auto *initializer =
-                AllocNode<ir::AssignmentExpression>(property, jsvalue_param, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+                AllocNode<ir::AssignmentExpression>(property, jsvalueParam, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
             {
                 ScopeContext ctx(this, scope);
                 initializer->Check(this);
@@ -663,58 +662,57 @@ ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(varbinder::
 
             statements->push_back(AllocNode<ir::ExpressionStatement>(initializer));
         },
-        functional_interface);
+        functionalInterface);
 }
 
-void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functional_interface, ir::TypeNode *ret_type_annotation)
+void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::TypeNode *retTypeAnnotation)
 {
-    auto *invoke_method = functional_interface->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke");
-    auto *invoke_signature = invoke_method->TsType()->AsETSFunctionType()->CallSignatures()[0];
+    auto *invokeMethod = functionalInterface->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke");
+    auto *invokeSignature = invokeMethod->TsType()->AsETSFunctionType()->CallSignatures()[0];
 
     std::stringstream ss;
     ss << compiler::Signatures::LAMBDA_OBJECT;
-    for (auto *arg : invoke_signature->Params()) {
+    for (auto *arg : invokeSignature->Params()) {
         ss << "-";
         arg->TsType()->ToString(ss);
     }
-    static std::string synthetic_lambda_obj_name {ss.str()};
+    static std::string syntheticLambdaObjName {ss.str()};
 
-    if (dynamic_lambda_signature_cache_.find(synthetic_lambda_obj_name) != dynamic_lambda_signature_cache_.end()) {
-        functional_interface->AddConstructSignature(dynamic_lambda_signature_cache_[synthetic_lambda_obj_name]);
+    if (dynamicLambdaSignatureCache_.find(syntheticLambdaObjName) != dynamicLambdaSignatureCache_.end()) {
+        functionalInterface->AddConstructSignature(dynamicLambdaSignatureCache_[syntheticLambdaObjName]);
         return;
     }
 
-    BuildClass(util::StringView(synthetic_lambda_obj_name),
-               [this, invoke_signature, ret_type_annotation,
-                functional_interface](varbinder::ClassScope *scope, ArenaVector<ir::AstNode *> *class_body) {
-                   auto *class_type = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
-                   class_type->AddInterface(functional_interface);
+    BuildClass(util::StringView(syntheticLambdaObjName),
+               [this, invokeSignature, retTypeAnnotation, functionalInterface](varbinder::ClassScope *scope,
+                                                                               ArenaVector<ir::AstNode *> *classBody) {
+                   auto *classType = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
+                   classType->AddInterface(functionalInterface);
 
-                   auto assembly_name = "jsvalue_lambda";
-                   auto *field_ident = AllocNode<ir::Identifier>(assembly_name, Allocator());
-                   auto *field = AllocNode<ir::ClassProperty>(field_ident, nullptr, nullptr, ir::ModifierFlags::PRIVATE,
+                   auto assemblyName = "jsvalue_lambda";
+                   auto *fieldIdent = AllocNode<ir::Identifier>(assemblyName, Allocator());
+                   auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::PRIVATE,
                                                               Allocator(), false);
                    field->SetTsType(GlobalBuiltinJSValueType());
 
-                   auto *decl = Allocator()->New<varbinder::LetDecl>(field_ident->Name());
+                   auto *decl = Allocator()->New<varbinder::LetDecl>(fieldIdent->Name());
                    decl->BindNode(field);
 
                    auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
                    var->AddFlag(varbinder::VariableFlags::PROPERTY);
                    var->SetTsType(GlobalBuiltinJSValueType());
-                   field_ident->SetVariable(var);
+                   fieldIdent->SetVariable(var);
 
-                   class_type->AddProperty<PropertyType::INSTANCE_FIELD>(var->AsLocalVariable());
+                   classType->AddProperty<PropertyType::INSTANCE_FIELD>(var->AsLocalVariable());
 
-                   class_body->push_back(field);
+                   classBody->push_back(field);
 
-                   class_body->push_back(CreateLambdaObjectClassInitializer(scope, functional_interface));
+                   classBody->push_back(CreateLambdaObjectClassInitializer(scope, functionalInterface));
 
-                   class_body->push_back(
-                       CreateLambdaObjectClassInvokeMethod(scope, invoke_signature, ret_type_annotation));
+                   classBody->push_back(CreateLambdaObjectClassInvokeMethod(scope, invokeSignature, retTypeAnnotation));
                });
 
-    dynamic_lambda_signature_cache_[synthetic_lambda_obj_name] = functional_interface->ConstructSignatures()[0];
+    dynamicLambdaSignatureCache_[syntheticLambdaObjName] = functionalInterface->ConstructSignatures()[0];
 }
 
 }  // namespace panda::es2panda::checker

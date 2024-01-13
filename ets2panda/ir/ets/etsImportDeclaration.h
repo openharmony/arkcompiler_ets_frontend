@@ -49,12 +49,12 @@ public:
 
     util::StringView &AssemblerName()
     {
-        return assembler_name_;
+        return assemblerName_;
     }
 
     const util::StringView &AssemblerName() const
     {
-        return assembler_name_;
+        return assemblerName_;
     }
 
     StringLiteral *ResolvedSource()
@@ -84,7 +84,7 @@ public:
 
 private:
     ImportSource *source_;
-    util::StringView assembler_name_ {};
+    util::StringView assemblerName_ {};
 };
 }  // namespace panda::es2panda::ir
 

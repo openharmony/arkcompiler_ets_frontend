@@ -31,30 +31,30 @@ varbinder::LocalVariable *ObjectDescriptor::FindProperty(const util::StringView 
     return nullptr;
 }
 
-void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copied_desc, TypeRelation *relation,
-                            GlobalTypesHolder *global_types)
+void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedDesc, TypeRelation *relation,
+                            GlobalTypesHolder *globalTypes)
 {
     // copy by hand
     for (auto *it : properties) {
-        auto *copied_prop = it->Copy(allocator, it->Declaration());
-        copied_prop->SetTsType(it->TsType()->Instantiate(allocator, relation, global_types));
-        copied_desc->properties.push_back(copied_prop);
+        auto *copiedProp = it->Copy(allocator, it->Declaration());
+        copiedProp->SetTsType(it->TsType()->Instantiate(allocator, relation, globalTypes));
+        copiedDesc->properties.push_back(copiedProp);
     }
 
-    for (auto *it : call_signatures) {
-        copied_desc->call_signatures.push_back(it->Copy(allocator, relation, global_types));
+    for (auto *it : callSignatures) {
+        copiedDesc->callSignatures.push_back(it->Copy(allocator, relation, globalTypes));
     }
 
-    for (auto *it : construct_signatures) {
-        copied_desc->construct_signatures.push_back(it->Copy(allocator, relation, global_types));
+    for (auto *it : constructSignatures) {
+        copiedDesc->constructSignatures.push_back(it->Copy(allocator, relation, globalTypes));
     }
 
-    if (number_index_info != nullptr) {
-        copied_desc->number_index_info = number_index_info->Copy(allocator, relation, global_types);
+    if (numberIndexInfo != nullptr) {
+        copiedDesc->numberIndexInfo = numberIndexInfo->Copy(allocator, relation, globalTypes);
     }
 
-    if (string_index_info != nullptr) {
-        copied_desc->string_index_info = string_index_info->Copy(allocator, relation, global_types);
+    if (stringIndexInfo != nullptr) {
+        copiedDesc->stringIndexInfo = stringIndexInfo->Copy(allocator, relation, globalTypes);
     }
 }
 }  // namespace panda::es2panda::checker

@@ -32,8 +32,8 @@ void TSTypeParameter::TransformChildren(const NodeTransformer &cb)
         constraint_ = static_cast<TypeNode *>(cb(constraint_));
     }
 
-    if (default_type_ != nullptr) {
-        default_type_ = static_cast<TypeNode *>(cb(default_type_));
+    if (defaultType_ != nullptr) {
+        defaultType_ = static_cast<TypeNode *>(cb(defaultType_));
     }
 }
 
@@ -45,8 +45,8 @@ void TSTypeParameter::Iterate(const NodeTraverser &cb) const
         cb(constraint_);
     }
 
-    if (default_type_ != nullptr) {
-        cb(default_type_);
+    if (defaultType_ != nullptr) {
+        cb(defaultType_);
     }
 }
 
@@ -56,7 +56,7 @@ void TSTypeParameter::Dump(ir::AstDumper *dumper) const
         {"type", "TSTypeParameter"},
         {"name", name_},
         {"constraint", AstDumper::Optional(constraint_)},
-        {"default", AstDumper::Optional(default_type_)},
+        {"default", AstDumper::Optional(defaultType_)},
         {"in", AstDumper::Optional(IsIn())},
         {"out", AstDumper::Optional(IsOut())},
     });

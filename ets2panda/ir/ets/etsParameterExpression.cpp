@@ -28,16 +28,15 @@
 
 namespace panda::es2panda::ir {
 
-ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const ident_or_spread,
-                                               Expression *const initializer)
+ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, Expression *const initializer)
     : Expression(AstNodeType::ETS_PARAMETER_EXPRESSION), initializer_(initializer)
 {
-    ASSERT(ident_or_spread != nullptr);
+    ASSERT(identOrSpread != nullptr);
 
-    if (ident_or_spread->IsIdentifier()) {
-        ident_ = ident_or_spread->AsIdentifier();
-    } else if (ident_or_spread->IsRestElement()) {
-        spread_ = ident_or_spread->AsRestElement();
+    if (identOrSpread->IsIdentifier()) {
+        ident_ = identOrSpread->AsIdentifier();
+    } else if (identOrSpread->IsRestElement()) {
+        spread_ = identOrSpread->AsRestElement();
         ASSERT(spread_->Argument()->IsIdentifier());
         ident_ = spread_->Argument()->AsIdentifier();
         ident_->SetParent(spread_);
@@ -99,12 +98,12 @@ void ETSParameterExpression::SetVariable(varbinder::Variable *const variable) no
 
 void ETSParameterExpression::SetLexerSaved(util::StringView s) noexcept
 {
-    saved_lexer_ = s;
+    savedLexer_ = s;
 }
 
 util::StringView ETSParameterExpression::LexerSaved() const noexcept
 {
-    return saved_lexer_;
+    return savedLexer_;
 }
 
 void ETSParameterExpression::TransformChildren(const NodeTransformer &cb)
@@ -152,10 +151,10 @@ void ETSParameterExpression::Dump(ir::SrcDumper *const dumper) const
         if (ident_ != nullptr) {
             ASSERT(ident_->IsAnnotatedExpression());
             ident_->Dump(dumper);
-            auto type_annotation = ident_->AsAnnotatedExpression()->TypeAnnotation();
-            if (type_annotation != nullptr) {
+            auto typeAnnotation = ident_->AsAnnotatedExpression()->TypeAnnotation();
+            if (typeAnnotation != nullptr) {
                 dumper->Add(": ");
-                type_annotation->Dump(dumper);
+                typeAnnotation->Dump(dumper);
             }
         }
         if (initializer_ != nullptr) {
@@ -191,12 +190,12 @@ checker::Type *ETSParameterExpression::Check(checker::ETSChecker *const checker)
 // NOLINTNEXTLINE(google-default-arguments)
 ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const ident_or_spread = spread_ != nullptr ? spread_->Clone(allocator)->AsAnnotatedExpression()
-                                                     : ident_->Clone(allocator)->AsAnnotatedExpression();
+    auto *const identOrSpread = spread_ != nullptr ? spread_->Clone(allocator)->AsAnnotatedExpression()
+                                                   : ident_->Clone(allocator)->AsAnnotatedExpression();
     auto *const initializer = initializer_ != nullptr ? initializer_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSParameterExpression>(ident_or_spread, initializer); clone != nullptr) {
-        ident_or_spread->SetParent(clone);
+    if (auto *const clone = allocator->New<ETSParameterExpression>(identOrSpread, initializer); clone != nullptr) {
+        identOrSpread->SetParent(clone);
 
         if (initializer != nullptr) {
             initializer->SetParent(clone);
@@ -206,7 +205,7 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
             clone->SetParent(parent);
         }
 
-        clone->SetRequiredParams(extra_value_);
+        clone->SetRequiredParams(extraValue_);
         return clone;
     }
 

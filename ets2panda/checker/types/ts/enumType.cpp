@@ -20,7 +20,7 @@
 namespace panda::es2panda::checker {
 void EnumType::ToString(std::stringstream &ss) const
 {
-    ss << enum_literal_var_->Name() << "." << enum_var_->Name();
+    ss << enumLiteralVar_->Name() << "." << enumVar_->Name();
 }
 
 void EnumType::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
@@ -42,7 +42,7 @@ TypeFacts EnumType::GetTypeFacts() const
 }
 
 Type *EnumType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
-                            [[maybe_unused]] GlobalTypesHolder *global_types)
+                            [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
     // NOTE: aszilagyi
     return this;

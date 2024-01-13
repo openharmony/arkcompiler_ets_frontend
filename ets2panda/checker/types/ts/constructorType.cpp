@@ -20,18 +20,18 @@
 namespace panda::es2panda::checker {
 void ConstructorType::ToString(std::stringstream &ss) const
 {
-    if (desc_->construct_signatures.size() > 1) {
+    if (desc_->constructSignatures.size() > 1) {
         ss << "{ ";
     }
 
-    for (auto it = desc_->construct_signatures.begin(); it != desc_->construct_signatures.end(); it++) {
+    for (auto it = desc_->constructSignatures.begin(); it != desc_->constructSignatures.end(); it++) {
         (*it)->ToString(ss, variable_);
-        if (std::next(it) != desc_->construct_signatures.end()) {
+        if (std::next(it) != desc_->constructSignatures.end()) {
             ss << ", ";
         }
     }
 
-    if (desc_->construct_signatures.size() > 1) {
+    if (desc_->constructSignatures.size() > 1) {
         ss << " }";
     }
 }
@@ -41,10 +41,10 @@ TypeFacts ConstructorType::GetTypeFacts() const
     return TypeFacts::FUNCTION_FACTS;
 }
 
-Type *ConstructorType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *ConstructorType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copied_desc = allocator->New<ObjectDescriptor>(allocator);
-    desc_->Copy(allocator, copied_desc, relation, global_types);
-    return allocator->New<ConstructorType>(copied_desc);
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
+    desc_->Copy(allocator, copiedDesc, relation, globalTypes);
+    return allocator->New<ConstructorType>(copiedDesc);
 }
 }  // namespace panda::es2panda::checker

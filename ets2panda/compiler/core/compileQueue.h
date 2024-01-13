@@ -36,14 +36,14 @@ class CompileQueue {
 public:
     using JobsFinishedCb = std::function<void(CompileJob *)>;
 
-    explicit CompileQueue(size_t thread_count);
+    explicit CompileQueue(size_t threadCount);
     NO_COPY_SEMANTIC(CompileQueue);
     NO_MOVE_SEMANTIC(CompileQueue);
     ~CompileQueue();
 
     void Schedule(CompilerContext *context);
     void Consume();
-    void Wait(const JobsFinishedCb &on_finished_cb);
+    void Wait(const JobsFinishedCb &onFinishedCb);
 
 private:
     static void Worker(CompileQueue *queue);
@@ -51,12 +51,12 @@ private:
     std::vector<os::thread::NativeHandleType> threads_;
     std::vector<Error> errors_;
     std::mutex m_;
-    std::condition_variable jobs_available_;
-    std::condition_variable jobs_finished_;
+    std::condition_variable jobsAvailable_;
+    std::condition_variable jobsFinished_;
     CompileJob *jobs_ {};
-    size_t jobs_count_ {0};
-    size_t total_jobs_count_ {0};
-    size_t active_workers_ {0};
+    size_t jobsCount_ {0};
+    size_t totalJobsCount_ {0};
+    size_t activeWorkers_ {0};
     bool terminate_ {};
 };
 }  // namespace panda::es2panda::compiler

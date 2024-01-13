@@ -64,7 +64,7 @@ struct OutVReg {
 
 class FormatItem {
 public:
-    constexpr FormatItem(OperandKind kind, uint32_t bit_width) : kind_(kind), bit_width_(bit_width) {}
+    constexpr FormatItem(OperandKind kind, uint32_t bitWidth) : kind_(kind), bitWidth_(bitWidth) {}
 
     OperandKind Kind() const
     {
@@ -78,12 +78,12 @@ public:
 
     uint32_t BitWidth() const
     {
-        return bit_width_;
+        return bitWidth_;
     };
 
 private:
     OperandKind kind_;
-    uint32_t bit_width_;
+    uint32_t bitWidth_;
 };
 
 class Format {
@@ -123,24 +123,24 @@ public:
         return node_;
     }
 
-    static uint16_t MapRegister(uint32_t reg, uint32_t total_regs)
+    static uint16_t MapRegister(uint32_t reg, uint32_t totalRegs)
     {
         ASSERT(reg != VReg::Invalid().GetIndex());
 
-        uint32_t reg_count = VReg::REG_START - total_regs;
-        uint16_t new_reg = 0;
+        uint32_t regCount = VReg::REG_START - totalRegs;
+        uint16_t newReg = 0;
 
         if (reg >= VReg::PARAM_START) {
-            new_reg = reg - VReg::PARAM_START + reg_count;
+            newReg = reg - VReg::PARAM_START + regCount;
             // NOTE: dbatiz. Remove this else if, and fix the regIndexes
-        } else if (reg <= reg_count + VReg::MANDATORY_PARAM_NUM) {
-            new_reg = VReg::REG_START - total_regs + VReg::MANDATORY_PARAM_NUM + reg;
+        } else if (reg <= regCount + VReg::MANDATORY_PARAM_NUM) {
+            newReg = VReg::REG_START - totalRegs + VReg::MANDATORY_PARAM_NUM + reg;
         } else {
-            uint32_t reg_offset = reg - total_regs;
-            new_reg = std::abs(static_cast<int32_t>(reg_offset - reg_count));
+            uint32_t regOffset = reg - totalRegs;
+            newReg = std::abs(static_cast<int32_t>(regOffset - regCount));
         }
 
-        return new_reg;
+        return newReg;
     }
 
     static constexpr auto MAX_REG_OPERAND = 5;
@@ -149,8 +149,8 @@ public:
     virtual size_t Registers([[maybe_unused]] std::array<VReg *, MAX_REG_OPERAND> *regs) = 0;
     virtual size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const = 0;
     virtual size_t OutRegisters([[maybe_unused]] std::array<OutVReg, MAX_REG_OPERAND> *regs) const = 0;
-    virtual void Transform(panda::pandasm::Ins *ins, [[maybe_unused]] ProgramElement *program_element,
-                           [[maybe_unused]] uint32_t total_regs) const = 0;
+    virtual void Transform(panda::pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
+                           [[maybe_unused]] uint32_t totalRegs) const = 0;
 
 private:
     const ir::AstNode *node_;

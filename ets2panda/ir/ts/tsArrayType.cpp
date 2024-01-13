@@ -26,23 +26,23 @@
 namespace panda::es2panda::ir {
 void TSArrayType::TransformChildren(const NodeTransformer &cb)
 {
-    element_type_ = static_cast<TypeNode *>(cb(element_type_));
+    elementType_ = static_cast<TypeNode *>(cb(elementType_));
 }
 
 void TSArrayType::Iterate(const NodeTraverser &cb) const
 {
-    cb(element_type_);
+    cb(elementType_);
 }
 
 void TSArrayType::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "TSArrayType"}, {"elementType", element_type_}});
+    dumper->Add({{"type", "TSArrayType"}, {"elementType", elementType_}});
 }
 
 void TSArrayType::Dump(ir::SrcDumper *dumper) const
 {
-    ASSERT(element_type_);
-    element_type_->Dump(dumper);
+    ASSERT(elementType_);
+    elementType_->Dump(dumper);
     dumper->Add("[]");
 }
 
@@ -63,7 +63,7 @@ checker::Type *TSArrayType::Check([[maybe_unused]] checker::TSChecker *checker)
 
 checker::Type *TSArrayType::GetType([[maybe_unused]] checker::TSChecker *checker)
 {
-    return checker->Allocator()->New<checker::ArrayType>(element_type_->GetType(checker));
+    return checker->Allocator()->New<checker::ArrayType>(elementType_->GetType(checker));
 }
 
 checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
@@ -73,19 +73,19 @@ checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 {
-    auto *const element_type = checker->GetTypeFromTypeAnnotation(element_type_);
+    auto *const elementType = checker->GetTypeFromTypeAnnotation(elementType_);
 
-    return checker->CreateETSArrayType(element_type);
+    return checker->CreateETSArrayType(elementType);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
 TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const element_type_clone = element_type_ != nullptr ? element_type_->Clone(allocator) : nullptr;
+    auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator) : nullptr;
 
-    if (auto *const clone = allocator->New<TSArrayType>(element_type_clone); clone != nullptr) {
-        if (element_type_clone != nullptr) {
-            element_type_clone->SetParent(clone);
+    if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone); clone != nullptr) {
+        if (elementTypeClone != nullptr) {
+            elementTypeClone->SetParent(clone);
         }
 
         if (parent != nullptr) {

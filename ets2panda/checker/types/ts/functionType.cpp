@@ -30,18 +30,18 @@ void FunctionType::ToString(std::stringstream &ss) const
 
     stack.insert(this);
 
-    if (desc_->call_signatures.size() > 1) {
+    if (desc_->callSignatures.size() > 1) {
         ss << "{ ";
     }
 
-    for (auto it = desc_->call_signatures.begin(); it != desc_->call_signatures.end(); it++) {
-        (*it)->ToString(ss, variable_, desc_->call_signatures.size() > 1);
-        if (std::next(it) != desc_->call_signatures.end()) {
+    for (auto it = desc_->callSignatures.begin(); it != desc_->callSignatures.end(); it++) {
+        (*it)->ToString(ss, variable_, desc_->callSignatures.size() > 1);
+        if (std::next(it) != desc_->callSignatures.end()) {
             ss << ", ";
         }
     }
 
-    if (desc_->call_signatures.size() > 1) {
+    if (desc_->callSignatures.size() > 1) {
         ss << " }";
     }
 }
@@ -51,10 +51,10 @@ TypeFacts FunctionType::GetTypeFacts() const
     return TypeFacts::FUNCTION_FACTS;
 }
 
-Type *FunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *FunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copied_desc = allocator->New<ObjectDescriptor>(allocator);
-    desc_->Copy(allocator, copied_desc, relation, global_types);
-    return allocator->New<FunctionType>(copied_desc);
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
+    desc_->Copy(allocator, copiedDesc, relation, globalTypes);
+    return allocator->New<FunctionType>(copiedDesc);
 }
 }  // namespace panda::es2panda::checker

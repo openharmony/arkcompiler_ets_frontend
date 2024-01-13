@@ -160,9 +160,9 @@ public:
             return DecodeCP<false>(nullptr);
         }
 
-        inline char32_t PeekCp(size_t *cp_size) const
+        inline char32_t PeekCp(size_t *cpSize) const
         {
-            return DecodeCP<false, true>(cp_size);
+            return DecodeCP<false, true>(cpSize);
         }
 
         inline void Forward(size_t offset)
@@ -199,7 +199,7 @@ public:
 
     private:
         template <bool MOVE_ITER, bool SET_CP_SIZE = false>
-        char32_t DecodeCP([[maybe_unused]] size_t *cp_size) const;
+        char32_t DecodeCP([[maybe_unused]] size_t *cpSize) const;
 
         std::string_view sv_;
         mutable std::string_view::const_iterator iter_;
@@ -330,32 +330,32 @@ protected:
 };
 
 template <bool MOVE_ITER, bool SET_CP_SIZE>
-char32_t StringView::Iterator::DecodeCP([[maybe_unused]] size_t *cp_size) const
+char32_t StringView::Iterator::DecodeCP([[maybe_unused]] size_t *cpSize) const
 {
     if (!HasNext()) {
         return INVALID_CP;
     }
 
-    const auto *iter_next = iter_;
+    const auto *iterNext = iter_;
 
-    char32_t cu0 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    char32_t cu0 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     char32_t res {};
 
     if (cu0 < Constants::UTF8_1BYTE_LIMIT) {
         res = cu0;
     } else if ((cu0 & Constants::UTF8_3BYTE_HEADER) == Constants::UTF8_2BYTE_HEADER) {
-        char32_t cu1 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        char32_t cu1 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         res = ((cu0 & Constants::UTF8_2BYTE_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu1 & Constants::UTF8_CONT_MASK);
     } else if ((cu0 & Constants::UTF8_4BYTE_HEADER) == Constants::UTF8_3BYTE_HEADER) {
-        char32_t cu1 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        char32_t cu2 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        char32_t cu1 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        char32_t cu2 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         res = ((cu0 & Constants::UTF8_3BYTE_MASK) << Constants::UTF8_3BYTE_SHIFT) |
               ((cu1 & Constants::UTF8_CONT_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu2 & Constants::UTF8_CONT_MASK);
     } else if (((cu0 & Constants::UTF8_DECODE_4BYTE_MASK) == Constants::UTF8_4BYTE_HEADER) &&
                (cu0 <= Constants::UTF8_DECODE_4BYTE_LIMIT)) {
-        char32_t cu1 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        char32_t cu2 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        char32_t cu3 = static_cast<uint8_t>(*iter_next++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        char32_t cu1 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        char32_t cu2 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        char32_t cu3 = static_cast<uint8_t>(*iterNext++);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         res = ((cu0 & Constants::UTF8_4BYTE_MASK) << Constants::UTF8_4BYTE_SHIFT) |
               ((cu1 & Constants::UTF8_CONT_MASK) << Constants::UTF8_3BYTE_SHIFT) |
               ((cu2 & Constants::UTF8_CONT_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu3 & Constants::UTF8_CONT_MASK);
@@ -365,13 +365,13 @@ char32_t StringView::Iterator::DecodeCP([[maybe_unused]] size_t *cp_size) const
 
     // NOLINTNEXTLINE(readability-braces-around-statements,bugprone-suspicious-semicolon)
     if constexpr (MOVE_ITER) {
-        iter_ = iter_next;
+        iter_ = iterNext;
         return res;
     }
 
     // NOLINTNEXTLINE(readability-braces-around-statements,bugprone-suspicious-semicolon)
     if constexpr (SET_CP_SIZE) {
-        *cp_size = iter_next - iter_;
+        *cpSize = iterNext - iter_;
     }
 
     return res;

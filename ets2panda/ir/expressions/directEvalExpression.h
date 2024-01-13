@@ -26,8 +26,8 @@ namespace panda::es2panda::ir {
 class DirectEvalExpression : public CallExpression {
 public:
     explicit DirectEvalExpression(Expression *callee, ArenaVector<Expression *> &&arguments,
-                                  TSTypeParameterInstantiation *type_params, bool optional, uint32_t parser_status)
-        : CallExpression(callee, std::move(arguments), type_params, optional), parser_status_(parser_status)
+                                  TSTypeParameterInstantiation *typeParams, bool optional, uint32_t parserStatus)
+        : CallExpression(callee, std::move(arguments), typeParams, optional), parserStatus_(parserStatus)
     {
         type_ = AstNodeType::DIRECT_EVAL;
     }
@@ -46,7 +46,7 @@ public:
     }
 
 private:
-    uint32_t parser_status_ {};
+    uint32_t parserStatus_ {};
 };
 }  // namespace panda::es2panda::ir
 

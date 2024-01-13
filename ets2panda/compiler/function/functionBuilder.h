@@ -43,7 +43,7 @@ public:
         ASYNC_GENERATOR,
     };
 
-    explicit FunctionBuilder(PandaGen *pg, CatchTable *catch_table);
+    explicit FunctionBuilder(PandaGen *pg, CatchTable *catchTable);
     virtual ~FunctionBuilder() = default;
     NO_COPY_SEMANTIC(FunctionBuilder);
     NO_MOVE_SEMANTIC(FunctionBuilder);
@@ -70,21 +70,21 @@ protected:
 
     virtual IteratorType GeneratorKind() const;
 
-    void SuspendResumeExecution(const ir::AstNode *node, VReg completion_type, VReg completion_value) const;
-    void AsyncYield(const ir::AstNode *node, VReg completion_type, VReg completion_value) const;
+    void SuspendResumeExecution(const ir::AstNode *node, VReg completionType, VReg completionValue) const;
+    void AsyncYield(const ir::AstNode *node, VReg completionType, VReg completionValue) const;
 
     VReg FunctionReg(const ir::ScriptFunction *node) const;
-    void HandleCompletion(const ir::AstNode *node, VReg completion_type, VReg completion_value);
+    void HandleCompletion(const ir::AstNode *node, VReg completionType, VReg completionValue);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     PandaGen *pg_;
-    CatchTable *catch_table_;
-    VReg func_obj_ {};
-    bool handle_return_ {};
+    CatchTable *catchTable_;
+    VReg funcObj_ {};
+    bool handleReturn_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:
-    void ResumeGenerator(const ir::AstNode *node, VReg completion_type, VReg completion_value) const;
+    void ResumeGenerator(const ir::AstNode *node, VReg completionType, VReg completionValue) const;
 };
 }  // namespace panda::es2panda::compiler
 

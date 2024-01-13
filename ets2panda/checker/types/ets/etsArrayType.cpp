@@ -145,18 +145,18 @@ void ETSArrayType::IsSupertypeOf(TypeRelation *const relation, Type *source)
     relation->Result(false);
     // 3.8.3 Subtyping among Array Types
     if (source->IsETSArrayType()) {
-        auto *const source_elem_type = this->AsETSArrayType()->ElementType();
-        auto *const target_elem_type = source->AsETSArrayType()->ElementType();
-        if (ETSChecker::IsReferenceType(target_elem_type) && ETSChecker::IsReferenceType(source_elem_type)) {
-            source_elem_type->IsSupertypeOf(relation, target_elem_type);
+        auto *const sourceElemType = this->AsETSArrayType()->ElementType();
+        auto *const targetElemType = source->AsETSArrayType()->ElementType();
+        if (ETSChecker::IsReferenceType(targetElemType) && ETSChecker::IsReferenceType(sourceElemType)) {
+            sourceElemType->IsSupertypeOf(relation, targetElemType);
         }
     }
 }
 
-Type *ETSArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
+Type *ETSArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     return relation->GetChecker()->AsETSChecker()->CreateETSArrayType(
-        element_->Instantiate(allocator, relation, global_types));
+        element_->Instantiate(allocator, relation, globalTypes));
 }
 
 Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -165,8 +165,8 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
         return this;
     }
 
-    auto *result_elt = element_->Substitute(relation, substitution);
-    return result_elt == element_ ? this : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(result_elt);
+    auto *resultElt = element_->Substitute(relation, substitution);
+    return resultElt == element_ ? this : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
 }
 
 }  // namespace panda::es2panda::checker

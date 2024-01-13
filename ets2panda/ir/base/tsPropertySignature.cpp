@@ -78,9 +78,9 @@ checker::Type *TSPropertySignature::Check(checker::ETSChecker *checker)
 TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const type_annotation = TypeAnnotation()->Clone(allocator);
+    auto *const typeAnnotation = TypeAnnotation()->Clone(allocator);
 
-    if (auto *const clone = allocator->New<TSPropertySignature>(key, type_annotation, computed_, optional_, readonly_);
+    if (auto *const clone = allocator->New<TSPropertySignature>(key, typeAnnotation, computed_, optional_, readonly_);
         clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
@@ -88,7 +88,7 @@ TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator,
         if (key != nullptr) {
             key->SetParent(clone);
         }
-        type_annotation->SetParent(clone);
+        typeAnnotation->SetParent(clone);
         return clone;
     }
 

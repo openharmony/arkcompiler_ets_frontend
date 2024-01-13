@@ -53,37 +53,37 @@ typename TargetType::UType ETSChecker::GetOperand(Type *type)
 }
 
 template <typename TargetType>
-Type *ETSChecker::PerformRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operation_type)
+Type *ETSChecker::PerformRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
     using UType = typename TargetType::UType;
 
-    UType left_value = GetOperand<TargetType>(left);
-    UType right_value = GetOperand<TargetType>(right);
+    UType leftValue = GetOperand<TargetType>(left);
+    UType rightValue = GetOperand<TargetType>(right);
 
     bool result {};
-    switch (operation_type) {
+    switch (operationType) {
         case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
-            result = left_value < right_value;
+            result = leftValue < rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL: {
-            result = left_value <= right_value;
+            result = leftValue <= rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            result = left_value > right_value;
+            result = leftValue > rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-            result = left_value >= right_value;
+            result = leftValue >= rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_EQUAL: {
-            result = left_value == right_value;
+            result = leftValue == rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
-            result = left_value != right_value;
+            result = leftValue != rightValue;
             break;
         }
         default: {
@@ -95,49 +95,49 @@ Type *ETSChecker::PerformRelationOperationOnTypes(Type *left, Type *right, lexer
 }
 
 template <typename TargetType>
-Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operation_type)
+Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
     using UType = typename TargetType::UType;
 
-    UType left_value = GetOperand<TargetType>(left);
-    UType right_value = GetOperand<TargetType>(right);
-    auto result = left_value;
-    auto is_forbidden_zero_division = [&]() { return std::is_integral<UType>::value && right_value == 0; };
+    UType leftValue = GetOperand<TargetType>(left);
+    UType rightValue = GetOperand<TargetType>(right);
+    auto result = leftValue;
+    auto isForbiddenZeroDivision = [&rightValue]() { return std::is_integral<UType>::value && rightValue == 0; };
 
-    switch (operation_type) {
+    switch (operationType) {
         case lexer::TokenType::PUNCTUATOR_PLUS:
         case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            result = left_value + right_value;
+            result = leftValue + rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL: {
-            result = left_value - right_value;
+            result = leftValue - rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_DIVIDE:
         case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL: {
-            if (is_forbidden_zero_division()) {
+            if (isForbiddenZeroDivision()) {
                 return nullptr;
             }
-            result = left_value / right_value;
+            result = leftValue / rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_MULTIPLY:
         case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL: {
-            result = left_value * right_value;
+            result = leftValue * rightValue;
             break;
         }
         case lexer::TokenType::PUNCTUATOR_MOD:
         case lexer::TokenType::PUNCTUATOR_MOD_EQUAL: {
-            if (is_forbidden_zero_division()) {
+            if (isForbiddenZeroDivision()) {
                 return nullptr;
             }
-            result = HandleModulo<UType>(left_value, right_value);
+            result = HandleModulo<UType>(leftValue, rightValue);
             break;
         }
         default: {
-            result = HandleBitWiseArithmetic<UType>(left_value, right_value, operation_type);
+            result = HandleBitWiseArithmetic<UType>(leftValue, rightValue, operationType);
         }
     }
 
@@ -145,69 +145,71 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
 }
 
 template <>
-inline IntType::UType panda::es2panda::checker::ETSChecker::HandleModulo<IntType::UType>(IntType::UType left_value,
-                                                                                         IntType::UType right_value)
+inline IntType::UType panda::es2panda::checker::ETSChecker::HandleModulo<IntType::UType>(IntType::UType leftValue,
+                                                                                         IntType::UType rightValue)
 {
-    return left_value % right_value;
+    ASSERT(rightValue != 0);
+    return leftValue % rightValue;
 }
 
 template <>
-inline LongType::UType panda::es2panda::checker::ETSChecker::HandleModulo<LongType::UType>(LongType::UType left_value,
-                                                                                           LongType::UType right_value)
+inline LongType::UType panda::es2panda::checker::ETSChecker::HandleModulo<LongType::UType>(LongType::UType leftValue,
+                                                                                           LongType::UType rightValue)
 {
-    return left_value % right_value;
+    ASSERT(rightValue != 0);
+    return leftValue % rightValue;
 }
 
 template <>
 inline FloatType::UType panda::es2panda::checker::ETSChecker::HandleModulo<FloatType::UType>(
-    FloatType::UType left_value, FloatType::UType right_value)
+    FloatType::UType leftValue, FloatType::UType rightValue)
 {
-    return std::fmod(left_value, right_value);
+    return std::fmod(leftValue, rightValue);
 }
 
 template <>
 inline DoubleType::UType panda::es2panda::checker::ETSChecker::HandleModulo<DoubleType::UType>(
-    DoubleType::UType left_value, DoubleType::UType right_value)
+    DoubleType::UType leftValue, DoubleType::UType rightValue)
 {
-    return std::fmod(left_value, right_value);
+    return std::fmod(leftValue, rightValue);
 }
 
 template <typename UType>
-UType ETSChecker::HandleBitWiseArithmetic(UType left_value, UType right_value, lexer::TokenType operation_type)
+UType ETSChecker::HandleBitWiseArithmetic(UType leftValue, UType rightValue, lexer::TokenType operationType)
 {
     using UnsignedType = std::make_unsigned_t<UType>;
-    auto unsigned_left_value = static_cast<UnsignedType>(left_value);
-    auto unsigned_right_value = static_cast<UnsignedType>(right_value);
+    auto unsignedLeftValue = static_cast<UnsignedType>(leftValue);
+    auto unsignedRightValue = static_cast<UnsignedType>(rightValue);
     size_t mask = std::numeric_limits<UnsignedType>::digits - 1U;
-    size_t shift = static_cast<UnsignedType>(unsigned_right_value) & mask;
+    size_t shift = static_cast<UnsignedType>(unsignedRightValue) & mask;
 
-    switch (operation_type) {
+    switch (operationType) {
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL: {
-            return unsigned_left_value & unsigned_right_value;
+            return unsignedLeftValue & unsignedRightValue;
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            return unsigned_left_value | unsigned_right_value;
+            return unsignedLeftValue | unsignedRightValue;
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL: {
-            return unsigned_left_value ^ unsigned_right_value;
+            return unsignedLeftValue ^ unsignedRightValue;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
         case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL: {
             static_assert(sizeof(UType) == 4 || sizeof(UType) == 8);
-            return unsigned_left_value << shift;
+            return unsignedLeftValue << shift;
         }
         case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
         case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL: {
             static_assert(sizeof(UType) == 4 || sizeof(UType) == 8);
-            return left_value >> shift;  // NOLINT(hicpp-signed-bitwise)
+            return leftValue >> shift;  // NOLINT(hicpp-signed-bitwise)
         }
         case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
         case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
             static_assert(sizeof(UType) == 4 || sizeof(UType) == 8);
-            return unsigned_left_value >> shift;
+            return unsignedLeftValue >> shift;
         }
         default: {
             UNREACHABLE();
@@ -217,16 +219,16 @@ UType ETSChecker::HandleBitWiseArithmetic(UType left_value, UType right_value, l
 
 template <>
 inline FloatType::UType ETSChecker::HandleBitWiseArithmetic<FloatType::UType>(
-    [[maybe_unused]] FloatType::UType left_value, [[maybe_unused]] FloatType::UType right_value,
-    [[maybe_unused]] lexer::TokenType operation_type)
+    [[maybe_unused]] FloatType::UType leftValue, [[maybe_unused]] FloatType::UType rightValue,
+    [[maybe_unused]] lexer::TokenType operationType)
 {
     return 0.0;
 }
 
 template <>
 inline DoubleType::UType ETSChecker::HandleBitWiseArithmetic<DoubleType::UType>(
-    [[maybe_unused]] DoubleType::UType left_value, [[maybe_unused]] DoubleType::UType right_value,
-    [[maybe_unused]] lexer::TokenType operation_type)
+    [[maybe_unused]] DoubleType::UType leftValue, [[maybe_unused]] DoubleType::UType rightValue,
+    [[maybe_unused]] lexer::TokenType operationType)
 {
     return 0.0;
 }

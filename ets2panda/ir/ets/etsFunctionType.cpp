@@ -100,27 +100,27 @@ checker::Type *ETSFunctionType::GetType(checker::ETSChecker *checker)
 // NOLINTNEXTLINE(google-default-arguments)
 ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    ArenaVector<Expression *> params_clone(allocator->Adapter());
+    ArenaVector<Expression *> paramsClone(allocator->Adapter());
 
     for (auto *const param : signature_.Params()) {
-        params_clone.emplace_back(param->Clone(allocator)->AsExpression());
+        paramsClone.emplace_back(param->Clone(allocator)->AsExpression());
     }
 
-    auto *const type_params_clone = signature_.TypeParams() != nullptr
-                                        ? signature_.TypeParams()->Clone(allocator)->AsTSTypeParameterDeclaration()
-                                        : nullptr;
-    auto *const return_type_clone =
+    auto *const typeParamsClone = signature_.TypeParams() != nullptr
+                                      ? signature_.TypeParams()->Clone(allocator)->AsTSTypeParameterDeclaration()
+                                      : nullptr;
+    auto *const returnTypeClone =
         signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator)->AsTypeNode() : nullptr;
 
     if (auto *const clone = allocator->New<ETSFunctionType>(
-            FunctionSignature(type_params_clone, std::move(params_clone), return_type_clone), func_flags_);
+            FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_);
         clone != nullptr) {
-        if (type_params_clone != nullptr) {
-            type_params_clone->SetParent(clone);
+        if (typeParamsClone != nullptr) {
+            typeParamsClone->SetParent(clone);
         }
 
-        if (return_type_clone != nullptr) {
-            return_type_clone->SetParent(clone);
+        if (returnTypeClone != nullptr) {
+            returnTypeClone->SetParent(clone);
         }
 
         if (parent != nullptr) {

@@ -38,8 +38,8 @@ void TSTypeAliasDeclaration::TransformChildren(const NodeTransformer &cb)
 
     id_ = cb(id_)->AsIdentifier();
 
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    if (typeParams_ != nullptr) {
+        typeParams_ = cb(typeParams_)->AsTSTypeParameterDeclaration();
     }
 
     if (TypeAnnotation() != nullptr) {
@@ -55,8 +55,8 @@ void TSTypeAliasDeclaration::Iterate(const NodeTraverser &cb) const
 
     cb(id_);
 
-    if (type_params_ != nullptr) {
-        cb(type_params_);
+    if (typeParams_ != nullptr) {
+        cb(typeParams_);
     }
 
     if (TypeAnnotation() != nullptr) {
@@ -70,7 +70,7 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"id", id_},
                  {"typeAnnotation", TypeAnnotation()},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
+                 {"typeParameters", AstDumper::Optional(typeParams_)},
                  {"declare", AstDumper::Optional(declare_)}});
 }
 
@@ -79,9 +79,9 @@ void TSTypeAliasDeclaration::Dump(ir::SrcDumper *dumper) const
     ASSERT(id_);
     dumper->Add("type ");
     id_->Dump(dumper);
-    if (type_params_ != nullptr) {
+    if (typeParams_ != nullptr) {
         dumper->Add("<");
-        type_params_->Dump(dumper);
+        typeParams_->Dump(dumper);
         dumper->Add(">");
     }
     dumper->Add(" = ");

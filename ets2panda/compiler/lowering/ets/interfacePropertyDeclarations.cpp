@@ -35,68 +35,68 @@ std::string_view InterfacePropertyDeclarationsPhase::Name()
 }
 
 static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, ir::ClassProperty *const field,
-                                                    bool is_setter)
+                                                    bool isSetter)
 {
-    auto class_scope = NearestScope(field);
-    auto *param_scope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), class_scope);
-    auto *function_scope = checker->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), param_scope);
+    auto classScope = NearestScope(field);
+    auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
+    auto *functionScope = checker->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), paramScope);
 
-    function_scope->BindParamScope(param_scope);
-    param_scope->BindFunctionScope(function_scope);
+    functionScope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(functionScope);
 
     auto flags = ir::ModifierFlags::PUBLIC;
     flags |= ir::ModifierFlags::ABSTRACT;
 
     ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
 
-    if (is_setter) {
-        auto param_ident = field->Key()->AsIdentifier()->Clone(checker->Allocator());
-        param_ident->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
-        param_ident->TypeAnnotation()->SetParent(param_ident);
+    if (isSetter) {
+        auto paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+        paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
+        paramIdent->TypeAnnotation()->SetParent(paramIdent);
 
-        auto param_expression = checker->AllocNode<ir::ETSParameterExpression>(param_ident, nullptr);
-        param_expression->SetRange(param_ident->Range());
-        const auto [_, __, param_var] = param_scope->AddParamDecl(checker->Allocator(), param_expression);
+        auto paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+        paramExpression->SetRange(paramIdent->Range());
+        const auto [_, __, param_var] = paramScope->AddParamDecl(checker->Allocator(), paramExpression);
         (void)_;
         (void)__;
 
-        param_ident->SetVariable(param_var);
-        param_expression->SetVariable(param_var);
+        paramIdent->SetVariable(param_var);
+        paramExpression->SetVariable(param_var);
 
-        params.push_back(param_expression);
+        params.push_back(paramExpression);
     }
 
-    auto signature = ir::FunctionSignature(nullptr, std::move(params), is_setter ? nullptr : field->TypeAnnotation());
+    auto signature = ir::FunctionSignature(nullptr, std::move(params), isSetter ? nullptr : field->TypeAnnotation());
 
     auto *func =
-        is_setter
+        isSetter
             ? checker->AllocNode<ir::ScriptFunction>(std::move(signature), nullptr, ir::ScriptFunctionFlags::SETTER,
                                                      flags, true, Language(Language::Id::ETS))
             : checker->AllocNode<ir::ScriptFunction>(std::move(signature), nullptr, ir::ScriptFunctionFlags::GETTER,
                                                      flags, true, Language(Language::Id::ETS));
     func->SetRange(field->Range());
 
-    func->SetScope(function_scope);
+    func->SetScope(functionScope);
 
-    auto method_ident = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+    auto methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
     auto *decl = checker->Allocator()->New<varbinder::VarDecl>(field->Key()->AsIdentifier()->Name());
-    auto var = function_scope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+    auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
 
-    method_ident->SetVariable(var);
+    methodIdent->SetVariable(var);
 
-    auto *func_expr = checker->AllocNode<ir::FunctionExpression>(func);
-    func_expr->SetRange(func->Range());
+    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    funcExpr->SetRange(func->Range());
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
-    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, method_ident, func_expr,
+    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
                                                             flags, checker->Allocator(), false);
 
     method->Id()->SetMutator();
     method->SetRange(field->Range());
     method->Function()->SetIdent(method->Id());
     method->Function()->AddModifier(method->Modifiers());
-    param_scope->BindNode(func);
-    function_scope->BindNode(func);
+    paramScope->BindNode(func);
+    functionScope->BindNode(func);
 
     return method;
 }
@@ -108,64 +108,64 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
         return interface;
     }
 
-    auto property_list = interface->Body();
-    ArenaVector<ir::AstNode *> new_property_list(checker->Allocator()->Adapter());
+    auto propertyList = interface->Body();
+    ArenaVector<ir::AstNode *> newPropertyList(checker->Allocator()->Adapter());
 
     auto scope = NearestScope(interface);
     ASSERT(scope->IsClassScope());
 
-    for (const auto &prop : property_list) {
+    for (const auto &prop : propertyList) {
         if (!prop->IsClassProperty()) {
-            new_property_list.emplace_back(prop);
+            newPropertyList.emplace_back(prop);
             continue;
         }
         auto getter = GenerateGetterOrSetter(checker, prop->AsClassProperty(), false);
-        new_property_list.emplace_back(getter);
+        newPropertyList.emplace_back(getter);
 
-        auto method_scope = scope->AsClassScope()->InstanceMethodScope();
+        auto methodScope = scope->AsClassScope()->InstanceMethodScope();
         auto name = getter->Key()->AsIdentifier()->Name();
 
         auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(), name, getter);
-        auto var = method_scope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+        auto var = methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
 
         if (var == nullptr) {
-            auto prev_decl = method_scope->FindDecl(name);
-            ASSERT(prev_decl->IsFunctionDecl());
-            prev_decl->Node()->AsMethodDefinition()->AddOverload(getter);
+            auto prevDecl = methodScope->FindDecl(name);
+            ASSERT(prevDecl->IsFunctionDecl());
+            prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
 
             if (!prop->AsClassProperty()->IsReadonly()) {
                 auto setter = GenerateGetterOrSetter(checker, prop->AsClassProperty(), true);
-                new_property_list.emplace_back(setter);
-                prev_decl->Node()->AsMethodDefinition()->AddOverload(setter);
+                newPropertyList.emplace_back(setter);
+                prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
             }
 
             getter->Function()->Id()->SetVariable(
-                method_scope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
+                methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
             continue;
         }
 
         if (!prop->AsClassProperty()->IsReadonly()) {
             auto setter = GenerateGetterOrSetter(checker, prop->AsClassProperty(), true);
-            new_property_list.emplace_back(setter);
+            newPropertyList.emplace_back(setter);
             getter->AddOverload(setter);
         }
         getter->Function()->Id()->SetVariable(var);
         scope->AsClassScope()->InstanceFieldScope()->EraseBinding(name);
     }
 
-    auto new_interface = checker->AllocNode<ir::TSInterfaceBody>(std::move(new_property_list));
-    new_interface->SetRange(interface->Range());
-    new_interface->SetParent(interface->Parent());
+    auto newInterface = checker->AllocNode<ir::TSInterfaceBody>(std::move(newPropertyList));
+    newInterface->SetRange(interface->Range());
+    newInterface->SetParent(interface->Parent());
 
-    return new_interface;
+    return newInterface;
 }
 
 bool InterfacePropertyDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (const auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
-        for (auto *const ext_prog : ext_programs) {
-            Perform(ctx, ext_prog);
+        for (auto *const extProg : ext_programs) {
+            Perform(ctx, extProg);
         }
     }
 

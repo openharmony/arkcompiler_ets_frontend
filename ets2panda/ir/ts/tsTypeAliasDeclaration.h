@@ -28,12 +28,12 @@ class TSTypeParameterDeclaration;
 
 class TSTypeAliasDeclaration : public AnnotatedStatement {
 public:
-    explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *type_params,
-                                    TypeNode *type_annotation, bool declare)
-        : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, type_annotation),
+    explicit TSTypeAliasDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *typeParams,
+                                    TypeNode *typeAnnotation, bool declare)
+        : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION, typeAnnotation),
           decorators_(allocator->Adapter()),
           id_(id),
-          type_params_(type_params),
+          typeParams_(typeParams),
           declare_(declare)
     {
     }
@@ -42,7 +42,7 @@ public:
         : AnnotatedStatement(AstNodeType::TS_TYPE_ALIAS_DECLARATION),
           decorators_(allocator->Adapter()),
           id_(id),
-          type_params_(nullptr),
+          typeParams_(nullptr),
           declare_(false)
     {
     }
@@ -59,7 +59,7 @@ public:
 
     const TSTypeParameterDeclaration *TypeParams() const
     {
-        return type_params_;
+        return typeParams_;
     }
 
     bool Declare() const
@@ -77,9 +77,9 @@ public:
         return &Decorators();
     }
 
-    void AddTypeParameters(ir::TSTypeParameterDeclaration *type_params)
+    void AddTypeParameters(ir::TSTypeParameterDeclaration *typeParams)
     {
-        type_params_ = type_params;
+        typeParams_ = typeParams;
     }
 
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
@@ -87,9 +87,9 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
-        return !in_ts;
+        return !inTs;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -109,7 +109,7 @@ public:
 private:
     ArenaVector<Decorator *> decorators_;
     Identifier *id_;
-    TSTypeParameterDeclaration *type_params_;
+    TSTypeParameterDeclaration *typeParams_;
     bool declare_;
 };
 }  // namespace panda::es2panda::ir

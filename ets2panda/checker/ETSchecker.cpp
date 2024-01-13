@@ -35,22 +35,22 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
         return;
     }
 
-    const auto var_map = varbinder->TopScope()->Bindings();
+    const auto varMap = varbinder->TopScope()->Bindings();
 
-    auto init_builtin = [var_map](ETSChecker *checker, std::string_view signature) -> util::StringView {
-        const auto iterator = var_map.find(signature);
-        ASSERT(iterator != var_map.end());
+    auto initBuiltin = [varMap](ETSChecker *checker, std::string_view signature) -> util::StringView {
+        const auto iterator = varMap.find(signature);
+        ASSERT(iterator != varMap.end());
         checker->GetGlobalTypesHolder()->InitializeBuiltin(
             iterator->first,
             checker->BuildClassProperties(iterator->second->Declaration()->Node()->AsClassDefinition()));
         return iterator->first;
     };
 
-    auto const object_name = init_builtin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
-    auto const void_name = init_builtin(this, compiler::Signatures::BUILTIN_VOID_CLASS);
+    auto const objectName = initBuiltin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
+    auto const voidName = initBuiltin(this, compiler::Signatures::BUILTIN_VOID_CLASS);
 
-    for (const auto &[name, var] : var_map) {
-        if (name == object_name || name == void_name) {
+    for (const auto &[name, var] : varMap) {
+        if (name == objectName || name == voidName) {
             continue;
         }
 
@@ -78,26 +78,26 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
 {
     Initialize(varbinder);
 
-    if (options.dump_ast) {
+    if (options.dumpAst) {
         std::cout << Program()->Dump() << std::endl;
     }
 
-    if (options.op_dump_ast_only_silent) {
+    if (options.opDumpAstOnlySilent) {
         Program()->DumpSilent();
         return false;
     }
 
-    if (options.parse_only) {
+    if (options.parseOnly) {
         return false;
     }
 
-    varbinder->SetGenStdLib(options.compilation_mode == CompilationMode::GEN_STD_LIB);
+    varbinder->SetGenStdLib(options.compilationMode == CompilationMode::GEN_STD_LIB);
     varbinder->IdentifierAnalysis();
 
-    auto *ets_binder = varbinder->AsETSBinder();
-    InitializeBuiltins(ets_binder);
+    auto *etsBinder = varbinder->AsETSBinder();
+    InitializeBuiltins(etsBinder);
 
-    for (auto &entry : ets_binder->DynamicImportVars()) {
+    for (auto &entry : etsBinder->DynamicImportVars()) {
         auto &data = entry.second;
         if (data.import->IsPureDynamic()) {
             data.variable->SetTsType(GlobalBuiltinDynamicType(data.import->Language()));
@@ -112,7 +112,7 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
     BuildDynamicImportClass();
 
 #ifndef NDEBUG
-    for (auto lambda : ets_binder->LambdaObjects()) {
+    for (auto lambda : etsBinder->LambdaObjects()) {
         ASSERT(!lambda.second.first->TsType()->AsETSObjectType()->AssemblerName().Empty());
     }
     for (auto *func : varbinder->Functions()) {
@@ -120,35 +120,35 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
     }
 #endif
 
-    if (options.dump_checked_ast) {
+    if (options.dumpCheckedAst) {
         std::cout << Program()->Dump() << std::endl;
     }
 
     return true;
 }
 
-void ETSChecker::CheckProgram(parser::Program *program, bool run_analysis)
+void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
 {
-    auto *saved_program = Program();
+    auto *savedProgram = Program();
     SetProgram(program);
 
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
-        for (auto *ext_prog : extPrograms) {
-            CheckProgram(ext_prog);
+        for (auto *extProg : extPrograms) {
+            CheckProgram(extProg);
         }
     }
 
     ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
-    if (run_analysis) {
+    if (runAnalysis) {
         AliveAnalyzer(Program()->Ast(), this);
     }
 
     ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
 
-    SetProgram(saved_program);
+    SetProgram(savedProgram);
 }
 
 Type *ETSChecker::CheckTypeCached(ir::Expression *expr)
@@ -160,9 +160,9 @@ Type *ETSChecker::CheckTypeCached(ir::Expression *expr)
     return expr->TsType();
 }
 
-ETSObjectType *ETSChecker::AsETSObjectType(Type *(GlobalTypesHolder::*type_functor)()) const
+ETSObjectType *ETSChecker::AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)()) const
 {
-    auto *ret = (GetGlobalTypesHolder()->*type_functor)();
+    auto *ret = (GetGlobalTypesHolder()->*typeFunctor)();
     return ret != nullptr ? ret->AsETSObjectType() : nullptr;
 }
 
@@ -320,17 +320,17 @@ ETSObjectType *ETSChecker::GlobalBuiltinBoxType(const Type *contents) const
 
 const checker::WrapperDesc &ETSChecker::PrimitiveWrapper() const
 {
-    return primitive_wrappers_.Wrappers();
+    return primitiveWrappers_.Wrappers();
 }
 
 GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes()
 {
-    return global_array_signatures_;
+    return globalArraySignatures_;
 }
 
 const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 {
-    return global_array_signatures_;
+    return globalArraySignatures_;
 }
 
 // For use in Signature::ToAssemblerType
@@ -339,9 +339,9 @@ const Type *MaybeBoxedType(Checker *checker, const varbinder::Variable *var)
     return checker->AsETSChecker()->MaybeBoxedType(var);
 }
 
-void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *call_expr)
+void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
 {
-    VarBinder()->AsETSBinder()->HandleCustomNodes(call_expr);
+    VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);
 }
 
 }  // namespace panda::es2panda::checker
