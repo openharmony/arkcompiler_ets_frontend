@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -100,8 +100,6 @@ public:
     void StoreGlobalVar(const ir::AstNode *node, const util::StringView &name);
     void StoreGlobalLet(const ir::AstNode *node, const util::StringView &name);
 
-    void TryLoadGlobalByValue(const ir::AstNode *node, VReg key);
-    void TryStoreGlobalByValue(const ir::AstNode *node, VReg key);
     void TryLoadGlobalByName(const ir::AstNode *node, const util::StringView &name);
     void TryStoreGlobalByName(const ir::AstNode *node, const util::StringView &name);
 

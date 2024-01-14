@@ -76,7 +76,7 @@ panda_gen(
     DATA ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.yaml
     TARGET_NAME es2panda_keywords
     TEMPLATES keywords.h.erb
-    REQUIRES
+    API
        ${CMAKE_CURRENT_SOURCE_DIR}/lexer/scripts/keywords.rb
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/lexer/templates
     DESTINATION ${GENERATED_DIR}
@@ -86,7 +86,7 @@ panda_gen(
     DATA ${CMAKE_CURRENT_SOURCE_DIR}/compiler/scripts/signatures.yaml
     TARGET_NAME es2panda_signatures
     TEMPLATES signatures.h.erb
-    REQUIRES
+    API
        ${CMAKE_CURRENT_SOURCE_DIR}/compiler/scripts/signatures.rb
     SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/compiler/templates
     DESTINATION ${GENERATED_DIR}

@@ -1466,14 +1466,14 @@ void ETSGen::CastToByte([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<I32toi8>(node);
             break;
         }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
+            ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
+            [[fallthrough]];
+        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
             Sa().Emit<I32toi8>(node);
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::BYTE);
-            ASSERT(GetAccumulatorType() == Checker()->GlobalByteType());
             break;
         }
         default: {
@@ -1510,14 +1510,14 @@ void ETSGen::CastToChar([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<I32tou16>(node);
             break;
         }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
+            ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
+            [[fallthrough]];
+        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
             Sa().Emit<I32tou16>(node);
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::CHAR);
-            ASSERT(GetAccumulatorType() == Checker()->GlobalCharType());
             break;
         }
         default: {
@@ -1557,14 +1557,14 @@ void ETSGen::CastToShort([[maybe_unused]] const ir::AstNode *node)
             Sa().Emit<I32toi16>(node);
             break;
         }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
+            ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
+            [[fallthrough]];
+        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
             Sa().Emit<I32toi16>(node);
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::SHORT);
-            ASSERT(GetAccumulatorType() == Checker()->GlobalShortType());
             break;
         }
         default: {
@@ -1636,13 +1636,13 @@ void ETSGen::CastToFloat(const ir::AstNode *node)
             Sa().Emit<I64tof32>(node);
             break;
         }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
+            ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
+            [[fallthrough]];
+        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64tof32>(node);
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::FLOAT);
-            ASSERT(GetAccumulatorType() == Checker()->GlobalFloatType());
             break;
         }
         default: {
@@ -1675,13 +1675,13 @@ void ETSGen::CastToLong(const ir::AstNode *node)
             Sa().Emit<F32toi64>(node);
             break;
         }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
+            ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
+            [[fallthrough]];
+        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi64>(node);
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::LONG);
-            ASSERT(GetAccumulatorType() == Checker()->GlobalLongType());
             break;
         }
         default: {
@@ -1715,13 +1715,13 @@ void ETSGen::CastToInt(const ir::AstNode *node)
             Sa().Emit<F32toi32>(node);
             break;
         }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            CastDynamicTo(node, checker::TypeFlag::DOUBLE);
+            ASSERT(GetAccumulatorType() == Checker()->GlobalDoubleType());
+            [[fallthrough]];
+        }
         case checker::TypeFlag::DOUBLE: {
             Sa().Emit<F64toi32>(node);
-            break;
-        }
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::INT);
-            ASSERT(GetAccumulatorType() == Checker()->GlobalIntType());
             break;
         }
         default: {
@@ -1830,31 +1830,14 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             methodName = compiler::Signatures::Dynamic::NewBooleanBuiltin(type->Language());
             break;
         }
-        case checker::TypeFlag::BYTE: {
-            methodName = compiler::Signatures::Dynamic::NewByteBuiltin(type->Language());
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            methodName = compiler::Signatures::Dynamic::NewCharBuiltin(type->Language());
-            break;
-        }
-        case checker::TypeFlag::SHORT: {
-            methodName = compiler::Signatures::Dynamic::NewShortBuiltin(type->Language());
-            break;
-        }
-        case checker::TypeFlag::INT: {
-            methodName = compiler::Signatures::Dynamic::NewIntBuiltin(type->Language());
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            methodName = compiler::Signatures::Dynamic::NewLongBuiltin(type->Language());
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            methodName = compiler::Signatures::Dynamic::NewFloatBuiltin(type->Language());
-            break;
-        }
+        case checker::TypeFlag::CHAR:
+        case checker::TypeFlag::BYTE:
+        case checker::TypeFlag::SHORT:
+        case checker::TypeFlag::INT:
+        case checker::TypeFlag::LONG:
+        case checker::TypeFlag::FLOAT:
         case checker::TypeFlag::DOUBLE: {
+            CastToDouble(node);
             methodName = compiler::Signatures::Dynamic::NewDoubleBuiltin(type->Language());
             break;
         }
@@ -1902,36 +1885,6 @@ void ETSGen::CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeF
         case checker::TypeFlag::ETS_BOOLEAN: {
             methodName = compiler::Signatures::Dynamic::GetBooleanBuiltin(type->Language());
             objectType = Checker()->GlobalETSBooleanType();
-            break;
-        }
-        case checker::TypeFlag::BYTE: {
-            methodName = compiler::Signatures::Dynamic::GetByteBuiltin(type->Language());
-            objectType = Checker()->GlobalByteType();
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            methodName = compiler::Signatures::Dynamic::GetCharBuiltin(type->Language());
-            objectType = Checker()->GlobalCharType();
-            break;
-        }
-        case checker::TypeFlag::SHORT: {
-            methodName = compiler::Signatures::Dynamic::GetShortBuiltin(type->Language());
-            objectType = Checker()->GlobalShortType();
-            break;
-        }
-        case checker::TypeFlag::INT: {
-            methodName = compiler::Signatures::Dynamic::GetIntBuiltin(type->Language());
-            objectType = Checker()->GlobalIntType();
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            methodName = compiler::Signatures::Dynamic::GetLongBuiltin(type->Language());
-            objectType = Checker()->GlobalLongType();
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            methodName = compiler::Signatures::Dynamic::GetFloatBuiltin(type->Language());
-            objectType = Checker()->GlobalFloatType();
             break;
         }
         case checker::TypeFlag::DOUBLE: {
