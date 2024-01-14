@@ -477,17 +477,17 @@ ark_isa_gen("isa_gen_es2panda") {
 }
 
 ark_gen("gen_es2panda_lexer") {
-  data = "lexer/scripts/keywords.yaml"
+  data = [ "lexer/scripts/keywords.yaml" ]
   template_files = [ "keywords.h.erb" ]
   sources = "lexer/templates"
   destination = "$target_gen_dir/generated"
-  requires = [ "lexer/scripts/keywords.rb" ]
+  api = [ "lexer/scripts/keywords.rb" ]
 }
 
 ark_gen("gen_es2panda_compiler") {
-  data = "compiler/scripts/signatures.yaml"
+  data = [ "compiler/scripts/signatures.yaml" ]
   template_files = [ "signatures.h.erb" ]
   sources = "compiler/templates"
   destination = "$target_gen_dir/generated"
-  requires = [ "compiler/scripts/signatures.rb" ]
+  api = [ "compiler/scripts/signatures.rb" ]
 }

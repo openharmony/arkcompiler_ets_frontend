@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,19 +21,27 @@
 
 namespace ark::es2panda::util {
 
+[[maybe_unused]] static void InitializeLogging(const util::Options *options)
+{
+    ark::Logger::ComponentMask componentMask;
+    componentMask.set(ark::Logger::Component::ASSEMBLER);
+    componentMask.set(ark::Logger::Component::COMPILER);
+    componentMask.set(ark::Logger::Component::BYTECODE_OPTIMIZER);
+
+    if (!ark::Logger::IsInitialized()) {
+        ark::Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), componentMask);
+    } else {
+        ark::Logger::EnableComponent(componentMask);
+    }
+}
+
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
 static int OptimizeBytecode(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter,
                             std::map<std::string, size_t> *statp,
                             ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
 {
     if (options->OptLevel() != 0) {
-        ark::Logger::ComponentMask componentMask;
-        componentMask.set(ark::Logger::Component::ASSEMBLER);
-        componentMask.set(ark::Logger::Component::COMPILER);
-        componentMask.set(ark::Logger::Component::BYTECODE_OPTIMIZER);
-
-        ark::Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), componentMask);
-
+        InitializeLogging(options);
         if (!ark::pandasm::AsmEmitter::Emit(options->CompilerOutput(), *prog, statp, mapsp, true)) {
             reporter("Failed to emit binary data: " + ark::pandasm::AsmEmitter::GetLastError());
             return 1;
