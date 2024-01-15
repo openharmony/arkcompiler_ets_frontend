@@ -473,6 +473,36 @@ void ETSChecker::ThrowError(ir::Identifier *const ident)
     ThrowTypeError({"Unresolved reference ", ident->Name()}, ident->Start());
 }
 
+void ETSChecker::WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *const resolved)
+{
+    std::string identCategoryName;
+    switch (static_cast<varbinder::VariableFlags>(
+        resolved->Flags() &
+        (varbinder::VariableFlags::CLASS_OR_INTERFACE_OR_ENUM | varbinder::VariableFlags::METHOD))) {
+        case varbinder::VariableFlags::CLASS: {
+            identCategoryName = "Class";
+            break;
+        }
+        case varbinder::VariableFlags::METHOD: {
+            identCategoryName = "Function";
+            break;
+        }
+        case varbinder::VariableFlags::INTERFACE: {
+            identCategoryName = "Interface";
+            break;
+        }
+        case varbinder::VariableFlags::ENUM_LITERAL: {
+            identCategoryName = "Enum";
+            break;
+        }
+        default: {
+            ThrowError(ident);
+        }
+    }
+    ThrowTypeError({identCategoryName.c_str(), " name \"", ident->Name(), "\" used in the wrong context"},
+                   ident->Start());
+}
+
 void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifier const *const id,
                                       ir::TypeNode const *const annotation)
 {
@@ -486,7 +516,7 @@ void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifie
     ASSERT(targetType != nullptr);
 
     if (!targetType->IsETSObjectType() || !targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        ThrowError(ident);
+        ThrowTypeError("Initializers type is not assignable to the target type", ident->Start());
     }
 }
 
@@ -534,7 +564,7 @@ void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident, varbinder
 {
     if (ident->Parent()->AsMemberExpression()->IsComputed()) {
         if (!resolved->Declaration()->PossibleTDZ()) {
-            ThrowError(ident);
+            WrongContextErrorClassifyByType(ident, resolved);
         }
 
         return;
@@ -578,7 +608,7 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbi
 {
     const auto *const assignmentExpr = ident->Parent()->AsAssignmentExpression();
     if (assignmentExpr->Left() == ident && !resolved->Declaration()->PossibleTDZ()) {
-        ThrowError(ident);
+        WrongContextErrorClassifyByType(ident, resolved);
     }
 
     if (assignmentExpr->Right() == ident) {
@@ -596,7 +626,7 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbi
         }
 
         if (!resolved->Declaration()->PossibleTDZ()) {
-            ThrowError(ident);
+            WrongContextErrorClassifyByType(ident, resolved);
         }
     }
 }
@@ -607,7 +637,8 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     bool isFinished = false;
     if (binaryExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binaryExpr->Right() == ident) {
         if (!IsReferenceType(type)) {
-            ThrowError(ident);
+            ThrowTypeError({R"(Using the "instance of" operator with non-object type ")", ident->Name(), "\""},
+                           ident->Start());
         }
         isFinished = true;
     }
@@ -645,7 +676,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
         case ir::AstNodeType::UPDATE_EXPRESSION:
         case ir::AstNodeType::UNARY_EXPRESSION: {
             if (!resolved->Declaration()->PossibleTDZ()) {
-                ThrowError(ident);
+                WrongContextErrorClassifyByType(ident, resolved);
             }
             break;
         }
@@ -660,7 +691,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
         }
         default: {
             if (!resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
-                ThrowError(ident);
+                WrongContextErrorClassifyByType(ident, resolved);
             }
             break;
         }
