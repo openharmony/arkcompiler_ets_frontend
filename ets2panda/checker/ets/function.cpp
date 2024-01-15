@@ -487,6 +487,10 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
         return nullptr;
     }
 
+    if (argumentCount > parameterCount && hasRestParameter && (flags & TypeRelationFlag::IGNORE_REST_PARAM) != 0) {
+        return nullptr;
+    }
+
     auto count = std::min(parameterCount, argumentCount);
     // Check all required formal parameter(s) first
     if (!ValidateSignatureRequiredParams(substitutedSig, arguments, flags, argTypeInferenceRequired, throwError)) {
@@ -555,7 +559,23 @@ bool IsSignatureAccessible(Signature *sig, ETSObjectType *containingClass, TypeR
 
     return false;
 }
-
+std::array<TypeRelationFlag, 8U> GetFlagVariants()
+{
+    // NOTE(boglarkahaag): Not in sync with specification, but solves the issues with rest params for now (#17483)
+    return {
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING |
+            TypeRelationFlag::IGNORE_REST_PARAM,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::IGNORE_REST_PARAM,
+        TypeRelationFlag::NO_THROW,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING | TypeRelationFlag::NO_UNBOXING |
+            TypeRelationFlag::NO_BOXING | TypeRelationFlag::IGNORE_REST_PARAM,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING | TypeRelationFlag::NO_UNBOXING |
+            TypeRelationFlag::NO_BOXING,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING | TypeRelationFlag::IGNORE_REST_PARAM,
+        TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING,
+    };
+}
 ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> &signatures,
                                                        const ir::TSTypeParameterInstantiation *typeArguments,
                                                        const ArenaVector<ir::Expression *> &arguments,
@@ -591,13 +611,7 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
         TypeRelationFlag flags = TypeRelationFlag::WIDENING | resolveFlags;
         collectSignatures(flags);
     } else {
-        std::array<TypeRelationFlag, 4U> flagVariants {TypeRelationFlag::NO_THROW | TypeRelationFlag::NO_UNBOXING |
-                                                           TypeRelationFlag::NO_BOXING,
-                                                       TypeRelationFlag::NO_THROW,
-                                                       TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING |
-                                                           TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING,
-                                                       TypeRelationFlag::NO_THROW | TypeRelationFlag::WIDENING};
-        for (auto flags : flagVariants) {
+        for (auto flags : GetFlagVariants()) {
             flags = flags | resolveFlags;
             collectSignatures(flags);
             if (!compatibleSignatures.empty()) {
@@ -679,98 +693,10 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
     return nullptr;
 }
 
-Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
-                                                   const std::vector<bool> &argTypeInferenceRequired,
-                                                   const lexer::SourcePosition &pos, size_t argumentsSize)
+Signature *ETSChecker::FindMostSpecificSignature(const ArenaVector<Signature *> &signatures,
+                                                 const ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
+                                                 size_t paramCount)
 {
-    ASSERT(signatures.empty() == false);
-
-    if (signatures.size() == 1) {
-        return signatures.front();
-    }
-
-    size_t paramCount = signatures.front()->Params().size();
-    if (argumentsSize != ULONG_MAX) {
-        paramCount = argumentsSize;
-    }
-    // Multiple signatures with zero parameter because of inheritance.
-    // Return the closest one in inheritance chain that is defined at the beginning of the vector.
-    if (paramCount == 0) {
-        return signatures.front();
-    }
-
-    // Collect which signatures are most specific for each parameter.
-    ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
-
-    const checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(Relation(),
-                                                                          TypeRelationFlag::ONLY_CHECK_WIDENING);
-
-    for (size_t i = 0; i < paramCount; ++i) {
-        if (argTypeInferenceRequired[i]) {
-            for (auto *sig : signatures) {
-                bestSignaturesForParameter.insert({i, sig});
-            }
-            continue;
-        }
-        // 1st step: check which is the most specific parameter type for i. parameter.
-        Type *mostSpecificType = signatures.front()->Params().at(i)->TsType();
-        Signature *prevSig = signatures.front();
-
-        auto initMostSpecificType = [&mostSpecificType, &prevSig, i](Signature *sig) {
-            if (Type *sigType = sig->Params().at(i)->TsType();
-                sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-                mostSpecificType = sigType;
-                prevSig = sig;
-                return true;
-            }
-            return false;
-        };
-
-        auto evaluateResult = [this, &mostSpecificType, &prevSig, pos](Signature *sig, Type *sigType) {
-            if (Relation()->IsAssignableTo(sigType, mostSpecificType)) {
-                mostSpecificType = sigType;
-                prevSig = sig;
-            } else if (sigType->IsETSObjectType() && mostSpecificType->IsETSObjectType() &&
-                       !Relation()->IsAssignableTo(mostSpecificType, sigType)) {
-                auto funcName = sig->Function()->Id()->Name();
-                ThrowTypeError({"Call to `", funcName, "` is ambiguous as `2` versions of `", funcName,
-                                "` are available: `", funcName, prevSig, "` and `", funcName, sig, "`"},
-                               pos);
-            }
-        };
-
-        auto searchAmongTypes = [this, &mostSpecificType, argumentsSize, paramCount, i,
-                                 &evaluateResult](Signature *sig, const bool lookForClassType) {
-            if (lookForClassType && argumentsSize == ULONG_MAX) {
-                [[maybe_unused]] const bool equalParamSize = sig->Params().size() == paramCount;
-                ASSERT(equalParamSize);
-            }
-            Type *sigType = sig->Params().at(i)->TsType();
-            const bool isClassType =
-                sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE);
-            if (isClassType == lookForClassType) {
-                if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
-                    return;
-                }
-                evaluateResult(sig, sigType);
-            }
-        };
-
-        std::any_of(signatures.begin(), signatures.end(), initMostSpecificType);
-        std::for_each(signatures.begin(), signatures.end(),
-                      [&searchAmongTypes](Signature *sig) mutable { searchAmongTypes(sig, true); });
-        std::for_each(signatures.begin(), signatures.end(),
-                      [&searchAmongTypes](Signature *sig) mutable { searchAmongTypes(sig, false); });
-
-        for (auto *sig : signatures) {
-            Type *sigType = sig->Params().at(i)->TsType();
-            if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
-                bestSignaturesForParameter.insert({i, sig});
-            }
-        }
-    }
-
-    // Find the signature that are most specific for all parameters.
     Signature *mostSpecificSignature = nullptr;
 
     for (auto *sig : signatures) {
@@ -779,10 +705,8 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
         for (size_t paramIdx = 0; paramIdx < paramCount; ++paramIdx) {
             const auto range = bestSignaturesForParameter.equal_range(paramIdx);
             // Check if signature is most specific for i. parameter type.
-            const bool hasSignature =
-                std::any_of(range.first, range.second, [&sig](auto entry) { return entry.second == sig; });
-            if (!hasSignature) {
-                mostSpecific = false;
+            mostSpecific = std::any_of(range.first, range.second, [&sig](auto entry) { return entry.second == sig; });
+            if (!mostSpecific) {
                 break;
             }
         }
@@ -803,6 +727,114 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
             return nullptr;
         }
     }
+    return mostSpecificSignature;
+}
+
+static void InitMostSpecificType(const ArenaVector<Signature *> &signatures, [[maybe_unused]] Type *&mostSpecificType,
+                                 [[maybe_unused]] Signature *&prevSig, const size_t idx)
+{
+    for (auto *sig : signatures) {
+        if (Type *sigType = sig->Params().at(idx)->TsType();
+            sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+            mostSpecificType = sigType;
+            prevSig = sig;
+            return;
+        }
+    }
+}
+
+void ETSChecker::EvaluateMostSpecificSearch(Type *&mostSpecificType, Signature *&prevSig,
+                                            const lexer::SourcePosition &pos, Signature *sig, Type *sigType)
+{
+    if (Relation()->IsAssignableTo(sigType, mostSpecificType)) {
+        mostSpecificType = sigType;
+        prevSig = sig;
+    } else if (sigType->IsETSObjectType() && mostSpecificType->IsETSObjectType() &&
+               !Relation()->IsAssignableTo(mostSpecificType, sigType)) {
+        auto funcName = sig->Function()->Id()->Name();
+        ThrowTypeError({"Call to `", funcName, "` is ambiguous as `2` versions of `", funcName, "` are available: `",
+                        funcName, prevSig, "` and `", funcName, sig, "`"},
+                       pos);
+    }
+}
+
+void ETSChecker::SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig,
+                                              const lexer::SourcePosition &pos, const size_t argumentsSize,
+                                              const size_t paramCount, const size_t idx, Signature *sig,
+                                              const bool lookForClassType)
+{
+    if (lookForClassType && argumentsSize == ULONG_MAX) {
+        [[maybe_unused]] const bool equalParamSize = sig->Params().size() == paramCount;
+        ASSERT(equalParamSize);
+    }
+    Type *sigType = sig->Params().at(idx)->TsType();
+    const bool isClassType =
+        sigType->IsETSObjectType() && !sigType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE);
+    if (isClassType == lookForClassType) {
+        if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
+            return;
+        }
+        EvaluateMostSpecificSearch(mostSpecificType, prevSig, pos, sig, sigType);
+    }
+}
+
+Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
+                                                   const std::vector<bool> &argTypeInferenceRequired,
+                                                   const lexer::SourcePosition &pos, size_t argumentsSize)
+{
+    ASSERT(signatures.empty() == false);
+
+    if (signatures.size() == 1) {
+        return signatures.front();
+    }
+
+    size_t paramCount = signatures.front()->Params().size();
+    if (argumentsSize != ULONG_MAX) {
+        paramCount = argumentsSize;
+    }
+    // Multiple signatures with zero parameter because of inheritance.
+    // Return the closest one in inheritance chain that is defined at the beginning of the vector.
+    if (paramCount == 0) {
+        if (signatures.front()->RestVar() == nullptr) {
+            return signatures.front();
+        }
+        ThrowTypeError({"Call to `", signatures.front()->Function()->Id()->Name(), "` is ambiguous "}, pos);
+    }
+
+    // Collect which signatures are most specific for each parameter.
+    ArenaMultiMap<size_t /* parameter index */, Signature *> bestSignaturesForParameter(Allocator()->Adapter());
+
+    const checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(Relation(),
+                                                                          TypeRelationFlag::ONLY_CHECK_WIDENING);
+
+    for (size_t i = 0; i < paramCount; ++i) {
+        if (argTypeInferenceRequired[i]) {
+            for (auto *sig : signatures) {
+                bestSignaturesForParameter.insert({i, sig});
+            }
+            continue;
+        }
+        // 1st step: check which is the most specific parameter type for i. parameter.
+        Type *mostSpecificType = signatures.front()->Params().at(i)->TsType();
+        Signature *prevSig = signatures.front();
+
+        InitMostSpecificType(signatures, mostSpecificType, prevSig, i);
+        for (auto *sig : signatures) {
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig, pos, argumentsSize, paramCount, i, sig, true);
+        }
+        for (auto *sig : signatures) {
+            SearchAmongMostSpecificTypes(mostSpecificType, prevSig, pos, argumentsSize, paramCount, i, sig, false);
+        }
+
+        for (auto *sig : signatures) {
+            Type *sigType = sig->Params().at(i)->TsType();
+            if (Relation()->IsIdenticalTo(sigType, mostSpecificType)) {
+                bestSignaturesForParameter.insert({i, sig});
+            }
+        }
+    }
+    // Find the signature that are most specific for all parameters.
+    Signature *mostSpecificSignature = FindMostSpecificSignature(signatures, bestSignaturesForParameter, paramCount);
 
     return mostSpecificSignature;
 }
