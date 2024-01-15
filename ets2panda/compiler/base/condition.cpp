@@ -260,10 +260,7 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binE
             RegScope rs(etsg);
             VReg lhs = etsg->AllocReg();
 
-            binExpr->Left()->Compile(etsg);
-            etsg->ApplyConversionAndStoreAccumulator(binExpr->Left(), lhs, binExpr->OperationType());
-            binExpr->Right()->Compile(etsg);
-            etsg->ApplyConversion(binExpr->Right(), binExpr->OperationType());
+            binExpr->CompileOperands(etsg, lhs);
             etsg->Condition(binExpr, binExpr->OperatorType(), lhs, falseLabel);
             return true;
         }

@@ -507,10 +507,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
         ThrowTypeError("Bad operand type, the types of the operands must be same type.", pos);
     }
 
-    if (rightType->IsETSDynamicType() || leftType->IsETSDynamicType()) {
-        if (!(rightType->IsETSDynamicType() && leftType->IsETSDynamicType())) {
-            ThrowTypeError("Bad operand type, both types of the operands must be dynamic.", pos);
-        }
+    if (rightType->IsETSDynamicType() && !rightType->AsETSDynamicType()->HasDecl()) {
+        ThrowTypeError("Right-hand side of instanceof expression must represent a type.", pos);
     }
 
     tsType = GlobalETSBooleanType();

@@ -773,11 +773,75 @@ static bool IsAnyReferenceSupertype(checker::Type const *type)
            });
 }
 
-void ETSGen::IsInstanceDynamic(const ir::AstNode *const node, const VReg srcReg, [[maybe_unused]] const VReg tgtReg)
+void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VReg srcReg,
+                               [[maybe_unused]] const VReg tgtReg)
 {
-    ASSERT(Checker()->GetApparentType(GetVRegType(tgtReg))->IsETSDynamicType() &&
-           GetVRegType(srcReg)->IsETSDynamicType());
-    Ra().Emit<CallShort, 2U>(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF, srcReg, MoveAccToReg(node));
+    ASSERT(node->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
+    const checker::Type *lhsType = node->Left()->TsType();
+    const checker::Type *rhsType = node->Right()->TsType();
+    ASSERT(rhsType->IsETSDynamicType() || lhsType->IsETSDynamicType());
+
+    const RegScope rs(this);
+    if (rhsType->IsETSDynamicType()) {
+        ASSERT(node->Right()->TsType()->AsETSDynamicType()->HasDecl());
+        if (lhsType->IsETSDynamicType()) {
+            VReg dynTypeReg = MoveAccToReg(node);
+            // Semantics:
+            //      let dyn_val: JSValue = ...
+            //      dyn_value instanceof DynamicDecl
+            // Bytecode:
+            //      call runtime intrinsic_dynamic
+            CallStatic2(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
+        } else if (lhsType == Checker()->GlobalETSObjectType()) {
+            // Semantics:
+            //      let obj: Object = ...
+            //      obj instanceof DynamicDecl
+            // Bytecode:
+            //      if isinstance <dynamic type name>:
+            //          checkcast <dynamic type name>
+            //          return call runtime intrinsic_dynamic
+            //      return false
+            Label *ifFalse = AllocLabel();
+            Language lang = rhsType->AsETSDynamicType()->Language();
+            VReg dynTypeReg = MoveAccToReg(node);
+            LoadAccumulator(node, srcReg);
+            Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinDynamicType(lang)->AssemblerName());
+            BranchIfFalse(node, ifFalse);
+            LoadAccumulator(node, srcReg);
+            Sa().Emit<Checkcast>(node, Checker()->GlobalBuiltinDynamicType(lang)->AssemblerName());
+            CallStatic2(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
+            SetLabel(node, ifFalse);
+        } else {
+            // Semantics:
+            //      let obj: EtsType = ...
+            //      obj instanceof DynamicDecl
+            // Bytecode:
+            //      False
+            Sa().Emit<Ldai>(node, 0);
+        }
+    } else {
+        if (lhsType->IsETSDynamicType()) {
+            if (rhsType == Checker()->GlobalETSObjectType()) {
+                // Semantics:
+                //      let dyn_val: JSValue = ...
+                //      dyn_val instanceof Object
+                // Bytecode:
+                //      True
+                Sa().Emit<Ldai>(node, 1);
+            } else {
+                // Semantics:
+                //      let dyn_val: JSValue = ...
+                //      dyn_val instanceof EtsType
+                // Bytecode:
+                //      lda.type + call runtime instrinsic_static
+                Sa().Emit<LdaType>(node, rhsType->AsETSObjectType()->AssemblerName());
+                VReg typeReg = MoveAccToReg(node);
+                CallStatic2(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC, srcReg, typeReg);
+            }
+        } else {
+            UNREACHABLE();
+        }
+    }
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 

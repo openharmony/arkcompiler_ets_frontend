@@ -17,24 +17,8 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A, I, foo } from "dynamic_import_tests/modules/module"
-
-class B implements I {
-    override f1(p: string): double {
-        return 10;
-    }
-    override f2(p: double): string {
-        return "abc"
-    }
+export declare class ADeclared {
 }
 
-function main(): void {
-    let obj: A = new A(10.0, "abc")
-    let f1: string = obj.foo(20)
-    let f2: double = A.bar()
-
-    obj.f1 = f1
-    A.f2 = f2
-
-    foo(obj)
+export declare class BDeclared {
 }

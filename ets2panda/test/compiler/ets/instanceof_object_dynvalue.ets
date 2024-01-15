@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,24 +17,8 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A, I, foo } from "dynamic_import_tests/modules/module"
+import { A } from "dynamic_js_import_tests"
 
-class B implements I {
-    override f1(p: string): double {
-        return 10;
-    }
-    override f2(p: double): string {
-        return "abc"
-    }
-}
-
-function main(): void {
-    let obj: A = new A(10.0, "abc")
-    let f1: string = obj.foo(20)
-    let f2: double = A.bar()
-
-    obj.f1 = f1
-    A.f2 = f2
-
-    foo(obj)
+function fn(o: Object): boolean {
+    return o instanceof A;
 }

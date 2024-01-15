@@ -1198,8 +1198,7 @@ Type *ETSChecker::GetReferencedTypeFromBase([[maybe_unused]] Type *baseType, [[m
 Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
 {
     if (name->IsTSQualifiedName()) {
-        auto *qualified = name->AsTSQualifiedName();
-        return qualified->Check(this);
+        return name->Check(this);
     }
 
     ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() != nullptr);
@@ -1207,34 +1206,43 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
     // NOTE: kbaladurin. forbid usage imported entities as types without declarations
     auto *importData = VarBinder()->AsETSBinder()->DynamicImportDataForVar(name->AsIdentifier()->Variable());
     if (importData != nullptr && importData->import->IsPureDynamic()) {
-        return GlobalBuiltinDynamicType(importData->import->Language());
+        name->SetTsType(GlobalBuiltinDynamicType(importData->import->Language()));
+        return name->TsType();
     }
 
     auto *refVar = name->AsIdentifier()->Variable()->AsLocalVariable();
 
+    checker::Type *tsType = nullptr;
     switch (refVar->Declaration()->Node()->Type()) {
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
-            return GetTypeFromInterfaceReference(refVar);
+            tsType = GetTypeFromInterfaceReference(refVar);
+            break;
         }
         case ir::AstNodeType::CLASS_DECLARATION:
         case ir::AstNodeType::STRUCT_DECLARATION:
         case ir::AstNodeType::CLASS_DEFINITION: {
-            return GetTypeFromClassReference(refVar);
+            tsType = GetTypeFromClassReference(refVar);
+            break;
         }
         case ir::AstNodeType::TS_ENUM_DECLARATION: {
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            return GetTypeFromEnumReference(refVar);
+            tsType = GetTypeFromEnumReference(refVar);
+            break;
         }
         case ir::AstNodeType::TS_TYPE_PARAMETER: {
-            return GetTypeFromTypeParameterReference(refVar, name->Start());
+            tsType = GetTypeFromTypeParameterReference(refVar, name->Start());
+            break;
         }
         case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {
-            return GetTypeFromTypeAliasReference(refVar);
+            tsType = GetTypeFromTypeAliasReference(refVar);
+            break;
         }
         default: {
             UNREACHABLE();
         }
     }
+    name->SetTsType(tsType);
+    return tsType;
 }
 
 void ETSChecker::ConcatConstantString(util::UString &target, Type *type)

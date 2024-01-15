@@ -580,7 +580,7 @@ static void CompileInstanceof(compiler::ETSGen *etsg, const ir::BinaryExpression
     expr->Left()->Compile(etsg);
     etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
 
-    if (expr->Right()->TsType()->IsETSDynamicType()) {
+    if (expr->Left()->TsType()->IsETSDynamicType() || expr->Right()->TsType()->IsETSDynamicType()) {
         auto rhs = etsg->AllocReg();
         expr->Right()->Compile(etsg);
         etsg->StoreAccumulator(expr, rhs);
@@ -691,10 +691,7 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
         return;
     }
 
-    expr->Left()->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
-    expr->Right()->Compile(etsg);
-    etsg->ApplyConversion(expr->Right(), expr->OperationType());
+    expr->CompileOperands(etsg, lhs);
     if (expr->OperationType()->IsIntType()) {
         etsg->ApplyCast(expr->Right(), expr->OperationType());
     }

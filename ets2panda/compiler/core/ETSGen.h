@@ -93,7 +93,7 @@ public:
 
     void BranchIfIsInstance(const ir::AstNode *node, VReg srcReg, const checker::Type *target, Label *ifTrue);
     void IsInstance(const ir::AstNode *node, VReg srcReg, checker::Type const *target);
-    void IsInstanceDynamic(const ir::AstNode *node, VReg srcReg, VReg tgtReg);
+    void IsInstanceDynamic(const ir::BinaryExpression *node, VReg srcReg, VReg tgtReg);
     void EmitFailedTypeCastException(const ir::AstNode *node, VReg src, checker::Type const *target);
 
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
@@ -562,6 +562,16 @@ public:
     void CallStatic0(const ir::AstNode *const node, const util::StringView name)
     {
         Ra().Emit<CallShort, 0>(node, name, dummyReg_, dummyReg_);
+    }
+
+    void CallStatic1(const ir::AstNode *const node, const util::StringView name, const VReg arg0)
+    {
+        Ra().Emit<CallShort, 1U>(node, name, arg0, dummyReg_);
+    }
+
+    void CallStatic2(const ir::AstNode *const node, const util::StringView name, const VReg arg0, const VReg arg1)
+    {
+        Ra().Emit<CallShort, 2U>(node, name, arg0, arg1);
     }
 
     void CallThisStatic0(const ir::AstNode *const node, const VReg ctor, const util::StringView name)
@@ -1041,6 +1051,7 @@ private:
     void CallImpl(const ir::AstNode *node, checker::Signature const *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
+        ASSERT(signature != nullptr);
         RegScope rs(this);
         if (ResolveStringFromNullishBuiltin<Short, General, Range>(node, signature, arguments)) {
             return;

@@ -26,9 +26,6 @@ compiler/ets/override3.ets
 compiler/ets/override4.ets
 compiler/ets/override5.ets
 
-# 13086
-compiler/ets/dynamic_instanceof.ets
-
 # Requires smart casts
 parser/ets/null-coalesc-negative.ets
 
