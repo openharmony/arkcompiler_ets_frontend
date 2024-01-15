@@ -288,11 +288,7 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
             continue;
         }
 
-        if (prop->IsPrivate()) {
-            continue;
-        }
-
-        if (prop->IsAbstract()) {
+        if (prop->IsPrivate() || prop->IsAbstract()) {
             continue;
         }
 
@@ -301,7 +297,8 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
 
         switch (prop->Kind()) {
             case ir::MethodDefinitionKind::METHOD: {
-                compiler::Operand key = pg->ToPropertyKey(prop->Key(), prop->Computed());
+                compiler::Operand key = prop->Computed() ? prop->KeyReg() :
+                    pg->ToPropertyKey(prop->Key(), false);
 
                 pg->LoadAccumulator(this, dest);
                 const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
@@ -312,7 +309,8 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
             }
             case ir::MethodDefinitionKind::GET:
             case ir::MethodDefinitionKind::SET: {
-                compiler::VReg keyReg = pg->LoadPropertyKey(prop->Key(), prop->Computed());
+                compiler::VReg keyReg = prop->Computed() ? prop->KeyReg() :
+                    pg->LoadPropertyKey(prop->Key(), false);
 
                 compiler::VReg undef = pg->AllocReg();
                 pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
@@ -385,6 +383,15 @@ void ClassDefinition::CompileComputedKeys(compiler::PandaGen *pg) const
                 pg->ToComputedPropertyKey(prop->Key());
                 pg->StoreLexicalVar(prop->Key(), 0, GetSlot(prop->Key()));
             }
+        } else if (stmt->IsMethodDefinition()) {
+            auto *methodDef = stmt->AsMethodDefinition();
+            if (methodDef->Computed()) {
+                compiler::VReg keyReg = pg->AllocReg();
+                methodDef->SetKeyReg(keyReg);
+                methodDef->Key()->Compile(pg);
+                pg->ToComputedPropertyKey(methodDef->Key());
+                pg->StoreAccumulator(methodDef->Key(), keyReg);
+            }
         }
     }
 }
@@ -409,6 +416,10 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     util::StringView ctorId = ctor_->Function()->Scope()->InternalName();
     util::BitSet compiled(body_.size());
 
+    if (hasComputedKey_) {
+        CompileComputedKeys(pg);
+    }
+
     int32_t bufIdx = CreateClassPublicBuffer(pg, compiled);
     pg->DefineClassWithBuffer(this, ctorId, bufIdx, baseReg);
 
@@ -421,10 +432,6 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     InitializeClassName(pg);
 
     CompileMissingProperties(pg, compiled, classReg);
-
-    if (hasComputedKey_) {
-        CompileComputedKeys(pg);
-    }
 
     if (hasPrivateElement_) {
         int32_t bufIdx = CreateClassPrivateBuffer(pg);
@@ -492,6 +499,8 @@ void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
             if (methodDef->IsPrivate()) {
                 privateProperties.push_back(stmt);
                 methodDef->IsStatic() ? staticPrivateMethodCnt ++ : instancePrivateMethodCnt++;
+            } else if (methodDef->Computed()) {
+                hasComputedKey_ = true;
             }
             continue;
         }
@@ -503,22 +512,17 @@ void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
 
         ASSERT(stmt->IsClassProperty());
         const auto *prop = stmt->AsClassProperty();
-
         // Do not process non-static public fields when not using define semantic.
         if (!prop->IsPrivate() && !prop->IsStatic() && !useDefineSemantic) {
             continue;
         }
 
+        prop->IsStatic() ? needStaticInitializer_ = true : needInstanceInitializer_ = true;
+
         if (prop->IsComputed() && prop->NeedCompileKey()) {
             hasComputedKey_ = true;
             scope_->AddClassVariable(prop->Key());
-        }
-        if (prop->IsStatic()) {
-            needStaticInitializer_ = true;
-        } else {
-            needInstanceInitializer_ = true;
-        }
-        if (prop->Key()->IsPrivateIdentifier()) {
+        } else if (prop->IsPrivate()) {
             privateFieldCnt++;
             privateProperties.push_back(stmt);
         }
