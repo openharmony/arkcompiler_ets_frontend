@@ -8,5 +8,6 @@
 /test/**
 /test_extended_features/**
 /test_rules/**
+/test_regression/**
 **.json
 **.js
