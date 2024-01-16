@@ -140,12 +140,12 @@ checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker
 
     const auto nullishUndefinedFlags =
         (containsNullOrUndefined.first ? checker::TypeFlag::NULLISH | checker::TypeFlag::NULL_TYPE
-                                          : checker::TypeFlag::NONE) |
+                                       : checker::TypeFlag::NONE) |
         (containsNullOrUndefined.second ? checker::TypeFlag::UNDEFINED : checker::TypeFlag::NONE);
 
     if (nullishUndefinedFlags != checker::TypeFlag::NONE) {
-        lubType = checker->CreateNullishType(lubType, nullishUndefinedFlags, checker->Allocator(),
-                                              checker->Relation(), checker->GetGlobalTypesHolder());
+        lubType = checker->CreateNullishType(lubType, nullishUndefinedFlags, checker->Allocator(), checker->Relation(),
+                                             checker->GetGlobalTypesHolder());
     }
 
     checker->Relation()->SetNode(savedRelationNode);

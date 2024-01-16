@@ -662,8 +662,7 @@ private:
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
     ETSObjectType *UpdateBoxedGlobalType(ETSObjectType *objType, util::StringView name);
-    ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode,
-                                                    ETSObjectFlags flags);
+    ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
 
     template <typename UType>

@@ -391,7 +391,7 @@ void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker
     bool isAssignable = true;
     for (auto elem : elements_) {
         auto assignCtx = checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), paramType,
-                                                     elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
+                                                    elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
         isAssignable &= assignCtx.IsAssignable();
     }
     if (isAssignable) {

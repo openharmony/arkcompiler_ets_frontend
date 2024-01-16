@@ -159,7 +159,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
             const auto &sourceName = std::get<0>(it);
             const auto &linkedProgram = std::get<1>(it);
             verificationCtx.Verify(context.Options()->verifierWarnings, context.Options()->verifierErrors,
-                                    linkedProgram->Ast(), phase->Name(), sourceName);
+                                   linkedProgram->Ast(), phase->Name(), sourceName);
             verificationCtx.IntroduceNewInvariants(phase->Name());
         }
 #endif

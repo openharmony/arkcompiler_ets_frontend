@@ -1345,8 +1345,7 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
 
 lexer::SourcePosition ETSParser::InitializeGlobalVariable(ir::Identifier *fieldName, ir::Expression *&initializer,
                                                           ir::ScriptFunction *initFunction,
-                                                          lexer::SourcePosition &startLoc,
-                                                          ir::TypeNode *typeAnnotation)
+                                                          lexer::SourcePosition &startLoc, ir::TypeNode *typeAnnotation)
 {
     lexer::SourcePosition endLoc = startLoc;
 
@@ -2390,7 +2389,7 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation, bo
             typeParamNames += ">";
         }
         return adjustNullish(typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8() +
-                              typeParamNames);
+                             typeParamNames);
     }
 
     if (typeAnnotation->IsETSFunctionType()) {
@@ -4690,11 +4689,11 @@ void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)
 
         // Run checks to validate type declarations
         // Should provide helpful messages with incorrect declarations like the following:
-        // instanceof A<String;
+        // `instanceof A<String;`
         ParseTypeParameterDeclaration(&options);
 
         // Display error message even when type declaration is correct
-        // instanceof A<String>;
+        // `instanceof A<String>;`
         ThrowSyntaxError("Invalid right-hand side in 'instanceof' expression");
     }
 }

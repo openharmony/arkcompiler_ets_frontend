@@ -308,8 +308,8 @@ ETSObjectType *ETSChecker::UpdateGlobalType(ETSObjectType *objType, util::String
         }
 
         if (name == compiler::Signatures::BUILTIN_OBJECT_CLASS) {
-            auto *nullish = CreateNullishType(objType, checker::TypeFlag::NULLISH, Allocator(), Relation(),
-                                              GetGlobalTypesHolder());
+            auto *nullish =
+                CreateNullishType(objType, checker::TypeFlag::NULLISH, Allocator(), Relation(), GetGlobalTypesHolder());
             GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
         }
     }

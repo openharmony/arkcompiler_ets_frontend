@@ -978,10 +978,10 @@ ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, ch
         if (constituentType->IsETSObjectType()) {
             ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
             tmpCallSignatures = constituentType->AsETSObjectType()
-                                      ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
-                                      ->TsType()
-                                      ->AsETSFunctionType()
-                                      ->CallSignatures();
+                                    ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                    ->TsType()
+                                    ->AsETSFunctionType()
+                                    ->CallSignatures();
             callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
         }
         if (constituentType->IsETSFunctionType()) {
@@ -1064,7 +1064,7 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
         calleeType->IsETSUnionType() &&
         calleeType->AsETSUnionType()->HasObjectType(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool isFunctionalInterface = calleeType->IsETSObjectType() && calleeType->AsETSObjectType()->HasObjectFlag(
-                                                                         checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
+                                                                      checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool etsExtensionFuncHelperType = calleeType->IsETSExtensionFuncHelperType();
 
     if (expr->Callee()->IsArrowFunctionExpression()) {
@@ -1535,8 +1535,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
     auto unboxedOperandType = isCondExpr ? checker->ETSBuiltinTypeAsConditionalType(argType)
                                          : checker->ETSBuiltinTypeAsPrimitiveType(argType);
 
-    if (argType != nullptr && argType->IsETSBigIntType() &&
-        argType->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
+    if (argType != nullptr && argType->IsETSBigIntType() && argType->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
         switch (expr->OperatorType()) {
             case lexer::TokenType::PUNCTUATOR_MINUS: {
                 checker::Type *type = checker->CreateETSBigIntLiteralType(argType->AsETSBigIntType()->GetValue());

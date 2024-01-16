@@ -600,7 +600,7 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
             tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr, pos, leftType, rightType,
-                                                          unboxedL, unboxedR);
+                                                         unboxedL, unboxedR);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
@@ -652,10 +652,10 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
 
     const bool isLogicalExtendedOperator =
         (op == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) || (op == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
-    Type *unboxedL = isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(leftType)
-                                                   : ETSBuiltinTypeAsPrimitiveType(leftType);
+    Type *unboxedL =
+        isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(leftType) : ETSBuiltinTypeAsPrimitiveType(leftType);
     Type *unboxedR = isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(rightType)
-                                                   : ETSBuiltinTypeAsPrimitiveType(rightType);
+                                               : ETSBuiltinTypeAsPrimitiveType(rightType);
 
     checker::Type *tsType {};
     bool isEqualOp =

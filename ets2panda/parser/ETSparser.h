@@ -168,8 +168,7 @@ private:
 
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                   ArenaVector<ir::AstNode *> *declarations,
-                                   ir::ScriptFunction *initFunction = nullptr,
+                                   ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *initFunction = nullptr,
                                    lexer::SourcePosition *letLoc = nullptr);
     lexer::SourcePosition InitializeGlobalVariable(ir::Identifier *fieldName, ir::Expression *&initializer,
                                                    ir::ScriptFunction *initFunction, lexer::SourcePosition &startLoc,

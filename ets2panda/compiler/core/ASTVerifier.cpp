@@ -754,7 +754,6 @@ std::tuple<ASTVerifier::Errors, ASTVerifier::Errors> ASTVerifier::Verify(
 
     const auto containsInvariants =
         std::includes(invariantsNames_.begin(), invariantsNames_.end(), invariantSet.begin(), invariantSet.end());
-
     if (!containsInvariants) {
         auto invalidInvariants = InvariantSet {};
         for (const auto &invariant : invariantSet) {

@@ -748,8 +748,8 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
         }
 
         foundVar = FindLocal(newDecl->Name(),
-                              ResolveBindingOptions::ALL ^ (isStatic ? ResolveBindingOptions::VARIABLES
-                                                                      : ResolveBindingOptions::STATIC_VARIABLES));
+                             ResolveBindingOptions::ALL ^ (isStatic ? ResolveBindingOptions::VARIABLES
+                                                                    : ResolveBindingOptions::STATIC_VARIABLES));
         if (foundVar != nullptr) {
             return nullptr;
         }

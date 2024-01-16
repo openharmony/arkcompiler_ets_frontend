@@ -183,16 +183,16 @@ public:
                 }};
             }
             const std::set<std::string> withoutAdditionalChecks = {"PromiseVoidInferencePhase",
-                                                                     "StructLowering",
-                                                                     "GenerateTsDeclarationsPhase",
-                                                                     "InterfacePropertyDeclarationsPhase",
-                                                                     "LambdaConstructionPhase",
-                                                                     "ObjectIndexLowering",
-                                                                     "OpAssignmentLowering",
-                                                                     "PromiseVoidInferencePhase",
-                                                                     "TupleLowering",
-                                                                     "UnionLowering",
-                                                                     "ExpandBracketsPhase"};
+                                                                   "StructLowering",
+                                                                   "GenerateTsDeclarationsPhase",
+                                                                   "InterfacePropertyDeclarationsPhase",
+                                                                   "LambdaConstructionPhase",
+                                                                   "ObjectIndexLowering",
+                                                                   "OpAssignmentLowering",
+                                                                   "PromiseVoidInferencePhase",
+                                                                   "TupleLowering",
+                                                                   "UnionLowering",
+                                                                   "ExpandBracketsPhase"};
             if (withoutAdditionalChecks.count(phaseName.Mutf8()) > 0) {
                 return {{}};
             }

@@ -122,7 +122,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("StackTrace", GlobalTypeId::ETS_STACK_TRACE_BUILTIN);
     builtinNameMappings_.emplace("NullPointerException", GlobalTypeId::ETS_NULL_POINTER_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ArrayIndexOutOfBoundsException",
-                                   GlobalTypeId::ETS_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION_BUILTIN);
+                                 GlobalTypeId::ETS_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ArithmeticException", GlobalTypeId::ETS_ARITHMETIC_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ClassNotFoundException", GlobalTypeId::ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ClassCastException", GlobalTypeId::ETS_CLASS_CAST_EXCEPTION_BUILTIN);

@@ -272,12 +272,11 @@ ir::Expression *ProcessOperandsInBinaryExpr(checker::ETSChecker *checker, ir::Bi
 {
     ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL);
-    bool isLhsUnion;
-    ir::Expression *unionNode =
-        (isLhsUnion = expr->Left()->TsType()->IsETSUnionType()) ? expr->Left() : expr->Right();
+    bool isLhsUnion = false;
+    ir::Expression *unionNode = (isLhsUnion = expr->Left()->TsType()->IsETSUnionType()) ? expr->Left() : expr->Right();
     checker::Type *typeToCast = constituentType->IsETSNullLike()
-                                      ? unionNode->TsType()->AsETSUnionType()->GetLeastUpperBoundType()
-                                      : constituentType;
+                                    ? unionNode->TsType()->AsETSUnionType()->GetLeastUpperBoundType()
+                                    : constituentType;
     auto *const asExpression = GenAsExpression(checker, typeToCast, unionNode, expr);
     if (isLhsUnion) {
         expr->SetLeft(asExpression);

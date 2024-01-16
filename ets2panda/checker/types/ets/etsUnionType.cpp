@@ -212,9 +212,9 @@ void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &c
                 relation->IsSupertypeOf((*cmpIt), ct);
                 bool removeSubtype = ct != *cmpIt && !bothConstants && relation->IsTrue();
                 bool removeNumeric = numberFound && ct->IsETSObjectType() &&
-                                      ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
-                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
-                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
+                                     ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
+                                     !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
+                                     !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
                 bool removeNever = ct == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
                 return removeSubtype || removeNumeric || removeNever;
             });

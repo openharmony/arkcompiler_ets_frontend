@@ -176,7 +176,6 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
 bool TypeRelation::IsSupertypeOf(Type *super, Type *sub)
 {
     result_ = CacheLookup(super, sub, checker_->SupertypeResults(), RelationType::SUPERTYPE);
-
     if (result_ == RelationResult::CACHE_MISS) {
         if (IsIdenticalTo(super, sub)) {
             return true;

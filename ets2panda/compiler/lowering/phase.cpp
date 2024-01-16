@@ -69,11 +69,11 @@ static InitScopesPhaseJs g_initScopesPhaseJs;
 std::vector<Phase *> GetETSPhaseList()
 {
     return {
-        &g_pluginsAfterParse,    &g_initScopesPhaseEts,     &g_promiseVoidInferencePhase,
-        &g_structLowering,        &g_lambdaConstructionPhase, &g_interfacePropDeclPhase,
-        &g_checkerPhase,          &g_pluginsAfterCheck,       &g_generateTsDeclarationsPhase,
+        &g_pluginsAfterParse,    &g_initScopesPhaseEts,      &g_promiseVoidInferencePhase,
+        &g_structLowering,       &g_lambdaConstructionPhase, &g_interfacePropDeclPhase,
+        &g_checkerPhase,         &g_pluginsAfterCheck,       &g_generateTsDeclarationsPhase,
         &g_opAssignmentLowering, &g_objectIndexLowering,     &g_tupleLowering,
-        &g_unionLowering,         &g_expandBracketsPhase,     &g_pluginsAfterLowerings,
+        &g_unionLowering,        &g_expandBracketsPhase,     &g_pluginsAfterLowerings,
     };
 }
 

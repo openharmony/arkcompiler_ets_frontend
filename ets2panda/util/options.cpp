@@ -184,7 +184,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> verifierWarnings("verifier-warnings", "", "Show warnings form verifier");
     panda::PandArg<std::string> verifierErrors("verifier-errors", "", "Show warnings form verifier");
     panda::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
-                                                   "Generate program dump before running phases in the list");
+                                                 "Generate program dump before running phases in the list");
     panda::PandArg<std::string> dumpEtsSrcBeforePhases(
         "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
     panda::PandArg<std::string> dumpEtsSrcAfterPhases(

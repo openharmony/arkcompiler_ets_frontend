@@ -61,15 +61,13 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
     extends "Comparable<String>", we will get an error here.
     */
 
-    auto const isDefaulted = [typeArgs](size_t idx) {
-        return typeArgs == nullptr || idx >= typeArgs->Params().size();
-    };
+    auto const isDefaulted = [typeArgs](size_t idx) { return typeArgs == nullptr || idx >= typeArgs->Params().size(); };
 
     auto const getTypes = [this, &typeArgs, type, isDefaulted](size_t idx) -> std::pair<ETSTypeParameter *, Type *> {
         auto *typeParam = type->TypeArguments().at(idx)->AsETSTypeParameter();
         return {typeParam, isDefaulted(idx)
-                                ? typeParam->GetDefaultType()
-                                : checker_->MaybePromotedBuiltinType(typeArgs->Params().at(idx)->GetType(checker_))};
+                               ? typeParam->GetDefaultType()
+                               : checker_->MaybePromotedBuiltinType(typeArgs->Params().at(idx)->GetType(checker_))};
     };
 
     auto *const substitution = checker_->NewSubstitution();
