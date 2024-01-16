@@ -248,6 +248,7 @@ private:
     void CompileComputedKeys(compiler::PandaGen *pg) const;
     int32_t CreateFieldTypeBuffer(compiler::PandaGen *pg) const;
     void CompileSendableClass(compiler::PandaGen *pg) const;
+    void CompileGetterOrSetter(compiler::PandaGen *pg, compiler::VReg dest, const MethodDefinition *prop) const;
 
     binder::ClassScope *scope_;
     Identifier *ident_;

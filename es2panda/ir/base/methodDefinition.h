@@ -151,6 +151,16 @@ public:
         overloads_.push_back(overload);
     }
 
+    void SetKeyReg(compiler::VReg keyReg)
+    {
+        keyReg_ = keyReg;
+    }
+
+    compiler::VReg KeyReg() const
+    {
+        return keyReg_;
+    }
+
     const ScriptFunction *Function() const;
 
     ScriptFunction *Function();
@@ -164,6 +174,7 @@ public:
 private:
     MethodDefinitionKind kind_;
     Expression *key_;
+    compiler::VReg keyReg_ {0};
     FunctionExpression *value_;
     ModifierFlags modifiers_;
     ArenaVector<MethodDefinition *> overloads_;
