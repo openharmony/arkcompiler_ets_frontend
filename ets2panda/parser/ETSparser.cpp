@@ -2299,7 +2299,7 @@ ir::MethodDefinition *ETSParser::CreateProxyMethodDefinition(ir::MethodDefinitio
     }
 
     proxyMethod += ' ';
-    if (returnType != "void") {
+    if ((function->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0) {
         proxyMethod += "return ";
     }
 

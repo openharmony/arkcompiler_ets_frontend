@@ -1145,6 +1145,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
 
     if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+        checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
         expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
         returnType = expr->Signature()->ReturnType();
         // NOTE(vpukhov): #14902 substituted signature is not updated
