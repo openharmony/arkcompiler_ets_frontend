@@ -266,7 +266,7 @@
         },
         {
             "line": 178,
-            "column": 12,
+            "column": 18,
             "problem": "FunctionApplyCall"
         },
         {
@@ -286,7 +286,7 @@
         },
         {
             "line": 187,
-            "column": 54,
+            "column": 60,
             "problem": "FunctionBind"
         },
         {

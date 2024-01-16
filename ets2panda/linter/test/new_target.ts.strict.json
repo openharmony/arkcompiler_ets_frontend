@@ -16,7 +16,7 @@
     "nodes": [
         {
             "line": 19,
-            "column": 5,
+            "column": 12,
             "problem": "LimitedStdLibApi"
         },
         {

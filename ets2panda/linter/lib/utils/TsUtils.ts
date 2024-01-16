@@ -957,13 +957,18 @@ export class TsUtils {
     return !parentName || parentName === 'global';
   }
 
-  isSymbolAPI(symbol: ts.Symbol): boolean {
+  isStdSymbol(symbol: ts.Symbol): boolean {
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
+    return name === 'Symbol' || name === 'SymbolConstructor';
+  }
+
+  isStdSymbolAPI(symbol: ts.Symbol): boolean {
     const parentName = this.getParentSymbolName(symbol);
     return !!parentName && (parentName === 'Symbol' || parentName === 'SymbolConstructor');
   }
 
   isSymbolIterator(symbol: ts.Symbol): boolean {
-    return this.isSymbolAPI(symbol) && symbol.name === 'iterator';
+    return this.isStdSymbolAPI(symbol) && symbol.name === 'iterator';
   }
 
   static isDefaultImport(importSpec: ts.ImportSpecifier): boolean {

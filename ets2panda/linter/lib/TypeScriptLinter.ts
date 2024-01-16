@@ -27,11 +27,6 @@ import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
 import { Logger } from './Logger';
 import { ARKUI_DECORATORS } from './utils/consts/ArkUIDecorators';
-import { LIMITED_STD_GLOBAL_FUNC } from './utils/consts/LimitedStdGlobalFunc';
-import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
-import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
-import { LIMITED_STD_PROXYHANDLER_API } from './utils/consts/LimitedStdProxyHandlerAPI';
-import { ALLOWED_STD_SYMBOL_API } from './utils/consts/AllowedStdSymbolAPI';
 import {
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS
@@ -57,6 +52,7 @@ import {
   LibraryTypeCallDiagnosticChecker
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
+import { LIMITED_STD_API } from './utils/consts/LimitedStdAPI';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -688,9 +684,6 @@ export class TypeScriptLinter {
 
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
-    }
-    if (!!exprSym && this.tsUtils.isSymbolAPI(exprSym) && !ALLOWED_STD_SYMBOL_API.includes(exprSym.getName())) {
-      this.incrementCounters(propertyAccessNode, FaultID.SymbolType);
     }
     if (TypeScriptLinter.advancedClassChecks && this.tsUtils.isClassObjectExpression(propertyAccessNode.expression)) {
       // missing exact rule
@@ -1404,6 +1397,7 @@ export class TypeScriptLinter {
     ) {
       this.incrementCounters(node, FaultID.GlobalThis);
     } else {
+      this.checkLimitedStdLib(tsIdentifier, tsIdentSym);
       this.handleRestrictedValues(tsIdentifier, tsIdentSym);
     }
   }
@@ -1576,10 +1570,12 @@ export class TypeScriptLinter {
     this.handleRequireCall(tsCallExpr);
     // NOTE: Keep handleFunctionApplyBindPropCall above handleGenericCallWithNoTypeArgs here!!!
     if (calleeSym !== undefined) {
-      this.handleStdlibAPICall(tsCallExpr, calleeSym);
-      this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
       if (TsUtils.symbolHasEsObjectType(calleeSym)) {
         this.incrementCounters(tsCallExpr, FaultID.EsObjectType);
+      }
+      // need to process Symbol call separatey in order to not report two times when using Symbol API
+      if (this.tsUtils.isStdSymbol(calleeSym)) {
+        this.incrementCounters(tsCallExpr, FaultID.SymbolType);
       }
     }
     if (callSignature !== undefined) {
@@ -1679,25 +1675,6 @@ export class TypeScriptLinter {
     }
   }
 
-  private static readonly listFunctionApplyCallApis = [
-    'Function.apply',
-    'Function.call',
-    'CallableFunction.apply',
-    'CallableFunction.call'
-  ];
-
-  private static readonly listFunctionBindApis = ['Function.bind', 'CallableFunction.bind'];
-
-  private handleFunctionApplyBindPropCall(tsCallExpr: ts.CallExpression, calleeSym: ts.Symbol): void {
-    const exprName = this.tsTypeChecker.getFullyQualifiedName(calleeSym);
-    if (TypeScriptLinter.listFunctionApplyCallApis.includes(exprName)) {
-      this.incrementCounters(tsCallExpr, FaultID.FunctionApplyCall);
-    }
-    if (TypeScriptLinter.listFunctionBindApis.includes(exprName)) {
-      this.incrementCounters(tsCallExpr, FaultID.FunctionBind);
-    }
-  }
-
   private handleStructIdentAndUndefinedInArgs(
     tsCallOrNewExpr: ts.CallExpression | ts.NewExpression,
     callSignature: ts.Signature
@@ -1732,33 +1709,17 @@ export class TypeScriptLinter {
     }
   }
 
-  private static readonly LimitedApis = new Map<string, { arr: Array<string> | null; fault: FaultID }>([
-    ['global', { arr: LIMITED_STD_GLOBAL_FUNC, fault: FaultID.LimitedStdLibApi }],
-    ['Object', { arr: LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi }],
-    ['ObjectConstructor', { arr: LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi }],
-    ['Reflect', { arr: LIMITED_STD_REFLECT_API, fault: FaultID.LimitedStdLibApi }],
-    ['ProxyHandler', { arr: LIMITED_STD_PROXYHANDLER_API, fault: FaultID.LimitedStdLibApi }],
-    ['Symbol', { arr: null, fault: FaultID.SymbolType }],
-    ['SymbolConstructor', { arr: null, fault: FaultID.SymbolType }]
-  ]);
-
-  private handleStdlibAPICall(callExpr: ts.CallExpression, calleeSym: ts.Symbol): void {
-    const name = calleeSym.getName();
-    const parName = this.tsUtils.getParentSymbolName(calleeSym);
-    if (parName === undefined) {
-      if (LIMITED_STD_GLOBAL_FUNC.includes(name)) {
-        this.incrementCounters(callExpr, FaultID.LimitedStdLibApi);
-        return;
-      }
-      const escapedName = calleeSym.escapedName;
-      if (escapedName === 'Symbol' || escapedName === 'SymbolConstructor') {
-        this.incrementCounters(callExpr, FaultID.SymbolType);
-      }
+  private checkLimitedStdLib(node: ts.Node, symbol: ts.Symbol): void {
+    const parName = this.tsUtils.getParentSymbolName(symbol);
+    const entries = LIMITED_STD_API.get(parName);
+    if (!entries) {
       return;
     }
-    const lookup = TypeScriptLinter.LimitedApis.get(parName);
-    if (lookup !== undefined && (lookup.arr === null || lookup.arr.includes(name))) {
-      this.incrementCounters(callExpr, lookup.fault);
+    for (const entry of entries) {
+      if (entry.api.includes(symbol.name)) {
+        this.incrementCounters(node, entry.faultId);
+        return;
+      }
     }
   }
 
