@@ -309,29 +309,7 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
             }
             case ir::MethodDefinitionKind::GET:
             case ir::MethodDefinitionKind::SET: {
-                compiler::VReg keyReg = prop->Computed() ? prop->KeyReg() :
-                    pg->LoadPropertyKey(prop->Key(), false);
-
-                compiler::VReg undef = pg->AllocReg();
-                pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-                pg->StoreAccumulator(this, undef);
-
-                compiler::VReg getter = undef;
-                compiler::VReg setter = undef;
-
-                pg->LoadAccumulator(this, dest);
-
-                compiler::VReg accessor = pg->AllocReg();
-                prop->Value()->Compile(pg);
-                pg->StoreAccumulator(prop->Value(), accessor);
-
-                if (prop->Kind() == ir::MethodDefinitionKind::GET) {
-                    getter = accessor;
-                } else {
-                    setter = accessor;
-                }
-
-                pg->DefineGetterSetterByValue(this, dest, keyReg, getter, setter, prop->Computed());
+                CompileGetterOrSetter(pg, dest, prop);
                 break;
             }
             default: {
@@ -624,6 +602,33 @@ void ClassDefinition::CompileSendableClass(compiler::PandaGen *pg) const
     if (NeedStaticInitializer()) {
         StaticInitialize(pg, classReg);
     }
+}
+
+void ClassDefinition::CompileGetterOrSetter(compiler::PandaGen *pg, compiler::VReg dest,
+    const MethodDefinition *prop) const
+{
+    compiler::VReg keyReg = prop->Computed() ? prop->KeyReg() : pg->LoadPropertyKey(prop->Key(), false);
+
+    compiler::VReg undef = pg->AllocReg();
+    pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
+    pg->StoreAccumulator(this, undef);
+
+    compiler::VReg getter = undef;
+    compiler::VReg setter = undef;
+
+    pg->LoadAccumulator(this, dest);
+
+    compiler::VReg accessor = pg->AllocReg();
+    prop->Value()->Compile(pg);
+    pg->StoreAccumulator(prop->Value(), accessor);
+
+    if (prop->Kind() == ir::MethodDefinitionKind::GET) {
+        getter = accessor;
+    } else {
+        setter = accessor;
+    }
+
+    pg->DefineGetterSetterByValue(this, dest, keyReg, getter, setter, prop->Computed());
 }
 
 }  // namespace panda::es2panda::ir
