@@ -1255,7 +1255,7 @@ void ETSChecker::CheckOverride(Signature *signature)
         iter = iter->SuperType();
     }
 
-    if (!isOverriding && signature->Function()->IsOverride()) {
+    if (!isOverriding && signature->Function()->IsOverride() && !(signature->Function()->IsDefaultParamProxy())) {
         ThrowTypeError({"Method ", signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
                         " not overriding any method"},
                        signature->Function()->Start());
