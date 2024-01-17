@@ -398,7 +398,7 @@ ohos_static_library("es2panda_lib") {
     "${target_out_dir}",
     "//third_party/icu/icu4c/source/common",
     "//third_party/icu/icu4c/source/i18n",
-    "//third_party/icu/icu4c/source ",
+    "//third_party/icu/icu4c/source",
   ]
 
   deps = [
