@@ -185,7 +185,8 @@ void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                 [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
-    return this;
+    return allocator->New<ETSTupleType>(GetTupleTypesList(),
+                                        ElementType()->Instantiate(allocator, relation, globalTypes), GetSpreadType());
 }
 
 }  // namespace panda::es2panda::checker
