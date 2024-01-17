@@ -90,7 +90,7 @@ public:
         return codeGenCb_;
     }
 
-    [[nodiscard]] int32_t AddContextLiteral(LiteralBuffer &&literals)
+    [[nodiscard]] uint32_t AddContextLiteral(LiteralBuffer &&literals)
     {
         buffStorage_.emplace_back(std::move(literals));
         return buffStorage_.size() - 1;

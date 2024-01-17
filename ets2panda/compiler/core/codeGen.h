@@ -125,7 +125,7 @@ public:
     [[nodiscard]] varbinder::VarBinder *VarBinder() const noexcept;
 
     [[nodiscard]] Label *AllocLabel();
-    [[nodiscard]] std::int32_t AddLiteralBuffer(LiteralBuffer &&buf);
+    [[nodiscard]] std::uint32_t AddLiteralBuffer(LiteralBuffer &&buf);
 
     void LoadAccumulatorString(const ir::AstNode *node, const util::StringView &str);
 
@@ -183,7 +183,7 @@ private:
     RegAllocator ra_;
     RangeRegAllocator rra_;
     std::size_t labelId_ {0};
-    std::int32_t literalBufferIdx_ {0};
+    std::uint32_t literalBufferIdx_ {0};
 
     std::uint32_t usedRegs_ {VReg::REG_START};
     std::uint32_t totalRegs_ {VReg::REG_START};

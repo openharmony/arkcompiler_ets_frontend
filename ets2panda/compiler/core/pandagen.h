@@ -203,10 +203,10 @@ public:
     void ThrowObjectNonCoercible(const ir::AstNode *node);
     void CloseIterator(const ir::AstNode *node, VReg iter);
     void SetClassComputedFields(const ir::AstNode *node, VReg classReg, VReg computedInstanceFieldArray);
-    void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg lexenv,
+    void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, uint32_t litIdx, VReg lexenv,
                                VReg base);
     void LoadClassComputedInstanceFields(const ir::AstNode *node, VReg ctor);
-    void DefineClassPrivateFields(const ir::AstNode *node, int32_t privateBufIdx);
+    void DefineClassPrivateFields(const ir::AstNode *node, uint32_t privateBufIdx);
     void ClassFieldAdd(const ir::AstNode *node, VReg obj, VReg prop);
     void ClassPrivateFieldAdd(const ir::AstNode *node, VReg ctor, VReg obj, const util::StringView &prop);
     void ClassPrivateMethodOrAccessorAdd(const ir::AstNode *node, VReg ctor, VReg obj);

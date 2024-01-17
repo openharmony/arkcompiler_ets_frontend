@@ -434,7 +434,7 @@ protected:
                                                                        const lexer::SourcePosition &startLoc);
     virtual bool ParsePotentialGenericFunctionCall(ir::Expression *primaryExpr, ir::Expression **returnExpression,
                                                    const lexer::SourcePosition &startLoc, bool ignoreCallExpression);
-    virtual ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr);
+    virtual ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpression);
     virtual bool IsNamedFunctionExpression();
     virtual ir::Identifier *ParsePrimaryExpressionIdent(ExpressionParseFlags flags);
     virtual void ValidateArrowFunctionRestParameter(ir::SpreadElement *restElement);

@@ -259,9 +259,9 @@ void KeywordsUtil::ScanIdContinueMaybeKeyword(const Keywords *kws, Span<const Ke
 
     const auto &str = lexer_->GetToken().Ident().Utf8();
 
-    int start = 0;
-    int end = map.size();
-    int middle = end / 2;
+    size_t start = 0;
+    size_t end = map.size();
+    size_t middle = end / 2;
 
     while (true) {
         const auto &kw = map[middle];

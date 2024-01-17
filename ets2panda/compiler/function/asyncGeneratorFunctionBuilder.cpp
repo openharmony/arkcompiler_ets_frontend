@@ -66,6 +66,10 @@ void AsyncGeneratorFunctionBuilder::Yield(const ir::AstNode *node)
     auto *notReturnCompletion = pg_->AllocLabel();
     auto *normalCompletion = pg_->AllocLabel();
     auto *notThrowCompletion = pg_->AllocLabel();
+    if (notReturnCompletion == nullptr || normalCompletion == nullptr || notThrowCompletion == nullptr) {
+        // NOTE(ipetrov): maybe need to change it
+        return;
+    }
 
     // 27.6.3.8.8.a. If resumptionValue.[[Type]] is not return
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));

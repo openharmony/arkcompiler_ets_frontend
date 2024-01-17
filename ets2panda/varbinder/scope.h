@@ -378,7 +378,7 @@ public:
         return evalBindings_;
     }
 
-    void CheckDirectEval(compiler::CompilerContext *ctx);
+    void CheckDirectEval(compiler::CompilerContext *compilerCtx);
 
 protected:
     explicit VariableScope(ArenaAllocator *allocator, Scope *parent) : Scope(allocator, parent) {}
@@ -476,7 +476,9 @@ private:
 template <typename E, typename T>
 class ScopeWithParamScope : public E {
 public:
-    explicit ScopeWithParamScope(ArenaAllocator *allocator, Scope *parent) : E(allocator, parent) {}
+    explicit ScopeWithParamScope(ArenaAllocator *allocator, Scope *parent) : E(allocator, parent), paramScope_(nullptr)
+    {
+    }
 
     void BindParamScope(T *paramScope)
     {

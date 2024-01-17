@@ -988,7 +988,7 @@ void ETSBinder::BuildProgram()
                                return stmt->IsETSImportDeclaration() || stmt->IsETSPackageDeclaration();
                            }).base();
 
-        const size_t index = std::distance(begin, etsGlobal);
+        const auto index = std::distance(begin, etsGlobal);
         std::rotate(begin, begin + index, begin + index + 1);
     }
 

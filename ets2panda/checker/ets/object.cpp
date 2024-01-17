@@ -870,13 +870,11 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
                stmt->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression();
     });
-
     // There is no super expression
     if (superExpr == stmts.end()) {
         const auto superTypeCtorSigs = classType->SuperType()->ConstructSignatures();
         const auto superTypeCtorSig = std::find_if(superTypeCtorSigs.begin(), superTypeCtorSigs.end(),
                                                    [](const Signature *sig) { return sig->Params().empty(); });
-
         // Super type has no parameterless ctor
         if (superTypeCtorSig == superTypeCtorSigs.end()) {
             ThrowTypeError("Must call super constructor", ctorSig->Function()->Start());
