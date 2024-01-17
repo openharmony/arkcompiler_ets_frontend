@@ -124,7 +124,7 @@ private:
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
-    void CollectDefaultSources();
+    std::vector<std::string> CollectDefaultSources();
     void CollectUserSourcesFromIndex(const std::string &path, const std::string &resolvedPath,
                                      std::vector<std::string> &userPaths);
     std::string ResolveImportPath(const std::string &path);
@@ -382,7 +382,6 @@ public:
 
 private:
     parser::Program *globalProgram_;
-    std::vector<std::string> parsedSources_;
     std::vector<ir::AstNode *> insertingNodes_ {};
     std::unordered_map<std::string, std::string> resolvedParsedSources_;
 };

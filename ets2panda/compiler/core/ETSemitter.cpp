@@ -412,7 +412,7 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
     }
 
     interfaceRecord.metadata->SetAccessFlags(accessFlags);
-    interfaceRecord.sourceFile = Context()->VarBinder()->Program()->AbsoluteName().Mutf8();
+    interfaceRecord.sourceFile = Context()->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
     interfaceRecord.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE, Signatures::BUILTIN_OBJECT);
 
     for (auto *it : baseType->Interfaces()) {
@@ -456,7 +456,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
     }
 
     classRecord.metadata->SetAccessFlags(accessFlags);
-    classRecord.sourceFile = Context()->VarBinder()->Program()->AbsoluteName().Mutf8();
+    classRecord.sourceFile = Context()->VarBinder()->Program()->SourceFile().GetAbsolutePath().Mutf8();
 
     auto *baseType = classDef->TsType()->AsETSObjectType();
     if (baseType->SuperType() != nullptr) {
