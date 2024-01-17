@@ -43,13 +43,18 @@ void UpdateExpression::Compile(compiler::PandaGen *pg) const
     compiler::LReference lref = compiler::LReference::CreateLRef(pg, argument_, false);
     lref.GetValue();
 
+    if (!IsPrefix()) {
+        pg->StoreAccumulator(this, operandReg);
+        pg->ToNumeric(this, operandReg);
+    }
+
     pg->StoreAccumulator(this, operandReg);
     pg->Unary(this, operator_, operandReg);
 
     lref.SetValue();
 
     if (!IsPrefix()) {
-        pg->ToNumeric(this, operandReg);
+        pg->LoadAccumulator(this, operandReg);
     }
 }
 
