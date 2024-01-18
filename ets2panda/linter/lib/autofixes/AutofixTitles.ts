@@ -22,7 +22,5 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [79, 'Remove type annotation'],
   [87, 'Wrap in \'Error\''],
   [90, 'Annotate return type'],
-  [118, 'Replace with ordinary import'],
-  [120, 'Replace with explicit import'],
-  [127, 'Replace with ordinary export']
+  [120, 'Replace with explicit import']
 ]);

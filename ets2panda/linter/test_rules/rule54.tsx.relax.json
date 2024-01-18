@@ -15,11 +15,29 @@
     ],
     "nodes": [
         {
-            "line": 16,
+            "line": 17,
+            "column": 33,
+            "problem": "JsxElement"
+        },
+        {
+            "line": 19,
+            "column": 27,
+            "problem": "JsxElement"
+        },
+        {
+            "line": 21,
+            "column": 7,
+            "problem": "AnyType"
+        },
+        {
+            "line": 22,
             "column": 5,
-            "problem": "DestructuringDeclaration",
-            "suggest": "",
-            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+            "problem": "JsxElement"
+        },
+        {
+            "line": 23,
+            "column": 38,
+            "problem": "JsxElement"
         }
     ]
 }
