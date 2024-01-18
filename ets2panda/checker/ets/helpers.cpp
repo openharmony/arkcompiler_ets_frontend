@@ -2276,7 +2276,7 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
         return relevantType;
     }
 
-    assert(child->SuperType() != nullptr);
+    ASSERT(child->SuperType() != nullptr);
 
     return GetRelevantArgumentedTypeFromChild(child->SuperType(), target);
 }
