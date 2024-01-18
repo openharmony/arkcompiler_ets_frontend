@@ -1170,6 +1170,7 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
             propName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         }
 
+        propName->SetReference();
         propName->SetRange(Lexer()->GetToken().Loc());
 
         typeName = AllocNode<ir::TSQualifiedName>(typeName, propName);

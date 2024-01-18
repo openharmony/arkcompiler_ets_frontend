@@ -1433,6 +1433,10 @@ void ETSChecker::CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpressio
     lambdaObject->SetScope(classScope);
     lambdaObject->SetParent(currentClassDef);
 
+    for (auto prop : lambdaObject->Body()) {
+        prop->SetParent(lambdaObject);
+    }
+
     // if we should save 'this', then propagate this information to the lambda node, so when we are compiling it,
     // and calling the lambda object ctor, we can pass the 'this' as argument
     if (saveThis) {
@@ -1529,7 +1533,9 @@ static Signature *CreateInvokeSignature(ETSChecker *checker, ir::ArrowFunctionEx
         auto [_, var] = checker->VarBinder()->AddParamDecl(param);
         (void)_;
         var->SetTsType(checker->CreateETSArrayType(checker->GlobalETSNullishObjectType()));
+        var->SetScope(paramCtx.GetScope());
         param->Ident()->SetVariable(var);
+        param->SetParent(lambda->Function());
         invokeFunc->Params().push_back(param);
         invokeSignatureInfo->restVar = var->AsLocalVariable();
     }
@@ -1890,6 +1896,10 @@ ir::ScriptFunction *ETSChecker::CreateProxyFunc(ir::ArrowFunctionExpression *lam
                                                  lambda->CapturedVars());
     }
 
+    for (auto param : func->Params()) {
+        param->SetParent(func);
+    }
+
     // Bind the scopes
     scope->BindNode(func);
     funcParamScope->BindNode(func);
@@ -1919,6 +1929,7 @@ ir::MethodDefinition *ETSChecker::CreateProxyMethodForLambda(ir::ClassDefinition
     func->SetIdent(identNode);
 
     auto *identClone = identNode->Clone(Allocator(), nullptr);
+    identClone->SetReference();
     auto *proxy = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, identClone, funcExpr,
                                                   GetFlagsForProxyLambda(isStatic), Allocator(), false);
 
@@ -2051,6 +2062,7 @@ varbinder::FunctionParamScope *ETSChecker::CreateProxyMethodParams(ir::ArrowFunc
                 var->AddFlag(varbinder::VariableFlags::BOXED);
             }
             param->SetTsType(capturedVar->TsType());
+            var->SetScope(paramCtx.GetScope());
             param->SetVariable(var);
             proxyParams.push_back(param);
         }
@@ -2090,6 +2102,7 @@ ir::ClassProperty *ETSChecker::CreateLambdaCapturedThis(varbinder::ClassScope *s
     // Add the declaration to the scope, and set the type based on the current class type, to be able to store the
     // 'this' reference
     auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(pos, fieldIdent->Name());
+    var->SetScope(scope->InstanceFieldScope());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
     var->SetTsType(Context().ContainingClass());
     fieldIdent->SetVariable(var);
@@ -2116,6 +2129,7 @@ ir::ClassProperty *ETSChecker::CreateLambdaCapturedField(const varbinder::Variab
 
     // Add the declaration to the scope, and set the type based on the captured variable's scope
     auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(pos, fieldIdent->Name());
+    var->SetScope(scope->InstanceFieldScope());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
     var->SetTsType(capturedVar->TsType());
     if (capturedVar->HasFlag(varbinder::VariableFlags::BOXED)) {
@@ -2159,6 +2173,10 @@ ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(ArenaVector<ir::AstNo
     scope->BindParamScope(funcParamScope);
     funcParamScope->BindFunctionScope(scope);
 
+    for (auto *param : func->Params()) {
+        param->SetParent(func);
+    }
+
     // Create the name for the synthetic constructor
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
@@ -2188,6 +2206,7 @@ varbinder::FunctionParamScope *ETSChecker::CreateLambdaCtorImplicitParams(ArenaV
         auto *type = MaybeBoxedType(field->Variable());
         var->SetTsType(type);
         param->Ident()->SetTsType(type);
+        var->SetScope(paramCtx.GetScope());
         param->Ident()->SetVariable(var);
         params.push_back(param);
     }
@@ -2202,6 +2221,7 @@ ir::Statement *ETSChecker::CreateLambdaCtorFieldInit(util::StringView name, varb
     // classes field, and the right hand side is refers to the constructors parameter
     auto *thisExpr = AllocNode<ir::ThisExpression>();
     auto *fieldAccessExpr = AllocNode<ir::Identifier>(name, Allocator());
+    fieldAccessExpr->SetReference();
     auto *leftHandSide = AllocNode<ir::MemberExpression>(thisExpr, fieldAccessExpr,
                                                          ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *rightHandSide = AllocNode<ir::Identifier>(name, Allocator());
@@ -2264,6 +2284,10 @@ void ETSChecker::CreateLambdaObjectForFunctionReference(ir::AstNode *refNode, Si
     invokeFunc->SetParent(lambdaObject);
     classScope->BindNode(lambdaObject);
 
+    for (auto *param : lambdaObject->Body()) {
+        param->SetParent(lambdaObject);
+    }
+
     // Build the lambda object in the binder
     VarBinder()->AsETSBinder()->BuildLambdaObject(refNode, lambdaObject, trueSignature);
 
@@ -2283,8 +2307,10 @@ ir::AstNode *ETSChecker::CreateLambdaImplicitField(varbinder::ClassScope *scope,
 
     // Add the declaration to the scope
     auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(pos, fieldIdent->Name());
+    var->SetScope(scope->InstanceFieldScope());
     var->AddFlag(varbinder::VariableFlags::PROPERTY);
     fieldIdent->SetVariable(var);
+    fieldIdent->SetParent(field);
     decl->BindNode(field);
     return field;
 }
@@ -2318,6 +2344,10 @@ ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(const lexer::SourceRa
     funcParamScope->BindNode(func);
     scope->BindParamScope(funcParamScope);
     funcParamScope->BindFunctionScope(scope);
+
+    for (auto *param : func->Params()) {
+        param->SetParent(func);
+    }
 
     // Create the synthetic constructor
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -2398,6 +2428,7 @@ void ETSChecker::CreateLambdaFuncDecl(ir::MethodDefinition *func, varbinder::Loc
             VarBinder()->NewVarDecl<varbinder::FunctionDecl>(func->Start(), Allocator(), func->Id()->Name(), func));
     }
     var->AddFlag(varbinder::VariableFlags::METHOD);
+    var->SetScope(ctx.GetScope());
     func->Function()->Id()->SetVariable(var);
 }
 
@@ -2544,6 +2575,7 @@ static Signature *CreateInvokeSignature(ETSChecker *checker, Signature *signatur
         (void)_;
         var->SetTsType(checker->CreateETSArrayType(checker->GlobalETSObjectType()));
         param->Ident()->SetVariable(var);
+        param->SetParent(invokeFunc);
         invokeFunc->Params().push_back(param);
         invokeSignatureInfo->restVar = var->AsLocalVariable();
     }
@@ -2673,6 +2705,7 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
     // If this is a static function reference, we have to call the referenced function through the class itself
     if (isStaticReference) {
         fieldIdent = AllocNode<ir::Identifier>(signatureRef->Owner()->Name(), Allocator());
+        fieldIdent->SetReference();
         fieldPropType = signatureRef->Owner();
         fieldIdent->SetVariable(signatureRef->Owner()->Variable());
         fieldIdent->SetTsType(fieldPropType);
@@ -2682,6 +2715,7 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
         auto *fieldProp = lambdaBody[0]->AsClassProperty()->Key()->AsIdentifier()->Variable();
         fieldPropType = fieldProp->TsType()->AsETSObjectType();
         fieldIdent = AllocNode<ir::Identifier>("field0", Allocator());
+        fieldIdent->SetReference();
         fieldIdent->SetVariable(fieldProp);
         fieldIdent->SetTsType(fieldPropType);
     }
@@ -2693,6 +2727,7 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
     callee->SetPropVar(signatureRef->OwnerVar()->AsLocalVariable());
     callee->SetObjectType(fieldPropType);
     callee->SetTsType(signatureRef->OwnerVar()->TsType());
+    fieldIdent->SetParent(callee);
 
     // Create the parameters for the referenced function call
     auto *invokeFunc = lambdaBody[lambdaBody.size() - (ifaceOverride ? 2 : 1)]->AsMethodDefinition()->Function();
@@ -2953,9 +2988,9 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
         (void)_;
         if (var->GetScope() == trailingBlock->Scope()) {
             var->SetScope(funcScope);
+            funcScope->InsertBinding(var->Name(), var);
         }
     }
-    funcScope->ReplaceBindings(trailingBlock->Scope()->Bindings());
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     auto *funcNode =

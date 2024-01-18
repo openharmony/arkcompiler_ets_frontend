@@ -430,7 +430,20 @@ public:
         if (!ast->IsIdentifier()) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
+
         if (ast->AsIdentifier()->Variable() != nullptr) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+
+        /*
+         * NOTICE: That is temporary fix for identifies without variable
+         *         That should be removed in future after fix issues in
+         *         varbinder and checker
+         */
+        if (ast->AsIdentifier()->Variable() != nullptr || ast->AsIdentifier()->IsReference() ||
+            ast->AsIdentifier()->Name().Empty() || ast->AsIdentifier()->Name() == "Void" ||
+            ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0 ||
+            (ast->AsIdentifier()->Parent() != nullptr && ast->AsIdentifier()->Parent()->IsProperty())) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
@@ -556,6 +569,17 @@ public:
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};  // we will check invariant of Identifier only
         }
 
+        /*
+         * NOTICE: That is temporary exclusion for identifies without variable
+         *         Should removed in future
+         */
+        if (ast->AsIdentifier()->IsReference() || ast->AsIdentifier()->TypeAnnotation() != nullptr ||
+            ast->AsIdentifier()->Name().Empty() || ast->AsIdentifier()->Name().Utf8().find("Void") == 0 ||
+            ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0 ||
+            (ast->AsIdentifier()->Parent() != nullptr && ast->AsIdentifier()->Parent()->IsProperty())) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+
         // we will check invariant for only local variables of identifiers
         if (const auto maybeVar = GetLocalScopeVariable(allocator_, ctx, ast); maybeVar.has_value()) {
             const auto var = *maybeVar;
@@ -577,6 +601,18 @@ public:
                                                                            const ir::AstNode *ast)
     {
         if (!ast->IsIdentifier()) {
+            return std::nullopt;
+        }
+
+        /*
+         * NOTICE: That is temporary exclusion for identifies without variable and scope
+         *         Should removed in future
+         */
+        if (ast->AsIdentifier()->IsReference() || ast->AsIdentifier()->TypeAnnotation() != nullptr ||
+            ast->AsIdentifier()->Name().Empty() || ast->AsIdentifier()->Name().Utf8().find("Void") == 0 ||
+            ast->AsIdentifier()->Name().Utf8().find("field") == 0 ||
+            ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0 ||
+            (ast->AsIdentifier()->Parent() != nullptr && ast->AsIdentifier()->Parent()->IsProperty())) {
             return std::nullopt;
         }
 

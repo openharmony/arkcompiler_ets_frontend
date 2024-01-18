@@ -461,6 +461,7 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
     }
 
     auto *identNode = AllocNode<ir::Identifier>(label, Allocator());
+    identNode->SetReference();
     identNode->SetRange(lexer_->GetToken().Loc());
 
     auto *breakStatement = AllocNode<ir::BreakStatement>(identNode);
@@ -516,6 +517,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     }
 
     auto *identNode = AllocNode<ir::Identifier>(label, Allocator());
+    identNode->SetReference();
     identNode->SetRange(lexer_->GetToken().Loc());
 
     auto *continueStatement = AllocNode<ir::ContinueStatement>(identNode);
@@ -1006,6 +1008,7 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
     SavedParserContext newCtx(this, ParserStatus::IN_LABELED, actualLabel);
 
     auto *identNode = AllocNode<ir::Identifier>(actualLabel, Allocator());
+    identNode->SetReference();
     identNode->SetRange(pos.GetToken().Loc());
 
     lexer_->NextToken();
@@ -1707,6 +1710,7 @@ ir::Identifier *ParserImpl::ParseNamedImport(const lexer::Token &importedToken)
     CheckRestrictedBinding(importedToken.KeywordType());
 
     auto *local = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
+    local->SetReference();
     local->SetRange(importedToken.Loc());
 
     return local;
@@ -1724,6 +1728,7 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         lexer::Token importedToken = lexer_->GetToken();
         auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
         ir::Identifier *local = nullptr;
+        imported->SetReference();
         imported->SetRange(lexer_->GetToken().Loc());
 
         lexer_->NextToken();  // eat import name

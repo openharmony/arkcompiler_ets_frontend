@@ -667,11 +667,10 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
 
     if ((modifiers & ir::ClassDefinitionModifiers::SET_CTOR_ID) != 0U) {
-        func->SetIdent(key);
+        func->SetIdent(key->Clone(Allocator(), nullptr));
     }
 
-    auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR,
-                                                 key->Clone(Allocator(), nullptr)->AsExpression(), funcExpr,
+    auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
                                                  ir::ModifierFlags::NONE, Allocator(), false);
 
     ctor->SetRange({startLoc, lexer_->GetToken().End()});

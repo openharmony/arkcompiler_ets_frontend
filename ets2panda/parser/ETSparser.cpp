@@ -338,6 +338,7 @@ ir::ScriptFunction *ETSParser::AddInitMethod(ArenaVector<ir::AstNode *> &globalP
         auto *initMethod = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD,
                                                            initIdent->Clone(Allocator(), nullptr)->AsExpression(),
                                                            funcExpr, functionModifiers, Allocator(), false);
+        initFunc->Id()->SetReference();
 
         return std::make_pair(initFunc, initMethod);
     };
@@ -1125,6 +1126,8 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
                                                    funcExpr, modifiers, Allocator(), false);
     method->SetRange(funcExpr->Range());
 
+    func->Id()->SetReference();
+
     fieldMap_.insert({methodName->Name(), method});
 
     return method;
@@ -1188,6 +1191,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     ir::ScriptFunction *func = ParseFunction(desc->newStatus);
     if (propName->IsIdentifier()) {
         func->SetIdent(propName->AsIdentifier()->Clone(Allocator(), nullptr));
+        func->Id()->SetReference();
     }
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -1887,6 +1891,8 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
                                                    name->Clone(Allocator(), nullptr)->AsExpression(), funcExpr, flags,
                                                    Allocator(), false);
     method->SetRange(funcExpr->Range());
+
+    func->Id()->SetReference();
 
     ConsumeSemicolon(method);
 
@@ -2795,6 +2801,7 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
         lexer::Token importedToken = Lexer()->GetToken();
         auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
         ir::Identifier *local = nullptr;
+        imported->SetReference();
         imported->SetRange(Lexer()->GetToken().Loc());
 
         Lexer()->NextToken();  // eat import/export name
@@ -2845,6 +2852,7 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
     auto *local = AllocNode<ir::Identifier>(util::StringView(""), Allocator());
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
         Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM || isReExport) {
+        local->SetReference();
         auto *specifier = AllocNode<ir::ImportNamespaceSpecifier>(local);
         specifier->SetRange({namespaceStart, Lexer()->GetToken().End()});
         specifiers->push_back(specifier);
@@ -2868,6 +2876,7 @@ ir::AstNode *ETSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *
     }
 
     auto *imported = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    imported->SetReference();
     imported->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();  // Eat import specifier.
 

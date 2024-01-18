@@ -56,12 +56,14 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
 
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(expr));
     auto *tmpIdent = Gensym(allocator);
+    auto *tmpIdentClone = tmpIdent->Clone(allocator, nullptr);
+    tmpIdentClone->SetReference();
 
     // '0's act as placeholders
     auto *sequenceExpr = parser->CreateFormattedExpression(
         "let @@I1 = 0;"
         "(@@I2 == null ? undefined : 0);",
-        parser::DEFAULT_SOURCE_FILE, tmpIdent, tmpIdent->Clone(allocator, nullptr));
+        parser::DEFAULT_SOURCE_FILE, tmpIdent, tmpIdentClone);
     sequenceExpr->SetParent(chain->Parent());
     InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
 
@@ -70,7 +72,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
     stmts[1]->AsExpressionStatement()->GetExpression()->AsConditionalExpression()->SetAlternate(chain->GetExpression());
 
     setSource(expr, parser->CreateFormattedExpression("@@I1!", parser::DEFAULT_SOURCE_FILE,
-                                                      tmpIdent->Clone(allocator, nullptr)));
+                                                      tmpIdentClone->Clone(allocator, nullptr)));
     return sequenceExpr;
 }
 

@@ -2680,11 +2680,11 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     // clang-format off
     auto *instantiateMethod =
         resolvedType->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INSTANTIATE_METHOD, searchFlag);
+    auto *invokeMethod =
+        resolvedType->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, searchFlag);
     if (instantiateMethod != nullptr) {
         propertyName = compiler::Signatures::STATIC_INSTANTIATE_METHOD;
-    } else if (auto *invokeMethod =
-                    resolvedType->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, searchFlag);
-                invokeMethod != nullptr) {
+    } else if (invokeMethod != nullptr) {
         propertyName = compiler::Signatures::STATIC_INVOKE_METHOD;
     } else {
         ThrowTypeError({"No static ", compiler::Signatures::STATIC_INVOKE_METHOD, " method and static ",
@@ -2696,6 +2696,12 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     auto *classId = AllocNode<ir::Identifier>(className, Allocator());
     auto *methodId = AllocNode<ir::Identifier>(propertyName, Allocator());
+    if (propertyName == compiler::Signatures::STATIC_INSTANTIATE_METHOD) {
+        methodId->SetVariable(instantiateMethod);
+    } else if (propertyName == compiler::Signatures::STATIC_INVOKE_METHOD) {
+        methodId->SetVariable(invokeMethod);
+    }
+
     auto *transformedCallee =
         AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 

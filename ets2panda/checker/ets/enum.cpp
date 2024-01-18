@@ -132,7 +132,9 @@ template <typename ElementMaker>
 [[nodiscard]] ir::ETSTypeReference *MakeTypeReference(ETSChecker *const checker, const util::StringView &name)
 {
     auto *const ident = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+    ident->SetReference();
     auto *const referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
+
     return checker->AllocNode<ir::ETSTypeReference>(referencePart);
 }
 
@@ -274,10 +276,11 @@ ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumInterface *const enumTyp
         [this, enumType](const ir::TSEnumMember *const member) {
             auto *const enumTypeIdent = AllocNode<ir::Identifier>(enumType->GetName(), Allocator());
             enumTypeIdent->SetTsType(enumType);
+            enumTypeIdent->SetReference();
 
             auto *const enumMemberIdent =
                 AllocNode<ir::Identifier>(member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
-
+            enumMemberIdent->SetReference();
             auto *const enumMemberExpr = AllocNode<ir::MemberExpression>(
                 enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
             enumMemberExpr->SetTsType(member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType());
@@ -363,6 +366,8 @@ ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const na
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), ident, function);
 
+    ident->SetReference();
+
     return {MakeGlobalSignature(this, function, enumType), nullptr};
 }
 
@@ -399,6 +404,8 @@ ETSEnumType::Method ETSChecker::CreateEnumToStringMethod(ir::Identifier *const s
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {
         MakeGlobalSignature(this, function, GlobalETSStringLiteralType()),
@@ -439,6 +446,8 @@ ETSEnumType::Method ETSChecker::CreateEnumGetValueMethod(ir::Identifier *const v
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
+    functionIdent->SetReference();
+
     return {MakeGlobalSignature(this, function, GlobalIntType()),
             MakeProxyFunctionType(this, ETSEnumType::GET_VALUE_METHOD_NAME, {}, function, GlobalIntType())};
 }
@@ -477,6 +486,8 @@ ETSEnumType::Method ETSChecker::CreateEnumGetNameMethod(ir::Identifier *const na
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {MakeGlobalSignature(this, function, GlobalBuiltinETSStringType()),
             MakeProxyFunctionType(this, ETSEnumType::GET_NAME_METHOD_NAME, {}, function, GlobalBuiltinETSStringType())};
@@ -606,6 +617,8 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
 
+    functionIdent->SetReference();
+
     return {MakeGlobalSignature(this, function, enumType),
             MakeProxyFunctionType(this, ETSEnumType::VALUE_OF_METHOD_NAME,
                                   {function->Params()[0]->AsETSParameterExpression()->Variable()->AsLocalVariable()},
@@ -634,6 +647,8 @@ ETSEnumType::Method ETSChecker::CreateEnumValuesMethod(ir::Identifier *const ite
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {MakeGlobalSignature(this, function, CreateETSArrayType(enumType)),
             MakeProxyFunctionType(this, ETSEnumType::VALUES_METHOD_NAME, {}, function, CreateETSArrayType(enumType))};

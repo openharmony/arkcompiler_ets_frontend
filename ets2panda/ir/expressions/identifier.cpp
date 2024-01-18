@@ -42,6 +42,10 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
             clone->SetParent(parent);
         }
 
+        if (this->IsReference()) {
+            clone->SetReference();
+        }
+
         clone->SetRange(Range());
         return clone;
     }

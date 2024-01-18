@@ -983,6 +983,7 @@ VariableType *Scope::AddDecl(ArenaAllocator *allocator, util::StringView name, V
 
     decls_.push_back(decl);
     bindings_.insert({decl->Name(), variable});
+    variable->SetScope(this);
 
     return variable;
 }

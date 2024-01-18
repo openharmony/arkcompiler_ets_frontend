@@ -112,11 +112,13 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
         } else {
             auto *ident = Gensym(checker->Allocator());
             auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+            auto *identClone = ident->Clone(checker->Allocator(), nullptr);
+            identClone->SetReference();
 
             auto *blockExpression =
                 parser
                     ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, parser::DEFAULT_SOURCE_FILE,
-                                                ident, exprType, dimension, ident->Clone(checker->Allocator(), nullptr))
+                                                ident, exprType, dimension, identClone)
                     ->AsBlockExpression();
 
             if (returnExpression == nullptr) {
@@ -127,7 +129,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
 
             auto *castedDimension =
                 parser->CreateFormattedExpression(CAST_NEW_DIMENSION_EXPRESSION, parser::DEFAULT_SOURCE_FILE,
-                                                  ident->Clone(checker->Allocator(), nullptr));
+                                                  identClone->Clone(checker->Allocator(), nullptr));
             castedDimension->SetParent(newInstanceExpression);
             newInstanceExpression->Dimensions()[i] = castedDimension;
         }

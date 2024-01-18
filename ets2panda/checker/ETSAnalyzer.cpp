@@ -1394,6 +1394,10 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
             checker->ThrowTypeError({"cannot assign to readonly property ", pname}, propExpr->Start());
         }
 
+        if (key->IsIdentifier()) {
+            key->AsIdentifier()->SetVariable(lv);
+        }
+
         auto *propType = checker->GetTypeOfVariable(lv);
         key->SetTsType(propType);
 
