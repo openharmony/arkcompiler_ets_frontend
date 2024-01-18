@@ -1035,9 +1035,9 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
     return expr->Callee()->AsMemberExpression()->ObjType();
 }
 
-checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr, checker::Type *calleeType,
-                                     bool isConstructorCall, bool isFunctionalInterface,
-                                     bool isUnionTypeWithFunctionalInterface)
+checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
+                                                  checker::Type *calleeType, bool isFunctionalInterface,
+                                                  bool isUnionTypeWithFunctionalInterface) const
 {
     bool extensionFunctionType = expr->Callee()->IsMemberExpression() && checker->ExtensionETSFunctionType(calleeType);
 
@@ -1047,7 +1047,7 @@ checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *ex
     if (extensionFunctionType) {
         return ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
     }
-    auto &signatures = ChooseSignatures(checker, calleeType, isConstructorCall, isFunctionalInterface,
+    auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
                                         isUnionTypeWithFunctionalInterface);
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
     if (signature->Function()->IsExtensionMethod()) {
@@ -1077,8 +1077,8 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
         checker->ThrowTypeError("This expression is not callable.", expr->Start());
     }
 
-    checker::Signature *signature = ResolveSignature(checker, expr, calleeType, isConstructorCall,
-                                                     isFunctionalInterface, isUnionTypeWithFunctionalInterface);
+    checker::Signature *signature =
+        ResolveSignature(checker, expr, calleeType, isFunctionalInterface, isUnionTypeWithFunctionalInterface);
 
     checker->CheckObjectLiteralArguments(signature, expr->Arguments());
     checker->AddUndefinedParamsForDefaultParams(signature, expr->Arguments(), checker);
@@ -1521,6 +1521,80 @@ checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
     return expr->TsType();
 }
 
+void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
+{
+    if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
+        auto tsType = checker->CreateETSBooleanType(true);
+        tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
+        expr->SetTsType(tsType);
+        return;
+    }
+
+    if (operandType == nullptr || !operandType->IsConditionalExprType()) {
+        checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.",
+                                expr->Argument()->Start());
+    }
+
+    auto exprRes = operandType->ResolveConditionExpr();
+    if (std::get<0>(exprRes)) {
+        auto tsType = checker->CreateETSBooleanType(!std::get<1>(exprRes));
+        tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
+        expr->SetTsType(tsType);
+        return;
+    }
+
+    expr->SetTsType(checker->GlobalETSBooleanType());
+}
+
+void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType,
+                                 checker::Type *argType)
+{
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_PLUS: {
+            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+                checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
+                                        expr->Argument()->Start());
+            }
+
+            if (operandType->HasTypeFlag(checker::TypeFlag::CONSTANT) &&
+                expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
+                expr->SetTsType(checker->NegateNumericType(operandType, expr));
+                break;
+            }
+
+            expr->SetTsType(operandType);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_TILDE: {
+            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+                checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
+                                        expr->Argument()->Start());
+            }
+
+            if (operandType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+                expr->SetTsType(checker->BitwiseNegateNumericType(operandType, expr));
+                break;
+            }
+
+            expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType));
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
+            ProcessExclamationMark(checker, expr, operandType);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
+            expr->SetTsType(argType);
+            break;
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1566,70 +1640,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
         }
     }
 
-    switch (expr->OperatorType()) {
-        case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_PLUS: {
-            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
-                checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
-                                        expr->Argument()->Start());
-            }
-
-            if (operandType->HasTypeFlag(checker::TypeFlag::CONSTANT) &&
-                expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
-                expr->SetTsType(checker->NegateNumericType(operandType, expr));
-                break;
-            }
-
-            expr->SetTsType(operandType);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_TILDE: {
-            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
-                checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
-                                        expr->Argument()->Start());
-            }
-
-            if (operandType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-                expr->SetTsType(checker->BitwiseNegateNumericType(operandType, expr));
-                break;
-            }
-
-            expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType));
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
-                auto tsType = checker->CreateETSBooleanType(true);
-                tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
-                expr->SetTsType(tsType);
-                break;
-            }
-
-            if (operandType == nullptr || !operandType->IsConditionalExprType()) {
-                checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.",
-                                        expr->Argument()->Start());
-            }
-
-            auto exprRes = operandType->ResolveConditionExpr();
-            if (std::get<0>(exprRes)) {
-                auto tsType = checker->CreateETSBooleanType(!std::get<1>(exprRes));
-                tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
-                expr->SetTsType(tsType);
-                break;
-            }
-
-            expr->SetTsType(checker->GlobalETSBooleanType());
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
-            expr->SetTsType(argType);
-            break;
-        }
-        default: {
-            UNREACHABLE();
-            break;
-        }
-    }
+    SetTsTypeForUnaryExpression(checker, expr, operandType, argType);
 
     if ((argType != nullptr) && argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
         unboxedOperandType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {

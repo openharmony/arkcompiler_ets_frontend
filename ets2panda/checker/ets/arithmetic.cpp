@@ -593,14 +593,12 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
     lexer::SourcePosition pos = binaryParams.pos;
     checker::Type *const leftType = typeParams.leftType;
     checker::Type *const rightType = typeParams.rightType;
-    Type *unboxedL = typeParams.unboxedL;
-    Type *unboxedR = typeParams.unboxedR;
     checker::Type *tsType {};
     switch (binaryParams.operationType) {
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
             tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr, pos, leftType, rightType,
-                                                         unboxedL, unboxedR);
+                                                         typeParams.unboxedL, typeParams.unboxedR);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
@@ -609,8 +607,9 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
         }
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
-            std::tuple<Type *, Type *> res = checker->CheckBinaryOperatorEqual(
-                left, right, binaryParams.operationType, pos, leftType, rightType, unboxedL, unboxedR);
+            std::tuple<Type *, Type *> res =
+                checker->CheckBinaryOperatorEqual(left, right, binaryParams.operationType, pos, leftType, rightType,
+                                                  typeParams.unboxedL, typeParams.unboxedR);
             if (!(std::get<0>(res) == nullptr && std::get<1>(res) == nullptr)) {
                 return res;
             }
@@ -621,8 +620,8 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
             return checker->CheckBinaryOperatorLessGreater(left, right, binaryParams.operationType, pos,
-                                                           binaryParams.isEqualOp, leftType, rightType, unboxedL,
-                                                           unboxedR);
+                                                           binaryParams.isEqualOp, leftType, rightType,
+                                                           typeParams.unboxedL, typeParams.unboxedR);
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {
             return checker->CheckBinaryOperatorInstanceOf(pos, leftType, rightType);

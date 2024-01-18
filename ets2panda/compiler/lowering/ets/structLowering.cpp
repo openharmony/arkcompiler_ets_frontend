@@ -79,6 +79,8 @@ ir::ETSTypeReference *CreateStructTypeReference(checker::ETSChecker *checker,
     return typeReference;
 }
 
+using AstNodePtr = ir::AstNode *;
+
 bool StructLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
@@ -90,7 +92,7 @@ bool StructLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> AstNodePtr {
         if (ast->IsETSStructDeclaration()) {
             auto *typeRef = CreateStructTypeReference(checker, ast->AsETSStructDeclaration());
             ast->AsETSStructDeclaration()->Definition()->SetSuper(typeRef);

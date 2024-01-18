@@ -1150,6 +1150,38 @@ Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *tar
     return target->Substitute(Relation(), substitution);
 }
 
+void ETSChecker::ThrowOverrideError(Signature *signature, Signature *overriddenSignature,
+                                    const OverrideErrorCode &errorCode)
+{
+    const char *reason {};
+    switch (errorCode) {
+        case OverrideErrorCode::OVERRIDDEN_STATIC: {
+            reason = "overridden method is static.";
+            break;
+        }
+        case OverrideErrorCode::OVERRIDDEN_FINAL: {
+            reason = "overridden method is final.";
+            break;
+        }
+        case OverrideErrorCode::INCOMPATIBLE_RETURN: {
+            reason = "overriding return type is not compatible with the other return type.";
+            break;
+        }
+        case OverrideErrorCode::OVERRIDDEN_WEAKER: {
+            reason = "overridden method has weaker access privilege.";
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+
+    ThrowTypeError({signature->Function()->Id()->Name(), signature, " in ", signature->Owner(), " cannot override ",
+                    overriddenSignature->Function()->Id()->Name(), overriddenSignature, " in ",
+                    overriddenSignature->Owner(), " because ", reason},
+                   signature->Function()->Start());
+}
+
 bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 {
     auto *target = site->GetProperty(signature->Function()->Id()->Name(), PropertySearchFlags::SEARCH_METHOD);
@@ -1189,33 +1221,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         auto [success, errorCode] = CheckOverride(signature, itSubst);
 
         if (!success) {
-            const char *reason {};
-            switch (errorCode) {
-                case OverrideErrorCode::OVERRIDDEN_STATIC: {
-                    reason = "overridden method is static.";
-                    break;
-                }
-                case OverrideErrorCode::OVERRIDDEN_FINAL: {
-                    reason = "overridden method is final.";
-                    break;
-                }
-                case OverrideErrorCode::INCOMPATIBLE_RETURN: {
-                    reason = "overriding return type is not compatible with the other return type.";
-                    break;
-                }
-                case OverrideErrorCode::OVERRIDDEN_WEAKER: {
-                    reason = "overridden method has weaker access privilege.";
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
-
-            ThrowTypeError({signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
-                            " cannot override ", it->Function()->Id()->Name(), it, " in ", it->Owner(), " because ",
-                            reason},
-                           signature->Function()->Start());
+            ThrowOverrideError(signature, it, errorCode);
         }
 
         isOverridingAnySignature = true;

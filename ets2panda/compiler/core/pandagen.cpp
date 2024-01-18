@@ -71,8 +71,8 @@ public:
         UNREACHABLE();
     }
 
-    void Transform([[maybe_unused]] pandasm::Ins *ins, [[maybe_unused]] ProgramElement *program_element,
-                   [[maybe_unused]] uint32_t total_regs) const override
+    void Transform([[maybe_unused]] pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
+                   [[maybe_unused]] uint32_t totalRegs) const override
     {
         UNREACHABLE();
     }

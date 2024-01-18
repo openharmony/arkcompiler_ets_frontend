@@ -38,6 +38,8 @@ static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::Ar
     return arrow;
 }
 
+using AstNodePtr = ir::AstNode *;
+
 bool LambdaConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
@@ -49,7 +51,7 @@ bool LambdaConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const node) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const node) -> AstNodePtr {
         if (node->IsArrowFunctionExpression() &&
             node->AsArrowFunctionExpression()->Function()->Body()->IsExpression()) {
             return ConvertExpression(checker, node->AsArrowFunctionExpression());

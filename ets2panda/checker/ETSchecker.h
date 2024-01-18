@@ -348,6 +348,7 @@ public:
     void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
                                  const ir::MethodDefinition *currentFunc);
     Signature *AdjustForTypeParameters(Signature *source, Signature *target);
+    void ThrowOverrideError(Signature *signature, Signature *overriddenSignature, const OverrideErrorCode &errorCode);
     void CheckOverride(Signature *signature);
     bool CheckOverride(Signature *signature, ETSObjectType *site);
     std::tuple<bool, OverrideErrorCode> CheckOverride(Signature *signature, Signature *other);

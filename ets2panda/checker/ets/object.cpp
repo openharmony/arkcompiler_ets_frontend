@@ -390,29 +390,20 @@ ETSObjectType *ETSChecker::BuildAnonymousClassProperties(ir::ClassDefinition *cl
     return classType;
 }
 
-void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
+static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, ETSObjectType *type, varbinder::ClassScope *scope)
 {
-    if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
-        return;
-    }
-
-    auto *declNode = type->GetDeclNode();
-    varbinder::ClassScope *scope = declNode->IsTSInterfaceDeclaration()
-                                       ? declNode->AsTSInterfaceDeclaration()->Scope()->AsClassScope()
-                                       : declNode->AsClassDefinition()->Scope()->AsClassScope();
-
     for (auto &[_, it] : scope->InstanceFieldScope()->Bindings()) {
         (void)_;
         ASSERT(it->Declaration()->Node()->IsClassProperty());
         auto *classProp = it->Declaration()->Node()->AsClassProperty();
-        it->AddFlag(GetAccessFlagFromNode(classProp));
+        it->AddFlag(checker->GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::INSTANCE_FIELD>(it->AsLocalVariable());
 
         if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
             type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
             it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
         } else if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSTypeReference()) {
-            bool hasFunctionType = HasETSFunctionType(classProp->TypeAnnotation());
+            bool hasFunctionType = checker->HasETSFunctionType(classProp->TypeAnnotation());
             if (hasFunctionType) {
                 type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
                 it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
@@ -424,21 +415,24 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
         (void)_;
         ASSERT(it->Declaration()->Node()->IsClassProperty());
         auto *classProp = it->Declaration()->Node()->AsClassProperty();
-        it->AddFlag(GetAccessFlagFromNode(classProp));
+        it->AddFlag(checker->GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::STATIC_FIELD>(it->AsLocalVariable());
 
         if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
             type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
             it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
         } else if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSTypeReference()) {
-            bool hasFunctionType = HasETSFunctionType(classProp->TypeAnnotation());
+            bool hasFunctionType = checker->HasETSFunctionType(classProp->TypeAnnotation());
             if (hasFunctionType) {
                 type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
                 it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
             }
         }
     }
+}
 
+static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, ETSObjectType *type, varbinder::ClassScope *scope)
+{
     for (auto &[_, it] : scope->InstanceMethodScope()->Bindings()) {
         (void)_;
         auto *node = it->Declaration()->Node()->AsMethodDefinition();
@@ -447,8 +441,8 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
             continue;
         }
 
-        it->AddFlag(GetAccessFlagFromNode(node));
-        auto *funcType = BuildMethodSignature(node);
+        it->AddFlag(checker->GetAccessFlagFromNode(node));
+        auto *funcType = checker->BuildMethodSignature(node);
         it->SetTsType(funcType);
         funcType->SetVariable(it);
         node->SetTsType(funcType);
@@ -462,8 +456,8 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
             continue;
         }
         auto *node = it->Declaration()->Node()->AsMethodDefinition();
-        it->AddFlag(GetAccessFlagFromNode(node));
-        auto *funcType = BuildMethodSignature(node);
+        it->AddFlag(checker->GetAccessFlagFromNode(node));
+        auto *funcType = checker->BuildMethodSignature(node);
         it->SetTsType(funcType);
         funcType->SetVariable(it);
         node->SetTsType(funcType);
@@ -475,18 +469,37 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
 
         type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
     }
+}
 
+static void ResolveDeclaredDeclsOfObject(ETSChecker *checker, ETSObjectType *type, varbinder::ClassScope *scope)
+{
     for (auto &[_, it] : scope->InstanceDeclScope()->Bindings()) {
         (void)_;
-        it->AddFlag(GetAccessFlagFromNode(it->Declaration()->Node()));
+        it->AddFlag(checker->GetAccessFlagFromNode(it->Declaration()->Node()));
         type->AddProperty<PropertyType::INSTANCE_DECL>(it->AsLocalVariable());
     }
 
     for (auto &[_, it] : scope->StaticDeclScope()->Bindings()) {
         (void)_;
-        it->AddFlag(GetAccessFlagFromNode(it->Declaration()->Node()));
+        it->AddFlag(checker->GetAccessFlagFromNode(it->Declaration()->Node()));
         type->AddProperty<PropertyType::STATIC_DECL>(it->AsLocalVariable());
     }
+}
+
+void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
+{
+    if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
+        return;
+    }
+
+    auto *declNode = type->GetDeclNode();
+    varbinder::ClassScope *scope = declNode->IsTSInterfaceDeclaration()
+                                       ? declNode->AsTSInterfaceDeclaration()->Scope()->AsClassScope()
+                                       : declNode->AsClassDefinition()->Scope()->AsClassScope();
+
+    ResolveDeclaredFieldsOfObject(this, type, scope);
+    ResolveDeclaredMethodsOfObject(this, type, scope);
+    ResolveDeclaredDeclsOfObject(this, type, scope);
 
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS);
 }
@@ -498,29 +511,33 @@ bool ETSChecker::HasETSFunctionType(ir::TypeNode *typeAnnotation)
     }
     std::unordered_set<ir::TypeNode *> childrenSet;
 
-    if (typeAnnotation->IsETSTypeReference()) {
-        auto *typeDecl =
-            typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
-        if (typeDecl != nullptr && typeDecl->IsTypeAliasDecl()) {
-            typeAnnotation = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
-            if (typeAnnotation->IsETSUnionType()) {
-                for (auto *type : typeAnnotation->AsETSUnionType()->Types()) {
-                    if (type->IsETSTypeReference()) {
-                        childrenSet.insert(type);
-                    }
-                }
-            } else {
-                childrenSet.insert(typeAnnotation);
-            }
-        }
-
-        for (auto *child : childrenSet) {
-            if (HasETSFunctionType(child)) {
-                return true;
-            }
-        }
+    if (!typeAnnotation->IsETSTypeReference()) {
+        return false;
     }
 
+    auto const addTypeAlias = [&childrenSet, &typeAnnotation](varbinder::Decl *typeDecl) {
+        typeAnnotation = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
+        if (!typeAnnotation->IsETSUnionType()) {
+            childrenSet.insert(typeAnnotation);
+            return;
+        }
+        for (auto *type : typeAnnotation->AsETSUnionType()->Types()) {
+            if (type->IsETSTypeReference()) {
+                childrenSet.insert(type);
+            }
+        }
+    };
+
+    auto *typeDecl = typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
+    if (typeDecl != nullptr && typeDecl->IsTypeAliasDecl()) {
+        addTypeAlias(typeDecl);
+    }
+
+    for (auto *child : childrenSet) {
+        if (HasETSFunctionType(child)) {
+            return true;
+        }
+    }
     return false;
 }
 

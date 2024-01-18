@@ -66,6 +66,48 @@ void WideningReference(TypeRelation *const relation, ETSArrayType *const source,
 }
 
 namespace {
+
+bool IsAllowedNarrowingReferenceConversionObjectObject(TypeRelation *const relation, ETSObjectType *const source,
+                                                       ETSObjectType *const target)
+{
+    // 1. S and T are class types, and either |S| <: |T| or |T| <: |S|.
+    // NOTE: use type erased S and T
+    relation->Result(false);
+    if (relation->IsSupertypeOf(target, source) || relation->IsSupertypeOf(source, target)) {
+        return true;
+    }
+
+    // 2. S and T are interface types.
+    if (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+        return true;
+    }
+
+    // 3. S is a class type, T is an interface type, and S names class not marked as final.
+    if (source->HasObjectFlag(ETSObjectFlags::CLASS) && target->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
+        !source->GetDeclNode()->IsFinal()) {
+        return true;
+    }
+
+    // 4. S is a class type, T is an interface type, and S names a class that is marked as final and that
+    //    implements the interface named by T.
+    if (source->HasObjectFlag(ETSObjectFlags::CLASS) && target->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
+        source->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(source, target)) {
+        return true;
+    }
+
+    // 5. S is an interface type, T is a class type, and T names a class not marked as final.
+    if (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::CLASS) &&
+        !target->GetDeclNode()->IsFinal()) {
+        return true;
+    }
+
+    // 6. S is an interface type, T is a class type, and T names a class that is marked as final and that
+    //    implements the interface named by S.
+    relation->Result(false);
+    return (source->HasObjectFlag(ETSObjectFlags::INTERFACE) && target->HasObjectFlag(ETSObjectFlags::CLASS) &&
+            target->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(target, source));
+}
+
 bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *const source, Type *const target)
 {
     ASSERT(source->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
@@ -88,45 +130,8 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
     // - One of the following cases applies:
 
     if (source->HasTypeFlag(TypeFlag::ETS_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-        auto *const s = source->AsETSObjectType();
-        auto *const t = target->AsETSObjectType();
-
-        // 1. S and T are class types, and either |S| <: |T| or |T| <: |S|.
-        // NOTE: use type erased S and T
-        relation->Result(false);
-        if (relation->IsSupertypeOf(t, s) || relation->IsSupertypeOf(s, t)) {
-            return true;
-        }
-
-        // 2. S and T are interface types.
-        if (s->HasObjectFlag(ETSObjectFlags::INTERFACE) && t->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-            return true;
-        }
-
-        // 3. S is a class type, T is an interface type, and S names class not marked as final.
-        if (s->HasObjectFlag(ETSObjectFlags::CLASS) && t->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-            !s->GetDeclNode()->IsFinal()) {
-            return true;
-        }
-
-        // 4. S is a class type, T is an interface type, and S names a class that is marked as final and that
-        //    implements the interface named by T.
-        if (s->HasObjectFlag(ETSObjectFlags::CLASS) && t->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-            s->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(s, t)) {
-            return true;
-        }
-
-        // 5. S is an interface type, T is a class type, and T names a class not marked as final.
-        if (s->HasObjectFlag(ETSObjectFlags::INTERFACE) && t->HasObjectFlag(ETSObjectFlags::CLASS) &&
-            !t->GetDeclNode()->IsFinal()) {
-            return true;
-        }
-
-        // 6. S is an interface type, T is a class type, and T names a class that is marked as final and that
-        //    implements the interface named by S.
-        relation->Result(false);
-        if (s->HasObjectFlag(ETSObjectFlags::INTERFACE) && t->HasObjectFlag(ETSObjectFlags::CLASS) &&
-            t->GetDeclNode()->IsFinal() && relation->IsSupertypeOf(t, s)) {
+        if (IsAllowedNarrowingReferenceConversionObjectObject(relation, source->AsETSObjectType(),
+                                                              target->AsETSObjectType())) {
             return true;
         }
     }

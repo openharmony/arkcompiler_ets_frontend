@@ -110,6 +110,13 @@ private:
                            std::function<ir::Statement *(ETSParser *)> const &parserFunction);
     void ParseTopLevelNextToken(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::AstNode *> &globalProperties,
                                 ir::ScriptFunction *initFunction);
+    void ParseTopLevelNextTokenDefault(ArenaVector<ir::Statement *> &statements, ir::ScriptFunction *initFunction,
+                                       size_t currentPos, lexer::TokenType tokenType, bool defaultExport);
+    ir::ModifierFlags ResolveMemberModifiers();
+    lexer::SourcePosition ParseTopLevelNextTokenResolution(ArenaVector<ir::Statement *> &statements,
+                                                           ArenaVector<ir::AstNode *> &globalProperties,
+                                                           ir::ScriptFunction *initFunction, size_t currentPos,
+                                                           bool defaultExport);
     void ParseTokenOfNative(panda::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers);
     void ParseTokenOfFunction(ir::ModifierFlags memberModifiers, lexer::SourcePosition startLoc,
                               ArenaVector<ir::AstNode *> &globalProperties);
@@ -144,6 +151,7 @@ private:
                                                        ir::ModifierFlags memberModifiers);
     ir::MethodDefinition *ParseInterfaceGetterSetterMethod(ir::ModifierFlags modifiers);
     ir::Statement *ParseTypeDeclaration(bool allowStatic = false);
+    ir::Statement *ParseTypeDeclarationAbstractFinal(bool allowStatic, ir::ClassDefinitionModifiers modifiers);
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::ClassProperty *ParseInterfaceField();
@@ -250,6 +258,13 @@ private:
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags = ir::ModifierFlags::NONE,
                                    ir::Identifier *identNode = nullptr) override;
+    ir::AstNode *ParseInnerTypeDeclaration(ir::ModifierFlags memberModifiers, lexer::LexerPosition savedPos,
+                                           bool isStepToken, bool seenStatic);
+    ir::AstNode *ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,
+                                                  const lexer::SourcePosition &startLoc);
+    ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
+                                ir::ModifierFlags memberModifiers, ir::Identifier *identNode,
+                                const lexer::SourcePosition &startLoc);
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();

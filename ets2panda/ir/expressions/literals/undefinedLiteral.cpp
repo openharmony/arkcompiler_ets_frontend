@@ -57,7 +57,6 @@ checker::Type *UndefinedLiteral::Check([[maybe_unused]] checker::ETSChecker *che
     return TsType();
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 UndefinedLiteral *UndefinedLiteral::Clone(ArenaAllocator *allocator, AstNode *parent)
 {
     if (auto *const clone = allocator->New<UndefinedLiteral>(); clone != nullptr) {

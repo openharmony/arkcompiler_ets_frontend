@@ -103,6 +103,28 @@ static void SetupPublicContext(public_lib::Context *context, const SourceFile *s
     context->emitter = compilerContext->GetEmitter();
 }
 
+#ifndef NDEBUG
+static void Verify(const parser::Program &program, const CompilerContext &context, Phase *phase,
+                   ASTVerifierContext &verificationCtx)
+{
+    using NamedProgram = std::tuple<util::StringView, const parser::Program *>;
+    ArenaVector<NamedProgram> toCheck {program.Allocator()->Adapter()};
+    toCheck.push_back(std::make_tuple(program.SourceFilePath(), &program));
+    for (const auto &externalSource : program.ExternalSources()) {
+        for (const auto *external : externalSource.second) {
+            toCheck.push_back(std::make_tuple(external->SourceFilePath(), external));
+        }
+    }
+    for (const auto &it : toCheck) {
+        const auto &sourceName = std::get<0>(it);
+        const auto &linkedProgram = std::get<1>(it);
+        verificationCtx.Verify(context.Options()->verifierWarnings, context.Options()->verifierErrors,
+                               linkedProgram->Ast(), phase->Name(), sourceName);
+        verificationCtx.IntroduceNewInvariants(phase->Name());
+    }
+}
+#endif
+
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
 
@@ -147,21 +169,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
             return nullptr;
         }
 #ifndef NDEBUG
-        using NamedProgram = std::tuple<util::StringView, const parser::Program *>;
-        ArenaVector<NamedProgram> toCheck {program.Allocator()->Adapter()};
-        toCheck.push_back(std::make_tuple(program.SourceFilePath(), &program));
-        for (const auto &externalSource : program.ExternalSources()) {
-            for (const auto *external : externalSource.second) {
-                toCheck.push_back(std::make_tuple(external->SourceFilePath(), external));
-            }
-        }
-        for (const auto &it : toCheck) {
-            const auto &sourceName = std::get<0>(it);
-            const auto &linkedProgram = std::get<1>(it);
-            verificationCtx.Verify(context.Options()->verifierWarnings, context.Options()->verifierErrors,
-                                   linkedProgram->Ast(), phase->Name(), sourceName);
-            verificationCtx.IntroduceNewInvariants(phase->Name());
-        }
+        Verify(program, context, phase, verificationCtx);
 #endif
     }
 
