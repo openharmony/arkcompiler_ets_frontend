@@ -15,63 +15,63 @@
     ],
     "nodes": [
         {
-            "line": 1,
+            "line": 16,
             "column": 1,
             "problem": "InterfaceMerging",
             "suggest": "",
             "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
         },
         {
-            "line": 2,
+            "line": 17,
             "column": 18,
             "problem": "ObjectTypeLiteral",
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
         {
-            "line": 4,
+            "line": 19,
             "column": 1,
             "problem": "InterfaceMerging",
             "suggest": "",
             "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
         },
         {
-            "line": 5,
+            "line": 20,
             "column": 18,
             "problem": "ObjectTypeLiteral",
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
         {
-            "line": 8,
+            "line": 23,
             "column": 1,
             "problem": "IntefaceExtendDifProps",
             "suggest": "",
             "rule": "Interface can not extend interfaces with the same method (arkts-no-extend-same-prop)"
         },
         {
-            "line": 9,
+            "line": 24,
             "column": 18,
             "problem": "ObjectTypeLiteral",
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
         {
-            "line": 20,
+            "line": 35,
             "column": 16,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
-            "line": 30,
+            "line": 45,
             "column": 1,
             "problem": "InterfaceMerging",
             "suggest": "",
             "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
         },
         {
-            "line": 40,
+            "line": 55,
             "column": 1,
             "problem": "InterfaceMerging",
             "suggest": "",

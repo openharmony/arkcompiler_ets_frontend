@@ -15,49 +15,49 @@
     ],
     "nodes": [
         {
-            "line": 14,
+            "line": 29,
             "column": 36,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
-            "line": 15,
+            "line": 30,
             "column": 3,
             "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
-            "line": 22,
+            "line": 37,
             "column": 3,
             "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
-            "line": 19,
+            "line": 34,
             "column": 3,
             "problem": "StrictDiagnostic",
             "suggest": "Property '['b']' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property '['b']' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 20,
+            "line": 35,
             "column": 3,
             "problem": "StrictDiagnostic",
             "suggest": "Property '[T.A]' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property '[T.A]' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 21,
+            "line": 36,
             "column": 3,
             "problem": "StrictDiagnostic",
             "suggest": "Property '[T.B]' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property '[T.B]' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 22,
+            "line": 37,
             "column": 3,
             "problem": "StrictDiagnostic",
             "suggest": "Property '[str1]' has no initializer and is not definitely assigned in the constructor.",

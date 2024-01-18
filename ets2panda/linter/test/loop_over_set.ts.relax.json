@@ -15,21 +15,21 @@
     ],
     "nodes": [
         {
-            "line": 3,
+            "line": 18,
             "column": 15,
             "problem": "ForInStatement",
             "suggest": "",
             "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
         },
         {
-            "line": 3,
+            "line": 18,
             "column": 18,
             "problem": "ClassAsObject",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         },
         {
-            "line": 7,
+            "line": 22,
             "column": 33,
             "problem": "ClassAsObject",
             "suggest": "",

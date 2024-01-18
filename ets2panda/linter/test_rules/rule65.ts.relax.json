@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 8,
+            "line": 23,
             "column": 11,
             "problem": "InstanceofUnsupported",
             "suggest": "",
             "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
-            "line": 9,
+            "line": 24,
             "column": 11,
             "problem": "InstanceofUnsupported",
             "suggest": "",

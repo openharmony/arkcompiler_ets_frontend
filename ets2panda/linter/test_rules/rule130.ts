@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-    // math-lib.d.ts
-    export const isPrime(x: number): boolean
-    export as namespace mathLib
+// math-lib.d.ts
+export const isPrime(x: number): boolean
+export as namespace mathLib
 
-    // in script
-    mathLib.isPrime(2)
+// in script
+mathLib.isPrime(2)

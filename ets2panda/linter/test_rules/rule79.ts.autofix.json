@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 4,
+            "line": 19,
             "column": 8,
             "problem": "CatchWithUnsupportedType",
             "autofixable": true,
             "autofix": [
                 {
-                    "start": 32,
-                    "end": 42,
+                    "start": 637,
+                    "end": 647,
                     "replacementText": "a"
                 }
             ],
@@ -30,7 +30,7 @@
             "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)"
         },
         {
-            "line": 4,
+            "line": 19,
             "column": 11,
             "problem": "UnknownType",
             "autofixable": false,

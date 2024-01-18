@@ -1,4 +1,4 @@
-// @ts-ignore - check for [1, 1] position
+// @ts-ignore - check for [1, 1] position, must be BEFORE any other statements or comments!!!
 let x: number = null; // No error, type checking is suppressed
 
 /*

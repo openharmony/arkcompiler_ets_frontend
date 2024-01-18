@@ -15,7 +15,7 @@
     ],
     "nodes": [
         {
-            "line": 2,
+            "line": 17,
             "column": 12,
             "problem": "ForInStatement",
             "suggest": "",

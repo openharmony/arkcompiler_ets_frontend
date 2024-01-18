@@ -15,7 +15,7 @@
     ],
     "nodes": [
         {
-            "line": 3,
+            "line": 18,
             "column": 5,
             "problem": "NonDeclarationInNamespace",
             "suggest": "",

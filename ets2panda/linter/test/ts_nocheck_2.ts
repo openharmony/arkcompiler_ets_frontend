@@ -1,4 +1,4 @@
-// @ts-nocheck - check for [1, 1] position
+// @ts-nocheck - check for [1, 1] position, must be BEFORE any other statements or comments!!!
 // @ts-nocheck - check for pragma with two entries
 let x: number = null; // No error, type checking is suppressed
 

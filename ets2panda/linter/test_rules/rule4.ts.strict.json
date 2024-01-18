@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 1,
+            "line": 16,
             "column": 5,
             "problem": "DeclWithDuplicateName",
             "suggest": "",
             "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
         },
         {
-            "line": 2,
+            "line": 17,
             "column": 6,
             "problem": "DeclWithDuplicateName",
             "suggest": "",

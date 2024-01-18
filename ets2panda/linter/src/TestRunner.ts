@@ -235,7 +235,7 @@ function autofixArraysMatch(expected: Autofix[] | undefined, actual: Autofix[] |
     if (
       actual[i].start !== expected[i].start ||
       actual[i].end !== expected[i].end ||
-      actual[i].replacementText.replace(/\r\n/g, '\n') !== expected[i].replacementText.replace(/\r\n/g, '\n')
+      actual[i].replacementText !== expected[i].replacementText
     ) {
       return false;
     }

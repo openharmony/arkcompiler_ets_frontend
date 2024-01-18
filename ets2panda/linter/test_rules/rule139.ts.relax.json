@@ -15,21 +15,21 @@
     ],
     "nodes": [
         {
-            "line": 6,
+            "line": 21,
             "column": 35,
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 20,
+            "line": 35,
             "column": 1,
             "problem": "MethodReassignment",
             "suggest": "",
             "rule": "Reassigning object methods is not supported (arkts-no-method-reassignment)"
         },
         {
-            "line": 20,
+            "line": 35,
             "column": 1,
             "problem": "PropertyDeclOnFunction",
             "suggest": "",

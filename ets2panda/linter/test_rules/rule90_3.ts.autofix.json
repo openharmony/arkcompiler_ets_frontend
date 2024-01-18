@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 13,
-            "column": 14,
+            "line": 28,
+            "column": 10,
             "problem": "LimitedReturnTypeInference",
             "autofixable": true,
             "autofix": [
                 {
-                    "start": 206,
-                    "end": 206,
+                    "start": 767,
+                    "end": 767,
                     "replacementText": ": number"
                 }
             ],

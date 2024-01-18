@@ -142,7 +142,11 @@ export function fixTypeAssertion(typeAssertion: ts.TypeAssertion): Autofix {
   return { start: typeAssertion.getStart(), end: typeAssertion.getEnd(), replacementText: text };
 }
 
-const printer: ts.Printer = ts.createPrinter();
+const printer: ts.Printer = ts.createPrinter({
+  omitTrailingSemicolon: false,
+  removeComments: false,
+  newLine: ts.NewLineKind.LineFeed
+});
 
 function numericLiteral2IdentifierName(numeric: ts.NumericLiteral): string {
   return '__' + numeric.getText();

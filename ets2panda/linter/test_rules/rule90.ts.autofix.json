@@ -15,7 +15,7 @@
     ],
     "nodes": [
         {
-            "line": 2,
+            "line": 17,
             "column": 14,
             "problem": "LimitedReturnTypeInference",
             "autofixable": false,
@@ -23,7 +23,7 @@
             "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
-            "line": 10,
+            "line": 25,
             "column": 14,
             "problem": "LimitedReturnTypeInference",
             "autofixable": false,

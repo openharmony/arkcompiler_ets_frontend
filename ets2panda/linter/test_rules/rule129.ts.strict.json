@@ -15,28 +15,28 @@
     ],
     "nodes": [
         {
-            "line": 4,
+            "line": 19,
             "column": 9,
             "problem": "NonDeclarationInNamespace",
             "suggest": "",
             "rule": "Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statements) (arkts-no-ns-statements)"
         },
         {
-            "line": 2,
+            "line": 17,
             "column": 5,
             "problem": "ShorthandAmbientModuleDecl",
             "suggest": "",
             "rule": "Ambient module declaration is not supported (arkts-no-ambient-decls)"
         },
         {
-            "line": 2,
+            "line": 17,
             "column": 5,
             "problem": "WildcardsInModuleName",
             "suggest": "",
             "rule": "Wildcards in module names are not supported (arkts-no-module-wildcards)"
         },
         {
-            "line": 8,
+            "line": 23,
             "column": 5,
             "problem": "ImportAfterStatement",
             "suggest": "",

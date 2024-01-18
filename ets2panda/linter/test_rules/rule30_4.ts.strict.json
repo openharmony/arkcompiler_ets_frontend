@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 35,
+            "line": 50,
             "column": 1,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 38,
+            "line": 53,
             "column": 1,
             "problem": "StructuralIdentity",
             "suggest": "",

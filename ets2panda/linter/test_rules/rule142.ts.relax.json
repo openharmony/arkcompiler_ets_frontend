@@ -15,28 +15,28 @@
     ],
     "nodes": [
         {
-            "line": 2,
+            "line": 17,
             "column": 21,
             "problem": "ConstAssertion",
             "suggest": "",
             "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         },
         {
-            "line": 5,
+            "line": 20,
             "column": 22,
             "problem": "ConstAssertion",
             "suggest": "",
             "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         },
         {
-            "line": 8,
+            "line": 23,
             "column": 31,
             "problem": "ConstAssertion",
             "suggest": "",
             "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
         },
         {
-            "line": 8,
+            "line": 23,
             "column": 13,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",

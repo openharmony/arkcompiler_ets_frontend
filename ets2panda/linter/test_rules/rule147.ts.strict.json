@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 7,
+            "line": 22,
             "column": 5,
             "problem": "ImportAfterStatement",
             "suggest": "",
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
         },
         {
-            "line": 7,
+            "line": 22,
             "column": 14,
             "problem": "DeclWithDuplicateName",
             "suggest": "",
