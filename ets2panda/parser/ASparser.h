@@ -76,6 +76,8 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    ir::Expression *ParseArrowFunctionRestParameter(lexer::SourcePosition start);
+    ir::Expression *ParseArrowFunctionNoParameter(lexer::SourcePosition start);
     ir::Expression *ParsePrefixAssertionExpression() override;
     ir::Statement *ParseConstStatement(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;

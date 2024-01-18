@@ -1351,6 +1351,57 @@ ir::AstNode *ASParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
     return nullptr;
 }
 
+ir::Expression *ASParser::ParseArrowFunctionRestParameter(lexer::SourcePosition start)
+{
+    ir::SpreadElement *restElement = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
+
+    restElement->SetGrouped();
+    restElement->SetStart(start);
+
+    ValidateArrowFunctionRestParameter(restElement);
+
+    Lexer()->NextToken();
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        ThrowSyntaxError(":' expected");
+    }
+
+    Lexer()->NextToken();  // eat ':'
+
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
+        ThrowSyntaxError("'=>' expected");
+    }
+
+    return ParseArrowFunctionExpression(restElement, nullptr, returnTypeAnnotation, false);
+}
+
+ir::Expression *ASParser::ParseArrowFunctionNoParameter(lexer::SourcePosition start)
+{
+    Lexer()->NextToken();
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        ThrowSyntaxError(":' expected");
+    }
+
+    Lexer()->NextToken();  // eat ':'
+
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
+        ThrowSyntaxError("'=>' expected");
+    }
+
+    auto *arrowExpr = ParseArrowFunctionExpression(nullptr, nullptr, returnTypeAnnotation, false);
+    arrowExpr->SetStart(start);
+    arrowExpr->AsArrowFunctionExpression()->Function()->SetStart(start);
+
+    return arrowExpr;
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)
@@ -1361,50 +1412,11 @@ ir::Expression *ASParser::ParseCoverParenthesizedExpressionAndArrowParameterList
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
-        ir::SpreadElement *restElement = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
-
-        restElement->SetGrouped();
-        restElement->SetStart(start);
-
-        ValidateArrowFunctionRestParameter(restElement);
-
-        Lexer()->NextToken();
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
-            ThrowSyntaxError(":' expected");
-        }
-
-        Lexer()->NextToken();  // eat ':'
-
-        ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-            ThrowSyntaxError("'=>' expected");
-        }
-
-        return ParseArrowFunctionExpression(restElement, nullptr, returnTypeAnnotation, false);
+        return ParseArrowFunctionRestParameter(start);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        Lexer()->NextToken();
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
-            ThrowSyntaxError(":' expected");
-        }
-
-        Lexer()->NextToken();  // eat ':'
-
-        ir::TypeNode *returnTypeAnnotation = ParseTypeAnnotation(&options);
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-            ThrowSyntaxError("'=>' expected");
-        }
-
-        auto *arrowExpr = ParseArrowFunctionExpression(nullptr, nullptr, returnTypeAnnotation, false);
-        arrowExpr->SetStart(start);
-        arrowExpr->AsArrowFunctionExpression()->Function()->SetStart(start);
-
-        return arrowExpr;
+        return ParseArrowFunctionNoParameter(start);
     }
 
     ir::Expression *expr = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::ACCEPT_REST |

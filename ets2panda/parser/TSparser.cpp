@@ -2599,6 +2599,53 @@ ir::Statement *TSParser::ParseExportDeclaration(StatementParsingFlags flags)
     }
 }
 
+ir::Expression *TSParser::ParseArrowFunctionRestParameter(lexer::SourcePosition start)
+{
+    ir::SpreadElement *restElement = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
+
+    restElement->SetGrouped();
+    restElement->SetStart(start);
+
+    ValidateArrowFunctionRestParameter(restElement);
+
+    Lexer()->NextToken();
+
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    ir::TypeNode *returnTypeAnnotation = nullptr;
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+        Lexer()->NextToken();  // eat ':'
+        returnTypeAnnotation = ParseTypeAnnotation(&options);
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
+        ThrowSyntaxError("Unexpected token");
+    }
+
+    return ParseArrowFunctionExpression(restElement, nullptr, returnTypeAnnotation, false);
+}
+
+ir::Expression *TSParser::ParseArrowFunctionNoParameter(lexer::SourcePosition start)
+{
+    Lexer()->NextToken();
+
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    ir::TypeNode *returnTypeAnnotation = nullptr;
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+        Lexer()->NextToken();  // eat ':'
+        returnTypeAnnotation = ParseTypeAnnotation(&options);
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
+        ThrowSyntaxError("Unexpected token");
+    }
+
+    auto *arrowExpr = ParseArrowFunctionExpression(nullptr, nullptr, returnTypeAnnotation, false);
+    arrowExpr->SetStart(start);
+    arrowExpr->AsArrowFunctionExpression()->Function()->SetStart(start);
+
+    return arrowExpr;
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList(
     [[maybe_unused]] ExpressionParseFlags flags)
@@ -2609,46 +2656,11 @@ ir::Expression *TSParser::ParseCoverParenthesizedExpressionAndArrowParameterList
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
-        ir::SpreadElement *restElement = ParseSpreadElement(ExpressionParseFlags::MUST_BE_PATTERN);
-
-        restElement->SetGrouped();
-        restElement->SetStart(start);
-
-        ValidateArrowFunctionRestParameter(restElement);
-
-        Lexer()->NextToken();
-
-        ir::TypeNode *returnTypeAnnotation = nullptr;
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-            Lexer()->NextToken();  // eat ':'
-            returnTypeAnnotation = ParseTypeAnnotation(&options);
-        }
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-            ThrowSyntaxError("Unexpected token");
-        }
-
-        return ParseArrowFunctionExpression(restElement, nullptr, returnTypeAnnotation, false);
+        return ParseArrowFunctionRestParameter(start);
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        Lexer()->NextToken();
-
-        ir::TypeNode *returnTypeAnnotation = nullptr;
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-            Lexer()->NextToken();  // eat ':'
-            returnTypeAnnotation = ParseTypeAnnotation(&options);
-        }
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
-            ThrowSyntaxError("Unexpected token");
-        }
-
-        auto *arrowExpr = ParseArrowFunctionExpression(nullptr, nullptr, returnTypeAnnotation, false);
-        arrowExpr->SetStart(start);
-        arrowExpr->AsArrowFunctionExpression()->Function()->SetStart(start);
-
-        return arrowExpr;
+        return ParseArrowFunctionNoParameter(start);
     }
 
     ir::Expression *expr = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA | ExpressionParseFlags::ACCEPT_REST |

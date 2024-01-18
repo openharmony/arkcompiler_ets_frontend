@@ -125,6 +125,8 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    ir::Expression *ParseArrowFunctionRestParameter(lexer::SourcePosition start);
+    ir::Expression *ParseArrowFunctionNoParameter(lexer::SourcePosition start);
     ir::Statement *ParseConstStatement(StatementParsingFlags flags) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param) override;
