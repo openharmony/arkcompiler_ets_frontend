@@ -524,6 +524,11 @@ export namespace ApiExtractor {
       fileNames = fs.readdirSync(apiPath);
       for (let fileName of fileNames) {
         let filePath: string = path.join(apiPath, fileName);
+        try {
+          fs.accessSync(filePath, fs.constants.R_OK);
+        } catch (err) {
+          continue;
+        }
         if (fs.statSync(filePath).isDirectory()) {
           const ohPackageJsonPath = path.join(filePath, 'oh-package.json5');
           let packgeNameAndVersion = '';
