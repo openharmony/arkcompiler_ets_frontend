@@ -2387,7 +2387,8 @@ void ETSGen::StringBuilderAppend(const ir::AstNode *node, VReg builder)
         signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_BUILTIN_STRING;
     }
 
-    if ((GetAccumulatorType()->IsETSObjectType() || GetAccumulatorType()->IsETSTypeParameter()) &&
+    if ((GetAccumulatorType()->IsETSObjectType() || GetAccumulatorType()->IsETSTypeParameter() ||
+         GetAccumulatorType()->IsETSArrayType()) &&
         !GetAccumulatorType()->IsETSStringType()) {
         if (Checker()->MayHaveNullValue(GetAccumulatorType())) {
             Label *ifnull = AllocLabel();

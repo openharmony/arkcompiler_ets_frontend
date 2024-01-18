@@ -1254,6 +1254,15 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) c
     UNREACHABLE();
 }
 
+checker::Type *ETSAnalyzer::SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr,
+                                             ETSObjectType *objectType) const
+{
+    expr->SetObjectType(objectType);
+    auto [resType, resVar] = expr->ResolveObjectMember(checker);
+    expr->SetPropVar(resVar);
+    return expr->AdjustType(checker, resType);
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1284,15 +1293,16 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
         return expr->AdjustType(checker, expr->CheckComputed(checker, baseType));
     }
 
-    if (baseType->IsETSArrayType() && expr->Property()->AsIdentifier()->Name().Is("length")) {
-        return expr->AdjustType(checker, checker->GlobalIntType());
+    if (baseType->IsETSArrayType()) {
+        if (expr->Property()->AsIdentifier()->Name().Is("length")) {
+            return expr->AdjustType(checker, checker->GlobalIntType());
+        }
+
+        return SetAndAdjustType(checker, expr, checker->GlobalETSObjectType());
     }
 
     if (baseType->IsETSObjectType()) {
-        expr->SetObjectType(baseType->AsETSObjectType());
-        auto [resType, resVar] = expr->ResolveObjectMember(checker);
-        expr->SetPropVar(resVar);
-        return expr->AdjustType(checker, resType);
+        return SetAndAdjustType(checker, expr, baseType->AsETSObjectType());
     }
 
     if (baseType->IsETSEnumType() || baseType->IsETSStringEnumType()) {
