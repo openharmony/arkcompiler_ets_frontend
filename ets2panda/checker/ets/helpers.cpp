@@ -205,7 +205,7 @@ bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
     return (type->HasTypeFlag(TypeFlag::CONSTANT) && (expr->IsIdentifier() || expr->IsMemberExpression()));
 }
 
-Type *ETSChecker::GetNonConstantTypeFromPrimitiveType(Type *type)
+Type *ETSChecker::GetNonConstantTypeFromPrimitiveType(Type *type) const
 {
     if (type->IsETSStringType()) {
         return GlobalBuiltinETSStringType();
@@ -1843,6 +1843,38 @@ ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)
     }
 }
 
+Type *ETSChecker::GetBoxedType(ir::BoxingUnboxingFlags flag) const
+{
+    switch (flag) {
+        case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN: {
+            return GlobalETSBooleanType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_BYTE: {
+            return GlobalByteType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_CHAR: {
+            return GlobalCharType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_SHORT: {
+            return GlobalShortType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_INT: {
+            return GlobalIntType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_LONG: {
+            return GlobalLongType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT: {
+            return GlobalFloatType();
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE: {
+            return GlobalDoubleType();
+        }
+        default:
+            UNREACHABLE();
+    }
+}
+
 ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingType) const
 {
     auto typeKind = TypeKind(unboxingType);
@@ -1870,6 +1902,39 @@ ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxingTy
         }
         case TypeFlag::DOUBLE: {
             return ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE;
+        }
+        default:
+            UNREACHABLE();
+    }
+}
+
+util::StringView ETSChecker::TypeToName(Type *type) const
+{
+    auto typeKind = TypeKind(type);
+    switch (typeKind) {
+        case TypeFlag::ETS_BOOLEAN: {
+            return "boolean";
+        }
+        case TypeFlag::BYTE: {
+            return "byte";
+        }
+        case TypeFlag::CHAR: {
+            return "char";
+        }
+        case TypeFlag::SHORT: {
+            return "short";
+        }
+        case TypeFlag::INT: {
+            return "int";
+        }
+        case TypeFlag::LONG: {
+            return "long";
+        }
+        case TypeFlag::FLOAT: {
+            return "float";
+        }
+        case TypeFlag::DOUBLE: {
+            return "number";
         }
         default:
             UNREACHABLE();

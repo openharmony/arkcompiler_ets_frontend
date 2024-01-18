@@ -50,6 +50,7 @@
 #include "ir/expressions/blockExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/superExpression.h"
+#include "ir/expressions/typeofExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/updateExpression.h"
 #include "ir/expressions/arrowFunctionExpression.h"
@@ -1962,6 +1963,7 @@ std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
             UNREACHABLE();
     }
 }
+
 std::string ETSParser::GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const
 {
     ASSERT(typeAnnotation->IsETSUnionType());
@@ -3337,6 +3339,25 @@ ir::Statement *ETSParser::ParseExportDeclaration([[maybe_unused]] StatementParsi
     ThrowUnexpectedToken(lexer::TokenType::KEYW_EXPORT);
 }
 
+ir::Expression *ETSParser::ResolveArgumentUnaryExpr(ExpressionParseFlags flags)
+{
+    switch (Lexer()->GetToken().Type()) {
+        case lexer::TokenType::PUNCTUATOR_PLUS:
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_TILDE:
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
+        case lexer::TokenType::PUNCTUATOR_PLUS_PLUS:
+        case lexer::TokenType::PUNCTUATOR_MINUS_MINUS:
+        case lexer::TokenType::KEYW_TYPEOF: {
+            return ParseUnaryOrPrefixUpdateExpression();
+        }
+        default: {
+            return ParseLeftHandSideExpression(flags);
+        }
+    }
+}
+
 // NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
@@ -3347,7 +3368,8 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
-        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
+        case lexer::TokenType::KEYW_TYPEOF: {
             break;
         }
         case lexer::TokenType::KEYW_LAUNCH: {
@@ -3362,23 +3384,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
     auto start = Lexer()->GetToken().Start();
     Lexer()->NextToken();
 
-    ir::Expression *argument = nullptr;
-    switch (Lexer()->GetToken().Type()) {
-        case lexer::TokenType::PUNCTUATOR_PLUS:
-        case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_TILDE:
-        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
-        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
-        case lexer::TokenType::PUNCTUATOR_PLUS_PLUS:
-        case lexer::TokenType::PUNCTUATOR_MINUS_MINUS: {
-            argument = ParseUnaryOrPrefixUpdateExpression();
-            break;
-        }
-        default: {
-            argument = ParseLeftHandSideExpression(flags);
-            break;
-        }
-    }
+    ir::Expression *argument = ResolveArgumentUnaryExpr(flags);
 
     if (lexer::Token::IsUpdateToken(operatorType)) {
         if (!argument->IsIdentifier() && !argument->IsMemberExpression()) {
@@ -3391,6 +3397,8 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
     ir::Expression *returnExpr = nullptr;
     if (lexer::Token::IsUpdateToken(operatorType)) {
         returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
+    } else if (operatorType == lexer::TokenType::KEYW_TYPEOF) {
+        returnExpr = AllocNode<ir::TypeofExpression>(argument);
     } else {
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
     }
@@ -3437,8 +3445,7 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
     return nullptr;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
-ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
+ir::Expression *ETSParser::ParsePrimaryExpressionWithLiterals(ExpressionParseFlags flags)
 {
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_TRUE:
@@ -3460,6 +3467,16 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         case lexer::TokenType::LITERAL_CHAR: {
             return ParseCharLiteral();
         }
+        default: {
+            return ParseDefaultPrimaryExpression(flags);
+        }
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
+{
+    switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return ParseCoverParenthesizedExpressionAndArrowParameterList(flags);
         }
@@ -3493,8 +3510,11 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         case lexer::TokenType::PUNCTUATOR_FORMAT: {
             return ParseExpressionFormatPlaceholder();
         }
+        case lexer::TokenType::KEYW_TYPEOF: {
+            return ParseUnaryOrPrefixUpdateExpression();
+        }
         default: {
-            return ParseDefaultPrimaryExpression(flags);
+            return ParsePrimaryExpressionWithLiterals(flags);
         }
     }
 }

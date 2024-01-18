@@ -1,0 +1,171 @@
+/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+function test(t: boolean): boolean | long[] {
+  if (t) {
+    return true
+  }
+  let c: long[] = [4, 6]
+  return c
+}
+function test1(t: int): Object | null {
+  if (t) {
+    return new Object();
+  }
+  return null
+}
+function test2(t: int): Object | undefined {
+  if (!t) {
+    return new Object();
+  }
+  return undefined
+}
+
+enum Color { Red, Green, Blue }
+
+function main() {
+  // for identifiers
+  // ---------------
+  // ids with numbers (primitive, boxed and objects)
+
+  let x00: boolean
+  let x01: byte
+  let x02: char
+  let x03: short
+  let x04: int
+  let x05: long
+  let x06: float
+  let x07: double
+  assert(typeof x00 == "boolean")
+  assert(typeof x01 == "byte")
+  assert(typeof x02 == "char")
+  assert(typeof x03 == "short")
+  assert(typeof x04 == "int")
+  assert(typeof x05 == "long")
+  assert(typeof x06 == "float")
+  assert(typeof x07 == "number")
+
+  let x000: Boolean
+  let x001: Byte
+  let x002: Char
+  let x003: Short
+  let x004: Int
+  let x005: Long
+  let x006: Float
+  let x007: Double
+  assert(typeof x000 == "boolean")
+  assert(typeof x001 == "byte")
+  assert(typeof x002 == "char")
+  assert(typeof x003 == "short")
+  assert(typeof x004 == "int")
+  assert(typeof x005 == "long")
+  assert(typeof x006 == "float")
+  assert(typeof x007 == "number")
+
+  let x0 = new Boolean()
+  let x1 = new Byte()
+  let x2 = new Char()
+  let x3 = new Short()
+  let x4 = new Int()
+  let x5 = new Long()
+  let x6 = new Float()
+  let x7 = new Double()
+  assert(typeof x0 == "boolean")
+  assert(typeof x1 == "byte")
+  assert(typeof x2 == "char")
+  assert(typeof x3 == "short")
+  assert(typeof x4 == "int")
+  assert(typeof x5 == "long")
+  assert(typeof x6 == "float")
+  assert(typeof x7 == "number")
+
+  // ---------------
+  // ids with literals
+
+  let l0 = "123"
+  let l1 = null
+  let l2 = undefined
+  let l3 = true
+  let l4 = false
+  assert(typeof l0 == "string")
+  assert(typeof l1 == "object")
+  assert(typeof l2 == "undefined")
+  assert(typeof l3 == "boolean")
+  assert(typeof l4 == "boolean")
+
+  // ---------------
+  // ids with objects and enums
+
+  let o0 = new String("1")
+  let o1: Int[] = [1, 2]
+  let o2 = test(true)
+  let o3 = test(false)
+  let o4: Object | null = test1(1)
+  let o5: Object | null = test1(0)
+  let o6: Object | undefined = test2(1)
+  let o7: Object | undefined = test2(0)
+  let o8: (a: boolean) => boolean | long[] = test
+  assert(typeof o0 == "string")
+  assert(typeof o1 == "object")
+  assert(typeof o2 == "boolean")
+  assert(typeof o3 == "object")
+  assert(typeof o4 == "object")
+  assert(typeof o5 == "object")
+  assert(typeof o6 == "undefined")
+  assert(typeof o7 == "object")
+  assert(typeof o8 == "function")
+
+  let e0 = Color.Red
+  let e1: Color
+  assert(typeof e0 == "number")
+  assert(typeof e1 == "number")
+
+  // ===============
+  // for expressions
+  // ---------------
+  // exprs with numbers (objects)
+
+  assert(typeof new Boolean() == "boolean")
+  assert(typeof new Byte() == "byte")
+  assert(typeof new Char() == "char")
+  assert(typeof new Short() == "short")
+  assert(typeof new Int() == "int")
+  assert(typeof new Long() == "long")
+  assert(typeof new Float() == "float")
+  assert(typeof new Number() == "number")
+
+  // ---------------
+  // exprs with literals
+  assert(typeof "123" == "string")
+  assert(typeof null == "object")
+  assert(typeof undefined == "undefined")
+  assert(typeof true == "boolean")
+  assert(typeof false == "boolean")
+
+  // ---------------
+  // exprs with objects and enums
+  assert(typeof new String() == "string")
+  assert(typeof [1, 2] == "object")
+  assert(typeof test(true) == "boolean")
+  assert(typeof test(false) == "object")
+  assert(typeof test1(1) == "object")
+  assert(typeof test1(0) == "object")
+  assert(typeof test2(1) == "undefined")
+  assert(typeof test1(0) == "object")
+  assert(typeof ("123" + "124") == "string")
+  x004 = 9
+  x4 = 6
+  assert(typeof (x4 + x004) == "int")
+}

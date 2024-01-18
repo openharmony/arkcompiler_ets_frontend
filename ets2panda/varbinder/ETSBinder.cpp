@@ -17,6 +17,7 @@
 
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/thisExpression.h"
+#include "ir/expressions/typeofExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/functionExpression.h"

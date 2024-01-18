@@ -218,6 +218,7 @@ set(ES2PANDA_LIB_SRC
   ir/expressions/taggedTemplateExpression.cpp
   ir/expressions/templateLiteral.cpp
   ir/expressions/thisExpression.cpp
+  ir/expressions/typeofExpression.cpp
   ir/expressions/unaryExpression.cpp
   ir/expressions/updateExpression.cpp
   ir/expressions/yieldExpression.cpp

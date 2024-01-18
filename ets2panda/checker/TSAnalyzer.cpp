@@ -1042,6 +1042,12 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ThisExpression *expr) cons
     return checker->GlobalAnyType();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) const
+{
+    TSChecker *checker = GetTSChecker();
+    return checker->GlobalStringType();
+}
+
 checker::Type *TSAnalyzer::CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker,
                                               ir::UnaryExpression *expr) const
 {
