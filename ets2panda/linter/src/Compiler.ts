@@ -28,15 +28,6 @@ function compile(cmdOptions: CommandLineOptions, overrideCompilerOptions: ts.Com
   if (cmdOptions.logTscErrors) {
     const diagnostics = ts.getPreEmitDiagnostics(program);
     logTscDiagnostic(diagnostics, consoleLog);
-    diagnostics.forEach((diagnostic) => {
-      if (diagnostic.file && diagnostic.start) {
-        const { line, character } = ts.getLineAndCharacterOfPosition(diagnostic.file, diagnostic.start);
-        const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-        consoleLog(`${diagnostic.file.fileName} (${line + 1}, ${character + 1}): ${message}`);
-      } else {
-        consoleLog(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
-      }
-    });
   }
   return program;
 }
