@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -67,7 +67,7 @@ const CB_META = '.. meta';
 const CB_FIX = ':fix:';
 
 const NEW_REC_HEADER = /.. _R\d\d\d:/;
-// should be ".. code-block" but in some places there is error in doc file
+// should be ".. code-block" but there is an error in some doc files
 const CODE_BLOCK = '.. code';
 
 let doc_lines: string[];

@@ -1,5 +1,5 @@
 REM
-REM Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+REM Copyright (c) 2023-2024 Huawei Device Co., Ltd.
 REM Licensed under the Apache License, Version 2.0 (the "License");
 REM you may not use this file except in compliance with the License.
 REM You may obtain a copy of the License at

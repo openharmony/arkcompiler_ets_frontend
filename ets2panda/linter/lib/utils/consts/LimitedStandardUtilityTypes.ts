@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,21 +14,21 @@
  */
 
 export const LIMITED_STANDARD_UTILITY_TYPES = [
-  'Awaited',
-  'Pick',
-  'Omit',
-  'Exclude',
-  'Extract',
-  'NonNullable',
-  'Parameters',
-  'ConstructorParameters',
-  'ReturnType',
-  'InstanceType',
-  'ThisParameterType',
-  'OmitThisParameter',
-  'ThisType',
-  'Uppercase',
-  'Lowercase',
+  'Uncapitalize',
   'Capitalize',
-  'Uncapitalize'
+  'Lowercase',
+  'Uppercase',
+  'ThisType',
+  'OmitThisParameter',
+  'ThisParameterType',
+  'InstanceType',
+  'ReturnType',
+  'ConstructorParameters',
+  'Parameters',
+  'NonNullable',
+  'Extract',
+  'Exclude',
+  'Omit',
+  'Pick',
+  'Awaited'
 ];

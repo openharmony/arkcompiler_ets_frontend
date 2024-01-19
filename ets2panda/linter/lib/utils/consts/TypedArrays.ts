@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,14 +15,14 @@
 
 export const TYPED_ARRAYS = [
   'Int8Array',
-  'Uint8Array',
   'Uint8ClampedArray',
-  'Int16Array',
+  'Uint8Array',
   'Uint16Array',
-  'Int32Array',
+  'Int16Array',
   'Uint32Array',
-  'Float32Array',
+  'Int32Array',
   'Float64Array',
-  'BigInt64Array',
-  'BigUint64Array'
+  'Float32Array',
+  'BigUint64Array',
+  'BigInt64Array'
 ];

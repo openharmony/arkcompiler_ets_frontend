@@ -18,7 +18,7 @@ Thus these functions are excessive.
 ```
 
     const person = {
-        firstName: "aa",
+        firstName: "John",
 
         fullName: function(): string {
             return this.firstName
