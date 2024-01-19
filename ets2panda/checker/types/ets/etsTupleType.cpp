@@ -24,10 +24,11 @@ void ETSTupleType::ToString(std::stringstream &ss) const
 {
     ss << "[";
 
-    for (const auto *const type : typeList_) {
-        type->ToString(ss);
-        if (type != typeList_.back()) {
-            ss << ",";
+    for (auto it = typeList_.begin(); it != typeList_.end(); it++) {
+        (*it)->ToString(ss);
+
+        if (std::next(it) != typeList_.end()) {
+            ss << ", ";
         }
     }
 

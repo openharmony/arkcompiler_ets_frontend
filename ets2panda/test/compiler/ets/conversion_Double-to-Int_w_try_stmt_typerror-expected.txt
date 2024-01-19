@@ -718,4 +718,4 @@
     }
   }
 }
-TypeError: Return statement type is not compatible with the enclosing method's return type. [conversion_Double-to-Int_w_try_stmt_typerror.ets:17:18]
+TypeError: Type 'Double' is not compatible with the enclosing method's return type 'Int' [conversion_Double-to-Int_w_try_stmt_typerror.ets:17:18]

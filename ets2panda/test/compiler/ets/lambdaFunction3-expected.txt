@@ -642,4 +642,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [lambdaFunction3.ets:18:39]
+TypeError: Type '(b: int) => void' cannot be assigned to type '(b: String) => void' [lambdaFunction3.ets:18:39]

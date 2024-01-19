@@ -442,4 +442,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [function_implicit_return_type6.ets:20:16]
+TypeError: Type 'void' cannot be assigned to type 'int' [function_implicit_return_type6.ets:20:16]

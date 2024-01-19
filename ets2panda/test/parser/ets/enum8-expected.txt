@@ -563,4 +563,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [enum8.ets:20:20]
+TypeError: Type 'Color2' cannot be assigned to type 'Color' [enum8.ets:20:20]

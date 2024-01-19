@@ -598,4 +598,4 @@
     }
   }
 }
-TypeError: Return statement type is not compatible with previous method's return statement type(s). [function_implicit_return_type7.ets:21:10]
+TypeError: Function cannot have different primitive return types, found 'boolean', 'int' [function_implicit_return_type7.ets:21:10]

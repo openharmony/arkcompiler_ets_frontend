@@ -455,4 +455,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [n_arrayHoldingNullValue.ets:17:24]
+TypeError: Type 'null' cannot be assigned to type 'float[]' [n_arrayHoldingNullValue.ets:17:24]

@@ -1293,4 +1293,4 @@
     }
   }
 }
-TypeError: Switch case type A is not comparable to discriminant type E [switch_readonly_member_different_enum_2.ets:34:14]
+TypeError: Switch case type 'A' is not comparable to discriminant type 'E' [switch_readonly_member_different_enum_2.ets:34:14]

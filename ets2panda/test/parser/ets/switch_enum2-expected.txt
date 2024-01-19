@@ -577,4 +577,4 @@
     }
   }
 }
-TypeError: Switch case type int is not comparable to discriminant type Color [switch_enum2.ets:20:14]
+TypeError: Switch case type 'int' is not comparable to discriminant type 'Color' [switch_enum2.ets:20:14]

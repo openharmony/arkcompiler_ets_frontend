@@ -803,4 +803,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [n_assignNullableToNonNullableArray.ets:22:10]
+TypeError: Type 'A[]|null' cannot be assigned to type 'Object[]' [n_assignNullableToNonNullableArray.ets:22:10]

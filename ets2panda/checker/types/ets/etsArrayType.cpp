@@ -25,6 +25,11 @@ void ETSArrayType::ToString(std::stringstream &ss) const
 {
     element_->ToString(ss);
     ss << "[]";
+
+    if (IsNullish()) {
+        ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
+           << lexer::TokenToString(lexer::TokenType::LITERAL_NULL);
+    }
 }
 
 void ETSArrayType::ToAssemblerType(std::stringstream &ss) const

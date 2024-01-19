@@ -913,4 +913,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [n_assignNullableFromMethodToNullableParam.ets:24:22]
+TypeError: Type 'A|null' cannot be assigned to type 'Object' [n_assignNullableFromMethodToNullableParam.ets:24:22]

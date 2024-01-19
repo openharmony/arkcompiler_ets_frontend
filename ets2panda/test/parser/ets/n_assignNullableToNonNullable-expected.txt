@@ -707,4 +707,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [n_assignNullableToNonNullable.ets:22:9]
+TypeError: Type 'A|null' cannot be assigned to type 'Object' [n_assignNullableToNonNullable.ets:22:9]

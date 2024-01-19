@@ -389,7 +389,7 @@ public:
         return (flags_ & flag) != 0;
     }
 
-    ETSFunctionType *GetFunctionalInterfaceInvokeType()
+    ETSFunctionType *GetFunctionalInterfaceInvokeType() const
     {
         ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
         auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>("invoke");

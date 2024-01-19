@@ -456,4 +456,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [conversion_Int-to-Double_typeerror.ets:17:20]
+TypeError: Type 'Int' cannot be assigned to type 'Double' [conversion_Int-to-Double_typeerror.ets:17:20]

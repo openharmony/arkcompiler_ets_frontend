@@ -670,4 +670,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [tuple_types_10_neg.ets:19:39]
+TypeError: Type '[double, double]' cannot be assigned to type '[double, double, double]' [tuple_types_10_neg.ets:19:39]

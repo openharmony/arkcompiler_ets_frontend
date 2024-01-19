@@ -1555,4 +1555,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [union_types_4.ets:30:9]
+TypeError: Type 'B' cannot be assigned to type 'String|Short|A' [union_types_4.ets:30:9]

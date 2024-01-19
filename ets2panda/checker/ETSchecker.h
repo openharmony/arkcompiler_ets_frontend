@@ -547,6 +547,7 @@ public:
     void ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
+    const Type *TryGettingFunctionTypeFromInvokeFunction(const Type *type) const;
 
     void GenerateGetterSetterBody(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
                                   ArenaVector<ir::Expression *> &params, ir::ClassProperty *field,

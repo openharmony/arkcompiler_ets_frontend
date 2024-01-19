@@ -19,6 +19,49 @@
             }
           }
         },
+        "typeParameters": {
+          "type": "TSTypeParameterDeclaration",
+          "params": [
+            {
+              "type": "TSTypeParameter",
+              "name": {
+                "type": "Identifier",
+                "name": "T",
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 16,
+                    "column": 10
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 9
+                },
+                "end": {
+                  "line": 16,
+                  "column": 11
+                }
+              }
+            }
+          ],
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 8
+            },
+            "end": {
+              "line": 16,
+              "column": 11
+            }
+          }
+        },
         "superClass": null,
         "implements": [],
         "body": [
@@ -107,11 +150,11 @@
             "loc": {
               "start": {
                 "line": 16,
-                "column": 11
+                "column": 13
               },
               "end": {
                 "line": 16,
-                "column": 11
+                "column": 13
               }
             }
           }
@@ -119,11 +162,11 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 9
+            "column": 11
           },
           "end": {
             "line": 16,
-            "column": 11
+            "column": 13
           }
         }
       },
@@ -134,7 +177,7 @@
         },
         "end": {
           "line": 16,
-          "column": 11
+          "column": 13
         }
       }
     },
@@ -206,7 +249,64 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [],
+                  "statements": [
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "operator": "=",
+                        "left": {
+                          "type": "Identifier",
+                          "name": "f",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 18,
+                              "column": 5
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 6
+                            }
+                          }
+                        },
+                        "right": {
+                          "type": "NumberLiteral",
+                          "value": 5,
+                          "loc": {
+                            "start": {
+                              "line": 18,
+                              "column": 29
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 30
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 18,
+                            "column": 5
+                          },
+                          "end": {
+                            "line": 18,
+                            "column": 30
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 18,
+                          "column": 1
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 31
+                        }
+                      }
+                    }
+                  ],
                   "loc": {
                     "start": {
                       "line": 1,
@@ -254,165 +354,79 @@
             }
           },
           {
-            "type": "MethodDefinition",
+            "type": "ClassProperty",
             "key": {
               "type": "Identifier",
-              "name": "foo",
+              "name": "f",
               "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 10
+                  "column": 5
                 },
                 "end": {
                   "line": 18,
-                  "column": 13
+                  "column": 6
                 }
               }
             },
-            "kind": "method",
+            "value": {
+              "type": "NumberLiteral",
+              "value": 5,
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 29
+                },
+                "end": {
+                  "line": 18,
+                  "column": 30
+                }
+              }
+            },
             "accessibility": "public",
             "static": true,
+            "readonly": false,
+            "declare": false,
             "optional": false,
             "computed": false,
-            "value": {
-              "type": "FunctionExpression",
-              "function": {
-                "type": "ScriptFunction",
-                "id": {
-                  "type": "Identifier",
-                  "name": "foo",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 10
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 13
-                    }
-                  }
-                },
-                "generator": false,
-                "async": false,
-                "expression": false,
-                "params": [],
-                "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "A",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 18,
-                          "column": 18
-                        },
-                        "end": {
-                          "line": 18,
-                          "column": 19
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 18
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 21
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 18
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 21
-                    }
-                  }
-                },
-                "body": {
-                  "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "ReturnStatement",
-                      "argument": {
-                        "type": "NullLiteral",
-                        "value": null,
-                        "loc": {
-                          "start": {
-                            "line": 19,
-                            "column": 12
-                          },
-                          "end": {
-                            "line": 19,
-                            "column": 16
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 19,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 19,
-                          "column": 17
-                        }
-                      }
-                    }
-                  ],
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 20
-                    },
-                    "end": {
-                      "line": 20,
-                      "column": 2
-                    }
-                  }
-                },
+            "typeAnnotation": {
+              "type": "ETSFunctionType",
+              "params": [],
+              "returnType": {
+                "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 13
+                    "column": 15
                   },
                   "end": {
-                    "line": 20,
-                    "column": 2
+                    "line": 18,
+                    "column": 18
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 13
+                  "column": 8
                 },
                 "end": {
-                  "line": 20,
-                  "column": 2
+                  "line": 18,
+                  "column": 18
                 }
               }
             },
-            "overloads": [],
+            "definite": false,
             "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
-                "column": 1
+                "column": 5
               },
               "end": {
-                "line": 20,
-                "column": 2
+                "line": 18,
+                "column": 30
               }
             }
           }
@@ -446,9 +460,9 @@
       "column": 1
     },
     "end": {
-      "line": 21,
+      "line": 19,
       "column": 1
     }
   }
 }
-TypeError: Type 'null' is not compatible with the enclosing method's return type 'A' [n_returnNullFromFunction.ets:19:12]
+TypeError: Type 'int' cannot be assigned to type '() => int' [etsObjectToString4.ets:18:29]

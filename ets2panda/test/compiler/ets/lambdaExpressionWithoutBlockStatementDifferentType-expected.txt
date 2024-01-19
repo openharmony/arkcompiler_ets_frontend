@@ -515,4 +515,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [lambdaExpressionWithoutBlockStatementDifferentType.ets:17:28]
+TypeError: Type '() => String' cannot be assigned to type '() => int' [lambdaExpressionWithoutBlockStatementDifferentType.ets:17:28]

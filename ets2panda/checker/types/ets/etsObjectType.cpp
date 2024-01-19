@@ -283,26 +283,40 @@ ArenaMap<util::StringView, const varbinder::LocalVariable *> ETSObjectType::Coll
 
 void ETSObjectType::ToString(std::stringstream &ss) const
 {
-    ss << name_;
+    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+        if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
+            !name_.Empty()) {
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+        }
+        GetFunctionalInterfaceInvokeType()->ToString(ss);
+    } else {
+        ss << name_;
+    }
 
     if (!typeArguments_.empty()) {
-        auto const typeArgumentsSize = typeArguments_.size();
         ss << compiler::Signatures::GENERIC_BEGIN;
-        typeArguments_[0]->ToString(ss);
-        for (std::size_t i = 1U; i < typeArgumentsSize; ++i) {
-            ss << ',';
-            typeArguments_[i]->ToString(ss);
+        for (auto arg = typeArguments_.cbegin(); arg != typeArguments_.cend(); ++arg) {
+            (*arg)->ToString(ss);
+
+            if (next(arg) != typeArguments_.cend()) {
+                ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_COMMA);
+            }
         }
         ss << compiler::Signatures::GENERIC_END;
     }
 
     if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
         !name_.Empty()) {
+        if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
+        }
         if (ContainsNull()) {
-            ss << "|null";
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
+               << lexer::TokenToString(lexer::TokenType::LITERAL_NULL);
         }
         if (ContainsUndefined()) {
-            ss << "|undefined";
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
+               << lexer::TokenToString(lexer::TokenType::KEYW_UNDEFINED);
         }
     }
 }

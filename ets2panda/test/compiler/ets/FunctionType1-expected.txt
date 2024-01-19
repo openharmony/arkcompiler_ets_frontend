@@ -1001,4 +1001,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [FunctionType1.ets:24:12]
+TypeError: Type '(a: int, b: int) => int' cannot be assigned to type '(a: int, b: int) => void' [FunctionType1.ets:24:12]

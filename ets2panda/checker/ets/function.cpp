@@ -162,11 +162,6 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
     return true;
 }
 
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr char const INVALID_CALL_ARGUMENT_1[] = "Call argument at index ";
-static constexpr char const INVALID_CALL_ARGUMENT_2[] = " is not compatible with the signature's type at that index.";
-static constexpr char const INVALID_CALL_ARGUMENT_3[] = " is not compatible with the signature's rest parameter type.";
-// NOLINTEND(modernize-avoid-c-arrays)
 Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                         TypeRelationFlag flags)
 {
@@ -226,10 +221,11 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
         }
 
         auto *const argumentType = argument->Check(this);
+        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->Params()[index]->TsType());
 
         auto const invocationCtx = checker::InvocationContext(
             Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
-            {INVALID_CALL_ARGUMENT_1, index, INVALID_CALL_ARGUMENT_2}, flags);
+            {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
         if (!invocationCtx.IsInvocable()) {
             return false;
         }
@@ -250,10 +246,16 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         auto &argument = arguments[index];
 
         if (!argument->IsSpreadElement()) {
+            auto *const argumentType = argument->Check(this);
+            const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(
+                substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType());
+            const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
             auto const invocationCtx = checker::InvocationContext(
-                Relation(), argument, argument->Check(this),
+                Relation(), argument, argumentType,
                 substitutedSig->RestVar()->TsType()->AsETSArrayType()->ElementType(), argument->Start(),
-                {INVALID_CALL_ARGUMENT_1, index, INVALID_CALL_ARGUMENT_3}, flags);
+                {"Type '", sourceType, "' is not compatible with rest parameter type '", targetType, "' at index ",
+                 index + 1},
+                flags);
             if (!invocationCtx.IsInvocable()) {
                 return false;
             }
@@ -268,10 +270,15 @@ bool ETSChecker::ValidateSignatureRestParams(Signature *substitutedSig, const Ar
         }
 
         auto *const restArgument = argument->AsSpreadElement()->Argument();
+        auto *const argumentType = restArgument->Check(this);
+        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->RestVar()->TsType());
+        const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
 
         auto const invocationCtx = checker::InvocationContext(
-            Relation(), restArgument, restArgument->Check(this), substitutedSig->RestVar()->TsType(), argument->Start(),
-            {INVALID_CALL_ARGUMENT_1, index, INVALID_CALL_ARGUMENT_3}, flags);
+            Relation(), restArgument, argumentType, substitutedSig->RestVar()->TsType(), argument->Start(),
+            {"Type '", sourceType, "' is not compatible with rest parameter type '", targetType, "' at index ",
+             index + 1},
+            flags);
         if (!invocationCtx.IsInvocable()) {
             return false;
         }

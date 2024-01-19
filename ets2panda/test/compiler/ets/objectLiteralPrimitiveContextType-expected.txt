@@ -257,4 +257,4 @@
     }
   }
 }
-TypeError: target type for class composite needs to be an object type [objectLiteralPrimitiveContextType.ets:16:14]
+TypeError: Target type for class composite needs to be an object type, found 'int' [objectLiteralPrimitiveContextType.ets:16:14]
