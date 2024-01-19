@@ -1250,8 +1250,10 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
 {
     auto searchFlag = GetInitialSearchFlags(memberExpr);
     searchFlag |= PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES;
-
-    if (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
+    if (targetRef != nullptr &&
+        (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
+         (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) &&
+          targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
         searchFlag &= ~(PropertySearchFlags::SEARCH_INSTANCE);
     } else if (memberExpr->Object()->IsThisExpression() ||
                (memberExpr->Object()->IsIdentifier() && memberExpr->ObjType()->GetDeclNode() != nullptr &&
