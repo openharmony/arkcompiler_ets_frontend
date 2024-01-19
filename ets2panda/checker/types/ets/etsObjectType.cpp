@@ -405,16 +405,18 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
     IdenticalUptoNullability(relation, other);
 }
 
-bool ETSObjectType::CheckIdenticalFlags(ETSObjectFlags target) const
+bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
 {
-    auto cleanedTargetFlags = static_cast<ETSObjectFlags>(target & (~ETSObjectFlags::COMPLETELY_RESOLVED));
-    cleanedTargetFlags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
-    cleanedTargetFlags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
-    cleanedTargetFlags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
-    auto cleanedSelfFlags = static_cast<ETSObjectFlags>(ObjectFlags() & (~ETSObjectFlags::COMPLETELY_RESOLVED));
-    cleanedSelfFlags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
-    cleanedSelfFlags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
-    cleanedSelfFlags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+    constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::COMPLETELY_RESOLVED | ETSObjectFlags::INCOMPLETE_INSTANTIATION |
+                                     ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
+                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+
+    auto cleanedTargetFlags = target;
+    cleanedTargetFlags &= ~FLAGS_TO_REMOVE;
+
+    auto cleanedSelfFlags = ObjectFlags();
+    cleanedSelfFlags &= ~FLAGS_TO_REMOVE;
+
     return cleanedSelfFlags == cleanedTargetFlags;
 }
 
