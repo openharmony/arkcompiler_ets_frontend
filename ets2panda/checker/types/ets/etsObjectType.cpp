@@ -780,7 +780,8 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
                                                                const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const copiedPropType = checker->GetTypeOfVariable(prop)->Substitute(relation, substitution);
+    auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
+    auto *const copiedPropType = varType->Substitute(relation, substitution);
     auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
     copiedPropType->SetVariable(copiedProp);
     copiedProp->SetTsType(copiedPropType);
