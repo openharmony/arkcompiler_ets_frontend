@@ -301,8 +301,12 @@ int32_t PandaGen::AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, std::pair<ut
     auto *buf = NewLiteralBuffer();
     buf->Add(Allocator()->New<ir::NumberLiteral>(lexicalVars.size()));
     for (auto &iter : lexicalVars) {
-        buf->Add(Allocator()->New<ir::StringLiteral>(iter.second.first));
-        buf->Add(Allocator()->New<ir::NumberLiteral>(iter.first));
+        // The slot is set to UINT32_MAX when the variable is a patchvar while its value is not stored in the slot
+        // The patchvar info should not be added to the DebugInfo since its value cannot be found in slot UINT32_MAX
+        if (iter.first != UINT32_MAX) {
+            buf->Add(Allocator()->New<ir::StringLiteral>(iter.second.first));
+            buf->Add(Allocator()->New<ir::NumberLiteral>(iter.first));
+        }
     }
     return AddLiteralBuffer(buf);
 }
