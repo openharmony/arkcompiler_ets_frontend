@@ -70,6 +70,15 @@ public:
         return right_;
     }
 
+    void SetRight(Expression *const expr) noexcept
+    {
+        right_ = expr;
+
+        if (right_ != nullptr) {
+            right_->SetParent(this);
+        }
+    }
+
     [[nodiscard]] const Expression *Result() const noexcept
     {
         return result_;

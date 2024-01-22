@@ -15,6 +15,7 @@
 
 #include "ETSBinder.h"
 
+#include "ir/expressions/blockExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/typeofExpression.h"
@@ -164,6 +165,11 @@ void ETSBinder::ResolveReferenceForScope(ir::AstNode *const node, Scope *const s
             break;
         }
         */
+        case ir::AstNodeType::BLOCK_EXPRESSION: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, node->AsBlockExpression()->Scope());
+            ResolveReferences(node);
+            break;
+        }
         default: {
             ResolveReferencesForScope(node, scope);
             break;

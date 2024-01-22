@@ -75,7 +75,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
 
     newInstanceExpression->SetTsType(nullptr);
     InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
-    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, scope);
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, NearestScope(blockExpression));
     blockExpression->Check(checker);
 
     return blockExpression;
@@ -136,7 +136,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
     }
 
     if (returnExpression != nullptr) {
-        return CreateNewMultiDimArrayInstanceExpression(checker, newInstanceExpression, returnExpression, scope);
+        return CreateNewMultiDimArrayInstanceExpression(checker, newInstanceExpression, returnExpression);
     }
 
     return newInstanceExpression;
@@ -145,14 +145,14 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
 //  NOTE: Just to reduce the size of 'ProcessNewMultiDimArrayInstanceExpression' method
 ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
     checker::ETSChecker *checker, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
-    ir::BlockExpression *blockExpression, varbinder::Scope *scope) const
+    ir::BlockExpression *blockExpression) const
 {
     blockExpression->SetParent(newInstanceExpression->Parent());
     newInstanceExpression->SetTsType(nullptr);
     blockExpression->AddStatement(checker->AllocNode<ir::ExpressionStatement>(newInstanceExpression));
 
     InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
-    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, scope);
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, NearestScope(blockExpression));
     blockExpression->Check(checker);
 
     return blockExpression;

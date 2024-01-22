@@ -759,8 +759,10 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
 
 void ETSCompiler::Compile(const ir::BlockExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::LocalRegScope lrs(etsg, expr->Scope());
+
+    etsg->CompileStatements(expr->Statements());
 }
 
 bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const
@@ -1168,28 +1170,18 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
     compiler::RegScope rs {etsg};
-    checker::ETSObjectType const *objType = expr->TsType()->AsETSObjectType();
     compiler::VReg objReg = etsg->AllocReg();
-    if (expr->TsType()->IsETSDynamicType()) {
-        auto *signatureInfo = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
-        auto *createObjSig = etsg->Allocator()->New<checker::Signature>(
-            signatureInfo, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
-        compiler::VReg dummyReg = compiler::VReg::RegStart();
-        etsg->CallDynamic(expr, dummyReg, dummyReg, createObjSig,
-                          ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
-    } else {
-        checker::Signature *emptySig = nullptr;
-        for (checker::Signature *sig : objType->ConstructSignatures()) {
-            if (sig->Params().empty()) {
-                emptySig = sig;
-                break;
-            }
-        }
-        if (emptySig == nullptr) {  // Would have already thrown in the checker.
-            UNREACHABLE();
-        }
-        etsg->InitObject(expr, emptySig, ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
-    }
+
+    // NOTE: object expressions of dynamic type are not handled in objectLiteralLowering phase
+    ASSERT(expr->TsType()->IsETSDynamicType());
+
+    auto *signatureInfo = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
+    auto *createObjSig = etsg->Allocator()->New<checker::Signature>(
+        signatureInfo, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
+    compiler::VReg dummyReg = compiler::VReg::RegStart();
+    etsg->CallDynamic(expr, dummyReg, dummyReg, createObjSig,
+                      ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
+
     etsg->SetAccumulatorType(expr->TsType());
     etsg->StoreAccumulator(expr, objReg);
 

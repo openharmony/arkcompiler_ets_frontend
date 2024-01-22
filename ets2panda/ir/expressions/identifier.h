@@ -170,21 +170,6 @@ public:
         flags_ |= IdentifierFlags::IGNORE_BOX;
     }
 
-    [[nodiscard]] varbinder::Variable *Variable() const noexcept
-    {
-        return variable_;
-    }
-
-    void SetVariable(varbinder::Variable *const variable) noexcept
-    {
-        variable_ = variable;
-    }
-
-    [[nodiscard]] varbinder::Variable *Variable() noexcept
-    {
-        return variable_;
-    }
-
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);
@@ -217,7 +202,6 @@ private:
     util::StringView name_;
     IdentifierFlags flags_ {IdentifierFlags::NONE};
     ArenaVector<Decorator *> decorators_;
-    varbinder::Variable *variable_ {};
 };
 }  // namespace ark::es2panda::ir
 

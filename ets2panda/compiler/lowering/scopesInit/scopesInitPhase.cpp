@@ -696,6 +696,13 @@ void InitScopesPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *in
     decl->BindNode(init);
 }
 
+void InitScopesPhaseETS::VisitBlockExpression(ir::BlockExpression *blockExpr)
+{
+    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    BindScopeNode(GetScope(), blockExpr);
+    Iterate(blockExpr);
+}
+
 void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock)
 {
     const auto func = staticBlock->Function();
