@@ -14,7 +14,7 @@
             "isSetAccessor": false,
             "key": {
               "type": "Identifier",
-              "name": "func",
+              "name": "set1",
               "loc": {
                 "start": {
                   "line": 18,
@@ -26,72 +26,17 @@
                 }
               }
             },
-            "params": [
-              {
-                "type": "Identifier",
-                "name": "a",
-                "typeAnnotation": {
-                  "type": "TSAnyKeyword",
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 13
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 16
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 10
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 11
-                  }
-                }
-              },
-              {
-                "type": "Identifier",
-                "name": "b",
-                "typeAnnotation": {
-                  "type": "TSAnyKeyword",
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 21
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 24
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 18
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 19
-                  }
-                }
-              }
-            ],
+            "params": [],
             "typeAnnotation": {
-              "type": "TSNumberKeyword",
+              "type": "TSVoidKeyword",
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 27
+                  "column": 12
                 },
                 "end": {
                   "line": 18,
-                  "column": 33
+                  "column": 16
                 }
               }
             },
@@ -101,8 +46,8 @@
                 "column": 5
               },
               "end": {
-                "line": 19,
-                "column": 7
+                "line": 18,
+                "column": 17
               }
             }
           },
@@ -114,7 +59,7 @@
             "isSetAccessor": false,
             "key": {
               "type": "Identifier",
-              "name": "is",
+              "name": "set2",
               "loc": {
                 "start": {
                   "line": 19,
@@ -122,21 +67,65 @@
                 },
                 "end": {
                   "line": 19,
-                  "column": 7
+                  "column": 9
                 }
               }
             },
             "params": [],
-            "typeAnnotation": {
-              "type": "TSBooleanKeyword",
+            "typeParameters": {
+              "type": "TSTypeParameterDeclaration",
+              "params": [
+                {
+                  "type": "TSTypeParameter",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "T",
+                    "loc": {
+                      "start": {
+                        "line": 19,
+                        "column": 10
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 11
+                      }
+                    }
+                  },
+                  "in": false,
+                  "out": false,
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 10
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 12
+                    }
+                  }
+                }
+              ],
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 11
+                  "column": 9
                 },
                 "end": {
                   "line": 19,
-                  "column": 18
+                  "column": 12
+                }
+              }
+            },
+            "typeAnnotation": {
+              "type": "TSVoidKeyword",
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 15
+                },
+                "end": {
+                  "line": 19,
+                  "column": 19
                 }
               }
             },
@@ -147,7 +136,7 @@
               },
               "end": {
                 "line": 19,
-                "column": 19
+                "column": 20
               }
             }
           }
@@ -155,17 +144,17 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 13
+            "column": 15
           },
           "end": {
             "line": 20,
-            "column": 2
+            "column": 4
           }
         }
       },
       "id": {
         "type": "Identifier",
-        "name": "I",
+        "name": "Obj",
         "loc": {
           "start": {
             "line": 17,
@@ -173,7 +162,7 @@
           },
           "end": {
             "line": 17,
-            "column": 12
+            "column": 14
           }
         }
       },
@@ -185,7 +174,7 @@
         },
         "end": {
           "line": 20,
-          "column": 2
+          "column": 4
         }
       }
     }
@@ -197,7 +186,7 @@
     },
     "end": {
       "line": 20,
-      "column": 2
+      "column": 4
     }
   }
 }

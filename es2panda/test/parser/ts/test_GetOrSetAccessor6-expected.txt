@@ -11,98 +11,58 @@
             "computed": false,
             "optional": false,
             "isGetAccessor": false,
-            "isSetAccessor": false,
+            "isSetAccessor": true,
             "key": {
               "type": "Identifier",
-              "name": "func",
+              "name": "set",
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 5
+                  "column": 9
                 },
                 "end": {
                   "line": 18,
-                  "column": 9
+                  "column": 12
                 }
               }
             },
             "params": [
               {
                 "type": "Identifier",
-                "name": "a",
+                "name": "p",
                 "typeAnnotation": {
-                  "type": "TSAnyKeyword",
+                  "type": "TSStringKeyword",
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 13
+                      "column": 15
                     },
                     "end": {
-                      "line": 18,
-                      "column": 16
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 10
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 11
-                  }
-                }
-              },
-              {
-                "type": "Identifier",
-                "name": "b",
-                "typeAnnotation": {
-                  "type": "TSAnyKeyword",
-                  "loc": {
-                    "start": {
                       "line": 18,
                       "column": 21
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 24
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 18
+                    "column": 13
                   },
                   "end": {
                     "line": 18,
-                    "column": 19
+                    "column": 14
                   }
                 }
               }
             ],
-            "typeAnnotation": {
-              "type": "TSNumberKeyword",
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 27
-                },
-                "end": {
-                  "line": 18,
-                  "column": 33
-                }
-              }
-            },
             "loc": {
               "start": {
                 "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 19,
-                "column": 7
+                "line": 18,
+                "column": 23
               }
             }
           },
@@ -110,33 +70,33 @@
             "type": "TSMethodSignature",
             "computed": false,
             "optional": false,
-            "isGetAccessor": false,
+            "isGetAccessor": true,
             "isSetAccessor": false,
             "key": {
               "type": "Identifier",
-              "name": "is",
+              "name": "get",
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 5
+                  "column": 9
                 },
                 "end": {
                   "line": 19,
-                  "column": 7
+                  "column": 12
                 }
               }
             },
             "params": [],
             "typeAnnotation": {
-              "type": "TSBooleanKeyword",
+              "type": "TSNumberKeyword",
               "loc": {
                 "start": {
                   "line": 19,
-                  "column": 11
+                  "column": 15
                 },
                 "end": {
                   "line": 19,
-                  "column": 18
+                  "column": 21
                 }
               }
             },
@@ -147,7 +107,7 @@
               },
               "end": {
                 "line": 19,
-                "column": 19
+                "column": 22
               }
             }
           }
@@ -155,7 +115,7 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 13
+            "column": 14
           },
           "end": {
             "line": 20,
@@ -165,7 +125,7 @@
       },
       "id": {
         "type": "Identifier",
-        "name": "I",
+        "name": "I1",
         "loc": {
           "start": {
             "line": 17,
@@ -173,7 +133,7 @@
           },
           "end": {
             "line": 17,
-            "column": 12
+            "column": 13
           }
         }
       },

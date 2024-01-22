@@ -265,6 +265,7 @@ private:
     ir::MappedOption ParseMappedOption(lexer::TokenType tokenType);
     ir::TSMappedType *ParseTsMappedType();
     ir::TSTypePredicate *ParseTsTypePredicate();
+    void ParseTsTypeLiteralOrInterfaceKeyModifiers(bool *isGetAccessor, bool *isSetAccessor);
     ir::Expression *ParseTsTypeLiteralOrInterfaceKey(bool *computed, bool *signature, bool *isIndexSignature);
     void ValidateIndexSignatureParameterType(ir::Expression *typeAnnotation);
     ir::Expression *ParseTsConditionalType(ir::Expression *checkType, bool restrictExtends);

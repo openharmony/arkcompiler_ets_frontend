@@ -10,6 +10,8 @@
             "type": "TSMethodSignature",
             "computed": false,
             "optional": false,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
             "key": {
               "type": "Identifier",
               "name": "then",
@@ -252,6 +254,8 @@
             "type": "TSMethodSignature",
             "computed": false,
             "optional": false,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
             "key": {
               "type": "Identifier",
               "name": "then",

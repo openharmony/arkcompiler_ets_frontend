@@ -1,0 +1,1 @@
+SyntaxError: Keyword must not contain escaped characters [test_GetOrSetAccessor10.ts:18:5]
