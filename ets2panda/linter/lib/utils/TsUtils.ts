@@ -1002,7 +1002,8 @@ export class TsUtils {
     [FaultID.FunctionApplyCall, TsUtils.getFunctionApplyCallHighlightRange],
     [FaultID.DeclWithDuplicateName, TsUtils.getDeclWithDuplicateNameHighlightRange],
     [FaultID.ObjectLiteralNoContextType, TsUtils.getObjectLiteralNoContextTypeHighlightRange],
-    [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange]
+    [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange],
+    [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange]
   ]);
 
   static getVarDeclarationHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
@@ -1105,6 +1106,10 @@ export class TsUtils {
 
   static getClassExpressionHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
     return this.getKeywordHighlightRange(nodeOrComment, 'class');
+  }
+
+  static getMultipleStaticBlocksHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, 'static');
   }
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {

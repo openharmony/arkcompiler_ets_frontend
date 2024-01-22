@@ -80,7 +80,6 @@ export class TypeScriptLinter {
 
   currentErrorLine: number;
   currentWarningLine: number;
-  staticBlocks: Set<string>;
   walkedComments: Set<number>;
   libraryTypeCallDiagnosticChecker: LibraryTypeCallDiagnosticChecker;
 
@@ -126,7 +125,6 @@ export class TypeScriptLinter {
     this.tsUtils = new TsUtils(this.tsTypeChecker, TypeScriptLinter.testMode, TypeScriptLinter.advancedClassChecks);
     this.currentErrorLine = 0;
     this.currentWarningLine = 0;
-    this.staticBlocks = new Set<string>();
     this.walkedComments = new Set<number>();
     this.libraryTypeCallDiagnosticChecker = new LibraryTypeCallDiagnosticChecker(
       TypeScriptLinter.filteredDiagnosticMessages
@@ -204,6 +202,7 @@ export class TypeScriptLinter {
       // In relax mode skip migratable
       return;
     }
+
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (TypeScriptLinter.ideMode) {
@@ -1223,7 +1222,6 @@ export class TypeScriptLinter {
     this.cancellationToken?.throwIfCancellationRequested();
 
     const tsClassDecl = node as ts.ClassDeclaration;
-    this.staticBlocks.clear();
     if (tsClassDecl.name) {
       this.countDeclarationsWithDuplicateName(tsClassDecl.name, tsClassDecl);
     }
@@ -1244,6 +1242,17 @@ export class TypeScriptLinter {
           continue;
         }
         visitHClause(hClause);
+      }
+    }
+
+    let hasStaticBlock = false;
+    for (const element of tsClassDecl.members) {
+      if (ts.isClassStaticBlockDeclaration(element)) {
+        if (hasStaticBlock) {
+          this.incrementCounters(element, FaultID.MultipleStaticBlocks);
+        } else {
+          hasStaticBlock = true;
+        }
       }
     }
   }
@@ -1387,18 +1396,10 @@ export class TypeScriptLinter {
 
   private handleClassStaticBlockDeclaration(node: ts.Node): void {
     const classStaticBlockDecl = node as ts.ClassStaticBlockDeclaration;
-    const parent = classStaticBlockDecl.parent;
-    if (!ts.isClassDeclaration(parent)) {
+    if (!ts.isClassDeclaration(classStaticBlockDecl.parent)) {
       return;
     }
     this.reportThisKeywordsInScope(classStaticBlockDecl.body);
-    // May be undefined in `export default class { ... }`.
-    const className = parent.name?.text ?? '';
-    if (this.staticBlocks.has(className)) {
-      this.incrementCounters(classStaticBlockDecl, FaultID.MultipleStaticBlocks);
-    } else {
-      this.staticBlocks.add(className);
-    }
   }
 
   private handleIdentifier(node: ts.Node): void {
