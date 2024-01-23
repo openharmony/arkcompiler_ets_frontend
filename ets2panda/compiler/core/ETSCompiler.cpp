@@ -1189,8 +1189,11 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
     const auto argumentUnboxingFlags = static_cast<ir::BoxingUnboxingFlags>(expr->Argument()->GetBoxingUnboxingFlags() &
                                                                             ir::BoxingUnboxingFlags::UNBOXING_FLAG);
 
+    // workaround so argument_ does not get auto unboxed by lref.GetValue()
+    expr->Argument()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
+    lref.GetValue();
+
     if (expr->IsPrefix()) {
-        lref.GetValue();
         expr->Argument()->SetBoxingUnboxingFlags(argumentUnboxingFlags);
         etsg->ApplyConversion(expr->Argument(), nullptr);
 
@@ -1208,10 +1211,6 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
         lref.SetValue();
         return;
     }
-
-    // workaround so argument_ does not get auto unboxed by lref.GetValue()
-    expr->Argument()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
-    lref.GetValue();
 
     compiler::RegScope rs(etsg);
     compiler::VReg originalValueReg = etsg->AllocReg();

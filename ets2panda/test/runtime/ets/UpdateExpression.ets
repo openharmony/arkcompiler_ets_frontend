@@ -92,4 +92,10 @@ function main(): void {
     assert ++s as int == -32768;
     assert --s as int == 32767;
   }
+
+  {
+    let b: Int[] = [1, 2]
+    assert ++b[1] == 3
+    assert --b[1] == 2
+  }
 }
