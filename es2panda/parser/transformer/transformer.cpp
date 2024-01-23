@@ -763,7 +763,7 @@ ir::Expression *Transformer::CopyClassKeyExpression(ir::Expression *orginalExpr)
         }
         case ir::AstNodeType::PRIVATE_IDENTIFIER: {
             ir::PrivateIdentifier *ident = orginalExpr->AsPrivateIdentifier();
-            newExpr = AllocNode<ir::Identifier>(ident->Name());
+            newExpr = AllocNode<ir::PrivateIdentifier>(ident->Name());
             break;
         }
         case ir::AstNodeType::TS_PRIVATE_IDENTIFIER: {

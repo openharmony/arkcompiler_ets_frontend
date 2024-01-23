@@ -14,5 +14,4 @@
  */
 
 
-type WithOptAndRest1 = [number, number?, ...string[]];
-type WithOptAndRest2 = [number, number?, string[]];
+const isNotNull = <T,>(value: T | null): value is T => value !== null;

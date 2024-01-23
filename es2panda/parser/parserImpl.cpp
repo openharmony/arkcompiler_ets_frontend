@@ -800,6 +800,8 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotation(TypeAnnotationParsingOptions *
     while (true) {
         ir::Expression *element = ParseTsTypeAnnotationElement(typeAnnotation, options);
 
+        *options &= ~TypeAnnotationParsingOptions::ALLOW_CONST;
+
         *options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
 
         if (!element) {
@@ -915,7 +917,9 @@ void ParserImpl::HandleRestType(ir::AstNodeType elementType, bool *hasRestType) 
     if (elementType ==  ir::AstNodeType::TS_ARRAY_TYPE && *hasRestType) {
         ThrowSyntaxError("A rest element cannot follow another rest element");
     }
-    *hasRestType = true;
+    if (elementType ==  ir::AstNodeType::TS_ARRAY_TYPE) {
+        *hasRestType = true;
+    }
 }
 
 ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional, bool *hasRestType)
@@ -1091,12 +1095,14 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(TypeAnnotationParsingOpt
             return ParseTsImportType(startLoc, true);
         }
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+            lexer_->GetToken().Type() != lexer::TokenType::KEYW_THIS) {
             ThrowSyntaxError("Identifier expected.");
         }
     }
 
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+           lexer_->GetToken().Type() == lexer::TokenType::KEYW_THIS ||
            lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
 
     ir::Expression *typeName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
@@ -1114,7 +1120,8 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(TypeAnnotationParsingOpt
     }
 
     ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+    if (!(lexer_->GetToken().Flags() & lexer::TokenFlags::NEW_LINE) &&
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         typeParamInst = ParseTsTypeParameterInstantiation(options & TypeAnnotationParsingOptions::THROW_ERROR);
         if (parseQuery) {
             typeName = AllocNode<ir::TypeArgumentsExpression>(typeName, typeParamInst);
@@ -2097,7 +2104,8 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             case lexer::TokenType::KEYW_ABSTRACT: {
                 actualStatus = ir::ModifierFlags::ABSTRACT;
                 nextStatus = ir::ModifierFlags::ACCESS | ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC |
-                             ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::OVERRIDE;
+                             ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::OVERRIDE |
+                             ir::ModifierFlags::ACCESSOR;
                 break;
             }
             case lexer::TokenType::KEYW_DECLARE: {

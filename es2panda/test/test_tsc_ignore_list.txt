@@ -49,3 +49,4 @@ es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitEr
 es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.5.ts
 es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.6.ts
 es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.12.ts
+es2panda/test/Typescript/tests/cases/conformance/decorators/class/property/decoratorOnClassProperty13.ts

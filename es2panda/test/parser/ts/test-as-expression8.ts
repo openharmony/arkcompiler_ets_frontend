@@ -14,5 +14,5 @@
  */
 
 
-type WithOptAndRest1 = [number, number?, ...string[]];
-type WithOptAndRest2 = [number, number?, string[]];
+const left = {} as any
+const right = {} as any

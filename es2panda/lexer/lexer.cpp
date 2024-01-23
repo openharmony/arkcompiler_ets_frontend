@@ -112,8 +112,10 @@ void Lexer::BackwardToken(TokenType type, size_t offset)
 
 void Lexer::ForwardToken(TokenType type, size_t offset)
 {
+    SetTokenStart();
     pos_.token.type_ = type;
     pos_.iterator.Forward(offset);
+    SetTokenEnd();
     SkipWhiteSpaces();
 }
 

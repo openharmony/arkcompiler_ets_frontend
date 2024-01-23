@@ -14,5 +14,4 @@
  */
 
 
-type STRINGS = string[]
-type WithMutipleRest4 = [...first: STRINGS, ...second: string[]];
+type a<S extends number[]> = [...S, ...string[]];

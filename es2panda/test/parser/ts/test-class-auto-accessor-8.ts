@@ -14,5 +14,9 @@
  */
 
 
-type WithOptAndRest1 = [number, number?, ...string[]];
-type WithOptAndRest2 = [number, number?, string[]];
+class C1 {
+    accessor #b = 1;
+    constructor() {
+        this.#b = 4;
+    }
+}
