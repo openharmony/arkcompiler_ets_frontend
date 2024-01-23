@@ -153,6 +153,9 @@ public:
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
     void ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos);
+    void CollectImplementedMethodsFromInterfaces(ETSObjectType *classType,
+                                                 std::vector<Signature *> *implementedSignatures,
+                                                 const ArenaVector<ETSFunctionType *> &abstractsToBeImplemented);
     void AddImplementedSignature(std::vector<Signature *> *implementedSignatures, varbinder::LocalVariable *function,
                                  ETSFunctionType *it);
     void CheckInnerClassMembers(const ETSObjectType *classType);

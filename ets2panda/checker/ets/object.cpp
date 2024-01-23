@@ -668,6 +668,35 @@ ArenaVector<ETSFunctionType *> &ETSChecker::GetAbstractsForClass(ETSObjectType *
     return cachedComputedAbstracts_.insert({classType, {merged, abstractInheritanceTarget}}).first->second.first;
 }
 
+/// Traverse the interface inheritance tree and collects implemented methods
+void ETSChecker::CollectImplementedMethodsFromInterfaces(ETSObjectType *classType,
+                                                         std::vector<Signature *> *implementedSignatures,
+                                                         const ArenaVector<ETSFunctionType *> &abstractsToBeImplemented)
+{
+    std::vector<ETSObjectType *> collectedInterfaces;
+
+    for (auto &classInterface : classType->Interfaces()) {
+        collectedInterfaces.emplace_back(classInterface);
+    }
+
+    size_t index = 0;
+
+    while (index < collectedInterfaces.size()) {
+        for (auto &it : abstractsToBeImplemented) {
+            for (const auto &prop : collectedInterfaces[index]->Methods()) {
+                GetTypeOfVariable(prop);
+                AddImplementedSignature(implementedSignatures, prop, it);
+            }
+        }
+
+        for (auto &currentInterfaceChild : collectedInterfaces[index]->Interfaces()) {
+            collectedInterfaces.emplace_back(currentInterfaceChild);
+        }
+
+        index++;
+    }
+}
+
 void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos)
 {
     if (classType->HasObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS)) {
@@ -685,6 +714,9 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
 
     auto &abstractsToBeImplemented = GetAbstractsForClass(classType);
     std::vector<Signature *> implementedSignatures;
+
+    // Since interfaces can define function bodies we have to collect the implemented ones first
+    CollectImplementedMethodsFromInterfaces(classType, &implementedSignatures, abstractsToBeImplemented);
 
     auto *superIter = classType;
     do {
