@@ -473,7 +473,7 @@ void PandaGen::StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand
     StoreObjByName(node, obj, std::get<util::StringView>(prop));
 }
 
-void PandaGen::DefineClassField(const ir::AstNode *node, VReg obj, const Operand &prop)
+void PandaGen::DefineOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop)
 {
     if (std::holds_alternative<VReg>(prop)) {
         DefineFieldByValue(node, obj, std::get<VReg>(prop));

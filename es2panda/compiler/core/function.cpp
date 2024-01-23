@@ -164,7 +164,7 @@ static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisR
     if (prop->IsPrivate()) {
         pg->DefineClassPrivateField(prop, result.lexLevel, result.result.slot, thisReg);
     } else {
-        pg->DefineClassField(prop, thisReg, op);
+        pg->DefineOwnProperty(prop, thisReg, op);
     }
 }
 
