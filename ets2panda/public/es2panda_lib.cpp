@@ -394,6 +394,9 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     mem::MemConfig::Finalize();
 
     auto *cfg = reinterpret_cast<ConfigImpl *>(config);
+    if (cfg == nullptr) {
+        return;
+    }
 
     delete cfg->options;
     delete cfg;

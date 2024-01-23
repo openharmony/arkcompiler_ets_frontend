@@ -456,6 +456,7 @@ set(ES2PANDA_LIB_SRC
   util/path.cpp
   util/pathHandler.cpp
   util/ustring.cpp
+  test/utils/panda_executable_path_getter.cpp
 )
 
 panda_add_library(es2panda-lib ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_LIB_SRC})
