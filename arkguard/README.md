@@ -182,10 +182,14 @@ By default, DevEco Studio will keep and update the namecache file in the tempora
 incremental compilation.  
 Cache directory: build/cache/{...}/release/obfuscation
 
+`-remove-comments`
+
+Remove all comments including single line, multi line and JsDoc comments, in a project except:
+* Those names of JsDoc comments above class, function, struct, enum ... in declaration files are in `-keep-comments`.
+**Note**: `-keep-comments` doesn't work for comments in generated source files, which will be deleted.
 ### Keep options
 
-Keep options are useful only when you use `enable-property-obfuscation` or `enable-toplevel-obfuscation`.
-
+Keep options are useful only when you use `enable-property-obfuscation`, `enable-toplevel-obfuscation` and `-keep-comments`.
 `-keep-property-name` [,identifiers,...]
 
 Specifies property names that you want to keep. For example,
@@ -196,6 +200,12 @@ firstName
 lastName
 ```
 
+`-keep-comments`
+You can have the following configs to keep certain JsDoc comments above a class, for example, class human:
+```
+-keep-comments
+Human
+```
 **What property names should be kept?**
 
 For safety, we would suggest keeping all property names that are not accessed through dot syntax.

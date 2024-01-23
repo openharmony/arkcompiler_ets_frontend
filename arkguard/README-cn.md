@@ -165,10 +165,14 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 默认情况下，DevEco Studio会在临时的缓存目录中保存缓存文件，并且在增量编译场景中自动应用该缓存文件。  
 缓存目录：build/cache/{...}/release/obfuscation
 
+`-remove-comments`
+
+删除文件中的所有注释，包括单行、多行，及JsDoc注释。以下场景除外：
+声明文件中，在`-keep-comments`中配置的类、方法、struct、枚举等名称上方的JsDoc注释。
+**注意**：编译生成的源码文件中的注释默认会被全部删除，不支持配置保留。
 ### 保留选项
 
-保留选项只有在使用`enable-property-obfuscation`或`enable-toplevel-obfuscation`选项时发挥作用。
-
+保留选项只有在使用`enable-property-obfuscation`或`enable-toplevel-obfuscation`以及`-remove-comments`选项时发挥作用。
 `-keep-property-name` [,identifiers,...]
 
 指定你想保留的属性名。比如下面的例子:
@@ -179,6 +183,12 @@ firstName
 lastName
 ```
 
+`-keep-comments`
+保留JsDoc注释的方法与上述属性名的保留方法类似。比如保留某个声明文件中类名为Human的类上方的JsDoc注释：
+```
+-keep-comments
+Human
+```
 **哪些属性名应该被保留?**
 
 为了保障混淆的正确性，我们建议你保留所有不通过点语法访问的属性。
