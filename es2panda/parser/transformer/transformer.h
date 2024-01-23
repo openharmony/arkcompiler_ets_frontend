@@ -164,6 +164,10 @@ private:
                                                         bool isStatic);
     ir::CallExpression *CreateGetOwnPropertyDescriptorCall(ir::Expression *target, ir::Expression *key);
     ir::CallExpression *CreateDefinePropertyCall(ir::Expression *target, ir::Expression *key, ir::Expression *value);
+    ir::ClassStaticBlock *CreateClassStaticBlock(ir::ClassDeclaration *node, bool hasPrivateIdentifer);
+    bool HasPrivateIdentifierInDecorators(const ir::ClassDefinition *classDefinition);
+    void FindPrivateIdentifierInDecorator(const ir::AstNode *parent, bool *hasprivateIdentifier);
+    void FindPrivateIdentifierInChildNode(const ir::AstNode *childNode, bool *hasprivateIdentifier);
     std::vector<ir::AstNode *> CreateVariableDeclarationForDecorators(ir::AstNode *node);
     std::vector<ir::AstNode *> CreateParamDecorators(util::StringView className,
                                                      ir::MethodDefinition *node,
@@ -228,8 +232,9 @@ private:
     void CheckTransformedAstNodes(const ir::AstNode *parent, bool *passed) const;
     void CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode *childNode, bool *passed) const;
 
-    void ResetParentScopeForAstNodes(const ir::AstNode *parent) const;
-    void ResetParentScopeForAstNode(ir::AstNode *childNode) const;
+    void ResetParentScope(ir::UpdateNodes res, binder::Scope *parentScope) const;
+    void ResetParentScopeForAstNodes(const ir::AstNode *parent, binder::Scope *parentScope) const;
+    void ResetParentScopeForAstNode(ir::AstNode *childNode, binder::Scope *parentScope) const;
 
     template <typename T>
     ir::UpdateNodes VisitExportClassDeclaration(T *node);

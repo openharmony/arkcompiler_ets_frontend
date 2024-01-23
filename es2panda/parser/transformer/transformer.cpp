@@ -21,6 +21,7 @@
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
+#include "ir/base/classStaticBlock.h"
 #include "ir/base/decorator.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
@@ -309,6 +310,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             node = VisitTSNodes(node)->AsClassDeclaration();
             auto res = VisitClassDeclaration(node);
             SetOriginalNode(res, childNode);
+            ResetParentScope(res, Scope());
             return res;
         }
         case ir::AstNodeType::CLASS_EXPRESSION: {
@@ -675,7 +677,7 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
         auto assignment = AllocNode<ir::AssignmentExpression>(left, it->Value(),
                                                               lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
-        ResetParentScopeForAstNode(assignment);
+        ResetParentScopeForAstNode(assignment, Scope());
         blockStat->AddStatementAtPos(insertPos, AllocNode<ir::ExpressionStatement>(assignment));
         insertPos++;
     }
@@ -1051,9 +1053,14 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
     }
 
     auto classDefinitionBody = node->Definition()->Body();
+    bool hasPrivateIdentifier = HasPrivateIdentifierInDecorators(node->Definition());
+    ir::ClassStaticBlock *staticBlock = CreateClassStaticBlock(node, hasPrivateIdentifier);
+
     // decorators of static members, should be called after instance members
     std::vector<ir::AstNode *> staticMemberDecorators;
     for (auto *it : classDefinitionBody) {
+        auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(),
+            hasPrivateIdentifier ? staticBlock->GetBody()->Scope() : Scope());
         if (it->IsMethodDefinition()) {
             auto *definition = it->AsMethodDefinition();
             bool isStatic = definition->IsStatic();
@@ -1062,7 +1069,7 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
             if (isStatic) {
                 staticMemberDecorators.insert(staticMemberDecorators.end(),
                     variableDeclarations.begin(), variableDeclarations.end());
-            } else {
+            } else if (!hasPrivateIdentifier) {
                 res.insert(res.end(), variableDeclarations.begin(), variableDeclarations.end());
             }
 
@@ -1070,18 +1077,35 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
             if (isStatic) {
                 staticMemberDecorators.insert(staticMemberDecorators.end(),
                     paramDecorators.begin(), paramDecorators.end());
-            } else {
+            } else if (!hasPrivateIdentifier) {
                 res.insert(res.end(), paramDecorators.begin(), paramDecorators.end());
             }
+
             if (!definition->HasDecorators()) {
                 continue;
             }
+
             auto methodDecorators = CreateMethodDecorators(name, definition, variableDeclarations, isStatic);
             if (isStatic) {
                 staticMemberDecorators.insert(staticMemberDecorators.end(),
                     methodDecorators.begin(), methodDecorators.end());
-            } else {
+            } else if (!hasPrivateIdentifier) {
                 res.insert(res.end(), methodDecorators.begin(), methodDecorators.end());
+            }
+
+            if (hasPrivateIdentifier && !isStatic) {
+                for (auto *it : variableDeclarations) {
+                    staticBlock->GetBody()->AddStatementAtPos(
+                        staticBlock->GetBody()->Statements().size(), it->AsStatement());
+                }
+                for (auto *it : paramDecorators) {
+                    staticBlock->GetBody()->AddStatementAtPos(
+                        staticBlock->GetBody()->Statements().size(), it->AsStatement());
+                }
+                for (auto *it : methodDecorators) {
+                    staticBlock->GetBody()->AddStatementAtPos(
+                        staticBlock->GetBody()->Statements().size(), it->AsStatement());
+                }
             }
         } else if (it->IsClassProperty()) {
             auto *classProperty = it->AsClassProperty();
@@ -1098,7 +1122,7 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
             if (isStatic) {
                 staticMemberDecorators.insert(staticMemberDecorators.end(),
                     variableDeclarations.begin(), variableDeclarations.end());
-            } else {
+            } else if (!hasPrivateIdentifier) {
                 res.insert(res.end(), variableDeclarations.begin(), variableDeclarations.end());
             }
 
@@ -1106,14 +1130,32 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
             if (isStatic) {
                 staticMemberDecorators.insert(staticMemberDecorators.end(),
                     propertyDecorators.begin(), propertyDecorators.end());
-            } else {
+            } else if (!hasPrivateIdentifier) {
                 res.insert(res.end(), propertyDecorators.begin(), propertyDecorators.end());
+            }
+
+            if (hasPrivateIdentifier && !isStatic) {
+                for (auto *it : variableDeclarations) {
+                    staticBlock->GetBody()->AddStatementAtPos(
+                        staticBlock->GetBody()->Statements().size(), it->AsStatement());
+                }
+                for (auto *it : propertyDecorators) {
+                    staticBlock->GetBody()->AddStatementAtPos(
+                        staticBlock->GetBody()->Statements().size(), it->AsStatement());
+                }
             }
         }
     }
 
     if (!staticMemberDecorators.empty()) {
-        res.insert(res.end(), staticMemberDecorators.begin(), staticMemberDecorators.end());
+        if (hasPrivateIdentifier) {
+            for (auto *it : staticMemberDecorators) {
+                staticBlock->GetBody()->AddStatementAtPos(
+                    staticBlock->GetBody()->Statements().size(), it->AsStatement());
+            }
+        } else {
+            res.insert(res.end(), staticMemberDecorators.begin(), staticMemberDecorators.end());
+        }
     }
 
     auto variableDeclarationsForCtorOrClass = CreateVariableDeclarationForDecorators(node);
@@ -1133,6 +1175,91 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
         return res.front();
     }
     return res;
+}
+
+ir::ClassStaticBlock *Transformer::CreateClassStaticBlock(ir::ClassDeclaration *node, bool hasPrivateIdentifer)
+{
+    if (!hasPrivateIdentifer) {
+        return nullptr;
+    }
+
+    ir::MethodDefinition *staticInitializer = node->Definition()->StaticInitializer();
+    auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(Binder(),
+                                                                       staticInitializer->Function()->Scope());
+
+    auto lexScope = binder::LexicalScope<binder::StaticBlockScope>(Binder());
+    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+    auto *blockStatement = AllocNode<ir::BlockStatement>(lexScope.GetScope(), std::move(statements));
+    lexScope.GetScope()->BindNode(blockStatement);
+    ir::ClassStaticBlock *staticBlock = AllocNode<ir::ClassStaticBlock>(blockStatement);
+    node->Definition()->AddToBody(staticBlock);
+
+    return staticBlock;
+}
+
+bool Transformer::HasPrivateIdentifierInDecorators(const ir::ClassDefinition *classDefinition)
+{
+    bool hasPrivateIdentifer = false;
+    for (auto *it : classDefinition->Body()) {
+        if (it->IsMethodDefinition()) {
+            auto methodDecorators = it->AsMethodDefinition()->Decorators();
+            for (size_t i = 0; i < methodDecorators.size(); i++) {
+                FindPrivateIdentifierInDecorator(methodDecorators[i]->Expr(), &hasPrivateIdentifer);
+                if (hasPrivateIdentifer) {
+                    return true;
+                }
+            }
+
+            auto paramsDecorators = it->AsMethodDefinition()->GetParamDecorators();
+            for (size_t i = 0; i < paramsDecorators.size(); i++) {
+                auto paramDecorators = paramsDecorators[i].decorators;
+                for (size_t j = 0; j < paramDecorators.size(); j++) {
+                    FindPrivateIdentifierInDecorator(paramDecorators[j]->Expr(), &hasPrivateIdentifer);
+                    if (hasPrivateIdentifer) {
+                        return true;
+                    }
+                }
+            }
+        } else if (it->IsClassProperty()) {
+            auto propDecorators = it->AsClassProperty()->Decorators();
+            for (size_t i = 0; i < propDecorators.size(); i++) {
+                FindPrivateIdentifierInDecorator(propDecorators[i]->Expr(), &hasPrivateIdentifer);
+                if (hasPrivateIdentifer) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return hasPrivateIdentifer;
+}
+
+void Transformer::FindPrivateIdentifierInDecorator(const ir::AstNode *parent, bool *hasprivateIdentifier)
+{
+    parent->Iterate([this, hasprivateIdentifier](auto *childNode) {
+        FindPrivateIdentifierInChildNode(childNode, hasprivateIdentifier);
+    });
+}
+
+void Transformer::FindPrivateIdentifierInChildNode(const ir::AstNode *childNode, bool *hasprivateIdentifier)
+{
+    if (*hasprivateIdentifier) {
+        return;
+    }
+
+    switch (childNode->Type()) {
+        case ir::AstNodeType::MEMBER_EXPRESSION: {
+            if (childNode->AsMemberExpression()->Property()->IsPrivateIdentifier()) {
+                *hasprivateIdentifier = true;
+                return;
+            }
+            break;
+        }
+        default: {
+            FindPrivateIdentifierInDecorator(childNode, hasprivateIdentifier);
+            break;
+        }
+    }
 }
 
 std::vector<ir::AstNode *> Transformer::CreateVariableDeclarationForDecorators(ir::AstNode *node)
@@ -1617,6 +1744,22 @@ void Transformer::SetOriginalNode(ir::UpdateNodes res, ir::AstNode *originalNode
         for (auto *it : nodes) {
             it->SetOriginal(originalNode);
             it->SetRange(originalNode->Range());
+        }
+    }
+}
+
+void Transformer::ResetParentScope(ir::UpdateNodes res, binder::Scope *parentScope) const
+{
+    if (std::holds_alternative<ir::AstNode *>(res)) {
+        auto *node = std::get<ir::AstNode *>(res);
+        if (node == nullptr) {
+            return;
+        }
+        ResetParentScopeForAstNode(node, parentScope);
+    } else {
+        auto nodes = std::get<std::vector<ir::AstNode *>>(res);
+        for (auto *it : nodes) {
+            ResetParentScopeForAstNode(it, parentScope);
         }
     }
 }
@@ -2435,124 +2578,124 @@ void Transformer::CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode
     CheckTransformedAstNodes(childNode, passed);
 }
 
-void Transformer::ResetParentScopeForAstNodes(const ir::AstNode *parent) const
+void Transformer::ResetParentScopeForAstNodes(const ir::AstNode *parent, binder::Scope *parentScope) const
 {
-    parent->Iterate([this](auto *childNode) { ResetParentScopeForAstNode(childNode); });
+    parent->Iterate([this, parentScope](auto *childNode) { ResetParentScopeForAstNode(childNode, parentScope); });
 }
 
-void Transformer::ResetParentScopeForAstNode(ir::AstNode *childNode) const
+void Transformer::ResetParentScopeForAstNode(ir::AstNode *childNode, binder::Scope *parentScope) const
 {
     switch (childNode->Type()) {
         case ir::AstNodeType::SCRIPT_FUNCTION: {
             auto scope = childNode->AsScriptFunction()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::CATCH_CLAUSE: {
             auto scope = childNode->AsCatchClause()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
             auto scope = childNode->AsClassDefinition()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::BLOCK_STATEMENT: {
             auto scope = childNode->AsBlockStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::DO_WHILE_STATEMENT: {
             auto scope = childNode->AsDoWhileStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::WHILE_STATEMENT: {
             auto scope = childNode->AsWhileStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::FOR_IN_STATEMENT: {
             auto scope = childNode->AsForInStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::FOR_OF_STATEMENT: {
             auto scope = childNode->AsForOfStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::FOR_UPDATE_STATEMENT: {
             auto scope = childNode->AsForUpdateStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::SWITCH_STATEMENT: {
             auto scope = childNode->AsSwitchStatement()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_ENUM_DECLARATION: {
             auto scope = childNode->AsTSEnumDeclaration()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
             auto scope = childNode->AsTSInterfaceDeclaration()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_METHOD_SIGNATURE: {
             auto scope = childNode->AsTSMethodSignature()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_MODULE_DECLARATION: {
             auto scope = childNode->AsTSModuleDeclaration()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
             auto scope = childNode->AsTSSignatureDeclaration()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_TYPE_PARAMETER_DECLARATION: {
             auto scope = childNode->AsTSTypeParameterDeclaration()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_CONSTRUCTOR_TYPE: {
             auto scope = childNode->AsTSConstructorType()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         case ir::AstNodeType::TS_FUNCTION_TYPE: {
             auto scope = childNode->AsTSFunctionType()->Scope();
             ASSERT(scope != nullptr);
-            scope->SetParent(Scope());
+            scope->SetParent(parentScope);
             break;
         }
         default: {
-            ResetParentScopeForAstNodes(childNode);
+            ResetParentScopeForAstNodes(childNode, parentScope);
             break;
         }
     }
