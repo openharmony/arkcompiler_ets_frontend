@@ -329,8 +329,8 @@ std::vector<std::string> ETSParser::UnixApiDefaultSources([[maybe_unused]] const
 
 std::vector<std::string> ETSParser::CollectDefaultSources()
 {
-    std::vector<std::string> stdlib = {"std/core", "std/math",       "std/containers",
-                                       "std/time", "std/interop/js", "escompat"};
+    std::vector<std::string> stdlib = {"std/core",       "std/math",  "std/containers",        "std/time",
+                                       "std/interop/js", "std/debug", "std/debug/concurrency", "escompat"};
 
 #ifdef USE_UNIX_SYSCALL
     return UnixApiDefaultSources(stdlib);
