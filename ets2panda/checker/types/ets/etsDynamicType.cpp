@@ -100,8 +100,7 @@ void ETSDynamicType::CastTarget(TypeRelation *relation, Type *source)
 
 bool ETSDynamicType::IsConvertible(Type const *target)
 {
-    return target->IsETSDynamicType() || (target->IsETSObjectType() && !target->IsETSNullLike()) ||
-           target->IsETSArrayType() ||
+    return target->IsETSDynamicType() || target->IsETSObjectType() || target->IsETSArrayType() ||
            target->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
 }
 

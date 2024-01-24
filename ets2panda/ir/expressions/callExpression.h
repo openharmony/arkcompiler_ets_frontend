@@ -74,6 +74,7 @@ public:
     void SetCallee(Expression *callee) noexcept
     {
         callee_ = callee;
+        callee_->SetParent(this);
     }
 
     [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept

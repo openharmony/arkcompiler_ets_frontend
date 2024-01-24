@@ -65,6 +65,9 @@ void CallExpression::Dump(ir::SrcDumper *dumper) const
 {
     ASSERT(callee_);
     callee_->Dump(dumper);
+    if (IsOptional()) {
+        dumper->Add("?.");
+    }
     dumper->Add("(");
     for (auto arg : arguments_) {
         arg->Dump(dumper);

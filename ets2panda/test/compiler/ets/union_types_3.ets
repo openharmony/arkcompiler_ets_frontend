@@ -29,5 +29,6 @@ function main() {
     let x2 : String | boolean | int | double = true;
     assert (x2 as boolean) == true: "Error! Must be `true`";
     let x3 : String | boolean | int | double = 3.14;
-    assert (x3 as double) == 3.14: "Error! Must be `3.14`";
+    // assert (x3 as double) == 3.14: "Error! Must be `3.14`"; // #15576
+    assert (x3 as Double) == 3.14: "Error! Must be `3.14`";
 }

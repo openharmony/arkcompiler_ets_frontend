@@ -14,19 +14,19 @@
  */
 
 class Foo {
-    async foo(i: int): Promise<Object> | null {
+    async foo(i: int): Promise<Object | null> {
         return null;
     }
 
-    async foo(o: Object | null, i: int): Promise<Object> | null {
+    async foo(o: Object | null, i: int): Promise<Object | null> {
     }
 }
 
-async function bar(i: int): Promise<Object> | null {
+async function bar(i: int): Promise<Object | null> {
     return null;
 }
 
-async function bar(o: Object | null, i: int): Promise<Object> | null{
+async function bar(o: Object | null, i: int): Promise<Object | null>{
     return null;
 }
 

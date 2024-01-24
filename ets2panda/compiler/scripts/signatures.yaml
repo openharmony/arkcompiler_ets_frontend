@@ -263,6 +263,9 @@ builtins:
   - name: AssertionError
     package: PKG_ESCOMPAT
     ref: BUILTIN_ASSERTION_ERROR
+  - name: Runtime
+    package: PKG_STD_CORE
+    ref: BUILTIN_RUNTIME
   - name: JSRuntime
     package: PKG_STD_INTEROP_JS
     ref: BUILTIN_JSRUNTIME
@@ -406,6 +409,12 @@ signatures:
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_ASSERTION_ERROR_CTOR
 
+  - callee: BUILTIN_RUNTIME
+    method_name: failedTypeCastException
+    params: [BUILTIN_OBJECT, BUILTIN_STRING]
+    return_type: BUILTIN_CLASS_CAST_EXCEPTION
+    ref: BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION
+
   - callee: BUILTIN_BIGINT
     method_name: $CTOR
     params: [BUILTIN_STRING]
@@ -546,7 +555,7 @@ signatures:
 
   - callee: BUILTIN_CLASS_CAST_EXCEPTION
     method_name: $CTOR
-    params: []
+    params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_CLASS_CAST_EXCEPTION_CTOR
 

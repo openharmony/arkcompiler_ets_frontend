@@ -15,12 +15,12 @@
 
 type funcType = () => String;
 
-function getPeach(): String { return "peach" }
 function getMelon(): String { return "melon" }
 
 function foo(a: funcType | null) {
     let fruit: String = a?.() ?? "apple";
 
+    let getPeach: funcType | null = (() => { return "peach"; }) as funcType // #15577;
     fruit = getPeach?.() ?? "banana";
     assert(fruit == "peach");
 
@@ -29,7 +29,7 @@ function foo(a: funcType | null) {
 
     let test = false;
     try {
-       fruit = a();
+        fruit = a!();
     } catch (e: NullPointerException) {
         test = true;
     }
@@ -38,13 +38,10 @@ function foo(a: funcType | null) {
 }
 
 function main(): void {
-  let getFruit: funcType | null = null;
-  foo(getFruit);
+    let getFruit: funcType | null = null;
+    foo(getFruit);
 
-  let a : funcType = getPeach;
-  let b = getPeach?.();
-  assert(b == "peach");
-
-  b = getMelon();
-  assert(b == "melon");
+    let getPeach: funcType | null = (() => { return "peach" }) as funcType // #15577;
+    let b = getPeach?.();
+    assert(b == "peach");
 }

@@ -53,6 +53,7 @@ using GlobalArraySignatureMap = ArenaUnorderedMap<ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
+using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
 
 class ETSChecker final : public Checker {
 public:
@@ -66,7 +67,8 @@ public:
           dynamicCallIntrinsics_(Allocator()->Adapter()),
           dynamicNewIntrinsics_(Allocator()->Adapter()),
           dynamicLambdaSignatureCache_(Allocator()->Adapter()),
-          functionalInterfaceCache_(Allocator()->Adapter())
+          functionalInterfaceCache_(Allocator()->Adapter()),
+          apparentTypes_(Allocator()->Adapter())
     {
     }
 
@@ -96,7 +98,7 @@ public:
     Type *GlobalWildcardType() const;
 
     ETSObjectType *GlobalETSObjectType() const;
-    ETSObjectType *GlobalETSNullishObjectType() const;
+    ETSUnionType *GlobalETSNullishObjectType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
     ETSObjectType *GlobalBuiltinETSBigIntType() const;
     ETSObjectType *GlobalBuiltinTypeType() const;
@@ -176,13 +178,13 @@ public:
     void TransformProperties(ETSObjectType *classType);
     void CheckGetterSetterProperties(ETSObjectType *classType);
     void AddElementsToModuleObject(ETSObjectType *moduleObj, const util::StringView &str);
-    Type *FindLeastUpperBound(Type *source, Type *target);
-    static Type *GetApparentType(Type *type);
-    static Type const *GetApparentType(Type const *type);
-    Type *MaybePromotedBuiltinType(Type *type) const;
-    Type *GetCommonClass(Type *source, Type *target);
+    void ComputeApparentType(Type *type)
+    {
+        [[maybe_unused]] auto x = GetApparentType(type);
+    }
+    [[nodiscard]] Type *GetApparentType(Type *type);
+    [[nodiscard]] Type const *GetApparentType(Type const *type) const;
     ETSObjectType *GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target);
-    ETSObjectType *GetTypeargumentedLUB(ETSObjectType *source, ETSObjectType *target);
     bool HasETSFunctionType(ir::TypeNode *typeAnnotation);
 
     // Type creation
@@ -197,14 +199,17 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
-    Type *CreateETSUnionType(ArenaVector<Type *> &&constituentTypes);
-    template <class... Types>
-    Type *CreateETSUnionType(Types &&...types)
+    Type *CreateETSUnionType(Span<Type *const> constituentTypes);
+    template <size_t N>
+    Type *CreateETSUnionType(Type *const (&arr)[N])  // NOLINT(modernize-avoid-c-arrays)
     {
-        ArenaVector<Type *> constituentTypes(Allocator()->Adapter());
-        (constituentTypes.push_back(types), ...);
-        return CreateETSUnionType(std::move(constituentTypes));
+        return CreateETSUnionType(Span(arr));
     }
+    Type *CreateETSUnionType(ArenaVector<Type *> &&constituentTypes)
+    {
+        return CreateETSUnionType(Span<Type *const>(constituentTypes));
+    }
+    Type *CreateNullishType(Type *type, bool isNull, bool isUndefined);
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
     ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
@@ -292,17 +297,13 @@ public:
         return Allocator()->New<Substitution>(*src);
     }
     static void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
-    ArenaUnorderedSet<ETSTypeParameter *> *NewInstantiatedTypeParamsSet()
-    {
-        return Allocator()->New<ArenaUnorderedSet<ETSTypeParameter *>>(Allocator()->Adapter());
-    }
     ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
-                                                  Type *argumentType, Substitution *substitution,
-                                                  ArenaUnorderedSet<ETSTypeParameter *> *instantiatedTypeParams);
+                                                  Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
-                                                    Type *argumentType, Substitution *substitution,
-                                                    ArenaUnorderedSet<ETSTypeParameter *> *instantiatedTypeParams);
+                                                    Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
+                                                   Type *argumentType, Substitution *substitution);
     Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                 TypeRelationFlag flags);
     Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
@@ -463,15 +464,8 @@ public:
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
     void CheckTruthinessOfType(ir::Expression *expr);
-    Type *CreateNullishType(Type *otype, checker::TypeFlag nullishFlags, ArenaAllocator *allocator,
-                            TypeRelation *relation, GlobalTypesHolder *globalTypes);
-    void CheckNonNullishType(Type *type, lexer::SourcePosition lineInfo);
-    Type *CreateOptionalResultType(Type *type);
-    Type *GetNonNullishType(Type *type) const;
-    const Type *GetNonNullishType(const Type *type) const;
-    bool MayHaveNullValue(const Type *type) const;
-    bool MayHaveUndefinedValue(const Type *type) const;
-    bool MayHaveNulllikeValue(const Type *type) const;
+    void CheckNonNullish(ir::Expression const *expr);
+    Type *GetNonNullishType(Type *type);
     void ConcatConstantString(util::UString &target, Type *type);
     Type *HandleStringConcatenation(Type *leftType, Type *rightType);
     Type *ResolveIdentifier(ir::Identifier *ident);
@@ -483,7 +477,10 @@ public:
     bool IsFunctionContainsSignature(ETSFunctionType *funcType, Signature *signature);
     void CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature);
     bool IsTypeBuiltinType(const Type *type) const;
-    static bool IsReferenceType(const Type *type);
+    static bool IsReferenceType(const Type *type)
+    {
+        return type->IsETSReferenceType();
+    }
     const ir::AstNode *FindJumpTarget(ir::AstNodeType nodeType, const ir::AstNode *node, const ir::Identifier *target);
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
@@ -499,6 +496,10 @@ public:
     {
         return MaybeBoxedType(var, Allocator());
     }
+    Type *MaybeBoxExpression(ir::Expression *expr);
+    Type *MaybePromotedBuiltinType(Type *type) const;
+    Type const *MaybePromotedBuiltinType(Type const *type) const;
+    Type *MaybePrimitiveBuiltinType(Type *type) const;
     void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> *cases);
     std::string GetStringFromIdentifierValue(checker::Type *caseType) const;
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
@@ -535,8 +536,7 @@ public:
     util::StringView GetHashFromTypeArguments(const ArenaVector<Type *> &typeArgTypes);
     util::StringView GetHashFromSubstitution(const Substitution *substitution);
     util::StringView GetHashFromFunctionType(ir::ETSFunctionType *type);
-    ETSObjectType *GetOriginalBaseType(Type *object);
-    Type *GetTypeFromTypeAnnotation(ir::TypeNode *typeAnnotation);
+    static ETSObjectType *GetOriginalBaseType(Type *object);
     void AddUndefinedParamsForDefaultParams(const Signature *signature, ir::AstNode *parent,
                                             ArenaVector<ark::es2panda::ir::Expression *> &arguments,
                                             ETSChecker *checker);
@@ -723,6 +723,7 @@ private:
     DynamicCallIntrinsicsMap dynamicNewIntrinsics_;
     DynamicLambdaObjectSignatureMap dynamicLambdaSignatureCache_;
     FunctionalInterfaceMap functionalInterfaceCache_;
+    TypeMapping apparentTypes_;
     std::recursive_mutex mtx_;
 };
 

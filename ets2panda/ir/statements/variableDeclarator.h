@@ -56,6 +56,12 @@ public:
         return init_;
     }
 
+    void SetInit(Expression *init)
+    {
+        init_ = init;
+        init_->SetParent(this);
+    }
+
     Expression *Id()
     {
         return id_;
@@ -84,6 +90,8 @@ public:
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] VariableDeclarator *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     Expression *id_;

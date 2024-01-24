@@ -319,9 +319,10 @@ ETSObjectType *ETSChecker::GlobalETSObjectType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSObjectType);
 }
 
-ETSObjectType *ETSChecker::GlobalETSNullishObjectType() const
+ETSUnionType *ETSChecker::GlobalETSNullishObjectType() const
 {
-    return AsETSObjectType(&GlobalTypesHolder::GlobalETSNullishObjectType);
+    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishObjectType)();
+    return ret != nullptr ? ret->AsETSUnionType() : nullptr;
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinETSStringType() const

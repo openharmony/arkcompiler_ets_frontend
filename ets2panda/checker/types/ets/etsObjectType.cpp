@@ -284,10 +284,6 @@ ArenaMap<util::StringView, const varbinder::LocalVariable *> ETSObjectType::Coll
 void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
 {
     if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
-            !name_.Empty()) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
-        }
         GetFunctionalInterfaceInvokeType()->ToString(ss, precise);
     } else if (precise) {
         ss << assemblerName_;  // NOTE(gogabr): need full qualified name
@@ -306,24 +302,9 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         }
         ss << compiler::Signatures::GENERIC_END;
     }
-
-    if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
-        !name_.Empty()) {
-        if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-        }
-        if (ContainsNull()) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
-               << lexer::TokenToString(lexer::TokenType::LITERAL_NULL);
-        }
-        if (ContainsUndefined()) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
-               << lexer::TokenToString(lexer::TokenType::KEYW_UNDEFINED);
-        }
-    }
 }
 
-void ETSObjectType::IdenticalUptoNullabilityAndTypeArguments(TypeRelation *relation, Type *other)
+void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *other)
 {
     relation->Result(false);
     if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType()->ObjectFlags())) {
@@ -341,11 +322,6 @@ void ETSObjectType::IdenticalUptoNullabilityAndTypeArguments(TypeRelation *relat
         return;
     }
 
-    if (IsNullish()) {
-        relation->Result(true);
-        return;
-    }
-
     auto const sourceTypeArguments = other->AsETSObjectType()->TypeArguments();
     if (typeArguments_.empty() != sourceTypeArguments.empty()) {
         return;
@@ -354,9 +330,9 @@ void ETSObjectType::IdenticalUptoNullabilityAndTypeArguments(TypeRelation *relat
     relation->Result(true);
 }
 
-void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other)
+void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 {
-    IdenticalUptoNullabilityAndTypeArguments(relation, other);
+    IdenticalUptoTypeArguments(relation, other);
 
     if (!relation->IsTrue() || !HasTypeFlag(TypeFlag::GENERIC)) {
         return;
@@ -371,38 +347,13 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         if (typeArguments_[idx]->IsWildcardType() || otherTypeArguments[idx]->IsWildcardType()) {
             continue;
         }
-
-        // checking the nullishness of type args before getting their original base types
-        // because most probably GetOriginalBaseType will return the non-nullish version of the type
-        if ((!typeArguments_[idx]->IsNullish() && otherTypeArguments[idx]->IsNullish()) ||
-            (typeArguments_[idx]->IsNullish() && !otherTypeArguments[idx]->IsNullish())) {
-            relation->Result(false);
-            return;
-        }
-
-        const auto getOriginalBaseTypeOrType = [&relation](Type *const originalType) {
-            auto *const baseType = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(originalType);
-            return baseType == nullptr ? originalType : baseType;
-        };
-
-        auto *const typeArgType = getOriginalBaseTypeOrType(typeArguments_[idx]);
-        auto *const otherTypeArgType = getOriginalBaseTypeOrType(otherTypeArguments[idx]);
-
-        typeArgType->Identical(relation, otherTypeArgType);
+        typeArguments_[idx]->Identical(relation, otherTypeArguments[idx]);
         if (!relation->IsTrue()) {
             return;
         }
     }
 
     relation->Result(true);
-}
-
-void ETSObjectType::Identical(TypeRelation *relation, Type *other)
-{
-    if ((ContainsNull() != other->ContainsNull()) || (ContainsUndefined() != other->ContainsUndefined())) {
-        return;
-    }
-    IdenticalUptoNullability(relation, other);
 }
 
 bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
@@ -420,29 +371,13 @@ bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
     return cleanedSelfFlags == cleanedTargetFlags;
 }
 
-bool ETSObjectType::AssignmentSource(TypeRelation *const relation, Type *const target)
+bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unused]] Type *const target)
 {
-    relation->Result((IsETSNullType() && target->ContainsNull()) ||
-                     (IsETSUndefinedType() && target->ContainsUndefined()));
-
-    return relation->IsTrue();
+    return relation->Result(false);
 }
 
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
-    if (source->IsETSNullType()) {
-        relation->Result(ContainsNull());
-        return;
-    }
-    if (source->IsETSUndefinedType()) {
-        relation->Result(ContainsUndefined());
-        return;
-    }
-
-    if ((source->ContainsNull() && !ContainsNull()) || (source->ContainsUndefined() && !ContainsUndefined())) {
-        return;
-    }
-
     if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         EnsurePropertiesInstantiated();
         auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find(
@@ -482,7 +417,7 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
                              TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
         return false;
     }
-    IdenticalUptoNullability(relation, target);
+    Identical(relation, target);
     if (relation->IsTrue()) {
         return true;
     }
@@ -571,17 +506,6 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
-    if (this->IsETSNullLike()) {
-        if (target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-            relation->GetNode()->SetTsType(target);
-            relation->Result(true);
-            return;
-        }
-
-        conversion::Forbidden(relation);
-        return;
-    }
-
     if (CastNumericObject(relation, target)) {
         return;
     }
@@ -609,6 +533,8 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
 bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, TypeRelation *const relation,
                                             Type *const source)
 {
+    relation->Result(false);
+
     // 3.8.3 Subtyping among Array Types
     auto const *const base = GetConstOriginalBaseType();
     if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
@@ -622,47 +548,27 @@ bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, 
     }
 
     if (!source->IsETSObjectType() ||
-        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
-                                                  ETSObjectFlags::NULL_TYPE)) {
+        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE)) {
         return true;
     }
 
-    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
-        return true;
-    }
     // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
+    if (base == etsChecker->GlobalETSObjectType()) {
         relation->Result(true);
         return true;
     }
 
-    IdenticalUptoNullabilityAndTypeArguments(relation, source);
+    Identical(relation, source);
     if (relation->IsTrue() && HasTypeFlag(TypeFlag::GENERIC)) {
         IsGenericSupertypeOf(relation, source);
     }
     return relation->IsTrue();
 }
 
-static void IsSupertypeOfUnion(TypeRelation *relation, ETSObjectType *self, ETSUnionType *unionType)
-{
-    bool res = std::all_of(unionType->ConstituentTypes().begin(), unionType->ConstituentTypes().end(),
-                           [self, relation](Type *ct) {
-                               relation->Result(false);
-                               self->IsSupertypeOf(relation, ct);
-                               return relation->IsTrue();
-                           });
-    relation->Result(res);
-}
-
 void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
     auto *const etsChecker = relation->GetChecker()->AsETSChecker();
-
-    if (source->IsETSUnionType()) {
-        IsSupertypeOfUnion(relation, this, source->AsETSUnionType());
-        return;
-    }
 
     if (DefaultObjectTypeChecks(etsChecker, relation, source)) {
         return;
@@ -801,7 +707,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     std::lock_guard guard {*checker->Mutex()};
     auto *const base = GetOriginalBaseType();
 
-    if (!relation->TypeInstantiationPossible(base) || IsETSNullLike()) {
+    if (!relation->TypeInstantiationPossible(base)) {
         return this;
     }
     relation->IncreaseTypeRecursionCount(base);
@@ -910,7 +816,7 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
         }
     }
 
-    if (!relation->TypeInstantiationPossible(base) || IsETSNullLike()) {
+    if (!relation->TypeInstantiationPossible(base)) {
         return this;
     }
     relation->IncreaseTypeRecursionCount(base);

@@ -358,13 +358,38 @@
                             "type": "Identifier",
                             "name": "c",
                             "typeAnnotation": {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "Object",
-                                  "decorators": [],
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "ETSTypeReference",
+                                  "part": {
+                                    "type": "ETSTypeReferencePart",
+                                    "name": {
+                                      "type": "Identifier",
+                                      "name": "Object",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 19,
+                                          "column": 12
+                                        },
+                                        "end": {
+                                          "line": 19,
+                                          "column": 18
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 19,
+                                        "column": 12
+                                      },
+                                      "end": {
+                                        "line": 19,
+                                        "column": 20
+                                      }
+                                    }
+                                  },
                                   "loc": {
                                     "start": {
                                       "line": 19,
@@ -372,21 +397,24 @@
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 18
+                                      "column": 20
                                     }
                                   }
                                 },
-                                "loc": {
-                                  "start": {
-                                    "line": 19,
-                                    "column": 12
-                                  },
-                                  "end": {
-                                    "line": 19,
-                                    "column": 20
+                                {
+                                  "type": "ETSNullType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 19,
+                                      "column": 20
+                                    },
+                                    "end": {
+                                      "line": 19,
+                                      "column": 24
+                                    }
                                   }
                                 }
-                              },
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 19,
@@ -394,7 +422,7 @@
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 20
+                                  "column": 24
                                 }
                               }
                             },

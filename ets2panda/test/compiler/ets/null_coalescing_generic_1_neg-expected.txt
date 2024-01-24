@@ -597,4 +597,4 @@
     }
   }
 }
-TypeError: Type 'Integral' is not compatible with the enclosing method's return type 'T' [null_coalescing_generic_1_neg.ets:18:12]
+TypeError: Type 'T|Short' is not compatible with the enclosing method's return type 'T' [null_coalescing_generic_1_neg.ets:18:12]

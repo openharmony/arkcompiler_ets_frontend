@@ -49,6 +49,20 @@ void ExpressionStatement::Dump(ir::SrcDumper *dumper) const
     }
 }
 
+ExpressionStatement *ExpressionStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expression = expression_->Clone(allocator, nullptr)->AsExpression();
+
+    if (auto *const clone = allocator->New<ExpressionStatement>(expression); clone != nullptr) {
+        expression->SetParent(clone);
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void ExpressionStatement::Compile(compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);

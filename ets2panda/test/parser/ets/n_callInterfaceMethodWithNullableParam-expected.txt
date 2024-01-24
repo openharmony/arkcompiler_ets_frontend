@@ -847,13 +847,38 @@
                             "type": "Identifier",
                             "name": "an",
                             "typeAnnotation": {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "I",
-                                  "decorators": [],
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "ETSTypeReference",
+                                  "part": {
+                                    "type": "ETSTypeReferencePart",
+                                    "name": {
+                                      "type": "Identifier",
+                                      "name": "I",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 25,
+                                          "column": 14
+                                        },
+                                        "end": {
+                                          "line": 25,
+                                          "column": 15
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 25,
+                                        "column": 14
+                                      },
+                                      "end": {
+                                        "line": 25,
+                                        "column": 17
+                                      }
+                                    }
+                                  },
                                   "loc": {
                                     "start": {
                                       "line": 25,
@@ -861,21 +886,24 @@
                                     },
                                     "end": {
                                       "line": 25,
-                                      "column": 15
+                                      "column": 17
                                     }
                                   }
                                 },
-                                "loc": {
-                                  "start": {
-                                    "line": 25,
-                                    "column": 14
-                                  },
-                                  "end": {
-                                    "line": 25,
-                                    "column": 17
+                                {
+                                  "type": "ETSNullType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 25,
+                                      "column": 18
+                                    },
+                                    "end": {
+                                      "line": 25,
+                                      "column": 22
+                                    }
                                   }
                                 }
-                              },
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 25,
@@ -883,7 +911,7 @@
                                 },
                                 "end": {
                                   "line": 25,
-                                  "column": 17
+                                  "column": 22
                                 }
                               }
                             },
@@ -985,9 +1013,49 @@
                         "callee": {
                           "type": "MemberExpression",
                           "object": {
-                            "type": "Identifier",
-                            "name": "an",
-                            "decorators": [],
+                            "type": "ETSNewClassInstanceExpression",
+                            "typeReference": {
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "A",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 27,
+                                      "column": 9
+                                    },
+                                    "end": {
+                                      "line": 27,
+                                      "column": 10
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 27,
+                                    "column": 9
+                                  },
+                                  "end": {
+                                    "line": 27,
+                                    "column": 11
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 27,
+                                  "column": 9
+                                },
+                                "end": {
+                                  "line": 27,
+                                  "column": 11
+                                }
+                              }
+                            },
+                            "arguments": [],
                             "loc": {
                               "start": {
                                 "line": 27,
@@ -995,7 +1063,7 @@
                               },
                               "end": {
                                 "line": 27,
-                                "column": 7
+                                "column": 13
                               }
                             }
                           },
@@ -1006,11 +1074,11 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 8
+                                "column": 13
                               },
                               "end": {
                                 "line": 27,
-                                "column": 11
+                                "column": 16
                               }
                             }
                           },
@@ -1023,7 +1091,7 @@
                             },
                             "end": {
                               "line": 27,
-                              "column": 11
+                              "column": 16
                             }
                           }
                         },
@@ -1035,11 +1103,11 @@
                             "loc": {
                               "start": {
                                 "line": 27,
-                                "column": 12
+                                "column": 17
                               },
                               "end": {
                                 "line": 27,
-                                "column": 14
+                                "column": 19
                               }
                             }
                           }
@@ -1052,7 +1120,7 @@
                           },
                           "end": {
                             "line": 27,
-                            "column": 15
+                            "column": 20
                           }
                         }
                       },
@@ -1063,7 +1131,7 @@
                         },
                         "end": {
                           "line": 27,
-                          "column": 16
+                          "column": 21
                         }
                       }
                     }
@@ -1149,4 +1217,4 @@
     }
   }
 }
-TypeError: Type 'I|null' is not compatible with type 'I' at index 1 [n_callInterfaceMethodWithNullableParam.ets:27:12]
+TypeError: Type 'I|null' is not compatible with type 'I' at index 1 [n_callInterfaceMethodWithNullableParam.ets:27:17]

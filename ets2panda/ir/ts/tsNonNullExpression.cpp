@@ -64,4 +64,19 @@ checker::Type *TSNonNullExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+TSNonNullExpression *TSNonNullExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expr = expr_->Clone(allocator, nullptr)->AsExpression();
+
+    if (auto *const clone = allocator->New<TSNonNullExpression>(expr); clone != nullptr) {
+        expr->SetParent(clone);
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace ark::es2panda::ir

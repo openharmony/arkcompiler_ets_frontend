@@ -147,7 +147,7 @@ Type *ETSTupleType::Substitute(TypeRelation *relation, const Substitution *subst
     }
 
     auto *newSpreadType = spreadType_ == nullptr ? nullptr : spreadType_->Substitute(relation, substitution);
-    auto *newElementType = ir::ETSTuple::CalculateLUBForTuple(checker, newTypeList, newSpreadType);
+    auto *newElementType = ir::ETSTuple::CalculateLUBForTuple(checker, newTypeList, &newSpreadType);
     return checker->Allocator()->New<ETSTupleType>(std::move(newTypeList), newElementType, newSpreadType);
 }
 

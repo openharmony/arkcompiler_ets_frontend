@@ -45,6 +45,11 @@ function foo(p: F): int {
   return 6;
 }
 
+// #15276 foo(Object|null) and foo(Object) overloads
+function foo7(p: Object | null): int {
+    return 7;
+}  
+
 function main(): void {
     sameTypeLUB();
     objectLUB();
@@ -54,30 +59,30 @@ function main(): void {
 function sameTypeLUB(): void {
     let a : A = new A();
     let b : A = new A();
-    let c = true ? a : b; // A
+    let c = true ? a : b;
     assert(foo(c) == 2);
 }
 
 function objectLUB(): void {
     let a : A = new A();
     let b : Int = 2;
-    let c = true ? a : b; // A | Int
+    let c = true ? a : b;
     assert(foo(c) == 1);
 
     let arr : Int[] | null = null;
-    let d = true ? a : arr; // A | Int[] | null
-    assert(foo(d) == 1);
+    let d = true ? a : arr;
+    assert(foo7(d) == 7);
 }
 
 function forkSubtypeLUB(): void {
     let a : F = new F();
     let b : D = new D();
-    let c = true ? a : b; // F | D => call most specific foo(A)
+    let c = true ? a : b;
     assert(foo(c) == 2);
     let d : A = new A();
-    let e = true ? a : d; // F | A => normalize to A
+    let e = true ? a : b;
     assert(foo(e) == 2);
     let f : B = new B();
-    let g = true ? a : f; // F | B => normalize to B
+    let g = true ? a : f;
     assert(foo(g) == 3);
 }

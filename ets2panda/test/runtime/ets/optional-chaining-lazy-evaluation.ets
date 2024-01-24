@@ -21,7 +21,8 @@ function main(): void {
   assert(number == 2);
   assert(x == 0); // 0 as x was not incremented
 
-  let obj: Int[] | null = [11, 21, 31];
+  let obj_tmp: Int[] = [11, 21, 31];
+  let obj: Int[] | null = obj_tmp;
   number = obj?.[x++];
 
   let a : Int = 11;

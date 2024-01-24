@@ -182,7 +182,8 @@ public:
                     "ImportExportAccessValid",
                 }};
             }
-            const std::set<std::string> withoutAdditionalChecks = {"PromiseVoidInferencePhase",
+            const std::set<std::string> withoutAdditionalChecks = {"OptionalLowering",
+                                                                   "PromiseVoidInferencePhase",
                                                                    "StructLowering",
                                                                    "GenerateTsDeclarationsPhase",
                                                                    "InterfacePropertyDeclarationsPhase",

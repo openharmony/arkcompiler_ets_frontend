@@ -13,17 +13,6 @@
  * limitations under the License.
  */
 
-function null_test(): void {
-  let Byte_   = null as Byte;
-  let Short_  = null as Short;
-  let Char_   = null as Char;
-  let Int_    = null as Int;
-  let Long_   = null as Long;
-  let Float_  = null as Float;
-  let Double_ = null as Double;
-  let Object  = null as Object;
-}
-
 function byte_test(): void {
   let byte_: byte = 42;
   let Byte_: Byte = new Byte(42 as byte);

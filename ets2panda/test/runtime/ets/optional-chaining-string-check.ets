@@ -19,7 +19,7 @@ class Person {
 
 function main(): void {
   let bill : Person = new Person();
-  let name = bill?.name;
+  let name = bill.name;
 
   assert(name == "Bill");
   assert(name.length == 4);
@@ -33,10 +33,5 @@ function main(): void {
 
   let test = false;
 
-  try {
-    name = juan.name;
-  } catch (e: NullPointerException) {
-    test = true;
-  }
-  assert(test = true);
+  assert(juan?.name === undefined);
 }

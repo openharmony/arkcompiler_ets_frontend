@@ -27,14 +27,4 @@ function main(): void {
     assert (test == null);
     let nullsafety_test = john?.residence?.numberOfRooms ?? "unknown";
     assert (nullsafety_test == "unknown");
-
-    let isNull: boolean = false;
-
-    try {
-        let numbers : int = john.residence.numberOfRooms;
-    } catch (e: NullPointerException) {
-      isNull = true;
-    }
-
-    assert (isNull == true);
 }

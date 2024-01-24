@@ -29,9 +29,19 @@ public:
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
-    const Expression *Expr() const
+    const Expression *Expr() const noexcept
     {
         return expr_;
+    }
+
+    Expression *Expr() noexcept
+    {
+        return expr_;
+    }
+
+    void SetExpr(Expression *expr) noexcept
+    {
+        expr_ = expr;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -47,6 +57,8 @@ public:
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] TSNonNullExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     Expression *expr_;

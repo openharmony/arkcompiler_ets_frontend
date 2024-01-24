@@ -90,21 +90,10 @@ checker::Type *ETSTypeReference::Check(checker::ETSChecker *checker)
 
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
+    if (TsType() == nullptr) {
+        SetTsType(part_->GetType(checker));
     }
-
-    checker::Type *type = part_->GetType(checker);
-    if (IsNullAssignable() || IsUndefinedAssignable()) {
-        auto nullishFlags = (IsNullAssignable() ? checker::TypeFlag::NULL_TYPE : checker::TypeFlag(0)) |
-                            (IsUndefinedAssignable() ? checker::TypeFlag::UNDEFINED : checker::TypeFlag(0));
-
-        type = checker->CreateNullishType(type, nullishFlags, checker->Allocator(), checker->Relation(),
-                                          checker->GetGlobalTypesHolder());
-    }
-
-    SetTsType(type);
-    return type;
+    return TsType();
 }
 
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)

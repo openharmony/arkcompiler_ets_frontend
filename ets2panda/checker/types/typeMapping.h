@@ -50,6 +50,8 @@
     _(TypeFlag::CHAR, CharType)                                        \
     _(TypeFlag::ETS_BOOLEAN, ETSBooleanType)                           \
     _(TypeFlag::ETS_VOID, ETSVoidType)                                 \
+    _(TypeFlag::ETS_NULL, ETSNullType)                                 \
+    _(TypeFlag::ETS_UNDEFINED, ETSUndefinedType)                       \
     _(TypeFlag::FUNCTION, ETSFunctionType)                             \
     _(TypeFlag::ETS_OBJECT, ETSObjectType)                             \
     _(TypeFlag::ETS_ARRAY, ETSArrayType)                               \
@@ -57,6 +59,7 @@
     _(TypeFlag::NON_PRIMITIVE, NonPrimitiveType)                       \
     _(TypeFlag::WILDCARD, WildcardType)                                \
     _(TypeFlag::ETS_TYPE_PARAMETER, ETSTypeParameter)                  \
+    _(TypeFlag::ETS_NONNULLISH, ETSNonNullishType)                     \
     _(TypeFlag::ETS_ENUM, ETSEnumType)                                 \
     _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)                    \
     _(TypeFlag::ETS_EXTENSION_FUNC_HELPER, ETSExtensionFuncHelperType) \

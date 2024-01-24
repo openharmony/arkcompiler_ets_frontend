@@ -85,6 +85,12 @@ public:
         return object_;
     }
 
+    void SetObject(Expression *object) noexcept
+    {
+        object_ = object;
+        object_->SetParent(this);
+    }
+
     [[nodiscard]] Expression *Property() noexcept
     {
         return property_;
@@ -160,16 +166,6 @@ public:
         return uncheckedType_;
     }
 
-    checker::Type *GetTupleConvertedType() const noexcept
-    {
-        return tupleConvertedType_;
-    }
-
-    void SetTupleConvertedType(checker::Type *convType) noexcept
-    {
-        tupleConvertedType_ = convType;
-    }
-
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -201,7 +197,6 @@ protected:
         // Note! Probably, we need to do 'Instantiate(...)' but we haven't access to 'Relation()' here...
         uncheckedType_ = other.uncheckedType_;
         objType_ = other.objType_;
-        tupleConvertedType_ = other.tupleConvertedType_;
     }
 
 private:
@@ -212,6 +207,8 @@ private:
     checker::Type *AdjustType(checker::ETSChecker *checker, checker::Type *type);
     checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *baseType);
     checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType);
+    checker::Type *TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType,
+                                       checker::Type *commonPropType);
 
     void CheckArrayIndexValue(checker::ETSChecker *checker) const;
     checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
@@ -227,7 +224,6 @@ private:
     checker::Type *uncheckedType_ {};
     varbinder::LocalVariable *propVar_ {};
     checker::ETSObjectType *objType_ {};
-    checker::Type *tupleConvertedType_ {};
 };
 }  // namespace ark::es2panda::ir
 

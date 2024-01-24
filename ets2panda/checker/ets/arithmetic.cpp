@@ -207,10 +207,6 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(ir::Expression *left, ir::Exp
                                                    bool isEqualOp, checker::Type *const leftType,
                                                    checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
 {
-    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
-    }
-
     if (leftType->IsETSStringType() || rightType->IsETSStringType()) {
         if (operationType == lexer::TokenType::PUNCTUATOR_MINUS ||
             operationType == lexer::TokenType::PUNCTUATOR_MINUS_EQUAL) {
@@ -218,6 +214,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(ir::Expression *left, ir::Exp
         }
 
         return HandleStringConcatenation(leftType, rightType);
+    }
+
+    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
     }
 
     auto [promotedType, bothConst] =
@@ -365,8 +365,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
                                                                       checker::Type *const rightType)
 {
     checker::Type *tsType {};
-    if (!(leftType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || leftType->IsETSUnionType()) ||
-        !(rightType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || rightType->IsETSUnionType())) {
+    if (!IsReferenceType(leftType) || !IsReferenceType(rightType)) {
         ThrowTypeError("Both operands have to be reference types", pos);
     }
 
@@ -410,8 +409,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
 
     if (IsReferenceType(leftType) && IsReferenceType(rightType)) {
         tsType = GlobalETSBooleanType();
-        auto *opType = GlobalETSObjectType();
-        return {tsType, opType};
+        return {tsType, CreateETSUnionType({leftType, rightType})};
     }
 
     if (unboxedL != nullptr && unboxedL->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN) && unboxedR != nullptr &&
@@ -471,14 +469,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
-    if (leftType->IsETSUnionType()) {
-        tsType = GlobalETSBooleanType();
-        return {tsType, leftType->AsETSUnionType()};
-    }
-
-    if (rightType->IsETSUnionType()) {
-        tsType = GlobalETSBooleanType();
-        return {tsType, rightType->AsETSUnionType()};
+    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
+        return {GlobalETSBooleanType(), CreateETSUnionType({leftType, rightType})};
     }
 
     if (promotedType == nullptr && !bothConst) {
@@ -512,53 +504,19 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
 
     tsType = GlobalETSBooleanType();
     checker::Type *opType = rightType->IsETSDynamicType() ? GlobalBuiltinJSValueType() : GlobalETSObjectType();
+    ComputeApparentType(rightType);
     return {tsType, opType};
 }
 
 Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, lexer::SourcePosition pos,
-                                                       checker::Type *leftType, checker::Type *rightType)
+                                                       checker::Type *const leftType,
+                                                       [[maybe_unused]] checker::Type *const rightType)
 {
-    if (!leftType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) && !leftType->IsETSTypeParameter()) {
+    ASSERT(rightType == right->TsType());
+    if (!IsReferenceType(leftType)) {
         ThrowTypeError("Left-hand side expression must be a reference type.", pos);
     }
-
-    checker::Type *nonNullishLeftType = leftType;
-
-    if (leftType->IsNullish()) {
-        nonNullishLeftType = GetNonNullishType(leftType);
-    }
-
-    // NOTE: vpukhov. check convertibility and use numeric promotion
-
-    if (rightType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        Relation()->SetNode(right);
-        auto *const boxedRightType = PrimitiveTypeAsETSBuiltinType(rightType);
-        if (boxedRightType == nullptr) {
-            ThrowTypeError("Invalid right-hand side expression", pos);
-        }
-        right->AddBoxingUnboxingFlags(GetBoxingFlag(boxedRightType));
-        rightType = boxedRightType;
-    }
-
-    if (rightType->IsETSNullType()) {
-        return CreateNullishType(nonNullishLeftType, TypeFlag::NULL_TYPE, Allocator(), Relation(),
-                                 GetGlobalTypesHolder());
-    }
-
-    if (rightType->IsETSUndefinedType()) {
-        return CreateNullishType(nonNullishLeftType, TypeFlag::UNDEFINED, Allocator(), Relation(),
-                                 GetGlobalTypesHolder());
-    }
-
-    if (nonNullishLeftType->IsETSTypeParameter()) {
-        nonNullishLeftType = nonNullishLeftType->AsETSTypeParameter()->GetConstraintType();
-    }
-
-    if (rightType->IsETSTypeParameter()) {
-        rightType = rightType->AsETSTypeParameter()->GetConstraintType();
-    }
-
-    return FindLeastUpperBound(nonNullishLeftType, rightType);
+    return CreateETSUnionType({GetNonNullishType(leftType), MaybeBoxExpression(right)});
 }
 
 using CheckBinaryFunction = std::function<checker::Type *(

@@ -34,5 +34,5 @@ class A<T> {
 function bar(p: Foo<Object>): void {
     let p1: Foo<Object> | null = p.then<Object>();
     let p2: Foo<A<A<Object>>> = new Foo<A<A<Object>>>();
-    p1 = p2.value.bar().baz().then<Object>();
+    p1 = p2.value.bar()!.baz()!.then<Object>();
 }

@@ -103,12 +103,12 @@ public:
 
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
     {
-        ss << "ets.lang.Object";
+        UNREACHABLE();
     }
 
-    void ToDebugInfoType(std::stringstream &ss) const override
+    void ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const override
     {
-        ss << "ets.lang.Object";
+        UNREACHABLE();
     }
 
     Signature *FirstAbstractSignature();

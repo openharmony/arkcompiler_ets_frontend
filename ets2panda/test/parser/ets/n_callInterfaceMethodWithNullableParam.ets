@@ -24,5 +24,5 @@ class A implements I {
 function main(): void {
     let an : I | null = new A();
 
-    an.foo(an);
+    new A().foo(an);
 }

@@ -48,8 +48,8 @@ function bar(p: C<Object>): void {
     let p1: C<Object> | null = p.then<Object>(new Object());
     let p2: C<A<A<Object>>> = new C<A<A<Object>>>();
     p1 = p2.then<Object>(new Object());
-    p1 = p2.value.bar().baz().then<Object>(new Object());
-    p1 = p2.value.bar().baz().then<Object>(new Object());
+    p1 = p2.value.bar().baz()!.then<Object>(new Object());
+    p1 = p2.value.bar().baz()!.then<Object>(new Object());
 
     let p3: C<Double> | null = p.then<Double>(new Double());
     let p4: C<A<A<Double>>> = new C<A<A<Double>>>();

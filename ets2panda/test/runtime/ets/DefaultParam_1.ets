@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function main():void{
+function main(): void {
     assert foo1() == 10;
     assert foo2() == c'a';
     assert foo3() == true;
@@ -22,67 +22,67 @@ function main():void{
     assert foo4(5) == 25;
 
     assert foo5(5) == 55;
-    assert foo5(5,10) == 45;
+    assert foo5(5, 10) == 45;
 
 
-    assert foo6() == 0;
-    assert foo7() == false;
-    assert foo8() == c'\u0000';
+    assert foo6() == undefined;
+    assert foo7() == undefined;
+    assert foo8() == undefined;
 
 
     assert foo13(10) == 15;
     assert foo14(10) == 25;
 
-    assert foo15(10,5) == 20;
-    assert foo16(10,5) == 30;
+    assert foo15(10, 5) == 20;
+    assert foo16(10, 5) == 30;
 }
 
-function foo1(a : int = 10) : int {
+function foo1(a: int = 10): int {
     return a;
 }
 
-function foo2(a : char = c'a') : char {
+function foo2(a: char = c'a'): char {
     return a;
 }
 
-function foo3(a : boolean = true) : boolean {
+function foo3(a: boolean = true): boolean {
     return a;
 }
 
-function foo4(a : int = 10, b : int = 20) : int {
+function foo4(a: int = 10, b: int = 20): int {
     return a + b;
 }
 
-function foo5(a : int = 10, b : int = 20, c : int = 30) : int {
+function foo5(a: int = 10, b: int = 20, c: int = 30): int {
     assert a == 5;
 
     return a + b + c;
 }
 
-function foo6(a? : int) : int {
+function foo6(a?: int): int | undefined {
     return a;
 }
 
-function foo7(a? : boolean) : boolean {
+function foo7(a?: boolean): boolean | undefined {
     return a;
 }
 
-function foo8(a? : char) : char {
+function foo8(a?: char): char | undefined {
     return a;
 }
 
-function foo13(a : int, b : int = 5) : int {
+function foo13(a: int, b: int = 5): int {
     return a + b;
 }
 
-function foo14(a : int, b : int = 5, c : int = 10) : int {
+function foo14(a: int, b: int = 5, c: int = 10): int {
     return a + b + c;
 }
 
-function foo15(a : int, b : int, c : int = 5) : int {
+function foo15(a: int, b: int, c: int = 5): int {
     return a + b + c;
 }
 
-function foo16(a : int, b : int, c : int = 10, d : int = 5) : int {
+function foo16(a: int, b: int, c: int = 10, d: int = 5): int {
     return a + b + c + d;
 }

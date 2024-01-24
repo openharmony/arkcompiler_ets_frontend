@@ -183,10 +183,10 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
     }
 }
 
-checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType)
+checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checker, checker::ETSUnionType *unionType,
+                                                     checker::Type *commonPropType)
+
 {
-    auto *const unionType = baseType->AsETSUnionType();
-    checker::Type *commonPropType = nullptr;
     auto const addPropType = [this, checker, &commonPropType](checker::Type *memberType) {
         if (commonPropType != nullptr && commonPropType != memberType) {
             checker->ThrowTypeError("Member type must be the same for all union objects.", Start());
@@ -198,26 +198,30 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
-        } else if (apparent->IsETSEnumType() || baseType->IsETSStringEnumType()) {
+        } else if (apparent->IsETSEnumType() || apparent->IsETSStringEnumType()) {
             addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
-            UNREACHABLE();
+            checker->ThrowTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
         }
     }
-    SetObjectType(unionType->GetLeastUpperBoundType()->AsETSObjectType());
+    return commonPropType;
+}
+
+checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, checker::Type *baseType)
+{
+    auto *const unionType = baseType->AsETSUnionType();
+    auto *const commonPropType = TraverseUnionMember(checker, unionType, nullptr);
+    SetObjectType(checker->GlobalETSObjectType());
     return commonPropType;
 }
 
 checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
-    SetOptionalType(type);
-    if (PropVar() != nullptr) {
+    auto *const objType = checker->GetApparentType(Object()->TsType());
+    if (PropVar() != nullptr) {  // access erased property type
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
-    }
-    if (IsOptional() && checker->MayHaveNulllikeValue(Object()->TsType())) {
-        checker->Relation()->SetNode(this);
-        type = checker->CreateOptionalResultType(type);
-        checker->Relation()->SetNode(nullptr);
+    } else if (IsComputed() && objType->IsETSArrayType()) {  // access erased array or tuple type
+        uncheckedType_ = checker->GuaranteedTypeForUncheckedCast(objType->AsETSArrayType()->ElementType(), type);
     }
     SetTsType(type);
     return TsType();
@@ -330,15 +334,6 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
         // LUB was calculated by casting
         const checker::CastingContext cast(checker->Relation(), this, baseType->AsETSArrayType()->ElementType(),
                                            tupleTypeAtIdx, Start(), {"Tuple type couldn't be converted "});
-
-        // NOTE(mmartin): this can be replaced with the general type mapper, once implemented
-        if ((GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-            SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tupleTypeAtIdx));
-        }
-
-        if (tupleTypeAtIdx->IsETSObjectType() && baseType->AsETSArrayType()->ElementType()->IsETSObjectType()) {
-            SetTupleConvertedType(tupleTypeAtIdx);
-        }
     }
 
     return tupleTypeAtIdx;

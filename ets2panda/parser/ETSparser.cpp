@@ -94,6 +94,7 @@
 #include "ir/ets/etsScript.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
+#include "ir/ets/etsNullishTypes.h"
 #include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
@@ -1399,6 +1400,7 @@ lexer::SourcePosition ETSParser::InitializeGlobalVariable(ir::Identifier *fieldN
         expressionStatement->SetParent(funcBody);
         expressionStatement->SetRange({startLoc, endLoc});
         funcBody->AsBlockStatement()->Statements().emplace_back(expressionStatement);
+        expressionStatement->SetParent(funcBody);
 
         if (typeAnnotation != nullptr && !typeAnnotation->IsETSFunctionType()) {
             initializer = nullptr;
@@ -2395,43 +2397,22 @@ std::string ETSParser::GetNameForETSUnionType(const ir::TypeNode *typeAnnotation
     std::string newstr;
     for (size_t i = 0; i < typeAnnotation->AsETSUnionType()->Types().size(); i++) {
         auto type = typeAnnotation->AsETSUnionType()->Types()[i];
-        if (type->IsNullAssignable() || type->IsUndefinedAssignable()) {
-            continue;
-        }
-        std::string str = GetNameForTypeNode(type, false);
+        std::string str = GetNameForTypeNode(type);
         newstr += str;
         if (i != typeAnnotation->AsETSUnionType()->Types().size() - 1) {
             newstr += "|";
         }
     }
-    if (typeAnnotation->IsNullAssignable()) {
-        newstr += "|null";
-    }
-    if (typeAnnotation->IsUndefinedAssignable()) {
-        newstr += "|undefined";
-    }
     return newstr;
 }
 
-std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation, bool adjust) const
+std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const
 {
     if (typeAnnotation->IsETSUnionType()) {
         return GetNameForETSUnionType(typeAnnotation);
     }
-
-    const auto adjustNullish = [typeAnnotation, adjust](std::string const &s) {
-        std::string newstr = s;
-        if (typeAnnotation->IsNullAssignable() && adjust) {
-            newstr += "|null";
-        }
-        if (typeAnnotation->IsUndefinedAssignable() && adjust) {
-            newstr += "|undefined";
-        }
-        return newstr;
-    };
-
     if (typeAnnotation->IsETSPrimitiveType()) {
-        return adjustNullish(PrimitiveTypeToName(typeAnnotation->AsETSPrimitiveType()->GetPrimitiveType()));
+        return PrimitiveTypeToName(typeAnnotation->AsETSPrimitiveType()->GetPrimitiveType());
     }
 
     if (typeAnnotation->IsETSTypeReference()) {
@@ -2447,8 +2428,7 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation, bo
             typeParamNames.pop_back();
             typeParamNames += ">";
         }
-        return adjustNullish(typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8() +
-                             typeParamNames);
+        return typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8() + typeParamNames;
     }
 
     if (typeAnnotation->IsETSFunctionType()) {
@@ -2464,12 +2444,20 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *typeAnnotation, bo
         lambdaParams.pop_back();
         const std::string returnTypeName = GetNameForTypeNode(typeAnnotation->AsETSFunctionType()->ReturnType());
 
-        return adjustNullish("((" + lambdaParams + ") => " + returnTypeName + ")");
+        return "((" + lambdaParams + ") => " + returnTypeName + ")";
     }
 
     if (typeAnnotation->IsTSArrayType()) {
         // Note! array is required for the rest parameter.
         return GetNameForTypeNode(typeAnnotation->AsTSArrayType()->ElementType()) + "[]";
+    }
+
+    if (typeAnnotation->IsETSNullType()) {
+        return "null";
+    }
+
+    if (typeAnnotation->IsETSUndefinedType()) {
+        return "undefined";
     }
 
     UNREACHABLE();
@@ -2661,33 +2649,15 @@ ir::TypeNode *ETSParser::ParseUnionType(ir::TypeNode *const firstType)
     ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
     types.push_back(firstType->AsTypeNode());
 
-    ir::ModifierFlags nullishModifiers {};
-
     while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
         Lexer()->NextToken();  // eat '|'
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
-            nullishModifiers |= ir::ModifierFlags::NULL_ASSIGNABLE;
-            Lexer()->NextToken();
-        } else if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_UNDEFINED) {
-            nullishModifiers |= ir::ModifierFlags::UNDEFINED_ASSIGNABLE;
-            Lexer()->NextToken();
-        } else {
-            auto options = TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
-            types.push_back(ParseTypeAnnotation(&options));
-        }
+        auto options = TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
+        types.push_back(ParseTypeAnnotation(&options));
     }
 
-    lexer::SourcePosition const endLoc = types.back()->End();
-
-    if (types.size() == 1) {  // Workaround until nullability is a typeflag
-        firstType->AddModifier(nullishModifiers);
-        firstType->SetRange({firstType->Start(), endLoc});
-        return firstType;
-    }
-
+    auto const endLoc = types.back()->End();
     auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types));
-    unionType->AddModifier(nullishModifiers);
     unionType->SetRange({firstType->Start(), endLoc});
     return unionType;
 }
@@ -2908,6 +2878,18 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
         }
         case lexer::TokenType::KEYW_SHORT: {
             typeAnnotation = ParsePrimitiveType(options, ir::PrimitiveType::SHORT);
+            break;
+        }
+        case lexer::TokenType::LITERAL_NULL: {
+            typeAnnotation = AllocNode<ir::ETSNullType>();
+            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            break;
+        }
+        case lexer::TokenType::KEYW_UNDEFINED: {
+            typeAnnotation = AllocNode<ir::ETSUndefinedType>();
+            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
@@ -3435,40 +3417,28 @@ static constexpr char const ONLY_ARRAY_FOR_REST[] = "Rest parameter should be of
 static constexpr char const EXPLICIT_PARAM_TYPE[] = "Parameter declaration should have an explicit type annotation.";
 // NOLINTEND(modernize-avoid-c-arrays)
 
-ir::Expression *ETSParser::ParseFunctionParameter()
+ir::ETSUnionType *ETSParser::CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation,
+                                                             ir::ETSUndefinedType *defaultUndef)
+{
+    ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
+    if (typeAnnotation->IsETSUnionType()) {
+        for (auto const &type : typeAnnotation->AsETSUnionType()->Types()) {
+            types.push_back(type);
+        }
+    } else {
+        types.push_back(typeAnnotation);
+    }
+    types.push_back(defaultUndef);
+
+    auto *const unionType = AllocNode<ir::ETSUnionType>(std::move(types));
+    unionType->SetRange({typeAnnotation->Start(), typeAnnotation->End()});
+    return unionType;
+}
+
+ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpression *const paramIdent,
+                                                            ir::ETSUndefinedType *defaultUndef)
 {
     ir::ETSParameterExpression *paramExpression;
-    auto *const paramIdent = GetAnnotatedExpressionFromParam();
-
-    bool defaultUndefined = false;
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-        if (paramIdent->IsRestElement()) {
-            ThrowSyntaxError(NO_DEFAULT_FOR_REST);
-        }
-        defaultUndefined = true;
-        Lexer()->NextToken();  // eat '?'
-    }
-
-    const bool isArrow = (GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0;
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        Lexer()->NextToken();  // eat ':'
-
-        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
-
-        if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
-            ThrowSyntaxError(ONLY_ARRAY_FOR_REST);
-        }
-
-        typeAnnotation->SetParent(paramIdent);
-        paramIdent->SetTsTypeAnnotation(typeAnnotation);
-        paramIdent->SetEnd(typeAnnotation->End());
-
-    } else if (!isArrow && !defaultUndefined) {
-        ThrowSyntaxError(EXPLICIT_PARAM_TYPE);
-    }
-
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         if (paramIdent->IsRestElement()) {
             ThrowSyntaxError(NO_DEFAULT_FOR_REST);
@@ -3477,10 +3447,9 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         auto const lexerPos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
-        if (defaultUndefined) {
+        if (defaultUndef != nullptr) {
             ThrowSyntaxError("Not enable default value with default undefined");
         }
-
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
             Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             ThrowSyntaxError("You didn't set the value.");
@@ -3499,52 +3468,68 @@ ir::Expression *ETSParser::ParseFunctionParameter()
 
         paramExpression->SetRange({paramIdent->Start(), paramExpression->Initializer()->End()});
     } else if (paramIdent->IsIdentifier()) {
-        auto *const typeAnnotation = paramIdent->AsIdentifier()->TypeAnnotation();
+        auto *typeAnnotation = paramIdent->AsIdentifier()->TypeAnnotation();
 
-        const auto typeAnnotationValue = [this, typeAnnotation]() -> std::pair<ir::Expression *, std::string> {
+        const auto typeAnnotationValue = [this, typeAnnotation,
+                                          defaultUndef]() -> std::pair<ir::Expression *, std::string> {
             if (typeAnnotation == nullptr) {
                 return std::make_pair(nullptr, "");
             }
-            if (!typeAnnotation->IsETSPrimitiveType()) {
-                return std::make_pair(AllocNode<ir::UndefinedLiteral>(), "undefined");
-            }
-            // NOTE(ttamas) : after nullable fix, fix this scope
-            switch (typeAnnotation->AsETSPrimitiveType()->GetPrimitiveType()) {
-                case ir::PrimitiveType::BYTE:
-                case ir::PrimitiveType::INT:
-                case ir::PrimitiveType::LONG:
-                case ir::PrimitiveType::SHORT:
-                case ir::PrimitiveType::FLOAT:
-                case ir::PrimitiveType::DOUBLE:
-                    return std::make_pair(AllocNode<ir::NumberLiteral>(lexer::Number(0)), "0");
-                case ir::PrimitiveType::BOOLEAN:
-                    return std::make_pair(AllocNode<ir::BooleanLiteral>(false), "false");
-                case ir::PrimitiveType::CHAR:
-                    return std::make_pair(AllocNode<ir::CharLiteral>(), "c'\\u0000'");
-                default: {
-                    UNREACHABLE();
-                }
-            }
+            return std::make_pair(defaultUndef != nullptr ? AllocNode<ir::UndefinedLiteral>() : nullptr, "undefined");
         }();
 
-        if (defaultUndefined && !typeAnnotation->IsETSPrimitiveType()) {
-            typeAnnotation->AddModifier(ir::ModifierFlags::UNDEFINED_ASSIGNABLE);
-        }
-
-        paramExpression = AllocNode<ir::ETSParameterExpression>(
-            paramIdent->AsIdentifier(), defaultUndefined ? std::get<0>(typeAnnotationValue) : nullptr);
-
-        if (defaultUndefined) {
+        paramExpression =
+            AllocNode<ir::ETSParameterExpression>(paramIdent->AsIdentifier(), std::get<0>(typeAnnotationValue));
+        if (defaultUndef != nullptr) {
             paramExpression->SetLexerSaved(util::UString(std::get<1>(typeAnnotationValue), Allocator()).View());
         }
-
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     } else {
         paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent->AsRestElement(), nullptr);
         paramExpression->SetRange({paramIdent->Start(), paramIdent->End()});
     }
-
     return paramExpression;
+}
+
+ir::Expression *ETSParser::ParseFunctionParameter()
+{
+    auto *const paramIdent = GetAnnotatedExpressionFromParam();
+
+    ir::ETSUndefinedType *defaultUndef = nullptr;
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+        if (paramIdent->IsRestElement()) {
+            ThrowSyntaxError(NO_DEFAULT_FOR_REST);
+        }
+        defaultUndef = AllocNode<ir::ETSUndefinedType>();
+        defaultUndef->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+        Lexer()->NextToken();  // eat '?'
+    }
+
+    const bool isArrow = (GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0;
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+        Lexer()->NextToken();  // eat ':'
+
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        ir::TypeNode *typeAnnotation = ParseTypeAnnotation(&options);
+
+        if (defaultUndef != nullptr) {
+            typeAnnotation = CreateOptionalParameterTypeNode(typeAnnotation, defaultUndef);
+        }
+
+        if (paramIdent->IsRestElement() && !typeAnnotation->IsTSArrayType()) {
+            ThrowSyntaxError(ONLY_ARRAY_FOR_REST);
+        }
+
+        typeAnnotation->SetParent(paramIdent);
+        paramIdent->SetTsTypeAnnotation(typeAnnotation);
+        paramIdent->SetEnd(typeAnnotation->End());
+    } else if (!isArrow && defaultUndef == nullptr) {
+        ThrowSyntaxError(EXPLICIT_PARAM_TYPE);
+    }
+
+    return ParseFunctionParameterExpression(paramIdent, defaultUndef);
 }
 
 ir::Expression *ETSParser::CreateParameterThis(const util::StringView className)
@@ -4128,6 +4113,10 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
     while (true) {
         switch (Lexer()->GetToken().Type()) {
             case lexer::TokenType::PUNCTUATOR_QUESTION_DOT: {
+                if (*isChainExpression) {
+                    break;  // terminate current chain
+                }
+                *isChainExpression = true;
                 Lexer()->NextToken();  // eat ?.
 
                 if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
@@ -4166,7 +4155,6 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
                 if (ignoreCallExpression) {
                     break;
                 }
-
                 returnExpression = ParseCallExpression(returnExpression, false, false);
                 continue;
             }

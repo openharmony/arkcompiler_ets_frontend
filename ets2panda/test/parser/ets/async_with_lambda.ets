@@ -15,7 +15,7 @@
 
 let global: int;
 
-async function func(param: int): Promise<String> | null {
+async function func(param: int): Promise<String | null> {
     let local: int;
     let lambda: () => void = (): void => {
         param;
@@ -23,7 +23,7 @@ async function func(param: int): Promise<String> | null {
         global;
         let x = 0;
     }
-    let async_lambda: () => Promise<Object> | null = async (): Promise<Object> | null => {
+    let async_lambda: () => Promise<Object | null> = async (): Promise<Object | null> => {
         param;
         local;
         global;

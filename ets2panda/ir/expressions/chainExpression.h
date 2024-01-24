@@ -45,6 +45,11 @@ public:
         return expression_;
     }
 
+    Expression *GetExpression() noexcept
+    {
+        return expression_;
+    }
+
     [[nodiscard]] ChainExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;

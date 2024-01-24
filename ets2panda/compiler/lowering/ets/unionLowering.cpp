@@ -20,8 +20,10 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "checker/ets/boxingConverter.h"
+#include "checker/ets/unboxingConverter.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/astNode.h"
@@ -82,11 +84,11 @@ varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSChecker *che
     }
 
     // Create field name for synthetic class
-    auto *fieldIdent = allocator->New<ir::Identifier>(propName, allocator);
+    auto *fieldIdent = checker->AllocNode<ir::Identifier>(propName, allocator);
 
     // Create the synthetic class property node
     auto *field =
-        allocator->New<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
+        checker->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
 
     // Add the declaration to the scope
     auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(fieldIdent->Start(), fieldIdent->Name());
@@ -105,6 +107,11 @@ varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSChecker *che
 void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *vbind, ir::MemberExpression *expr)
 {
     ASSERT(expr->PropVar() == nullptr);
+    auto parent = expr->Parent();
+    if (parent->IsCallExpression() &&
+        !parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)) {
+        return;
+    }
     expr->SetPropVar(
         CreateUnionFieldClassProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
     ASSERT(expr->PropVar() != nullptr);
@@ -116,7 +123,6 @@ ir::TSAsExpression *GenAsExpression(checker::ETSChecker *checker, checker::Type 
     auto *const typeNode = checker->AllocNode<ir::OpaqueTypeNode>(opaqueType);
     auto *const asExpression = checker->AllocNode<ir::TSAsExpression>(node, typeNode, false);
     asExpression->SetParent(parent);
-    node->SetParent(asExpression);
     asExpression->Check(checker);
     return asExpression;
 }
@@ -131,13 +137,7 @@ ir::TSAsExpression *UnionCastToPrimitive(checker::ETSChecker *checker, checker::
                                          checker::Type *unboxedPrim, ir::Expression *unionNode)
 {
     auto *const unionAsRefExpression = GenAsExpression(checker, unboxableRef, unionNode, nullptr);
-    unionAsRefExpression->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedPrim));
-    unionNode->SetParent(unionAsRefExpression);
-
-    auto *const refAsPrimExpression = GenAsExpression(checker, unboxedPrim, unionAsRefExpression, unionNode->Parent());
-    unionAsRefExpression->SetParent(refAsPrimExpression);
-
-    return refAsPrimExpression;
+    return GenAsExpression(checker, unboxedPrim, unionAsRefExpression, unionNode->Parent());
 }
 
 ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *checker, ir::TSAsExpression *expr)
@@ -164,36 +164,15 @@ ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *checker, ir:
     return expr;
 }
 
-ir::BinaryExpression *GenInstanceofExpr(checker::ETSChecker *checker, ir::Expression *unionNode,
+ir::BinaryExpression *GenInstanceofExpr(checker::ETSChecker *checker, ir::Identifier *unionNode,
                                         checker::Type *constituentType)
 {
     auto *const lhsExpr = unionNode->Clone(checker->Allocator(), nullptr)->AsExpression();
     lhsExpr->Check(checker);
     lhsExpr->SetBoxingUnboxingFlags(unionNode->GetBoxingUnboxingFlags());
-    auto *rhsType = constituentType;
-    if (!constituentType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-        checker->Relation()->SetNode(unionNode);
-        rhsType = checker::conversion::Boxing(checker->Relation(), constituentType);
-        checker->Relation()->SetNode(nullptr);
-    }
-    if (constituentType->IsETSStringType()) {
-        rhsType = checker->GlobalBuiltinETSStringType();
-    }
-    ir::Expression *rhsExpr;
-    if (rhsType->IsETSUndefinedType()) {
-        rhsExpr = checker->Allocator()->New<ir::UndefinedLiteral>();
-    } else if (rhsType->IsETSNullType()) {
-        rhsExpr = checker->Allocator()->New<ir::NullLiteral>();
-    } else {
-        rhsExpr = checker->Allocator()->New<ir::Identifier>(rhsType->AsETSObjectType()->Name(), checker->Allocator());
-        auto rhsVar = NearestScope(unionNode)->Find(rhsExpr->AsIdentifier()->Name());
-        rhsExpr->AsIdentifier()->SetVariable(rhsVar.variable);
-    }
+    auto *const rhsExpr = checker->AllocNode<ir::OpaqueTypeNode>(constituentType);
     auto *const instanceofExpr =
-        checker->Allocator()->New<ir::BinaryExpression>(rhsExpr, rhsExpr, lexer::TokenType::KEYW_INSTANCEOF);
-    rhsExpr->SetParent(instanceofExpr);
-    rhsExpr->SetParent(instanceofExpr);
-    rhsExpr->SetTsType(rhsType);
+        checker->AllocNode<ir::BinaryExpression>(lhsExpr, rhsExpr, lexer::TokenType::KEYW_INSTANCEOF);
     instanceofExpr->SetOperationType(checker->GlobalETSObjectType());
     instanceofExpr->SetTsType(checker->GlobalETSBooleanType());
     return instanceofExpr;
@@ -212,6 +191,9 @@ ir::VariableDeclaration *GenVariableDeclForBinaryExpr(checker::ETSChecker *check
     varId->SetTsType(var->TsType());
 
     auto declarator = checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, varId);
+    declarator->SetInit(
+        checker->AllocNode<ir::BooleanLiteral>(expr->OperatorType() != lexer::TokenType::PUNCTUATOR_EQUAL));
+    declarator->Init()->Check(checker);
     ArenaVector<ir::VariableDeclarator *> declarators(checker->Allocator()->Adapter());
     declarators.push_back(declarator);
 
@@ -248,8 +230,9 @@ ir::BlockStatement *GenBlockStmtForAssignmentBinary(checker::ETSChecker *checker
 ir::Expression *SetBoxFlagOrGenAsExpression(checker::ETSChecker *checker, checker::Type *constituentType,
                                             ir::Expression *otherNode)
 {
-    if (constituentType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE) &&
-        !otherNode->IsETSUnionType() && otherNode->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+    if (constituentType->IsETSObjectType() &&
+        constituentType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE) &&
+        otherNode->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         auto *unboxedConstituentType = checker->ETSBuiltinTypeAsPrimitiveType(constituentType);
         if (unboxedConstituentType != otherNode->TsType()) {
             auto *const primAsExpression =
@@ -266,25 +249,18 @@ ir::Expression *SetBoxFlagOrGenAsExpression(checker::ETSChecker *checker, checke
     return otherNode;
 }
 
-ir::Expression *ProcessOperandsInBinaryExpr(checker::ETSChecker *checker, ir::BinaryExpression *expr,
-                                            checker::Type *constituentType)
+ir::Expression *ProcessOperandsInBinaryExpr(checker::ETSChecker *checker, ir::BinaryExpression *expr, bool isLhsUnion,
+                                            checker::ETSObjectType *constituentType)
 {
     ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL);
-    bool isLhsUnion = false;
-    ir::Expression *unionNode = (isLhsUnion = expr->Left()->TsType()->IsETSUnionType()) ? expr->Left() : expr->Right();
-    checker::Type *typeToCast = constituentType->IsETSNullLike()
-                                    ? unionNode->TsType()->AsETSUnionType()->GetLeastUpperBoundType()
-                                    : constituentType;
-    auto *const asExpression = GenAsExpression(checker, typeToCast, unionNode, expr);
     if (isLhsUnion) {
-        expr->SetLeft(asExpression);
-        expr->SetRight(SetBoxFlagOrGenAsExpression(checker, constituentType, expr->Right()));
+        expr->SetLeft(UnionCastToPrimitive(checker, constituentType, expr->Right()->TsType(), expr->Left()));
     } else {
-        expr->SetRight(asExpression);
-        expr->SetLeft(SetBoxFlagOrGenAsExpression(checker, constituentType, expr->Left()));
+        expr->SetRight(UnionCastToPrimitive(checker, constituentType, expr->Left()->TsType(), expr->Right()));
     }
-    expr->SetOperationType(checker->GlobalETSObjectType());
+    ASSERT(expr->Right()->TsType() == expr->Left()->TsType());
+    expr->SetOperationType(expr->Right()->TsType());
     expr->SetTsType(checker->GlobalETSBooleanType());
     return expr;
 }
@@ -299,8 +275,7 @@ ir::Statement *FindStatementFromNode(ir::Expression *expr)
     return node->AsStatement();
 }
 
-void InsertInstanceofTreeBeforeStmt(ir::Statement *stmt, ir::VariableDeclaration *binaryVarDecl,
-                                    ir::Statement *instanceofTree)
+static void InsertAfterStmt(ir::Statement *stmt, ir::Statement *ins)
 {
     if (stmt->IsVariableDeclarator()) {
         ASSERT(stmt->Parent()->IsVariableDeclaration());
@@ -308,64 +283,126 @@ void InsertInstanceofTreeBeforeStmt(ir::Statement *stmt, ir::VariableDeclaration
     }
     ASSERT(stmt->Parent()->IsBlockStatement());
     auto *block = stmt->Parent()->AsBlockStatement();
-    binaryVarDecl->SetParent(block);
-    instanceofTree->SetParent(block);
+    ins->SetParent(block);
     auto itStmt = std::find(block->Statements().begin(), block->Statements().end(), stmt);
-    block->Statements().insert(itStmt, {binaryVarDecl, instanceofTree});
+    block->Statements().insert(itStmt, ins);
 }
 
-ir::BlockStatement *ReplaceBinaryExprInStmt(checker::ETSChecker *checker, ir::Expression *unionNode,
-                                            ir::BlockStatement *block, ir::BinaryExpression *expr)
+static ir::Identifier *CreatePrecomputedTemporary(public_lib::Context *ctx, ir::Statement *pos, ir::Expression *expr)
 {
+    auto *const allocator = ctx->allocator;
+    auto *const checker = ctx->checker->AsETSChecker();
+    auto *const parser = ctx->parser->AsETSParser();
+    auto *const varbinder = ctx->compilerContext->VarBinder();
+
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(expr));
+
+    auto *const temp = Gensym(allocator);
+
+    auto *const vardecl = parser->CreateFormattedStatements("let @@I1: @@T2;", parser::DEFAULT_SOURCE_FILE, temp,
+                                                            checker->AllocNode<ir::OpaqueTypeNode>(expr->TsType()))[0];
+
+    InsertAfterStmt(pos, vardecl);
+    InitScopesPhaseETS::RunExternalNode(vardecl, varbinder);
+    vardecl->AsVariableDeclaration()->Declarators()[0]->SetInit(expr);
+    vardecl->Check(checker);
+
+    auto *cloned = temp->Clone(allocator, nullptr);
+    cloned->Check(checker);
+    return cloned;
+}
+
+static ir::BlockStatement *ReplaceBinaryExprInStmt(public_lib::Context *ctx, ir::BlockStatement *block,
+                                                   ir::BinaryExpression *expr)
+{
+    auto *const checker = ctx->checker->AsETSChecker();
+
     auto *stmt = FindStatementFromNode(expr);
     ASSERT(stmt->IsVariableDeclarator() || block == stmt->Parent());  // statement with union
     auto *const binaryVarDecl = GenVariableDeclForBinaryExpr(checker, NearestScope(stmt), expr);
     auto *const varDeclId = binaryVarDecl->Declarators().front()->Id();  // only one declarator was generated
     ir::IfStatement *instanceofTree = nullptr;
+
+    expr->SetLeft(CreatePrecomputedTemporary(ctx, stmt, expr->Left()));
+    expr->SetRight(CreatePrecomputedTemporary(ctx, stmt, expr->Right()));
+
+    bool isLhsUnion = expr->Left()->TsType()->IsETSUnionType();
+    auto *const unionNode = isLhsUnion ? expr->Left() : expr->Right();
+
     for (auto *uType : unionNode->TsType()->AsETSUnionType()->ConstituentTypes()) {
-        auto *const test = GenInstanceofExpr(checker, unionNode, uType);
+        if (!uType->IsETSObjectType() ||
+            !uType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+            continue;
+        }
+        auto *const test = GenInstanceofExpr(checker, unionNode->AsIdentifier(), uType);
         auto *clonedBinary = expr->Clone(checker->Allocator(), expr->Parent())->AsBinaryExpression();
         clonedBinary->Check(checker);
         auto *const consequent = GenBlockStmtForAssignmentBinary(
-            checker, varDeclId->AsIdentifier(), ProcessOperandsInBinaryExpr(checker, clonedBinary, uType));
+            checker, varDeclId->AsIdentifier()->Clone(checker->Allocator(), nullptr),
+            ProcessOperandsInBinaryExpr(checker, clonedBinary, isLhsUnion, uType->AsETSObjectType()));
         instanceofTree = checker->AllocNode<ir::IfStatement>(test, consequent, instanceofTree);
     }
     ASSERT(instanceofTree != nullptr);
     // Replacing a binary expression with an identifier
     // that was set in one of the branches of the `instanceof_tree` tree
-    stmt->TransformChildrenRecursively([varDeclId](ir::AstNode *ast) -> ir::AstNode * {
+    stmt->TransformChildrenRecursively([varDeclId, checker](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsBinaryExpression() && ast->AsBinaryExpression()->OperationType() != nullptr &&
             ast->AsBinaryExpression()->OperationType()->IsETSUnionType()) {
-            return varDeclId;
+            auto cloned = varDeclId->Clone(checker->Allocator(), ast->Parent());
+            cloned->Check(checker);
+            return cloned;
         }
 
         return ast;
     });
-    InsertInstanceofTreeBeforeStmt(stmt, binaryVarDecl, instanceofTree);
+    InsertAfterStmt(stmt, binaryVarDecl);
+    InsertAfterStmt(stmt, instanceofTree);
     return block;
 }
 
-ir::BlockStatement *HandleBlockWithBinaryAndUnion(checker::ETSChecker *checker, ir::BlockStatement *block,
+ir::BlockStatement *HandleBlockWithBinaryAndUnion(public_lib::Context *ctx, ir::BlockStatement *block,
                                                   ir::BinaryExpression *binExpr)
 {
     if (binExpr->OperatorType() != lexer::TokenType::PUNCTUATOR_EQUAL &&
         binExpr->OperatorType() != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
-        checker->ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.",
-                                binExpr->Start());
+        ctx->checker->ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.",
+                                     binExpr->Start());
     }
-    ir::Expression *unionNode = binExpr->Left()->TsType()->IsETSUnionType() ? binExpr->Left() : binExpr->Right();
-    return ReplaceBinaryExprInStmt(checker, unionNode, block, binExpr);
+    return ReplaceBinaryExprInStmt(ctx, block, binExpr);
 }
 
-ir::BlockStatement *HandleBlockWithBinaryAndUnions(checker::ETSChecker *checker, ir::BlockStatement *block,
+ir::BlockStatement *HandleBlockWithBinaryAndUnions(public_lib::Context *ctx, ir::BlockStatement *block,
                                                    const ir::NodePredicate &handleBinary)
 {
     ir::BlockStatement *modifiedAstBlock = block;
     while (modifiedAstBlock->IsAnyChild(handleBinary)) {
         modifiedAstBlock = HandleBlockWithBinaryAndUnion(
-            checker, modifiedAstBlock, modifiedAstBlock->FindChild(handleBinary)->AsBinaryExpression());
+            ctx, modifiedAstBlock, modifiedAstBlock->FindChild(handleBinary)->AsBinaryExpression());
     }
     return modifiedAstBlock;
+}
+
+static bool BinaryLoweringAppliable(const ir::AstNode *astNode)
+{
+    if (!astNode->IsBinaryExpression()) {
+        return false;
+    }
+    auto *binary = astNode->AsBinaryExpression();
+    if (binary->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
+        return false;
+    }
+    auto *const lhsType = binary->Left()->TsType();
+    auto *const rhsType = binary->Right()->TsType();
+    if (lhsType == nullptr || rhsType == nullptr) {
+        return false;
+    }
+    if (lhsType->IsETSReferenceType() && rhsType->IsETSReferenceType()) {
+        return false;
+    }
+    if (!lhsType->IsETSUnionType() && !rhsType->IsETSUnionType()) {
+        return false;
+    }
+    return binary->OperationType() != nullptr && binary->OperationType()->IsETSUnionType();
 }
 
 bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
@@ -379,11 +416,14 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
-            ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType()) {
-            HandleUnionPropertyAccess(checker, checker->VarBinder(), ast->AsMemberExpression());
-            return ast;
+    program->Ast()->TransformChildrenRecursively([checker, ctx](ir::AstNode *ast) -> ir::AstNode * {
+        if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
+            auto *objType =
+                checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
+            if (objType->IsETSUnionType()) {
+                HandleUnionPropertyAccess(checker, checker->VarBinder(), ast->AsMemberExpression());
+                return ast;
+            }
         }
 
         if (ast->IsTSAsExpression() && ast->AsTSAsExpression()->Expr()->TsType() != nullptr &&
@@ -393,12 +433,8 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
             return HandleUnionCastToPrimitive(checker, ast->AsTSAsExpression());
         }
 
-        auto handleBinary = [](const ir::AstNode *astNode) {
-            return astNode->IsBinaryExpression() && astNode->AsBinaryExpression()->OperationType() != nullptr &&
-                   astNode->AsBinaryExpression()->OperationType()->IsETSUnionType();
-        };
-        if (ast->IsBlockStatement() && ast->IsAnyChild(handleBinary)) {
-            return HandleBlockWithBinaryAndUnions(checker, ast->AsBlockStatement(), handleBinary);
+        if (ast->IsBlockStatement() && ast->IsAnyChild(BinaryLoweringAppliable)) {
+            return HandleBlockWithBinaryAndUnions(ctx, ast->AsBlockStatement(), BinaryLoweringAppliable);
         }
 
         return ast;
@@ -409,10 +445,19 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
 bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    bool current = !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
-        return ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
-               ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
-               ast->AsMemberExpression()->PropVar() == nullptr;
+    bool current = !program->Ast()->IsAnyChild([checker = ctx->checker->AsETSChecker()](ir::AstNode *ast) {
+        if (!ast->IsMemberExpression() || ast->AsMemberExpression()->Object()->TsType() == nullptr) {
+            return false;
+        }
+        auto *objType =
+            checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
+        auto *parent = ast->Parent();
+        if (parent != nullptr &&  // #15040
+            !(parent->IsCallExpression() &&
+              parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE))) {
+            return false;
+        }
+        return objType->IsETSUnionType() && ast->AsMemberExpression()->PropVar() == nullptr;
     });
     if (!current || ctx->compilerContext->Options()->compilationMode != CompilationMode::GEN_STD_LIB) {
         return current;

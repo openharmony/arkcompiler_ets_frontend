@@ -60,10 +60,6 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        if (IsNullish()) {
-            return {false, false};
-        }
-
         return {IsConstantType(), IsConstantType() ? (GetValue().Length() != 0) : false};
     }
 

@@ -23,7 +23,7 @@
 namespace ark::es2panda::checker {
 void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
 {
-    bool needParens = (element_->IsETSUnionType() || element_->IsETSFunctionType() || element_->IsNullish());
+    bool needParens = (element_->IsETSUnionType() || element_->IsETSFunctionType());
     if (needParens) {
         ss << "(";
     }
@@ -32,11 +32,6 @@ void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
         ss << ")";
     }
     ss << "[]";
-
-    if (IsNullish()) {
-        ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
-           << lexer::TokenToString(lexer::TokenType::LITERAL_NULL);
-    }
 }
 
 void ETSArrayType::ToAssemblerType(std::stringstream &ss) const
@@ -73,10 +68,6 @@ uint32_t ETSArrayType::Rank() const
 
 void ETSArrayType::Identical(TypeRelation *relation, Type *other)
 {
-    if ((ContainsNull() != other->ContainsNull()) || (ContainsUndefined() != other->ContainsUndefined())) {
-        return;
-    }
-
     if (other->IsETSArrayType()) {
         // will be removed, if wildcard type is assigned to array type, not element type
         if (element_->IsWildcardType() || other->AsETSArrayType()->ElementType()->IsWildcardType()) {
@@ -89,19 +80,6 @@ void ETSArrayType::Identical(TypeRelation *relation, Type *other)
 
 void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    if (source->IsETSNullType()) {
-        relation->Result(ContainsNull());
-        return;
-    }
-    if (source->IsETSUndefinedType()) {
-        relation->Result(ContainsUndefined());
-        return;
-    }
-
-    if ((source->ContainsNull() && !ContainsNull()) || (source->ContainsUndefined() && !ContainsUndefined())) {
-        return;
-    }
-
     if (source->IsETSArrayType()) {
         if (AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ||
             source->AsETSArrayType()->ElementType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
@@ -159,7 +137,7 @@ void ETSArrayType::IsSupertypeOf(TypeRelation *const relation, Type *source)
     if (source->IsETSArrayType()) {
         auto *const sourceElemType = this->AsETSArrayType()->ElementType();
         auto *const targetElemType = source->AsETSArrayType()->ElementType();
-        if (ETSChecker::IsReferenceType(targetElemType) && ETSChecker::IsReferenceType(sourceElemType)) {
+        if (targetElemType->IsETSReferenceType() && sourceElemType->IsETSReferenceType()) {
             sourceElemType->IsSupertypeOf(relation, targetElemType);
         }
     }

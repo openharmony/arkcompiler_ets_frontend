@@ -31,7 +31,7 @@ public:
             return;
         }
 
-        SetResult(GlobalTypeFromSource(source->AsETSObjectType()->BuiltInKind()));
+        SetResult(GlobalTypeFromSource(checker, source->AsETSObjectType()));
         relation->Result(source != Result());
     }
 
@@ -44,12 +44,12 @@ public:
             return;
         }
 
-        SetResult(GlobalTypeFromSource(Source()->AsETSObjectType()->BuiltInKind()));
+        SetResult(GlobalTypeFromSource(checker, source->AsETSObjectType()));
 
         Relation()->Result(Result()->TypeFlags() == target->TypeFlags());
     }
 
-    checker::Type *GlobalTypeFromSource(ETSObjectFlags type);
+    static checker::Type *GlobalTypeFromSource(checker::ETSChecker const *checker, ETSObjectType *type);
 };
 }  // namespace ark::es2panda::checker
 

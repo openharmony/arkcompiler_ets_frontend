@@ -131,18 +131,14 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
     return arrayType;
 }
 
-Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituentTypes)
+Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
 {
     if (constituentTypes.empty()) {
         return nullptr;
     }
 
     ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
-
-    for (auto *it : constituentTypes) {
-        newConstituentTypes.push_back(
-            it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? BoxingConverter::ETSTypeFromSource(this, it) : it);
-    }
+    newConstituentTypes.assign(constituentTypes.begin(), constituentTypes.end());
 
     ETSUnionType::NormalizeTypes(Relation(), newConstituentTypes);
     if (newConstituentTypes.size() == 1) {
@@ -308,8 +304,7 @@ ETSObjectType *ETSChecker::UpdateGlobalType(ETSObjectType *objType, util::String
         }
 
         if (name == compiler::Signatures::BUILTIN_OBJECT_CLASS) {
-            auto *nullish =
-                CreateNullishType(objType, checker::TypeFlag::NULLISH, Allocator(), Relation(), GetGlobalTypesHolder());
+            auto *nullish = CreateETSUnionType({objType, GlobalETSNullType(), GlobalETSUndefinedType()});
             GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
         }
     }

@@ -39,14 +39,12 @@ enum class ETSObjectFlags : uint32_t {
     RESOLVED_SUPER = 1U << 9U,
     RESOLVED_TYPE_PARAMS = 1U << 10U,
     CHECKED_COMPATIBLE_ABSTRACTS = 1U << 11U,
-    NULL_TYPE = 1U << 12U,
-    STRING = 1U << 13U,
-    INCOMPLETE_INSTANTIATION = 1U << 14U,
-    INNER = 1U << 15U,
-    DYNAMIC = 1U << 16U,
-    ASYNC_FUNC_RETURN_TYPE = 1U << 17U,
-    CHECKED_INVOKE_LEGITIMACY = 1U << 18U,
-    UNDEFINED_TYPE = 1U << 19U,
+    STRING = 1U << 12U,
+    INCOMPLETE_INSTANTIATION = 1U << 13U,
+    INNER = 1U << 14U,
+    DYNAMIC = 1U << 15U,
+    ASYNC_FUNC_RETURN_TYPE = 1U << 16U,
+    CHECKED_INVOKE_LEGITIMACY = 1U << 17U,
 
     BUILTIN_BIGINT = 1U << 22U,
     BUILTIN_STRING = 1U << 23U,
@@ -294,6 +292,11 @@ public:
     ETSObjectType *GetOriginalBaseType() noexcept
     {
         return const_cast<ETSObjectType *>(GetConstOriginalBaseType());
+    }
+
+    bool IsGlobalETSObjectType() const noexcept
+    {
+        return superType_ == nullptr;
     }
 
     bool IsPropertyInherited(const varbinder::Variable *var)
@@ -544,10 +547,9 @@ private:
         }
     }
     ArenaMap<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
-    void IdenticalUptoNullability(TypeRelation *relation, Type *other);
     bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
                                TypeFlag narrowingFlags);
-    void IdenticalUptoNullabilityAndTypeArguments(TypeRelation *relation, Type *other);
+    void IdenticalUptoTypeArguments(TypeRelation *relation, Type *other);
     void IsGenericSupertypeOf(TypeRelation *relation, Type *source);
 
     ir::TSTypeParameterDeclaration *GetTypeParams() const

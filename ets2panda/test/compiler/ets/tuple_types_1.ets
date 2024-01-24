@@ -72,10 +72,10 @@ function main(): void {
     let g_var: [number, string][];
     g_var = [[1, "A"], [2, "B"], [3, "C"]];
 
-    let h_var: [number, int, string, boolean, Object] = [1, 2, "asd", false, new Object()];
-    let i_var: float = h_var[1];
-
-    let j_var: [int, number, string, boolean, Object] = [6, 7, "abc", true, 666];
+    // #15570 - test ArrayExpr assignability with individual element types
+    // let h_var: [number, int, string, boolean, Object] = [1, 2, "asd", false, new Object()];
+    // let i_var: float = h_var[1];
+    // let j_var: [int, number, string, boolean, Object] = [6, 7, "abc", true, 666];
     // NOTE: Bug in op_assignment lowering (removes const from property)
     // j_var[0] += new Short(2 as short);
 

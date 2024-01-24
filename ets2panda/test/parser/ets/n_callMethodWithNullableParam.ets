@@ -20,5 +20,5 @@ class A {
 function main(): void {
     let an : A | null = new A();
 
-    an.foo(an);
+    new A().foo(an);
 }

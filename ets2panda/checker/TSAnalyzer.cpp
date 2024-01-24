@@ -301,6 +301,18 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node
     UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check(ir::ETSNullType *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check(ir::ETSUndefinedType *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check(ir::ETSUnionType *node) const
 {
     (void)node;

@@ -58,7 +58,7 @@ public:
         return size_ + (spreadType_ == nullptr ? 0 : 1);
     }
 
-    [[nodiscard]] ArenaVector<Type *> GetTupleTypesList() const
+    [[nodiscard]] ArenaVector<Type *> const &GetTupleTypesList() const
     {
         return typeList_;
     }
@@ -90,7 +90,7 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
-    ArenaVector<Type *> typeList_;
+    ArenaVector<Type *> const typeList_;
     Type *spreadType_ {};
     TupleSizeType size_ {0};
 };

@@ -86,24 +86,20 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
                                                                  const ArenaVector<ir::Expression *> &arguments)
 {
     Substitution *substitution = checker->NewSubstitution();
-    auto *instantiatedTypeParams = checker->NewInstantiatedTypeParamsSet();
     auto *sigInfo = signature->GetSignatureInfo();
-    auto &typeParams = sigInfo->typeParams;
     for (size_t ix = 0; ix < arguments.size(); ix++) {
         auto *arg = arguments[ix];
         if (arg->IsObjectExpression()) {
             continue;
         }
-        auto *argType = arg->Check(checker);
-        argType = MaybeBoxedType(checker, argType, arg);
+        auto *argType = MaybeBoxedType(checker, arg->Check(checker), arg);
         auto *paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
                           : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
                                                           : nullptr;
         if (paramType == nullptr) {
             continue;
         }
-        if (!checker->EnhanceSubstitutionForType(typeParams, paramType, argType, substitution,
-                                                 instantiatedTypeParams)) {
+        if (!checker->EnhanceSubstitutionForType(sigInfo->typeParams, paramType, argType, substitution)) {
             return nullptr;
         }
     }

@@ -44,6 +44,7 @@
 #include "checker/types/ets/etsStringType.h"
 #include "checker/types/ets/etsBigIntType.h"
 #include "checker/types/ets/etsVoidType.h"
+#include "checker/types/ets/etsNullishTypes.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/wildcardType.h"
 #include "util/helpers.h"
@@ -91,16 +92,8 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     globalTypes_[static_cast<size_t>(GlobalTypeId::CHAR)] = allocator->New<CharType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_BOOLEAN)] = allocator->New<ETSBooleanType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_VOID)] = allocator->New<ETSVoidType>();
-    auto *globalNullType = allocator->New<ETSObjectType>(allocator);
-    globalNullType->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NULL_TYPE);
-    globalNullType->AsETSObjectType()->SetName("null");
-    globalNullType->AsETSObjectType()->SetAssemblerName("null has no symbol!");
-    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NULL)] = globalNullType;
-    auto *globalUndefinedType = allocator->New<ETSObjectType>(allocator);
-    globalUndefinedType->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::UNDEFINED_TYPE);
-    globalUndefinedType->AsETSObjectType()->SetName("undefined");
-    globalUndefinedType->AsETSObjectType()->SetAssemblerName("undefined has no symbol!");
-    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = globalUndefinedType;
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NULL)] = allocator->New<ETSNullType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = allocator->New<ETSUndefinedType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_WILDCARD)] = allocator->New<WildcardType>();
 
     builtinNameMappings_.emplace("Boolean", GlobalTypeId::ETS_BOOLEAN_BUILTIN);

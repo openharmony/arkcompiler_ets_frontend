@@ -170,10 +170,6 @@ static ir::ModifierFlags E2pToIrModifierFlags(es2panda_ModifierFlags e2pFlags)
     irFlags |= (e2pFlags & ES2PANDA_MODIFIER_FUNCTIONAL) != 0 ? ir::ModifierFlags::FUNCTIONAL : ir::ModifierFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_MODIFIER_IN) != 0 ? ir::ModifierFlags::IN : ir::ModifierFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_MODIFIER_OUT) != 0 ? ir::ModifierFlags::OUT : ir::ModifierFlags::NONE;
-    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_NULL_ASSIGNABLE) != 0 ? ir::ModifierFlags::NULL_ASSIGNABLE
-                                                                   : ir::ModifierFlags::NONE;
-    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_UNDEFINED_ASSIGNABLE) != 0 ? ir::ModifierFlags::UNDEFINED_ASSIGNABLE
-                                                                        : ir::ModifierFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_MODIFIER_EXPORT) != 0 ? ir::ModifierFlags::EXPORT : ir::ModifierFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_MODIFIER_SETTER) != 0 ? ir::ModifierFlags::SETTER : ir::ModifierFlags::NONE;
     irFlags |= (e2pFlags & ES2PANDA_MODIFIER_DEFAULT_EXPORT) != 0 ? ir::ModifierFlags::DEFAULT_EXPORT
@@ -239,11 +235,6 @@ static es2panda_ModifierFlags IrToE2pModifierFlags(ir::ModifierFlags irFlags)
         (irFlags & ir::ModifierFlags::IN) != 0 ? e2pFlags | ES2PANDA_MODIFIER_IN : e2pFlags);
     e2pFlags = static_cast<es2panda_ModifierFlags>(
         (irFlags & ir::ModifierFlags::OUT) != 0 ? e2pFlags | ES2PANDA_MODIFIER_OUT : e2pFlags);
-    e2pFlags = static_cast<es2panda_ModifierFlags>(
-        (irFlags & ir::ModifierFlags::NULL_ASSIGNABLE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_NULL_ASSIGNABLE : e2pFlags);
-    e2pFlags = static_cast<es2panda_ModifierFlags>((irFlags & ir::ModifierFlags::UNDEFINED_ASSIGNABLE) != 0
-                                                       ? e2pFlags | ES2PANDA_MODIFIER_UNDEFINED_ASSIGNABLE
-                                                       : e2pFlags);
     e2pFlags = static_cast<es2panda_ModifierFlags>(
         (irFlags & ir::ModifierFlags::EXPORT) != 0 ? e2pFlags | ES2PANDA_MODIFIER_EXPORT : e2pFlags);
     e2pFlags = static_cast<es2panda_ModifierFlags>(
@@ -1091,6 +1082,7 @@ extern "C" void BlockStatementAddStatement(es2panda_AstNode *ast, es2panda_AstNo
     auto *node = reinterpret_cast<ir::AstNode *>(ast)->AsBlockStatement();
     auto *stmt = reinterpret_cast<ir::AstNode *>(statement)->AsBlockStatement();
     node->Statements().push_back(stmt);
+    stmt->SetParent(node);
 }
 
 extern "C" es2panda_AstNode *CreateCallExpression(es2panda_Context *context, es2panda_AstNode *callee,

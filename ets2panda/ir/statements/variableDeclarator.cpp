@@ -75,6 +75,26 @@ void VariableDeclarator::Dump(ir::SrcDumper *dumper) const
     }
 }
 
+VariableDeclarator *VariableDeclarator::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const id = id_ != nullptr ? id_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const init = init_ != nullptr ? init_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+
+    if (auto *const clone = allocator->New<VariableDeclarator>(flag_, id, init); clone != nullptr) {
+        if (id != nullptr) {
+            id->SetParent(clone);
+        }
+        if (init != nullptr) {
+            init->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void VariableDeclarator::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);

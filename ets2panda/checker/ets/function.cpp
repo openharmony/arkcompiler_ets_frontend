@@ -84,51 +84,80 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
 
 /* A very rough and imprecise partial type inference */
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
-                                            Substitution *substitution,
-                                            ArenaUnorderedSet<ETSTypeParameter *> *instantiatedTypeParams)
+                                            Substitution *substitution)
 {
     if (paramType->IsETSTypeParameter()) {
         auto *const tparam = paramType->AsETSTypeParameter();
         auto *const originalTparam = tparam->GetOriginal();
-        if (instantiatedTypeParams->find(tparam) != instantiatedTypeParams->end() &&
-            substitution->at(originalTparam) != argumentType) {
-            ThrowTypeError({"Type parameter already instantiated with another type "}, tparam->GetDeclNode()->Start());
-        }
         if (std::find(typeParams.begin(), typeParams.end(), originalTparam) != typeParams.end() &&
             substitution->count(originalTparam) == 0) {
             if (!IsCompatibleTypeArgument(tparam, argumentType, substitution)) {
                 return false;
             }
+            if (substitution->find(originalTparam) != substitution->end() &&
+                substitution->at(originalTparam) != argumentType) {
+                ThrowTypeError({"Type parameter already instantiated with another type "},
+                               tparam->GetDeclNode()->Start());
+            }
             ETSChecker::EmplaceSubstituted(substitution, originalTparam, argumentType);
-            instantiatedTypeParams->insert(tparam);
             return true;
         }
     }
 
     if (paramType->IsETSUnionType()) {
-        auto const &constitutent = paramType->AsETSUnionType()->ConstituentTypes();
-        return std::all_of(constitutent.begin(), constitutent.end(),
-                           [this, typeParams, argumentType, substitution, instantiatedTypeParams](Type *member) {
-                               return EnhanceSubstitutionForType(typeParams, member, argumentType, substitution,
-                                                                 instantiatedTypeParams);
-                           });
+        return EnhanceSubstitutionForUnion(typeParams, paramType->AsETSUnionType(), argumentType, substitution);
     }
-
     if (paramType->IsETSObjectType()) {
-        return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution,
-                                            instantiatedTypeParams);
+        return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution);
+    }
+    return true;
+}
+
+bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
+                                             Type *argumentType, Substitution *substitution)
+{
+    if (!argumentType->IsETSUnionType()) {
+        for (auto *ctype : paramUn->ConstituentTypes()) {
+            if (!EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    auto *const argUn = argumentType->AsETSUnionType();
+
+    ArenaVector<Type *> paramWlist(Allocator()->Adapter());
+    ArenaVector<Type *> argWlist(Allocator()->Adapter());
+
+    for (auto *pc : paramUn->ConstituentTypes()) {
+        for (auto *ac : argUn->ConstituentTypes()) {
+            if (ETSChecker::GetOriginalBaseType(pc) != ETSChecker::GetOriginalBaseType(ac)) {
+                paramWlist.push_back(pc);
+                argWlist.push_back(ac);
+                continue;
+            }
+            if (!EnhanceSubstitutionForType(typeParams, pc, ac, substitution)) {
+                return false;
+            }
+        }
+    }
+    auto *const newArg = CreateETSUnionType(std::move(argWlist));
+
+    for (auto *pc : paramWlist) {
+        if (!EnhanceSubstitutionForType(typeParams, pc, newArg, substitution)) {
+            return false;
+        }
     }
     return true;
 }
 
 bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
-                                              Type *argumentType, Substitution *substitution,
-                                              ArenaUnorderedSet<ETSTypeParameter *> *instantiatedTypeParams)
+                                              Type *argumentType, Substitution *substitution)
 {
     auto *paramObjType = paramType->AsETSObjectType();
 
-    auto const enhance = [this, typeParams, substitution, instantiatedTypeParams](Type *ptype, Type *atype) {
-        return EnhanceSubstitutionForType(typeParams, ptype, atype, substitution, instantiatedTypeParams);
+    auto const enhance = [this, typeParams, substitution](Type *ptype, Type *atype) {
+        return EnhanceSubstitutionForType(typeParams, ptype, atype, substitution);
     };
 
     if (argumentType->IsETSObjectType()) {
@@ -895,7 +924,7 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func, util::StringView f
     } else if (func->IsEntryPoint() && returnTypeAnnotation->GetType(this) == GlobalBuiltinVoidType()) {
         returnType = GlobalVoidType();
     } else {
-        returnType = GetTypeFromTypeAnnotation(returnTypeAnnotation);
+        returnType = returnTypeAnnotation->GetType(this);
         returnTypeAnnotation->SetTsType(returnType);
     }
 
@@ -929,7 +958,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
             auto *const restParamTypeAnnotation = param->TypeAnnotation();
             ASSERT(restParamTypeAnnotation);
 
-            signatureInfo->restVar->SetTsType(GetTypeFromTypeAnnotation(restParamTypeAnnotation));
+            signatureInfo->restVar->SetTsType(restParamTypeAnnotation->GetType(this));
             auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
             CreateBuiltinArraySignature(arrayType, arrayType->Rank());
         } else {
@@ -941,7 +970,7 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
             auto *const paramTypeAnnotation = param->TypeAnnotation();
             ASSERT(paramTypeAnnotation);
 
-            paramVar->SetTsType(GetTypeFromTypeAnnotation(paramTypeAnnotation));
+            paramVar->SetTsType(paramTypeAnnotation->GetType(this));
             signatureInfo->params.push_back(paramVar->AsLocalVariable());
             ++signatureInfo->minArgCount;
         }
@@ -1670,6 +1699,18 @@ static void AddFieldRefsToCallParameters(ETSChecker *checker, ir::ClassDefinitio
     }
 }
 
+static ir::TSAsExpression *BuildNarrowingToType(ETSChecker *checker, ir::Expression *arg, Type *target)
+{
+    auto *boxedTarget = checker->MaybePromotedBuiltinType(target);
+    auto *paramAsExpr =
+        checker->AllocNode<ir::TSAsExpression>(arg, checker->AllocNode<ir::OpaqueTypeNode>(boxedTarget), false);
+    if (boxedTarget != target) {
+        paramAsExpr =
+            checker->AllocNode<ir::TSAsExpression>(paramAsExpr, checker->AllocNode<ir::OpaqueTypeNode>(target), false);
+    }
+    return paramAsExpr;
+}
+
 static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSChecker *checker,
                                                                             ir::ClassDefinition *lambdaObject,
                                                                             ir::ArrowFunctionExpression *lambda,
@@ -1702,7 +1743,7 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
 
             auto *lambdaParam = lambda->Function()->Params()[i]->AsETSParameterExpression();
             auto *const paramCast =
-                allocator->New<ir::TSAsExpression>(paramIdent, lambdaParam->TypeAnnotation(), false);
+                BuildNarrowingToType(checker, paramIdent, lambdaParam->TypeAnnotation()->GetType(checker));
             paramCast->Check(checker);
             callParams.push_back(paramCast);
         }
@@ -1719,7 +1760,7 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
                                                              true, false);
 
             auto *lambdaParam = lambda->Function()->Params()[i]->AsETSParameterExpression();
-            auto *const paramCast = allocator->New<ir::TSAsExpression>(arg, lambdaParam->TypeAnnotation(), false);
+            auto *const paramCast = BuildNarrowingToType(checker, arg, lambdaParam->TypeAnnotation()->GetType(checker));
             paramCast->Check(checker);
             callParams.push_back(paramCast);
         }
@@ -2794,7 +2835,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
 
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
     // subtype of R2.
-    ASSERT(r1->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) || r1->IsETSTypeParameter());
+    ASSERT(IsReferenceType(r1));
     return Relation()->IsSupertypeOf(r2, r1);
 }
 
@@ -2844,7 +2885,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
     auto *promiseType = [this](ir::TypeNode *type) {
         if (type != nullptr) {
-            return GetTypeFromTypeAnnotation(type)->AsETSObjectType();
+            return type->GetType(this)->AsETSObjectType();
         }
 
         return GlobalBuiltinPromiseType()->AsETSObjectType();

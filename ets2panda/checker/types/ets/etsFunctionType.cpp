@@ -86,17 +86,16 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
 
         if (!it->GetSignatureInfo()->typeParams.empty()) {
             auto *substitution = relation->GetChecker()->AsETSChecker()->NewSubstitution();
-            auto *instantiatedTypeParams = relation->GetChecker()->AsETSChecker()->NewInstantiatedTypeParamsSet();
             bool res = true;
             for (size_t ix = 0; ix < target->MinArgCount(); ix++) {
                 res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->typeParams, it->GetSignatureInfo()->params[ix]->TsType(),
-                    target->GetSignatureInfo()->params[ix]->TsType(), substitution, instantiatedTypeParams);
+                    target->GetSignatureInfo()->params[ix]->TsType(), substitution);
             }
             if (target->RestVar() != nullptr) {
                 res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->typeParams, it->RestVar()->TsType(), target->RestVar()->TsType(),
-                    substitution, instantiatedTypeParams);
+                    substitution);
             }
             if (!res) {
                 continue;
@@ -241,7 +240,9 @@ checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relati
     }
     for (size_t i = 0; i < theirParams.size(); i++) {
         relation->Result(RelationResult::FALSE);
-        ourParams[i]->TsType()->Cast(relation, theirParams[i]->TsType());
+        auto savedBoxFlags = relation->GetNode()->GetBoxingUnboxingFlags();
+        relation->IsCastableTo(ourParams[i]->TsType(), theirParams[i]->TsType());
+        relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
         if (!relation->IsTrue()) {
             return RelationResult::FALSE;
         }
@@ -265,7 +266,9 @@ void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
             auto *targetInvokeSig = targetInvokeVar->TsType()->AsETSFunctionType()->CallSignatures()[0];
             relation->Result(CastFunctionParams(relation, targetInvokeSig));
             auto *targetReturnType = targetInvokeSig->ReturnType();
-            callSignatures_[0]->ReturnType()->Cast(relation, targetReturnType);
+            auto savedBoxFlags = relation->GetNode()->GetBoxingUnboxingFlags();
+            relation->IsCastableTo(callSignatures_[0]->ReturnType(), targetReturnType);
+            relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
         }
         if (relation->IsTrue()) {
             relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(

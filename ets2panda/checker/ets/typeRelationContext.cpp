@@ -101,7 +101,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 
 bool InstantiationContext::ValidateTypeArg(Type *constraintType, Type *typeArg)
 {
-    // NOTE: #14993 enforce ETSChecker::IsReferenceType
+    // NOTE: #14993 enforce IsETSReferenceType
     if (typeArg->IsWildcardType()) {
         return true;
     }
@@ -117,7 +117,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
 
     if (typeArgs != nullptr) {
         for (auto *const it : typeArgs->Params()) {
-            auto *paramType = checker_->GetTypeFromTypeAnnotation(it);
+            auto *paramType = it->GetType(checker_);
 
             if (paramType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
                 checker_->Relation()->SetNode(it);

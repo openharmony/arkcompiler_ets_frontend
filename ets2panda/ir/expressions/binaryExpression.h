@@ -106,19 +106,22 @@ public:
     void SetLeft(Expression *expr) noexcept
     {
         left_ = expr;
+        left_->SetParent(this);
         SetStart(left_->Start());
     }
 
     void SetRight(Expression *expr) noexcept
     {
         right_ = expr;
+        right_->SetParent(this);
         SetEnd(right_->End());
     }
 
     void SetResult(Expression *expr) noexcept
     {
-        left_ = expr;
-        SetStart(left_->Start());
+        result_ = expr;
+        result_->SetParent(this);
+        SetStart(result_->Start());
     }
 
     void SetOperator(lexer::TokenType operatorType) noexcept

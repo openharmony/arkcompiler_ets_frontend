@@ -48,38 +48,35 @@ public:
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
     Type *FindUnboxableType() const;
 
-    Type *GetLeastUpperBoundType() const
-    {
-        ASSERT(lubType_ != nullptr);
-        return lubType_;
-    }
-
     bool HasObjectType(ETSObjectFlags flag) const;
 
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 
-    static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituentTypes);
+    static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &types);
 
-    std::tuple<bool, bool> ResolveConditionExpr() const override
+    std::tuple<bool, bool> ResolveConditionExpr() const override;
+
+    // Do not use it anywhere except codegen
+    Type *GetAssemblerLUB() const
     {
-        for (auto const &tp : ConstituentTypes()) {
-            if (!tp->IsConditionalExprType()) {
-                return {true, false};
-            }
-        }
-        return {true, true};
+        return assemblerLub_;
     }
 
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);
 
-    static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituentTypes);
+    template <typename RelFN>
+    void RelationSource(TypeRelation *relation, Type *target, RelFN const &relFn);
+    template <typename RelFN>
+    void RelationTarget(TypeRelation *relation, Type *source, RelFN const &relFn);
 
-    Type *ComputeLUB(ETSChecker *checker) const;
+    static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &types);
+
+    static Type *ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un);
 
     ArenaVector<Type *> const constituentTypes_;
-    Type *lubType_ {nullptr};
+    Type *assemblerLub_ {nullptr};
 };
 }  // namespace ark::es2panda::checker
 

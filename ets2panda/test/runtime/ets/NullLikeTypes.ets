@@ -13,7 +13,13 @@
  * limitations under the License.
  */
 
-function main(): void {
-  let Object_: Object = null as Object;
-  let Int_ = Object_ as Int;
+function fnull(): null { return null }
+function fundefined(): undefined { return undefined }
+
+function main() {
+    let n: null = fnull();
+    let u: undefined = fundefined();
+
+    assert(n as null | undefined == u as null | undefined);
+    assert(n as null | undefined !== u as null | undefined);
 }

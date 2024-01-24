@@ -28,7 +28,7 @@ class TreeNode {
     if (this.left == null)
       return this.item;
     else
-      return this.item + this.left.itemCheck() - this.right.itemCheck();
+      return this.item + this.left!.itemCheck() - this.right!.itemCheck();
   }
 }
 

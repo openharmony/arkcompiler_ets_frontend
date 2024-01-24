@@ -370,20 +370,6 @@
                 }
               }
             },
-            "value": {
-              "type": "NumberLiteral",
-              "value": 5,
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 29
-                },
-                "end": {
-                  "line": 18,
-                  "column": 30
-                }
-              }
-            },
             "accessibility": "public",
             "static": true,
             "readonly": false,
@@ -391,21 +377,49 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "ETSFunctionType",
-              "params": [],
-              "returnType": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 15
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "ETSFunctionType",
+                  "params": [],
+                  "returnType": {
+                    "type": "ETSPrimitiveType",
+                    "loc": {
+                      "start": {
+                        "line": 18,
+                        "column": 15
+                      },
+                      "end": {
+                        "line": 18,
+                        "column": 18
+                      }
+                    }
                   },
-                  "end": {
-                    "line": 18,
-                    "column": 18
+                  "loc": {
+                    "start": {
+                      "line": 18,
+                      "column": 8
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 18
+                    }
+                  }
+                },
+                {
+                  "type": "ETSNullType",
+                  "loc": {
+                    "start": {
+                      "line": 18,
+                      "column": 22
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 26
+                    }
                   }
                 }
-              },
+              ],
               "loc": {
                 "start": {
                   "line": 18,
@@ -413,7 +427,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 18
+                  "column": 26
                 }
               }
             },
@@ -426,7 +440,7 @@
               },
               "end": {
                 "line": 18,
-                "column": 30
+                "column": 26
               }
             }
           }
@@ -465,4 +479,4 @@
     }
   }
 }
-TypeError: Type 'int' cannot be assigned to type '() => Int' [etsObjectToString4.ets:18:29]
+TypeError: Type 'int' cannot be assigned to type '() => Int|null' [etsObjectToString4.ets:18:29]

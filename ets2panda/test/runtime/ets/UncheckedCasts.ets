@@ -13,66 +13,91 @@
  * limitations under the License.
  */
 
-type Nullish = Object | null | undefined;
-
-class Bad { }
-class X { }
-
-function expect_ccexc(fn: () => void) {
+function assert_ccexc(f: () => void) {
     try {
-        fn();
-        assert false;
-    } catch (e: Exception) {
+        f();
+        assert false : "exception expected";
+    } catch (e) {
         assert(e instanceof ClassCastException);
     }
 }
 
-class G<T> {
-    erase(x: Nullish): T { return x as T; }
-}
-function check_G_Object(x: Nullish) {
-    expect_ccexc(() => { new G<Object>().erase(x); })
-}
-function check_G_X(x: Nullish) {
-    expect_ccexc(() => { new G<X>().erase(x); })
-}
+class A { }
+class B { }
+class C { }
+class X<T> { }
+
+function erase<T>(x: Object | null | undefined): T { return x as T; }
+
 function test_substitution() {
-    //check_G_Object(null);
-    //check_G_Object(undefined);
-    //check_G_X(null);
-    check_G_X(undefined);
-    check_G_X(new Object());
-    check_G_X(new Bad());
+    assert_ccexc(() => { erase<Object>(null); })
+    assert_ccexc(() => { erase<Object>(undefined); })
+    assert_ccexc(() => { erase<A>(null); })
+    assert_ccexc(() => { erase<A>(undefined); })
+
+    assert_ccexc(() => { erase<Object | undefined>(null); })
+    assert_ccexc(() => { erase<Object | null>(undefined); })
+    assert_ccexc(() => { erase<A | undefined>(null); })
+    assert_ccexc(() => { erase<A | null>(undefined); })
+
+    assert_ccexc(() => { erase<A>(undefined); })
+    assert_ccexc(() => { erase<A>(new Object()); })
+    assert_ccexc(() => { erase<A>(new B()); })
+
+    assert_ccexc(() => { erase<A | B>(undefined); })
+    assert_ccexc(() => { erase<A | B>(new Object()); })
+    assert_ccexc(() => { erase<A | B>(new C()); })
+
+    assert_ccexc(() => { erase<A[]>(new B[0]); })
 }
 
-class CG<T extends X> {
-    pass(x: Nullish) { x as T; }
+class Erased<T> {
+    constructor(x: Object | null | undefined) { this.t = x as T; }
+    t: T;
 }
-function check_CG_X(x: Nullish) {
-    expect_ccexc(() => { new CG<X>().pass(x); })
+
+function test_substitution_memberexpr() {
+    assert_ccexc(() => { new Erased<Object>(null).t; })
+    assert_ccexc(() => { new Erased<Object>(undefined).t; })
+    assert_ccexc(() => { new Erased<A>(null).t; })
+    assert_ccexc(() => { new Erased<A>(undefined).t; })
+
+    assert_ccexc(() => { new Erased<Object | undefined>(null).t; })
+    assert_ccexc(() => { new Erased<Object | null>(undefined).t; })
+    assert_ccexc(() => { new Erased<A | undefined>(null).t; })
+    assert_ccexc(() => { new Erased<A | null>(undefined).t; })
+
+    assert_ccexc(() => { new Erased<A>(undefined).t; })
+    assert_ccexc(() => { new Erased<A>(new Object()).t; })
+    assert_ccexc(() => { new Erased<A>(new B()).t; })
+
+    assert_ccexc(() => { new Erased<A | B>(undefined).t; })
+    assert_ccexc(() => { new Erased<A | B>(new Object()).t; })
+    assert_ccexc(() => { new Erased<A | B>(new C()).t; })
+
+    assert_ccexc(() => { new Erased<A[]>(new B[0]).t; })
 }
+
+function cast_to_tparam<T extends A | B | null>(x: Object | null | undefined) { x as T; }
+
 function test_constraint() {
-    //check_CG_X(null);
-    check_CG_X(undefined);
-    check_CG_X(new Object());
-    check_CG_X(new Bad());
+    assert_ccexc(() => { cast_to_tparam<A>(undefined); })
+    assert_ccexc(() => { cast_to_tparam<A>(new Object()); })
+    assert_ccexc(() => { cast_to_tparam<A>(new C()); })
 }
 
-class GG<T> {
-    pass(x: Nullish) { x as G<T>; }
-}
-function check_GG(x: Nullish) {
-    expect_ccexc(() => { new GG<X>().pass(x); })
-}
+function to_basetype<T>(x: Object | null | undefined) { return x as X<T>; }
+
 function test_basetype() {
-    //check_GG(null);
-    check_GG(undefined);
-    check_GG(new Object());
+    assert_ccexc(() => { to_basetype<A>(null); })
+    assert_ccexc(() => { to_basetype<A>(undefined); })
+    assert_ccexc(() => { to_basetype<A>(new Object()); })
+    assert_ccexc(() => { to_basetype<A>(new C()); })
 }
 
 function main() {
-    // NOTE(vpukhov): add nullability checks, add union param/constraint tests
     test_substitution();
+    test_substitution_memberexpr();
     test_constraint();
     test_basetype();
 }

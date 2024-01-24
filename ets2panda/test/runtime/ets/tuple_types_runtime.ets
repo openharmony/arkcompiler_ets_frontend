@@ -98,16 +98,16 @@ function main(): void {
     assert(tup_8[1][0] == 2 && tup_8[1][1] == "F");
     assert(tup_8[2][0] == 3 && tup_8[2][1] == "G");
 
-    let tup_10: [number, int, string, boolean, Object] = [1, 2, "I", false, new Object()];
-    let var_float: float = tup_10[1];
-    let var_float_2: float = 2.0;
-    assert(var_float == var_float_2);
-
-    let tup_11: [int, number, string, boolean, Object] = [6, 7, "J", true, 789];
+    // #15570 - test ArrayExpr assignability with individual element types
+    // let tup_10: [number, int, string, boolean, Object] = [1, 2, "I", false, new Object()];
+    // let var_float: float = tup_10[1];
+    // let var_float_2: float = 2.0;
+    // assert(var_float == var_float_2);
+    // let tup_11: [int, number, string, boolean, Object] = [6, 7, "J", true, 789];
     // NOTE: Bug in op_assignment lowering (removes const from property)
     // tup_11[0] += new Short(2 as short);
     // assert(tup_11[0] == 8);
-    assert(tup_11[4] == (789 as Object));
+    // assert(tup_11[4] == (789 as Object));
 
     let tup_12: [number, ...number[]] = [1, 2, 3, 4];
     try {

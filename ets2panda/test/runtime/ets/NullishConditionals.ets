@@ -18,9 +18,9 @@ function test_u(v: Object | undefined) { return v ? true : false }
 function test_nu(v: Object | null | undefined) { return v ? true : false }
 
 function main() {
-    assert(test_n({}));
-    assert(test_u({}));
-    assert(test_nu({}));
+    assert(test_n({} as Object));
+    assert(test_u({} as Object));
+    assert(test_nu({} as Object));
 
     assert(!null);
     if (null) { assert(false) }

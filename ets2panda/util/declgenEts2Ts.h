@@ -47,11 +47,10 @@ private:
     std::string GetKeyName(const ir::Expression *key);
 
     void GenType(const checker::Type *checkerType);
-    void GenTypeNonNullish(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
-    void GenTypeParameterType(const checker::ETSTypeParameter *typeParam);
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenEnumType(const checker::ETSEnumType *enumType);
+    void GenUnionType(const checker::ETSUnionType *unionType);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);

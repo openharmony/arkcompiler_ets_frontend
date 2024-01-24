@@ -20,35 +20,35 @@
 
 namespace ark::es2panda::checker {
 
-checker::Type *UnboxingConverter::GlobalTypeFromSource(ETSObjectFlags type)
+checker::Type *UnboxingConverter::GlobalTypeFromSource(checker::ETSChecker const *checker, ETSObjectType *type)
 {
-    switch (type) {
+    switch (type->BuiltInKind()) {
         case ETSObjectFlags::BUILTIN_BOOLEAN: {
-            return Checker()->GlobalETSBooleanType();
+            return checker->GlobalETSBooleanType();
         }
         case ETSObjectFlags::BUILTIN_BYTE: {
-            return Checker()->GlobalByteType();
+            return checker->GlobalByteType();
         }
         case ETSObjectFlags::BUILTIN_SHORT: {
-            return Checker()->GlobalShortType();
+            return checker->GlobalShortType();
         }
         case ETSObjectFlags::BUILTIN_CHAR: {
-            return Checker()->GlobalCharType();
+            return checker->GlobalCharType();
         }
         case ETSObjectFlags::BUILTIN_INT: {
-            return Checker()->GlobalIntType();
+            return checker->GlobalIntType();
         }
         case ETSObjectFlags::BUILTIN_LONG: {
-            return Checker()->GlobalLongType();
+            return checker->GlobalLongType();
         }
         case ETSObjectFlags::BUILTIN_FLOAT: {
-            return Checker()->GlobalFloatType();
+            return checker->GlobalFloatType();
         }
         case ETSObjectFlags::BUILTIN_DOUBLE: {
-            return Checker()->GlobalDoubleType();
+            return checker->GlobalDoubleType();
         }
         default:
-            return Source();
+            return type;
     }
 }
 

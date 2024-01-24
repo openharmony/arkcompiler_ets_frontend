@@ -146,14 +146,9 @@ public:
         return optional_;
     }
 
-    void SetOptionalType(checker::Type *optionalType)
+    void ClearOptional() noexcept
     {
-        optionalType_ = optionalType;
-    }
-
-    [[nodiscard]] const checker::Type *OptionalType() const noexcept
-    {
-        return optionalType_ != nullptr ? optionalType_ : TsType();
+        optional_ = false;
     }
 
 protected:
@@ -165,12 +160,10 @@ protected:
 
     MaybeOptionalExpression(MaybeOptionalExpression const &other) : Expression(static_cast<Expression const &>(other))
     {
-        optionalType_ = other.optionalType_;
         optional_ = other.optional_;
     }
 
 private:
-    checker::Type *optionalType_ {};
     bool optional_;
 };
 

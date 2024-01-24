@@ -116,69 +116,60 @@ std::string TSDeclGen::GetKeyName(const ir::Expression *key)
     return key->AsIdentifier()->Name().Mutf8();
 }
 
-void TSDeclGen::GenType(const checker::Type *checkerType)
+static char const *GetDebugTypeName(const checker::Type *checkerType)
 {
-    // NOTE: vpukhov. rewrite when nullish type is implemented with union
-    GenTypeNonNullish(checkerType);
-    if (checkerType->IsNullish()) {
-        if (checkerType->ContainsNull()) {
-            Out(" | null");
-        }
-        if (checkerType->ContainsUndefined()) {
-            Out(" | undefined");
-        }
-    }
-}
-
-void TSDeclGen::GenTypeNonNullish(const checker::Type *checkerType)
-{
-    ASSERT(checkerType != nullptr);
-    DebugPrint("  GenType: ");
-#if DEBUG_PRINT
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TYPE_CHECKS(type_flag, typeName)                                                                         \
-    if (checkerType->Is##typeName()) {                                                                           \
-        const auto var_name = checkerType->Variable() == nullptr ? "" : checkerType->Variable()->Name().Mutf8(); \
-        DebugPrint("  Converting type: " #typeName " (" + var_name + ")");                                       \
+#define TYPE_CHECKS(type_flag, typeName) \
+    if (checkerType->Is##typeName()) {   \
+        return #typeName;                \
     }
     TYPE_MAPPING(TYPE_CHECKS)
 #undef TYPE_CHECKS
+    return "unknown type";
+}
+
+void TSDeclGen::GenType(const checker::Type *checkerType)
+{
+    DebugPrint("  GenType: ");
+#if DEBUG_PRINT
+    const auto var_name = checkerType->Variable() == nullptr ? "" : checkerType->Variable()->Name().Mutf8();
+    DebugPrint(std::string("  Converting type: ") + GetDebugTypeName(checkerType) + " (" + var_name + ")");
 #endif
 
-    if (checkerType->IsCharType() || checkerType->IsByteType() || checkerType->IsIntType() ||
-        checkerType->IsShortType() || checkerType->IsNumberType() || checkerType->IsLongType() ||
-        checkerType->IsFloatType() || checkerType->IsDoubleType()) {
+    if (checkerType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
         Out("number");
-    } else if (checkerType->IsETSBooleanType()) {
-        Out("boolean");
-    } else if (checkerType->IsETSVoidType()) {
-        Out("void");
-    } else if (checkerType->IsETSStringType()) {
-        Out("string");
-    } else if (checkerType->IsETSArrayType()) {
-        GenType(checkerType->AsETSArrayType()->ElementType());
-        Out("[]");
-    } else if (checkerType->IsETSEnumType()) {
-        GenEnumType(checkerType->AsETSEnumType());
-    } else if (checkerType->IsETSFunctionType()) {
-        GenFunctionType(checkerType->AsETSFunctionType());
-    } else if (checkerType->IsETSObjectType()) {
-        if (checker_->IsTypeBuiltinType(checkerType)) {
-            Out("number");
-            return;
-        }
-        GenObjectType(checkerType->AsETSObjectType());
-    } else if (checkerType->IsETSTypeParameter()) {
-        GenTypeParameterType(checkerType->AsETSTypeParameter());
-    } else {
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TYPE_CHECKS(typeFlag, typeName)              \
-    if (checkerType->Is##typeName()) {               \
-        ThrowError("Unsupported type: '" #typeName); \
+        return;
     }
-        TYPE_MAPPING(TYPE_CHECKS)
-#undef TYPE_CHECKS
-        UNREACHABLE();
+    if (checkerType->HasTypeFlag(checker::TypeFlag::FUNCTION)) {
+        GenFunctionType(checkerType->AsETSFunctionType());
+        return;
+    }
+
+    switch (checker::ETSChecker::ETSType(checkerType)) {
+        case checker::TypeFlag::ETS_VOID:
+        case checker::TypeFlag::ETS_NULL:
+        case checker::TypeFlag::ETS_UNDEFINED:
+        case checker::TypeFlag::ETS_BOOLEAN:
+        case checker::TypeFlag::ETS_TYPE_PARAMETER:
+        case checker::TypeFlag::ETS_NONNULLISH:
+            Out(checkerType->ToString());
+            return;
+        case checker::TypeFlag::ETS_ENUM:
+            GenEnumType(checkerType->AsETSEnumType());
+            return;
+        case checker::TypeFlag::ETS_OBJECT:
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE:
+            GenObjectType(checkerType->AsETSObjectType());
+            return;
+        case checker::TypeFlag::ETS_ARRAY:
+            GenType(checkerType->AsETSArrayType()->ElementType());
+            Out("[]");
+            return;
+        case checker::TypeFlag::ETS_UNION:
+            GenUnionType(checkerType->AsETSUnionType());
+            return;
+        default:
+            ThrowError(std::string("Unsupported type: '") + GetDebugTypeName(checkerType));
     }
 }
 
@@ -229,7 +220,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *etsFunctionType,
             Out(param->Name());
             const auto *paramType = param->TsType();
 
-            if (param->HasFlag(varbinder::VariableFlags::OPTIONAL) || paramType->IsNullish()) {
+            if (param->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
                 Out("?");
             }
 
@@ -292,8 +283,26 @@ void TSDeclGen::GenEnumType(const checker::ETSEnumType *enumType)
     }
 }
 
+void TSDeclGen::GenUnionType(const checker::ETSUnionType *unionType)
+{
+    for (auto *ctype : unionType->ConstituentTypes()) {
+        GenType(ctype);
+        if (ctype != unionType->ConstituentTypes().back()) {
+            Out(" | ");
+        }
+    }
+}
+
 void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
 {
+    if (objectType->IsETSStringType()) {
+        Out("string");
+        return;
+    }
+    if (objectType->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+        Out("number");  // NOTE(ivagin): create precise builtin type
+        return;
+    }
     if (objectType->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL)) {
         const auto *invoke = objectType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
             checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
@@ -301,7 +310,6 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
         GenType(invoke->TsType());
         return;
     }
-
     if (objectType->HasObjectFlag(checker::ETSObjectFlags::DYNAMIC)) {
         Out("any");
         return;
@@ -321,11 +329,6 @@ void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
         GenCommaSeparated(typeArgs, [this](checker::Type *arg) { GenType(arg); });
         Out(">");
     }
-}
-
-void TSDeclGen::GenTypeParameterType(const checker::ETSTypeParameter *typeParam)
-{
-    Out(typeParam->GetDeclNode()->Name()->Name());
 }
 
 void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams)

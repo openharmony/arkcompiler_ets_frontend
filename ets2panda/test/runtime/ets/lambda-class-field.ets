@@ -20,7 +20,7 @@ class cls {
 
 function main(): void {
   let c = new cls();
-  c.lambda_field = () => 42;
-  assert c.lambda_field() == 42;
+  c.lambda_field = (() => new Int(42)) as () => Int; // #15577
+  assert c.lambda_field!() == 42;
   assert c.num == 0;
 }

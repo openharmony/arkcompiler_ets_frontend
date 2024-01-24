@@ -40,7 +40,9 @@ void ChainExpression::Dump(ir::AstDumper *dumper) const
 
 void ChainExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ChainExpression");
+    dumper->Add("(");  // affects precedence
+    expression_->Dump(dumper);
+    dumper->Add(")");
 }
 
 void ChainExpression::Compile(compiler::PandaGen *pg) const

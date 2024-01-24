@@ -214,7 +214,35 @@
                             "type": "Identifier",
                             "name": "a",
                             "typeAnnotation": {
-                              "type": "ETSPrimitiveType",
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "ETSPrimitiveType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 11
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 14
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "ETSNullType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 17
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 21
+                                    }
+                                  }
+                                }
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -222,7 +250,7 @@
                                 },
                                 "end": {
                                   "line": 17,
-                                  "column": 14
+                                  "column": 21
                                 }
                               }
                             },
@@ -345,4 +373,3 @@
     }
   }
 }
-TypeError: Non reference types cannot be nullish. [n_nullableTypeNotRef.ets:17:11]

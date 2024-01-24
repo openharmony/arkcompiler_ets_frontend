@@ -19,7 +19,7 @@ type AN = A | null;
 
 function main(): void {
     let x : Object;
-    let an : AN = new AN();
+    let an : AN = new A();
 
     x = an;
 }

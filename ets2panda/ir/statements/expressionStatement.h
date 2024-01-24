@@ -49,6 +49,8 @@ public:
         v->Accept(this);
     }
 
+    [[nodiscard]] ExpressionStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+
 private:
     Expression *expression_;
 };

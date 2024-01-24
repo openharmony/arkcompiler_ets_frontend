@@ -1618,87 +1618,68 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util:
     }
 }
 
-Type *ETSChecker::FindLeastUpperBound(Type *source, Type *target)
-{
-    ASSERT(source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TYPE_PARAMETER));
-    ASSERT(target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TYPE_PARAMETER));
-
-    // GetCommonClass(GenA<A>, GenB<B>) => LUB(GenA, GenB)<T>
-    auto commonClass = GetCommonClass(source, target);
-
-    if (!commonClass->IsETSObjectType() || !commonClass->HasTypeFlag(TypeFlag::GENERIC)) {
-        return commonClass->HasTypeFlag(TypeFlag::CONSTANT) ? commonClass->Variable()->TsType() : commonClass;
-    }
-
-    // GetRelevantArgumentedTypeFromChild(GenA<A>, LUB(GenA, GenB)<T>) => LUB(GenA, GenB)<A>
-    ETSObjectType *relevantSourceType =
-        GetRelevantArgumentedTypeFromChild(source->AsETSObjectType(), commonClass->AsETSObjectType());
-    ETSObjectType *relevantTargetType =
-        GetRelevantArgumentedTypeFromChild(target->AsETSObjectType(), commonClass->AsETSObjectType());
-
-    // GetTypeargumentedLUB(LUB(GenA, GenB)<A>, LUB(GenA, GenB)<B>) => LUB(GenA, GenB)<LUB(A, B)>
-    return GetTypeargumentedLUB(relevantSourceType, relevantTargetType);
-}
-
+// This function computes effective runtime view of type
 Type *ETSChecker::GetApparentType(Type *type)
 {
-    while (type->IsETSTypeParameter()) {
-        type = type->AsETSTypeParameter()->GetConstraintType();
+    if (auto it = apparentTypes_.find(type); LIKELY(it != apparentTypes_.end())) {
+        return it->second;
+    }
+    auto cached = [this, type](Type *res) {
+        if (type != res) {
+            apparentTypes_.insert({type, res});
+        }
+        apparentTypes_.insert({res, res});
+        return res;
+    };
+
+    if (type->IsETSTypeParameter()) {
+        return cached(GetApparentType(type->AsETSTypeParameter()->GetConstraintType()));
+    }
+    if (type->IsETSNonNullishType()) {
+        return cached(
+            GetNonNullishType(GetApparentType(type->AsETSNonNullishType()->GetUnderlying()->GetConstraintType())));
+    }
+    if (type->IsETSArrayType()) {
+        return cached(type);
+    }
+    if (type->IsETSUnionType()) {
+        bool differ = false;
+        ArenaVector<checker::Type *> newConstituent(Allocator()->Adapter());
+        for (auto const &ct : type->AsETSUnionType()->ConstituentTypes()) {
+            newConstituent.push_back(GetApparentType(ct));
+            differ |= (newConstituent.back() != ct);
+        }
+        return cached(differ ? CreateETSUnionType(std::move(newConstituent)) : type);
+    }
+    return cached(type);
+}
+
+Type const *ETSChecker::GetApparentType(Type const *type) const
+{
+    if (auto it = apparentTypes_.find(type); LIKELY(it != apparentTypes_.end())) {
+        return it->second;
+    }
+    // Relaxed for some types
+    if (type->IsETSTypeParameter()) {
+        return GetApparentType(type->AsETSTypeParameter()->GetConstraintType());
+    }
+    if (type->IsETSArrayType()) {
+        return type;
+    }
+    if (type->IsETSUnionType() || type->IsETSNonNullishType()) {
+        ASSERT_PRINT(false, std::string("Type ") + type->ToString() + " was not found in apparent_types_");
     }
     return type;
-}
-
-Type const *ETSChecker::GetApparentType(Type const *type)
-{
-    while (type->IsETSTypeParameter()) {
-        type = type->AsETSTypeParameter()->GetConstraintType();
-    }
-    return type;
-}
-
-Type *ETSChecker::MaybePromotedBuiltinType(Type *type) const
-{
-    return type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) ? checker::BoxingConverter::ETSTypeFromSource(this, type) : type;
-}
-
-Type *ETSChecker::GetCommonClass(Type *source, Type *target)
-{
-    SavedTypeRelationFlagsContext checkerCtx(this->Relation(), TypeRelationFlag::IGNORE_TYPE_PARAMETERS);
-
-    if (IsTypeIdenticalTo(source, target)) {
-        return source;
-    }
-
-    if (Relation()->IsSupertypeOf(target, source)) {
-        return target;
-    }
-
-    if (Relation()->IsSupertypeOf(source, target)) {
-        return source;
-    }
-
-    if (source->IsETSObjectType() && target->IsETSObjectType()) {
-        if (source->IsETSNullLike()) {
-            return target;
-        }
-
-        if (target->IsETSNullLike()) {
-            return source;
-        }
-
-        if (source->AsETSObjectType()->GetDeclNode() == target->AsETSObjectType()->GetDeclNode()) {
-            return source;
-        }
-
-        return GetClosestCommonAncestor(source->AsETSObjectType(), target->AsETSObjectType());
-    }
-
-    return GlobalETSObjectType();
 }
 
 ETSObjectType *ETSChecker::GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target)
 {
-    ASSERT(target->SuperType() != nullptr);
+    if (source->AsETSObjectType()->GetDeclNode() == target->AsETSObjectType()->GetDeclNode()) {
+        return source;
+    }
+    if (target->SuperType() == nullptr) {
+        return GlobalETSObjectType();
+    }
 
     auto *targetBase = GetOriginalBaseType(target->SuperType());
     auto *targetType = targetBase == nullptr ? target->SuperType() : targetBase;
@@ -1712,41 +1693,6 @@ ETSObjectType *ETSChecker::GetClosestCommonAncestor(ETSObjectType *source, ETSOb
     }
 
     return GetClosestCommonAncestor(sourceType, targetType);
-}
-
-ETSObjectType *ETSChecker::GetTypeargumentedLUB(ETSObjectType *const source, ETSObjectType *const target)
-{
-    ASSERT(source->TypeArguments().size() == target->TypeArguments().size());
-
-    ArenaVector<Type *> params(Allocator()->Adapter());
-
-    for (uint32_t i = 0; i < source->TypeArguments().size(); i++) {
-        params.push_back(FindLeastUpperBound(source->TypeArguments()[i], target->TypeArguments()[i]));
-    }
-
-    const util::StringView hash = GetHashFromTypeArguments(params);
-
-    if (!source->GetDeclNode()->IsClassDefinition()) {
-        return source;
-    }
-
-    ETSObjectType *templateType;
-    if (source->GetDeclNode()->IsClassDefinition()) {
-        templateType = source->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType();
-    } else {
-        templateType = source->GetDeclNode()->AsTSInterfaceDeclaration()->TsType()->AsETSObjectType();
-    }
-
-    auto *lubType = templateType->GetInstantiatedType(hash);
-
-    if (lubType == nullptr) {
-        lubType = templateType->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
-        lubType->SetTypeArguments(std::move(params));
-
-        templateType->GetInstantiationMap().try_emplace(hash, lubType);
-    }
-
-    return lubType;
 }
 
 void ETSChecker::CheckInvokeMethodsLegitimacy(ETSObjectType *const classType)

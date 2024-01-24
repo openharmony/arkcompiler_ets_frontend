@@ -49,13 +49,38 @@
               "type": "ETSFunctionType",
               "params": [],
               "returnType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "Observable",
-                    "decorators": [],
+                "type": "ETSUnionType",
+                "types": [
+                  {
+                    "type": "ETSTypeReference",
+                    "part": {
+                      "type": "ETSTypeReferencePart",
+                      "name": {
+                        "type": "Identifier",
+                        "name": "Observable",
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 53
+                          },
+                          "end": {
+                            "line": 17,
+                            "column": 63
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 53
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 64
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
                         "line": 17,
@@ -63,21 +88,24 @@
                       },
                       "end": {
                         "line": 17,
-                        "column": 63
+                        "column": 64
                       }
                     }
                   },
-                  "loc": {
-                    "start": {
-                      "line": 17,
-                      "column": 53
-                    },
-                    "end": {
-                      "line": 17,
-                      "column": 64
+                  {
+                    "type": "ETSUndefinedType",
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 64
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 73
+                      }
                     }
                   }
-                },
+                ],
                 "loc": {
                   "start": {
                     "line": 17,
@@ -85,7 +113,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 64
+                    "column": 73
                   }
                 }
               },
@@ -96,7 +124,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 64
+                  "column": 73
                 }
               }
             },
@@ -109,7 +137,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 64
+                "column": 73
               }
             }
           },
@@ -370,13 +398,38 @@
                       "type": "Identifier",
                       "name": "observable",
                       "typeAnnotation": {
-                        "type": "ETSTypeReference",
-                        "part": {
-                          "type": "ETSTypeReferencePart",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "Observable",
-                            "decorators": [],
+                        "type": "ETSUnionType",
+                        "types": [
+                          {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "Observable",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 49
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 59
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 21,
+                                  "column": 49
+                                },
+                                "end": {
+                                  "line": 21,
+                                  "column": 60
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
                                 "line": 21,
@@ -384,21 +437,24 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 59
+                                "column": 60
                               }
                             }
                           },
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 49
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 60
+                          {
+                            "type": "ETSUndefinedType",
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 60
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 69
+                              }
                             }
                           }
-                        },
+                        ],
                         "loc": {
                           "start": {
                             "line": 21,
@@ -406,7 +462,7 @@
                           },
                           "end": {
                             "line": 21,
-                            "column": 60
+                            "column": 69
                           }
                         }
                       },
@@ -418,7 +474,7 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 60
+                          "column": 69
                         }
                       }
                     },
@@ -429,7 +485,7 @@
                       },
                       "end": {
                         "line": 21,
-                        "column": 60
+                        "column": 69
                       }
                     }
                   }
