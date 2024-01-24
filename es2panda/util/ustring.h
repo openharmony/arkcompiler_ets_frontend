@@ -200,6 +200,18 @@ public:
             return iter_ != sv_.end();
         }
 
+        bool HasExpectedNumberOfBytes(size_t count) const
+        {
+            for (size_t i = 0; i < count; ++i) {
+                if (!HasNext()) {
+                    return false;
+                }
+                iter_++;
+            }
+            iter_ -= count;
+            return true;
+        }
+
         void SkipCp() const;
 
     private:
@@ -234,6 +246,10 @@ private:
 
         static constexpr uint16_t UTF8_CONT_MASK = 0x3F;
         static constexpr uint16_t UTF8_CONT_HEADER = 0x80;
+
+        static constexpr size_t UTF8_NEXT_ONE_BYTE = 1;
+        static constexpr size_t UTF8_NEXT_TWO_BYTE = 2;
+        static constexpr size_t UTF8_NEXT_THREE_BYTE = 3;
 
         static constexpr char32_t SURROGATE_HIGH_MIN = 0xD800;
         static constexpr char32_t SURROGATE_HIGH_MAX = 0xDC00;
@@ -322,15 +338,27 @@ char32_t StringView::Iterator::DecodeCP([[maybe_unused]] size_t *cpSize) const
     if (cu0 < Constants::UTF8_1BYTE_LIMIT) {
         res = cu0;
     } else if ((cu0 & Constants::UTF8_3BYTE_HEADER) == Constants::UTF8_2BYTE_HEADER) {
+        // Should be 2 bytes decoded in UTF-8, check if there is one byte following.
+        if (!HasExpectedNumberOfBytes(Constants::UTF8_NEXT_ONE_BYTE)) {
+            return INVALID_CP;
+        }
         char32_t cu1 = static_cast<uint8_t>(*iterNext++);
         res = ((cu0 & Constants::UTF8_2BYTE_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu1 & Constants::UTF8_CONT_MASK);
     } else if ((cu0 & Constants::UTF8_4BYTE_HEADER) == Constants::UTF8_3BYTE_HEADER) {
+        // Should be 3 bytes decoded in UTF-8, check if there are 2 bytes following.
+        if (!HasExpectedNumberOfBytes(Constants::UTF8_NEXT_TWO_BYTE)) {
+            return INVALID_CP;
+        }
         char32_t cu1 = static_cast<uint8_t>(*iterNext++);
         char32_t cu2 = static_cast<uint8_t>(*iterNext++);
         res = ((cu0 & Constants::UTF8_3BYTE_MASK) << Constants::UTF8_3BYTE_SHIFT) |
               ((cu1 & Constants::UTF8_CONT_MASK) << Constants::UTF8_2BYTE_SHIFT) | (cu2 & Constants::UTF8_CONT_MASK);
     } else if (((cu0 & Constants::UTF8_DECODE_4BYTE_MASK) == Constants::UTF8_4BYTE_HEADER) &&
                (cu0 <= Constants::UTF8_DECODE_4BYTE_LIMIT)) {
+        // Should be 4 bytes decoded in UTF-8, check if there are 3 bytes following.
+        if (!HasExpectedNumberOfBytes(Constants::UTF8_NEXT_THREE_BYTE)) {
+            return INVALID_CP;
+        }
         char32_t cu1 = static_cast<uint8_t>(*iterNext++);
         char32_t cu2 = static_cast<uint8_t>(*iterNext++);
         char32_t cu3 = static_cast<uint8_t>(*iterNext++);
