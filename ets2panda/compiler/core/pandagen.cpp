@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,8 +71,8 @@ public:
         UNREACHABLE();
     }
 
-    void Transform([[maybe_unused]] pandasm::Ins *ins, [[maybe_unused]] ProgramElement *program_element,
-                   [[maybe_unused]] uint32_t total_regs) const override
+    void Transform([[maybe_unused]] pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
+                   [[maybe_unused]] uint32_t totalRegs) const override
     {
         UNREACHABLE();
     }

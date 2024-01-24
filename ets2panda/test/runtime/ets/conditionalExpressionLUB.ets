@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,23 +61,23 @@ function sameTypeLUB(): void {
 function objectLUB(): void {
     let a : A = new A();
     let b : Int = 2;
-    let c = true ? a : b; // Object
+    let c = true ? a : b; // A | Int
     assert(foo(c) == 1);
 
     let arr : Int[] | null = null;
-    let d = true ? a : arr; // Object
+    let d = true ? a : arr; // A | Int[] | null
     assert(foo(d) == 1);
 }
 
 function forkSubtypeLUB(): void {
     let a : F = new F();
     let b : D = new D();
-    let c = true ? a : b; // A
+    let c = true ? a : b; // F | D => call most specific foo(A)
     assert(foo(c) == 2);
     let d : A = new A();
-    let e = true ? a : b; // A
+    let e = true ? a : d; // F | A => normalize to A
     assert(foo(e) == 2);
     let f : B = new B();
-    let g = true ? a : f; // B
+    let g = true ? a : f; // F | B => normalize to B
     assert(foo(g) == 3);
 }

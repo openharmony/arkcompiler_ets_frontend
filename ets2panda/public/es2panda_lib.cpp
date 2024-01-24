@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -129,124 +129,256 @@ static char const *ArenaStrdup(ArenaAllocator *allocator, char const *src)
     return res;
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FOR_ALL_MODIFIER_FLAGS(_) \
-    _(STATIC)                     \
-    _(ASYNC)                      \
-    _(PUBLIC)                     \
-    _(PROTECTED)                  \
-    _(PRIVATE)                    \
-    _(DECLARE)                    \
-    _(READONLY)                   \
-    _(OPTIONAL)                   \
-    _(DEFINITE)                   \
-    _(ABSTRACT)                   \
-    _(CONST)                      \
-    _(FINAL)                      \
-    _(NATIVE)                     \
-    _(OVERRIDE)                   \
-    _(CONSTRUCTOR)                \
-    _(SYNCHRONIZED)               \
-    _(FUNCTIONAL)                 \
-    _(IN)                         \
-    _(OUT)                        \
-    _(INTERNAL)                   \
-    _(NULL_ASSIGNABLE)            \
-    _(UNDEFINED_ASSIGNABLE)       \
-    _(EXPORT)                     \
-    _(SETTER)                     \
-    _(DEFAULT_EXPORT)
-
-static ir::ModifierFlags E2pToIrModifierFlags(es2panda_ModifierFlags e2p_flags)
+static ir::ModifierFlags E2pToIrAccessFlags(es2panda_ModifierFlags e2pFlags)
 {
-    ir::ModifierFlags ir_flags {ir::ModifierFlags::NONE};
+    ir::ModifierFlags irFlags {ir::ModifierFlags::NONE};
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_PUBLIC) != 0 ? ir::ModifierFlags::PUBLIC : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_PROTECTED) != 0 ? ir::ModifierFlags::PROTECTED : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_PRIVATE) != 0 ? ir::ModifierFlags::PRIVATE : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_INTERNAL) != 0 ? ir::ModifierFlags::INTERNAL : ir::ModifierFlags::NONE;
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DO_FLAG(FL)                                  \
-    if ((e2p_flags & ES2PANDA_MODIFIER_##FL) != 0) { \
-        ir_flags |= ir::ModifierFlags::FL;           \
-    }
-
-    FOR_ALL_MODIFIER_FLAGS(DO_FLAG)
-
-#undef DO_FLAG
-
-    return ir_flags;
+    return irFlags;
 }
 
-static es2panda_ModifierFlags IrToE2pModifierFlags(ir::ModifierFlags ir_flags)
+static ir::ModifierFlags E2pToIrMethodFlags(es2panda_ModifierFlags e2pFlags)
 {
-    es2panda_ModifierFlags e2p_flags {ES2PANDA_MODIFIER_NONE};
+    ir::ModifierFlags irFlags {ir::ModifierFlags::NONE};
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_STATIC) != 0 ? ir::ModifierFlags::STATIC : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_ABSTRACT) != 0 ? ir::ModifierFlags::ABSTRACT : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_FINAL) != 0 ? ir::ModifierFlags::FINAL : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_NATIVE) != 0 ? ir::ModifierFlags::NATIVE : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_OVERRIDE) != 0 ? ir::ModifierFlags::OVERRIDE : ir::ModifierFlags::NONE;
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DO_FLAG(FL)                                                                          \
-    if ((ir_flags & ir::ModifierFlags::FL) != 0) {                                           \
-        e2p_flags = static_cast<es2panda_ModifierFlags>(e2p_flags | ES2PANDA_MODIFIER_##FL); \
-    }
-
-    FOR_ALL_MODIFIER_FLAGS(DO_FLAG)
-
-#undef DO_FLAG
-
-    return e2p_flags;
+    return irFlags;
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FOR_ALL_SCRIPT_FUNCTION_FLAGS(_) \
-    _(GENERATOR)                         \
-    _(ASYNC)                             \
-    _(ARROW)                             \
-    _(EXPRESSION)                        \
-    _(OVERLOAD)                          \
-    _(CONSTRUCTOR)                       \
-    _(METHOD)                            \
-    _(STATIC_BLOCK)                      \
-    _(HIDDEN)                            \
-    _(IMPLICIT_SUPER_CALL_NEEDED)        \
-    _(ENUM)                              \
-    _(EXTERNAL)                          \
-    _(PROXY)                             \
-    _(THROWS)                            \
-    _(RETHROWS)                          \
-    _(GETTER)                            \
-    _(SETTER)                            \
-    _(DEFAULT_PARAM_PROXY)               \
-    _(ENTRY_POINT)                       \
-    _(INSTANCE_EXTENSION_METHOD)         \
-    _(HAS_RETURN)
-
-static ir::ScriptFunctionFlags E2pToIrScriptFunctionFlags(es2panda_ScriptFunctionFlags e2p_flags)
+static ir::ModifierFlags E2pToIrModifierFlags(es2panda_ModifierFlags e2pFlags)
 {
-    ir::ScriptFunctionFlags ir_flags {ir::ScriptFunctionFlags::NONE};
+    ir::ModifierFlags irFlags {ir::ModifierFlags::NONE};
+    irFlags |= E2pToIrAccessFlags(e2pFlags);
+    irFlags |= E2pToIrMethodFlags(e2pFlags);
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_ASYNC) != 0 ? ir::ModifierFlags::ASYNC : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_DECLARE) != 0 ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_READONLY) != 0 ? ir::ModifierFlags::READONLY : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_OPTIONAL) != 0 ? ir::ModifierFlags::OPTIONAL : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_DEFINITE) != 0 ? ir::ModifierFlags::DEFINITE : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_CONST) != 0 ? ir::ModifierFlags::CONST : ir::ModifierFlags::NONE;
+    irFlags |=
+        (e2pFlags & ES2PANDA_MODIFIER_CONSTRUCTOR) != 0 ? ir::ModifierFlags::CONSTRUCTOR : ir::ModifierFlags::NONE;
+    irFlags |=
+        (e2pFlags & ES2PANDA_MODIFIER_SYNCHRONIZED) != 0 ? ir::ModifierFlags::SYNCHRONIZED : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_FUNCTIONAL) != 0 ? ir::ModifierFlags::FUNCTIONAL : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_IN) != 0 ? ir::ModifierFlags::IN : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_OUT) != 0 ? ir::ModifierFlags::OUT : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_NULL_ASSIGNABLE) != 0 ? ir::ModifierFlags::NULL_ASSIGNABLE
+                                                                   : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_UNDEFINED_ASSIGNABLE) != 0 ? ir::ModifierFlags::UNDEFINED_ASSIGNABLE
+                                                                        : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_EXPORT) != 0 ? ir::ModifierFlags::EXPORT : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_SETTER) != 0 ? ir::ModifierFlags::SETTER : ir::ModifierFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_MODIFIER_DEFAULT_EXPORT) != 0 ? ir::ModifierFlags::DEFAULT_EXPORT
+                                                                  : ir::ModifierFlags::NONE;
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DO_FLAG(FL)                                         \
-    if ((e2p_flags & ES2PANDA_SCRIPT_FUNCTION_##FL) != 0) { \
-        ir_flags |= ir::ScriptFunctionFlags::FL;            \
-    }
-
-    FOR_ALL_SCRIPT_FUNCTION_FLAGS(DO_FLAG)
-
-#undef DO_FLAG
-
-    return ir_flags;
+    return irFlags;
 }
 
-static es2panda_ScriptFunctionFlags IrToE2pScriptFunctionFlags(ir::ScriptFunctionFlags ir_flags)
+static es2panda_ModifierFlags IrToE2pAccessFlags(es2panda_ModifierFlags e2pFlags, ir::ModifierFlags irFlags)
 {
-    es2panda_ScriptFunctionFlags e2p_flags {ES2PANDA_SCRIPT_FUNCTION_NONE};
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::PUBLIC) != 0 ? e2pFlags | ES2PANDA_MODIFIER_PUBLIC : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::PROTECTED) != 0 ? e2pFlags | ES2PANDA_MODIFIER_PROTECTED : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::PRIVATE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_PRIVATE : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::INTERNAL) != 0 ? e2pFlags | ES2PANDA_MODIFIER_INTERNAL : e2pFlags);
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DO_FLAG(FL)                                                                                       \
-    if ((ir_flags & ir::ScriptFunctionFlags::FL) != 0) {                                                  \
-        e2p_flags = static_cast<es2panda_ScriptFunctionFlags>(e2p_flags | ES2PANDA_SCRIPT_FUNCTION_##FL); \
-    }
+    return e2pFlags;
+}
 
-    FOR_ALL_SCRIPT_FUNCTION_FLAGS(DO_FLAG)
+static es2panda_ModifierFlags IrToE2pMethodFlags(es2panda_ModifierFlags e2pFlags, ir::ModifierFlags irFlags)
+{
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::STATIC) != 0 ? e2pFlags | ES2PANDA_MODIFIER_STATIC : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::ABSTRACT) != 0 ? e2pFlags | ES2PANDA_MODIFIER_ABSTRACT : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::FINAL) != 0 ? e2pFlags | ES2PANDA_MODIFIER_FINAL : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::NATIVE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_NATIVE : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::OVERRIDE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_OVERRIDE : e2pFlags);
 
-#undef DO_FLAG
+    return e2pFlags;
+}
 
-    return e2p_flags;
+static es2panda_ModifierFlags IrToE2pModifierFlags(ir::ModifierFlags irFlags)
+{
+    es2panda_ModifierFlags e2pFlags {ES2PANDA_MODIFIER_NONE};
+    e2pFlags = IrToE2pAccessFlags(e2pFlags, irFlags);
+    e2pFlags = IrToE2pMethodFlags(e2pFlags, irFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::ASYNC) != 0 ? e2pFlags | ES2PANDA_MODIFIER_ASYNC : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::DECLARE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_DECLARE : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::READONLY) != 0 ? e2pFlags | ES2PANDA_MODIFIER_READONLY : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::OPTIONAL) != 0 ? e2pFlags | ES2PANDA_MODIFIER_OPTIONAL : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::DEFINITE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_DEFINITE : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::CONST) != 0 ? e2pFlags | ES2PANDA_MODIFIER_CONST : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::CONSTRUCTOR) != 0 ? e2pFlags | ES2PANDA_MODIFIER_CONSTRUCTOR : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::SYNCHRONIZED) != 0 ? e2pFlags | ES2PANDA_MODIFIER_SYNCHRONIZED : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::FUNCTIONAL) != 0 ? e2pFlags | ES2PANDA_MODIFIER_FUNCTIONAL : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::IN) != 0 ? e2pFlags | ES2PANDA_MODIFIER_IN : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::OUT) != 0 ? e2pFlags | ES2PANDA_MODIFIER_OUT : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::NULL_ASSIGNABLE) != 0 ? e2pFlags | ES2PANDA_MODIFIER_NULL_ASSIGNABLE : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>((irFlags & ir::ModifierFlags::UNDEFINED_ASSIGNABLE) != 0
+                                                       ? e2pFlags | ES2PANDA_MODIFIER_UNDEFINED_ASSIGNABLE
+                                                       : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::EXPORT) != 0 ? e2pFlags | ES2PANDA_MODIFIER_EXPORT : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::SETTER) != 0 ? e2pFlags | ES2PANDA_MODIFIER_SETTER : e2pFlags);
+    e2pFlags = static_cast<es2panda_ModifierFlags>(
+        (irFlags & ir::ModifierFlags::DEFAULT_EXPORT) != 0 ? e2pFlags | ES2PANDA_MODIFIER_DEFAULT_EXPORT : e2pFlags);
+
+    return e2pFlags;
+}
+
+static ir::ScriptFunctionFlags E2pToIrTypeScriptFunctionFlags(es2panda_ScriptFunctionFlags e2pFlags)
+{
+    ir::ScriptFunctionFlags irFlags {ir::ScriptFunctionFlags::NONE};
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_GENERATOR) != 0 ? ir::ScriptFunctionFlags::GENERATOR
+                                                                    : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_ARROW) != 0 ? ir::ScriptFunctionFlags::ARROW
+                                                                : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_CONSTRUCTOR) != 0 ? ir::ScriptFunctionFlags::CONSTRUCTOR
+                                                                      : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_METHOD) != 0 ? ir::ScriptFunctionFlags::METHOD
+                                                                 : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_STATIC_BLOCK) != 0 ? ir::ScriptFunctionFlags::STATIC_BLOCK
+                                                                       : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_PROXY) != 0 ? ir::ScriptFunctionFlags::PROXY
+                                                                : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_GETTER) != 0 ? ir::ScriptFunctionFlags::GETTER
+                                                                 : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_SETTER) != 0 ? ir::ScriptFunctionFlags::SETTER
+                                                                 : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_INSTANCE_EXTENSION_METHOD) != 0
+                   ? ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD
+                   : ir::ScriptFunctionFlags::NONE;
+
+    return irFlags;
+}
+
+static ir::ScriptFunctionFlags E2pToIrScriptFunctionFlags(es2panda_ScriptFunctionFlags e2pFlags)
+{
+    ir::ScriptFunctionFlags irFlags {ir::ScriptFunctionFlags::NONE};
+    irFlags |= E2pToIrTypeScriptFunctionFlags(e2pFlags);
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_ASYNC) != 0 ? ir::ScriptFunctionFlags::ASYNC
+                                                                : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_EXPRESSION) != 0 ? ir::ScriptFunctionFlags::EXPRESSION
+                                                                     : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_OVERLOAD) != 0 ? ir::ScriptFunctionFlags::OVERLOAD
+                                                                   : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_HIDDEN) != 0 ? ir::ScriptFunctionFlags::HIDDEN
+                                                                 : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_IMPLICIT_SUPER_CALL_NEEDED) != 0
+                   ? ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED
+                   : ir::ScriptFunctionFlags::NONE;
+    irFlags |=
+        (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_ENUM) != 0 ? ir::ScriptFunctionFlags::ENUM : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_EXTERNAL) != 0 ? ir::ScriptFunctionFlags::EXTERNAL
+                                                                   : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_THROWS) != 0 ? ir::ScriptFunctionFlags::THROWS
+                                                                 : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_RETHROWS) != 0 ? ir::ScriptFunctionFlags::RETHROWS
+                                                                   : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_DEFAULT_PARAM_PROXY) != 0
+                   ? ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY
+                   : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_ENTRY_POINT) != 0 ? ir::ScriptFunctionFlags::ENTRY_POINT
+                                                                      : ir::ScriptFunctionFlags::NONE;
+    irFlags |= (e2pFlags & ES2PANDA_SCRIPT_FUNCTION_HAS_RETURN) != 0 ? ir::ScriptFunctionFlags::HAS_RETURN
+                                                                     : ir::ScriptFunctionFlags::NONE;
+
+    return irFlags;
+}
+
+static es2panda_ScriptFunctionFlags IrToE2pTypeScriptFunctionFlags(es2panda_ScriptFunctionFlags e2pFlags,
+                                                                   ir::ScriptFunctionFlags irFlags)
+{
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::GENERATOR) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_GENERATOR : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::ARROW) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_ARROW : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0
+                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_CONSTRUCTOR
+                                                             : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::METHOD) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_METHOD : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0
+                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_STATIC_BLOCK
+                                                             : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::PROXY) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_PROXY : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::GETTER) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_GETTER : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::SETTER) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_SETTER : e2pFlags);
+    e2pFlags =
+        static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0
+                                                      ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_INSTANCE_EXTENSION_METHOD
+                                                      : e2pFlags);
+
+    return e2pFlags;
+}
+
+static es2panda_ScriptFunctionFlags IrToE2pScriptFunctionFlags(ir::ScriptFunctionFlags irFlags)
+{
+    es2panda_ScriptFunctionFlags e2pFlags {ES2PANDA_SCRIPT_FUNCTION_NONE};
+    e2pFlags = IrToE2pTypeScriptFunctionFlags(e2pFlags, irFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::ASYNC) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_ASYNC : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::EXPRESSION) != 0
+                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_EXPRESSION
+                                                             : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::OVERLOAD) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_OVERLOAD : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::HIDDEN) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_HIDDEN : e2pFlags);
+    e2pFlags =
+        static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED) != 0
+                                                      ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_IMPLICIT_SUPER_CALL_NEEDED
+                                                      : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::ENUM) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_ENUM : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::EXTERNAL) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_EXTERNAL : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::THROWS) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_THROWS : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>(
+        (irFlags & ir::ScriptFunctionFlags::RETHROWS) != 0 ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_RETHROWS : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY) != 0
+                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_DEFAULT_PARAM_PROXY
+                                                             : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::ENTRY_POINT) != 0
+                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_ENTRY_POINT
+                                                             : e2pFlags);
+    e2pFlags = static_cast<es2panda_ScriptFunctionFlags>((irFlags & ir::ScriptFunctionFlags::HAS_RETURN) != 0
+                                                             ? e2pFlags | ES2PANDA_SCRIPT_FUNCTION_HAS_RETURN
+                                                             : e2pFlags);
+
+    return e2pFlags;
 }
 
 extern "C" es2panda_Config *CreateConfig(int args, char const **argv)
@@ -398,7 +530,7 @@ static Context *InitScopes(Context *ctx)
     ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
 
     try {
-        compiler::ScopesInitPhaseETS scopesInit;
+        compiler::InitScopesPhaseETS scopesInit;
         scopesInit.Perform(ctx, ctx->parserProgram);
         do {
             if (ctx->currentPhase >= ctx->phases.size()) {
@@ -1467,45 +1599,37 @@ extern "C" es2panda_AstNode *ImportSpecifierLocal(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Local());
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FOR_ALL_MEMBER_EXPRESSION_KINDS(_) \
-    _(ELEMENT_ACCESS)                      \
-    _(PROPERTY_ACCESS)                     \
-    _(GETTER)                              \
-    _(SETTER)
-
-static ir::MemberExpressionKind E2pToIrMemberExpressionKind(es2panda_MemberExpressionKind e2p_kind)
+static ir::MemberExpressionKind E2pToIrMemberExpressionKind(es2panda_MemberExpressionKind e2pKind)
 {
-    ir::MemberExpressionKind ir_kind = ir::MemberExpressionKind::NONE;
+    ir::MemberExpressionKind irKind = ir::MemberExpressionKind::NONE;
+    irKind |= (e2pKind & ES2PANDA_MEMBER_EXPRESSION_KIND_ELEMENT_ACCESS) != 0 ? ir::MemberExpressionKind::ELEMENT_ACCESS
+                                                                              : ir::MemberExpressionKind::NONE;
+    irKind |= (e2pKind & ES2PANDA_MEMBER_EXPRESSION_KIND_PROPERTY_ACCESS) != 0
+                  ? ir::MemberExpressionKind::PROPERTY_ACCESS
+                  : ir::MemberExpressionKind::NONE;
+    irKind |= (e2pKind & ES2PANDA_MEMBER_EXPRESSION_KIND_GETTER) != 0 ? ir::MemberExpressionKind::GETTER
+                                                                      : ir::MemberExpressionKind::NONE;
+    irKind |= (e2pKind & ES2PANDA_MEMBER_EXPRESSION_KIND_SETTER) != 0 ? ir::MemberExpressionKind::SETTER
+                                                                      : ir::MemberExpressionKind::NONE;
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DO_KIND(K)                                               \
-    if ((e2p_kind & ES2PANDA_MEMBER_EXPRESSION_KIND_##K) != 0) { \
-        ir_kind |= ir::MemberExpressionKind::K;                  \
-    }
-
-    FOR_ALL_MEMBER_EXPRESSION_KINDS(DO_KIND)
-
-#undef DO_KIND
-
-    return ir_kind;
+    return irKind;
 }
 
-static es2panda_MemberExpressionKind IrToE2pMemberExpressionKind(ir::MemberExpressionKind ir_kind)
+static es2panda_MemberExpressionKind IrToE2pMemberExpressionKind(ir::MemberExpressionKind irKind)
 {
-    es2panda_MemberExpressionKind e2p_kind = ES2PANDA_MEMBER_EXPRESSION_KIND_NONE;
+    es2panda_MemberExpressionKind e2pKind = ES2PANDA_MEMBER_EXPRESSION_KIND_NONE;
+    e2pKind = static_cast<es2panda_MemberExpressionKind>((irKind & ir::MemberExpressionKind::ELEMENT_ACCESS) != 0
+                                                             ? e2pKind | ES2PANDA_MEMBER_EXPRESSION_KIND_ELEMENT_ACCESS
+                                                             : e2pKind);
+    e2pKind = static_cast<es2panda_MemberExpressionKind>((irKind & ir::MemberExpressionKind::PROPERTY_ACCESS) != 0
+                                                             ? e2pKind | ES2PANDA_MEMBER_EXPRESSION_KIND_PROPERTY_ACCESS
+                                                             : e2pKind);
+    e2pKind = static_cast<es2panda_MemberExpressionKind>(
+        (irKind & ir::MemberExpressionKind::GETTER) != 0 ? e2pKind | ES2PANDA_MEMBER_EXPRESSION_KIND_GETTER : e2pKind);
+    e2pKind = static_cast<es2panda_MemberExpressionKind>(
+        (irKind & ir::MemberExpressionKind::SETTER) != 0 ? e2pKind | ES2PANDA_MEMBER_EXPRESSION_KIND_SETTER : e2pKind);
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define DO_KIND(K)                                                                                             \
-    if ((ir_kind & ir::MemberExpressionKind::K) != 0) {                                                        \
-        e2p_kind = static_cast<es2panda_MemberExpressionKind>(e2p_kind | ES2PANDA_MEMBER_EXPRESSION_KIND_##K); \
-    }
-
-    FOR_ALL_MEMBER_EXPRESSION_KINDS(DO_KIND)
-
-#undef DO_KIND
-
-    return e2p_kind;
+    return e2pKind;
 }
 
 extern "C" es2panda_AstNode *CreateMemberExpression(es2panda_Context *context, es2panda_AstNode *object,

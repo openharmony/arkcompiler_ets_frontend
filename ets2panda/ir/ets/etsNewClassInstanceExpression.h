@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,9 +70,14 @@ public:
         return typeReference_;
     }
 
-    [[nodiscard]] ArenaVector<ir::Expression *> GetArguments() const noexcept
+    [[nodiscard]] const ArenaVector<ir::Expression *> &GetArguments() const noexcept
     {
         return arguments_;
+    }
+
+    [[nodiscard]] checker::Signature *GetSignature() const noexcept
+    {
+        return signature_;
     }
 
     void SetSignature(checker::Signature *const signature) noexcept

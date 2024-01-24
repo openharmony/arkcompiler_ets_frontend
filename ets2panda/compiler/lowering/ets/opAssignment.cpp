@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,11 +37,6 @@
 #include "ir/statements/expressionStatement.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view OpAssignmentLowering::Name()
-{
-    return "op-assignment";
-}
 
 struct Conversion {
     lexer::TokenType from;
@@ -176,7 +171,7 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
         ident1->Clone(allocator), ident2 != nullptr ? ident2->Clone(allocator) : nullptr, ident1->Clone(allocator),
         ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, exprType);
     loweringResult->SetParent(assignment->Parent());
-    ScopesInitPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
+    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, scope);
     loweringResult->Check(checker);

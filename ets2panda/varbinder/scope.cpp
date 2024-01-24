@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -741,8 +741,18 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
 
     SetBindingProps(newDecl, &props, isStatic);
 
-    if (FindLocal(newDecl->Name(), ResolveBindingOptions::ALL) != nullptr) {
-        return nullptr;
+    const auto *foundVar = FindLocal(newDecl->Name(), ResolveBindingOptions::ALL);
+    if (foundVar != nullptr) {
+        if (!newDecl->IsLetOrConstDecl()) {
+            return nullptr;
+        }
+
+        foundVar = FindLocal(newDecl->Name(),
+                             ResolveBindingOptions::ALL ^ (isStatic ? ResolveBindingOptions::VARIABLES
+                                                                    : ResolveBindingOptions::STATIC_VARIABLES));
+        if (foundVar != nullptr) {
+            return nullptr;
+        }
     }
 
     auto *var = props.GetTargetScope()->AddBinding(allocator, nullptr, newDecl, extension);

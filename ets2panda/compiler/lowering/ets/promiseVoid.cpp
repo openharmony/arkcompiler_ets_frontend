@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 #include "promiseVoid.h"
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
@@ -31,13 +32,6 @@
 #include "util/ustring.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view PromiseVoidLowering::Name()
-{
-    static std::string const NAME = "promise-void";
-    return NAME;
-}
-
 static ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body)
 {
     (void)checker;
@@ -128,7 +122,18 @@ static bool CheckForPromiseVoid(const ir::TypeNode *type)
     return isTypePromise && isParamVoid;
 }
 
-bool PromiseVoidLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+using AstNodePtr = ir::AstNode *;
+
+/*
+ * Transformation is basically syntactical: it adds relevant return type and return statements to methods and function
+ * NOTE: but not for lambdas, at least for now
+ * So, the code
+ * async function f() {}
+ * transforms to
+ * async function f(): Promise<void> { return Void; }
+ * */
+
+bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
@@ -156,68 +161,74 @@ bool PromiseVoidLowering::Perform(public_lib::Context *ctx, parser::Program *pro
         return {loc.end, loc.end};
     };
 
-    program->Ast()->TransformChildrenRecursively([checker, genTypeLocation](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc()) {
-            auto *function = ast->AsScriptFunction();
-            auto *returnAnn = function->ReturnTypeAnnotation();
-            const auto hasReturnAnn = returnAnn != nullptr;
-            const auto hasPromiseVoid = CheckForPromiseVoid(returnAnn);
+    const auto transformer = [checker, genTypeLocation](ir::AstNode *ast) -> AstNodePtr {
+        if (!(ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc())) {
+            return ast;
+        }
 
-            if (!hasReturnAnn) {
-                const auto &loc = genTypeLocation(function);
-                function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
+        auto *function = ast->AsScriptFunction();
+        auto *returnAnn = function->ReturnTypeAnnotation();
+        const auto hasReturnAnn = returnAnn != nullptr;
+        const auto hasPromiseVoid = CheckForPromiseVoid(returnAnn);
 
-                if (function->HasBody()) {
-                    HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
-                }
-            } else if (hasPromiseVoid && function->HasBody()) {
+        if (!hasReturnAnn) {
+            const auto &loc = genTypeLocation(function);
+            function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
+
+            if (function->HasBody()) {
                 HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
             }
+        } else if (hasPromiseVoid && function->HasBody()) {
+            HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());
         }
 
         return ast;
-    });
+    };
+
+    program->Ast()->TransformChildrenRecursively(transformer);
 
     return true;
 }
 
-bool PromiseVoidLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
     (void)ctx;
 
     auto checkFunctionBody = [](const ir::BlockStatement *body) -> bool {
-        if (body->IsReturnStatement()) {
-            auto *returnStmt = body->AsReturnStatement();
-            const auto *arg = returnStmt->Argument();
-
-            if (!arg->IsIdentifier()) {
-                return false;
-            }
-
-            const auto *id = arg->AsIdentifier();
-            return id->Name() == compiler::Signatures::VOID_OBJECT;
+        if (!body->IsReturnStatement()) {
+            return true;
         }
+        auto *returnStmt = body->AsReturnStatement();
+        const auto *arg = returnStmt->Argument();
+
+        if (!arg->IsIdentifier()) {
+            return false;
+        }
+
+        const auto *id = arg->AsIdentifier();
+        return id->Name() == compiler::Signatures::VOID_OBJECT;
 
         return true;
     };
 
     auto isOk = true;
-    program->Ast()->IterateRecursively([checkFunctionBody, &isOk](ir::AstNode *ast) {
-        if (ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc()) {
-            auto *function = ast->AsScriptFunction();
-            auto *returnAnn = function->ReturnTypeAnnotation();
-            if (!CheckForPromiseVoid(returnAnn)) {
+    auto transformer = [checkFunctionBody, &isOk](ir::AstNode *ast) {
+        if (!(ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc())) {
+            return;
+        }
+        auto *function = ast->AsScriptFunction();
+        auto *returnAnn = function->ReturnTypeAnnotation();
+        if (!CheckForPromiseVoid(returnAnn)) {
+            return;
+        }
+        if (function->HasBody()) {
+            if (!checkFunctionBody(function->Body()->AsBlockStatement())) {
+                isOk = false;
                 return;
             }
-            if (function->HasBody()) {
-                if (!checkFunctionBody(function->Body()->AsBlockStatement())) {
-                    isOk = false;
-                    return;
-                }
-            }
         }
-        return;
-    });
+    };
+    program->Ast()->IterateRecursively(transformer);
 
     return isOk;
 }

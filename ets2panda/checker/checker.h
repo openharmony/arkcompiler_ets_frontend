@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -134,6 +134,11 @@ public:
         return uncheckedCastableResults_;
     }
 
+    RelationHolder &SupertypeResults()
+    {
+        return supertypeResults_;
+    }
+
     std::unordered_set<const void *> &TypeStack()
     {
         return typeStack_;
@@ -209,6 +214,7 @@ private:
     RelationHolder assignableResults_;
     RelationHolder comparableResults_;
     RelationHolder uncheckedCastableResults_;
+    RelationHolder supertypeResults_;
 
     std::unordered_set<const void *> typeStack_;
 };

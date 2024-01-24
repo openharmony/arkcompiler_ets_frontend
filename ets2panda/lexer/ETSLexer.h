@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_CORE_ETS_LEXER_H
 
 #include "lexer/lexer.h"
+#include "token/letters.h"
 
 namespace panda::es2panda::lexer {
 class ETSLexer final : public Lexer {
@@ -40,11 +41,24 @@ public:
     void ScanNumberLeadingZero() override
     {
         const auto savedLexerPosition = Save();
+
+        bool allowBigint = false;
+        if (Iterator().Peek() == LEX_CHAR_LOWERCASE_N) {
+            // 0n is the only allowed bigint literal with leading 0
+            allowBigint = true;
+        }
+
         try {
             ScanNumberLeadingZeroImpl<uint32_t, uint32_t>();
         } catch (...) {
             Rewind(savedLexerPosition);
             ScanNumberLeadingZeroImpl<uint64_t, uint64_t>();
+        }
+
+        if ((GetToken().flags_ & TokenFlags::NUMBER_BIGINT) != 0) {
+            if (!allowBigint) {
+                ThrowError("Invalid BigInt number");
+            }
         }
     }
 

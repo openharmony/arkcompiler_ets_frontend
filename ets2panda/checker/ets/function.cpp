@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -67,6 +67,7 @@
 
 namespace panda::es2panda::checker {
 
+// NOTE: #14993 merge with InstantiationContext::ValidateTypeArg
 bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument,
                                           const Substitution *substitution)
 {
@@ -76,21 +77,8 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (!typeArgument->IsETSTypeParameter() && !IsReferenceType(typeArgument)) {
         return false;
     }
-    if (typeArgument->IsETSUnionType()) {
-        auto const &constitutent = typeArgument->AsETSUnionType()->ConstituentTypes();
-        return std::all_of(constitutent.begin(), constitutent.end(), [this, typeParam, substitution](Type *typeArg) {
-            return IsCompatibleTypeArgument(typeParam->AsETSTypeParameter(), typeArg, substitution);
-        });
-    }
-
-    if (auto *constraint = typeParam->GetConstraintType(); constraint != nullptr) {
-        constraint = constraint->Substitute(Relation(), substitution);
-        constraint->IsSupertypeOf(Relation(), typeArgument);
-        if (!Relation()->IsTrue()) {
-            return false;
-        }
-    }
-    return true;
+    auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
+    return Relation()->IsSupertypeOf(constraint, typeArgument);
 }
 
 /* A very rough and imprecise partial type inference */
@@ -254,6 +242,11 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
                 continue;
             }
             return nullptr;
+        }
+
+        if (argument->IsArrayExpression()) {
+            argument->AsArrayExpression()->GetPrefferedTypeFromFuncParam(
+                this, substitutedSig->Function()->Params()[index], flags);
         }
 
         auto *const argumentType = argument->Check(this);
@@ -1047,9 +1040,9 @@ bool ETSChecker::IsOverridableIn(Signature *signature)
         return false;
     }
 
-    if (signature->HasSignatureFlag(SignatureFlags::PUBLIC)) {
-        return FindAncestorGivenByType(signature->Function(), ir::AstNodeType::TS_INTERFACE_DECLARATION) == nullptr ||
-               signature->HasSignatureFlag(SignatureFlags::STATIC);
+    // NOTE: #15095 workaround, separate internal visibility check
+    if (signature->HasSignatureFlag(SignatureFlags::PUBLIC | SignatureFlags::INTERNAL)) {
+        return true;
     }
 
     return signature->HasSignatureFlag(SignatureFlags::PROTECTED);
@@ -1071,7 +1064,6 @@ bool ETSChecker::IsMethodOverridesOther(Signature *target, Signature *source)
         if (Relation()->IsTrue()) {
             CheckThrowMarkers(source, target);
 
-            CheckStaticHide(target, source);
             if (source->HasSignatureFlag(SignatureFlags::STATIC)) {
                 return false;
             }
@@ -1158,6 +1150,38 @@ Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *tar
     return target->Substitute(Relation(), substitution);
 }
 
+void ETSChecker::ThrowOverrideError(Signature *signature, Signature *overriddenSignature,
+                                    const OverrideErrorCode &errorCode)
+{
+    const char *reason {};
+    switch (errorCode) {
+        case OverrideErrorCode::OVERRIDDEN_STATIC: {
+            reason = "overridden method is static.";
+            break;
+        }
+        case OverrideErrorCode::OVERRIDDEN_FINAL: {
+            reason = "overridden method is final.";
+            break;
+        }
+        case OverrideErrorCode::INCOMPATIBLE_RETURN: {
+            reason = "overriding return type is not compatible with the other return type.";
+            break;
+        }
+        case OverrideErrorCode::OVERRIDDEN_WEAKER: {
+            reason = "overridden method has weaker access privilege.";
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+
+    ThrowTypeError({signature->Function()->Id()->Name(), signature, " in ", signature->Owner(), " cannot override ",
+                    overriddenSignature->Function()->Id()->Name(), overriddenSignature, " in ",
+                    overriddenSignature->Owner(), " because ", reason},
+                   signature->Function()->Start());
+}
+
 bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 {
     auto *target = site->GetProperty(signature->Function()->Id()->Name(), PropertySearchFlags::SEARCH_METHOD);
@@ -1189,40 +1213,15 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
                 (itSubst->Function()->IsGetter() && !signature->Function()->IsGetter())) {
                 continue;
             }
-        } else if (!IsMethodOverridesOther(itSubst, signature)) {
+        }
+        if (!IsMethodOverridesOther(itSubst, signature)) {
             continue;
         }
 
         auto [success, errorCode] = CheckOverride(signature, itSubst);
 
         if (!success) {
-            const char *reason {};
-            switch (errorCode) {
-                case OverrideErrorCode::OVERRIDDEN_STATIC: {
-                    reason = "overridden method is static.";
-                    break;
-                }
-                case OverrideErrorCode::OVERRIDDEN_FINAL: {
-                    reason = "overridden method is final.";
-                    break;
-                }
-                case OverrideErrorCode::INCOMPATIBLE_RETURN: {
-                    reason = "overriding return type is not compatible with the other return type.";
-                    break;
-                }
-                case OverrideErrorCode::OVERRIDDEN_WEAKER: {
-                    reason = "overridden method has weaker access privilege.";
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
-
-            ThrowTypeError({signature->Function()->Id()->Name(), signature, " in ", signature->Owner(),
-                            " cannot override ", it->Function()->Id()->Name(), it, " in ", it->Owner(), " because ",
-                            reason},
-                           signature->Function()->Start());
+            ThrowOverrideError(signature, it, errorCode);
         }
 
         isOverridingAnySignature = true;
@@ -2590,8 +2589,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
     // subtype of R2.
     ASSERT(r1->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) || r1->IsETSTypeParameter());
-    r2->IsSupertypeOf(Relation(), r1);
-    return Relation()->IsTrue();
+    return Relation()->IsSupertypeOf(r2, r1);
 }
 
 std::string ETSChecker::GetAsyncImplName(const util::StringView &name)

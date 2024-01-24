@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,22 +13,7 @@
  * limitations under the License.
  */
 
+type Two = [Int|undefined, string]
 function main(): void {
-    let a : int = 10;
-    let b : int = 10;
-    let c : int = 100;
-    let d : int = 10000;
-
-    let x : int = (a == b ? 2 : 4)
-    assert x == 2;
-
-    let y : int = (c == d ? 8 : 16)
-    assert y == 16;
-
-    assert(foo(true) == "true");
-    assert(foo(false) == "false");
-}
-
-function foo(b: boolean): String {
-    return b ? "true" : "false";
+    let t: Two = [undefined, "Test"];
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,11 +27,11 @@ function main(): void {
   object.toString();
 
 //  TypeError: Cannot access property of non-object or non-enum type
-//  arr1.hashCode();
-//  arr2.hashCode();
-//  object_array.hashCode();
+//  arr1.$_hashCode();
+//  arr2.$_hashCode();
+//  object_array.$_hashCode();
 
-  object.hashCode();
+  object.$_hashCode();
 
   assert(arr1 == arr1);
   assert(arr1 == object_array);

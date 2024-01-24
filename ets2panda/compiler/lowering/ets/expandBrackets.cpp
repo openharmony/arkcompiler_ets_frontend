@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,7 +63,7 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
             "(@@E5);",
             parser::DEFAULT_SOURCE_FILE, ident, dimension, exprType, ident->Clone(allocator), newExpression);
         sequenceExpr->SetParent(newExpression->Parent());
-        ScopesInitPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
+        InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
         checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(sequenceExpr, scope);
         sequenceExpr->Check(checker);
 

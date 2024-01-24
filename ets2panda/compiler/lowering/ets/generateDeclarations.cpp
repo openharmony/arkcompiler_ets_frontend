@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,12 @@
 
 #include "generateDeclarations.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "util/declgenEts2Ts.h"
 
 namespace panda::es2panda::compiler {
+
 bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker;

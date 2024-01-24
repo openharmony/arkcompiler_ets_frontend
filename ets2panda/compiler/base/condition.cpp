@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -187,8 +187,60 @@ void Condition::CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *
     etsg->SetLabel(binExpr, returnRightTrueLabel);
 }
 
+bool Condition::CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *expr, Label *falseLabel)
+{
+    if ((expr->Left()->TsType() == nullptr) || (expr->Right()->TsType() == nullptr)) {
+        return false;
+    }
+
+    if (!expr->Left()->TsType()->IsETSBigIntType()) {
+        return false;
+    }
+
+    if (!expr->Right()->TsType()->IsETSBigIntType()) {
+        return false;
+    }
+
+    std::string_view signature = compiler::Signatures::ANY;
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+            signature = compiler::Signatures::BUILTIN_BIGINT_OPERATOR_LESS_THAN;
+            break;
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+            signature = compiler::Signatures::BUILTIN_BIGINT_OPERATOR_LESS_THAN_EQUAL;
+            break;
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+            signature = compiler::Signatures::BUILTIN_BIGINT_OPERATOR_GREATER_THAN;
+            break;
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+            signature = compiler::Signatures::BUILTIN_BIGINT_OPERATOR_GREATER_THAN_EQUAL;
+            break;
+        default:
+            // Other operations are handled in the CompileBinaryExpr function
+            return false;
+    }
+
+    auto ttctx = TargetTypeContext(etsg, expr->OperationType());
+    RegScope rs(etsg);
+    VReg lhs = etsg->AllocReg();
+    expr->Left()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
+    expr->Right()->Compile(etsg);
+    etsg->ApplyConversion(expr->Right(), expr->OperationType());
+    compiler::VReg rhs = etsg->AllocReg();
+    etsg->StoreAccumulator(expr, rhs);
+    etsg->CallBigIntBinaryComparison(expr, lhs, rhs, signature);
+    etsg->BranchIfFalse(expr, falseLabel);
+
+    return true;
+}
+
 bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
+    if (CompileBinaryExprForBigInt(etsg, binExpr, falseLabel)) {
+        return true;
+    }
+
     switch (binExpr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:

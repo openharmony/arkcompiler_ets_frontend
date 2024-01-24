@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
 #include "checker/types/type.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
 #include "ir/astNode.h"
@@ -32,12 +33,6 @@
 #include "ir/ts/tsAsExpression.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view TupleLowering::Name()
-{
-    return "tuple-lowering";
-}
-
 static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir::UpdateExpression *const update)
 {
     // Converts `tuple[n]++` to

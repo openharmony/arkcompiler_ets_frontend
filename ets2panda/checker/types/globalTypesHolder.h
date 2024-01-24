@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -109,6 +109,8 @@ enum class GlobalTypeId {
     ETS_FLOAT_BOX_BUILTIN,
     ETS_DOUBLE_BOX_BUILTIN,
     ETS_NEVER_BUILTIN,
+    ETS_BIG_INT_BUILTIN,
+    ETS_BIG_INT,
 
     COUNT,
 };
@@ -185,6 +187,8 @@ public:
     Type *GlobalClassNotFoundExceptionBuiltinType();
     [[nodiscard]] Type *GlobalClassCastExceptionBuiltinType() const noexcept;
     Type *GlobalETSStringBuiltinType();
+    Type *GlobalETSBigIntBuiltinType();
+    Type *GlobalETSBigIntLiteralType();
     Type *GlobalStringBuilderBuiltinType();
     Type *GlobalTypeBuiltinType();
     Type *GlobalTypesBuiltinType();

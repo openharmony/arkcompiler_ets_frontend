@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -159,6 +159,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/unionLowering.cpp
   compiler/lowering/ets/expandBrackets.cpp
   compiler/lowering/ets/promiseVoid.cpp
+  compiler/lowering/ets/structLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
   ir/astNode.cpp
@@ -395,6 +396,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp
+  checker/types/ets/etsBigIntType.cpp
   checker/types/ets/etsTupleType.cpp
   checker/types/ets/etsTypeParameter.cpp
   checker/types/ets/etsUnionType.cpp

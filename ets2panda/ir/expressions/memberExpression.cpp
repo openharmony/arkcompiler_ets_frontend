@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -221,7 +221,7 @@ checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checke
     if (PropVar() != nullptr) {
         uncheckedType_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
     }
-    if (IsOptional() && Object()->TsType()->IsNullishOrNullLike()) {
+    if (IsOptional() && checker->MayHaveNulllikeValue(Object()->TsType())) {
         checker->Relation()->SetNode(this);
         type = checker->CreateOptionalResultType(type);
         checker->Relation()->SetNode(nullptr);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_CORE_ETS_PARSER_H
 
 #include <optional>
+#include "parserFlags.h"
 #include "util/arktsconfig.h"
 #include "TypedParser.h"
 
@@ -105,6 +106,20 @@ private:
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
     void ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements);
     ArenaVector<ir::AstNode *> ParseTopLevelStatements(ArenaVector<ir::Statement *> &statements);
+    void ParseTopLevelType(ArenaVector<ir::Statement *> &statements, bool &defaultExport, std::size_t currentPos,
+                           std::function<ir::Statement *(ETSParser *)> const &parserFunction);
+    void ParseTopLevelNextToken(ArenaVector<ir::Statement *> &statements, ArenaVector<ir::AstNode *> &globalProperties,
+                                ir::ScriptFunction *initFunction);
+    void ParseTopLevelNextTokenDefault(ArenaVector<ir::Statement *> &statements, ir::ScriptFunction *initFunction,
+                                       size_t currentPos, lexer::TokenType tokenType, bool defaultExport);
+    ir::ModifierFlags ResolveMemberModifiers();
+    lexer::SourcePosition ParseTopLevelNextTokenResolution(ArenaVector<ir::Statement *> &statements,
+                                                           ArenaVector<ir::AstNode *> &globalProperties,
+                                                           ir::ScriptFunction *initFunction, size_t currentPos,
+                                                           bool defaultExport);
+    void ParseTokenOfNative(panda::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers);
+    void ParseTokenOfFunction(ir::ModifierFlags memberModifiers, lexer::SourcePosition startLoc,
+                              ArenaVector<ir::AstNode *> &globalProperties);
 #ifdef USE_FTW
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
@@ -136,6 +151,7 @@ private:
                                                        ir::ModifierFlags memberModifiers);
     ir::MethodDefinition *ParseInterfaceGetterSetterMethod(ir::ModifierFlags modifiers);
     ir::Statement *ParseTypeDeclaration(bool allowStatic = false);
+    ir::Statement *ParseTypeDeclarationAbstractFinal(bool allowStatic, ir::ClassDefinitionModifiers modifiers);
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::ClassProperty *ParseInterfaceField();
@@ -159,9 +175,12 @@ private:
     ir::Expression *CreateParameterThis(util::StringView className) override;
 
     // NOLINTNEXTLINE(google-default-arguments)
-    void ParseClassFieldDefiniton(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                  ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *initFunction = nullptr,
-                                  lexer::SourcePosition *letLoc = nullptr);
+    void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
+                                   ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *initFunction = nullptr,
+                                   lexer::SourcePosition *letLoc = nullptr);
+    lexer::SourcePosition InitializeGlobalVariable(ir::Identifier *fieldName, ir::Expression *&initializer,
+                                                   ir::ScriptFunction *initFunction, lexer::SourcePosition &startLoc,
+                                                   ir::TypeNode *typeAnnotation);
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseTypeReferencePart(
         TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
@@ -187,12 +206,17 @@ private:
 
     void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
+    void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
+                               lexer::LexerPosition savedPos);
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
 
     void ValidateForInStatement() override;
 
-    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
+        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Statement *ParseTryStatement() override;
     ir::DebuggerStatement *ParseDebuggerStatement() override;
     void ParseExport(lexer::SourcePosition startLoc);
@@ -234,6 +258,13 @@ private:
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                    ir::ModifierFlags flags = ir::ModifierFlags::NONE,
                                    ir::Identifier *identNode = nullptr) override;
+    ir::AstNode *ParseInnerTypeDeclaration(ir::ModifierFlags memberModifiers, lexer::LexerPosition savedPos,
+                                           bool isStepToken, bool seenStatic);
+    ir::AstNode *ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,
+                                                  const lexer::SourcePosition &startLoc);
+    ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
+                                ir::ModifierFlags memberModifiers, ir::Identifier *identNode,
+                                const lexer::SourcePosition &startLoc);
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
@@ -264,6 +295,7 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseEnumDeclaration(bool isConst = false, bool isStatic = false) override;
     ir::Expression *ParseLaunchExpression(ExpressionParseFlags flags);
+    void ValidateInstanceOfExpression(ir::Expression *expr);
     void ValidateRestParameter(ir::Expression *param) override;
     void CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const;
 
@@ -338,6 +370,7 @@ private:
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view sourceCode,
                                        std::string_view fileName = DEFAULT_SOURCE_FILE);
     // NOLINTEND(google-default-arguments)
+
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "typeRelationContext.h"
+#include "boxingConverter.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "varbinder/declaration.h"
@@ -60,12 +61,13 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
     extends "Comparable<String>", we will get an error here.
     */
 
-    auto const getTypes = [this, &typeArgs, type](size_t idx) -> std::pair<ETSTypeParameter *, Type *> {
+    auto const isDefaulted = [typeArgs](size_t idx) { return typeArgs == nullptr || idx >= typeArgs->Params().size(); };
+
+    auto const getTypes = [this, &typeArgs, type, isDefaulted](size_t idx) -> std::pair<ETSTypeParameter *, Type *> {
         auto *typeParam = type->TypeArguments().at(idx)->AsETSTypeParameter();
-        if (typeArgs != nullptr && idx < typeArgs->Params().size()) {
-            return {typeParam, typeArgs->Params().at(idx)->GetType(checker_)};
-        }
-        return {typeParam, typeParam->GetDefaultType()};
+        return {typeParam, isDefaulted(idx)
+                               ? typeParam->GetDefaultType()
+                               : checker_->MaybePromotedBuiltinType(typeArgs->Params().at(idx)->GetType(checker_))};
     };
 
     auto *const substitution = checker_->NewSubstitution();
@@ -87,7 +89,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
         if (!ValidateTypeArg(constraint, typeArg) && typeArgs != nullptr &&
             !checker_->Relation()->NoThrowGenericTypeAlias()) {
             checker_->ThrowTypeError({"Type '", typeArg, "' is not assignable to constraint type '", constraint, "'."},
-                                     typeArgs->Params().at(idx)->Start());
+                                     isDefaulted(idx) ? pos : typeArgs->Params().at(idx)->Start());
         }
     }
 
@@ -96,16 +98,10 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 
 bool InstantiationContext::ValidateTypeArg(Type *constraintType, Type *typeArg)
 {
-    if (!ETSChecker::IsReferenceType(typeArg)) {
-        return false;
+    // NOTE: #14993 enforce ETSChecker::IsReferenceType
+    if (typeArg->IsWildcardType()) {
+        return true;
     }
-
-    if (typeArg->IsETSUnionType()) {
-        auto const &constituentTypes = typeArg->AsETSUnionType()->ConstituentTypes();
-        return std::all_of(constituentTypes.begin(), constituentTypes.end(),
-                           [this, constraintType](Type *cType) { return ValidateTypeArg(constraintType, cType); });
-    }
-
     return checker_->Relation()->IsAssignableTo(typeArg, constraintType);
 }
 

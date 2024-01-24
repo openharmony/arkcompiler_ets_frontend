@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@
 
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
+#include "checker/types/ets/etsArrayType.h"
 
 namespace panda::es2panda::checker {
 class ETSAnalyzer;
@@ -139,6 +140,9 @@ public:
     {
         v->Accept(this);
     }
+
+    void GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
+                                       checker::TypeRelationFlag flags);
 
 private:
     ArenaVector<Decorator *> decorators_;

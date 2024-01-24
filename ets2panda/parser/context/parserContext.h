@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,7 @@
 namespace panda::es2panda::parser {
 class Program;
 
-enum class ParserStatus : uint32_t {
+enum class ParserStatus : uint64_t {
     NO_OPTS = 0U,
     DIRECT_EVAL = 1U << 0U,
 
@@ -65,6 +65,7 @@ enum class ParserStatus : uint32_t {
     IN_DEFAULT_IMPORTS = 1U << 29U,
     IN_EXTENSION_FUNCTION = 1U << 30U,
     FUNCTION_HAS_RETURN_STATEMENT = 1U << 31U,
+    IN_NAMESPACE = 1ULL << 32ULL,
 };
 
 DEFINE_BITOPS(ParserStatus)

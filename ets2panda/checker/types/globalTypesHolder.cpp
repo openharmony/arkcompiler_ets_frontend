@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,6 +42,7 @@
 #include "checker/types/ets/shortType.h"
 #include "checker/types/ets/etsBooleanType.h"
 #include "checker/types/ets/etsStringType.h"
+#include "checker/types/ets/etsBigIntType.h"
 #include "checker/types/ets/etsVoidType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/wildcardType.h"
@@ -126,6 +127,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("ClassNotFoundException", GlobalTypeId::ETS_CLASS_NOT_FOUND_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("ClassCastException", GlobalTypeId::ETS_CLASS_CAST_EXCEPTION_BUILTIN);
     builtinNameMappings_.emplace("String", GlobalTypeId::ETS_STRING_BUILTIN);
+    builtinNameMappings_.emplace("BigInt", GlobalTypeId::ETS_BIG_INT_BUILTIN);
     builtinNameMappings_.emplace("StringBuilder", GlobalTypeId::ETS_STRING_BUILDER_BUILTIN);
     builtinNameMappings_.emplace("Type", GlobalTypeId::ETS_TYPE_BUILTIN);
     builtinNameMappings_.emplace("Types", GlobalTypeId::ETS_TYPES_BUILTIN);
@@ -509,6 +511,16 @@ Type *GlobalTypesHolder::GlobalUncatchedExceptionErrorBuiltinType()
 Type *GlobalTypesHolder::GlobalETSStringBuiltinType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_STRING_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalETSBigIntBuiltinType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_BIG_INT_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalETSBigIntLiteralType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_BIG_INT));
 }
 
 Type *GlobalTypesHolder::GlobalStringBuilderBuiltinType()

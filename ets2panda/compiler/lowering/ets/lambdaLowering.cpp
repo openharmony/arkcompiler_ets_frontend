@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,16 +15,11 @@
 
 #include "lambdaLowering.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "util/declgenEts2Ts.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view LambdaLowering::Name()
-{
-    return "lambda-lowering";
-}
-
 static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::ArrowFunctionExpression *const arrow)
 {
     auto *const function = arrow->Function();
@@ -43,7 +38,9 @@ static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::Ar
     return arrow;
 }
 
-bool LambdaLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+using AstNodePtr = ir::AstNode *;
+
+bool LambdaConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
@@ -54,7 +51,7 @@ bool LambdaLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const node) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const node) -> AstNodePtr {
         if (node->IsArrowFunctionExpression() &&
             node->AsArrowFunctionExpression()->Function()->Body()->IsExpression()) {
             return ConvertExpression(checker, node->AsArrowFunctionExpression());
@@ -66,7 +63,7 @@ bool LambdaLowering::Perform(public_lib::Context *ctx, parser::Program *program)
     return true;
 }
 
-bool LambdaLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool LambdaConstructionPhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;

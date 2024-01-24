@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -169,37 +169,43 @@ Type *ETSChecker::CreateOptionalResultType(Type *type)
     return CreateNullishType(type, checker::TypeFlag::UNDEFINED, Allocator(), Relation(), GetGlobalTypesHolder());
 }
 
-bool ETSChecker::MayHaveNullValue(const Type *type) const
+// NOTE(vpukhov): #14595 could be implemented with relation
+template <typename P>
+static bool MatchConstitutentOrConstraint(P const &pred, const Type *type)
 {
-    if (type->ContainsNull() || type->IsETSNullType()) {
+    if (pred(type)) {
         return true;
     }
+    if (type->IsETSUnionType()) {
+        for (auto const &ctype : type->AsETSUnionType()->ConstituentTypes()) {
+            if (MatchConstitutentOrConstraint(pred, ctype)) {
+                return true;
+            }
+        }
+        return false;
+    }
     if (type->IsETSTypeParameter()) {
-        return MayHaveNullValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
+        return MatchConstitutentOrConstraint(pred, type->AsETSTypeParameter()->GetConstraintType());
     }
     return false;
+}
+
+bool ETSChecker::MayHaveNullValue(const Type *type) const
+{
+    const auto pred = [](const Type *t) { return t->ContainsNull() || t->IsETSNullType(); };
+    return MatchConstitutentOrConstraint(pred, type);
 }
 
 bool ETSChecker::MayHaveUndefinedValue(const Type *type) const
 {
-    if (type->ContainsUndefined() || type->IsETSUndefinedType()) {
-        return true;
-    }
-    if (type->IsETSTypeParameter()) {
-        return MayHaveUndefinedValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
-    }
-    return false;
+    const auto pred = [](const Type *t) { return t->ContainsUndefined() || t->IsETSUndefinedType(); };
+    return MatchConstitutentOrConstraint(pred, type);
 }
 
 bool ETSChecker::MayHaveNulllikeValue(const Type *type) const
 {
-    if (type->IsNullishOrNullLike()) {
-        return true;
-    }
-    if (type->IsETSTypeParameter()) {
-        return MayHaveNulllikeValue(type->AsETSTypeParameter()->EffectiveConstraint(this));
-    }
-    return false;
+    const auto pred = [](const Type *t) { return t->IsNullishOrNullLike(); };
+    return MatchConstitutentOrConstraint(pred, type);
 }
 
 bool ETSChecker::IsConstantExpression(ir::Expression *expr, Type *type)
@@ -354,7 +360,7 @@ Type *ETSChecker::GuaranteedTypeForUncheckedCast(Type *base, Type *substituted)
     if (!base->IsETSTypeParameter()) {
         return nullptr;
     }
-    auto *constr = base->AsETSTypeParameter()->EffectiveConstraint(this);
+    auto *constr = base->AsETSTypeParameter()->GetConstraintType();
     // Constraint is supertype of TypeArg AND TypeArg is supertype of Constraint
     return Relation()->IsIdenticalTo(substituted, constr) ? nullptr : constr;
 }
@@ -772,6 +778,10 @@ std::tuple<Type *, bool> ETSChecker::ApplyBinaryOperatorPromotion(Type *left, Ty
 
             if (unboxedL->IsLongType() || unboxedR->IsLongType()) {
                 return {GlobalLongType(), bothConst};
+            }
+
+            if (unboxedL->IsCharType() && unboxedR->IsCharType()) {
+                return {GlobalCharType(), bothConst};
             }
 
             return {GlobalIntType(), bothConst};
@@ -1558,7 +1568,7 @@ bool ETSChecker::IsFunctionContainsSignature(ETSFunctionType *funcType, Signatur
 void ETSChecker::CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature)
 {
     for (auto *it : funcType->CallSignatures()) {
-        SavedTypeRelationFlagsContext strfCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
+        SavedTypeRelationFlagsContext strfCtx(Relation(), TypeRelationFlag::NONE);
         Relation()->IsIdenticalTo(it, signature);
         if (Relation()->IsTrue() && it->Function()->Id()->Name() == signature->Function()->Id()->Name()) {
             std::stringstream ss;
@@ -1662,7 +1672,7 @@ bool ETSChecker::IsTypeBuiltinType(const Type *type) const
 bool ETSChecker::IsReferenceType(const Type *type)
 {
     return type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || type->IsETSNullLike() ||
-           type->IsETSStringType() || type->IsETSTypeParameter() || type->IsETSUnionType();
+           type->IsETSStringType() || type->IsETSTypeParameter() || type->IsETSUnionType() || type->IsETSBigIntType();
 }
 
 const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNodeType nodeType, const ir::AstNode *node,
@@ -2609,6 +2619,19 @@ void ETSChecker::ModifyPreferredType(ir::ArrayExpression *const arrayExpr, Type 
     }
 }
 
+std::string GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod, const std::string &className)
+{
+    auto callSignatures = instantiateMethod->TsType()->AsETSFunctionType()->CallSignatures();
+    ASSERT(!callSignatures.empty());
+    auto methodOwner = std::string(callSignatures[0]->Owner()->Name());
+    std::string implicitInstantiateArgument = "()=>{return new " + className + "()";
+    if (methodOwner != className) {
+        implicitInstantiateArgument.append(" as " + methodOwner);
+    }
+    implicitInstantiateArgument.append("}");
+    return implicitInstantiateArgument;
+}
+
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)
 {
     ASSERT(ident->Parent()->IsCallExpression());
@@ -2654,13 +2677,14 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     callExpr->SetCallee(transformedCallee);
 
     if (instantiateMethod != nullptr) {
-        std::string implicitInstantiateArgument = "()=>{return new " + std::string(className) + "()}";
+        std::string implicitInstantiateArgument =
+            GenerateImplicitInstantiateArg(instantiateMethod, std::string(className));
 
         parser::Program program(Allocator(), VarBinder());
         es2panda::CompilerOptions options;
         auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
         auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
-        compiler::ScopesInitPhaseETS::RunExternalNode(argExpr, &program);
+        compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
 
         argExpr->SetParent(callExpr);
         argExpr->SetRange(ident->Range());

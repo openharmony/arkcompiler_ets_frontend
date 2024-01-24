@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_CORE_TS_PARSER_H
 
 #include "TypedParser.h"
+#include "parserFlags.h"
 
 namespace panda::es2panda::ir {
 class Decorator;
@@ -121,7 +122,11 @@ private:
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
-    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList(
+        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    ir::Expression *ParseArrowFunctionRestParameter(lexer::SourcePosition start);
+    ir::Expression *ParseArrowFunctionNoParameter(lexer::SourcePosition start);
     ir::Statement *ParseConstStatement(StatementParsingFlags flags) override;
     ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags) override;
     void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param) override;

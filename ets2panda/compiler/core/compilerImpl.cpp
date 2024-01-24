@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "compilerImpl.h"
 
+#include "compiler/core/ASTVerifier.h"
 #include "es2panda.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/TSAnalyzer.h"
@@ -102,6 +103,28 @@ static void SetupPublicContext(public_lib::Context *context, const SourceFile *s
     context->emitter = compilerContext->GetEmitter();
 }
 
+#ifndef NDEBUG
+static void Verify(const parser::Program &program, const CompilerContext &context, Phase *phase,
+                   ASTVerifierContext &verificationCtx)
+{
+    using NamedProgram = std::tuple<util::StringView, const parser::Program *>;
+    ArenaVector<NamedProgram> toCheck {program.Allocator()->Adapter()};
+    toCheck.push_back(std::make_tuple(program.SourceFilePath(), &program));
+    for (const auto &externalSource : program.ExternalSources()) {
+        for (const auto *external : externalSource.second) {
+            toCheck.push_back(std::make_tuple(external->SourceFilePath(), external));
+        }
+    }
+    for (const auto &it : toCheck) {
+        const auto &sourceName = std::get<0>(it);
+        const auto &linkedProgram = std::get<1>(it);
+        verificationCtx.Verify(context.Options()->verifierWarnings, context.Options()->verifierErrors,
+                               linkedProgram->Ast(), phase->Name(), sourceName);
+        verificationCtx.IntroduceNewInvariants(phase->Name());
+    }
+}
+#endif
+
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
 
@@ -129,6 +152,9 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     context.SetEmitter(&emitter);
     context.SetParser(&parser);
 
+    auto verifier = ASTVerifier {&allocator};
+    auto verificationCtx = ASTVerifierContext {verifier};
+
     public_lib::Context publicContext;
     SetupPublicContext(&publicContext, &unit.input, &allocator, compilerImpl->Queue(), &compilerImpl->Plugins(),
                        &parser, &context);
@@ -142,7 +168,23 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
         if (!phase->Apply(&publicContext, &program)) {
             return nullptr;
         }
+#ifndef NDEBUG
+        Verify(program, context, phase, verificationCtx);
+#endif
     }
+
+#ifndef NDEBUG
+    if (!context.Options()->verifierWarnings.empty()) {
+        if (auto errors = verificationCtx.DumpWarningsJSON(); errors != "[]") {
+            LOG(ERROR, ES2PANDA) << errors;
+        }
+    }
+    if (!context.Options()->verifierErrors.empty()) {
+        if (auto errors = verificationCtx.DumpAssertsJSON(); errors != "[]") {
+            ASSERT_PRINT(false, errors);
+        }
+    }
+#endif
 
     emitter.GenAnnotation();
 

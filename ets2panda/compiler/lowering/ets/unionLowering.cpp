@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "unionLowering.h"
+#include "compiler/core/ASTVerifier.h"
 #include "varbinder/variableFlags.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
@@ -26,6 +27,8 @@
 #include "ir/astNode.h"
 #include "ir/expression.h"
 #include "ir/opaqueTypeNode.h"
+#include "ir/expressions/literals/nullLiteral.h"
+#include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
@@ -36,12 +39,6 @@
 #include "type_helper.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view UnionLowering::Name()
-{
-    return "union-property-access";
-}
-
 ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
 {
     // Create the name for the synthetic class node
@@ -153,9 +150,9 @@ ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *checker, ir:
     }
     if (sourceType != nullptr && expr->Expr()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
         if (expr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-            auto *const boxedExprType = checker::BoxingConverter::ETSTypeFromSource(checker, expr->TsType());
-            auto *const asExpr = GenAsExpression(checker, boxedExprType, expr->Expr(), expr);
-            asExpr->SetBoxingUnboxingFlags(expr->Expr()->GetBoxingUnboxingFlags());
+            auto *const asExpr = GenAsExpression(checker, sourceType, expr->Expr(), expr);
+            asExpr->SetBoxingUnboxingFlags(
+                checker->GetUnboxingFlag(checker->ETSBuiltinTypeAsPrimitiveType(sourceType)));
             expr->Expr()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
             expr->SetExpr(asExpr);
         }
@@ -179,15 +176,24 @@ ir::BinaryExpression *GenInstanceofExpr(checker::ETSChecker *checker, ir::Expres
         rhsType = checker::conversion::Boxing(checker->Relation(), constituentType);
         checker->Relation()->SetNode(nullptr);
     }
-    auto *const rhsExpr =
-        checker->Allocator()->New<ir::Identifier>(rhsType->AsETSObjectType()->Name(), checker->Allocator());
+    if (constituentType->IsETSStringType()) {
+        rhsType = checker->GlobalBuiltinETSStringType();
+    }
+    ir::Expression *rhsExpr;
+    if (rhsType->IsETSUndefinedType()) {
+        rhsExpr = checker->Allocator()->New<ir::UndefinedLiteral>();
+    } else if (rhsType->IsETSNullType()) {
+        rhsExpr = checker->Allocator()->New<ir::NullLiteral>();
+    } else {
+        rhsExpr = checker->Allocator()->New<ir::Identifier>(rhsType->AsETSObjectType()->Name(), checker->Allocator());
+        auto rhsVar = NearestScope(unionNode)->Find(rhsExpr->AsIdentifier()->Name());
+        rhsExpr->AsIdentifier()->SetVariable(rhsVar.variable);
+    }
     auto *const instanceofExpr =
-        checker->Allocator()->New<ir::BinaryExpression>(lhsExpr, rhsExpr, lexer::TokenType::KEYW_INSTANCEOF);
-    lhsExpr->SetParent(instanceofExpr);
+        checker->Allocator()->New<ir::BinaryExpression>(rhsExpr, rhsExpr, lexer::TokenType::KEYW_INSTANCEOF);
     rhsExpr->SetParent(instanceofExpr);
-    auto rhsVar = NearestScope(unionNode)->Find(rhsExpr->Name());
-    rhsExpr->SetVariable(rhsVar.variable);
-    rhsExpr->SetTsType(rhsVar.variable->TsType());
+    rhsExpr->SetParent(instanceofExpr);
+    rhsExpr->SetTsType(rhsType);
     instanceofExpr->SetOperationType(checker->GlobalETSObjectType());
     instanceofExpr->SetTsType(checker->GlobalETSBooleanType());
     return instanceofExpr;
@@ -266,9 +272,12 @@ ir::Expression *ProcessOperandsInBinaryExpr(checker::ETSChecker *checker, ir::Bi
 {
     ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EQUAL ||
            expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_EQUAL);
-    bool isLhsUnion = expr->Left()->TsType()->IsETSUnionType();
-    ir::Expression *unionNode = isLhsUnion ? expr->Left() : expr->Right();
-    auto *const asExpression = GenAsExpression(checker, constituentType, unionNode, expr);
+    bool isLhsUnion = false;
+    ir::Expression *unionNode = (isLhsUnion = expr->Left()->TsType()->IsETSUnionType()) ? expr->Left() : expr->Right();
+    checker::Type *typeToCast = constituentType->IsETSNullLike()
+                                    ? unionNode->TsType()->AsETSUnionType()->GetLeastUpperBoundType()
+                                    : constituentType;
+    auto *const asExpression = GenAsExpression(checker, typeToCast, unionNode, expr);
     if (isLhsUnion) {
         expr->SetLeft(asExpression);
         expr->SetRight(SetBoxFlagOrGenAsExpression(checker, constituentType, expr->Right()));

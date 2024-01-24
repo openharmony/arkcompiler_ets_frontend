@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,8 @@
 #include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
 #include "util/helpers.h"
+
+#include <memory>
 
 namespace panda::es2panda::checker {
 
@@ -968,9 +970,41 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     UNREACHABLE();
 }
 
-ArenaVector<Signature *> &ChooseSignatures(checker::Type *calleeType, bool isConstructorCall,
-                                           bool isFunctionalInterface)
+ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, checker::ETSUnionType *etsUnionType)
 {
+    ArenaVector<checker::Signature *> callSignatures(checker->Allocator()->Adapter());
+
+    for (auto *constituentType : etsUnionType->ConstituentTypes()) {
+        if (constituentType->IsETSObjectType()) {
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            tmpCallSignatures = constituentType->AsETSObjectType()
+                                    ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                    ->TsType()
+                                    ->AsETSFunctionType()
+                                    ->CallSignatures();
+            callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
+        }
+        if (constituentType->IsETSFunctionType()) {
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            tmpCallSignatures = constituentType->AsETSFunctionType()->CallSignatures();
+            callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
+        }
+        if (constituentType->IsETSUnionType()) {
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            tmpCallSignatures = GetUnionTypeSignatures(checker, constituentType->AsETSUnionType());
+            callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
+        }
+    }
+
+    return callSignatures;
+}
+
+ArenaVector<checker::Signature *> &ChooseSignatures(ETSChecker *checker, checker::Type *calleeType,
+                                                    bool isConstructorCall, bool isFunctionalInterface,
+                                                    bool isUnionTypeWithFunctionalInterface)
+{
+    static ArenaVector<checker::Signature *> unionSignatures(checker->Allocator()->Adapter());
+    unionSignatures.clear();
     if (isConstructorCall) {
         return calleeType->AsETSObjectType()->ConstructSignatures();
     }
@@ -980,6 +1014,10 @@ ArenaVector<Signature *> &ChooseSignatures(checker::Type *calleeType, bool isCon
             ->TsType()
             ->AsETSFunctionType()
             ->CallSignatures();
+    }
+    if (isUnionTypeWithFunctionalInterface) {
+        unionSignatures = GetUnionTypeSignatures(checker, calleeType->AsETSUnionType());
+        return unionSignatures;
     }
     return calleeType->AsETSFunctionType()->CallSignatures();
 }
@@ -997,8 +1035,9 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
     return expr->Callee()->AsMemberExpression()->ObjType();
 }
 
-checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr, checker::Type *calleeType,
-                                     bool isConstructorCall, bool isFunctionalInterface)
+checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallExpression *expr,
+                                                  checker::Type *calleeType, bool isFunctionalInterface,
+                                                  bool isUnionTypeWithFunctionalInterface) const
 {
     bool extensionFunctionType = expr->Callee()->IsMemberExpression() && checker->ExtensionETSFunctionType(calleeType);
 
@@ -1008,7 +1047,8 @@ checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *ex
     if (extensionFunctionType) {
         return ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
     }
-    auto &signatures = ChooseSignatures(calleeType, isConstructorCall, isFunctionalInterface);
+    auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
+                                        isUnionTypeWithFunctionalInterface);
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
     if (signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"No matching call signature"}, expr->Start());
@@ -1020,6 +1060,9 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
 {
     ETSChecker *checker = GetETSChecker();
     bool isConstructorCall = expr->IsETSConstructorCall();
+    bool isUnionTypeWithFunctionalInterface =
+        calleeType->IsETSUnionType() &&
+        calleeType->AsETSUnionType()->HasObjectType(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool isFunctionalInterface = calleeType->IsETSObjectType() && calleeType->AsETSObjectType()->HasObjectFlag(
                                                                       checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool etsExtensionFuncHelperType = calleeType->IsETSExtensionFuncHelperType();
@@ -1030,12 +1073,12 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     }
 
     if (!isFunctionalInterface && !calleeType->IsETSFunctionType() && !isConstructorCall &&
-        !etsExtensionFuncHelperType) {
+        !etsExtensionFuncHelperType && !isUnionTypeWithFunctionalInterface) {
         checker->ThrowTypeError("This expression is not callable.", expr->Start());
     }
 
     checker::Signature *signature =
-        ResolveSignature(checker, expr, calleeType, isConstructorCall, isFunctionalInterface);
+        ResolveSignature(checker, expr, calleeType, isFunctionalInterface, isUnionTypeWithFunctionalInterface);
 
     checker->CheckObjectLiteralArguments(signature, expr->Arguments());
     checker->AddUndefinedParamsForDefaultParams(signature, expr->Arguments(), checker);
@@ -1107,7 +1150,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         // NOTE(vpukhov): #14902 substituted signature is not updated
     }
     expr->SetOptionalType(returnType);
-    if (expr->IsOptional() && calleeType->IsNullishOrNullLike()) {
+    if (expr->IsOptional() && checker->MayHaveNulllikeValue(expr->Callee()->Check(checker))) {
         checker->Relation()->SetNode(expr);
         returnType = checker->CreateOptionalResultType(returnType);
         checker->Relation()->SetNode(nullptr);
@@ -1179,7 +1222,7 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
                 builtinAlternateType = alternateType;
             }
 
-            expr->SetTsType(checker->FindLeastUpperBound(builtinConseqType, builtinAlternateType));
+            expr->SetTsType(checker->CreateETSUnionType(builtinConseqType, builtinAlternateType));
         }
     }
 
@@ -1478,20 +1521,34 @@ checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
     return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
+void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
 {
-    ETSChecker *checker = GetETSChecker();
-
-    if (expr->TsType() != nullptr) {
-        return expr->TsType();
+    if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
+        auto tsType = checker->CreateETSBooleanType(true);
+        tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
+        expr->SetTsType(tsType);
+        return;
     }
 
-    auto argType = expr->argument_->Check(checker);
-    const auto isCondExpr = expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
-    checker::Type *operandType = checker->ApplyUnaryOperatorPromotion(argType, true, true, isCondExpr);
-    auto unboxedOperandType = isCondExpr ? checker->ETSBuiltinTypeAsConditionalType(argType)
-                                         : checker->ETSBuiltinTypeAsPrimitiveType(argType);
+    if (operandType == nullptr || !operandType->IsConditionalExprType()) {
+        checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.",
+                                expr->Argument()->Start());
+    }
 
+    auto exprRes = operandType->ResolveConditionExpr();
+    if (std::get<0>(exprRes)) {
+        auto tsType = checker->CreateETSBooleanType(!std::get<1>(exprRes));
+        tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
+        expr->SetTsType(tsType);
+        return;
+    }
+
+    expr->SetTsType(checker->GlobalETSBooleanType());
+}
+
+void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType,
+                                 checker::Type *argType)
+{
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_PLUS: {
@@ -1510,41 +1567,21 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
             break;
         }
         case lexer::TokenType::PUNCTUATOR_TILDE: {
-            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL)) {
-                checker->ThrowTypeError("Bad operand type, the type of the operand must be integral type.",
+            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+                checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
                                         expr->Argument()->Start());
             }
 
             if (operandType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-                expr->SetTsType(checker->BitwiseNegateIntegralType(operandType, expr));
+                expr->SetTsType(checker->BitwiseNegateNumericType(operandType, expr));
                 break;
             }
 
-            expr->SetTsType(operandType);
+            expr->SetTsType(checker->SelectGlobalIntegerTypeForNumeric(operandType));
             break;
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
-                auto tsType = checker->CreateETSBooleanType(true);
-                tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
-                expr->SetTsType(tsType);
-                break;
-            }
-
-            if (operandType == nullptr || !operandType->IsConditionalExprType()) {
-                checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.",
-                                        expr->Argument()->Start());
-            }
-
-            auto exprRes = operandType->ResolveConditionExpr();
-            if (std::get<0>(exprRes)) {
-                auto tsType = checker->CreateETSBooleanType(!std::get<1>(exprRes));
-                tsType->AddTypeFlag(checker::TypeFlag::CONSTANT);
-                expr->SetTsType(tsType);
-                break;
-            }
-
-            expr->SetTsType(checker->GlobalETSBooleanType());
+            ProcessExclamationMark(checker, expr, operandType);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
@@ -1556,8 +1593,56 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
             break;
         }
     }
+}
 
-    if (argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
+checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
+
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    auto argType = expr->argument_->Check(checker);
+    const auto isCondExpr = expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
+    checker::Type *operandType = checker->ApplyUnaryOperatorPromotion(argType, true, true, isCondExpr);
+    auto unboxedOperandType = isCondExpr ? checker->ETSBuiltinTypeAsConditionalType(argType)
+                                         : checker->ETSBuiltinTypeAsPrimitiveType(argType);
+
+    if (argType != nullptr && argType->IsETSBigIntType() && argType->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
+        switch (expr->OperatorType()) {
+            case lexer::TokenType::PUNCTUATOR_MINUS: {
+                checker::Type *type = checker->CreateETSBigIntLiteralType(argType->AsETSBigIntType()->GetValue());
+
+                // We do not need this const anymore as we are negating the bigint object in runtime
+                type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+                expr->argument_->SetTsType(type);
+                expr->SetTsType(type);
+                return expr->TsType();
+            }
+            default:
+                // Handled below
+                // NOTE(kkonsw): handle other unary operators for bigint literals
+                break;
+        }
+    }
+
+    if (argType != nullptr && argType->IsETSBigIntType()) {
+        switch (expr->OperatorType()) {
+            case lexer::TokenType::PUNCTUATOR_MINUS:
+            case lexer::TokenType::PUNCTUATOR_PLUS:
+            case lexer::TokenType::PUNCTUATOR_TILDE: {
+                expr->SetTsType(argType);
+                return expr->TsType();
+            }
+            default:
+                break;
+        }
+    }
+
+    SetTsTypeForUnaryExpression(checker, expr, operandType, argType);
+
+    if ((argType != nullptr) && argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
         unboxedOperandType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedOperandType));
     }
@@ -1587,6 +1672,11 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
         }
     }
 
+    if (operandType->IsETSBigIntType()) {
+        expr->SetTsType(operandType);
+        return expr->TsType();
+    }
+
     auto unboxedType = checker->ETSBuiltinTypeAsPrimitiveType(operandType);
     if (unboxedType == nullptr || !unboxedType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
         checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
@@ -1609,7 +1699,9 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::YieldExpression *expr) co
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::BigIntLiteral *expr) const
 {
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    expr->SetTsType(checker->CreateETSBigIntLiteralType(expr->Str()));
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::BooleanLiteral *expr) const
@@ -2660,6 +2752,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
     if (st->TypeParams() != nullptr) {
+        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
         for (auto *const param : st->TypeParams()->Params()) {
             const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
                 if (!node->IsIdentifier()) {
@@ -2674,8 +2767,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
                     {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
                     param->Start());
             }
-
-            checker->SetUpParameterType(param);
         }
     }
 

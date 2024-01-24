@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,9 +53,9 @@ void ETSTuple::Dump(ir::AstDumper *const dumper) const
 void ETSTuple::Dump(ir::SrcDumper *const dumper) const
 {
     dumper->Add("[");
-    for (auto typeAnnot : typeAnnotationList_) {
+    for (const auto *const typeAnnot : typeAnnotationList_) {
         typeAnnot->Dump(dumper);
-        if (typeAnnot != typeAnnotationList_.back() || spreadType_ != nullptr) {
+        if ((typeAnnot != typeAnnotationList_.back()) || (spreadType_ != nullptr)) {
             dumper->Add(", ");
         }
     }
@@ -63,7 +63,7 @@ void ETSTuple::Dump(ir::SrcDumper *const dumper) const
         dumper->Add("...");
         spreadType_->Dump(dumper);
     }
-    dumper->Add(("]"));
+    dumper->Add("]");
 }
 
 void ETSTuple::Compile([[maybe_unused]] compiler::PandaGen *const pg) const {}
@@ -79,6 +79,17 @@ checker::Type *ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const check
     return GetType(checker);
 }
 
+void ETSTuple::SetNullUndefinedFlags(std::pair<bool, bool> &containsNullOrUndefined, const checker::Type *const type)
+{
+    if (type->HasTypeFlag(checker::TypeFlag::NULLISH)) {
+        containsNullOrUndefined.first = true;
+    }
+
+    if (type->HasTypeFlag(checker::TypeFlag::UNDEFINED)) {
+        containsNullOrUndefined.second = true;
+    }
+}
+
 checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker,
                                               ArenaVector<checker::Type *> &typeList, checker::Type *const spreadType)
 {
@@ -86,11 +97,17 @@ checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker
         return spreadType == nullptr ? checker->GlobalETSObjectType() : spreadType;
     }
 
-    bool allElementsAreSame = std::all_of(typeList.begin(), typeList.end(), [&checker, &typeList](auto *element) {
-        return checker->Relation()->IsIdenticalTo(typeList[0], element);
-    });
+    std::pair<bool, bool> containsNullOrUndefined = {false, false};
+
+    bool allElementsAreSame =
+        std::all_of(typeList.begin(), typeList.end(),
+                    [this, &checker, &typeList, &containsNullOrUndefined](checker::Type *const element) {
+                        SetNullUndefinedFlags(containsNullOrUndefined, element);
+                        return checker->Relation()->IsIdenticalTo(typeList[0], element);
+                    });
 
     if (spreadType != nullptr) {
+        SetNullUndefinedFlags(containsNullOrUndefined, spreadType);
         allElementsAreSame = allElementsAreSame && checker->Relation()->IsIdenticalTo(typeList[0], spreadType);
     }
 
@@ -119,6 +136,16 @@ checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker
 
     if (spreadType != nullptr) {
         lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(spreadType));
+    }
+
+    const auto nullishUndefinedFlags =
+        (containsNullOrUndefined.first ? checker::TypeFlag::NULLISH | checker::TypeFlag::NULL_TYPE
+                                       : checker::TypeFlag::NONE) |
+        (containsNullOrUndefined.second ? checker::TypeFlag::UNDEFINED : checker::TypeFlag::NONE);
+
+    if (nullishUndefinedFlags != checker::TypeFlag::NONE) {
+        lubType = checker->CreateNullishType(lubType, nullishUndefinedFlags, checker->Allocator(), checker->Relation(),
+                                             checker->GetGlobalTypesHolder());
     }
 
     checker->Relation()->SetNode(savedRelationNode);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -436,7 +436,7 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
         return;
     }
 
-    IsSupertypeOf(relation, source);
+    relation->IsSupertypeOf(this, source);
 }
 
 bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *const target, TypeFlag unboxFlags,
@@ -570,7 +570,7 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
     }
 
     if (this->IsETSNullLike()) {
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+        if (target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
             relation->GetNode()->SetTsType(target);
             relation->Result(true);
             return;
@@ -609,15 +609,21 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
     relation->Result(false);
     auto *const etsChecker = relation->GetChecker()->AsETSChecker();
 
+    if (source->IsETSUnionType()) {
+        bool res = std::all_of(source->AsETSUnionType()->ConstituentTypes().begin(),
+                               source->AsETSUnionType()->ConstituentTypes().end(), [this, relation](Type *ct) {
+                                   relation->Result(false);
+                                   IsSupertypeOf(relation, ct);
+                                   return relation->IsTrue();
+                               });
+        relation->Result(res);
+        return;
+    }
+
     // 3.8.3 Subtyping among Array Types
     auto const *const base = GetConstOriginalBaseType();
     if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
         relation->Result(true);
-        return;
-    }
-
-    if (source->IsETSTypeParameter()) {
-        source->AsETSTypeParameter()->ConstraintIsSubtypeOf(relation, this);
         return;
     }
 
@@ -631,7 +637,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
     // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType()) {
+    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
         relation->Result(true);
         return;
     }
@@ -643,16 +649,14 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 
     ETSObjectType *sourceObj = source->AsETSObjectType();
     if (auto *sourceSuper = sourceObj->SuperType(); sourceSuper != nullptr) {
-        IsSupertypeOf(relation, sourceSuper);
-        if (relation->IsTrue()) {
+        if (relation->IsSupertypeOf(this, sourceSuper)) {
             return;
         }
     }
 
     if (HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         for (auto *itf : sourceObj->Interfaces()) {
-            IsSupertypeOf(relation, itf);
-            if (relation->IsTrue()) {
+            if (relation->IsSupertypeOf(this, itf)) {
                 return;
             }
         }

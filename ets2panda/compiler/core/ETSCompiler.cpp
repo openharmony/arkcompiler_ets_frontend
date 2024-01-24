@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -290,6 +290,32 @@ static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg,
     etsg->CallDynamic(node, objReg, qnameReg, signature, arguments);
 }
 
+static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::ETSNewClassInstanceExpression *expr)
+{
+    if (expr->GetSignature()->RestVar() != nullptr) {
+        std::size_t const argumentCount = expr->GetArguments().size();
+        std::size_t const parameterCount = expr->GetSignature()->MinArgCount();
+        ASSERT(argumentCount >= parameterCount);
+
+        auto &arguments = const_cast<ArenaVector<ir::Expression *> &>(expr->GetArguments());
+        std::size_t i = parameterCount;
+
+        if (i < argumentCount && expr->GetArguments()[i]->IsSpreadElement()) {
+            arguments[i] = expr->GetArguments()[i]->AsSpreadElement()->Argument();
+        } else {
+            ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
+            for (; i < argumentCount; ++i) {
+                elements.emplace_back(expr->GetArguments()[i]);
+            }
+            auto *arrayExpression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+            arrayExpression->SetParent(const_cast<ir::ETSNewClassInstanceExpression *>(expr));
+            arrayExpression->SetTsType(expr->GetSignature()->RestVar()->TsType());
+            arguments.erase(expr->GetArguments().begin() + parameterCount, expr->GetArguments().end());
+            arguments.emplace_back(arrayExpression);
+        }
+    }
+}
+
 void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -298,6 +324,7 @@ void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
         auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
         CreateDynamicObject(expr, etsg, objReg, name, expr->signature_, expr->GetArguments());
     } else {
+        ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()), expr);
         etsg->InitObject(expr, expr->signature_, expr->GetArguments());
     }
 
@@ -523,9 +550,83 @@ static void CompileLogical(compiler::ETSGen *etsg, const ir::BinaryExpression *e
     etsg->SetAccumulatorType(expr->TsType());
 }
 
+std::map<lexer::TokenType, std::string_view> &GetBigintSignatures()
+{
+    static std::map<lexer::TokenType, std::string_view> bigintSignatures = {
+        {lexer::TokenType::PUNCTUATOR_PLUS, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_ADD},
+        {lexer::TokenType::PUNCTUATOR_MINUS, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_SUBTRACT},
+        {lexer::TokenType::PUNCTUATOR_MULTIPLY, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_MULTIPLY},
+        {lexer::TokenType::PUNCTUATOR_DIVIDE, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_DIVIDE},
+        {lexer::TokenType::PUNCTUATOR_MOD, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_MODULE},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_OR, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_BITWISE_OR},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_AND, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_BITWISE_AND},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_XOR, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_BITWISE_XOR},
+        {lexer::TokenType::PUNCTUATOR_LEFT_SHIFT, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_LEFT_SHIFT},
+        {lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_RIGHT_SHIFT},
+        {lexer::TokenType::PUNCTUATOR_GREATER_THAN, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_GREATER_THAN},
+        {lexer::TokenType::PUNCTUATOR_LESS_THAN, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_LESS_THAN},
+        {lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL,
+         compiler::Signatures::BUILTIN_BIGINT_OPERATOR_GREATER_THAN_EQUAL},
+        {lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL, compiler::Signatures::BUILTIN_BIGINT_OPERATOR_LESS_THAN_EQUAL},
+    };
+
+    return bigintSignatures;
+}
+
+static bool CompileBigInt(compiler::ETSGen *etsg, const ir::BinaryExpression *expr)
+{
+    if ((expr->Left()->TsType() == nullptr) || (expr->Right()->TsType() == nullptr)) {
+        return false;
+    }
+
+    if (!expr->Left()->TsType()->IsETSBigIntType()) {
+        return false;
+    }
+
+    if (!expr->Right()->TsType()->IsETSBigIntType()) {
+        return false;
+    }
+
+    auto map = GetBigintSignatures();
+    if (map.find(expr->OperatorType()) == map.end()) {
+        return false;
+    }
+
+    const checker::Type *operationType = expr->OperationType();
+    auto ttctx = compiler::TargetTypeContext(etsg, operationType);
+    compiler::RegScope rs(etsg);
+    compiler::VReg lhs = etsg->AllocReg();
+    expr->Left()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, operationType);
+    expr->Right()->Compile(etsg);
+    etsg->ApplyConversion(expr->Right(), operationType);
+    compiler::VReg rhs = etsg->AllocReg();
+    etsg->StoreAccumulator(expr, rhs);
+
+    std::string_view signature = map.at(expr->OperatorType());
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+            etsg->CallBigIntBinaryComparison(expr, lhs, rhs, signature);
+            break;
+        default:
+            etsg->CallBigIntBinaryOperator(expr, lhs, rhs, signature);
+            break;
+    }
+
+    return true;
+}
+
 void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
+
+    if (CompileBigInt(etsg, expr)) {
+        return;
+    }
+
     if (etsg->TryLoadConstantExpression(expr)) {
         return;
     }
@@ -551,8 +652,7 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
     etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
     expr->Right()->Compile(etsg);
     etsg->ApplyConversion(expr->Right(), expr->OperationType());
-    if (expr->OperatorType() >= lexer::TokenType::PUNCTUATOR_LEFT_SHIFT &&
-        expr->OperatorType() <= lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT) {
+    if (expr->OperationType()->IsIntType()) {
         etsg->ApplyCast(expr->Right(), expr->OperationType());
     }
 
@@ -788,7 +888,11 @@ void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
     expr->Alternate()->Compile(etsg);
     etsg->ApplyConversion(expr->Alternate());
     etsg->SetLabel(expr, endLabel);
-    etsg->SetAccumulatorType(expr->TsType());
+    if (expr->TsType()->IsETSUnionType()) {
+        etsg->SetAccumulatorType(expr->TsType()->AsETSUnionType()->GetLeastUpperBoundType());
+    } else {
+        etsg->SetAccumulatorType(expr->TsType());
+    }
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::DirectEvalExpression *expr) const
@@ -1064,7 +1168,13 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     if (!etsg->TryLoadConstantExpression(expr->Argument())) {
         expr->Argument()->Compile(etsg);
     }
+
     etsg->ApplyConversion(expr->Argument(), nullptr);
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_TILDE) {
+        etsg->ApplyCast(expr->Argument(), expr->TsType());
+    }
+
     etsg->Unary(expr, expr->OperatorType());
 }
 
@@ -1083,7 +1193,16 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
         lref.GetValue();
         expr->Argument()->SetBoxingUnboxingFlags(argumentUnboxingFlags);
         etsg->ApplyConversion(expr->Argument(), nullptr);
-        etsg->Update(expr, expr->OperatorType());
+
+        if (expr->Argument()->TsType()->IsETSBigIntType()) {
+            compiler::RegScope rs(etsg);
+            compiler::VReg valueReg = etsg->AllocReg();
+            etsg->StoreAccumulator(expr->Argument(), valueReg);
+            etsg->UpdateBigInt(expr, valueReg, expr->OperatorType());
+        } else {
+            etsg->Update(expr, expr->OperatorType());
+        }
+
         expr->Argument()->SetBoxingUnboxingFlags(argumentBoxingFlags);
         etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
         lref.SetValue();
@@ -1100,7 +1219,12 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
 
     expr->Argument()->SetBoxingUnboxingFlags(argumentUnboxingFlags);
     etsg->ApplyConversion(expr->Argument(), nullptr);
-    etsg->Update(expr, expr->OperatorType());
+
+    if (expr->Argument()->TsType()->IsETSBigIntType()) {
+        etsg->UpdateBigInt(expr, originalValueReg, expr->OperatorType());
+    } else {
+        etsg->Update(expr, expr->OperatorType());
+    }
 
     expr->Argument()->SetBoxingUnboxingFlags(argumentBoxingFlags);
     etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
@@ -1116,7 +1240,13 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::YieldExpression *expr) cons
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
 void ETSCompiler::Compile([[maybe_unused]] const ir::BigIntLiteral *expr) const
 {
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::TargetTypeContext ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    compiler::RegScope rs {etsg};
+    etsg->LoadAccumulatorBigInt(expr, expr->Str());
+    const compiler::VReg value = etsg->AllocReg();
+    etsg->StoreAccumulator(expr, value);
+    etsg->CreateBigIntObject(expr, value);
 }
 
 void ETSCompiler::Compile(const ir::BooleanLiteral *expr) const

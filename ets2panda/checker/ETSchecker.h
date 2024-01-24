@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,8 +28,10 @@
 #include "checker/types/globalTypesHolder.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
+#include "lexer/token/tokenType.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
+#include "utils/bit_utils.h"
 #include "checker/resolveResult.h"
 #include "macros.h"
 
@@ -38,6 +40,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <type_traits>
 
 namespace panda::es2panda::varbinder {
 class VarBinder;
@@ -98,11 +101,13 @@ public:
     Type *GlobalETSNullType() const;
     Type *GlobalETSUndefinedType() const;
     Type *GlobalETSStringLiteralType() const;
+    Type *GlobalETSBigIntType() const;
     Type *GlobalWildcardType() const;
 
     ETSObjectType *GlobalETSObjectType() const;
     ETSObjectType *GlobalETSNullishObjectType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
+    ETSObjectType *GlobalBuiltinETSBigIntType() const;
     ETSObjectType *GlobalBuiltinTypeType() const;
     ETSObjectType *GlobalBuiltinExceptionType() const;
     ETSObjectType *GlobalBuiltinErrorType() const;
@@ -177,9 +182,11 @@ public:
     Type *FindLeastUpperBound(Type *source, Type *target);
     static Type *GetApparentType(Type *type);
     static Type const *GetApparentType(Type const *type);
+    Type *MaybePromotedBuiltinType(Type *type) const;
     Type *GetCommonClass(Type *source, Type *target);
     ETSObjectType *GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target);
     ETSObjectType *GetTypeargumentedLUB(ETSObjectType *source, ETSObjectType *target);
+    bool HasETSFunctionType(ir::TypeNode *typeAnnotation);
 
     // Type creation
     ByteType *CreateByteType(int8_t value);
@@ -190,9 +197,17 @@ public:
     LongType *CreateLongType(int64_t value);
     ShortType *CreateShortType(int16_t value);
     CharType *CreateCharType(char16_t value);
+    ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
     Type *CreateETSUnionType(ArenaVector<Type *> &&constituentTypes);
+    template <class... Types>
+    Type *CreateETSUnionType(Types &&...types)
+    {
+        ArenaVector<Type *> constituentTypes(Allocator()->Adapter());
+        (constituentTypes.push_back(types), ...);
+        return CreateETSUnionType(std::move(constituentTypes));
+    }
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
     ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
@@ -215,7 +230,8 @@ public:
 
     // Arithmetic
     Type *NegateNumericType(Type *type, ir::Expression *node);
-    Type *BitwiseNegateIntegralType(Type *type, ir::Expression *node);
+    Type *BitwiseNegateNumericType(Type *type, ir::Expression *node);
+    bool CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expression *expr, lexer::TokenType op);
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operationType, lexer::SourcePosition pos,
                                                    bool forcePromotion = false);
@@ -253,6 +269,7 @@ public:
     checker::Type *CheckBinaryOperatorNullishCoalescing(ir::Expression *right, lexer::SourcePosition pos,
                                                         checker::Type *leftType, checker::Type *rightType);
     Type *HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
+    Type *HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
     void FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::Expression *typeExpression);
     template <typename ValueType>
     Type *PerformArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
@@ -282,6 +299,7 @@ public:
     {
         return Allocator()->New<ArenaUnorderedSet<ETSTypeParameter *>>(Allocator()->Adapter());
     }
+    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution,
                                                   ArenaUnorderedSet<ETSTypeParameter *> *instantiatedTypeParams);
@@ -330,6 +348,7 @@ public:
     void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
                                  const ir::MethodDefinition *currentFunc);
     Signature *AdjustForTypeParameters(Signature *source, Signature *target);
+    void ThrowOverrideError(Signature *signature, Signature *overriddenSignature, const OverrideErrorCode &errorCode);
     void CheckOverride(Signature *signature);
     bool CheckOverride(Signature *signature, ETSObjectType *site);
     std::tuple<bool, OverrideErrorCode> CheckOverride(Signature *signature, Signature *other);
@@ -521,6 +540,7 @@ public:
     bool ExtensionETSFunctionType(checker::Type *type);
     void ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
+    Type *SelectGlobalIntegerTypeForNumeric(Type *type);
 
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);
@@ -637,20 +657,20 @@ private:
         return isConstruct ? &dynamicNewIntrinsics_ : &dynamicCallIntrinsics_;
     }
 
-    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *typeParams);
-
     using Type2TypeMap = std::unordered_map<std::string_view, std::string_view>;
     void CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends);
 
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
+    ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
+    ETSObjectType *UpdateBoxedGlobalType(ETSObjectType *objType, util::StringView name);
     ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
 
     template <typename UType>
     UType HandleModulo(UType leftValue, UType rightValue);
 
-    template <typename UType>
-    UType HandleBitWiseArithmetic(UType leftValue, UType rightValue, lexer::TokenType operationType);
+    template <typename FloatOrIntegerType, typename IntegerType = FloatOrIntegerType>
+    Type *HandleBitWiseArithmetic(Type *leftValue, Type *rightValue, lexer::TokenType operationType);
 
     template <typename TargetType>
     typename TargetType::UType GetOperand(Type *type);

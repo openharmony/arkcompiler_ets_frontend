@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -377,4 +377,26 @@ checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker, Expression *param,
+                                                    checker::TypeRelationFlag flags)
+{
+    if (preferredType_ != nullptr) {
+        return;
+    }
+    auto paramType = param->Check(checker);
+    if (paramType->IsETSArrayType()) {
+        paramType = paramType->AsETSArrayType()->ElementType();
+    }
+    bool isAssignable = true;
+    for (auto elem : elements_) {
+        auto assignCtx = checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), paramType,
+                                                    elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
+        isAssignable &= assignCtx.IsAssignable();
+    }
+    if (isAssignable) {
+        preferredType_ = param->Check(checker);
+    }
+}
+
 }  // namespace panda::es2panda::ir

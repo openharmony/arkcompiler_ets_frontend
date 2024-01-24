@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -562,31 +562,31 @@ void ScopeInitTyped::VisitClassDefinition(ir::ClassDefinition *classDef)
     IterateNoTParams(classDef);
 }
 
-void ScopesInitPhaseTs::VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *exportDecl)
+void InitScopesPhaseTs::VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *exportDecl)
 {
     ExportDeclarationContext exportDeclCtx(VarBinder());
     Iterate(exportDecl);
 }
 
-void ScopesInitPhaseTs::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)
+void InitScopesPhaseTs::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)
 {
     ExportDeclarationContext exportDeclCtx(VarBinder());
     Iterate(exportDecl);
 }
 
-void ScopesInitPhaseTs::VisitImportDeclaration(ir::ImportDeclaration *importDeclaration)
+void InitScopesPhaseTs::VisitImportDeclaration(ir::ImportDeclaration *importDeclaration)
 {
     ImportDeclarationContext importCtx(VarBinder());
     Iterate(importDeclaration);
 }
 
-void ScopesInitPhaseTs::VisitTSFunctionType(ir::TSFunctionType *constrType)
+void InitScopesPhaseTs::VisitTSFunctionType(ir::TSFunctionType *constrType)
 {
     auto lexicalScope = HandleFunctionSig(constrType->TypeParams(), constrType->Params(), constrType->ReturnType());
     BindScopeNode(lexicalScope, constrType);
 }
 
-void ScopesInitPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
+void InitScopesPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
 {
     const auto identNode = func->Id();
     const auto startLoc = identNode->Start();
@@ -609,46 +609,46 @@ void ScopesInitPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
     decl->Add(func);
 }
 
-void ScopesInitPhaseTs::VisitTSConstructorType(ir::TSConstructorType *constrT)
+void InitScopesPhaseTs::VisitTSConstructorType(ir::TSConstructorType *constrT)
 {
     auto funcParamScope = HandleFunctionSig(constrT->TypeParams(), constrT->Params(), constrT->ReturnType());
     BindScopeNode(funcParamScope, constrT);
 }
 
-void ScopesInitPhaseTs::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowFExpr)
+void InitScopesPhaseTs::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowFExpr)
 {
     auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     Iterate(arrowFExpr);
 }
 
-void ScopesInitPhaseTs::VisitTSSignatureDeclaration(ir::TSSignatureDeclaration *signDecl)
+void InitScopesPhaseTs::VisitTSSignatureDeclaration(ir::TSSignatureDeclaration *signDecl)
 {
     auto funcParamScope =
         HandleFunctionSig(signDecl->TypeParams(), signDecl->Params(), signDecl->ReturnTypeAnnotation());
     BindScopeNode(funcParamScope, signDecl);
 }
 
-void ScopesInitPhaseTs::VisitTSMethodSignature(ir::TSMethodSignature *methodSign)
+void InitScopesPhaseTs::VisitTSMethodSignature(ir::TSMethodSignature *methodSign)
 {
     auto funcParamScope =
         HandleFunctionSig(methodSign->TypeParams(), methodSign->Params(), methodSign->ReturnTypeAnnotation());
     BindScopeNode(funcParamScope, methodSign);
 }
 
-void ScopesInitPhaseETS::RunExternalNode(ir::AstNode *node, varbinder::VarBinder *varbinder)
+void InitScopesPhaseETS::RunExternalNode(ir::AstNode *node, varbinder::VarBinder *varbinder)
 {
     auto program = parser::Program(varbinder->Allocator(), varbinder);
     RunExternalNode(node, &program);
 }
 
-void ScopesInitPhaseETS::RunExternalNode(ir::AstNode *node, parser::Program *ctx)
+void InitScopesPhaseETS::RunExternalNode(ir::AstNode *node, parser::Program *ctx)
 {
-    auto scopesPhase = ScopesInitPhaseETS();
+    auto scopesPhase = InitScopesPhaseETS();
     scopesPhase.SetProgram(ctx);
     scopesPhase.CallNode(node);
 }
 
-bool ScopesInitPhaseETS::Perform(PhaseContext *ctx, parser::Program *program)
+bool InitScopesPhaseETS::Perform(PhaseContext *ctx, parser::Program *program)
 {
     Prepare(ctx, program);
 
@@ -662,7 +662,7 @@ bool ScopesInitPhaseETS::Perform(PhaseContext *ctx, parser::Program *program)
     return true;
 }
 
-void ScopesInitPhaseETS::HandleProgram(parser::Program *program)
+void InitScopesPhaseETS::HandleProgram(parser::Program *program)
 {
     for (auto &[_, prog_list] : program->ExternalSources()) {
         (void)_;
@@ -678,7 +678,7 @@ void ScopesInitPhaseETS::HandleProgram(parser::Program *program)
             BindScopeNode(prog->VarBinder()->GetScope(), prog->Ast());
             prog->VarBinder()->ResetTopScope(globalScope);
             if (mainProg->Ast() != nullptr) {
-                ScopesInitPhaseETS().Perform(Context(), prog);
+                InitScopesPhaseETS().Perform(Context(), prog);
             }
         }
         program->VarBinder()->ResetTopScope(savedTopScope);
@@ -688,7 +688,7 @@ void ScopesInitPhaseETS::HandleProgram(parser::Program *program)
     HandleETSScript(program->Ast());
 }
 
-void ScopesInitPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
+void InitScopesPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
                                      varbinder::Variable *var)
 {
     binding->SetVariable(var);
@@ -697,7 +697,7 @@ void ScopesInitPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *in
     decl->BindNode(init);
 }
 
-void ScopesInitPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock)
+void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock)
 {
     const auto func = staticBlock->Function();
 
@@ -724,7 +724,7 @@ void ScopesInitPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock
     func->Id()->SetVariable(var);
 }
 
-void ScopesInitPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec)
+void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec)
 {
     if (importSpec->Local()->Name().Empty()) {
         return;
@@ -734,7 +734,7 @@ void ScopesInitPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
     Iterate(importSpec);
 }
 
-void ScopesInitPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
+void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
 {
     const auto methodName = method->Id();
 
@@ -794,7 +794,7 @@ void ScopesInitPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
     }
 }
 
-void ScopesInitPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr)
+void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr)
 {
     auto *const var = std::get<1>(VarBinder()->AddParamDecl(paramExpr));
     paramExpr->Ident()->SetVariable(var);
@@ -802,7 +802,7 @@ void ScopesInitPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression 
     Iterate(paramExpr);
 }
 
-void ScopesInitPhaseETS::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)
+void InitScopesPhaseETS::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)
 {
     ImportDeclarationContext importCtx(VarBinder());
     if (importDecl->Language().IsDynamic()) {
@@ -811,7 +811,7 @@ void ScopesInitPhaseETS::VisitETSImportDeclaration(ir::ETSImportDeclaration *imp
     Iterate(importDecl);
 }
 
-void ScopesInitPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
+void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
 {
     auto ident = enumMember->Key()->AsIdentifier();
     auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
@@ -822,7 +822,7 @@ void ScopesInitPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
     Iterate(enumMember);
 }
 
-void ScopesInitPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
+void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 {
     auto *curScope = VarBinder()->GetScope();
     const auto methodName = method->Id();
@@ -834,7 +834,7 @@ void ScopesInitPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
     DeclareClassMethod(method);
 }
 
-void ScopesInitPhaseETS::VisitETSFunctionType(ir::ETSFunctionType *funcType)
+void InitScopesPhaseETS::VisitETSFunctionType(ir::ETSFunctionType *funcType)
 {
     auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     varbinder::LexicalScope<varbinder::FunctionParamScope> lexicalScope(VarBinder());
@@ -843,7 +843,7 @@ void ScopesInitPhaseETS::VisitETSFunctionType(ir::ETSFunctionType *funcType)
     Iterate(funcType);
 }
 
-void ScopesInitPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *newClassExpr)
+void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *newClassExpr)
 {
     CallNode(newClassExpr->GetArguments());
     CallNode(newClassExpr->GetTypeRef());
@@ -865,7 +865,7 @@ void ScopesInitPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
     }
 }
 
-void ScopesInitPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
+void InitScopesPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 {
     auto [decl, var] =
         VarBinder()->NewVarDecl<varbinder::TypeParameterDecl>(typeParam->Name()->Start(), typeParam->Name()->Name());
@@ -875,7 +875,7 @@ void ScopesInitPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
     decl->BindNode(typeParam);
 }
 
-void ScopesInitPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl)
+void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     {
         auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
@@ -891,7 +891,7 @@ void ScopesInitPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration 
     decl->AsInterfaceDecl()->Add(interfaceDecl);
 }
 
-void ScopesInitPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
+void InitScopesPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 {
     {
         const auto enumCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
@@ -904,14 +904,14 @@ void ScopesInitPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
     decl->BindScope(enumDecl->Scope());
 }
 
-void ScopesInitPhaseETS::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias)
+void InitScopesPhaseETS::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias)
 {
     VarBinder()->AddDecl<varbinder::TypeAliasDecl>(typeAlias->Id()->Start(), typeAlias->Id()->Name(), typeAlias);
     auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     Iterate(typeAlias);
 }
 
-void ScopesInitPhaseETS::AddGlobalToBinder(parser::Program *program)
+void InitScopesPhaseETS::AddGlobalToBinder(parser::Program *program)
 {
     auto globalId = program->GlobalClass()->Ident();
 
@@ -926,7 +926,7 @@ void ScopesInitPhaseETS::AddGlobalToBinder(parser::Program *program)
     globalId->SetVariable(var);
 }
 
-void ScopesInitPhaseETS::HandleETSScript(ir::BlockStatement *script)
+void InitScopesPhaseETS::HandleETSScript(ir::BlockStatement *script)
 {
     for (auto decl : script->Statements()) {
         if (decl->IsETSImportDeclaration()) {
@@ -944,7 +944,7 @@ void ScopesInitPhaseETS::HandleETSScript(ir::BlockStatement *script)
     }
 }
 
-void ScopesInitPhaseETS::VisitClassDefinition(ir::ClassDefinition *classDef)
+void InitScopesPhaseETS::VisitClassDefinition(ir::ClassDefinition *classDef)
 {
     if (classDef->IsGlobal()) {
         ParseGlobalClass(classDef);
@@ -960,13 +960,13 @@ void ScopesInitPhaseETS::VisitClassDefinition(ir::ClassDefinition *classDef)
     BindScopeNode(classScope, classDef);
 }
 
-void ScopesInitPhaseETS::VisitTSInterfaceBody(ir::TSInterfaceBody *interfBody)
+void InitScopesPhaseETS::VisitTSInterfaceBody(ir::TSInterfaceBody *interfBody)
 {
     Iterate(interfBody);
     FilterInterfaceOverloads(interfBody->Body());
 }
 
-void ScopesInitPhaseETS::FilterInterfaceOverloads(ArenaVector<ir::AstNode *, false> &props)
+void InitScopesPhaseETS::FilterInterfaceOverloads(ArenaVector<ir::AstNode *, false> &props)
 {
     auto condition = [](ir::AstNode *prop) {
         if (prop->IsMethodDefinition()) {
@@ -978,7 +978,7 @@ void ScopesInitPhaseETS::FilterInterfaceOverloads(ArenaVector<ir::AstNode *, fal
     props.erase(std::remove_if(props.begin(), props.end(), condition), props.end());
 }
 
-void ScopesInitPhaseETS::FilterOverloads(ArenaVector<ir::AstNode *, false> &props)
+void InitScopesPhaseETS::FilterOverloads(ArenaVector<ir::AstNode *, false> &props)
 {
     auto condition = [](ir::AstNode *prop) {
         if (prop->IsMethodDefinition()) {
@@ -990,7 +990,7 @@ void ScopesInitPhaseETS::FilterOverloads(ArenaVector<ir::AstNode *, false> &prop
     props.erase(std::remove_if(props.begin(), props.end(), condition), props.end());
 }
 
-void ScopesInitPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
+void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
 {
     auto curScope = VarBinder()->GetScope();
     if (classProp->IsClassStaticBlock()) {
@@ -1022,7 +1022,7 @@ void ScopesInitPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
     Iterate(classProp);
 }
 
-void ScopesInitPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
+void InitScopesPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
 {
     for (auto decl : global->Body()) {
         if (decl->IsDefaultExported()) {
@@ -1036,7 +1036,7 @@ void ScopesInitPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)
     FilterOverloads(global->Body());
 }
 
-void ScopesInitPhaseETS::AddGlobalDeclaration(ir::AstNode *node)
+void InitScopesPhaseETS::AddGlobalDeclaration(ir::AstNode *node)
 {
     ir::Identifier *ident = nullptr;
     bool isBuiltin = false;
@@ -1080,12 +1080,12 @@ void ScopesInitPhaseETS::AddGlobalDeclaration(ir::AstNode *node)
     }
 }
 
-void ScopesInitPhaseAS::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr)
+void InitScopesPhaseAS::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr)
 {
     Iterate(arrowExpr);
 }
 
-void ScopesInitPhaseAS::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)
+void InitScopesPhaseAS::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl)
 {
     ExportDeclarationContext exportDeclCtx(VarBinder());
     Iterate(exportDecl);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,6 +43,7 @@ class ETSTypeParameter;
 TYPE_MAPPING(DECLARE_TYPENAMES)
 #undef DECLARE_TYPENAMES
 class ETSStringType;
+class ETSBigIntType;
 
 using Substitution = ArenaMap<ETSTypeParameter *, Type *>;
 
@@ -84,6 +85,7 @@ public:
 #undef TYPE_AS_CASTS
 
     bool IsETSStringType() const;
+    bool IsETSBigIntType() const;
     bool IsETSNullType() const;
     bool IsETSUndefinedType() const;
     bool IsETSNullLike() const;
@@ -103,6 +105,12 @@ public:
     {
         ASSERT(IsETSObjectType());
         return reinterpret_cast<const ETSStringType *>(this);
+    }
+
+    const ETSBigIntType *AsETSBigIntType() const
+    {
+        ASSERT(IsETSObjectType());
+        return reinterpret_cast<const ETSBigIntType *>(this);
     }
 
     bool IsETSDynamicType() const
@@ -243,6 +251,7 @@ public:
     virtual void Cast(TypeRelation *relation, Type *target);
     virtual void CastTarget(TypeRelation *relation, Type *source);
     virtual void IsSupertypeOf(TypeRelation *relation, Type *source);
+    virtual void IsSubtypeOf(TypeRelation *relation, Type *target);
     virtual Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar);
 
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);

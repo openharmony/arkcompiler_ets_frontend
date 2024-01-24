@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,16 +24,10 @@
 #include "objectIndexAccess.h"
 
 #include "checker/ETSchecker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "parser/ETSparser.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view ObjectIndexLowering::Name()
-{
-    static std::string const NAME = "object-index-access";
-    return NAME;
-}
-
 ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
                                                            ir::AssignmentExpression *assignmentExpression) const
 {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,15 +31,19 @@ class TSEnumMember;
 class TSEnumDeclaration : public TypedStatement {
 public:
     explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
-                               bool isConst, bool isStatic = false)
+                               bool isConst, bool isStatic = false, bool isDeclare = false)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
           members_(std::move(members)),
-          isConst_(isConst)
+          isConst_(isConst),
+          isDeclare_(isDeclare)
     {
         if (isStatic) {
             AddModifier(ModifierFlags::STATIC);
+        }
+        if (isDeclare) {
+            AddModifier(ModifierFlags::DECLARE);
         }
     }
 
@@ -88,6 +92,11 @@ public:
         return isConst_;
     }
 
+    bool IsDeclare() const
+    {
+        return isDeclare_;
+    }
+
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
@@ -131,6 +140,7 @@ private:
     ArenaVector<AstNode *> members_;
     util::StringView internalName_;
     bool isConst_;
+    bool isDeclare_;
 };
 }  // namespace panda::es2panda::ir
 
