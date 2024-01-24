@@ -41,6 +41,8 @@ if(PANDA_WITH_ETS)
     set(OPTIONS --parser
                 --processes=1
                 --build-dir ${PANDA_BINARY_ROOT}
+                --es2panda-timeout=120
+                --timeout=120
                 --groups ${ES2PANDA_REGRESSION_TESTS_GROUPS})
 
     if(PANDA_TARGET_ARM64)
