@@ -423,6 +423,27 @@ Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> 
     return compatibleSignature;
 }
 
+bool IsSignatureAccessible(Signature *sig, ETSObjectType *containingClass, TypeRelation *relation)
+{
+    // NOTE(vivienvoros): this check can be removed if signature is implicitly declared as public according to the spec.
+    if (!sig->HasSignatureFlag(SignatureFlags::PUBLIC | SignatureFlags::PROTECTED | SignatureFlags::PRIVATE |
+                               SignatureFlags::INTERNAL)) {
+        return true;
+    }
+
+    // NOTE(vivienvoros): take care of SignatureFlags::INTERNAL and SignatureFlags::INTERNAL_PROTECTED
+    if (sig->HasSignatureFlag(SignatureFlags::INTERNAL) && !sig->HasSignatureFlag(SignatureFlags::PROTECTED)) {
+        return true;
+    }
+
+    if (sig->HasSignatureFlag(SignatureFlags::PUBLIC) || sig->Owner() == containingClass ||
+        (sig->HasSignatureFlag(SignatureFlags::PROTECTED) && relation->IsSupertypeOf(sig->Owner(), containingClass))) {
+        return true;
+    }
+
+    return false;
+}
+
 ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> &signatures,
                                                        const ir::TSTypeParameterInstantiation *typeArguments,
                                                        const ArenaVector<ir::Expression *> &arguments,
@@ -430,12 +451,23 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
 {
     ArenaVector<Signature *> compatibleSignatures(Allocator()->Adapter());
     std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
+    Signature *notVisibleSignature = nullptr;
 
     auto collectSignatures = [&](TypeRelationFlag relationFlags) {
         for (auto *sig : signatures) {
+            if (notVisibleSignature != nullptr &&
+                !IsSignatureAccessible(sig, Context().ContainingClass(), Relation())) {
+                continue;
+            }
             auto *concreteSig =
                 ValidateSignature(sig, typeArguments, arguments, pos, relationFlags, argTypeInferenceRequired);
-            if (concreteSig != nullptr) {
+            if (concreteSig == nullptr) {
+                continue;
+            }
+            if (notVisibleSignature == nullptr &&
+                !IsSignatureAccessible(sig, Context().ContainingClass(), Relation())) {
+                notVisibleSignature = concreteSig;
+            } else {
                 compatibleSignatures.push_back(concreteSig);
             }
         }
@@ -460,6 +492,12 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
                 break;
             }
         }
+    }
+
+    if (compatibleSignatures.empty() && notVisibleSignature != nullptr) {
+        ThrowTypeError(
+            {"Signature ", notVisibleSignature->Function()->Id()->Name(), notVisibleSignature, " is not visible here."},
+            pos);
     }
     return compatibleSignatures;
 }
