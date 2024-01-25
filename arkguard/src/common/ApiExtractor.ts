@@ -608,7 +608,6 @@ export namespace ApiExtractor {
    */
   export function parseCommonProject(projectPath: string, customProfiles: IOptions, scanningApiType: ApiType): string[] {
     mPropertySet.clear();
-    stringPropsSet.clear();
     if (fs.lstatSync(projectPath).isFile()) {
       if (projectPath.endsWith('.ets') || projectPath.endsWith('.ts') || projectPath.endsWith('.js')) {
         parseFile(projectPath, scanningApiType);
@@ -629,7 +628,6 @@ export namespace ApiExtractor {
   export function parseThirdPartyLibs(libPath: string, scanningApiType: ApiType): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
     mPropertySet.clear();
     mLibExportNameSet.clear();
-    stringPropsSet.clear();
     if (fs.lstatSync(libPath).isFile()) {
       if (libPath.endsWith('.ets') || libPath.endsWith('.ts') || libPath.endsWith('.js')) {
         parseFile(libPath, scanningApiType);
