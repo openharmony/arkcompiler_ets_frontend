@@ -504,7 +504,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSPrimitiveType *node) const
 {
-    return nullptr;
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSStructDeclaration *node) const
@@ -2043,6 +2044,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSArrayType *node) const
 {
     ETSChecker *checker = GetETSChecker();
     node->elementType_->Check(checker);
+    node->SetTsType(node->GetType(checker));
+
+    const auto arrayType = node->TsType()->AsETSArrayType();
+    checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     return nullptr;
 }
 

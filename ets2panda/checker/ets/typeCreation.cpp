@@ -124,8 +124,13 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
     }
 
     auto *arrayType = Allocator()->New<ETSArrayType>(elementType);
+
+    std::stringstream ss;
+    arrayType->ToAssemblerTypeWithRank(ss);
+    arrayType->SetAssemblerName(util::UString(ss.str(), Allocator()).View());
+
     auto it = arrayTypes_.insert({elementType, arrayType});
-    if (it.second && !elementType->IsETSTypeParameter()) {
+    if (it.second && (!elementType->IsTypeParameter() || !elementType->IsETSTypeParameter())) {
         CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     }
 

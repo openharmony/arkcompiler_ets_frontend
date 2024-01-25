@@ -161,9 +161,11 @@ void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
     }
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *node) const
+void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
 {
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    etsg->LoadAccumulatorNull(node, node->TsType());
 }
 
 void ETSCompiler::Compile(const ir::ETSTuple *node) const
@@ -1972,9 +1974,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
+void ETSCompiler::Compile(const ir::TSArrayType *node) const
 {
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    etsg->LoadAccumulatorNull(node, node->TsType());
 }
 
 void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const

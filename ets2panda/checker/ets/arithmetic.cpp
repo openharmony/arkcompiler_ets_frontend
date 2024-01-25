@@ -519,6 +519,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
     tsType = GlobalETSBooleanType();
     checker::Type *opType = rightType->IsETSDynamicType() ? GlobalBuiltinJSValueType() : GlobalETSObjectType();
     ComputeApparentType(rightType);
+    RemoveStatus(checker::CheckerStatus::IN_INSTANCEOF_CONTEXT);
+
     return {tsType, opType};
 }
 
@@ -643,28 +645,39 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
 }
 
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
-                                                           ir::Expression *expr, lexer::TokenType op,
+                                                           ir::Expression *expr, lexer::TokenType operationType,
                                                            lexer::SourcePosition pos, bool forcePromotion)
 {
     checker::Type *const leftType = left->Check(this);
-    checker::Type *const rightType = right->Check(this);
+
+    if (operationType == lexer::TokenType::KEYW_INSTANCEOF) {
+        AddStatus(checker::CheckerStatus::IN_INSTANCEOF_CONTEXT);
+    }
+
+    checker::Type *rightType = right->Check(this);
+
+    if (right->IsTypeNode()) {
+        rightType = right->AsTypeNode()->GetType(this);
+    }
+
     if ((leftType == nullptr) || (rightType == nullptr)) {
         ThrowTypeError("Unexpected type error in binary expression", pos);
     }
 
-    const bool isLogicalExtendedOperator =
-        (op == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) || (op == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+    const bool isLogicalExtendedOperator = (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) ||
+                                           (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
     Type *unboxedL =
         isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(leftType) : ETSBuiltinTypeAsPrimitiveType(leftType);
     Type *unboxedR = isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(rightType)
                                                : ETSBuiltinTypeAsPrimitiveType(rightType);
 
     checker::Type *tsType {};
-    bool isEqualOp =
-        (op > lexer::TokenType::PUNCTUATOR_SUBSTITUTION && op < lexer::TokenType::PUNCTUATOR_ARROW) && !forcePromotion;
+    bool isEqualOp = (operationType > lexer::TokenType::PUNCTUATOR_SUBSTITUTION &&
+                      operationType < lexer::TokenType::PUNCTUATOR_ARROW) &&
+                     !forcePromotion;
 
-    if (CheckBinaryOperatorForBigInt(leftType, rightType, expr, op)) {
-        switch (op) {
+    if (CheckBinaryOperatorForBigInt(leftType, rightType, expr, operationType)) {
+        switch (operationType) {
             case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
             case lexer::TokenType::PUNCTUATOR_LESS_THAN:
             case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
@@ -676,13 +689,13 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     };
 
     auto checkMap = GetCheckMap();
-    if (checkMap.find(op) != checkMap.end()) {
-        auto check = checkMap[op];
-        tsType = check(this, left, right, op, pos, isEqualOp, leftType, rightType, unboxedL, unboxedR);
+    if (checkMap.find(operationType) != checkMap.end()) {
+        auto check = checkMap[operationType];
+        tsType = check(this, left, right, operationType, pos, isEqualOp, leftType, rightType, unboxedL, unboxedR);
         return {tsType, tsType};
     }
 
-    BinaryOperatorParams binaryParams {left, right, expr, op, pos, isEqualOp};
+    BinaryOperatorParams binaryParams {left, right, expr, operationType, pos, isEqualOp};
     TypeParams typeParams {leftType, rightType, unboxedL, unboxedR};
     return CheckBinaryOperatorHelper(this, binaryParams, typeParams);
 }

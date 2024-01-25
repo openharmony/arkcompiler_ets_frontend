@@ -3041,6 +3041,10 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
     ir::TypeNode *potentialType = ParseTypeAnnotation(&options);
 
     if (potentialType != nullptr) {
+        if (potentialType->IsTSArrayType()) {
+            return potentialType;
+        }
+
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
             Lexer()->NextToken();  // eat '.'
         }
@@ -3157,6 +3161,26 @@ bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
         default:
             return false;
     }
+}
+
+ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type,
+                                                           [[maybe_unused]] ExpressionParseFlags flags)
+{
+    if (type == lexer::TokenType::KEYW_INSTANCEOF) {
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
+            auto *typeAnnotation = AllocNode<ir::NullLiteral>();
+            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+
+            return typeAnnotation;
+        }
+
+        return ParseTypeAnnotation(&options);
+    }
+
+    return ParseExpression(ExpressionParseFlags::DISALLOW_YIELD);
 }
 
 bool ETSParser::IsArrowFunctionExpressionStart()

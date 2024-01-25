@@ -32,3 +32,4 @@ function main() {
     // assert (x3 as double) == 3.14: "Error! Must be `3.14`"; // #15576
     assert (x3 as Double) == 3.14: "Error! Must be `3.14`";
 }
+
