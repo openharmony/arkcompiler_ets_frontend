@@ -105,6 +105,7 @@
 #include <ir/ts/tsUnionType.h>
 #include <ir/ts/tsUnknownKeyword.h>
 #include <ir/ts/tsVoidKeyword.h>
+#include <ir/ts/tsNonNullExpression.h>
 #include <lexer/lexer.h>
 #include <lexer/token/letters.h>
 #include <lexer/token/sourceLocation.h>
@@ -4090,6 +4091,10 @@ void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node) const
         }
         case ir::AstNodeType::TS_TYPE_ASSERTION: {
             ValidateLvalueAssignmentTarget(node->AsTSTypeAssertion()->GetExpression());
+            break;
+        }
+        case ir::AstNodeType::TS_NON_NULL_EXPRESSION: {
+            ValidateLvalueAssignmentTarget(node->AsTSNonNullExpression()->Expr());
             break;
         }
         default: {

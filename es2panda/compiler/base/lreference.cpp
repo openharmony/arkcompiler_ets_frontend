@@ -28,6 +28,7 @@
 #include <ir/ts/tsAsExpression.h>
 #include <ir/ts/tsSatisfiesExpression.h>
 #include <ir/ts/tsTypeAssertion.h>
+#include <ir/ts/tsNonNullExpression.h>
 
 namespace panda::es2panda::compiler {
 
@@ -200,6 +201,9 @@ LReference LReference::CreateLRef(PandaGen *pg, const ir::AstNode *node, bool is
         }
         case ir::AstNodeType::TS_TYPE_ASSERTION: {
             return LReference::CreateLRef(pg, node->AsTSTypeAssertion()->GetExpression(), isDeclaration);
+        }
+        case ir::AstNodeType::TS_NON_NULL_EXPRESSION: {
+            return LReference::CreateLRef(pg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
         }
         default: {
             UNREACHABLE();
