@@ -1341,42 +1341,62 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
     lexer::TokenType tokenType = lexer_->GetToken().Type();
     ir::Expression *returnExpression = nullptr;
 
-    if (tokenType == lexer::TokenType::LITERAL_IDENT) {
-        auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
-        identNode->SetReference();
-        identNode->SetRange(lexer_->GetToken().Loc());
-
-        returnExpression = AllocNode<ir::MemberExpression>(
-            leftSideExpr, identNode, ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, true);
-        returnExpression->SetRange({leftSideExpr->Start(), identNode->End()});
-        lexer_->NextToken();
-    }
-
-    if (tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-        lexer_->NextToken();  // eat '['
-        ir::Expression *propertyNode = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
-
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+    switch (tokenType) {
+        case lexer::TokenType::LITERAL_IDENT:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            returnExpression = ParseOptionalMemberExpression(leftSideExpr);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
+            returnExpression = ParseCallExpression(leftSideExpr, true);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
+            ThrowSyntaxError("Tagged Template Literals are not allowed in optionalChain");
+        }
+        default: {
             ThrowSyntaxError("Unexpected token");
         }
-
-        returnExpression = AllocNode<ir::MemberExpression>(
-            leftSideExpr, propertyNode, ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS, true, true);
-        returnExpression->SetRange({leftSideExpr->Start(), lexer_->GetToken().End()});
-        lexer_->NextToken();
-    }
-
-    if (tokenType == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        returnExpression = ParseCallExpression(leftSideExpr, true);
     }
 
     // Static semantic
-    if (tokenType == lexer::TokenType::PUNCTUATOR_BACK_TICK ||
-        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
         ThrowSyntaxError("Tagged Template Literals are not allowed in optionalChain");
     }
 
     return returnExpression;
+}
+
+ir::Expression *ParserImpl::ParseOptionalMemberExpression(ir::Expression *object)
+{
+    ir::Expression *property = nullptr;
+    bool computed = false;
+    auto kind = ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS;
+
+    lexer::TokenType tokenType = lexer_->GetToken().Type();
+    ASSERT(tokenType == lexer::TokenType::LITERAL_IDENT ||
+        tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+
+    if (tokenType == lexer::TokenType::LITERAL_IDENT) {
+        property = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+        property->AsIdentifier()->SetReference();
+        property->SetRange(lexer_->GetToken().Loc());
+    } else {
+        computed = true;
+        kind = ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS;
+        lexer_->NextToken();  // eat '['
+        property = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+            ThrowSyntaxError("Expected ']'");
+        }
+    }
+    lexer::SourcePosition end = lexer_->GetToken().End();
+    lexer_->NextToken();
+
+    auto *memberExpr = AllocNode<ir::MemberExpression>(object, property, kind, computed, true);
+    memberExpr->SetRange({object->Start(), end});
+    return memberExpr;
 }
 
 ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expression **returnExpression,
