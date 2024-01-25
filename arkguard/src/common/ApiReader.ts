@@ -86,7 +86,7 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
       console.error(`File ${FileUtils.getFileName(projectPath)} is not found.`);
       return {projectAndLibsReservedProperties:[], libExportNames: []};
     }
-
+    stringPropsSet.clear();
     const sourcPath = isOHProject ? path.join(projectPath, 'src', 'main') : projectPath;
     const projProperties: string[] = ApiExtractor.parseCommonProject(sourcPath, customProfiles, scanningCommonType);
     const libExportNamesAndReservedProps = readThirdPartyLibProperties(projectPath, scanningLibsType);

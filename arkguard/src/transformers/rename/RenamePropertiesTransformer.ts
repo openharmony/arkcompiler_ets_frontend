@@ -162,6 +162,10 @@ namespace secharmony {
           return visitEachChild(node, renameProperties, context);
         }
 
+        if (isStringLiteralLike(node) && profile?.mKeepStringProperty) {
+          return node;
+        }
+
         let original: string = node.text;
         if (reservedProperties.has(original)) {
           return node;
