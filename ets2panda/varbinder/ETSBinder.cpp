@@ -361,12 +361,12 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
     }
 }
 
-void ETSBinder::AddLambdaFunctionThisParam(ir::ScriptFunction *func)
+void ETSBinder::AddLambdaFunctionThisParam(const ir::ScriptFunction *const func, bool isExternal)
 {
     auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-    auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    auto *const thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
     thisParam->Declaration()->BindNode(thisParam_);
-    if (!func->IsAsyncFunc()) {
+    if (!func->IsAsyncFunc() && !isExternal) {
         Functions().push_back(func->Scope());
     }
 }
@@ -378,7 +378,8 @@ void ETSBinder::AddInvokeFunctionThisParam(ir::ScriptFunction *func)
     thisParam->Declaration()->BindNode(thisParam_);
 }
 
-void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic)
+void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic,
+                                 bool isExternal)
 {
     ASSERT(!containingClassName.Empty());
     func->Scope()->BindName(containingClassName);
@@ -389,20 +390,20 @@ void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringVie
         thisParam->Declaration()->BindNode(thisParam_);
     }
 
-    if (!func->IsAsyncFunc()) {
+    if (!func->IsAsyncFunc() && !isExternal) {
         Functions().push_back(func->Scope());
     }
 }
 
 void ETSBinder::BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lambdaObject,
-                                  checker::Signature *signature)
+                                  checker::Signature *signature, bool isExternal)
 {
     auto boundCtx = BoundContext(GetGlobalRecordTable(), lambdaObject);
     const auto &lambdaBody = lambdaObject->Body();
 
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 3U]->AsMethodDefinition()->Function());
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function());
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 1U]->AsMethodDefinition()->Function());
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 3U]->AsMethodDefinition()->Function(), isExternal);
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function(), isExternal);
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 1U]->AsMethodDefinition()->Function(), isExternal);
 
     LambdaObjects().insert({refNode, {lambdaObject, signature}});
 }
@@ -753,21 +754,21 @@ void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)
 
 bool ETSBinder::BuildInternalName(ir::ScriptFunction *scriptFunc)
 {
+    const bool isExternal = recordTable_->IsExternal();
+    if (isExternal) {
+        scriptFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    }
+
     if (scriptFunc->IsArrow()) {
         return true;
     }
 
     auto *funcScope = scriptFunc->Scope();
     funcScope->BindName(recordTable_->RecordName());
-    bool isExternal = recordTable_->IsExternal();
 
     bool compilable = scriptFunc->Body() != nullptr && !isExternal;
     if (!compilable) {
         recordTable_->Signatures().push_back(funcScope);
-    }
-
-    if (isExternal) {
-        scriptFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
     }
 
     return compilable;
