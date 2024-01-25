@@ -1521,6 +1521,7 @@ def main():
         runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
         runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
         runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
+        runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
         runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
 
         runners.append(runner)
