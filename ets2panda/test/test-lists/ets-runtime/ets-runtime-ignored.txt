@@ -25,7 +25,7 @@ GenericsTest.ets
 # panda#11327
 objectEquality.ets
 
-# FailKind.ES2PANDA_FAIL
+# FailKind.ES2PANDA_FAIL # panda#12518
 CastReference3.ets
 conditionalExpressionGenericLUB.ets
 

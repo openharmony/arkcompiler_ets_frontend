@@ -106,10 +106,6 @@ if(PANDA_WITH_ETS)
         add_dependencies(es2panda_tests es2panda-regression-tests)
     endif()
 
-    if(TARGET ets_tests)
-        add_dependencies(ets_tests es2panda_tests)
-    endif()
-
     panda_add_gtest(
         NAME es2panda_astverifier_tests
         SOURCES
