@@ -14,6 +14,7 @@
             "intl402/PluralRules/proto-from-ctor-realm.js",
             "intl402/DisplayNames/ctor-custom-get-prototype-poison-throws.js",
             "intl402/DisplayNames/ctor-custom-prototype.js",
+            "intl402/Segmenter/ctor-custom-get-prototype-poison-throws.js",
             "intl402/Segmenter/ctor-custom-prototype.js",
             "intl402/DisplayNames/prototype/resolvedOptions/return-object.js",
             "intl402/NumberFormat/prototype/resolvedOptions/basic.js",
