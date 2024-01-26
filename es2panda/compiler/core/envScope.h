@@ -69,9 +69,8 @@ protected:
 class VariableEnvScope : public EnvScope {
 public:
     explicit VariableEnvScope(PandaGen *pg, binder::VariableScope *scope, LabelTarget target)
-        : scope_(scope->NeedLexEnv() ? scope : nullptr), regScope_(pg, scope), lexEnvCtx_(this, pg, target)
+        : scope_(InitVariableContext(pg, scope) ? scope : nullptr), regScope_(pg, scope), lexEnvCtx_(this, pg, target)
     {
-        InitVariableContext(pg, scope);
     }
 
     bool HasEnv() const
@@ -89,7 +88,7 @@ protected:
     binder::VariableScope *scope_ {};
 
 private:
-    void InitVariableContext(PandaGen *pg, binder::VariableScope *scope);
+    bool InitVariableContext(PandaGen *pg, binder::VariableScope *scope);
 
     LocalRegScope regScope_;
     LexEnvContext lexEnvCtx_;
