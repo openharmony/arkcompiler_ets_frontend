@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_STATIC_BLOCK_H
 #define ES2PANDA_PARSER_INCLUDE_AST_STATIC_BLOCK_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
 
 namespace panda::es2panda::compiler {
@@ -31,8 +32,9 @@ namespace panda::es2panda::ir {
 
 class ClassStaticBlock : public Statement {
 public:
-    explicit ClassStaticBlock(BlockStatement *blockStatement)
+    explicit ClassStaticBlock(binder::StaticBlockScope *scope, BlockStatement *blockStatement)
         : Statement(AstNodeType::CLASS_STATIC_BLOCK),
+          scope_(scope),
           blockStatement_(blockStatement)
     {
     }
@@ -49,6 +51,7 @@ public:
     void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
+    binder::StaticBlockScope *scope_;
     BlockStatement *blockStatement_;
 };
 

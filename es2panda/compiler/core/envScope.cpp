@@ -47,15 +47,15 @@ EnvScope::~EnvScope()
     pg_->envScope_ = prev_;
 }
 
-void VariableEnvScope::InitVariableContext(PandaGen *pg, binder::VariableScope *scope)
+bool VariableEnvScope::InitVariableContext(PandaGen *pg, binder::VariableScope *scope)
 {
-    if (!HasEnv()) {
-        return;
+    if (!scope->NeedLexEnv()) {
+        return false;
     }
 
     Initialize(pg);
-    ASSERT(scope->NeedLexEnv());
-    pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
+    pg_->NewLexicalEnv(scope->Node(), scope->LexicalSlots(), scope);
+    return true;
 }
 
 void LoopEnvScope::CopyPerIterationCtx()
