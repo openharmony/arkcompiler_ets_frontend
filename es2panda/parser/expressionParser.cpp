@@ -208,7 +208,8 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA &&
         (flags & ExpressionParseFlags::ACCEPT_COMMA)) {
         return ParseSequenceExpression(assignmentExpression, (flags & ExpressionParseFlags::ACCEPT_REST),
-                                       flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN);
+                                       flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN,
+                                       flags & ExpressionParseFlags::POTENTIALLY_IN_PATTERN);
     }
 
     return assignmentExpression;
@@ -2283,7 +2284,7 @@ ir::ObjectExpression *ParserImpl::ParseObjectExpression(ExpressionParseFlags fla
 }
 
 ir::SequenceExpression *ParserImpl::ParseSequenceExpression(ir::Expression *startExpr, bool acceptRest,
-                                                            bool acceptTsParam)
+                                                            bool acceptTsParam, bool acceptPattern)
 {
     lexer::SourcePosition start = startExpr->Start();
 
@@ -2303,8 +2304,11 @@ ir::SequenceExpression *ParserImpl::ParseSequenceExpression(ir::Expression *star
             break;
         }
 
-        sequence.push_back(ParseExpression(acceptTsParam ? ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN
-                                                         : ExpressionParseFlags::NO_OPTS));
+        ExpressionParseFlags flags = acceptTsParam ? ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN
+                                                   : ExpressionParseFlags::NO_OPTS;
+
+        sequence.push_back(ParseExpression(acceptPattern ? (ExpressionParseFlags::POTENTIALLY_IN_PATTERN | flags)
+                                                         : flags));
     }
 
     lexer::SourcePosition end = sequence.back()->End();
