@@ -26,7 +26,7 @@ class Config():
     log_direct = "buildTestData"
     log_direct_data_format = "%Y-%m-%d-%H-%M-%S"
     send_mail = True
-    run_list = ["FTB", "FDY", "FWX"]
+    run_list = ["HelloWorld"]
 
     def __init__(self):
         # Default config settings for all projects, if it's not what you need, config them in application_configs
@@ -43,19 +43,24 @@ class Config():
         self.incremental_code_str = "let index = 5 + 6\n"
         self.incremental_code_start_pos = "let index = 5 + 6\n"
         self.incremental_code_end_pos = 'this.num = num'
-        self.cmd_debug_suffix = r' --mode module -p product=default assembleHap --no-daemon'
-        self.cmd_release_suffix = r' --mode project -p product=default assembleApp --no-daemon'
+        self.cmd_debug_suffix = r' --mode module -p product=default module=entry@default -p buildMode=debug assembleHap ' + \
+            '--info --verbose-analyze --parallel --incremental --daemon'
+        self.cmd_release_suffix = r' --mode module -p product=default module=entry@default -p buildMode=release assembleHap ' + \
+            '--info --verbose-analyze --parallel --incremental --daemon'
         self.debug_package_path = r'entry/build/default/outputs/default/entry-default-signed.hap'
         self.release_package_path = r'entry/build/default/outputs/default/app/entry-default.hap'
         self.incremental_code_path = r'entry/src/main/ets/pages/Index.ets'
-        self.json5_path = r'entry/build-profile.json5'
+        self.json5_path = r'build-profile.json5'
 
         # build serveral times then calculate the average value
         self.build_times = 3
-        # Do not build the project，use the test data if you need to debug the scripts
-        self.developing_test_mode = False
+        # Debug this script fastly with skipping building and will use test data.
+        # Use test_report.json to test the build succeed case.
+        # Use test_error_report.json the build failed case.
+        # Use '' to run the real build.
+        self.developing_test_data_path = ''
         # set your node_js path, it should be the same to the setting in your IDE
-        self.node_js_path = r"%s/nodejs" % os.environ['USERPROFILE']
+        self.node_js_path = r"xxx/nodejs"
         # Must set according environment
         self.jbr_path = r'xxx/DevEco Studio/jbr'
 
@@ -66,18 +71,21 @@ class Config():
                 "FTB", dict
                     (
                         project_path=r"D:/FTB",
+                        name='FTB',
                     )
             ),
             (    
                 "FDY", dict
                     (
                         project_path=r"D:/FDY",
+                        name='FDY',
                     )
             ),
             (    
                 "FWX", dict
                     (
                         project_path=r"D:/FWX",
+                        name='FWX',
                     )
             ),
             (
@@ -85,6 +93,7 @@ class Config():
                     (
                         # The following params must be set according you environment
                         project_path=r"D:/HelloWorld",
+                        name='HelloWorld',
                         
                         # The following params is not neccessary to be modified
                         debug_package_path=r'entry/build/default/outputs/default/entry-default-unsigned.hap',
@@ -93,6 +102,13 @@ class Config():
                         incremental_code_end_pos='build() {',
                         incremental_code_str="a: number=5 + 6\n",
                         incremental_code_start_pos="a: number=5 + 6\n",
+
+                        # This app will show the time costs in html
+                        # you can setting this as a global setting to show all applications.
+                        show_time_detail_filter = ["createProgram", "arkTSLinter", "tsProgramEmit",
+                            "generate content and source map information", "write obfuscated source code",
+                            "write source map (async)", "generate merged abc by es2abc (async)", "total build cost"
+                        ]
                     )
             )
         ]
@@ -107,6 +123,8 @@ def get_config(index):
         return res
     for k in res:
         setattr(config, k, res[k])
+    if not hasattr(config, 'name'):
+        setattr(config, 'name', os.path.basename(config.project_path))
     return config
 
 

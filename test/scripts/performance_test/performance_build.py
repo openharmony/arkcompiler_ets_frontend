@@ -15,11 +15,12 @@
 # limitations under the License.
 
 
+import json5
 import os
 import subprocess
-import stat
 import sys
 import time
+import traceback
 import zipfile
 
 import performance_config
@@ -35,11 +36,11 @@ class PerformanceBuild():
         self.all_size_dic = {}
         self.mail_helper = None
         self.mail_msg = ''
-        self.developing_test_mode = False
+        self.developing_test_data_path = ''
         self.mail_helper = mail_obj
         self.config = config_input
         self.prj_name = ''
-        self.timeout = 180
+        self.timeout = 1800
         self.error_log_str = ''
 
     def start(self):
@@ -55,29 +56,23 @@ class PerformanceBuild():
         dic[key].append(value)
 
     def init(self):
-        self.developing_test_mode = self.config.developing_test_mode
+        self.developing_test_data_path = os.path.join(os.path.dirname(__file__), self.config.developing_test_data_path)
         if self.config.ide == performance_config.IdeType.DevEco:
             os.environ['path'] = self.config.node_js_path + ";" + os.environ['path']
         os.chdir(self.config.project_path)
         os.environ['path'] = os.path.join(self.config.jbr_path, "bin") + ";" + os.environ['path']
         os.environ['JAVA_HOME'] = self.config.jbr_path
         self.config.cmd_prefix = os.path.join(self.config.project_path, self.config.cmd_prefix)
-        self.config.log_direct = os.path.join(self.config.project_path, self.config.log_direct)
         self.config.debug_package_path = os.path.join(self.config.project_path, self.config.debug_package_path)
         self.config.release_package_path = os.path.join(self.config.project_path, self.config.release_package_path)
         self.config.incremental_code_path = os.path.join(self.config.project_path, self.config.incremental_code_path)
         self.config.json5_path = os.path.join(self.config.project_path, self.config.json5_path)
-        if not os.path.exists(self.config.log_direct):
-            os.makedirs(self.config.log_direct)
-        self.config.log_direct = os.path.join(self.config.log_direct,
-                                        time.strftime(self.config.log_direct_data_format,
-                                        time.localtime()))
-        if not os.path.exists(self.config.log_direct):
-            os.makedirs(self.config.log_direct)
-        self.config.log_direct = os.path.join(self.config.project_path, self.config.log_direct)
-        self.config.error_filename = os.path.join(self.config.log_direct, self.config.error_filename)
-        if self.developing_test_mode:
+        if self.developing_test_data_path:
             self.config.build_times = 3
+        else:
+            subprocess.Popen((self.config.cmd_prefix + " --stop-daemon").split(" "),
+                             stderr=sys.stderr,
+                             stdout=sys.stdout).communicate(timeout=self.timeout)
 
     @staticmethod
     def add_code(code_path, start_pos, end_pos, code_str, lines):
@@ -119,17 +114,18 @@ class PerformanceBuild():
         self.all_time_dic = {}
         self.size_avg_dic = {}
         self.all_size_dic = {}
+        self.error_log_str = ''
         self.revert_incremental_code()
 
     def clean_project(self):
-        if not self.developing_test_mode:
-            print(self.config.cmd_prefix + " clean --no-daemon")
-            subprocess.Popen((self.config.cmd_prefix + " clean --no-daemon").split(" "),
+        if not self.developing_test_data_path:
+            print(self.config.cmd_prefix + " clean")
+            subprocess.Popen((self.config.cmd_prefix + " clean").split(" "),
                              stderr=sys.stderr,
                              stdout=sys.stdout).communicate(timeout=self.timeout)
 
     def get_bytecode_size(self, is_debug):
-        if self.developing_test_mode:
+        if self.developing_test_data_path:
             # test data for size
             PerformanceBuild.append_into_dic("ets/mudules.abc rawSize", 44444, self.all_size_dic)
             PerformanceBuild.append_into_dic("ets/mudules.abc Compress_size", 33333, self.all_size_dic)
@@ -146,48 +142,55 @@ class PerformanceBuild():
                 PerformanceBuild.append_into_dic(name_str1, info.file_size, self.all_size_dic)
                 PerformanceBuild.append_into_dic(name_str2, info.compress_size, self.all_size_dic)
 
+    def collect_build_data(self, is_debug, report_path):
+        with open(report_path, 'r+', encoding='UTF-8') as report:
+            event_obj = json5.load(report)['events']
+            found_error = False
+            for node in event_obj:
+                if node['head']['type'] == "log" and node['additional']['logType'] == 'error':
+                    self.error_log_str = self.error_log_str + node['head']['name']
+                    found_error = True
+                if found_error:
+                    continue
+
+                build_time = 0
+                task_name = node['head']['name']
+                if node['head']['type'] == "mark":
+                    if node['additional']['markType'] == 'history':
+                        build_time = (node['body']['endTime'] - node['body']['startTime']) / 1000000000
+                        task_name = "total build cost"
+                    else:
+                        continue
+                elif node['head']['type'] == "continual":
+                    build_time = node['additional']['totalTime'] / 1000000000
+                else:
+                    continue
+                PerformanceBuild.append_into_dic(task_name, build_time, self.all_time_dic)
+            if found_error:
+                raise Exception('Build Failed')
+        self.get_bytecode_size(is_debug)
+
     def start_build(self, is_debug):
-        if self.developing_test_mode:
+        if self.developing_test_data_path:
             # test data
-            PerformanceBuild.append_into_dic("task1", 6800, self.all_time_dic)
-            PerformanceBuild.append_into_dic("task2", 3200, self.all_time_dic)
-            PerformanceBuild.append_into_dic("total build cost", 15200, self.all_time_dic)
+            self.collect_build_data(is_debug, os.path.join(os.path.dirname(__file__), self.developing_test_data_path))
             return True
+        reports_before = []
+        report_dir = '.hvigor/report'
+        if os.path.exists(report_dir):
+            reports_before = os.listdir(report_dir)
         cmd_suffix = self.config.cmd_debug_suffix if is_debug else self.config.cmd_release_suffix
         print(self.config.cmd_prefix + cmd_suffix)
-        p = subprocess.Popen((self.config.cmd_prefix + cmd_suffix).split(" "),
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-        while True:
-            log_str = p.stdout.readline().decode('utf-8')
-            if not log_str:
-                break
-            print(log_str, end='')
-            cost_time = 0
-            str_finished = "Finished :"
-            if str_finished in log_str:
-                name_start_pos = log_str.find(str_finished) + len(str_finished)
-                name_end_pos = log_str.find('...')
-                key_str = log_str[name_start_pos:name_end_pos]
-                cost_time = self.get_millisecond(log_str.split(' after ')[1])
-            elif 'BUILD SUCCESSFUL' in log_str:
-                key_str = 'total build cost'
-                cost_time = self.get_millisecond(log_str.split(' in ')[1])
-            elif 'ERROR' in log_str:
-                rest_error = p.stdout.read().decode('utf-8')
-                print(rest_error)
-                self.error_log_str = self.error_log_str + log_str + rest_error
-                p.communicate(timeout=self.timeout)
-                return False
-            else:
-                continue
-            PerformanceBuild.append_into_dic(key_str, cost_time, self.all_time_dic)
-        p.communicate(timeout=self.timeout)
+        subprocess.Popen((self.config.cmd_prefix + cmd_suffix).split(" "),
+                              stderr=sys.stderr,
+                              stdout=sys.stdout).communicate(timeout=self.timeout)
+        report_path = (set(os.listdir(report_dir)) - set(reports_before)).pop()
+        self.collect_build_data(is_debug, os.path.join(report_dir, report_path))
         return True
         
 
     def get_millisecond(self, time_string):
-        if self.config.ide != performance_config.IdeType.DevEco and not self.developing_test_mode:
+        if self.config.ide != performance_config.IdeType.DevEco and not self.developing_test_data_path:
             return int(time_string)
         else:
             cost_time = 0
@@ -227,13 +230,13 @@ class PerformanceBuild():
                 if not has_task:
                     self.all_time_dic[key].insert(index + 1, 0)
                 sum_build_time = sum_build_time + self.all_time_dic[key][index]
-            cost = "%.2f s" % (sum_build_time / self.config.build_times / 1000)
+            cost = round(sum_build_time / self.config.build_times, 2)
             PerformanceBuild.append_into_dic(key, cost, self.time_avg_dic)
             # average of incremental build
             sum_build_time = 0
             for i in range(1, len(self.all_time_dic[key]), 2):
                 sum_build_time = sum_build_time + self.all_time_dic[key][i]
-            cost = "%.2f s" % (sum_build_time / self.config.build_times / 1000)
+            cost = round(sum_build_time / self.config.build_times, 2)
             PerformanceBuild.append_into_dic(key, cost, self.time_avg_dic)
 
     def cal_incremental_avg_size(self):
@@ -251,25 +254,19 @@ class PerformanceBuild():
         self.all_size_dic["total_compressed_size"] = total_compressed_size
         for key in self.all_size_dic:
             # sizes should be the same, just check
-            is_size_the_same = True
             full_first_size = self.all_size_dic[key][0]
             for i in range(0, len(self.all_size_dic[key]), 2):
                 if full_first_size != self.all_size_dic[key][i]:
-                    is_size_the_same = False
+                    full_first_size = -1
                     break
-            is_size_the_same = is_size_the_same and full_first_size != -1
-            full_avg_size = f"{full_first_size} Byte" if is_size_the_same else "size is not the same"
-            PerformanceBuild.append_into_dic(key, full_avg_size, self.size_avg_dic)
+            PerformanceBuild.append_into_dic(key, full_first_size, self.size_avg_dic)
 
-            is_size_the_same = True
             incremental_first_size = self.all_size_dic[key][1]
             for i in range(1, len(self.all_size_dic[key]), 2):
                 if incremental_first_size != self.all_size_dic[key][i]:
-                    is_size_the_same = False
+                    incremental_first_size = -1
                     break
-            is_size_the_same = is_size_the_same and incremental_first_size != -1
-            incremental_avg_size = f"{incremental_first_size} Byte" if is_size_the_same else "size is not the same"
-            PerformanceBuild.append_into_dic(key, incremental_avg_size, self.size_avg_dic)
+            PerformanceBuild.append_into_dic(key, incremental_first_size, self.size_avg_dic)
 
     def cal_incremental_avg(self):
         self.cal_incremental_avg_time()
@@ -297,34 +294,37 @@ class PerformanceBuild():
     
     def add_time_pic_data(self, dic, is_debug):
         for key in dic:
-            full_time = dic[key][0]
-            full_time = float(full_time[:len(full_time) - 2])
-            incremental_time = dic[key][1]
-            incremental_time = float(incremental_time[:len(incremental_time) - 2])
-        self.mail_helper.add_pic_data(self.prj_name, is_debug, [full_time, incremental_time])
+            if "total" in key:
+                full_time = dic[key][0]
+                incremental_time = dic[key][1]
+                break
+        self.mail_helper.add_pic_data(self.config.name, is_debug, [full_time, incremental_time])
 
     def add_size_pic_data(self, dic, is_debug):
         for key in dic:
             full_size = dic[key][0]
-            full_size = float(full_size[:len(full_size) - 5])
-        self.mail_helper.add_pic_data(self.prj_name, is_debug, [full_size])
-    
-    @staticmethod
-    def write_mail_files(first_line, dic, mail_table_title="", is_debug=""):
-        msg = PerformanceBuild.test_type_title(mail_table_title)
-        if first_line:
-            first_row = ""
-            first_line_res = first_line.replace("\n", "").split(",")
-            for i in first_line_res:
-                first_row += PerformanceBuild.add_th(i)
-            rows = PerformanceBuild.add_row(first_row)
-        
-        for key in dic:
+        self.mail_helper.add_pic_data(self.config.name, is_debug, [full_size])
+
+    def write_mail_files(self, dic, is_Time_dic):
+        if not hasattr(self.config, 'show_time_detail_filter'):
+            return ''
+        msg = ''
+        rows = ''
+        first_row = ""
+        first_line_res = self.first_line_in_avg_excel.replace("\n", "").split(",")
+        for i in first_line_res:
+            first_row += PerformanceBuild.add_th(i)
+        rows += PerformanceBuild.add_row(first_row)
+
+        show_dic = []
+        for k in self.config.show_time_detail_filter:
+             if k in dic:
+                 show_dic.append(k)
+        for key in show_dic:
             content_row = PerformanceBuild.add_th(key)
-            if "total" in key:
-                for v in dic[key]:
-                    content_row += PerformanceBuild.add_td(v)
-                rows += PerformanceBuild.add_row(content_row)
+            for v in dic[key]:
+                content_row += PerformanceBuild.add_td(f'{v} s')
+            rows += PerformanceBuild.add_row(content_row)
         msg += rows
         return msg
 
@@ -338,14 +338,16 @@ class PerformanceBuild():
                 content_list.append(",")
                 content_list.append(str(v))
             content_list.append("\n")
-        excel_path = os.path.join(self.config.log_direct, os.path.basename(file_path))
         content = "".join(content_list)
-        with os.fdopen(os.open(excel_path,
-                               os.O_WRONLY | os.O_CREAT,
-                               stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG), 'w') as excel:
-            excel.write(content)
-            self.mail_helper.add_logs_file(file_path, content.encode())
+        self.mail_helper.add_logs_file(file_path, content.encode())
 
+
+    def write_logs_from_dic(self, path_prefix, log_filename, source_dic, need_first_line):
+        file_path = self.config.output_split.join((path_prefix, log_filename))
+        file_path = os.path.join(self.prj_name, file_path)
+        first_line = self.first_line_in_avg_excel if need_first_line else None
+        self.write_from_dic(file_path, first_line, source_dic)
+        return
 
     def generate_full_and_incremental_results(self, is_debug):
         path_prefix = self.config.output_split.join(
@@ -354,85 +356,62 @@ class PerformanceBuild():
             self.config.build_type_of_log[0])
         )
         temp_mail_msg = ""
-        # sizeAll
-        file_path = self.config.output_split.join((path_prefix, self.config.log_filename[0]))
-        file_path = os.path.join(self.prj_name, file_path)
-        self.write_from_dic(file_path, None, self.all_size_dic)
-        # sizeAvg and mailmsg
-        file_path = self.config.output_split.join((path_prefix, self.config.log_filename[1]))
-        file_path = os.path.join(self.prj_name, file_path)
-        self.write_from_dic(file_path, self.first_line_in_avg_excel, self.size_avg_dic)
-        temp_mail_msg += PerformanceBuild.write_mail_files(self.first_line_in_avg_excel,
-                                                           self.size_avg_dic, 'abc Size')
-        self.add_size_pic_data(self.size_avg_dic, is_debug)
-        # timeAll
-        file_path = self.config.output_split.join((path_prefix, self.config.log_filename[2]))
-        file_path = os.path.join(self.prj_name, file_path)
-        self.write_from_dic(file_path, None, self.all_time_dic)
-        # timeAvg and mailmsg
-        file_path = self.config.output_split.join((path_prefix, self.config.log_filename[3]))
-        file_path = os.path.join(self.prj_name, file_path)
-        self.write_from_dic(file_path, self.first_line_in_avg_excel, self.time_avg_dic)
-        temp_mail_msg += PerformanceBuild.write_mail_files(self.first_line_in_avg_excel,
-                                                           self.time_avg_dic, 'Build Time', is_debug)
+        # write all build time log
+        self.write_logs_from_dic(path_prefix, self.config.log_filename[2], self.all_time_dic, False)
+        # write avg build time, html msg and picture data
+        self.write_logs_from_dic(path_prefix, self.config.log_filename[3], self.time_avg_dic, True)
+        temp_mail_msg += self.write_mail_files(self.time_avg_dic, True)
         self.add_time_pic_data(self.time_avg_dic, is_debug)
-        # mail files
-        if self.config.send_mail:
+        # write all size of abc log
+        self.write_logs_from_dic(path_prefix, self.config.log_filename[0], self.all_size_dic, False)
+        # write avg abc size, html msg and picture data
+        self.write_logs_from_dic(path_prefix, self.config.log_filename[1], self.size_avg_dic, True)
+        self.add_size_pic_data(self.size_avg_dic, is_debug)
+
+        # write html message
+        if self.config.send_mail and hasattr(self.config, 'show_time_detail_filter'):
             temp_mail_msg = '<table width="100%" border=1 cellspacing=0 cellpadding=0 align="center">' + \
-                PerformanceBuild.app_title(self.prj_name + (' Debug' if is_debug else ' Release')) + \
+                PerformanceBuild.app_title(self.config.name + (' Debug' if is_debug else ' Release')) + \
                 temp_mail_msg + '</table>'
             self.mail_msg += temp_mail_msg
 
 
     def error_handle(self, is_debug, log_type):
-        build_mode = performance_config.BuildMode.DEBUG if is_debug else performance_config.BuildMode.RELEASE
-        if log_type == performance_config.LogType.FULL:
-            self.mail_helper.add_failed_project(self.prj_name, build_mode,
-                                                performance_config.LogType.FULL)
-        self.mail_helper.add_failed_project(self.prj_name, build_mode,
-                                            performance_config.LogType.INCREMENTAL)
+        build_mode = 'Debug' if is_debug else 'Release'
+        log_type_str = 'full_build' if log_type == performance_config.LogType.FULL else 'incremental_build'
+        self.mail_helper.add_failed_project(self.prj_name, build_mode, log_type_str)
+        save_name = build_mode + '_' + os.path.basename(self.config.error_filename)
+        print(self.error_log_str)
+        self.mail_helper.add_logs_file(os.path.join(self.prj_name, save_name),
+                                           self.error_log_str)
 
     def full_and_incremental_build(self, is_debug):
-        self.reset()
-        self.prj_name = os.path.basename(self.config.project_path)
-        if self.developing_test_mode:
-            PerformanceBuild.append_into_dic("task0", 7100, self.all_time_dic)
-        self.first_line_in_avg_excel = self.first_line_in_avg_excel + ",first build,incremental build"
-        for i in range(self.config.build_times):
-            self.clean_project()
-            print(f"fullbuild: {'Debug' if is_debug else 'Release'}, {i + 1}/{self.config.build_times}")
-            res = self.start_build(is_debug)
-            if not res:
-                self.error_handle(is_debug, performance_config.LogType.FULL)
-                return res
-            self.get_bytecode_size(is_debug)
-            self.add_incremental_code(1)
-            print(f"incremental: {'Debug' if is_debug else 'Release'}, {i + 1}/{self.config.build_times}")
-            res = self.start_build(is_debug)
-            if not res:
-                self.error_handle(is_debug, performance_config.LogType.INCREMENTAL)
-                return res
-            self.get_bytecode_size(is_debug)
-            self.revert_incremental_code()
-        self.cal_incremental_avg()
-        self.generate_full_and_incremental_results(is_debug)
-        return True
-
-    def add_error_logs(self):
-        if not self.error_log_str:
-            return
-        with os.fdopen(os.open(self.config.error_filename,
-                               os.O_WRONLY | os.O_CREAT,
-                               stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG), 'w') as excel:
-            excel.write(self.error_log_str)
-            save_name = os.path.basename(self.config.error_filename)
-            self.mail_helper.add_logs_file(os.path.join(self.prj_name, save_name),
-                                           self.error_log_str)
+        log_type = performance_config.LogType.FULL
+        try:
+            self.reset()
+            self.prj_name = os.path.basename(self.config.project_path)
+            self.first_line_in_avg_excel = self.first_line_in_avg_excel + ",first build,incremental build"
+            for i in range(self.config.build_times):
+                self.clean_project()
+                print(f"fullbuild: {'Debug' if is_debug else 'Release'}, {i + 1}/{self.config.build_times}")
+                log_type = performance_config.LogType.FULL
+                self.start_build(is_debug)
+                self.add_incremental_code(1)
+                print(f"incremental: {'Debug' if is_debug else 'Release'}, {i + 1}/{self.config.build_times}")
+                log_type = performance_config.LogType.INCREMENTAL
+                self.start_build(is_debug)
+                self.revert_incremental_code()
+            self.cal_incremental_avg()
+            self.generate_full_and_incremental_results(is_debug)
+        except Exception as e:
+            err_msg = traceback.format_exc()
+            self.error_log_str = f'error:\n{self.error_log_str}\n{err_msg}'
+            self.error_handle(is_debug, log_type)
 
     def start_test(self):
         self.full_and_incremental_build(True)
         self.full_and_incremental_build(False)
-        self.add_error_logs()
+        self.reset()
 
     def write_mail_msg(self):
         if self.config.send_mail:
