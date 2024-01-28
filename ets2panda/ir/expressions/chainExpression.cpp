@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "ir/expressions/memberExpression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ChainExpression::TransformChildren(const NodeTransformer &cb)
 {
     expression_ = cb(expression_)->AsExpression();
@@ -93,4 +93,4 @@ ChainExpression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

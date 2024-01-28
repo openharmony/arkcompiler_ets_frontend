@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassDeclaration : public Statement {
 public:
     explicit ClassDeclaration(ClassDefinition *def, ArenaAllocator *allocator)
@@ -75,6 +75,6 @@ private:
     ClassDefinition *def_;
     ArenaVector<Decorator *> decorators_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

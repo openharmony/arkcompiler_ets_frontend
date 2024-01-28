@@ -15,7 +15,7 @@
 
 #include "etsBigIntType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSBigIntType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsETSBigIntType()) {
@@ -41,4 +41,4 @@ Type *ETSBigIntType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[m
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

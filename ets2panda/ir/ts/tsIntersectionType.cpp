@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSIntersectionType::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : types_) {
@@ -76,4 +76,4 @@ checker::Type *TSIntersectionType::Check([[maybe_unused]] checker::ETSChecker *c
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSQualifiedName::Iterate(const NodeTraverser &cb) const
 {
     cb(left_);
@@ -132,4 +132,4 @@ const ir::TSQualifiedName *TSQualifiedName::ResolveLeftMostQualifiedName() const
 {
     return ResolveLeftMostQualifiedNameImpl(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

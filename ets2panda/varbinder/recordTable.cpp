@@ -22,7 +22,7 @@
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "generated/signatures.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 BoundContext::BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef)
     : prev_(recordTable->boundCtx_), recordTable_(recordTable), savedRecord_(recordTable->record_)
 {
@@ -87,4 +87,4 @@ util::StringView RecordTable::RecordName() const
     return std::get<ir::TSInterfaceDeclaration *>(record_)->InternalName();
 }
 
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder

@@ -17,7 +17,7 @@
 
 #include "varbinder/variable.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void EnumType::ToString(std::stringstream &ss) const
 {
     ss << enumLiteralVar_->Name() << "." << enumVar_->Name();
@@ -47,4 +47,4 @@ Type *EnumType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_
     // NOTE: aszilagyi
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

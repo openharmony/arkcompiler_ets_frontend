@@ -25,7 +25,7 @@
 #include "ir/base/decorator.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSStructDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : decorators_) {
@@ -97,4 +97,4 @@ ETSStructDeclaration *ETSStructDeclaration::Clone(ArenaAllocator *const allocato
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

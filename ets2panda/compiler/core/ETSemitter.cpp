@@ -43,7 +43,7 @@
 
 #include "assembly-program.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 #ifdef PANDA_WITH_ETS
 static constexpr auto EXTENSION = panda_file::SourceLang::ETS;
@@ -391,7 +391,7 @@ void ETSEmitter::GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker:
 
     std::stringstream ss2;
     arrayType->ElementType()->ToAssemblerType(ss2);
-    panda::pandasm::Type atypePa(ss2.str(), arrayType->Rank());
+    ark::pandasm::Type atypePa(ss2.str(), arrayType->Rank());
     Program()->arrayTypes.emplace(std::move(atypePa));
 }
 
@@ -684,4 +684,4 @@ void ETSEmitter::GenAnnotationRecord(std::string_view recordNameView, bool isRun
         Program()->recordTable.emplace(record.name, std::move(record));
     }
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

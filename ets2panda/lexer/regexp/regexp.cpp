@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 RegExpError::RegExpError(std::string_view m) : message(m) {}
 
 RegExp::RegExp(util::StringView p, util::StringView f, RegExpFlags reFlags) : patternStr(p), flagsStr(f), flags(reFlags)
@@ -907,4 +907,4 @@ util::StringView RegExpParser::ParseIdent()
 
     return ident.View();
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

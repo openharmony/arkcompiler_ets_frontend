@@ -22,7 +22,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void BigIntLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void BigIntLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -68,4 +68,4 @@ BigIntLiteral *BigIntLiteral::Clone(ArenaAllocator *const allocator, AstNode *co
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

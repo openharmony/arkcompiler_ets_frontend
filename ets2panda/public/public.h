@@ -28,11 +28,11 @@
 #include "compiler/core/emitter.h"
 #include "util/options.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class Phase;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::public_lib {
+namespace ark::es2panda::public_lib {
 struct ConfigImpl {
     util::Options *options;
 };
@@ -60,6 +60,6 @@ struct Context {
     std::string errorMessage;
     lexer::SourcePosition errorPos;
 };
-}  // namespace panda::es2panda::public_lib
+}  // namespace ark::es2panda::public_lib
 
 #endif

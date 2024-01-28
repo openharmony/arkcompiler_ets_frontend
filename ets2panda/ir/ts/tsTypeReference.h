@@ -18,11 +18,11 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterInstantiation;
 
 class TSTypeReference : public TypeNode {
@@ -63,6 +63,6 @@ private:
     Expression *typeName_;
     TSTypeParameterInstantiation *typeParams_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

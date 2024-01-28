@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_COMPILER_BASE_HOISTING_H
 #define ES2PANDA_COMPILER_BASE_HOISTING_H
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class Hoisting {
 public:
     static void Hoist(PandaGen *pg);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

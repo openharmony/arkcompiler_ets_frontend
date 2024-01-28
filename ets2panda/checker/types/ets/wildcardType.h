@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class WildcardType : public Type {
 public:
     WildcardType() : Type(TypeFlag::WILDCARD) {}
@@ -33,6 +33,6 @@ public:
         ss << "wildcard";
     }
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

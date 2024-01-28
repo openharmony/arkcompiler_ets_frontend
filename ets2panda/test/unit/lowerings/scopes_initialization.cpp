@@ -22,7 +22,7 @@
 #include "varbinder/tsBinding.h"
 #include "varbinder/ETSBinder.h"
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 
 class ScopesInitPhaseTest : public testing::Test {
 public:
@@ -124,4 +124,4 @@ TEST_F(ScopesInitPhaseTest, CreateWhile)
     ASSERT_EQ(bodyBindings.begin()->second, name->Variable());
 }
 
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda

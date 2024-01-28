@@ -19,7 +19,7 @@
 
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSObjectType;
 
 using WrapperDesc = ArenaUnorderedMap<util::StringView, std::pair<ETSObjectType *, ETSObjectFlags>>;
@@ -54,5 +54,5 @@ public:
 private:
     WrapperDesc wrappers_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 #endif

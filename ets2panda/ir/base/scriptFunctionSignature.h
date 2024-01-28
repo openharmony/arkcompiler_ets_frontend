@@ -18,7 +18,7 @@
 
 #include "ir/astNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
 
@@ -76,6 +76,6 @@ private:
     TypeNode *returnTypeAnnotation_;
 };
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

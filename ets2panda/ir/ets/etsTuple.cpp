@@ -18,7 +18,7 @@
 #include "checker/types/ets/etsTupleType.h"
 #include "ir/astDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 void ETSTuple::TransformChildren([[maybe_unused]] const NodeTransformer &cb)
 {
@@ -184,4 +184,4 @@ checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker
     return lubType;
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "macros.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void StringLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void StringLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -99,4 +99,4 @@ StringLiteral *StringLiteral::Clone(ArenaAllocator *const allocator, AstNode *co
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

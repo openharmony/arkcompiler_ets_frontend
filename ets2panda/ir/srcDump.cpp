@@ -20,7 +20,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 SrcDumper::SrcDumper(const ir::AstNode *node)
 {
@@ -74,4 +74,4 @@ void SrcDumper::Add(const double d)
 {
     ss_ << d;
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

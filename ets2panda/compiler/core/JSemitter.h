@@ -18,7 +18,7 @@
 
 #include "emitter.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class JSFunctionEmitter : public FunctionEmitter {
 public:
@@ -53,6 +53,6 @@ private:
     void GenESAnnotationRecord();
     void GenESModuleModeRecord(bool isModule);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

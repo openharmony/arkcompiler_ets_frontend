@@ -32,11 +32,11 @@
 #include <variant>
 #include <vector>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 enum class OperandKind {
     // the least significant bit indicates vreg
     // the second bit indicates src or dst
@@ -90,9 +90,9 @@ class Format {
 public:
     constexpr Format(const FormatItem *item, size_t size) : item_(item), size_(size) {}
 
-    panda::Span<const FormatItem> GetFormatItem() const
+    ark::Span<const FormatItem> GetFormatItem() const
     {
-        return panda::Span<const FormatItem>(item_, size_);
+        return ark::Span<const FormatItem>(item_, size_);
     }
 
 private:
@@ -100,7 +100,7 @@ private:
     size_t size_;
 };
 
-using Formats = panda::Span<const Format>;
+using Formats = ark::Span<const Format>;
 
 class Label;
 class IRNode;
@@ -149,12 +149,12 @@ public:
     virtual size_t Registers([[maybe_unused]] std::array<VReg *, MAX_REG_OPERAND> *regs) = 0;
     virtual size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const = 0;
     virtual size_t OutRegisters([[maybe_unused]] std::array<OutVReg, MAX_REG_OPERAND> *regs) const = 0;
-    virtual void Transform(panda::pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
+    virtual void Transform(ark::pandasm::Ins *ins, [[maybe_unused]] ProgramElement *programElement,
                            [[maybe_unused]] uint32_t totalRegs) const = 0;
 
 private:
     const ir::AstNode *node_;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

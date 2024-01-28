@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ContinueStatement::TransformChildren(const NodeTransformer &cb)
 {
     if (ident_ != nullptr) {
@@ -65,4 +65,4 @@ checker::Type *ContinueStatement::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

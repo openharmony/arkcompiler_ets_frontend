@@ -15,7 +15,7 @@
 #include "plugin.h"
 #include "os/library_loader.h"
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 std::string Plugin::FullNameForProcedure(std::string const &shortName)
 {
@@ -50,4 +50,4 @@ Plugin::Plugin(util::StringView const &name) : name_ {name}, err_ {0}, h_ {nullp
     }
 }
 
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util

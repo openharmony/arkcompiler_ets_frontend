@@ -29,7 +29,7 @@
 #include "generated/formats.h"
 #include "assembly-ins.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class Label : public IRNode {
 public:
     explicit Label(const ir::AstNode* node, std::string id) : IRNode(node), id_(std::move(id)) {}
@@ -212,6 +212,6 @@ private:
 
 % end
 // NOLINTEND(readability-identifier-naming)
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

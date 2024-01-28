@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ScriptFunction;
 
 class FunctionDeclaration : public Statement {
@@ -75,6 +75,6 @@ private:
     ScriptFunction *func_;
     const bool isAnonymous_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

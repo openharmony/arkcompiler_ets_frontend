@@ -18,15 +18,15 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSClassLiteral : public Expression {
 public:
@@ -62,6 +62,6 @@ public:
 private:
     ir::TypeNode *expr_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

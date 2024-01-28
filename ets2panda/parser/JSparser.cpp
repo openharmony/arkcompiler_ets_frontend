@@ -15,5 +15,5 @@
 
 #include "JSparser.h"
 
-namespace panda::es2panda::parser {
-}  // namespace panda::es2panda::parser
+namespace ark::es2panda::parser {
+}  // namespace ark::es2panda::parser

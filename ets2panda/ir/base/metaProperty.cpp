@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void MetaProperty::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void MetaProperty::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -83,4 +83,4 @@ MetaProperty *MetaProperty::Clone(ArenaAllocator *const allocator, AstNode *cons
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

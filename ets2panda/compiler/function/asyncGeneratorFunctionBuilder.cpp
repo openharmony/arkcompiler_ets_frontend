@@ -19,7 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "ir/base/scriptFunction.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 void AsyncGeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
 {
     VReg callee = FunctionReg(node);
@@ -103,4 +103,4 @@ IteratorType AsyncGeneratorFunctionBuilder::GeneratorKind() const
 {
     return IteratorType::ASYNC;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

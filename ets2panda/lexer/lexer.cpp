@@ -24,7 +24,7 @@
 
 #include <array>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 LexerPosition::LexerPosition(const util::StringView &source) : iterator_(source) {}
 
 Lexer::Lexer(const parser::ParserContext *parserContext, bool startLexer)
@@ -1552,4 +1552,4 @@ const LexerPosition &Lexer::Pos() const
 {
     return pos_;
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

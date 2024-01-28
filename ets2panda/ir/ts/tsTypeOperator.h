@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeOperator : public TypeNode {
 public:
     explicit TSTypeOperator(TypeNode *type, TSOperatorType operatorType)
@@ -65,6 +65,6 @@ private:
     TypeNode *type_;
     TSOperatorType operatorType_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

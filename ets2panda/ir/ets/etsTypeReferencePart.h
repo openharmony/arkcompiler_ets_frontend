@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSTypeReferencePart : public TypeNode {
 public:
@@ -78,6 +78,6 @@ private:
     ir::TSTypeParameterInstantiation *typeParams_ {};
     ir::ETSTypeReferencePart *prev_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

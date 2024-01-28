@@ -21,21 +21,21 @@
 #include "util/ustring.h"
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class Program;
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Signature;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassDefinition;
 class TSInterfaceDeclaration;
 class Identifier;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class FunctionScope;
 class BoundContext;
 
@@ -184,6 +184,6 @@ private:
     ir::Identifier *recordIdent_;
 };
 
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif  // ES2PANDA_VARBINDER_RECORDTABLE_H

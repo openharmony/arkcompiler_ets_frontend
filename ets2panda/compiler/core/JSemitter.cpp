@@ -21,7 +21,7 @@
 #include "compiler/core/compilerContext.h"
 #include "assembly-program.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
 {
 #ifdef PANDA_WITH_ECMASCRIPT
@@ -106,4 +106,4 @@ void JSEmitter::GenESModuleModeRecord(bool isModule)
 
     Program()->recordTable.emplace(modeRecord.name, std::move(modeRecord));
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

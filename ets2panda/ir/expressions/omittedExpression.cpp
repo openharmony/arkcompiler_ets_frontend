@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void OmittedExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -66,4 +66,4 @@ OmittedExpression *OmittedExpression::Clone(ArenaAllocator *const allocator, Ast
     }
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

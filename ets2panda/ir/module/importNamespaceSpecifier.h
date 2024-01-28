@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 
 class ImportNamespaceSpecifier : public Statement {
@@ -55,6 +55,6 @@ public:
 private:
     Identifier *local_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

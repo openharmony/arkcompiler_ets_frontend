@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSVoidType : public Type {
 public:
     ETSVoidType() : Type(TypeFlag::ETS_VOID) {}
@@ -44,6 +44,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

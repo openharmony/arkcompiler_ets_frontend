@@ -24,12 +24,12 @@
 #include <fstream>
 #include <iostream>
 
-namespace panda {
+namespace ark {
 class PandArgParser;
 class PandaArg;
-}  // namespace panda
+}  // namespace ark
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 enum class OptionFlags : uint32_t {
     DEFAULT = 0U,
     PARSE_ONLY = 1U << 0U,
@@ -54,7 +54,7 @@ inline OptionFlags &operator|=(OptionFlags &a, OptionFlags b)
 template <class T>
 T BaseName(T const &path)
 {
-    return path.substr(path.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
+    return path.substr(path.find_last_of(ark::os::file::File::GetPathDelim()) + 1);
 }
 
 class Options {
@@ -164,7 +164,7 @@ private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};
     OptionFlags options_ {OptionFlags::DEFAULT};
     es2panda::CompilerOptions compilerOptions_ {};
-    panda::PandArgParser *argparser_;
+    ark::PandArgParser *argparser_;
     std::string parserInput_;
     std::string compilerOutput_;
     std::string result_;
@@ -175,6 +175,6 @@ private:
     bool listFiles_ {false};
     util::LogLevel logLevel_ {util::LogLevel::ERROR};
 };
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif  // UTIL_OPTIONS_H

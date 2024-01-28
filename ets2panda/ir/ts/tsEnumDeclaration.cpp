@@ -23,7 +23,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : decorators_) {
@@ -124,4 +124,4 @@ checker::Type *TSEnumDeclaration::Check(checker::ETSChecker *const checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

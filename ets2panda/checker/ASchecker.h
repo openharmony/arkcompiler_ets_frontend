@@ -18,7 +18,7 @@
 
 #include "checker/checker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ASChecker : public Checker {
 public:
@@ -40,6 +40,6 @@ public:
     }
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* CHECKER_H */

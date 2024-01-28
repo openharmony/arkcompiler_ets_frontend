@@ -18,7 +18,7 @@
 #include "checker/ets/conversion.h"
 #include "checker/ets/narrowingConverter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ByteType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsByteType()) {
@@ -100,4 +100,4 @@ Type *ByteType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

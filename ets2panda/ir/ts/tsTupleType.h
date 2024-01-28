@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 enum class TSTupleKind { NONE, NAMED, DEFAULT };
 
 class TSTupleType : public TypeNode {
@@ -51,6 +51,6 @@ public:
 private:
     ArenaVector<TypeNode *> elementTypes_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

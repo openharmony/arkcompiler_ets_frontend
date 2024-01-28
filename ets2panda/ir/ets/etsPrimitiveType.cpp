@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSPrimitiveType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void ETSPrimitiveType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -146,4 +146,4 @@ ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNo
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

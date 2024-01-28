@@ -24,20 +24,20 @@
 #include <cmath>
 #include <string>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSObjectType;
 class Type;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class Literal;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 class ScriptFunction;
 class ClassDefinition;
@@ -52,9 +52,9 @@ class TSInterfaceDeclaration;
 class TSEnumDeclaration;
 class ETSImportDeclaration;
 enum class AstNodeType;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 enum class LogLevel : std::uint8_t {
     DEBUG,
     INFO,
@@ -182,23 +182,23 @@ bool Helpers::IsInteger(double number)
 template <LogLevel LOG_L, typename... Elements>
 void Helpers::Log(Elements &&...elems)
 {
-    constexpr auto ES2PANDA = panda::Logger::Component::ES2PANDA;
+    constexpr auto ES2PANDA = ark::Logger::Component::ES2PANDA;
     constexpr auto LOG_LEVEL = []() {
         switch (LOG_L) {
             case LogLevel::DEBUG: {
-                return panda::Logger::Level::DEBUG;
+                return ark::Logger::Level::DEBUG;
             }
             case LogLevel::INFO: {
-                return panda::Logger::Level::INFO;
+                return ark::Logger::Level::INFO;
             }
             case LogLevel::WARNING: {
-                return panda::Logger::Level::WARNING;
+                return ark::Logger::Level::WARNING;
             }
             case LogLevel::ERROR: {
-                return panda::Logger::Level::ERROR;
+                return ark::Logger::Level::ERROR;
             }
             case LogLevel::FATAL: {
-                return panda::Logger::Level::FATAL;
+                return ark::Logger::Level::FATAL;
             }
             default: {
                 UNREACHABLE_CONSTEXPR();
@@ -207,15 +207,15 @@ void Helpers::Log(Elements &&...elems)
     }();
 
 #ifndef NDEBUG
-    const bool isMessageSuppressed = panda::Logger::IsMessageSuppressed(LOG_LEVEL, ES2PANDA);
+    const bool isMessageSuppressed = ark::Logger::IsMessageSuppressed(LOG_LEVEL, ES2PANDA);
 #else
     const bool isMessageSuppressed = false;
 #endif
-    if (!panda::Logger::IsLoggingOnOrAbort(LOG_LEVEL, ES2PANDA) || isMessageSuppressed) {
+    if (!ark::Logger::IsLoggingOnOrAbort(LOG_LEVEL, ES2PANDA) || isMessageSuppressed) {
         return;
     }
 
-    (panda::Logger::Message(LOG_LEVEL, ES2PANDA, false).GetStream() << ... << std::forward<Elements>(elems));
+    (ark::Logger::Message(LOG_LEVEL, ES2PANDA, false).GetStream() << ... << std::forward<Elements>(elems));
 }
 
 template <typename... Elements>
@@ -256,6 +256,6 @@ std::string Helpers::AppendAll(Elements &&...elems)
     return ret;
 }
 
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif

@@ -18,10 +18,10 @@
 
 #include <assembly-ins.h>
 
-namespace panda::es2panda::debuginfo {
+namespace ark::es2panda::debuginfo {
 
-const char *pandaInsToString(const panda::pandasm::Ins &ins);
+const char *pandaInsToString(const ark::pandasm::Ins &ins);
 
-}  // namespace panda::es2panda::debuginfo
+}  // namespace ark::es2panda::debuginfo
 
 #endif  // GEN_OPCODE_MAP_H

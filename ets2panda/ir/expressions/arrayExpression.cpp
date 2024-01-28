@@ -32,7 +32,7 @@
 #include "ir/expressions/objectExpression.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression const &other,
                                  ArenaAllocator *const allocator)
     : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other), allocator),
@@ -399,4 +399,4 @@ void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker
     }
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

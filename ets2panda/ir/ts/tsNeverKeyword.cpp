@@ -21,7 +21,7 @@
 #include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSNeverKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TSNeverKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -59,4 +59,4 @@ checker::Type *TSNeverKeyword::Check([[maybe_unused]] checker::ETSChecker *check
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

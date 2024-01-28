@@ -15,7 +15,7 @@
 
 #include "bigintType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void BigintType::ToString(std::stringstream &ss) const
 {
     ss << "bigint";
@@ -45,4 +45,4 @@ Type *BigintType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[mayb
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

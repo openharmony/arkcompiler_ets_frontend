@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 NewExpression::NewExpression([[maybe_unused]] Tag const tag, NewExpression const &other,
                              ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)), arguments_(allocator->Adapter())
@@ -95,4 +95,4 @@ checker::Type *NewExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

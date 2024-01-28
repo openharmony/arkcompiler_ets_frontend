@@ -18,11 +18,11 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class NewExpression : public Expression {
 private:
     struct Tag {};
@@ -74,6 +74,6 @@ private:
     Expression *callee_ = nullptr;
     ArenaVector<Expression *> arguments_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

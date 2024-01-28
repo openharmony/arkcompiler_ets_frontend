@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "ir/ets/etsTypeReference.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSWildcardType::TransformChildren(const NodeTransformer &cb)
 {
     if (typeReference_ != nullptr) {
@@ -80,4 +80,4 @@ checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::ETSChecker *ch
 {
     return checker->GlobalWildcardType();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

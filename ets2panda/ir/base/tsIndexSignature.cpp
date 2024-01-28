@@ -20,7 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const noexcept
 {
     return param_->AsIdentifier()->TypeAnnotation()->IsTSNumberKeyword() ? TSIndexSignatureKind::NUMBER
@@ -91,4 +91,4 @@ TSIndexSignature *TSIndexSignature::Clone(ArenaAllocator *const allocator, AstNo
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

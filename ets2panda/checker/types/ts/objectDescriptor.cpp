@@ -19,7 +19,7 @@
 #include "checker/types/ts/indexInfo.h"
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 varbinder::LocalVariable *ObjectDescriptor::FindProperty(const util::StringView &name) const
 {
     for (auto *it : properties) {
@@ -57,4 +57,4 @@ void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedD
         copiedDesc->stringIndexInfo = stringIndexInfo->Copy(allocator, relation, globalTypes);
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

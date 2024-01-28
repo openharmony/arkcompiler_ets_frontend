@@ -20,7 +20,7 @@
 #include "public/es2panda_lib.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 class Plugin {
 public:
@@ -82,6 +82,6 @@ private:
     void (*afterLowerings_)(es2panda_Context *) = nullptr;
 };
 
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif

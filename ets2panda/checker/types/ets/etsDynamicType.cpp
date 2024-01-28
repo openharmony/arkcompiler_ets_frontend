@@ -18,7 +18,7 @@
 #include "checker/ets/conversion.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 varbinder::LocalVariable *ETSDynamicType::GetPropertyDynamic(const util::StringView &name,
                                                              const ETSChecker *checker) const
@@ -115,4 +115,4 @@ void ETSDynamicType::ToAssemblerType(std::stringstream &ss) const
     ss << compiler::Signatures::Dynamic::Type(lang_);
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

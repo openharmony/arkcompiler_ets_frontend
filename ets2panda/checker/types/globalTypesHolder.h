@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 enum class GlobalTypeId {
     NUMBER,
     ANY,
@@ -238,6 +238,6 @@ private:
     Holder globalTypes_ {};
     ArenaMap<util::StringView, GlobalTypeId> builtinNameMappings_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ES2PANDA_COMPILER_CHECKER_TYPES_TS_GLOBAL_TYPES_HOLDER_H */

@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "ir/astNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSTypeParameter : public Type {
 public:
     explicit ETSTypeParameter() : Type(TypeFlag::ETS_TYPE_PARAMETER) {}
@@ -80,6 +80,6 @@ private:
     Type *default_ {};
     Type *constraint_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

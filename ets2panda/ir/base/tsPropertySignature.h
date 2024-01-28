@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TypeNode;
 
 class TSPropertySignature : public AnnotatedAstNode {
@@ -87,6 +87,6 @@ private:
     bool optional_;
     bool readonly_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

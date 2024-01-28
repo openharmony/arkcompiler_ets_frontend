@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void FunctionExpression::TransformChildren(const NodeTransformer &cb)
 {
     func_ = cb(func_)->AsScriptFunction();
@@ -77,4 +77,4 @@ FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, A
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

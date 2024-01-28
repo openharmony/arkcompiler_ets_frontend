@@ -18,12 +18,12 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSChecker;
 class Type;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TypeNode : public Expression {
 public:
     TypeNode() = delete;
@@ -54,6 +54,6 @@ protected:
     explicit TypeNode(AstNodeType const type) : Expression(type) {}
     explicit TypeNode(AstNodeType const type, ModifierFlags const flags) : Expression(type, flags) {}
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif /* ES2PANDA_IR_TYPE_NODE_H */

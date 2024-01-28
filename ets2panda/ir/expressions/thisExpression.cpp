@@ -29,7 +29,7 @@
 #include "ir/srcDump.h"
 #include "ir/expressions/callExpression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ThisExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void ThisExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -74,4 +74,4 @@ ThisExpression *ThisExpression::Clone(ArenaAllocator *const allocator, AstNode *
     }
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -22,7 +22,7 @@
 
 #include "libpandabase/macros.h"
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define LANGUAGES(_)   \
@@ -112,17 +112,17 @@ private:
     Id id_;
 };
 
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda
 
 // NOLINTNEXTLINE(cert-dcl58-cpp)
 namespace std {
 
 template <>
 // NOLINTNEXTLINE(altera-struct-pack-align)
-struct hash<panda::es2panda::Language> {
-    std::size_t operator()(panda::es2panda::Language lang) const
+struct hash<ark::es2panda::Language> {
+    std::size_t operator()(ark::es2panda::Language lang) const
     {
-        return std::hash<panda::es2panda::Language::Id> {}(lang.GetId());
+        return std::hash<ark::es2panda::Language::Id> {}(lang.GetId());
     }
 };
 

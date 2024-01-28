@@ -19,7 +19,7 @@
 #include "checker/types/ets/etsFunctionType.h"
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSDynamicFunctionType : public ETSFunctionType {
 public:
@@ -44,6 +44,6 @@ public:
 private:
     es2panda::Language lang_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ES2PANDA_COMPILER_CHECKER_TYPES_ETS_DYNAMIC_FUNCTION_TYPE_H */

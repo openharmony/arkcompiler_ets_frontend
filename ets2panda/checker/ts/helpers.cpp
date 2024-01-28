@@ -33,7 +33,7 @@
 #include "checker/ts/typeElaborationContext.h"
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void TSChecker::CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo)
 {
     if (type->IsVoidType()) {
@@ -513,4 +513,4 @@ Type *TSChecker::GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Vari
                    node->Start());
     return nullptr;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

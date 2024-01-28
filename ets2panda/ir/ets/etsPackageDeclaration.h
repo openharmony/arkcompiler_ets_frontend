@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSPackageDeclaration : public Statement {
 public:
@@ -54,6 +54,6 @@ public:
 private:
     ir::Expression *name_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

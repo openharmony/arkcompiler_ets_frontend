@@ -44,7 +44,7 @@
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 static constexpr auto TYPE_FLAG_BYTECODE_REF =
     checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION | checker::TypeFlag::ETS_TYPE_PARAMETER;
@@ -2741,4 +2741,4 @@ util::StringView ETSGen::ToAssemblerType(const es2panda::checker::Type *type) co
     return util::UString(ss.str(), Allocator()).View();
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

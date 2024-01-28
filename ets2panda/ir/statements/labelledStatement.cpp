@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void LabelledStatement::TransformChildren(const NodeTransformer &cb)
 {
     ident_ = cb(ident_)->AsIdentifier();
@@ -88,4 +88,4 @@ checker::Type *LabelledStatement::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSConditionalType : public TypeNode {
 public:
     explicit TSConditionalType(Expression *checkType, Expression *extendsType, Expression *trueType,
@@ -72,6 +72,6 @@ private:
     Expression *trueType_;
     Expression *falseType_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

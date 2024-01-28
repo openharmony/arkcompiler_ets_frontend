@@ -36,7 +36,7 @@
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/expressionStatement.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 struct Conversion {
     lexer::TokenType from;
@@ -250,4 +250,4 @@ bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser:
     });
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

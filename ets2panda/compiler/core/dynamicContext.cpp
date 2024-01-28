@@ -30,7 +30,7 @@
 #include "ir/statements/tryStatement.h"
 #include "ir/statements/labelledStatement.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 DynamicContext::DynamicContext(CodeGen *cg, LabelTarget target) : cg_(cg), target_(target), prev_(Cg()->dynamicContext_)
 {
     Cg()->dynamicContext_ = this;
@@ -285,4 +285,4 @@ void ETSTryContext::EmitFinalizer(
     etsg->SetLabel(tryStmt_, finalizerTable->LabelSet().CatchEnd());
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -32,7 +32,7 @@
 #include "ir/statements/blockStatement.h"
 #include "ir/ts/tsAsExpression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir::UpdateExpression *const update)
 {
     // Converts `tuple[n]++` to
@@ -254,4 +254,4 @@ bool TupleLowering::Postcondition(public_lib::Context *const ctx, const parser::
     });
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

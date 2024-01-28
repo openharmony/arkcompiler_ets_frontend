@@ -31,7 +31,7 @@
 #include <cstdint>
 #include <string>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ClassStaticBlock::TransformChildren(const NodeTransformer &cb)
 {
     value_ = cb(value_)->AsExpression();
@@ -87,4 +87,4 @@ const util::StringView &ClassStaticBlock::Name() const
     return Function()->Id()->Name();
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

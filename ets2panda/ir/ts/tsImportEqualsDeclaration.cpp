@@ -23,7 +23,7 @@
 #include "ir/expression.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSImportEqualsDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     id_ = cb(id_)->AsIdentifier();
@@ -67,4 +67,4 @@ checker::Type *TSImportEqualsDeclaration::Check([[maybe_unused]] checker::ETSChe
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

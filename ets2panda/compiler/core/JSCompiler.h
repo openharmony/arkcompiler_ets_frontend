@@ -19,10 +19,10 @@
 #include "compiler/core/ASTCompiler.h"
 #include "util/bitset.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
-namespace panda::es2panda::compiler {
+}  // namespace ark::es2panda::ir
+namespace ark::es2panda::compiler {
 
 class JSCompiler final : public AstCompiler {
 public:
@@ -46,6 +46,6 @@ private:
     PandaGen *GetPandaGen() const;
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif  // ES2PANDA_COMPILER_CORE_JSCOMPILER_H

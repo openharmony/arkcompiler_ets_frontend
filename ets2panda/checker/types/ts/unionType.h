@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class GlobalTypesHolder;
 
 class UnionType : public Type {
@@ -134,6 +134,6 @@ private:
     ArenaUnorderedMap<util::StringView, varbinder::Variable *> cachedSyntheticProperties_;
     ObjectType *mergedObjectType_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_UNION_TYPE_H */

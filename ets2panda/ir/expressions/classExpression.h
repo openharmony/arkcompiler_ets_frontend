@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassDefinition;
 
 class ClassExpression : public Expression {
@@ -57,6 +57,6 @@ public:
 private:
     ClassDefinition *def_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -23,7 +23,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void NamedType::TransformChildren(const NodeTransformer &cb)
 {
     name_ = cb(name_)->AsIdentifier();
@@ -83,4 +83,4 @@ checker::Type *NamedType::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

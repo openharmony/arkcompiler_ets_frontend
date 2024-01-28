@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSUnionType::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : types_) {
@@ -81,4 +81,4 @@ checker::Type *TSUnionType::GetType(checker::TSChecker *checker)
     SetTsType(checker->CreateUnionType(std::move(types)));
     return TsType();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

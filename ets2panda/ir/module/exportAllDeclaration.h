@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 class StringLiteral;
 
@@ -57,6 +57,6 @@ private:
     StringLiteral *source_;
     Identifier *exported_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

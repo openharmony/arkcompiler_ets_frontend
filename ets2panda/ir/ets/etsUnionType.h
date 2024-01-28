@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ETSUnionType : public TypeNode {
 public:
     explicit ETSUnionType(ArenaVector<TypeNode *> &&types)
@@ -48,6 +48,6 @@ public:
 private:
     ArenaVector<TypeNode *> types_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

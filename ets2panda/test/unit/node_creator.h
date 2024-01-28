@@ -25,7 +25,7 @@
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/updateExpression.h"
 
-namespace panda::es2panda::gtests {
+namespace ark::es2panda::gtests {
 
 class NodeGenerator {
 public:
@@ -82,4 +82,4 @@ public:
 private:
     ArenaAllocator *const alloc_;
 };
-}  // namespace panda::es2panda::gtests
+}  // namespace ark::es2panda::gtests

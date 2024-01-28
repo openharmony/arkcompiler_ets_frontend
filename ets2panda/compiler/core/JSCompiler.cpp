@@ -24,7 +24,7 @@
 #include "compiler/function/functionBuilder.h"
 #include "util/bitset.h"
 #include "util/helpers.h"
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 PandaGen *JSCompiler::GetPandaGen() const
 {
@@ -2159,4 +2159,4 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSVoidKeyword *node) const
     UNREACHABLE();
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

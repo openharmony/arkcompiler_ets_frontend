@@ -16,7 +16,7 @@
 #include "ETSLexer.h"
 #include "generated/keywords.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 // NOLINTNEXTLINE(google-default-arguments)
 void ETSLexer::NextToken(NextTokenFlags flags)
 {
@@ -226,4 +226,4 @@ bool ETSLexer::ScanDollarPunctuator()
     Iterator().Forward(1);
     return true;
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

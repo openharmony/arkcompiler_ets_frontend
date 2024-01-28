@@ -17,7 +17,7 @@
 
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ConstructorType::ToString(std::stringstream &ss) const
 {
     if (desc_->constructSignatures.size() > 1) {
@@ -47,4 +47,4 @@ Type *ConstructorType::Instantiate(ArenaAllocator *allocator, TypeRelation *rela
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
     return allocator->New<ConstructorType>(copiedDesc);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -65,7 +65,7 @@
 #include "util/helpers.h"
 #include "util/language.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 // NOTE: #14993 merge with InstantiationContext::ValidateTypeArg
 bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument,
@@ -2893,4 +2893,4 @@ void ETSChecker::EnsureValidCurlyBrace(ir::CallExpression *callExpr)
 
     ThrowTypeError({"No matching call signature with trailing lambda"}, callExpr->Start());
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

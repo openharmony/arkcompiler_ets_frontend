@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ETSStructDeclaration : public Statement {
 public:
     ETSStructDeclaration() = delete;
@@ -90,6 +90,6 @@ private:
     ClassDefinition *def_;
     ArenaVector<Decorator *> decorators_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -18,11 +18,11 @@
 
 #include "ir/base/classElement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class Expression;
 class ScriptFunction;
@@ -126,6 +126,6 @@ private:
     MethodDefinitionKind kind_;
     OverloadsT overloads_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

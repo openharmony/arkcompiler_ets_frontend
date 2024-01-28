@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class AnyType : public Type {
 public:
     AnyType() : Type(TypeFlag::ANY) {}
@@ -30,6 +30,6 @@ public:
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

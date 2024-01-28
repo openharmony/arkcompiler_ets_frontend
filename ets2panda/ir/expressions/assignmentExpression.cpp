@@ -33,7 +33,7 @@
 #include "checker/ts/destructuringContext.h"
 #include "checker/ets/typeRelationContext.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 bool AssignmentExpression::ConvertibleToAssignmentPattern(bool mustBePattern)
 {
     bool convResult = true;
@@ -189,4 +189,4 @@ AssignmentExpression *AssignmentExpression::Clone(ArenaAllocator *const allocato
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

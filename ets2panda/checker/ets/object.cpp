@@ -58,7 +58,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "ir/ets/etsUnionType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
 {
     if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_SUPER)) {
@@ -1733,4 +1733,4 @@ void ETSChecker::CheckInvokeMethodsLegitimacy(ETSObjectType *const classType)
     }
     classType->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

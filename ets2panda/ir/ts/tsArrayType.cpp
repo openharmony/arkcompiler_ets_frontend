@@ -23,7 +23,7 @@
 #include "checker/ETSchecker.h"
 #include "macros.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSArrayType::TransformChildren(const NodeTransformer &cb)
 {
     elementType_ = static_cast<TypeNode *>(cb(elementType_));
@@ -98,4 +98,4 @@ TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

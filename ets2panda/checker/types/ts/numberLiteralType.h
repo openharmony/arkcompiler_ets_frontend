@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class NumberLiteralType : public Type {
 public:
     explicit NumberLiteralType(double value) : Type(TypeFlag::NUMBER_LITERAL), value_(value) {}
@@ -38,6 +38,6 @@ public:
 private:
     double value_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_NUMBER_LITERAL_TYPE_H */

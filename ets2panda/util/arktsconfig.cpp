@@ -46,7 +46,7 @@ namespace fs = std::experimental::filesystem;
         return ret;                                             \
     }
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 
 static bool IsAbsolute(const std::string &path)
 {
@@ -177,7 +177,7 @@ bool ArkTsConfig::Parse()
 
     ASSERT(!isParsed_);
     isParsed_ = true;
-    auto arktsConfigDir = ParentPath(panda::os::GetAbsolutePath(configPath_));
+    auto arktsConfigDir = ParentPath(ark::os::GetAbsolutePath(configPath_));
 
     // Read input
     std::ifstream inputStream(configPath_);
@@ -257,7 +257,7 @@ bool ArkTsConfig::Parse()
                 auto hasDeclValue = data->get()->GetValue<JsonObject::BoolT>(HAS_DECL);
                 CHECK(hasDeclValue, false, "Invalid 'hasDecl' value for dynamic path with key '" << key << "'");
 
-                auto normalizedKey = panda::os::NormalizePath(key);
+                auto normalizedKey = ark::os::NormalizePath(key);
                 auto res = dynamicPaths_.insert({normalizedKey, DynamicImportData(*lang, *hasDeclValue)});
                 CHECK(res.second, false, "Duplicated dynamic path '" << key << "' for key '" << key << "'");
             }
@@ -440,4 +440,4 @@ std::vector<std::pair<std::string, std::string>> FindProjectSources(
 }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda

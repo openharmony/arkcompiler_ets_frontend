@@ -28,7 +28,7 @@
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/base/classProperty.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, ir::ClassProperty *const field,
                                                     bool isSetter)
 {
@@ -172,4 +172,4 @@ bool InterfacePropertyDeclarationsPhase::Perform(public_lib::Context *ctx, parse
     return true;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -21,7 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSMethodSignature::TransformChildren(const NodeTransformer &cb)
 {
     key_ = cb(key_)->AsExpression();
@@ -69,4 +69,4 @@ checker::Type *TSMethodSignature::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

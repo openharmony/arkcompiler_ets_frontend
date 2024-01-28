@@ -19,7 +19,7 @@
 #include "macros.h"
 #include "ir/irnode.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class LabelPair {
 public:
     LabelPair(Label *begin, Label *end) : begin_(begin), end_(end) {}
@@ -41,6 +41,6 @@ protected:
     Label *end_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

@@ -18,10 +18,10 @@
 #include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
     return ctx->checker->StartChecker(ctx->compilerContext->VarBinder(), *ctx->compilerContext->Options());
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

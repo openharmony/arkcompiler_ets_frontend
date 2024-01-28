@@ -19,7 +19,7 @@
 #include "compiler/core/compilerContext.h"
 #include "util/declgenEts2Ts.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::ArrowFunctionExpression *const arrow)
 {
     auto *const function = arrow->Function();
@@ -80,4 +80,4 @@ bool LambdaConstructionPhase::Postcondition(public_lib::Context *ctx, const pars
     });
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -23,7 +23,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/statements/blockStatement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void CatchClause::TransformChildren(const NodeTransformer &cb)
 {
     if (param_ != nullptr) {
@@ -87,4 +87,4 @@ checker::Type *CatchClause::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

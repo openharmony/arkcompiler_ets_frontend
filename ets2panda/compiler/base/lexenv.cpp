@@ -21,7 +21,7 @@
 #include "compiler/core/moduleContext.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 // Helpers
 
 static bool CheckTdz(const ir::AstNode *node)
@@ -133,4 +133,4 @@ void VirtualStoreVar::Expand(PandaGen *pg, const ir::AstNode *node, const varbin
         ExpandStoreNormalVar(pg, node, result, isDecl);
     }
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

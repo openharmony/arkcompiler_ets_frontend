@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class Destructuring {
@@ -27,6 +27,6 @@ public:
 
     static void Compile(PandaGen *pg, const ir::Expression *pattern);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

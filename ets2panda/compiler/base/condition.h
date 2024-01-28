@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 class ETSGen;
 class Label;
@@ -44,6 +44,6 @@ private:
     static void CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static bool CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

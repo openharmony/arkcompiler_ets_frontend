@@ -18,7 +18,7 @@
 
 #include "ir/astNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Literal;
 class TypeNode;
 class AnnotatedExpression;
@@ -174,6 +174,6 @@ private:
     bool optional_;
 };
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif /* ES2PANDA_IR_EXPRESSION_H */

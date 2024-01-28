@@ -20,7 +20,7 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 Signature *ETSFunctionType::FirstAbstractSignature()
 {
@@ -245,4 +245,4 @@ void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
     }
     conversion::Forbidden(relation);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

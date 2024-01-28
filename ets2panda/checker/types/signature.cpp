@@ -20,7 +20,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 util::StringView Signature::InternalName() const
 {
@@ -340,4 +340,4 @@ void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
         relation->IsAssignableTo(source->RestVar()->TsType(), signatureInfo_->restVar->TsType());
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

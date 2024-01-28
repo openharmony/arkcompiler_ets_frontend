@@ -30,7 +30,7 @@
 #include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsTuple.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 /**
  * Responsible for initialization of scopes. Should be called right after Parser stage.
@@ -372,6 +372,6 @@ private:
     void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr) override;
     void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

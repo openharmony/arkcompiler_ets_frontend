@@ -25,7 +25,7 @@
 #include "checker/TSchecker.h"
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeLiteral::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : members_) {
@@ -83,4 +83,4 @@ checker::Type *TSTypeLiteral::Check([[maybe_unused]] checker::ETSChecker *checke
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

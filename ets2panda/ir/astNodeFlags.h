@@ -18,7 +18,7 @@
 
 #include <cstdint>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 enum class AstNodeFlags {
     NO_OPTS = 0,
     CHECKCAST = 1U << 0U,
@@ -112,6 +112,6 @@ enum class BoxingUnboxingFlags : uint32_t {
     UNBOXING_FLAG = UNBOX_TO_BOOLEAN | UNBOX_TO_BYTE | UNBOX_TO_SHORT | UNBOX_TO_CHAR | UNBOX_TO_INT | UNBOX_TO_LONG |
                     UNBOX_TO_FLOAT | UNBOX_TO_DOUBLE,
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

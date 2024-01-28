@@ -29,7 +29,7 @@
 #include "ir/expressions/thisExpression.h"
 #include "ir/statements/variableDeclarator.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb)
 {
     func_ = cb(func_)->AsScriptFunction();
@@ -145,4 +145,4 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
     returnNode->SetParent(funcType);
     return funcType;
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -19,20 +19,20 @@
 #include "compiler/core/labelPair.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class JSCompiler;
 class ETSCompiler;
 class PandaGen;
 class TryLabelSet;
 class TryContext;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BlockStatement;
 class CatchClause;
 
@@ -104,6 +104,6 @@ private:
     BlockStatement *finalizer_;
     ArenaVector<std::pair<compiler::LabelPair, const Statement *>> finalizerInsertions_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

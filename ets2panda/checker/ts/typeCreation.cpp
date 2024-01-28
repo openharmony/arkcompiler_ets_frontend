@@ -16,7 +16,7 @@
 #include "checker/TSchecker.h"
 #include "checker/types/ts/indexInfo.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 Type *TSChecker::CreateNumberLiteralType(double value)
 {
     auto search = numberLiteralMap_.find(value);
@@ -168,4 +168,4 @@ Type *TSChecker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlag
     return Allocator()->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly,
                                        std::move(namedMembers));
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

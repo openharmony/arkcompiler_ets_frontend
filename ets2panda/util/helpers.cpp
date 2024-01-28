@@ -48,7 +48,7 @@
 #include "libpandabase/utils/utf.h"
 #include "libpandabase/os/filesystem.h"
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 // Helpers
 
 bool Helpers::IsGlobalIdentifier(const util::StringView &str)
@@ -162,7 +162,7 @@ util::StringView Helpers::ToStringView(ArenaAllocator *allocator, int32_t number
 
 bool Helpers::IsRelativePath(const std::string &path)
 {
-    auto pathDelimiter = panda::os::file::File::GetPathDelim();
+    auto pathDelimiter = ark::os::file::File::GetPathDelim();
 
     std::string currentDirReference = ".";
     std::string parentDirReference = "..";
@@ -177,29 +177,29 @@ std::string Helpers::GetAbsPath(const std::string &path)
 {
     std::string fullFilePath = path;
     std::string importExtension;
-    if (!panda::os::file::File::IsRegularFile(path) && (panda::os::GetAbsolutePath(path).empty())) {
+    if (!ark::os::file::File::IsRegularFile(path) && (ark::os::GetAbsolutePath(path).empty())) {
         importExtension = ".ets";
         fullFilePath = path + importExtension;
-        if (!panda::os::file::File::IsRegularFile(fullFilePath)) {
+        if (!ark::os::file::File::IsRegularFile(fullFilePath)) {
             importExtension = ".ts";
             fullFilePath = path + importExtension;
-            if (!panda::os::file::File::IsRegularFile(fullFilePath)) {
+            if (!ark::os::file::File::IsRegularFile(fullFilePath)) {
                 return path;
             }
         }
     }
-    std::string absFilePath = panda::os::GetAbsolutePath(fullFilePath);
+    std::string absFilePath = ark::os::GetAbsolutePath(fullFilePath);
     absFilePath.erase(absFilePath.find(importExtension), importExtension.size());
     return absFilePath;
 }
 
 bool Helpers::IsRealPath(const std::string &path)
 {
-    if (!panda::os::file::File::IsRegularFile(path) && (panda::os::GetAbsolutePath(path).empty())) {
+    if (!ark::os::file::File::IsRegularFile(path) && (ark::os::GetAbsolutePath(path).empty())) {
         auto importExtension = ".ets";
-        if (!panda::os::file::File::IsRegularFile(path + importExtension)) {
+        if (!ark::os::file::File::IsRegularFile(path + importExtension)) {
             importExtension = ".ts";
-            if (!panda::os::file::File::IsRegularFile(path + importExtension)) {
+            if (!ark::os::file::File::IsRegularFile(path + importExtension)) {
                 return false;
             }
         }
@@ -691,4 +691,4 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
     return {className, methodName};
 }
 
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util

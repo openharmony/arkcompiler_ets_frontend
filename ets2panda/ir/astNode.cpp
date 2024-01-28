@@ -18,7 +18,7 @@
 #include "ir/srcDump.h"
 #include "typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 AstNode::AstNode(AstNode const &other)
 {
@@ -122,4 +122,4 @@ std::string AstNode::DumpEtsSrc() const
     ir::SrcDumper dumper {this};
     return dumper.Str();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

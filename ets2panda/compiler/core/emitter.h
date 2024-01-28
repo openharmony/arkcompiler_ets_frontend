@@ -26,21 +26,21 @@
 #include <unordered_set>
 #include <vector>
 
-namespace panda::pandasm {
+namespace ark::pandasm {
 struct Program;
 struct Function;
 struct Ins;
 namespace debuginfo {
 struct LocalVariable;
 }  // namespace debuginfo
-}  // namespace panda::pandasm
+}  // namespace ark::pandasm
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Scope;
 class LocalVariable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CodeGen;
 class DebugInfo;
 class Label;
@@ -68,11 +68,11 @@ protected:
     virtual void GenVariableSignature(pandasm::debuginfo::LocalVariable &variableDebug,
                                       varbinder::LocalVariable *variable) const = 0;
 
-    void GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns);
+    void GenInstructionDebugInfo(const IRNode *ins, ark::pandasm::Ins *pandaIns);
     void GenFunctionInstructions(pandasm::Function *func);
     void GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const;
     void GenSourceFileDebugInfo(pandasm::Function *func);
-    void GenFunctionCatchTables(panda::pandasm::Function *func);
+    void GenFunctionCatchTables(ark::pandasm::Function *func);
     void GenVariablesDebugInfo(pandasm::Function *func);
     util::StringView SourceCode() const;
 
@@ -128,6 +128,6 @@ private:
     const CompilerContext *context_;
     uint32_t literalBufferIndex_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

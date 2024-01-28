@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void IfStatement::TransformChildren(const NodeTransformer &cb)
 {
     test_ = cb(test_)->AsExpression();
@@ -100,4 +100,4 @@ checker::Type *IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

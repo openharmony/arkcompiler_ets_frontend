@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterInstantiation;
 
 class TSClassImplements : public Expression {
@@ -66,6 +66,6 @@ private:
     Expression *expression_;
     TSTypeParameterInstantiation *typeParameters_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

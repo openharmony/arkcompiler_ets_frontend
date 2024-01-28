@@ -164,7 +164,7 @@
 #include "ir/ts/tsUnknownKeyword.h"
 #include "ir/ts/tsVoidKeyword.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CodeGen;
 
 class AstCompiler {
@@ -202,6 +202,6 @@ private:
     CodeGen *cg_;
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif  // ES2PANDA_COMPILER_CORE_ASTCOMPILER_H

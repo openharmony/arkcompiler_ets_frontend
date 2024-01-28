@@ -26,11 +26,11 @@
 #include <unordered_map>
 #include <variant>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Signature;
 class IndexInfo;
 class Type;
@@ -329,6 +329,6 @@ private:
     TypeRelation *relation_;
     TypeRelationFlag prev_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_TYPE_RELATION_H */

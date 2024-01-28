@@ -19,11 +19,11 @@
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BinaryExpression : public Expression {
 public:
     BinaryExpression() = delete;
@@ -166,6 +166,6 @@ private:
     lexer::TokenType operator_;
     checker::Type *operationType_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

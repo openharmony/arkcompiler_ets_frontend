@@ -22,7 +22,7 @@
 #include "compiler/core/function.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 CompileQueue::CompileQueue(size_t threadCount)
 {
     threads_.reserve(threadCount);
@@ -122,4 +122,4 @@ void CompileQueue::Wait(const JobsFinishedCb &onFinishedCb)
 
     delete[] jobs_;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

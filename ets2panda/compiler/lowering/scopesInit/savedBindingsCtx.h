@@ -19,7 +19,7 @@
 #include "varbinder/varbinder.h"
 #include "ir/module/importDeclaration.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class SavedBindingsContext {
 public:
     explicit SavedBindingsContext(varbinder::VarBinder *varbinder)
@@ -77,6 +77,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

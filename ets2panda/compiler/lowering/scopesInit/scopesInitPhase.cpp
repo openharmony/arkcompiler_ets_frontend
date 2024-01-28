@@ -15,7 +15,7 @@
 
 #include "scopesInitPhase.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 bool ScopesInitPhase::Perform(PhaseContext *ctx, parser::Program *program)
 {
     Prepare(ctx, program);
@@ -1091,4 +1091,4 @@ void InitScopesPhaseAS::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
     Iterate(exportDecl);
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

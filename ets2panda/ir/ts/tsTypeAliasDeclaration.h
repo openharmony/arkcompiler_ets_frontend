@@ -18,11 +18,11 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 class TSTypeParameterDeclaration;
 
@@ -125,6 +125,6 @@ private:
     ArenaVector<checker::Type *> typeParamTypes_;
     bool declare_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

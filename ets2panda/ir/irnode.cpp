@@ -15,5 +15,5 @@
 
 #include "irnode.h"
 
-namespace panda::es2panda::compiler {
-}  // namespace panda::es2panda::compiler
+namespace ark::es2panda::compiler {
+}  // namespace ark::es2panda::compiler

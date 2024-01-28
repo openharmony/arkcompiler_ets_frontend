@@ -15,7 +15,7 @@
 
 #include "typeConverter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 TypeConverter::TypeConverter(ETSChecker *checker, TypeRelation *relation, Type *target, Type *source)
     : checker_(checker), relation_(relation), target_(target), source_(source)
 {
@@ -50,4 +50,4 @@ ETSChecker *TypeConverter::Checker() const
 {
     return checker_;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

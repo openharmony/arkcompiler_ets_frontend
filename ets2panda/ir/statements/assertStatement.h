@@ -18,11 +18,11 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class AssertStatement : public Statement {
@@ -62,6 +62,6 @@ private:
     Expression *test_;
     Expression *second_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

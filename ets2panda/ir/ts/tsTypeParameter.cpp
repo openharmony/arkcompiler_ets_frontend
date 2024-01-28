@@ -23,7 +23,7 @@
 #include "ir/typeNode.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeParameter::TransformChildren(const NodeTransformer &cb)
 {
     name_ = cb(name_)->AsIdentifier();
@@ -85,4 +85,4 @@ checker::Type *TSTypeParameter::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

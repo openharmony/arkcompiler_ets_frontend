@@ -24,7 +24,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void BlockStatement::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : statements_) {
@@ -74,4 +74,4 @@ checker::Type *BlockStatement::Check([[maybe_unused]] checker::ETSChecker *check
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

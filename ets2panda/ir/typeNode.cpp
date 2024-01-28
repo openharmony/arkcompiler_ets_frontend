@@ -18,7 +18,7 @@
 #include "opaqueTypeNode.h"
 #include "es2panda.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 // NOLINTNEXTLINE(google-default-arguments)
 TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -36,4 +36,4 @@ TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent
     return this;
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -25,15 +25,15 @@
 
 #include "es2panda.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BlockStatement;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class VarBinder;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
 
 class Program {
@@ -162,7 +162,7 @@ public:
         sourceFileFolder_ = sourceFileFolder;
     }
 
-    void SetSource(const panda::es2panda::SourceFile &sourceFile)
+    void SetSource(const ark::es2panda::SourceFile &sourceFile)
     {
         sourceCode_ = util::UString(sourceFile.source, Allocator()).View();
         sourceFile_ = util::Path(sourceFile.filePath, Allocator());
@@ -217,6 +217,6 @@ private:
     ScriptExtension extension_ {};
     bool entryPoint_ {};
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

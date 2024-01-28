@@ -17,10 +17,10 @@
 #define ES2PANDA_IR_TS_PARENT_TYPE_H
 
 #include "ir/typeNode.h"
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
-namespace panda::es2panda::ir {
+}  // namespace ark::es2panda::checker
+namespace ark::es2panda::ir {
 class TSParenthesizedType : public TypeNode {
 public:
     explicit TSParenthesizedType(TypeNode *type) : TypeNode(AstNodeType::TS_PARENT_TYPE), type_(type) {}
@@ -51,6 +51,6 @@ public:
 private:
     TypeNode *type_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class TSEnumMember : public Statement {
@@ -63,6 +63,6 @@ private:
     Expression *key_;
     Expression *init_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

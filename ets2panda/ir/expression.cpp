@@ -16,7 +16,7 @@
 #include "expression.h"
 #include "typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 AnnotatedExpression::AnnotatedExpression(AnnotatedExpression const &other, ArenaAllocator *const allocator)
     : Annotated<Expression>(static_cast<Annotated<Expression> const &>(other))
@@ -26,4 +26,4 @@ AnnotatedExpression::AnnotatedExpression(AnnotatedExpression const &other, Arena
     }
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -19,11 +19,11 @@
 #include "ir/irnode.h"
 #include "compiler/core/regScope.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CodeGen;
 
 class RegSpiller {
@@ -121,6 +121,6 @@ constexpr RegSpiller::SpillInfo RegSpiller::SpillInfo::Reversed() const noexcept
     return SpillInfo {spillReg_, originReg_};
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

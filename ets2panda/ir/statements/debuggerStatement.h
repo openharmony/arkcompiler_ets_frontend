@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class DebuggerStatement : public Statement {
 public:
     explicit DebuggerStatement() : Statement(AstNodeType::DEBUGGER_STATEMENT) {}
@@ -39,6 +39,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class SequenceExpression : public Expression {
 private:
     struct Tag {};
@@ -67,6 +67,6 @@ public:
 private:
     ArenaVector<Expression *> sequence_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

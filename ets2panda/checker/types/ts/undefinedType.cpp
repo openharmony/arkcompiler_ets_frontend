@@ -15,7 +15,7 @@
 
 #include "undefinedType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void UndefinedType::ToString(std::stringstream &ss) const
 {
     ss << "undefined";
@@ -46,4 +46,4 @@ Type *UndefinedType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[m
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

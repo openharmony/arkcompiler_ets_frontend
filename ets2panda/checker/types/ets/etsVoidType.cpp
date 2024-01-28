@@ -15,7 +15,7 @@
 
 #include "etsVoidType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSVoidType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsETSVoidType()) {
@@ -30,4 +30,4 @@ Type *ETSVoidType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[may
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

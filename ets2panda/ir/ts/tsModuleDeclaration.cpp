@@ -24,7 +24,7 @@
 #include "ir/base/decorator.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSModuleDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : decorators_) {
@@ -85,4 +85,4 @@ checker::Type *TSModuleDeclaration::Check([[maybe_unused]] checker::ETSChecker *
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

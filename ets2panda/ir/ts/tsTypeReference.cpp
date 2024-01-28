@@ -30,7 +30,7 @@
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsQualifiedName.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeReference::TransformChildren(const NodeTransformer &cb)
 {
     if (typeParams_ != nullptr) {
@@ -114,4 +114,4 @@ checker::Type *TSTypeReference::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

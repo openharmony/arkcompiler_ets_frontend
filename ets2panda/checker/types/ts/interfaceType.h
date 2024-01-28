@@ -18,7 +18,7 @@
 
 #include "objectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class InterfaceType : public ObjectType {
 public:
     InterfaceType(ArenaAllocator *allocator, util::StringView name, ObjectDescriptor *desc)
@@ -145,6 +145,6 @@ private:
     std::pair<std::vector<varbinder::Variable *>, size_t> mergedTypeParams_ {};
     std::vector<Type *> typeParamTypes_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_INTERFACE_TYPE_H */

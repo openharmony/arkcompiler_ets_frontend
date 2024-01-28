@@ -19,15 +19,15 @@
 #include "ir/statement.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ContinueStatement : public Statement {
 public:
     explicit ContinueStatement() : Statement(AstNodeType::CONTINUE_STATEMENT) {}
@@ -65,6 +65,6 @@ private:
     Identifier *ident_ {};
     const ir::AstNode *target_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

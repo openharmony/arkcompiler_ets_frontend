@@ -18,12 +18,12 @@
 
 #include "ir/irnode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ScriptFunction;
 class BlockStatement;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSGen;
 
 class ETSFunction {
@@ -39,6 +39,6 @@ private:
     static void CompileFunction(ETSGen *etsg);
     static void CallImplicitCtor(ETSGen *etsg);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

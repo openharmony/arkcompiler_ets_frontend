@@ -18,11 +18,11 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Scope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class EnumLiteralType : public Type {
 public:
     enum class EnumLiteralTypeKind { NUMERIC, LITERAL };
@@ -59,6 +59,6 @@ private:
     varbinder::Scope *scope_;
     EnumLiteralTypeKind kind_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_ENUM_LITERAL_TYPE_H */

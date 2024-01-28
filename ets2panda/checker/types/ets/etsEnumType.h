@@ -24,11 +24,11 @@ template <typename>
 // NOLINTNEXTLINE(readability-identifier-naming)
 inline constexpr bool dependent_false_v = false;
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class LocalVariable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 template <typename T>
 struct ETSEnumValueType {
     using ValueType = T;
@@ -214,6 +214,6 @@ public:
     ETSStringEnumType() = delete;
     ~ETSStringEnumType() override = default;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

@@ -22,7 +22,7 @@
 
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb)
 {
     objectType_ = static_cast<TypeNode *>(cb(objectType_));
@@ -77,4 +77,4 @@ checker::Type *TSIndexedAccessType::Check([[maybe_unused]] checker::ETSChecker *
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

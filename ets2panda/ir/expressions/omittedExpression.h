@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class OmittedExpression : public Expression {
 public:
     ~OmittedExpression() override = default;
@@ -46,6 +46,6 @@ public:
         v->Accept(this);
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

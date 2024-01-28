@@ -17,7 +17,7 @@
 
 #include <assembly-program.h>
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 std::set<std::string> &ProgramElement::Strings()
 {
     return strings_;
@@ -47,4 +47,4 @@ ProgramElement::~ProgramElement()
 {
     delete func_;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

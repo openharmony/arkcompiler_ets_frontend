@@ -24,7 +24,7 @@
 #include "ir/expression.h"
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 TSTypeParameterInstantiation::TSTypeParameterInstantiation([[maybe_unused]] Tag const tag,
                                                            TSTypeParameterInstantiation const &other,
                                                            ArenaAllocator *const allocator)
@@ -100,4 +100,4 @@ checker::Type *TSTypeParameterInstantiation::Check([[maybe_unused]] checker::ETS
     return checker->GetAnalyzer()->Check(this);
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

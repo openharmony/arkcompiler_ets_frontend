@@ -19,7 +19,7 @@
 #include "TypedParser.h"
 #include "parserFlags.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class ASParser : public TypedParser {
 public:
     ASParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
@@ -97,6 +97,6 @@ private:
     void ThrowIllegalBreakError() override;
     void ThrowIllegalContinueError() override;
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

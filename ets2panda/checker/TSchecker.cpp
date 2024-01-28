@@ -18,7 +18,7 @@
 #include "ir/statements/blockStatement.h"
 #include "parser/program/program.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
@@ -53,4 +53,4 @@ Type *TSChecker::CheckTypeCached(ir::Expression *expr)
     return expr->TsType();
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

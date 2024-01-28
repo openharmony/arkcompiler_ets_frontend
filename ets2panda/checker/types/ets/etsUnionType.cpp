@@ -21,7 +21,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/astNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSUnionType::ToString(std::stringstream &ss) const
 {
     for (auto it = constituentTypes_.begin(); it != constituentTypes_.end(); it++) {
@@ -433,4 +433,4 @@ Type *ETSUnionType::FindExactOrBoxedType(ETSChecker *checker, Type *const type) 
     return nullptr;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

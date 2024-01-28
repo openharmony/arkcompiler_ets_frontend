@@ -19,7 +19,7 @@
 #include "varbinder/variable.h"
 #include "checker/types/ts/enumType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void NumberLiteralType::ToString(std::stringstream &ss) const
 {
     ss << util::Helpers::ToString(value_);
@@ -60,4 +60,4 @@ Type *NumberLiteralType::Instantiate([[maybe_unused]] ArenaAllocator *allocator,
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

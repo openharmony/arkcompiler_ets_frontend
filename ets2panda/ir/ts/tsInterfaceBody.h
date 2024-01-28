@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSInterfaceBody : public Expression {
 public:
     explicit TSInterfaceBody(ArenaVector<AstNode *> &&body)
@@ -58,6 +58,6 @@ public:
 private:
     ArenaVector<AstNode *> body_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

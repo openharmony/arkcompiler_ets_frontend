@@ -18,7 +18,7 @@
 #include "checker/ets/conversion.h"
 #include "checker/ets/wideningConverter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void DoubleType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsDoubleType()) {
@@ -95,4 +95,4 @@ Type *DoubleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[mayb
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -15,7 +15,7 @@
 
 #include "typeReference.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void TypeReference::ToString(std::stringstream &ss) const
 {
     if (*ref_ != nullptr) {
@@ -55,4 +55,4 @@ Type *TypeReference::Instantiate(ArenaAllocator *allocator, TypeRelation *relati
     UNREACHABLE();
     return nullptr;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

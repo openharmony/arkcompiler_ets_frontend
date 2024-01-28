@@ -15,7 +15,7 @@
 
 #include "stringType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void StringType::ToString(std::stringstream &ss) const
 {
     ss << "string";
@@ -45,4 +45,4 @@ Type *StringType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[mayb
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

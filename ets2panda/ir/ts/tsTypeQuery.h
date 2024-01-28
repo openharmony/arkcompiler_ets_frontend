@@ -17,10 +17,10 @@
 #define ES2PANDA_IR_TS_TYPE_QUERY_H
 
 #include "ir/typeNode.h"
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
-namespace panda::es2panda::ir {
+}  // namespace ark::es2panda::checker
+namespace ark::es2panda::ir {
 class TSTypeQuery : public TypeNode {
 public:
     explicit TSTypeQuery(Expression *exprName) : TypeNode(AstNodeType::TS_TYPE_QUERY), exprName_(exprName) {}
@@ -50,6 +50,6 @@ public:
 private:
     Expression *exprName_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

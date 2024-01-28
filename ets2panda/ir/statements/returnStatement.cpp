@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ReturnStatement::TransformChildren(const NodeTransformer &cb)
 {
     if (argument_ != nullptr) {
@@ -98,4 +98,4 @@ void ReturnStatement::SetArgument(Expression *arg)
     argument_ = arg;
     arg->SetParent(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

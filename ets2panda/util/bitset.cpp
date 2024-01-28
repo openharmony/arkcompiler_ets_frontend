@@ -21,7 +21,7 @@
 #include <cstring>
 #include <utility>
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 BitSet::BitSet(size_t size) : size_(size)
 {
     size_t dataSize = DataSize();
@@ -92,4 +92,4 @@ bool BitSet::All(bool value) const noexcept
 
     return true;
 }
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util

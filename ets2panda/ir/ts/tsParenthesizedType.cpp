@@ -21,7 +21,7 @@
 #include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSParenthesizedType::TransformChildren(const NodeTransformer &cb)
 {
     type_ = static_cast<TypeNode *>(cb(type_));
@@ -71,4 +71,4 @@ checker::Type *TSParenthesizedType::Check([[maybe_unused]] checker::ETSChecker *
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

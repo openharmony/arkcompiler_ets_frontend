@@ -19,14 +19,14 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 #include "ir/expression.h"
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
-namespace panda::es2panda::ir {
+}  // namespace ark::es2panda::compiler
+namespace ark::es2panda::ir {
 class TSAsExpression : public AnnotatedExpression {
 public:
     explicit TSAsExpression(Expression *expression, TypeNode *typeAnnotation, bool isConst)
@@ -68,6 +68,6 @@ private:
     bool isUncheckedCast_ {true};
     bool isConst_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

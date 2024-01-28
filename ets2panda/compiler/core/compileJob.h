@@ -23,11 +23,11 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class FunctionScope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CompilerContext;
 class ProgramElement;
 
@@ -67,6 +67,6 @@ private:
     CompileJob *dependant_ {};
     size_t dependencies_ {0};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

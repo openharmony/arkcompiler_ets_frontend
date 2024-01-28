@@ -22,12 +22,12 @@
 #include "compiler/core/regScope.h"
 #include "compiler/core/labelTarget.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class Statement;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class ScopeContext {
@@ -118,6 +118,6 @@ private:
     LocalRegScope regScope_;
     LexEnvContext lexEnvCtx_;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

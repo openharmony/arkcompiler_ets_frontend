@@ -20,7 +20,7 @@
 #include <ir/statements/functionDeclaration.h>
 #include <ir/base/scriptFunction.h>
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 void ImportDeclarationContext::BindImportDecl(ir::ImportDeclaration *importDecl)
 {
@@ -77,4 +77,4 @@ void ExportDeclarationContext::BindExportDecl(ir::AstNode *exportDecl)
     moduleScope->AddExportDecl(exportDecl, std::move(declList));
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

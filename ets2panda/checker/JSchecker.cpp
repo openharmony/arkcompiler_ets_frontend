@@ -18,7 +18,7 @@
 #include "varbinder/varbinder.h"
 #include "parser/program/program.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 bool JSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
@@ -37,4 +37,4 @@ bool JSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, c
     return !options.parseOnly;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

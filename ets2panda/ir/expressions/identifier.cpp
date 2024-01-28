@@ -23,7 +23,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
     : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other), allocator), decorators_(allocator->Adapter())
 {
@@ -123,4 +123,4 @@ checker::Type *Identifier::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

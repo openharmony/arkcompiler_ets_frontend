@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class TSImportEqualsDeclaration : public Statement {
@@ -65,6 +65,6 @@ private:
     Expression *moduleReference_;
     bool isExport_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

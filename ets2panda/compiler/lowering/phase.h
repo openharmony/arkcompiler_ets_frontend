@@ -19,7 +19,7 @@
 #include "parser/program/program.h"
 #include "public/public.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class Phase {
 public:
@@ -49,6 +49,6 @@ private:
 
 std::vector<Phase *> GetPhaseList(ScriptExtension ext);
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

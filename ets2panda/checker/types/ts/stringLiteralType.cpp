@@ -15,7 +15,7 @@
 
 #include "stringLiteralType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void StringLiteralType::ToString(std::stringstream &ss) const
 {
     ss << "\"" << value_ << "\"";
@@ -46,4 +46,4 @@ Type *StringLiteralType::Instantiate([[maybe_unused]] ArenaAllocator *allocator,
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

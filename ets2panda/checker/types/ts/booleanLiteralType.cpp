@@ -15,7 +15,7 @@
 
 #include "booleanLiteralType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void BooleanLiteralType::ToString(std::stringstream &ss) const
 {
     if (value_) {
@@ -51,4 +51,4 @@ Type *BooleanLiteralType::Instantiate([[maybe_unused]] ArenaAllocator *allocator
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

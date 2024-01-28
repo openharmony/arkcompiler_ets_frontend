@@ -19,7 +19,7 @@
 #include "compiler/base/catchTable.h"
 #include "ir/base/scriptFunction.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 void GeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
 {
     VReg callee = FunctionReg(node);
@@ -66,4 +66,4 @@ void GeneratorFunctionBuilder::Yield(const ir::AstNode *node)
 
     HandleCompletion(node, completionType, completionValue);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

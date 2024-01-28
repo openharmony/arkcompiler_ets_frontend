@@ -15,7 +15,7 @@
 
 #include "nonPrimitiveType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void NonPrimitiveType::ToString(std::stringstream &ss) const
 {
     ss << "object";
@@ -45,4 +45,4 @@ Type *NonPrimitiveType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, 
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

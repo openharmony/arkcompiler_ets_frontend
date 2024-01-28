@@ -20,11 +20,11 @@
 #include "ir/base/scriptFunctionSignature.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 
 class TSSignatureDeclaration : public TypedAstNode {
@@ -109,6 +109,6 @@ private:
     TSSignatureDeclarationKind kind_;
     ir::FunctionSignature signature_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

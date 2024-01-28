@@ -20,7 +20,7 @@
 #include "checker/ets/conversion.h"
 #include "checker/types/typeRelation.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSArrayType::ToString(std::stringstream &ss) const
 {
     element_->ToString(ss);
@@ -174,4 +174,4 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
     return resultElt == element_ ? this : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(resultElt);
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

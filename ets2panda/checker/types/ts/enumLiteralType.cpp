@@ -18,7 +18,7 @@
 #include "varbinder/variable.h"
 #include "checker/types/ts/enumType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void EnumLiteralType::ToString(std::stringstream &ss) const
 {
     ss << name_;
@@ -54,4 +54,4 @@ Type *EnumLiteralType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [
 {
     return allocator->New<EnumLiteralType>(name_, scope_, kind_);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

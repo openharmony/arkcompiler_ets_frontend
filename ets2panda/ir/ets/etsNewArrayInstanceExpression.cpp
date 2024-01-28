@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
 {
     typeReference_ = static_cast<TypeNode *>(cb(typeReference_));
@@ -95,4 +95,4 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -21,7 +21,7 @@
 
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 ir::MemberExpression *TSChecker::ResolveLeftMostMemberExpression(ir::MemberExpression *expr)
 {
     ir::MemberExpression *iter = expr;
@@ -181,4 +181,4 @@ bool TSChecker::IsStringLike(ir::Expression *expr)
 
     return false;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

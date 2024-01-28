@@ -19,11 +19,11 @@
 #include "ir/typeNode.h"
 #include "ir/base/scriptFunctionSignature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
@@ -118,6 +118,6 @@ private:
     ir::TSInterfaceDeclaration *functionalInterface_ {};
     ir::ScriptFunctionFlags funcFlags_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

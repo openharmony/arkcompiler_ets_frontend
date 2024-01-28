@@ -18,12 +18,12 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class IfStatement : public Statement {
@@ -86,6 +86,6 @@ private:
     Statement *consequent_;
     Statement *alternate_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

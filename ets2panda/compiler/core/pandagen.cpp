@@ -40,7 +40,7 @@
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 #ifndef PANDA_WITH_ECMASCRIPT
 class EcmaDisabled : public IRNode {
@@ -1823,4 +1823,4 @@ const checker::Type *PandaGen::GetVRegType(VReg vreg) const
     return nullptr;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

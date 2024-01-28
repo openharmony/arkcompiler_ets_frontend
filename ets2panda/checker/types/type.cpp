@@ -19,7 +19,7 @@
 #include "checker/types/typeRelation.h"
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 bool Type::IsETSNullType() const
 {
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::NULL_TYPE);
@@ -140,4 +140,4 @@ Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]]
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

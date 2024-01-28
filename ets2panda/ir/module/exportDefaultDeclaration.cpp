@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ExportDefaultDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     decl_ = cb(decl_);
@@ -62,4 +62,4 @@ checker::Type *ExportDefaultDeclaration::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

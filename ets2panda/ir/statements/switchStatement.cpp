@@ -24,7 +24,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void SwitchStatement::TransformChildren(const NodeTransformer &cb)
 {
     discriminant_ = cb(discriminant_)->AsExpression();
@@ -96,4 +96,4 @@ void SwitchStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
         }
     }
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

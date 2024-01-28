@@ -74,7 +74,7 @@
 
 #include "parserImpl.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 ir::YieldExpression *ParserImpl::ParseYieldExpression()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_YIELD);
@@ -2236,4 +2236,4 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
 
     return funcExpr;
 }
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

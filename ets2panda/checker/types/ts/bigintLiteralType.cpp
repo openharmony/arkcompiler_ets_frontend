@@ -15,7 +15,7 @@
 
 #include "bigintLiteralType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void BigintLiteralType::ToString(std::stringstream &ss) const
 {
     ss << value_;
@@ -48,4 +48,4 @@ Type *BigintLiteralType::Instantiate([[maybe_unused]] ArenaAllocator *allocator,
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class GlobalTypesHolder;
 
 class ETSUnionType : public Type {
@@ -81,6 +81,6 @@ private:
     ArenaVector<Type *> const constituentTypes_;
     Type *lubType_ {nullptr};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ETS_TYPES_ETS_UNION_TYPE_H */

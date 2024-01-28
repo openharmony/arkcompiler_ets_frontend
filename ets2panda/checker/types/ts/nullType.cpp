@@ -15,7 +15,7 @@
 
 #include "nullType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void NullType::ToString(std::stringstream &ss) const
 {
     ss << "null";
@@ -46,4 +46,4 @@ Type *NullType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

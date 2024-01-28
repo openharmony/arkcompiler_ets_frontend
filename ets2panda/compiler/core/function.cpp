@@ -28,7 +28,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/statements/blockStatement.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static void CompileSourceBlock(PandaGen *pg, const ir::BlockStatement *block)
 {
     const auto &statements = block->Statements();
@@ -273,4 +273,4 @@ void Function::Compile(PandaGen *pg)
 
     pg->SortCatchTables();
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

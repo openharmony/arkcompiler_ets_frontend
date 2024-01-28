@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterInstantiation;
 
 class TSImportType : public TypeNode {
@@ -74,6 +74,6 @@ private:
     Expression *qualifier_;
     bool isTypeof_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

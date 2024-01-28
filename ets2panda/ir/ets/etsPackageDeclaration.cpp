@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSPackageDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     name_ = cb(name_)->AsExpression();
@@ -80,4 +80,4 @@ ETSPackageDeclaration *ETSPackageDeclaration::Clone(ArenaAllocator *const alloca
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

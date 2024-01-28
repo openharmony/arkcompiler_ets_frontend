@@ -18,7 +18,7 @@
 
 #include "parserImpl.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class JSParser : public ParserImpl {
 public:
     JSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
@@ -26,6 +26,6 @@ public:
     {
     }
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

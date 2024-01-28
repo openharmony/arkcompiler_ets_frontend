@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSWildcardType : public TypeNode {
 public:
@@ -53,6 +53,6 @@ public:
 private:
     ir::ETSTypeReference *typeReference_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

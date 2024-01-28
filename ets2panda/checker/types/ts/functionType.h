@@ -19,7 +19,7 @@
 #include <unordered_set>
 #include "objectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class FunctionType : public ObjectType {
 public:
     explicit FunctionType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
@@ -28,6 +28,6 @@ public:
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_FUNCTION_TYPE_H */

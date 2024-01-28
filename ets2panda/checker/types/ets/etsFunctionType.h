@@ -20,7 +20,7 @@
 #include "checker/types/signature.h"
 #include "ir/base/scriptFunction.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSFunctionType : public Type {
 public:
@@ -126,6 +126,6 @@ private:
     util::StringView name_;
     Signature *refSignature_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_FUNCTION_TYPE_H */

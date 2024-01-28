@@ -19,7 +19,7 @@
 #include "varbinder/scope.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSModuleBlock : public Statement {
 public:
     explicit TSModuleBlock(ArenaVector<Statement *> &&statements)
@@ -65,6 +65,6 @@ private:
     varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<Statement *> statements_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

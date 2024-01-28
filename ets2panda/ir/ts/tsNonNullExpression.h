@@ -18,10 +18,10 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
-namespace panda::es2panda::ir {
+}  // namespace ark::es2panda::checker
+namespace ark::es2panda::ir {
 class TSNonNullExpression : public Expression {
 public:
     explicit TSNonNullExpression(Expression *expr) : Expression(AstNodeType::TS_NON_NULL_EXPRESSION), expr_(expr) {}
@@ -51,6 +51,6 @@ public:
 private:
     Expression *expr_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

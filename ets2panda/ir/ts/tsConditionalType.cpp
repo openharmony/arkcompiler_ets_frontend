@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSConditionalType::TransformChildren(const NodeTransformer &cb)
 {
     checkType_ = cb(checkType_)->AsExpression();
@@ -75,4 +75,4 @@ checker::Type *TSConditionalType::Check([[maybe_unused]] checker::ETSChecker *ch
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

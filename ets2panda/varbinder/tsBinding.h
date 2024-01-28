@@ -20,7 +20,7 @@
 
 #include <variant>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 // Note: if the bool operand is present, the expression cannot be evaluated during compilation
 using EnumMemberResult = std::variant<double, util::StringView, bool>;
 
@@ -39,6 +39,6 @@ public:
 
     static constexpr std::string_view TS_PREFIX = "%";
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

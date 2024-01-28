@@ -71,7 +71,7 @@
 #include "checker/types/ets/types.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
     checker::Type *type = expr->Check(this);
@@ -2557,7 +2557,7 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 }
 
 void ETSChecker::AddUndefinedParamsForDefaultParams(const Signature *const signature,
-                                                    ArenaVector<panda::es2panda::ir::Expression *> &arguments,
+                                                    ArenaVector<ark::es2panda::ir::Expression *> &arguments,
                                                     ETSChecker *checker)
 {
     if (!signature->Function()->IsDefaultParamProxy() || signature->Function()->Params().size() <= arguments.size()) {
@@ -2805,4 +2805,4 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     return true;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class ClassElement : public TypedStatement {
@@ -107,6 +107,6 @@ protected:
     bool isComputed_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

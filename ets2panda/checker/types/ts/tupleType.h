@@ -22,7 +22,7 @@
 #include "checker/types/ts/elementFlags.h"
 #include "checker/types/ts/objectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 using NamedTupleMemberPool = ArenaUnorderedMap<varbinder::LocalVariable *, util::StringView>;
 
 class TupleType : public ObjectType {
@@ -101,6 +101,6 @@ private:
     NamedTupleMemberPool namedMembers_;
     bool readonly_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_TUPLE_TYPE_H */

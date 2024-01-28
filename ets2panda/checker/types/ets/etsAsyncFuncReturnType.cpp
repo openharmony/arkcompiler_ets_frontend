@@ -17,7 +17,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSAsyncFuncReturnType::ToString(std::stringstream &ss) const
 {
     promiseType_->ToString(ss);
@@ -51,4 +51,4 @@ void ETSAsyncFuncReturnType::AssignmentTarget(TypeRelation *relation, Type *sour
         relation->GetChecker()->AsETSChecker()->AddBoxingFlagToPrimitiveType(relation, source);
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

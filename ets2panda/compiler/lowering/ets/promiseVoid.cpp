@@ -31,7 +31,7 @@
 #include "ir/statements/blockStatement.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body)
 {
     (void)checker;
@@ -232,4 +232,4 @@ bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const pa
 
     return isOk;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

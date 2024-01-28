@@ -44,7 +44,7 @@
 #include "generated/signatures.h"
 #include "ir/ets/etsParameterExpression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 ir::ETSParameterExpression *ETSChecker::AddParam(varbinder::FunctionParamScope *paramScope, util::StringView name,
                                                  checker::Type *type)
@@ -429,7 +429,7 @@ ir::ClassStaticBlock *ETSChecker::CreateDynamicModuleClassInitializer(
 template <bool IS_STATIC>
 ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *classScope,
                                                     const std::string_view methodName,
-                                                    panda::es2panda::ir::ModifierFlags modifierFlags,
+                                                    ark::es2panda::ir::ModifierFlags modifierFlags,
                                                     const MethodBuilder &builder)
 {
     auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), classScope->StaticMethodScope());
@@ -715,4 +715,4 @@ void ETSChecker::BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::
     dynamicLambdaSignatureCache_[syntheticLambdaObjName] = functionalInterface->ConstructSignatures()[0];
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -29,7 +29,7 @@
 #include "ir/typeNode.h"
 #include "ir/ets/etsFunctionType.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 Expression *TSAsExpression::Expr()
 {
     return expression_;
@@ -82,4 +82,4 @@ checker::Type *TSAsExpression::Check(checker::ETSChecker *const checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

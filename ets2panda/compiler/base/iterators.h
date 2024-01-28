@@ -18,11 +18,11 @@
 
 #include "ir/irnode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 enum class IteratorType { SYNC, ASYNC };
@@ -115,6 +115,6 @@ public:
 
     void OnIterDone([[maybe_unused]] Label *doneTarget) const override;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

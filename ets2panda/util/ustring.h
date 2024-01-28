@@ -25,7 +25,7 @@
 #include <string>
 #include <string_view>
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 class StringView {
 public:
     explicit StringView() noexcept = default;
@@ -481,21 +481,21 @@ void StringView::Mutf8Encode(T *str, char32_t cu)
         Mutf8Encode(str, cu2);
     }
 }
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 // NOLINTNEXTLINE(cert-dcl58-cpp)
 namespace std {
 
 template <>
 // NOLINTNEXTLINE(altera-struct-pack-align)
-struct hash<panda::es2panda::util::StringView> {
-    std::size_t operator()(const panda::es2panda::util::StringView &str) const
+struct hash<ark::es2panda::util::StringView> {
+    std::size_t operator()(const ark::es2panda::util::StringView &str) const
     {
         return std::hash<std::string_view> {}(str.Utf8());
     }
 };
 
-ostream &operator<<(ostream &os, const panda::es2panda::util::StringView &us);
+ostream &operator<<(ostream &os, const ark::es2panda::util::StringView &us);
 
 }  // namespace std
 

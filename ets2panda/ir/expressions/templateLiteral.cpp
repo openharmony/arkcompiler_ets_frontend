@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "ir/base/templateElement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral const &other,
                                  ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)),
@@ -103,4 +103,4 @@ checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

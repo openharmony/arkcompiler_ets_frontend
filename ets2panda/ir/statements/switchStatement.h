@@ -19,12 +19,12 @@
 #include "varbinder/scope.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 class SwitchCaseStatement;
 
@@ -95,6 +95,6 @@ private:
     Expression *discriminant_;
     ArenaVector<SwitchCaseStatement *> cases_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

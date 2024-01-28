@@ -19,7 +19,7 @@
 #include "ir/base/templateElement.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TemplateLiteral : public Expression {
 private:
     struct Tag {};
@@ -69,6 +69,6 @@ private:
     ArenaVector<TemplateElement *> quasis_;
     ArenaVector<Expression *> expressions_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

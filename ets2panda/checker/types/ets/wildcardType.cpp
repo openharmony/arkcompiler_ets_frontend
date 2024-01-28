@@ -15,7 +15,7 @@
 
 #include "wildcardType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void WildcardType::ToString(std::stringstream &ss) const
 {
     ss << "wildcard";
@@ -35,4 +35,4 @@ Type *WildcardType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[ma
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

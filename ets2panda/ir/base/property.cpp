@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expression *const key,
                    Expression *const value)
     : Property(other)
@@ -193,4 +193,4 @@ checker::Type *Property::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

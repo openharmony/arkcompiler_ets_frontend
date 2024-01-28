@@ -19,7 +19,7 @@
 #include "varbinder/scope.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class LoopStatement : public Statement {
 public:
     bool IsScopeBearer() const override
@@ -74,6 +74,6 @@ protected:
 private:
     varbinder::LoopScope *scope_ {nullptr};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

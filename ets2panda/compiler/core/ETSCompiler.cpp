@@ -24,7 +24,7 @@
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 ETSGen *ETSCompiler::GetETSGen() const
 {
@@ -2231,4 +2231,4 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSVoidKeyword *node) const
     UNREACHABLE();
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

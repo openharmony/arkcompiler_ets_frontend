@@ -21,12 +21,12 @@
 
 #include <macros.h>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 class SpreadElement;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Type;
 
 class DestructuringContext {
@@ -124,6 +124,6 @@ public:
     Type *GetRestType([[maybe_unused]] const lexer::SourcePosition &loc) override;
     Type *ConvertTupleTypeToArrayTypeIfNecessary(ir::AstNode *node, Type *type) override;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

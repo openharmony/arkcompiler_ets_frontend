@@ -21,7 +21,7 @@
 
 #include <unordered_set>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 enum class RegExpFlags : uint32_t {
     EMPTY = 0U,
     GLOBAL = 1U << 0U,
@@ -106,6 +106,6 @@ private:
     std::unordered_set<util::StringView> groupNames_;
     std::unordered_set<util::StringView> backReferences_;
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

@@ -23,7 +23,7 @@
 #include "ir/expressions/identifier.h"
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void BreakStatement::TransformChildren(const NodeTransformer &cb)
 {
     if (ident_ != nullptr) {
@@ -72,4 +72,4 @@ checker::Type *BreakStatement::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -19,7 +19,7 @@
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 enum class PropertyKind { INIT, GET, SET, PROTO };
 
 class Property : public Expression {
@@ -139,6 +139,6 @@ private:
     bool isShorthand_ = true;
     bool isComputed_ = false;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

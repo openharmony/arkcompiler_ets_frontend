@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSBigintKeyword : public TypeNode {
 public:
     explicit TSBigintKeyword() : TypeNode(AstNodeType::TS_BIGINT_KEYWORD) {}
@@ -38,6 +38,6 @@ public:
         v->Accept(this);
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

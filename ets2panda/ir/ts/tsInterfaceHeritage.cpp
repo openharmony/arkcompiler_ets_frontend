@@ -27,7 +27,7 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "ir/ts/tsTypeReference.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSInterfaceHeritage::TransformChildren(const NodeTransformer &cb)
 {
     expr_ = static_cast<TypeNode *>(cb(expr_));
@@ -71,4 +71,4 @@ checker::Type *TSInterfaceHeritage::Check([[maybe_unused]] checker::ETSChecker *
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

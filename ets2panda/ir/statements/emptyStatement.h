@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class EmptyStatement : public Statement {
 public:
     explicit EmptyStatement() : Statement(AstNodeType::EMPTY_STATEMENT) {}
@@ -39,6 +39,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

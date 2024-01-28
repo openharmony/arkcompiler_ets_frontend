@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
 {
     typeReference_ = static_cast<TypeNode *>(cb(typeReference_));
@@ -103,4 +103,4 @@ ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Cl
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

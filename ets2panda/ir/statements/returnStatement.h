@@ -18,20 +18,20 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class JSCompiler;
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ReturnStatement : public Statement {
 public:
     explicit ReturnStatement() : ReturnStatement(nullptr) {}
@@ -82,6 +82,6 @@ private:
     Expression *argument_ {};
     checker::Type *returnType_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

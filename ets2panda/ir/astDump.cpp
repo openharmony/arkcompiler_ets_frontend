@@ -21,7 +21,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 AstDumper::AstDumper(const ir::AstNode *node, util::StringView sourceCode) : index_(sourceCode)
 {
     isSrcEmpty_ = sourceCode.Empty();
@@ -270,4 +270,4 @@ void AstDumper::Indent()
         ss_ << "  ";
     }
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

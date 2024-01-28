@@ -59,7 +59,7 @@
 #include "checker/types/type.h"
 #include "checker/types/ets/types.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 
 void ETSBinder::IdentifierAnalysis()
 {
@@ -696,7 +696,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         if (import->Module() == nullptr) {
             return importPath->Str();
         }
-        char pathDelimiter = panda::os::file::File::GetPathDelim().at(0);
+        char pathDelimiter = ark::os::file::File::GetPathDelim().at(0);
         auto strImportPath = importPath->Str().Mutf8();
         if (strImportPath.find(pathDelimiter) == (strImportPath.size() - 1)) {
             return util::UString(strImportPath + import->Module()->Str().Mutf8(), Allocator()).View();
@@ -1130,4 +1130,4 @@ bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
     return data->specifier->IsImportNamespaceSpecifier();
 }
 
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder

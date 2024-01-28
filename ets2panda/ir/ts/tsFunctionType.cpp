@@ -28,7 +28,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSFunctionType::TransformChildren(const NodeTransformer &cb)
 {
     signature_.TransformChildren(cb);
@@ -81,4 +81,4 @@ checker::Type *TSFunctionType::GetType([[maybe_unused]] checker::ETSChecker *che
 {
     return nullptr;
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

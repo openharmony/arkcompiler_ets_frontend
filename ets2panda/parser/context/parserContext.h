@@ -23,7 +23,7 @@
 
 #include <vector>
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class Program;
 
 enum class ParserStatus : uint64_t {
@@ -159,6 +159,6 @@ private:
     util::StringView label_ {};
     Language lang_;
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

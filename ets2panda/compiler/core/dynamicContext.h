@@ -21,13 +21,13 @@
 #include "compiler/core/labelTarget.h"
 #include "compiler/base/iterators.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TryStatement;
 class ForOfStatement;
 class LabelledStatement;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CodeGen;
 class LoopEnvScope;
 class CatchTable;
@@ -293,6 +293,6 @@ private:
     const bool hasFinalizer_ {};
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

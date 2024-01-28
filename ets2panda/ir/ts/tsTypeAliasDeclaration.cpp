@@ -29,7 +29,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeAliasDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : decorators_) {
@@ -114,4 +114,4 @@ checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecke
     return checker->GetAnalyzer()->Check(this);
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TemplateElement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TemplateElement::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -70,4 +70,4 @@ TemplateElement *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

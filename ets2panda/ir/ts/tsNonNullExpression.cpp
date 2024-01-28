@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSNonNullExpression::TransformChildren(const NodeTransformer &cb)
 {
     expr_ = cb(expr_)->AsExpression();
@@ -64,4 +64,4 @@ checker::Type *TSNonNullExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

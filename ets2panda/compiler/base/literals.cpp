@@ -20,7 +20,7 @@
 #include "ir/expressions/taggedTemplateExpression.h"
 #include "ir/expressions/templateLiteral.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 void Literals::GetTemplateObject(PandaGen *pg, const ir::TaggedTemplateExpression *lit)
 {
     RegScope rs(pg);
@@ -71,4 +71,4 @@ void Literals::GetTemplateObject(PandaGen *pg, const ir::TaggedTemplateExpressio
 
     pg->GetTemplateObject(lit, templateArg);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -21,7 +21,7 @@
 #include "varbinder/variable.h"
 #include "compiler/core/compilerContext.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 // For use in Signature::ToAssemblerType
 Type const *MaybeBoxedType(Checker *checker, varbinder::Variable const *var);
 
@@ -260,6 +260,6 @@ private:
     ETSObjectType *ownerObj_ {};
     varbinder::Variable *ownerVar_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_SIGNATURE_H */

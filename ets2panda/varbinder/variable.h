@@ -24,12 +24,12 @@
 
 #include <limits>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Type;
 enum class PropertyType;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Decl;
 class Scope;
 class VariableScope;
@@ -276,5 +276,5 @@ private:
     EnumMemberResult value_ {};
     bool backReference_ {};
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 #endif

@@ -37,7 +37,7 @@
 #include "util/helpers.h"
 #include "checker/types/ts/bigintType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 ByteType *ETSChecker::CreateByteType(int8_t value)
 {
     return Allocator()->New<ByteType>(value);
@@ -571,4 +571,4 @@ Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size
 
     return signature;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -20,7 +20,7 @@
 #include "lexer/keywordsUtil.h"
 #include "macros.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 class Keywords {
 public:
     explicit Keywords(Lexer *lexer, lexer::NextTokenFlags flags) : util_(KeywordsUtil(lexer, flags)) {}
@@ -66,5 +66,5 @@ protected:
 private:
     KeywordsUtil util_;
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 #endif

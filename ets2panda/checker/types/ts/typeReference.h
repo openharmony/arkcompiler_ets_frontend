@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TypeReference : public Type {
 public:
     explicit TypeReference(Type **ref) : Type(TypeFlag::TYPE_REFERENCE), ref_(ref) {}
@@ -42,6 +42,6 @@ public:
 private:
     Type **ref_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ES2PANDA_COMPILER_CHECKER_TYPES_TS_TYPE_REFERENCE_H */

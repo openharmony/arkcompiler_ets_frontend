@@ -19,11 +19,11 @@
 #include "ir/statement.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 
 class LabelledStatement : public Statement {
@@ -73,6 +73,6 @@ private:
     Identifier *ident_;
     Statement *body_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

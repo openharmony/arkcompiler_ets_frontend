@@ -22,12 +22,12 @@
 
 #include <vector>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassElement;
 class Identifier;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class ClassPrivateContext {
 public:
     explicit ClassPrivateContext() = default;
@@ -53,6 +53,6 @@ private:
     ClassPrivateContext *prev_ {};
     std::vector<const ir::ClassElement *> elements_;
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

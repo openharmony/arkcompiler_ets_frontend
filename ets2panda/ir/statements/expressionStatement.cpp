@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ExpressionStatement::TransformChildren(const NodeTransformer &cb)
 {
     expression_ = cb(expression_)->AsExpression();
@@ -68,4 +68,4 @@ checker::Type *ExpressionStatement::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

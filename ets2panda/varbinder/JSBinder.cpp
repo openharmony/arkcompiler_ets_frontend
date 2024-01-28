@@ -15,5 +15,5 @@
 
 #include "JSBinder.h"
 
-namespace panda::es2panda::varbinder {
-}  // namespace panda::es2panda::varbinder
+namespace ark::es2panda::varbinder {
+}  // namespace ark::es2panda::varbinder

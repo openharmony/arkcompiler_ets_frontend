@@ -24,7 +24,7 @@
 #include "ir/srcDump.h"
 #include "macros.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb)
 {
     name_ = cb(name_)->AsExpression();
@@ -140,4 +140,4 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

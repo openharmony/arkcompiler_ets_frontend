@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "checker/types/typeRelation.h"
 
-namespace panda::es2panda::checker::conversion {
+namespace ark::es2panda::checker::conversion {
 void Identity(TypeRelation *relation, Type *source, Type *target);
 
 void WideningPrimitive(TypeRelation *relation, Type *source, Type *target);
@@ -45,6 +45,6 @@ void BoxingWideningReference(TypeRelation *relation, Type *source, ETSObjectType
 
 void String(TypeRelation *relation, Type *source);
 void Forbidden(TypeRelation *relation);
-}  // namespace panda::es2panda::checker::conversion
+}  // namespace ark::es2panda::checker::conversion
 
 #endif

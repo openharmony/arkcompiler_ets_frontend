@@ -18,11 +18,11 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class EnumVariable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class EnumType : public Type {
 public:
     EnumType(varbinder::Variable *enumLiteralVar, varbinder::EnumVariable *enumVar)
@@ -50,6 +50,6 @@ private:
     varbinder::Variable *enumLiteralVar_;
     varbinder::EnumVariable *enumVar_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_ENUM_TYPE_H */

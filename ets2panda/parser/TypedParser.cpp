@@ -56,7 +56,7 @@
 #include "ir/ts/tsClassImplements.h"
 #include "ir/ts/tsTypeAssertion.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 
 ir::Expression *TypedParser::ParsePotentialAsExpression([[maybe_unused]] ir::Expression *primaryExpression)
 {
@@ -1426,4 +1426,4 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
     return ParserStatus::NO_OPTS;
 }
 
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

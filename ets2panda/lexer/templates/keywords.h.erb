@@ -23,7 +23,7 @@
 
 // NOLINTBEGIN(readability-identifier-naming)
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 % token_type_prefix = 'TokenType::'
 % Keywords::extensions.each do |extension_name, desc|
 % class_name = extension_name.upcase + 'Keywords'
@@ -126,7 +126,7 @@ private:
 %   end
 };
 % end
-} // namespace panda::es2panda::lexer
+} // namespace ark::es2panda::lexer
 
 // NOLINTEND(readability-identifier-naming)
 

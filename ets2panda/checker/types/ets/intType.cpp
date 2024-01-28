@@ -18,7 +18,7 @@
 #include "checker/ets/conversion.h"
 #include "checker/ets/narrowingWideningConverter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void IntType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsIntType()) {
@@ -105,4 +105,4 @@ Type *IntType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_u
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

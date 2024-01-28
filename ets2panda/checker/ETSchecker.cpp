@@ -28,7 +28,7 @@
 #include "ir/base/scriptFunction.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
     if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
@@ -369,4 +369,4 @@ Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
     }
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

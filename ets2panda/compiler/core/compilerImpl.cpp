@@ -46,7 +46,7 @@
 #include "public/public.h"
 #include "util/declgenEts2Ts.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 void CompilerImpl::HandleContextLiterals(CompilerContext *context)
 {
@@ -60,7 +60,7 @@ void CompilerImpl::HandleContextLiterals(CompilerContext *context)
     emitter->LiteralBufferIndex() += context->ContextLiterals().size();
 }
 
-panda::pandasm::Program *CompilerImpl::Emit(CompilerContext *context)
+ark::pandasm::Program *CompilerImpl::Emit(CompilerContext *context)
 {
     HandleContextLiterals(context);
 
@@ -222,8 +222,8 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
     }
 }
 
-void CompilerImpl::DumpAsm(const panda::pandasm::Program *prog)
+void CompilerImpl::DumpAsm(const ark::pandasm::Program *prog)
 {
     Emitter::DumpAsm(prog);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -18,7 +18,7 @@
 
 #include "ir/expressions/literal.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class NullLiteral : public Literal {
 public:
     ~NullLiteral() override = default;
@@ -45,6 +45,6 @@ public:
         v->Accept(this);
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

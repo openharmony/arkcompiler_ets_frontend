@@ -18,7 +18,7 @@
 
 #include "ir/expressions/literal.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BooleanLiteral : public Literal {
 public:
     BooleanLiteral() = delete;
@@ -54,6 +54,6 @@ public:
 private:
     bool const boolean_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

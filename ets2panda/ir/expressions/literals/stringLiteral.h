@@ -20,7 +20,7 @@
 #include "macros.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class StringLiteral : public Literal {
 public:
     ~StringLiteral() override = default;
@@ -61,6 +61,6 @@ public:
 private:
     util::StringView str_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

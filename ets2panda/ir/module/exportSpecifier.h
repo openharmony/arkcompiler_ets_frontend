@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 
 class ExportSpecifier : public Statement {
@@ -56,6 +56,6 @@ private:
     Identifier *local_;
     Identifier *exported_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

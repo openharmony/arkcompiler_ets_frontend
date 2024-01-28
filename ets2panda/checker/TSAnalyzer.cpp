@@ -18,7 +18,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ts/destructuringContext.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 TSChecker *TSAnalyzer::GetTSChecker() const
 {
@@ -2414,4 +2414,4 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) const
     return nullptr;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

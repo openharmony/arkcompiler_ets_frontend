@@ -23,7 +23,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void RegExpLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void RegExpLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -69,4 +69,4 @@ RegExpLiteral *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *co
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

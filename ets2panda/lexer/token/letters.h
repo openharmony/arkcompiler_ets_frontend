@@ -17,7 +17,7 @@
 #define ES2PANDA_PARSER_CORE_LETTERS_H
 
 #include <cstdint>
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 inline constexpr char32_t LEX_ASCII_MAX_BITS = 128;
 
 inline constexpr char32_t LEX_CHAR_NULL = 0x00; /* \0 */
@@ -148,6 +148,6 @@ inline constexpr char32_t LEX_UTF8_EXTRA_BYTE_MASK = 0xC0;
 inline constexpr char32_t LEX_CHAR_EOS = 0xFFFF;
 inline constexpr char32_t UNICODE_CODE_POINT_MAX = 0x10FFFF;
 inline constexpr char32_t UNICODE_INVALID_CP = UINT32_MAX;
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

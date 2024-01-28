@@ -20,11 +20,11 @@
 #include "util/ustring.h"
 #include "ir/validationInfo.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 enum class IdentifierFlags : uint32_t {
     NONE = 0U,
     OPTIONAL = 1U << 0U,
@@ -220,6 +220,6 @@ private:
     ArenaVector<Decorator *> decorators_;
     varbinder::Variable *variable_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

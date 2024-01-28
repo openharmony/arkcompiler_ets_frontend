@@ -19,17 +19,17 @@
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class JSCompiler;
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSObjectType;
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline constexpr char const INDEX_ACCESS_ERROR_1[] = "The special index access method '";
@@ -228,6 +228,6 @@ private:
     checker::ETSObjectType *objType_ {};
     checker::Type *tupleConvertedType_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSParameterProperty::TransformChildren(const NodeTransformer &cb)
 {
     parameter_ = cb(parameter_)->AsExpression();
@@ -69,4 +69,4 @@ checker::Type *TSParameterProperty::Check([[maybe_unused]] checker::ETSChecker *
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

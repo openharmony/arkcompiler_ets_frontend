@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameter;
 
 class TSInferType : public TypeNode {
@@ -48,6 +48,6 @@ public:
 private:
     TSTypeParameter *typeParam_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

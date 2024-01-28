@@ -24,7 +24,7 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 ArenaAllocator *CodeGen::Allocator() const noexcept
 {
@@ -352,4 +352,4 @@ compiler::AstCompiler *CodeGen::GetAstCompiler() const
 {
     return astCompiler_;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -15,7 +15,7 @@
 
 #include "booleanType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void BooleanType::ToString(std::stringstream &ss) const
 {
     ss << "boolean";
@@ -45,4 +45,4 @@ Type *BooleanType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[may
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -74,7 +74,7 @@
 #include "util/language.h"
 #include "util/options.h"
 
-namespace panda::es2panda::public_lib {
+namespace ark::es2panda::public_lib {
 
 struct TokenTypeToStr {
     lexer::TokenType token;
@@ -2646,12 +2646,12 @@ es2panda_Impl g_impl = {
     VariableDeclaratorInitializer,
 };
 
-}  // namespace panda::es2panda::public_lib
+}  // namespace ark::es2panda::public_lib
 
 extern "C" es2panda_Impl const *es2panda_GetImpl(int version)
 {
     if (version != ES2PANDA_LIB_VERSION) {
         return nullptr;
     }
-    return &panda::es2panda::public_lib::g_impl;
+    return &ark::es2panda::public_lib::g_impl;
 }

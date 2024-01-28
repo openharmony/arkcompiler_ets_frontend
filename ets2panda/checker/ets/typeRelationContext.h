@@ -24,7 +24,7 @@
 #include "checker/types/type.h"
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSChecker;
 
 class AssignmentContext {
@@ -177,6 +177,6 @@ private:
     ETSObjectType *result_ {};
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

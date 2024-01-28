@@ -18,7 +18,7 @@
 
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class GlobalTypesHolder;
 
 class ETSAsyncFuncReturnType : public ETSObjectType {
@@ -48,7 +48,7 @@ public:
 private:
     ETSObjectType *promiseType_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ES2PANDA_COMPILER_CHECKER_TYPES_ETS_ASYNC_FUNC_RETURN_TYPE_H \
 # */

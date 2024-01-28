@@ -17,7 +17,7 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 void FunctionSignature::Iterate(const NodeTraverser &cb) const
 {
@@ -48,4 +48,4 @@ void FunctionSignature::TransformChildren(const NodeTransformer &cb)
         returnTypeAnnotation_ = static_cast<TypeNode *>(cb(returnTypeAnnotation_));
     }
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

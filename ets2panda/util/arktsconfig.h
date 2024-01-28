@@ -31,7 +31,7 @@
 #define ARKTSCONFIG_USE_FILESYSTEM
 #endif
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 
 class ArkTsConfig {
 public:
@@ -147,6 +147,6 @@ std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::s
 std::string JoinPaths(const std::string &a, const std::string &b);
 std::string ParentPath(const std::string &path);
 
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda
 
 #endif  // ES2PANDA_AOT_TSCONFIG_H

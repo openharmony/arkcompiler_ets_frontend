@@ -19,7 +19,7 @@
 #include <cstdint>
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARATION_KINDS(_)             \
     _(VAR, VarDecl)                      \
@@ -185,6 +185,6 @@ enum class ScopeFlags : uint32_t {
 };
 
 DEFINE_BITOPS(ScopeFlags)
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
                                    Expression *const object, Expression *const property)
     : MemberExpression(other)
@@ -418,4 +418,4 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

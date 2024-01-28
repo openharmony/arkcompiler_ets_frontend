@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void NullLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void NullLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -67,4 +67,4 @@ NullLiteral *NullLiteral::Clone(ArenaAllocator *const allocator, AstNode *const 
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

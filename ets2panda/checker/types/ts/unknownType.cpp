@@ -15,7 +15,7 @@
 
 #include "unknownType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void UnknownType::ToString(std::stringstream &ss) const
 {
     ss << "unknown";
@@ -43,4 +43,4 @@ Type *UnknownType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[may
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

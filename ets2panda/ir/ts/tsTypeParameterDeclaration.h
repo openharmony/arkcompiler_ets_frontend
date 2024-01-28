@@ -20,7 +20,7 @@
 #include "ir/expression.h"
 #include "ir/ts/tsTypeParameter.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class TSTypeParameterDeclaration : public Expression {
 public:
@@ -83,6 +83,6 @@ private:
     varbinder::LocalScope *scope_ {nullptr};
     size_t requiredParams_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -18,12 +18,12 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ConditionalExpression : public Expression {
 public:
     ConditionalExpression() = delete;
@@ -92,6 +92,6 @@ private:
     Expression *consequent_;
     Expression *alternate_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

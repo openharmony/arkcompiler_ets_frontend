@@ -30,7 +30,7 @@
 #include "ir/expressions/objectExpression.h"
 #include "ir/statements/variableDeclarator.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void VariableDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : decorators_) {
@@ -129,4 +129,4 @@ checker::Type *VariableDeclaration::Check([[maybe_unused]] checker::ETSChecker *
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

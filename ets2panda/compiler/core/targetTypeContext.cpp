@@ -17,7 +17,7 @@
 
 #include "compiler/core/ETSGen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 TargetTypeContext::TargetTypeContext(ETSGen *etsg, const checker::Type *targetType)
     : etsg_(etsg), prev_(etsg->targetType_)
 {
@@ -28,4 +28,4 @@ TargetTypeContext::~TargetTypeContext()
 {
     etsg_->targetType_ = prev_;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

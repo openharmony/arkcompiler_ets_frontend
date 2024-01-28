@@ -33,7 +33,7 @@
 
 #define DEBUG_PRINT 0
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 static void DebugPrint([[maybe_unused]] const std::string &msg)
 {
@@ -577,7 +577,7 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
     OutEndl();
 }
 
-bool GenerateTsDeclarations(checker::ETSChecker *checker, const panda::es2panda::parser::Program *program,
+bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
                             const std::string &outPath)
 {
     TSDeclGen declBuilder(checker, program);
@@ -594,4 +594,4 @@ bool GenerateTsDeclarations(checker::ETSChecker *checker, const panda::es2panda:
 
     return true;
 }
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util

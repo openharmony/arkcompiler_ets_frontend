@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class MetaProperty : public Expression {
 private:
     struct Tag {};
@@ -62,6 +62,6 @@ public:
 private:
     MetaPropertyKind kind_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

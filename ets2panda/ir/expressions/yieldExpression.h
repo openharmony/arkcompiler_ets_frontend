@@ -18,11 +18,11 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class GeneratorFunctionBuilder;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class YieldExpression : public Expression {
 public:
     YieldExpression() = delete;
@@ -67,6 +67,6 @@ private:
     Expression *argument_;
     bool delegate_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

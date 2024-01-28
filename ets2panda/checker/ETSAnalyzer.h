@@ -18,7 +18,7 @@
 
 #include "checker/SemanticAnalyzer.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSAnalyzer final : public SemanticAnalyzer {
 public:
@@ -49,6 +49,6 @@ private:
     checker::Type *SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr, ETSObjectType *objectType) const;
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif  // ES2PANDA_CHECKER_ETSANALYZER_H

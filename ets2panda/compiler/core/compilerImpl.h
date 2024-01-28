@@ -24,11 +24,11 @@
 
 #include <string>
 
-namespace panda::pandasm {
+namespace ark::pandasm {
 struct Program;
-}  // namespace panda::pandasm
+}  // namespace ark::pandasm
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CompileQueue;
 class CompilerContext;
 
@@ -64,9 +64,9 @@ public:
         return *plugins_;
     }
 
-    static void DumpAsm(const panda::pandasm::Program *prog);
+    static void DumpAsm(const ark::pandasm::Program *prog);
 
-    panda::pandasm::Program *Emit(CompilerContext *context);
+    ark::pandasm::Program *Emit(CompilerContext *context);
 
     CompileQueue *Queue()
     {
@@ -79,6 +79,6 @@ private:
     CompileQueue queue_;
     std::vector<util::Plugin> const *plugins_;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

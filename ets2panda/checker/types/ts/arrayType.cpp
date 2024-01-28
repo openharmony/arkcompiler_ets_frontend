@@ -18,7 +18,7 @@
 #include "varbinder/variable.h"
 #include "checker/types/ts/objectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ArrayType::ToString(std::stringstream &ss) const
 {
     bool elemIsUnion = (element_->TypeFlags() == TypeFlag::UNION);
@@ -63,4 +63,4 @@ Type *ArrayType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, 
 {
     return allocator->New<ArrayType>(element_->Instantiate(allocator, relation, globalTypes));
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

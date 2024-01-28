@@ -18,12 +18,12 @@
 
 #include "ir/irnode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ScriptFunction;
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class Function {
@@ -35,6 +35,6 @@ public:
 
     static void LoadClassContexts(const ir::AstNode *node, PandaGen *pg, VReg ctor, const util::StringView &name);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

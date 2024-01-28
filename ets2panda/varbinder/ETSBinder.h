@@ -21,7 +21,7 @@
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsReExportDeclaration.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 
 using ComputedLambdaObjects = ArenaMap<const ir::AstNode *, std::pair<ir::ClassDefinition *, checker::Signature *>>;
 
@@ -266,6 +266,6 @@ private:
     ir::AstNode *defaultExport_ {};
 };
 
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

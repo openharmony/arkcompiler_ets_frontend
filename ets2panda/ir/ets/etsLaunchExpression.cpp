@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 ETSLaunchExpression::ETSLaunchExpression(CallExpression *expr)
     : Expression(AstNodeType::ETS_LAUNCH_EXPRESSION), expr_(expr)
 {
@@ -92,4 +92,4 @@ ETSLaunchExpression *ETSLaunchExpression::Clone(ArenaAllocator *const allocator,
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

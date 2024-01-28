@@ -21,7 +21,7 @@
 #include "ir/base/classDefinition.h"
 #include "ir/statements/blockStatement.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 
 std::string Program::Dump() const
 {
@@ -69,4 +69,4 @@ const varbinder::GlobalScope *Program::GlobalScope() const
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

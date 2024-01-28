@@ -19,7 +19,7 @@
 #include "ir/expressions/literal.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BigIntLiteral : public Literal {
 public:
     BigIntLiteral() = delete;
@@ -55,6 +55,6 @@ public:
 private:
     util::StringView const src_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif
