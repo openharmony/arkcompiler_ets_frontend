@@ -59,6 +59,11 @@ import type {
   ScopeManager
 } from '../../utils/ScopeAnalyzer';
 
+import {
+  IDENTIFIER_CACHE,
+  MEM_METHOD_CACHE
+} from '../../utils/NameCacheUtil';
+
 import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGenerator';
 import type {IOptions} from '../../configs/IOptions';
 import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
@@ -69,7 +74,8 @@ import {TypeUtils} from '../../utils/TypeUtils';
 import {collectIdentifiersAndStructs} from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
-import { globalMangledTable, historyMangledTable, reservedProperties } from './RenamePropertiesTransformer';
+import {globalMangledTable, historyMangledTable, reservedProperties} from './RenamePropertiesTransformer';
+import {memberMethodCache} from '../../utils/ScopeAnalyzer';
 
 namespace secharmony {
   /**
@@ -106,6 +112,7 @@ namespace secharmony {
       profile?.mReservedToplevelNames?.forEach(item => reservedProperties.add(item));
       let mangledSymbolNames: Map<Symbol, string> = new Map<Symbol, string>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
+      memberMethodCache.clear();
       noSymbolIdentifier.clear();
 
       let historyMangledNames: Set<string> = undefined;
@@ -132,6 +139,10 @@ namespace secharmony {
           return node;
         }
 
+        if (nameCache.size === 0) {
+          nameCache.set(IDENTIFIER_CACHE, new Map<string, string>());
+        }
+
         const shadowSourceAst: SourceFile = TypeUtils.createNewSourceFile(node);
         checker = TypeUtils.createChecker(shadowSourceAst);
         manager.analyze(shadowSourceAst, checker, exportObfuscation);
@@ -141,10 +152,6 @@ namespace secharmony {
           manager.getReservedNames().forEach((name) => {
             reservedNames.push(name);
           });
-        }
-
-        if (nameCache === undefined) {
-          nameCache = new Map<string, string>();
         }
 
         let root: Scope = manager.getRootScope();
@@ -157,6 +164,7 @@ namespace secharmony {
 
         let ret: Node = visit(node);
         ret = tryRemoveVirtualConstructor(ret);
+        nameCache.set(MEM_METHOD_CACHE, memberMethodCache);
         return setParentRecursive(ret, true);
       }
 
@@ -218,7 +226,6 @@ namespace secharmony {
 
           const path: string = scope.loc + '#' + original;
           const historyName: string = historyNameCache?.get(path);
-
           if (historyName) {
             mangled = historyName;
           } else if (Reflect.has(def, 'obfuscateAsProperty')) {
@@ -228,7 +235,12 @@ namespace secharmony {
           }
 
           // add new names to name cache
-          nameCache.set(path, mangled);
+          let identifierCache = nameCache?.get(IDENTIFIER_CACHE);
+          if (identifierCache) {
+            const isFunction: boolean = Reflect.has(def, 'isFunction');
+            const pathWithLine: string = splicePathWithLineInfo(isFunction, def, scope.loc, original);
+            (identifierCache as Map<string, string>).set(pathWithLine, mangled);
+          }
           scope.mangledNames.add(mangled);
           mangledSymbolNames.set(def, mangled);
         });
@@ -386,6 +398,19 @@ namespace secharmony {
         return results;
       }
 
+      function splicePathWithLineInfo(isFunction: boolean, sym: Symbol, scope: string, origin: string): string {
+        let path: string = scope + '#' + origin;
+        if (!isFunction) {
+          return path;
+        }
+        let positions = Reflect.get(sym, 'lineInfo') as Array<number>;
+        let startLine = positions[0];
+        let startCharacter = positions[1];
+        let endLine = positions[2];
+        let endCharacter = positions[3];
+        return path + ':' +  startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
+      }
+
       /**
        * visit each node to change identifier name to mangled name
        *  - calculate shadow name index to find shadow node
@@ -485,7 +510,9 @@ namespace secharmony {
         const path: string = '#' + original;
         const historyName: string = historyNameCache?.get(path);
         let mangled = historyName ?? getPropertyMangledName(original);
-        nameCache.set(path, mangled);
+        if (nameCache && nameCache.get(IDENTIFIER_CACHE)) {
+          (nameCache.get(IDENTIFIER_CACHE) as Map<string, string>).set(path, mangled);
+        }
         return mangled;
       }
 
@@ -511,7 +538,7 @@ namespace secharmony {
     'createTransformerFactory': createRenameIdentifierFactory
   };
 
-  export let nameCache: Map<string, string> = undefined;
+  export let nameCache: Map<string, string | Map<string, string>> = new Map();
   export let historyNameCache: Map<string, string> = undefined;
   export let globalNameCache: Map<string, string> = new Map();
 }

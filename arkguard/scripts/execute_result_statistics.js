@@ -82,9 +82,21 @@ function compareContent(filePath) {
   const sourcePath = filePath.replace('/test/local/', '/test/grammar/');
   const sourcePathAndExtension = FileUtils.getFileSuffix(sourcePath);
   const expectationPath = sourcePathAndExtension.path + '_expected.txt';
-  if (fs.existsSync(expectationPath)) {
-    const actual = fs.readFileSync(filePath).toString();
-    const expectation = fs.readFileSync(expectationPath).toString();
+  const resultPathAndExtension = FileUtils.getFileSuffix(filePath);
+  const resultCachePath = resultPathAndExtension.path + '.cache.json';
+  const expectationCachePath = sourcePathAndExtension.path + '_expected_cache.txt';
+  const hasExpectationFile = fs.existsSync(expectationPath);
+  const hasExpectationCache = fs.existsSync(expectationCachePath);
+  const hasResultCache = fs.existsSync(resultCachePath);
+  if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
+    let actual,expectation;
+    if (hasExpectationFile) {
+      actual = fs.readFileSync(filePath).toString();
+      expectation = fs.readFileSync(expectationPath).toString();
+    } else {
+      actual = fs.readFileSync(resultCachePath).toString();
+      expectation = fs.readFileSync(expectationCachePath).toString();
+    }
     if (actual === expectation) {
       contentcomparationSuccessCount++;
     } else {

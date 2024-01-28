@@ -1,0 +1,8 @@
+{
+  "IdentifierCache": {
+    "#OutFunction:16:23": "p",
+    "OutFunction#inFunction:19:21": "q",
+    "OutFunction#a": "r"
+  },
+  "MemberMethodCache": {}
+}
