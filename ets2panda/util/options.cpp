@@ -181,8 +181,22 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> genStdLib("gen-stdlib", false, "Gen standard library");
     panda::PandArg<std::string> plugins("plugins", "", "Plugins");
     panda::PandArg<std::string> skipPhases("skip-phases", "", "Phases to skip");
-    panda::PandArg<std::string> verifierWarnings("verifier-warnings", "", "Show warnings form verifier");
-    panda::PandArg<std::string> verifierErrors("verifier-errors", "", "Show warnings form verifier");
+    panda::PandArg<std::string> verifierWarnings(
+        "verifier-warnings", "",
+        "Print errors and continue compilation if AST tree is incorrect. "
+        "Possible values: "
+        "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
+        "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
+        "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
+        "ImportExportAccessValid");
+    panda::PandArg<std::string> verifierErrors(
+        "verifier-errors", "ForLoopCorrectlyInitializedForAll",
+        "Print errors and stop compilation if AST tree is incorrect. "
+        "Possible values: "
+        "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
+        "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
+        "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
+        "ImportExportAccessValid");
     panda::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
                                                  "Generate program dump before running phases in the list");
     panda::PandArg<std::string> dumpEtsSrcBeforePhases(
