@@ -41,7 +41,7 @@ namespace fs = std::experimental::filesystem;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define CHECK(cond, ret, msg)                                   \
-    if (!cond) {                                                \
+    if (!(cond)) {                                              \
         std::cerr << "ArkTsConfig error: " << msg << std::endl; \
         return ret;                                             \
     }

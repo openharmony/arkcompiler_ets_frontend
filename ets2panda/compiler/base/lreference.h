@@ -140,7 +140,7 @@ public:
     void GetValue() const;
     void SetValue() const;
 
-    static ETSLReference Create(CodeGen *cg, const ir::AstNode *node, bool isDeclaration);
+    static ETSLReference Create(CodeGen *const cg, const ir::AstNode *const node, const bool isDeclaration);
     static ReferenceKind ResolveReferenceKind(const varbinder::Variable *variable);
 
 private:
