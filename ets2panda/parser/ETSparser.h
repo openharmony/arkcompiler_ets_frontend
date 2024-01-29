@@ -163,6 +163,7 @@ private:
     ir::Expression *CreateParameterThis(util::StringView className) override;
     lexer::SourcePosition ParseEndLocInterfaceMethod(lexer::LexerPosition startPos, ir::ScriptFunction *func,
                                                      ir::MethodDefinitionKind methodKind);
+    ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeNode);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
                                    ArenaVector<ir::AstNode *> *declarations, lexer::SourcePosition *letLoc = nullptr);

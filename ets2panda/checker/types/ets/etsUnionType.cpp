@@ -471,4 +471,14 @@ std::tuple<bool, bool> ETSUnionType::ResolveConditionExpr() const
     return {false, false};
 }
 
+bool ETSUnionType::HasUndefinedType() const
+{
+    for (const auto &type : constituentTypes_) {
+        if (type->IsETSUndefinedType()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 }  // namespace ark::es2panda::checker

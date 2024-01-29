@@ -2546,7 +2546,9 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
         ir::VariableDeclaration::VariableDeclarationKind::CONST) {
         flags |= ir::ModifierFlags::CONST;
     }
-
+    if (st->Id()->IsOptionalDeclaration()) {
+        flags |= ir::ModifierFlags::OPTIONAL;
+    }
     st->SetTsType(checker->CheckVariableDeclaration(st->Id()->AsIdentifier(),
                                                     st->Id()->AsIdentifier()->TypeAnnotation(), st->Init(), flags));
     return st->TsType();

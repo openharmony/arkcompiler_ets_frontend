@@ -46,6 +46,11 @@ public:
         return typeAnnotation_;
     }
 
+    void SetTypeAnnotation(TypeNode *typeAnnotation) noexcept
+    {
+        typeAnnotation_ = typeAnnotation;
+    }
+
     [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool const isStatic) const override
     {
         return isStatic ? PrivateFieldKind::STATIC_FIELD : PrivateFieldKind::FIELD;

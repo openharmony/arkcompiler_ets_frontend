@@ -61,14 +61,16 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDefinition *node) cons
 void ETSCompiler::Compile(const ir::ClassProperty *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (st->Value() == nullptr) {
+    if (st->Value() == nullptr && st->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         return;
     }
 
     auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
     compiler::RegScope rs(etsg);
 
-    if (!etsg->TryLoadConstantExpression(st->Value())) {
+    if (st->Value() == nullptr) {
+        etsg->LoadDefaultValue(st, st->TsType());
+    } else if (!etsg->TryLoadConstantExpression(st->Value())) {
         st->Value()->Compile(etsg);
         etsg->ApplyConversion(st->Value(), st->TsType());
     }

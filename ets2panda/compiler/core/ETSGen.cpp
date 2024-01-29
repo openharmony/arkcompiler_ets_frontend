@@ -724,12 +724,17 @@ void ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node, [[maybe_
     }
 
     if (type->IsETSUnionType()) {
-        type = Checker()->GetGlobalTypesHolder()->GlobalETSObjectType();
+        if (type->AsETSUnionType()->HasUndefinedType()) {
+            type = Checker()->GetGlobalTypesHolder()->GlobalETSUndefinedType();
+        } else {
+            type = Checker()->GetGlobalTypesHolder()->GlobalETSObjectType();
+        }
     }
-    if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() || type->IsETSNullType()) {
-        LoadAccumulatorNull(node, type);
-    } else if (type->IsETSUndefinedType()) {
+    if (type->IsUndefinedType() || type->IsETSUndefinedType()) {
         LoadAccumulatorUndefined(node);
+    } else if (type->IsETSObjectType() || type->IsETSArrayType() || type->IsETSTypeParameter() ||
+               type->IsETSNullType()) {
+        LoadAccumulatorNull(node, type);
     } else if (type->IsETSBooleanType()) {
         LoadAccumulatorBoolean(node, type->AsETSBooleanType()->GetValue());
     } else {
