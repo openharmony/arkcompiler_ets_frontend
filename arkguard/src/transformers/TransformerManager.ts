@@ -28,9 +28,10 @@ export class TransformerManager {
 
   private readonly mTransformers: TransformerFactory<Node>[];
 
-  public static getInstance(): TransformerManager {
+  public static getInstance(options: IOptions): TransformerManager {
     if (!this.sInstance) {
       this.sInstance = new TransformerManager();
+      this.sInstance.loadTransformers(options);
     }
 
     return this.sInstance as TransformerManager;
@@ -40,7 +41,11 @@ export class TransformerManager {
     this.mTransformers = [];
   }
 
-  public loadTransformers(options: IOptions): TransformerFactory<Node>[] {
+  public getTransformers(): TransformerFactory<Node>[] {
+    return this.mTransformers;
+  }
+
+  private loadTransformers(options: IOptions): TransformerFactory<Node>[] {
     let subFiles: string[] = readdirSync(TransformerManager.sLoadPath);
     let plugins: TransformPlugin[] = [];
     for (const subFile of subFiles) {

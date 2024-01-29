@@ -138,7 +138,7 @@ export class ArkObfuscator {
     }
 
     // load transformers
-    this.mTransformers = TransformerManager.getInstance().loadTransformers(this.mCustomProfiles);
+    this.mTransformers = TransformerManager.getInstance(this.mCustomProfiles).getTransformers();
 
     if (needReadApiInfo(this.mCustomProfiles)) {
       this.mCustomProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(
