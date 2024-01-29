@@ -417,7 +417,7 @@ private:
                                           ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::ObjectExpression *ParseObjectExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::SequenceExpression *ParseSequenceExpression(ir::Expression *startExpr, bool acceptRest = false,
-                                                    bool acceptTsParam = false);
+                                                    bool acceptTsParam = false, bool acceptPattern = false);
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::Expression *ParseLeftHandSideExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::MetaProperty *ParsePotentialNewTarget();
