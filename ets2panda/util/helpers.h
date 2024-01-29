@@ -61,6 +61,7 @@ enum class LogLevel : std::uint8_t {
     WARNING,
     ERROR,
     FATAL,
+    INVALID,
 };
 
 class Helpers {
