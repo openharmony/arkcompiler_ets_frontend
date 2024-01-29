@@ -111,7 +111,6 @@ static pandasm::Function GenScriptFunction(CompilerContext const *context, const
     auto *paramScope = funcScope->ParamScope();
 
     auto func = pandasm::Function(funcScope->InternalName().Mutf8(), EXTENSION);
-
     func.params.reserve(paramScope->Params().size());
 
     for (const auto *var : paramScope->Params()) {
@@ -125,10 +124,15 @@ static pandasm::Function GenScriptFunction(CompilerContext const *context, const
         func.returnType = PandasmTypeWithRank(scriptFunc->Signature()->ReturnType());
     }
 
+    uint32_t accessFlags = 0;
     if (!scriptFunc->IsStaticBlock()) {
         const auto *methodDef = util::Helpers::GetContainingClassMethodDefinition(scriptFunc);
-        func.metadata->SetAccessFlags(TranslateModifierFlags(methodDef->Modifiers()));
+        accessFlags |= TranslateModifierFlags(methodDef->Modifiers());
     }
+    if (scriptFunc->HasRestParameter()) {
+        accessFlags |= ACC_VARARGS;
+    }
+    func.metadata->SetAccessFlags(accessFlags);
 
     return func;
 }

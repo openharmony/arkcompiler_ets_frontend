@@ -162,6 +162,17 @@ if(PANDA_REGRESSION_TESTS)
             ${PANDA_SANITIZERS_LIST}
     )
 
+    # NOTE: es2panda_rest_parameter_flag test runs a lot of time on qemu, so let's disable it
+    if (NOT PANDA_QEMU_BUILD)
+        panda_add_gtest(
+            NAME es2panda_rest_parameter_flag
+            SOURCES unit/rest_parameter_flag_test.cpp
+            LIBRARIES es2panda-public es2panda-lib arkassembler arkbytecodeopt
+            INCLUDE_DIRS ${ES2PANDA_PATH} ${ES2PANDA_BINARY_ROOT}
+            SANITIZERS ${PANDA_SANITIZERS_LIST}
+        )
+    endif()
+
     add_subdirectory(tsconfig)
 endif()
 
