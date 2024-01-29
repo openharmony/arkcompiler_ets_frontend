@@ -72,12 +72,12 @@ Arkguard默认使能对参数名和局部变量名的混淆。顶层作用域名
 
 ### 混淆选项
 
-`-disable-obfuscation`
+#### -disable-obfuscation
 
 关闭所有混淆。如果你使用这个选项，那么构建出来的HAP或HAR将不会被混淆。默认情况下，
 Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随机的短名字)。
 
-`-enable-property-obfuscation`
+#### -enable-property-obfuscation
 
 开启属性混淆。 如果你使用这个选项，那么所有的属性名都会被混淆，除了下面场景:
 * 被`import/export`直接导入或导出的类或对象的属性名不会被混淆。比如下面例子中的属性名`data`不会被混淆。
@@ -92,6 +92,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
        person = {name: "123", age: 100};
     }
     ```
+    如果想混淆直接导入/导出的名称，请参考[`-enable-export-obfuscation`](#-enable-export-obfuscation)选项。
 * ArkUI组件中的属性名不会被混淆。比如下面例子中的`message`和`data`不会被混淆。
     ```
     @Component struct MyExample {
@@ -126,7 +127,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
     ```
     因此在开启了`-enable-string-property-obfuscation`选项时，如果想保留代码中使用的系统API字符串常量的属性不被混淆，比如obj['ohos.want.action.home'], 那么需要使用keep选项保留。
 
-`-enable-toplevel-obfuscation`
+#### -enable-toplevel-obfuscation
 
 开启顶层作用域名称混淆。如果你使用这个选项，那么所有的顶层作用域的名称都会被混淆，除了下面场景:
 * 被`import/export`的名称不会被混淆。
@@ -134,30 +135,53 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 * 被[保留选项](#保留选项)指定的顶层作用域名称不会被混淆。
 * 系统API列表中的顶层作用域名称不会被混淆。
 
-`-enable-filename-obfuscation`
+#### -enable-filename-obfuscation
 
 开启文件/文件夹名称混淆。这个选项只在闭源HAR场景下生效，如果你使用这个选项，那么闭源HAR所有的文件/文件夹名称都会被混淆，除了下面场景:
 * oh-package.json5文件中'main'、'types'字段配置的文件/文件夹名称不会被混淆。
 * 模块内module.json5文件中'srcEntry'字段配置的文件/文件夹名称不会被混淆。
-* 被[保留选项](#keep-file-name-link)指定的文件/文件夹名称不会被混淆。
+* 被[`-keep-file-name`](#保留选项)指定的文件/文件夹名称不会被混淆。
 * 非ECMAScript模块引用方式（ECMAScript模块示例：`import {foo} from './filename'`）
 * 非路径引用方式，比如例子中的json5不会被混淆 `import module from 'json5'`
 
-`-compact`
+#### -enable-export-obfuscation
+
+开启直接导入或导出的类或对象的名称和属性名混淆。如果使用这个选项，那么模块中的直接导入或导出的名称都会被混淆，除了下面场景:
+* 远程HAR(真实路径在oh_modules中的包)中导出的类或对象的名称和属性名不会被混淆。
+* 被[保留选项](#保留选项)指定的名称与属性名不会被混淆。
+* 系统API列表中的名称不会被混淆。  
+
+**注意**： 
+1. 混淆导入或导出的类中属性名称需要同时开启`-enable-property-obfuscation`与`-enable-export-obfuscation`选项。  
+2. 编译HSP时，如果开启`-enable-export-obfuscation`选项，需要在模块中的混淆配置文件`obfuscation-rules.txt`中保留对外暴露的接口。
+3. HAP/HSP/HAR依赖HSP场景下，编译时如果开启`-enable-export-obfuscation`选项，需要在模块中的混淆配置文件`obfuscation-rules.txt`中保留HSP导入的接口。  
+   
+    ```
+    // 代码示例(HSP中入口文件Index.ets)：
+    export { add, customApiName } from './src/main/ets/utils/Calc'
+
+    // 保留接口名称配置示例：
+    // HSP以及依赖此HSP的模块中obfuscation-rules.txt文件配置： 
+    keep-global-name
+    add
+    customApiName
+    ```
+
+#### -compact
 
 去除不必要的空格符和所有的换行符。如果使用这个选项，那么所有代码会被压缩到一行。  
 **注意**：release模式构建的应用栈信息仅包含代码行号，不包含列号，因此compact功能开启后无法依据报错栈中的行号定位到源码具体位置。
 
-`-remove-log`
+#### -remove-log
 
 删除所有`console.*`语句。
 
-`-print-namecache` filepath
+#### `-print-namecache` filepath
 
 将名称缓存保存到指定的文件路径。名称缓存包含名称混淆前后的映射。  
 注意：每次全量构建工程时都会生成新的namecache.json文件，因此您每次发布新版本时都要注意保存一个该文件的副本。
 
-`-apply-namecache` filepath
+#### `-apply-namecache` filepath
 
 复用指定的名称缓存文件。名字将会被混淆成缓存映射对应的名字，如果没有对应，将会被混淆成新的随机段名字。
 该选项应该在增量编译场景中被使用。
@@ -165,7 +189,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 默认情况下，DevEco Studio会在临时的缓存目录中保存缓存文件，并且在增量编译场景中自动应用该缓存文件。  
 缓存目录：build/cache/{...}/release/obfuscation
 
-`-remove-comments`
+#### -remove-comments
 
 删除文件中的所有注释，包括单行、多行，及JsDoc注释。以下场景除外：
 声明文件中，在`-keep-comments`中配置的类、方法、struct、枚举等名称上方的JsDoc注释。
@@ -173,7 +197,8 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 ### 保留选项
 
 保留选项只有在使用`enable-property-obfuscation`或`enable-toplevel-obfuscation`以及`-remove-comments`选项时发挥作用。
-`-keep-property-name` [,identifiers,...]
+
+#### `-keep-property-name` [,identifiers,...]
 
 指定你想保留的属性名。比如下面的例子:
 ```
@@ -219,7 +244,7 @@ console.log(obj['v']);        // 在开启字符串字面量属性名混淆时'v
 在Native API场景中，没有在so的d.ts文件中声明的API，如果要在ets/ts/js文件中使用需要手动保留。
 
 
-`-keep-global-name` [,identifiers,...]
+#### `-keep-global-name` [,identifiers,...]
 
 指定要保留的顶层作用域的名称。比如，
 ```
@@ -250,7 +275,7 @@ class MyClass {}
 let d = new MyClass();      // MyClass 可以被正确地混淆
 ```
 
-<a id="keep-file-name-link">`-keep-file-name` [,identifiers,...]</a>
+#### `-keep-file-name` [,identifiers,...]
 
 指定要保留的文件/文件夹的名称(不需要写文件后缀)。比如，
 ```
@@ -265,7 +290,7 @@ const moduleName = './file2'
 const module2 = import(moduleName)    // 动态引用方式无法识别moduleName是否是路径，应该被保留
 ```
 
-`-keep-dts` filepath
+#### `-keep-dts` filepath
 
 保留指定路径的`.d.ts`文件中的名称。这里的文件路径可以是一个目录，这种情况下目录中所有`.d.ts`文件中的名称都会被保留。
 如果在构建HAR时使用了这个选项，那么文件中的名称会被合并到最后的`obfuscation.txt`文件中。

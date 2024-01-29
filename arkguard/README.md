@@ -81,12 +81,12 @@ In rule files, you can write [obfuscation options](#obfuscation-options) and [ke
 
 ### Obfuscation options
 
-`-disable-obfuscation`
+#### -disable-obfuscation
 
 Specifies to disable all obfuscations. If you use this option, the resulting HAP or HAR will not be obfuscated. By default,
 Arkguard only obfuscates the parameter names and local variable names by assigning random short names to them.
 
-`-enable-property-obfuscation`
+#### -enable-property-obfuscation
 
 Specifies to obfuscate the property names. If you use this option, all property names will be obfuscated except the
 following:
@@ -104,6 +104,7 @@ their property names, you need to use [keep options](#keep-options) to keep them
        person = {name: "123", age: 100};
     }
     ```
+    If you want to obfuscate import/export names, please refer to the [`-enable-export-obfuscation`](#-enable-export-obfuscation) option.
 * the property names defined in UI components. For example, the property names `message` and `data` in
     ```
     @Component struct MyExample {
@@ -149,31 +150,54 @@ except the following:
 * the global names that are specified by [keep options](#keep-options).
 * the global names in system API list.
 
-`-enable-filename-obfuscation`
+#### -enable-filename-obfuscation
 
 Specifies to obfuscate the file/folder names. This option only takes effect in OpenHarmony Archive(HAR) scenarios. If you use this option, all file/folder names will be obfuscated except the following:
 * the file/folder names configured in the 'main' and 'types' fields in the oh-package.json5.
 * the file/folder names configured in the 'srcEntry' field in the module.json5.
-* the file/folder names that are specified by [keep options](#keep-file-name-link).
+* the file/folder names that are specified by [`-keep-file-name`](#keep-options).
 * non-ECMAScript module reference (ECMAScript module example: `import {foo} from './filename'`)
 * non-path reference, such as json5 will not be obfuscated `import module from 'json5'`
 
-`-compact`
+#### -enable-export-obfuscation
+
+Enable name and property name obfuscation for directly imported or exported classes or objects. If you use this option, the names of direct imports or exports in the module will be obfuscated, except in the following scenarios:
+* The names and property names of classes or objects exported in remote HAR (packages with real paths in oh_modules) will not be obfuscated.
+* Names and property names specified by [keep options](#keep-options) will not be obfuscated.
+* Names in the system API list will not be obfuscated.
+
+**Note**: 
+1. To obfuscate the property names in imported or exported classes, you need to enable both the `-enable-property-obfuscation` and `-enable-export-obfuscation` options.
+2. When compiling HSP, if the `-enable-export-obfuscation` option is used, the externally exposed interfaces need to be kept in the obfuscation configuration file `obfuscation-rules.txt` in the module.
+3. In the scenario where HAP/HSP/HAR depends on HSP, if the `-enable-export-obfuscation` option is used during compilation, the interface imported from HSP needs to be kept in the obfuscation configuration file `obfuscation-rules.txt` in the module.
+   
+     ```
+     // Code example (entry file Index.ets in HSP):
+     export { add, customApiName } from './src/main/ets/utils/Calc'
+    
+     // Example of keeping interface name:
+     // obfuscation-rules.txt file configuration in HSP and modules that depend on this HSP:
+    keep-global-name
+    add
+    customApiName
+     ```
+
+#### -compact
 
 Specifies to remove unnecessary blank spaces and all line feeds. If you use this option, all code will be compressed into
 one line.  
 **Note**: The stack information in release mode only includes the line number of code, not the column number. Therefore, when the compact is enabled, the specific location of the source code cannot be located based on the line number of stack information.
 
-`-remove-log`
+#### -remove-log
 
 Specifies to remove all `console.*` statements.
 
-`-print-namecache` filepath
+#### `-print-namecache` filepath
 
 Specifies to print the name cache that contains the mapping from the old names to new names.  
 Note: The namecache.json file will be generated every time the module is fully built, so you should save a copy each time you publish a new version.
 
-`-apply-namecache` filepath
+#### `-apply-namecache` filepath
 
 Specifies to reuse the given cache file. The old names in the cache will receive the corresponding new names specified in
 the cache. Other names will receive new random short names. This option should be used in incremental obfuscation.
@@ -182,7 +206,7 @@ By default, DevEco Studio will keep and update the namecache file in the tempora
 incremental compilation.  
 Cache directory: build/cache/{...}/release/obfuscation
 
-`-remove-comments`
+#### -remove-comments
 
 Remove all comments including single line, multi line and JsDoc comments, in a project except:
 * Those names of JsDoc comments above class, function, struct, enum ... in declaration files are in `-keep-comments`.
@@ -190,7 +214,8 @@ Remove all comments including single line, multi line and JsDoc comments, in a p
 ### Keep options
 
 Keep options are useful only when you use `enable-property-obfuscation`, `enable-toplevel-obfuscation` and `-keep-comments`.
-`-keep-property-name` [,identifiers,...]
+
+#### `-keep-property-name` [,identifiers,...]
 
 Specifies property names that you want to keep. For example,
 ```
@@ -235,7 +260,7 @@ console.log(obj['v']);        // 'v' can be safely obfuscated when `-enable-stri
 ```
 In the native API scenario, if in the ets/ts/js file you want to use APIs that are not declared in d.ts file, you need to keep these APIs.
 
-`-keep-global-name` [,identifiers,...]
+#### `-keep-global-name` [,identifiers,...]
 
 Specifies names that you want to keep in the global scope. For example,
 ```
@@ -267,7 +292,7 @@ class MyClass {}
 let d = new MyClass();      // MyClass can be safely obfuscated
 ```
 
-<a id="keep-file-name-link">`-keep-file-name` [,identifiers,...]</a>
+#### `-keep-file-name` [,identifiers,...]
 
 Specify the name of files/folders to keep (no need to write the file suffix). for example,
 ```
@@ -282,7 +307,7 @@ const moduleName = './file2'
 const module2 = import(moduleName)   // dynamic reference cannot identify whether moduleName is a path and should be retained.
 ```
 
-`-keep-dts` filepath
+#### `-keep-dts` filepath
 
 Specifies to keep names in the given `.d.ts` file. Here filepath can be also a directory. If so, then the names in all
 `d.ts` files under the given directory will be kept.
