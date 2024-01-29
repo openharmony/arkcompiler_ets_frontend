@@ -17,6 +17,8 @@ export const enum Extension {
   TS = '.ts',
   DTS = '.d.ts',
   JS = '.js',
+  CJS = '.cjs',
+  MJS = '.mjs',
   JSON = '.json',
   ETS = '.ets',
   DETS = '.d.ets'
@@ -31,3 +33,6 @@ export const supportedRunningExtension: readonly string[] = [Extension.TS, Exten
 export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
 
 export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];
+
+// supported file suffixes from ets-loader.
+export const supportedParsingExtension: string[] = [Extension.ETS, Extension.TS, Extension.JS, Extension.CJS, Extension.MJS];

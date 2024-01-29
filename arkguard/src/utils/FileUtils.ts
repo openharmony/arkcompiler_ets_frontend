@@ -18,6 +18,7 @@ import { readJsonSync } from 'fs-extra';
 import type { IOptions } from '../configs/IOptions';
 import { fileExtensions } from '../common/type';
 import type { PathAndExtension } from '../common/type';
+import fs from 'fs';
 
 export class FileUtils {
   /**
@@ -153,5 +154,14 @@ export class FileUtils {
       }
     }
     return { path: filePath, ext: undefined };
+  }
+
+  public static isReadableFile(filePath: string): boolean {
+    try {
+      fs.accessSync(filePath, fs.constants.R_OK);
+    } catch (err) {
+      return false;
+    }
+    return true;
   }
 }

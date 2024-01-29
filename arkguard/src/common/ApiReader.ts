@@ -122,6 +122,76 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
   };
 }
 
+/**
+ * read project reserved properties by collected paths
+ * @param filesForCompilation set collection of files
+ * @param customProfiles
+ */
+export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions):
+  {projectAndLibsReservedProperties: string[]; libExportNames: string[]} {
+  const ApiType = ApiExtractor.ApiType;
+  let scanningCommonType = undefined;
+  let scanningLibsType = undefined;
+  if (isEnabledPropertyObfuscation(customProfiles)) {
+    scanningCommonType = ApiType.PROJECT;
+    scanningLibsType = ApiType.PROJECT_DEPENDS;
+  } else {
+    scanningCommonType = ApiType.CONSTRUCTOR_PROPERTY;
+    scanningLibsType = ApiType.CONSTRUCTOR_PROPERTY;
+    ApiExtractor.mConstructorPropertySet = new Set();
+  }
+
+  const nameObfuscationConfig = customProfiles.mNameObfuscation;
+  scanProjectConfig.mKeepStringProperty = nameObfuscationConfig?.mKeepStringProperty;
+  scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
+
+  const sourcePaths: string[] = [];
+  const remoteHarParhs: string[] = [];
+
+  filesForCompilation.forEach(path => {
+    if (ApiExtractor.isRemoteHar(path)) {
+      remoteHarParhs.push(path);
+    } else {
+      sourcePaths.push(path);
+    }
+  });
+
+  stringPropsSet.clear();
+
+  const projProperties: string[] = ApiExtractor.parseProjectSourceByPaths(sourcePaths, customProfiles, scanningCommonType);
+  const libExportNamesAndReservedProps = ApiExtractor.parseThirdPartyLibsByPaths(remoteHarParhs, scanningLibsType);
+  let sdkProperties = libExportNamesAndReservedProps?.reservedProperties ?? [];
+
+  if (isEnabledPropertyObfuscation(customProfiles)) {
+    // read project code export names
+    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(projProperties,
+      nameObfuscationConfig.mReservedProperties, [...structPropsSet]);
+
+    // read project lib export names
+    if (sdkProperties && sdkProperties.length > 0) {
+      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties,
+        nameObfuscationConfig.mReservedProperties);
+    }
+
+    if (scanProjectConfig.mKeepStringProperty && stringPropsSet.size > 0) {
+      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet],
+        nameObfuscationConfig.mReservedProperties);
+    }
+  }
+  structPropsSet.clear();
+  stringPropsSet.clear();
+
+  if (scanProjectConfig.mExportObfuscation && libExportNamesAndReservedProps?.reservedLibExportNames) {
+    nameObfuscationConfig.mReservedNames = ListUtil.uniqueMergeList(libExportNamesAndReservedProps.reservedLibExportNames,
+      nameObfuscationConfig.mReservedNames);
+  }
+
+  return {
+    projectAndLibsReservedProperties: nameObfuscationConfig.mReservedProperties ?? [],
+    libExportNames: nameObfuscationConfig.mReservedNames ?? []
+  };
+}
+
 function readThirdPartyLibProperties(projectPath: string, scanningApiType: ApiExtractor.ApiType): {reservedProperties: string[];
   reservedLibExportNames: string[] | undefined} {
   if (!fs.lstatSync(projectPath).isDirectory()) {

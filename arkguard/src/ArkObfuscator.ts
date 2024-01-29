@@ -50,7 +50,7 @@ import {
   readCache, writeCache
 } from './utils/NameCacheUtil';
 import {ListUtil} from './utils/ListUtil';
-import {needReadApiInfo, readProjectProperties} from './common/ApiReader';
+import {needReadApiInfo, readProjectProperties, readProjectPropertiesByCollectedPaths} from './common/ApiReader';
 import {ApiExtractor} from './common/ApiExtractor';
 import es6Info from './configs/preset/es6_reserved_properties.json';
 
@@ -58,7 +58,7 @@ export const renameIdentifierModule = require('./transformers/rename/RenameIdent
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
 export const renameFileNameModule = require('./transformers/rename/RenameFileNameTransformer');
 
-export {getMapFromJson, readProjectProperties};
+export {getMapFromJson, readProjectPropertiesByCollectedPaths};
 export let orignalFilePathForSearching: string | undefined;
 
 type ObfuscationResultType = {
@@ -94,6 +94,23 @@ export class ArkObfuscator {
     this.mTransformers = [];
   }
 
+  public addReservedProperties(newReservedProperties: string[]) {
+    if (newReservedProperties.length === 0) {
+      return;
+    }
+    const nameObfuscationConfig = this.mCustomProfiles.mNameObfuscation;
+    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(newReservedProperties,
+      nameObfuscationConfig?.mReservedProperties);
+  }
+
+  public addReservedNames(newReservedNames: string[]) {
+    if (newReservedNames.length === 0) {
+      return;
+    }
+    const nameObfuscationConfig = this.mCustomProfiles.mNameObfuscation;
+    nameObfuscationConfig.mReservedNames = ListUtil.uniqueMergeList(newReservedNames,
+      nameObfuscationConfig?.mReservedNames);
+  }
   /**
    * init ArkObfuscator according to user config
    * should be called after constructor
