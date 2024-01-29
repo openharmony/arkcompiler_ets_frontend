@@ -63,6 +63,8 @@ import {
 import { scanProjectConfig } from './ApiReader';
 import { stringPropsSet } from '../utils/OhsUtil';
 import type { IOptions } from '../configs/IOptions';
+import { FileUtils } from '../utils/FileUtils';
+import { supportedParsingExtension } from './type';
 
 export namespace ApiExtractor {
   interface KeywordInfo {
@@ -461,6 +463,10 @@ export namespace ApiExtractor {
    * @private
    */
   const parseFile = function (fileName: string, apiType: ApiType): void {
+    if (!FileUtils.isReadableFile(fileName) || !isParsableFile(fileName)) {
+      return;
+    }
+
     const sourceFile: SourceFile = createSourceFile(fileName, fs.readFileSync(fileName).toString(), ScriptTarget.ES2015, true);
     mCurrentExportedPropertySet.clear();
     // get export name list
@@ -665,5 +671,44 @@ export namespace ApiExtractor {
   
   export function isInOhModuleFile(filePath: string): boolean {
     return filePath.indexOf('/oh_modules/') !== -1 || filePath.indexOf('\\oh_modules\\') !== -1;
+  }
+
+  export function isParsableFile(path: string): boolean {
+    return supportedParsingExtension.some(extension => path.endsWith(extension));
+  }
+
+   /**
+   * parse common project or file to extract exported api list
+   * @return reserved api names
+   */
+   export function parseProjectSourceByPaths(projectPaths: string[], customProfiles: IOptions, scanningApiType: ApiType): string[] {
+    mPropertySet.clear();
+    projectPaths.forEach(path => {
+      parseFile(path, scanningApiType);
+    })
+    let reservedProperties: string[] = customProfiles.mExportObfuscation ? [] : [...mPropertySet];
+    mPropertySet.clear();
+    return reservedProperties;
+  }
+
+  /**
+   * parse api of third party libs like libs in node_modules
+   * @param libPath
+   */
+  export function parseThirdPartyLibsByPaths(libPaths: string[], scanningApiType: ApiType): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
+    mPropertySet.clear();
+    mLibExportNameSet.clear();
+    libPaths.forEach(path => {
+      parseFile(path, scanningApiType);
+    })
+    let reservedLibExportNames: string[] = undefined;
+    if (scanProjectConfig.mExportObfuscation) {
+      reservedLibExportNames = [...mLibExportNameSet];
+      mLibExportNameSet.clear();
+    }
+    const reservedProperties: string[] = [...mPropertySet];
+    mPropertySet.clear();
+
+    return {reservedProperties: reservedProperties, reservedLibExportNames: reservedLibExportNames};
   }
 }
