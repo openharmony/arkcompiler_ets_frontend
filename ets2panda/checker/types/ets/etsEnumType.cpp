@@ -128,7 +128,14 @@ ETSEnumInterface *ETSEnumInterface::LookupConstant(ETSChecker *const checker, co
                                                    const ir::Identifier *const prop) const
 {
     if (!IsEnumTypeExpression(expression)) {
-        checker->ThrowTypeError({"Enum constant do not have property '", prop->Name(), "'"}, prop->Start());
+        if (expression->IsIdentifier() &&
+            expression->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
+            checker->ThrowTypeError({"Cannot refer to enum members through type alias."}, prop->Start());
+        } else if (IsLiteralType()) {
+            checker->ThrowTypeError({"Cannot refer to enum members through variable."}, prop->Start());
+        } else {
+            checker->ThrowTypeError({"Enum constant does not have property '", prop->Name(), "'."}, prop->Start());
+        }
     }
 
     auto *const member = FindMember(prop->Name());
