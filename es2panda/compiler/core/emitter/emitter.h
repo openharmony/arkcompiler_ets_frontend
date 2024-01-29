@@ -78,6 +78,7 @@ public:
     const ArenaSet<util::StringView> &Strings() const;
 
 private:
+    uint32_t UpdateForReturnIns(const ir::AstNode *astNode, panda::pandasm::Ins *pandaIns);
     void GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns);
     void GenFunctionInstructions();
     void GenFunctionCatchTables();

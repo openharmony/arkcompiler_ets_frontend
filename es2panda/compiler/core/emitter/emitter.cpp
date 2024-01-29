@@ -158,20 +158,42 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
     return source.Substr(range.start.index, range.end.index).EscapeSymbol<util::StringView::Mutf8Encode>();
 }
 
+// This is for supporting setting breakpoint on the right parenthesis of a scriptFunciton.
+uint32_t FunctionEmitter::UpdateForReturnIns(const ir::AstNode *astNode, panda::pandasm::Ins *pandaIns)
+{
+    constexpr size_t INVALID_LINE = -1;
+    constexpr uint32_t INVALID_COL = -1;
+    // The GetLocation method calculated position starts with 1, and
+    // the column number in pandaIns->ins_debug starts with 0
+    constexpr uint32_t OFFSET_COL = 1;
+    uint32_t columnNum = INVALID_COL;
+    if (pandaIns->opcode == pandasm::Opcode::RETURNUNDEFINED || pandaIns->opcode == pandasm::Opcode::RETURN) {
+        while (astNode != nullptr && !astNode->IsScriptFunction()) {
+            if (astNode->IsBlockStatement() && astNode->AsBlockStatement()->Scope()->Node()->IsScriptFunction()) {
+                astNode = astNode->AsBlockStatement()->Scope()->Node();
+                break;
+            }
+            astNode = astNode->Parent();
+        }
+        pandaIns->ins_debug.line_number = astNode ? astNode->Range().end.line : INVALID_LINE;
+        columnNum = astNode ? (GetLineIndex().GetLocation(astNode->Range().end).col - OFFSET_COL) : INVALID_COL;
+    } else {
+        pandaIns->ins_debug.line_number = astNode ? astNode->Range().start.line : INVALID_LINE;
+        columnNum = astNode ? (GetLineIndex().GetLocation(astNode->Range().start).col - OFFSET_COL) : INVALID_COL;
+    }
+    return columnNum;
+}
+
 void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns)
 {
     const ir::AstNode *astNode = ins->Node();
-    constexpr size_t INVALID_LINE = -1;
-    constexpr uint32_t INVALID_COL = -1;
-
     if (astNode == FIRST_NODE_OF_FUNCTION) {
         astNode = pg_->Debuginfo().firstStmt;
         if (!astNode) {
             return;
         }
     }
-
-    pandaIns->ins_debug.line_number = astNode ? astNode->Range().start.line : INVALID_LINE;
+    uint32_t columnNum = UpdateForReturnIns(astNode, pandaIns);
 
     if (pg_->IsDebug()) {
         size_t insLen = GetIRNodeWholeLength(ins);
@@ -181,9 +203,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
         }
 
         offset_ += insLen;
-
-        pandaIns->ins_debug.column_number = astNode ?
-            (GetLineIndex().GetLocation(astNode->Range().start).col - 1) : INVALID_COL;
+        pandaIns->ins_debug.column_number = columnNum;
     }
 }
 
