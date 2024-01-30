@@ -35,6 +35,7 @@
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/literals/taggedLiteral.h>
+#include <ir/expressions/unaryExpression.h>
 #include <ir/statements/classDeclaration.h>
 #include <ir/validationInfo.h>
 #include <util/bitset.h>
@@ -338,6 +339,65 @@ void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::Bit
     EmitCreateObjectWithBuffer(pg, buf, hasMethod);
 }
 
+void ObjectExpression::CompilePropertyOfGetterOrSetter(compiler::PandaGen *pg, const ir::Property *prop,
+    compiler::VReg objReg) const
+{
+    compiler::VReg key = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+
+    compiler::VReg undef = pg->AllocReg();
+    pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
+    pg->StoreAccumulator(this, undef);
+
+    compiler::VReg getter = undef;
+    compiler::VReg setter = undef;
+
+    compiler::VReg accessor = pg->AllocReg();
+    pg->LoadAccumulator(prop->Value(), objReg);
+    prop->Value()->Compile(pg);
+    pg->StoreAccumulator(prop->Value(), accessor);
+
+    if (prop->Kind() == ir::PropertyKind::GET) {
+        getter = accessor;
+    } else {
+        setter = accessor;
+    }
+
+    pg->DefineGetterSetterByValue(this, objReg, key, getter, setter, prop->IsComputed());
+}
+
+void ObjectExpression::CompilePropertyWithInit(compiler::PandaGen *pg, const ir::Property *prop,
+    compiler::VReg objReg) const
+{
+    compiler::Operand key = pg->ToPropertyKey(prop->Key(), prop->IsComputed());
+    const auto *value = prop->Value();
+
+    bool nameSetting = false;
+    if (prop->IsMethod()) {
+        pg->LoadAccumulator(value, objReg);
+        if (prop->IsComputed()) {
+            nameSetting = true;
+        }
+    } else {
+        if (prop->IsComputed()) {
+            nameSetting = IsAnonClassOrFuncExpr(value);
+        } else {
+            nameSetting = IsAnonClassOrFuncExpr(value) && IsLegalNameFormat(prop->Key());
+        }
+    }
+
+    // This is for disallowing breakpoint on property with negative number as initializer
+    // TODO: remove setting invalid flag after puttting negative number into literal buffer
+    bool shouldSetInvalidFlag = value->IsUnaryExpression() && value->AsUnaryExpression()->IsNegativeNumber()
+        && !prop->IsComputed();
+    if (shouldSetInvalidFlag) {
+        pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
+    }
+
+    value->Compile(pg);
+    pg->StoreOwnProperty(this, objReg, key, nameSetting);
+    pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
+}
+
 void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const util::BitSet *compiled,
                                                   compiler::VReg objReg) const
 {
@@ -363,48 +423,11 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
         switch (prop->Kind()) {
             case ir::PropertyKind::GET:
             case ir::PropertyKind::SET: {
-                compiler::VReg key = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
-
-                compiler::VReg undef = pg->AllocReg();
-                pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-                pg->StoreAccumulator(this, undef);
-
-                compiler::VReg getter = undef;
-                compiler::VReg setter = undef;
-
-                compiler::VReg accessor = pg->AllocReg();
-                pg->LoadAccumulator(prop->Value(), objReg);
-                prop->Value()->Compile(pg);
-                pg->StoreAccumulator(prop->Value(), accessor);
-
-                if (prop->Kind() == ir::PropertyKind::GET) {
-                    getter = accessor;
-                } else {
-                    setter = accessor;
-                }
-
-                pg->DefineGetterSetterByValue(this, objReg, key, getter, setter, prop->IsComputed());
+                CompilePropertyOfGetterOrSetter(pg, prop, objReg);
                 break;
             }
             case ir::PropertyKind::INIT: {
-                compiler::Operand key = pg->ToPropertyKey(prop->Key(), prop->IsComputed());
-
-                bool nameSetting = false;
-                if (prop->IsMethod()) {
-                    pg->LoadAccumulator(prop->Value(), objReg);
-                    if (prop->IsComputed()) {
-                        nameSetting = true;
-                    }
-                } else {
-                    if (prop->IsComputed()) {
-                        nameSetting = IsAnonClassOrFuncExpr(prop->Value());
-                    } else {
-                        nameSetting = IsAnonClassOrFuncExpr(prop->Value()) && IsLegalNameFormat(prop->Key());
-                    }
-                }
-
-                prop->Value()->Compile(pg);
-                pg->StoreOwnProperty(this, objReg, key, nameSetting);
+                CompilePropertyWithInit(pg, prop, objReg);
                 break;
             }
             case ir::PropertyKind::PROTO: {
