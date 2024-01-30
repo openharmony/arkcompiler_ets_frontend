@@ -2618,10 +2618,10 @@ ir::ClassStaticBlock *ParserImpl::ParseStaticBlock(ClassElmentDescriptor *desc)
                            ParserStatus::DISALLOW_ARGUMENTS);
     context_.Status() &= ~ParserStatus::FUNCTION;
     auto lexScope = binder::LexicalScope<binder::StaticBlockScope>(Binder());
-    auto *blockStatement = ParseBlockStatement(lexScope.GetScope());
-    lexer_->NextToken();
-    auto *staticBlock = AllocNode<ir::ClassStaticBlock>(blockStatement);
+    auto *blockStatement = ParseBlockStatement();
+    auto *staticBlock = AllocNode<ir::ClassStaticBlock>(lexScope.GetScope(), blockStatement);
     staticBlock->SetRange({desc->propStart, blockStatement->End()});
+    lexScope.GetScope()->BindNode(staticBlock);
     return staticBlock;
 }
 
