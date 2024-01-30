@@ -1020,7 +1020,7 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     ir::Expression *initializer = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         Lexer()->NextToken();  // eat '='
-        initializer = ParseInitializer();
+        initializer = ParseExpression();
     } else if (typeAnnotation == nullptr) {
         ThrowSyntaxError("Field type annotation expected");
     }
@@ -3123,45 +3123,6 @@ ir::AnnotatedExpression *ETSParser::ParseVariableDeclaratorKey([[maybe_unused]] 
     return init;
 }
 
-ir::Expression *ETSParser::ParseInitializer()
-{
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-        return ParseArrayLiteral();
-    }
-
-    return ParseExpression();
-}
-
-ir::ArrayExpression *ETSParser::ParseArrayLiteral()
-{
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
-
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-
-    ArenaVector<ir::Expression *> elements(Allocator()->Adapter());
-
-    Lexer()->NextToken();
-
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        elements.push_back(ParseInitializer());
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken();  // eat comma
-            continue;
-        }
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            ThrowSyntaxError("Comma is mandatory between elements in an array literal");
-        }
-    }
-
-    auto *arrayLiteral = AllocNode<ir::ArrayExpression>(std::move(elements), Allocator());
-    arrayLiteral->SetRange({startLoc, Lexer()->GetToken().End()});
-    Lexer()->NextToken();
-
-    return arrayLiteral;
-}
-
 ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                       const lexer::SourcePosition &startLoc)
 {
@@ -3171,7 +3132,7 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expres
 
     Lexer()->NextToken();
 
-    ir::Expression *initializer = ParseInitializer();
+    ir::Expression *initializer = ParseExpression();
 
     lexer::SourcePosition endLoc = initializer->End();
 

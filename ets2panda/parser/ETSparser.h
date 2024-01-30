@@ -167,8 +167,6 @@ private:
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
     ir::ClassProperty *ParseInterfaceField();
-    ir::Expression *ParseInitializer();
-    ir::ArrayExpression *ParseArrayLiteral();
     ir::Expression *ParseCoercedNumberLiteral();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
