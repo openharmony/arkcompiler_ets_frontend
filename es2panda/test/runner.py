@@ -1020,6 +1020,7 @@ def main():
         runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
         runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
         runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
+        runner.add_directory("parser/unicode", "js", ["--parse-only"])
 
         runners.append(runner)
 
