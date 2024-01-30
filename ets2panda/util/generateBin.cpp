@@ -21,14 +21,11 @@
 
 namespace ark::es2panda::util {
 
-int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter)
-{
-    std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = options->OptLevel() != 0 ? &stat : nullptr;
-    ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
-    ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = options->OptLevel() != 0 ? &maps : nullptr;
-
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+static int OptimizeBytecode(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter,
+                            std::map<std::string, size_t> *statp,
+                            ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
+{
     if (options->OptLevel() != 0) {
         ark::Logger::ComponentMask componentMask;
         componentMask.set(ark::Logger::Component::ASSEMBLER);
@@ -48,8 +45,15 @@ int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, c
         ark::compiler::g_options.SetCompilerMaxBytecodeSize(ark::compiler::g_options.GetCompilerMaxBytecodeSize());
         ark::bytecodeopt::OptimizeBytecode(prog, mapsp, options->CompilerOutput(), options->IsDynamic(), true);
     }
+
+    return 0;
+}
 #endif
 
+static int GenerateProgramImpl(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter,
+                               std::map<std::string, size_t> *statp,
+                               ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
+{
     if (options->CompilerOptions().dumpAsm) {
         es2panda::Compiler::DumpAsm(prog);
     }
@@ -69,6 +73,7 @@ int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, c
         std::cout << "Panda file size statistic:" << std::endl;
         constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
 
+        auto &stat = *statp;
         for (const auto &[name, size] : stat) {
             if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
                 continue;
@@ -82,6 +87,25 @@ int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, c
         }
 
         std::cout << "total: " << totalSize << std::endl;
+    }
+
+    return 0;
+}
+
+int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter)
+{
+    std::map<std::string, size_t> stat;
+    std::map<std::string, size_t> *statp = options->OptLevel() != 0 ? &stat : nullptr;
+    ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
+    ark::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = options->OptLevel() != 0 ? &maps : nullptr;
+
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    if (OptimizeBytecode(prog, options, reporter, statp, mapsp) != 0) {
+        return 1;
+    }
+#endif
+    if (GenerateProgramImpl(prog, options, reporter, statp, mapsp) != 0) {
+        return 1;
     }
 
     return 0;
