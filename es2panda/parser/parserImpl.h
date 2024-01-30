@@ -439,6 +439,7 @@ private:
     ir::AssertEntry *ParseAssertEntry();
     ir::FunctionExpression *ParseFunctionExpression(ParserStatus newStatus = ParserStatus::NO_OPTS);
     ir::Expression *ParseOptionalChain(ir::Expression *leftSideExpr);
+    ir::Expression *ParseOptionalMemberExpression(ir::Expression *object);
     void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers, bool isType);
     ir::Identifier *ParseNamedImport(const lexer::Token &importedToken);
     binder::Decl *AddImportDecl(bool isType,
