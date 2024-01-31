@@ -2829,22 +2829,29 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSTupleType *node) const
 checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    if (st->TypeParams() != nullptr) {
-        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
-        for (auto *const param : st->TypeParams()->Params()) {
-            const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
-                if (!node->IsIdentifier()) {
-                    return false;
-                }
+    if (st->TypeParams() == nullptr) {
+        const checker::SavedTypeRelationFlagsContext savedFlagsCtx(
+            checker->Relation(), checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
-                return param->Name()->AsIdentifier()->Variable() == node->AsIdentifier()->Variable();
-            });
+        st->TypeAnnotation()->Check(checker);
 
-            if (res == nullptr) {
-                checker->ThrowTypeError(
-                    {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
-                    param->Start());
+        return nullptr;
+    }
+
+    st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+    for (auto *const param : st->TypeParams()->Params()) {
+        const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
+            if (!node->IsIdentifier()) {
+                return false;
             }
+
+            return param->Name()->AsIdentifier()->Variable() == node->AsIdentifier()->Variable();
+        });
+
+        if (res == nullptr) {
+            checker->ThrowTypeError(
+                {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
+                param->Start());
         }
     }
 
