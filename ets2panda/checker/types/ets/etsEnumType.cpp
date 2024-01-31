@@ -165,38 +165,27 @@ bool ETSEnumInterface::IsSameEnumLiteralType(const ETSEnumInterface *const other
     return member_ == other->member_;
 }
 
+[[maybe_unused]] static const ETSEnumInterface *SpecifyEnumInterface(const checker::Type *enumType)
+{
+    if (enumType->IsETSEnumType()) {
+        return enumType->AsETSEnumType();
+    }
+    if (enumType->IsETSStringEnumType()) {
+        return enumType->AsETSStringEnumType();
+    }
+    return nullptr;
+}
+
 bool ETSEnumInterface::IsEnumInstanceExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
-        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enumType->IsETSEnumType()) {
-            return enumType->AsETSEnumType();
-        }
-        if (enumType->IsETSStringEnumType()) {
-            return enumType->AsETSStringEnumType();
-        }
-        return nullptr;
-    }();
-
-    ASSERT(IsSameEnumType(enumInterface));
+    ASSERT(IsSameEnumType(SpecifyEnumInterface(expression->TsType())));
 
     return IsEnumLiteralExpression(expression) || !IsEnumTypeExpression(expression);
 }
 
 bool ETSEnumInterface::IsEnumLiteralExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
-        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enumType->IsETSEnumType()) {
-            return enumType->AsETSEnumType();
-        }
-        if (enumType->IsETSStringEnumType()) {
-            return enumType->AsETSStringEnumType();
-        }
-        return nullptr;
-    }();
-
-    ASSERT(IsSameEnumType(enumInterface));
+    ASSERT(IsSameEnumType(SpecifyEnumInterface(expression->TsType())));
 
     if (expression->IsMemberExpression()) {
         const auto *const memberExpr = expression->AsMemberExpression();
@@ -209,18 +198,12 @@ bool ETSEnumInterface::IsEnumLiteralExpression(const ir::Expression *const expre
 
 bool ETSEnumInterface::IsEnumTypeExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
-        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enumType->IsETSEnumType()) {
-            return enumType->AsETSEnumType();
-        }
-        if (enumType->IsETSStringEnumType()) {
-            return enumType->AsETSStringEnumType();
-        }
-        return nullptr;
-    }();
-
-    ASSERT(IsSameEnumType(enumInterface));
+    auto specifiedEnumInterface = SpecifyEnumInterface(expression->TsType());
+    if (specifiedEnumInterface != nullptr) {
+        ASSERT(IsSameEnumType(specifiedEnumInterface));
+    } else {
+        return false;
+    }
 
     if (expression->IsCallExpression()) {
         return false;
