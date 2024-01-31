@@ -78,6 +78,8 @@ namespace panda::es2panda::parser {
 
 ir::YieldExpression *ParserImpl::ParseYieldExpression()
 {
+    // Prevent stack overflow caused by nesting too many yields. For example: yield yield...
+    CHECK_PARSER_RECURSIVE_DEPTH;
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_YIELD);
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
@@ -147,6 +149,8 @@ ir::TSAsExpression *ParserImpl::ParseTsAsExpression(ir::Expression *expr, [[mayb
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
         lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS &&
         !(flags & ExpressionParseFlags::EXP_DISALLOW_AS)) {
+        // Prevent stack overflow caused by nesting too many as. For example: a as Int as Int...
+        CHECK_PARSER_RECURSIVE_DEPTH;
         return ParseTsAsExpression(asExpr, flags);
     }
 
@@ -1041,6 +1045,8 @@ ir::Expression *ParserImpl::ParsePrimaryExpression(ExpressionParseFlags flags)
             return regexpNode;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            // Prevent stack overflow caused by nesting too many '['. For example: [[[...
+            CHECK_PARSER_RECURSIVE_DEPTH;
             return ParseArrayExpression(CarryPatternFlags(flags));
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
@@ -1349,7 +1355,7 @@ ir::Expression *ParserImpl::ParseOptionalMemberExpression(ir::Expression *object
         tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
 
     if (tokenType == lexer::TokenType::LITERAL_IDENT) {
-        property = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+        property = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
         property->AsIdentifier()->SetReference();
         property->SetRange(lexer_->GetToken().Loc());
     } else {
@@ -2242,6 +2248,8 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
     lexer::TokenType operatorType = lexer_->GetToken().Type();
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();
+    // Prevent stack overflow caused by nesting too many unary opration. For example: !!!!!!...
+    CHECK_PARSER_RECURSIVE_DEPTH;
     ir::Expression *argument = ParseUnaryOrPrefixUpdateExpression();
 
     if (lexer::Token::IsUpdateToken(operatorType)) {
