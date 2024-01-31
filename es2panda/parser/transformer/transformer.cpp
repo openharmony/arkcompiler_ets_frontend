@@ -1188,10 +1188,17 @@ ir::ClassStaticBlock *Transformer::CreateClassStaticBlock(ir::ClassDeclaration *
                                                                        staticInitializer->Function()->Scope());
 
     auto lexScope = binder::LexicalScope<binder::StaticBlockScope>(Binder());
-    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
-    auto *blockStatement = AllocNode<ir::BlockStatement>(lexScope.GetScope(), std::move(statements));
-    lexScope.GetScope()->BindNode(blockStatement);
-    ir::ClassStaticBlock *staticBlock = AllocNode<ir::ClassStaticBlock>(blockStatement);
+    ir::BlockStatement *blockStatement = nullptr;
+
+    {
+        auto localCtx = binder::LexicalScope<binder::LocalScope>(Binder());
+        ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+        blockStatement = AllocNode<ir::BlockStatement>(localCtx.GetScope(), std::move(statements));
+        localCtx.GetScope()->BindNode(blockStatement);
+    }
+
+    ir::ClassStaticBlock *staticBlock = AllocNode<ir::ClassStaticBlock>(lexScope.GetScope(), blockStatement);
+    lexScope.GetScope()->BindNode(staticBlock);
     node->Definition()->AddToBody(staticBlock);
 
     return staticBlock;
