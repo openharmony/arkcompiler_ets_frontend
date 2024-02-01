@@ -1425,7 +1425,7 @@ void ParserImpl::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expres
     node->SetVariable(propVar);
 }
 
-void ParserImpl::ParseTsTypeLiteralOrInterfaceKeyModifiers(bool *isGetAccessor, bool *isSetAccesser)
+void ParserImpl::ParseTsTypeLiteralOrInterfaceKeyModifiers(bool *isGetAccessor, bool *isSetAccessor)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         return;
@@ -1448,7 +1448,7 @@ void ParserImpl::ParseTsTypeLiteralOrInterfaceKeyModifiers(bool *isGetAccessor, 
                 ThrowSyntaxError("Keyword must not contain escaped characters");
             }
 
-            *isSetAccesser = true;
+            *isSetAccessor = true;
             lexer_->NextToken();
         }
     }
