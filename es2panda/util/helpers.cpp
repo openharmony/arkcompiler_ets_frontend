@@ -162,11 +162,15 @@ void Helpers::GetScientificNotationForDouble(double number, uint32_t significand
                                              char *significandArray, char *sciNotationArray, uint32_t size)
 {
     if (size < MAX_DOUBLE_DIGIT) {
-        std::cerr << "Failed to set the size of buffer in snprintf_s!" << std::endl;
+        std::cerr << "Failed to set the size of buffer, the buffer size provided (" << size
+                  << ") is less than the required minimum size (" << MAX_DOUBLE_DIGIT
+                  << ") for formatting the number in scientific notation." << std::endl;
         return;
     }
     if (snprintf_s(sciNotationArray, size, size - 1, "%.*e", significandBitCount - 1, number) == FAIL_SNPRINTF_S) {
-        std::cerr << "Failed to write number to buffer in snprintf_s!" << std::endl;
+        std::cerr << "Failed to format the number " << number
+                  << " into scientific notation using snprintf_s. Please check if the buffer size (" << size
+                  << ") and significand bit count (" << significandBitCount << ") are appropriate." << std::endl;
         return;
     }
 

@@ -97,7 +97,9 @@ bool Options::CollectInputFilesFromFileList(const std::string &input, const std:
     std::string line;
     ifs.open(panda::os::file::File::GetExtendedFilePath(input));
     if (!ifs.is_open()) {
-        std::cerr << "Failed to open source list: " << input << std::endl;
+        std::cerr << "Failed to open source list file '" << input << "' during input file collection." << std::endl
+                  << "Please check if the file exists or the path is correct, "
+                  << "and you have the necessary permissions to access it." << std::endl;
         return false;
     }
 
@@ -107,7 +109,11 @@ bool Options::CollectInputFilesFromFileList(const std::string &input, const std:
         std::vector<std::string> itemList = GetStringItems(line, LIST_ITEM_SEPERATOR);
         if ((compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_MERGE) ||
             (!compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_NOT_MERGE)) {
-            std::cerr << "Failed to parse input file" << std::endl;
+            std::cerr << "Failed to parse line " << line << " of the input file: '"
+                      << input << "'." << std::endl
+                      << "Expected " << (compilerOptions_.mergeAbc ? ITEM_COUNT_MERGE : ITEM_COUNT_NOT_MERGE)
+                      << " items per line, but found " << itemList.size() << " items." << std::endl
+                      << "Please check the file format and content for correctness." << std::endl;
             return false;
         }
 
@@ -163,7 +169,9 @@ void Options::ParseCacheFileOption(const std::string &cacheInput)
     std::string line;
     ifs.open(panda::os::file::File::GetExtendedFilePath(cacheInput.substr(1)));
     if (!ifs.is_open()) {
-        std::cerr << "Failed to open cache file list: " << cacheInput << std::endl;
+        std::cerr << "Failed to open cache file list from the provided path: '" << cacheInput << "'." << std::endl
+                  << "Please check if the file exists or the path is correct, "
+                  << "and you have the necessary permissions to read the file." << std::endl;
         return;
     }
 
@@ -398,7 +406,9 @@ bool Options::Parse(int argc, const char **argv)
         // common mode
         auto inputAbs = panda::os::file::File::GetAbsolutePath(sourceFile_);
         if (!inputAbs) {
-            std::cerr << "Failed to find: " << sourceFile_ << std::endl;
+            std::cerr << "Failed to find file '" << sourceFile_ << "' during input file resolution" << std::endl
+                      << "Please check if the file name is correct, the file exists at the specified path, "
+                      << "and your project has the necessary permissions to access it." << std::endl;
             return false;
         }
 
