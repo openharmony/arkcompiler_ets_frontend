@@ -42,6 +42,7 @@ class TaskResult(Enum):
 class CompilationInfo:
     def __init__(self):
         self.result = TaskResult.undefind
+        self.runtime_result = TaskResult.undefind
         self.error_message = ''
         self.time = 0
         self.abc_size = 0
@@ -73,9 +74,12 @@ class TestTask:
     def __init__(self):
         self.name = ''
         self.path = ''
+        self.bundle_name = ''
+        self.ability_name = ''
         self.type = ''
         self.build_path = []
         self.output_hap_path = ''
+        self.output_hap_path_signed = ''
         self.output_app_path = ''
         self.inc_modify_file = []
 
@@ -127,13 +131,19 @@ def parse_configs():
 
 
 def get_ark_disasm_path(task_path):
-    sdk_path = configs.get('deveco_sdk_path')
     ark_disasm = 'ark_disasm.exe' if utils.is_windows() else 'ark_disasm'
     profile_file = os.path.join(task_path, 'build-profile.json5')
     with open(profile_file, 'r') as file:
         profile_data = json5.load(file)
-    return os.path.join(sdk_path, str(profile_data['app']['products'][0]['compileSdkVersion']),
-                        'toolchains', ark_disasm)
+        api_version = profile_data['app']['products'][0]['compileSdkVersion']
+        if isinstance(api_version, int):
+            openharmony_sdk_path = configs.get('deveco_openharmony_sdk_path')
+            return os.path.join(openharmony_sdk_path, str(api_version), 'toolchains', ark_disasm)
+        else:
+            harmonyos_sdk_path = configs.get('deveco_harmonyos_sdk_path')
+            api_version_file_map = configs.get('api_version_file_name_map')
+            file_name = api_version_file_map.get(api_version)
+            return os.path.join(harmonyos_sdk_path, file_name, 'base', 'toolchains', ark_disasm)
 
 
 def create_test_tasks():
@@ -156,10 +166,13 @@ def create_test_tasks():
             task = TestTask()
             task.name = hap['name']
             task.path = hap['path']
+            task.bundle_name = hap['bundle_name']
+            task.ability_name = hap['ability_name']
             task.type = hap['type']
             task.build_path = hap['build_path']
             task.cache_path = hap['cache_path']
             task.output_hap_path = hap['output_hap_path']
+            task.output_hap_path_signed = hap['output_hap_path_signed']
             task.output_app_path = hap['output_app_path']
             task.inc_modify_file = hap['inc_modify_file']
             task.backup_info.cache_path = os.path.join(task.path, 'test_suite_cache')

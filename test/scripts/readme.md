@@ -5,11 +5,12 @@
 2. Run xts test which in auto_xts_test
 3. Run sdk_test which in sdk_test
 4. Run performance test which in performance_test
-5. Send the result by Email
+5. Run spider script which in get commit log
+6. Send the result by Email
 
 ## Usage
 ### How to work
-In timer.py, it will run downloading sdk，xts， sdk_test，performance_test, and send email, you can delete any of them if you don't need run the test.  
+In entry.py, it will run downloading sdk，xts， sdk_test，performance_test, get commit log script, and send email, you can delete any of them if you don't need run the test.  
 If you do not want to run test immediately, delete run_all()  
 Set email infos in email_config  
 ### Note
