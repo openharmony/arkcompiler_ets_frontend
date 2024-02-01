@@ -889,15 +889,19 @@ void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
 {
     ArenaVector<ir::MethodDefinition *> asyncImpls(Allocator()->Adapter());
     for (auto *it : classDef->Body()) {
-        if (IsAsyncMethod(it)) {
-            auto *method = it->AsMethodDefinition();
-            asyncImpls.push_back(CreateAsyncProxy(method, classDef));
-            auto *proxy = asyncImpls.back();
-            for (auto *overload : method->Overloads()) {
-                auto *impl = CreateAsyncProxy(overload, classDef, false);
-                impl->Function()->Id()->SetVariable(proxy->Function()->Id()->Variable());
-                proxy->AddOverload(impl);
+        if (!IsAsyncMethod(it)) {
+            continue;
+        }
+        auto *method = it->AsMethodDefinition();
+        asyncImpls.push_back(CreateAsyncProxy(method, classDef));
+        auto *proxy = asyncImpls.back();
+        for (auto *overload : method->Overloads()) {
+            if (!overload->IsAsync()) {
+                continue;
             }
+            auto *impl = CreateAsyncProxy(overload, classDef, false);
+            impl->Function()->Id()->SetVariable(proxy->Function()->Id()->Variable());
+            proxy->AddOverload(impl);
         }
     }
     for (auto *it : asyncImpls) {
