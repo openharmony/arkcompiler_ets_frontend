@@ -607,8 +607,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": "abc ",
+                                  "cooked": "abc "
                                 },
                                 "loc": {
                                   "start": {
@@ -624,8 +624,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": " = ",
+                                  "cooked": " = "
                                 },
                                 "loc": {
                                   "start": {
@@ -641,8 +641,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": "!",
+                                  "cooked": "!"
                                 },
                                 "loc": {
                                   "start": {
@@ -763,8 +763,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": "--- ",
+                                  "cooked": "--- "
                                 },
                                 "loc": {
                                   "start": {
@@ -780,8 +780,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": " ---",
+                                  "cooked": " ---"
                                 },
                                 "loc": {
                                   "start": {
@@ -937,8 +937,8 @@
                                     {
                                       "type": "TemplateElement",
                                       "value": {
-                                        "raw": "",
-                                        "cooked": ""
+                                        "raw": "abc ",
+                                        "cooked": "abc "
                                       },
                                       "loc": {
                                         "start": {
@@ -954,8 +954,8 @@
                                     {
                                       "type": "TemplateElement",
                                       "value": {
-                                        "raw": "",
-                                        "cooked": ""
+                                        "raw": " = ",
+                                        "cooked": " = "
                                       },
                                       "loc": {
                                         "start": {
@@ -971,8 +971,8 @@
                                     {
                                       "type": "TemplateElement",
                                       "value": {
-                                        "raw": "",
-                                        "cooked": ""
+                                        "raw": "!",
+                                        "cooked": "!"
                                       },
                                       "loc": {
                                         "start": {
@@ -1013,8 +1013,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": "--- ",
+                                  "cooked": "--- "
                                 },
                                 "loc": {
                                   "start": {
@@ -1030,8 +1030,8 @@
                               {
                                 "type": "TemplateElement",
                                 "value": {
-                                  "raw": "",
-                                  "cooked": ""
+                                  "raw": " ---",
+                                  "cooked": " ---"
                                 },
                                 "loc": {
                                   "start": {

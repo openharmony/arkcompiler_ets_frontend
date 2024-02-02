@@ -29,7 +29,7 @@ void TemplateElement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({
         {"type", "TemplateElement"},
-        {"value", {{"raw", ""}, {"cooked", ""}}},
+        {"value", {{"raw", raw_}, {"cooked", cooked_}}},
     });
 }
 
