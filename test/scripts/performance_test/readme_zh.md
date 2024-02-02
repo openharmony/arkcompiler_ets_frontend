@@ -82,6 +82,9 @@ jbr_path = r'xxx\DevEco Studio\jbr'
 **目标工程的路径**
 project_path = r"D"\xxx"
 
+**图片所示app的名字**
+name = r'FTB'
+
 **AS = 1  DevEco = 2**  
 IDE = 2  
 
@@ -121,5 +124,11 @@ build_type_of_log = ["Incremental", "fullBuild"]
 **size 表示log里记录了hap中abc的大小，time记录了构建耗时，All表示记录全部数据，Avg表示平均值**  
 log_filename = ["sizeAll.xlsx", "sizeAve.xlsx","timeAll.xlsx", "timeAve.xlsx"]  
 
-**跳过build阶段，使用测试数据，修改脚本时调试使用**  
-developing_test_mode = False  
+**配置的APP会显示更精细的构建耗时，不配置则不显示**
+show_time_detail_filter = ["createProgram", "arkTSLinter", "tsProgramEmit",
+                            "generate content and source map information", "write obfuscated source code",
+                            "write source map (async)", "generate merged abc by es2abc (async)", "total build cost"
+                        ]
+
+**跳过build阶段，使用测试数据，修改脚本时调试使用. ''为不使用测试模式，test_report.json测试构建成功的模式，test_error_report.json测试构建失败报错的场景**  
+developing_test_data_path = ''  

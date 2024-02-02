@@ -82,6 +82,9 @@ jbr_path = r'xxx\DevEco Studio\jbr'
 **path of the project**
 project_path = r"xxx"
 
+**app name which showed in pictures**
+name = r'FTB'
+
 **AS = 1  DevEco = 2**  
 IDE = 2  
 
@@ -121,5 +124,11 @@ build_type_of_log = ["Incremental", "fullBuild"]
 **size means this file record the size of abc in the package, time means the build cost time, All means it records all data, avg means it records the value of the data**  
 log_filename = ["sizeAll.xlsx", "sizeAve.xlsx","timeAll.xlsx", "timeAve.xlsx"]  
 
-**Do not build the project，use the test data if you need to debug the scripts**  
-developing_test_mode = False  
+**show detailed build cost time in html, delete this setting to hide this info**
+show_time_detail_filter = ["createProgram", "arkTSLinter", "tsProgramEmit",
+                            "generate content and source map information", "write obfuscated source code",
+                            "write source map (async)", "generate merged abc by es2abc (async)", "total build cost"
+                        ]
+
+**Do not build the project，use the test data if you need to debug the scripts,use '' to close this mode，test_report.json will test in build succeed case，test_error_report.json will test in build failed case**  
+developing_test_mode = ''  

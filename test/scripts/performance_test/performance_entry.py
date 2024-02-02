@@ -25,9 +25,12 @@ import pandas as pd
 import performance_build
 import performance_config
 
+from pylab import mpl
+
 
 class MailHelper():
     def __init__(self):
+        mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
         self.pic_table = {}
         self.head_line = []
         self.mail_msg = ''
@@ -54,18 +57,6 @@ class MailHelper():
                     if os.path.exists(pic_path):
                         os.remove(pic_path)
 
-    def create(self, prj_name):
-        self.create_table(prj_name)
-
-    def create_table(self, prj_name):
-        self.pic_table[prj_name] = {
-            # full_time, incremental_time, size
-            performance_config.BuildMode.DEBUG:[np.nan, np.nan, np.nan],
-            performance_config.BuildMode.RELEASE:[np.nan, np.nan, np.nan]
-        }
-        self.head_line.append(prj_name)
-        self.time_index = [time.strftime("%Y/%m/%d", time.localtime())]
-
     @staticmethod
     def find_in_double_map(key_1, key_2, double_dic, error_table_name):
         it_1 = double_dic.get(key_1)
@@ -82,9 +73,7 @@ class MailHelper():
         self.mail_msg += msg
 
     def add_failed_project(self, prj_name, build_mode, log_type):
-        build_mode_info = 'Debug' if build_mode == performance_config.BuildMode.DEBUG else 'Release'
-        build_type_info = 'full_build' if log_type == performance_config.LogType.FULL else 'incremental_build'
-        info = '-'.join((prj_name, build_mode_info, build_type_info)) + '<br>'
+        info = '-'.join((prj_name, build_mode, log_type)) + '<br>'
         if self.failed_prjs == '':
             self.failed_prjs = 'failed projects:<br>'
         self.failed_prjs += info
@@ -94,20 +83,30 @@ class MailHelper():
 
     def add_pic_data(self, prj_name, is_debug, data_list):
         build_mode = performance_config.BuildMode.DEBUG if is_debug else performance_config.BuildMode.RELEASE
-        prj_table = self.find_in_double_map(prj_name, build_mode, self.pic_table, "pic_table")
-        if prj_table:
-            if len(data_list) == 1: # size
-                prj_table[2] = data_list[0]
-            else: # time
-                prj_table[0] = data_list[0]
-                prj_table[1] = data_list[1]
+        it_1 = self.pic_table.get(prj_name)
+        prj_table = None
+        if it_1:
+            prj_table = it_1.get(build_mode)
+            if not prj_table:
+                it_1[build_mode] = [np.nan, np.nan, np.nan]
+        else:
+            self.pic_table[prj_name] = {build_mode:[np.nan, np.nan, np.nan]}
+            self.head_line.append(prj_name)
+            self.time_index = [time.strftime("%Y/%m/%d", time.localtime())]
+
+        prj_table = self.pic_table[prj_name][build_mode]
+        if len(data_list) == 1: # size
+            prj_table[2] = data_list[0]
+        else: # time
+            prj_table[0] = data_list[0]
+            prj_table[1] = data_list[1]
 
     def create_msg_file(self):
         with os.fdopen(
             os.open(performance_config.MailPicConfig.html_file_path,
                     os.O_WRONLY | os.O_CREAT | os.O_TRUNC,
                     stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG),
-                    'w'
+                    'w', encoding='utf-8'
             ) as msg_file:
             if self.failed_prjs == '':
                 self.failed_prjs = 'All Build Succeed<br>'
@@ -132,15 +131,19 @@ class MailHelper():
                     markeredgecolor='black',
                     title=title_name,
                     ylabel=y_lable,
-                    grid=True
+                    grid=True,
+                    rot=30
         )
         i = 0
+        y_min, y_max = ax.get_ylim()
+        y_range = y_max - y_min
         for idx, data in df.iterrows():
             for k in data:
                 if not pd.isna(k):
-                    ax.text(i + 0.05, k + 0.1, k)
+                    pos_y = k + y_range / 50 if i % 2 == 0 else k - y_range / 15
+                    ax.text(i - 0.1, pos_y, k)
             i += 1
-        ax.get_figure().savefig(pic_name)
+        ax.get_figure().savefig(pic_name, bbox_inches='tight')
         
     def create_pic(self):
         for build_mode in range(2):
@@ -171,10 +174,11 @@ class MailHelper():
                 dic = {}
                 for prj_name in self.pic_table:
                     dic[prj_name] = [self.pic_table[prj_name][build_mode][log_type]]
-                df_inserted = pd.DataFrame(dic, index=self.time_index)
-                df = df._append(df_inserted)
-                if len(df) > 5:
-                    df = df[1:len(df)]
+                if len(dic) > 0:
+                    df_inserted = pd.DataFrame(dic, index=self.time_index)
+                    df = df._append(df_inserted)
+                    if len(df) > 10:
+                        df = df[1:len(df)]
                 df.to_csv(csv_filename)
                 y_lable = 'build time (s)' if log_type < performance_config.LogType.SIZE else 'size (Byte)'
                 self.draw_pic(df, pic_name, title_name, y_lable)
@@ -202,7 +206,6 @@ class PerformanceEntry():
         config = performance_config.get_config(index)
         if not config:
             return
-        self.mail_helper.create(os.path.basename(config.project_path))
         performance_build.run(config, self.mail_helper)
 
     def create_mail_files(self):
