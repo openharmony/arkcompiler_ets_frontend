@@ -24,7 +24,9 @@ import {
     dynamic_array,
     padding,
     margin,
-    position
+    position,
+    IndexedSignatureType,
+    postCardAction
 } from "./dynamic_lib"
 
 function main(): void {
@@ -85,3 +87,21 @@ dynamic_array.splice(2, 0, {a: 1, b: '2'});
 padding({'top': '0px', 'right': '5px', 'bottom': '10px', 'left': '15px'});
 margin({'top': '10px', 'right': '20px', 'bottom': '30px', 'left': '40px'});
 position({'x': '20', 'y': '40'});
+
+// allow literal as property name for type aliases that come from interop
+function typeAliasLitAsPropName(): IndexedSignatureType {
+    return {
+        'a': '1',
+        'b': '2',
+        'c': '3'
+    }
+}
+
+// #14399
+postCardAction({}, {
+    "action": 'router',
+    "abilityName": 'SomeAbility',
+    "params": {
+        "message": 'add detail'
+    }
+});

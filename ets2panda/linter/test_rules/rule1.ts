@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,3 +26,34 @@ console.log(x.name)
 
 let z = [1, 2, 3]
 console.log(y[2])
+
+enum S1 {
+  s1 = "qwqwq",
+}
+
+enum S2 {
+  s2 = 123,
+}
+
+interface A1 {
+  [S1.s1]: string;
+}
+
+interface A2 {
+  [S2.s2]: string;
+}
+
+const a1: A1 = {
+  [S1.s1]: "fld1",
+};
+
+const a2: A2 = {
+  [S2.s2]: "fld2",
+};
+
+S1["s1"];
+S2["s2"];
+
+interface I {
+  2: number;
+}

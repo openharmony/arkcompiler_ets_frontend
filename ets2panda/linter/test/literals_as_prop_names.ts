@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,3 +61,9 @@ let x_fix = {name: 20, _2: 20};
 console.log("Fixed x object literal:");
 console.log(x_fix.name);
 console.log(x_fix._2);
+
+interface litAsPropNameIface {
+  one: string;
+  2: string;
+  'Two': number;
+}

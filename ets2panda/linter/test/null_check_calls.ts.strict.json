@@ -17,32 +17,37 @@
         {
             "line": 43,
             "column": 1,
-            "problem": "LimitedReturnTypeInference"
-        },
-        {
-            "line": 33,
-            "column": 12,
-            "problem": "StrictDiagnostic"
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 37,
             "column": 5,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'number[]'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'number[]'."
         },
         {
             "line": 42,
             "column": 20,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'number'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'number'."
         },
         {
             "line": 43,
             "column": 42,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'number | null' is not assignable to parameter of type 'number'.\n  Type 'null' is not assignable to type 'number'.",
+            "rule": "Argument of type 'number | null' is not assignable to parameter of type 'number'.\n  Type 'null' is not assignable to type 'number'."
         },
         {
             "line": 47,
             "column": 5,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Argument of type 'number | null' is not assignable to parameter of type 'number'.\n  Type 'null' is not assignable to type 'number'.",
+            "rule": "Argument of type 'number | null' is not assignable to parameter of type 'number'.\n  Type 'null' is not assignable to type 'number'."
         },
         {
             "line": 52,

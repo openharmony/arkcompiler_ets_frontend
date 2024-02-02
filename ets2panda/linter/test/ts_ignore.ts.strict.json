@@ -15,64 +15,88 @@
     ],
     "nodes": [
         {
-            "line": 16,
-            "column": 1,
-            "problem": "ErrorSuppression"
-        },
-        {
-            "line": 21,
-            "column": 3,
-            "problem": "ErrorSuppression"
-        },
-        {
-            "line": 25,
-            "column": 19,
-            "problem": "ErrorSuppression"
-        },
-        {
-            "line": 30,
-            "column": 9,
-            "problem": "ErrorSuppression"
-        },
-        {
-            "line": 33,
-            "column": 2,
-            "problem": "ErrorSuppression"
-        },
-        {
-            "line": 43,
-            "column": 9,
-            "problem": "ErrorSuppression"
-        },
-        {
-            "line": 52,
-            "column": 3,
-            "problem": "ErrorSuppression"
-        },
-        {
             "line": 53,
             "column": 3,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 55,
             "column": 22,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 16,
+            "column": 1,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
+        },
+        {
+            "line": 21,
+            "column": 3,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
+        },
+        {
+            "line": 25,
+            "column": 19,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
+        },
+        {
+            "line": 30,
+            "column": 9,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
+        },
+        {
+            "line": 43,
+            "column": 9,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
+        },
+        {
+            "line": 52,
+            "column": 3,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
         },
         {
             "line": 56,
             "column": 9,
-            "problem": "ErrorSuppression"
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
         },
         {
             "line": 58,
             "column": 9,
-            "problem": "ErrorSuppression"
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
+        },
+        {
+            "line": 75,
+            "column": 1,
+            "problem": "ErrorSuppression",
+            "suggest": "",
+            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
         },
         {
             "line": 18,
             "column": 5,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'null' is not assignable to type 'number'.",
+            "rule": "Type 'null' is not assignable to type 'number'."
         }
     ]
 }

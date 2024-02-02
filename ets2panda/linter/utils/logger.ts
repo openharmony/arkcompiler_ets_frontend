@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,35 +13,35 @@
  * limitations under the License.
  */
 
-import { Logger } from 'log4js';
+import type { Logger } from 'log4js';
 import { configure, getLogger } from 'log4js';
 
 export default class ConsoleLogger {
   private static isConfigured = false;
 
-  public static configure(): void {
+  static configure(): void {
     configure({
       appenders: {
         console: {
           type: 'console',
           layout: {
             type: 'pattern',
-            pattern: '%m',
-          },
-        },
+            pattern: '%m'
+          }
+        }
       },
       categories: {
         default: {
           appenders: ['console'],
-          level: 'all',
-        },
-      },
+          level: 'all'
+        }
+      }
     });
 
     ConsoleLogger.isConfigured = true;
   }
 
-  public static getLogger(): Logger {
+  static getLogger(): Logger {
     if (!ConsoleLogger.isConfigured) {
       ConsoleLogger.configure();
     }

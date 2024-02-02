@@ -15,14 +15,14 @@
     ],
     "nodes": [
         {
-            "line": 7,
+            "line": 22,
             "column": 19,
             "problem": "ConstructorFuncs",
             "suggest": "",
             "rule": "Constructor function type is not supported (arkts-no-ctor-signatures-funcs)"
         },
         {
-            "line": 14,
+            "line": 29,
             "column": 29,
             "problem": "ClassAsObject",
             "suggest": "",

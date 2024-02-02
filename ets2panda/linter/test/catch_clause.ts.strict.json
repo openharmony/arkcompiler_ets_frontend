@@ -17,37 +17,51 @@
         {
             "line": 17,
             "column": 13,
-            "problem": "ThrowStatement"
+            "problem": "ThrowStatement",
+            "suggest": "",
+            "rule": "\"throw\" statements cannot accept values of arbitrary types (arkts-limited-throw)"
         },
         {
             "line": 18,
-            "column": 3,
-            "problem": "CatchWithUnsupportedType"
+            "column": 10,
+            "problem": "CatchWithUnsupportedType",
+            "suggest": "",
+            "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)"
         },
         {
             "line": 18,
             "column": 13,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 23,
             "column": 13,
-            "problem": "ThrowStatement"
+            "problem": "ThrowStatement",
+            "suggest": "",
+            "rule": "\"throw\" statements cannot accept values of arbitrary types (arkts-limited-throw)"
         },
         {
             "line": 24,
-            "column": 3,
-            "problem": "CatchWithUnsupportedType"
+            "column": 10,
+            "problem": "CatchWithUnsupportedType",
+            "suggest": "",
+            "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)"
         },
         {
             "line": 24,
             "column": 13,
-            "problem": "UnknownType"
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 29,
             "column": 13,
-            "problem": "ThrowStatement"
+            "problem": "ThrowStatement",
+            "suggest": "",
+            "rule": "\"throw\" statements cannot accept values of arbitrary types (arkts-limited-throw)"
         }
     ]
 }

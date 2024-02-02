@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,10 @@
  */
 
 export class A {
-  constructor(public onAction?: () => void, public onH?: () => void) {}
+  constructor(
+    public onAction?: () => void,
+    public onH?: () => void
+  ) {}
 }
 
 export function f(a: Partial<A>) {}
@@ -30,11 +33,17 @@ export class OhosLibCC extends OhosLibC {}
 export class OhosLibCI implements OhosLibI {}
 
 export interface OhosI {
-  f: number
+  f: number;
 }
 
-export function ohFunction1({d: OhosI}): void {} // incorrect usage, but it was an issue, so we check it too
-export function ohFunction2(p: {d: OhosI}): void {}
+export function ohFunction1({ d: OhosI }): void {} // incorrect usage, but it was an issue, so we check it too
+export function ohFunction2(p: { d: OhosI }): void {}
 
 export function fooOh(): any {}
 export function barOh(a: any) {}
+
+export interface OhosInterface {
+  fld: A & {
+    [key: string]: number;
+  };
+}

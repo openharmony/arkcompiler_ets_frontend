@@ -41,19 +41,6 @@
             ]
         },
         {
-            "line": 17,
-            "column": 8,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 655,
-                    "end": 675,
-                    "replacementText": "{ default as D2 }"
-                }
-            ]
-        },
-        {
             "line": 18,
             "column": 9,
             "problem": "DefaultImport",
@@ -93,19 +80,6 @@
             ]
         },
         {
-            "line": 20,
-            "column": 8,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 785,
-                    "end": 811,
-                    "replacementText": "{ C, default as D5, D }"
-                }
-            ]
-        },
-        {
             "line": 21,
             "column": 17,
             "problem": "DefaultImport",
@@ -115,19 +89,6 @@
                     "start": 834,
                     "end": 865,
                     "replacementText": "D5, { type E, F }"
-                }
-            ]
-        },
-        {
-            "line": 21,
-            "column": 9,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 835,
-                    "end": 841,
-                    "replacementText": "E"
                 }
             ]
         }

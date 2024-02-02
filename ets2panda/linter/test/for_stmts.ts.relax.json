@@ -16,43 +16,59 @@
     "nodes": [
         {
             "line": 22,
-            "column": 1,
-            "problem": "ForInStatement"
+            "column": 14,
+            "problem": "ForInStatement",
+            "suggest": "",
+            "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
         },
         {
             "line": 22,
             "column": 17,
-            "problem": "ClassAsObject"
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         },
         {
             "line": 49,
-            "column": 1,
-            "problem": "ForInStatement"
+            "column": 14,
+            "problem": "ForInStatement",
+            "suggest": "",
+            "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
         },
         {
             "line": 75,
-            "column": 1,
-            "problem": "ForInStatement"
+            "column": 14,
+            "problem": "ForInStatement",
+            "suggest": "",
+            "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
         },
         {
             "line": 91,
             "column": 14,
-            "problem": "CommaOperator"
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
         {
             "line": 91,
             "column": 54,
-            "problem": "CommaOperator"
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
         {
             "line": 99,
             "column": 7,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 124,
             "column": 12,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         }
     ]
 }

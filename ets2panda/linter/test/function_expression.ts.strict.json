@@ -171,6 +171,13 @@
         {
             "line": 82,
             "column": 19,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 82,
+            "column": 19,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
@@ -213,9 +220,9 @@
         {
             "line": 104,
             "column": 7,
-            "problem": "FunctionApplyBindCall",
+            "problem": "FunctionBind",
             "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 108,

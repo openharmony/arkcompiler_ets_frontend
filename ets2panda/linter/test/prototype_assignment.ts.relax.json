@@ -15,15 +15,15 @@
     ],
     "nodes": [
         {
-            "line": 19,
-            "column": 1,
+            "line": 26,
+            "column": 19,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
         },
         {
-            "line": 20,
-            "column": 20,
+            "line": 21,
+            "column": 5,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
@@ -50,8 +50,8 @@
             "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)"
         },
         {
-            "line": 30,
-            "column": 26,
+            "line": 31,
+            "column": 12,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"

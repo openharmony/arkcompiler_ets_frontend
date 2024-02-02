@@ -15,76 +15,92 @@
     ],
     "nodes": [
         {
-            "line": 16,
-            "column": 1,
-            "problem": "ImportFromPath",
-            "autofixable": false
-        },
-        {
             "line": 22,
             "column": 3,
             "problem": "WithStatement",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"with\" statement is not supported (arkts-no-with)"
         },
         {
             "line": 23,
             "column": 11,
             "problem": "AnyType",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 43,
             "column": 3,
             "problem": "NonDeclarationInNamespace",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statements) (arkts-no-ns-statements)"
         },
         {
             "line": 44,
             "column": 3,
             "problem": "NonDeclarationInNamespace",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statements) (arkts-no-ns-statements)"
         },
         {
             "line": 64,
             "column": 11,
             "problem": "NamespaceAsObject",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)"
         },
         {
             "line": 67,
             "column": 15,
             "problem": "NamespaceAsObject",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)"
         },
         {
             "line": 70,
             "column": 18,
             "problem": "TypeQuery",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"typeof\" operator is allowed only in expression contexts (arkts-no-type-query)"
         },
         {
             "line": 73,
             "column": 6,
             "problem": "NamespaceAsObject",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)"
         },
         {
             "line": 75,
             "column": 20,
             "problem": "TypeQuery",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"typeof\" operator is allowed only in expression contexts (arkts-no-type-query)"
         },
         {
             "line": 78,
             "column": 9,
             "problem": "NamespaceAsObject",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)"
         },
         {
             "line": 80,
             "column": 1,
             "problem": "ImportAfterStatement",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
         },
         {
             "line": 80,
@@ -97,151 +113,97 @@
                     "end": 1655,
                     "replacementText": "def"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "\"import default as ...\" is not supported (arkts-no-import-default-as)"
         },
         {
             "line": 89,
-            "column": 1,
+            "column": 22,
             "problem": "DeclWithDuplicateName",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
         },
         {
             "line": 92,
             "column": 1,
             "problem": "ImportAfterStatement",
-            "autofixable": false
-        },
-        {
-            "line": 92,
-            "column": 8,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 1923,
-                    "end": 1947,
-                    "replacementText": "{ APIResponseType }"
-                }
-            ]
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
         },
         {
             "line": 93,
             "column": 1,
             "problem": "ImportAfterStatement",
-            "autofixable": false
-        },
-        {
-            "line": 93,
-            "column": 8,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 1969,
-                    "end": 1980,
-                    "replacementText": "* as P"
-                }
-            ]
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
         },
         {
             "line": 94,
             "column": 1,
             "problem": "ImportAfterStatement",
-            "autofixable": false
-        },
-        {
-            "line": 94,
-            "column": 10,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2002,
-                    "end": 2009,
-                    "replacementText": "T1"
-                }
-            ]
-        },
-        {
-            "line": 94,
-            "column": 19,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2011,
-                    "end": 2024,
-                    "replacementText": "T2 as T3"
-                }
-            ]
-        },
-        {
-            "line": 97,
-            "column": 1,
-            "problem": "TypeOnlyExport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2063,
-                    "end": 2094,
-                    "replacementText": "export { TypeA as TypeB };"
-                }
-            ]
-        },
-        {
-            "line": 98,
-            "column": 10,
-            "problem": "TypeOnlyExport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2104,
-                    "end": 2127,
-                    "replacementText": "TypeFoo as TypeBar"
-                }
-            ]
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
         },
         {
             "line": 106,
             "column": 1,
             "problem": "ExportAssignment",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"export = ...\" assignment is not supported (arkts-no-export-assignment)"
         },
         {
             "line": 108,
             "column": 1,
             "problem": "ImportAssignment",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"require\" and \"import\" assignment are not supported (arkts-no-require)"
         },
         {
             "line": 109,
             "column": 1,
             "problem": "ImportAssignment",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"require\" and \"import\" assignment are not supported (arkts-no-require)"
         },
         {
             "line": 111,
             "column": 5,
             "problem": "AnyType",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 111,
             "column": 5,
             "problem": "ImportAssignment",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"require\" and \"import\" assignment are not supported (arkts-no-require)"
         },
         {
             "line": 112,
             "column": 7,
             "problem": "AnyType",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 112,
             "column": 7,
             "problem": "ImportAssignment",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"require\" and \"import\" assignment are not supported (arkts-no-require)"
         }
     ]
 }

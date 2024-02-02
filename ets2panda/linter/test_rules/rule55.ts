@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,3 +31,11 @@ function returnString(): string {
 
 let x = +returnTen()    // -10 as number
 let y = +returnString() // NaN
+
+let t1: BigInt = BigInt(1)
+
+let t2 = -t1;
+let t3 = -9007199254740991n;
+
+let t4 = -(new Number(1))
+let t5 = -(BigInt(1))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,4 +30,19 @@ export declare class SomethingBar extends Something { }
 
 export declare class Bar<T extends Something> {
     constructor(arg: { new(): T });
+}
+
+export class Select<Model> {
+    public from(cls: any) {
+        return this;
+    }
+
+    // we intentionally omit generic argument of 'Select', see #14228
+    public eq(name: string): Select {
+        return this;
+    }
+
+    public query(cls: any): Promise<any> {
+        return cls.foo();
+    }
 }

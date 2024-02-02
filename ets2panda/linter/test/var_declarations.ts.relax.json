@@ -16,13 +16,17 @@
     "nodes": [
         {
             "line": 31,
-            "column": 3,
-            "problem": "ForInStatement"
+            "column": 14,
+            "problem": "ForInStatement",
+            "suggest": "",
+            "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
         },
         {
             "line": 23,
             "column": 12,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'y' is used before being assigned.",
+            "rule": "Variable 'y' is used before being assigned."
         }
     ]
 }

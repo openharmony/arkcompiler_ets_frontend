@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -124,4 +124,3 @@ class P {
 let a1 = [ { n:1, s:"1" } as P,  { n:2, s:"2" } as P ]; // OK
 let a2: P[] =  [ { n:3, s:"3" },  { n:4, s:"4" } ]; // OK
 let a3 =  [ { n:1, s:"1" },  { n:2, s:"2" } ]; // NOT OK
-  

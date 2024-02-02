@@ -25,19 +25,9 @@
             "problem": "DefaultImport"
         },
         {
-            "line": 17,
-            "column": 8,
-            "problem": "TypeOnlyImport"
-        },
-        {
             "line": 18,
             "column": 9,
             "problem": "DefaultImport"
-        },
-        {
-            "line": 18,
-            "column": 9,
-            "problem": "TypeOnlyImport"
         },
         {
             "line": 19,
@@ -50,24 +40,9 @@
             "problem": "DefaultImport"
         },
         {
-            "line": 20,
-            "column": 8,
-            "problem": "TypeOnlyImport"
-        },
-        {
             "line": 21,
             "column": 17,
             "problem": "DefaultImport"
-        },
-        {
-            "line": 21,
-            "column": 9,
-            "problem": "TypeOnlyImport"
-        },
-        {
-            "line": 21,
-            "column": 17,
-            "problem": "TypeOnlyImport"
         }
     ]
 }

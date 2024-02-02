@@ -85,13 +85,6 @@
             "rule": "Type guarding is supported with \"instanceof\" and \"as\" (arkts-no-is)"
         },
         {
-            "line": 47,
-            "column": 17,
-            "problem": "RegexLiteral",
-            "suggest": "",
-            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
-        },
-        {
             "line": 54,
             "column": 26,
             "problem": "ObjectTypeLiteral",
@@ -111,13 +104,6 @@
             "problem": "ComputedPropertyName",
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
-        },
-        {
-            "line": 66,
-            "column": 46,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
             "line": 71,

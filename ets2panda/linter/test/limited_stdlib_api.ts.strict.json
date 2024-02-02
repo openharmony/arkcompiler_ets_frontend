@@ -22,6 +22,13 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
+            "line": 31,
+            "column": 8,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
             "line": 32,
             "column": 1,
             "problem": "GlobalThis",
@@ -451,13 +458,6 @@
         {
             "line": 117,
             "column": 37,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 120,
-            "column": 13,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,7 +37,7 @@ const RESULTS_DIR = 'results'
 let testDirs = [];
 
 // forces to update all tests regardless of whether there was diff in a test result
-const force_update = false;
+let force_update = false;
 
 for (let arg of process.argv.slice(2)) {
     if (arg === '--force')
@@ -47,7 +47,7 @@ for (let arg of process.argv.slice(2)) {
 }
 
 const DEFAULT_COPYRIGHT =  [
-    "Copyright (c) 2023-2023 Huawei Device Co., Ltd.",
+    "Copyright (c) 2024 Huawei Device Co., Ltd.",
     "Licensed under the Apache License, Version 2.0 (the 'License');",
     "you may not use this file except in compliance with the License.",
     "You may obtain a copy of the License at",
@@ -72,33 +72,37 @@ function readTestFile(filePath) {
 
 function updateTest(testDir, testFile, mode) {
     let resultExt = RESULT_EXT[mode];
-    let testFileWithExt = testFile + resultExt;
+    let resultFileWithExt = testFile + resultExt;
+    let resultFilePath = path.join(testDir, resultFileWithExt);
 
     // Do not update autofix result if test is skipped
-    if (mode === Mode.AUTOFIX && fs.existsSync(path.join(testDir, testFileWithExt + AUTOFIX_SKIP_EXT))) {
+    if (mode === Mode.AUTOFIX && fs.existsSync(path.join(testDir, testFile + AUTOFIX_SKIP_EXT))) {
         return;
     }
 
-    // Update test result when 'diff' exists or the 'force' option is enabled.
-    if (!fs.existsSync(path.join(testDir, RESULTS_DIR, testFileWithExt + DIFF_EXT)) && !force_update) {
+    // Update test result when:
+    // - '.diff' exists
+    // - expected '.json' doesn't exist 
+    // - 'force' option is enabled
+    if (fs.existsSync(resultFilePath) && !fs.existsSync(path.join(testDir, RESULTS_DIR, resultFileWithExt + DIFF_EXT)) && !force_update) {
         return;
     }
 
-    let expectedResult = readTestFile(path.join(testDir, testFileWithExt));
+    let expectedResult = readTestFile(resultFilePath);
 
     const copyright = expectedResult?.copyright ?? DEFAULT_COPYRIGHT;
 
-    let actualResult = readTestFile(path.join(testDir, RESULTS_DIR, testFileWithExt));
+    let actualResult = readTestFile(path.join(testDir, RESULTS_DIR, resultFileWithExt));
     if (!actualResult || !actualResult.nodes) {
-        console.log(`Failed to update ${testFileWithExt}: couldn't read ACTUAL result file.`);
+        console.log(`Failed to update ${resultFileWithExt}: couldn't read ACTUAL result file.`);
         return;
     }
 
     // Write file with actual test results.
     let newResultJSON = JSON.stringify({ copyright, nodes: actualResult.nodes }, null, 4);
-    fs.writeFileSync(path.join(testDir, testFileWithExt), newResultJSON);
+    fs.writeFileSync(resultFilePath, newResultJSON);
 
-    console.log(`Updated ${testFileWithExt}`);
+    console.log(`Updated ${resultFileWithExt}`);
 }
 
 for (let testDir of testDirs) {
