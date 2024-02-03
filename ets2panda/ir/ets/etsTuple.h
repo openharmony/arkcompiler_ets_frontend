@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_ETS_TUPLE_H
 #define ES2PANDA_IR_ETS_TUPLE_H
 
+#include "checker/ETSchecker.h"
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
@@ -75,9 +76,8 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
-    void SetNullUndefinedFlags(std::pair<bool, bool> &containsNullOrUndefined, const checker::Type *type);
-    checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
-                                        checker::Type *spreadType);
+    static checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
+                                               checker::Type *spreadType);
 
     void Accept(ASTVisitorT *v) override
     {

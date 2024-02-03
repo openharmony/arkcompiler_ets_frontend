@@ -14,14 +14,22 @@
  */
 
 #include "etsTupleType.h"
+
+#include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
+#include "ir/ets/etsTuple.h"
 
 namespace panda::es2panda::checker {
 void ETSTupleType::ToString(std::stringstream &ss) const
 {
     ss << "[";
-    for (const auto *const type : typeList_) {
-        type->ToString(ss);
+
+    for (auto it = typeList_.begin(); it != typeList_.end(); it++) {
+        (*it)->ToString(ss);
+
+        if (std::next(it) != typeList_.end()) {
+            ss << ", ";
+        }
     }
 
     if (spreadType_ != nullptr) {
@@ -129,6 +137,20 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
     relation->Result(true);
 }
 
+Type *ETSTupleType::Substitute(TypeRelation *relation, const Substitution *substitution)
+{
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    ArenaVector<Type *> newTypeList(checker->Allocator()->Adapter());
+
+    for (auto *const tupleTypeListElement : GetTupleTypesList()) {
+        newTypeList.emplace_back(tupleTypeListElement->Substitute(relation, substitution));
+    }
+
+    auto *newSpreadType = spreadType_ == nullptr ? nullptr : spreadType_->Substitute(relation, substitution);
+    auto *newElementType = ir::ETSTuple::CalculateLUBForTuple(checker, newTypeList, newSpreadType);
+    return checker->Allocator()->New<ETSTupleType>(std::move(newTypeList), newElementType, newSpreadType);
+}
+
 void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 {
     // NOTE(mmartin): Might be not the correct casting rules, as these aren't defined yet
@@ -185,7 +207,8 @@ void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                 [[maybe_unused]] GlobalTypesHolder *globalTypes)
 {
-    return this;
+    return allocator->New<ETSTupleType>(GetTupleTypesList(),
+                                        ElementType()->Instantiate(allocator, relation, globalTypes), GetSpreadType());
 }
 
 }  // namespace panda::es2panda::checker

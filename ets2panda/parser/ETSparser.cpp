@@ -190,7 +190,6 @@ void ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector
         for (const auto &item : items) {
             auto resolved = ResolveImportPath(item);
             resolvedParsedSources_.emplace(item, resolved);
-            parsedSources_.push_back(resolved);
         }
     };
     // clang-format on
@@ -288,12 +287,9 @@ static bool IsCompitableExtension(const std::string &extension)
     return extension == ".ets" || extension == ".ts";
 }
 
-void ETSParser::CollectDefaultSources()
+std::vector<std::string> ETSParser::UnixApiDefaultSources([[maybe_unused]] const std::vector<std::string> &stdlib)
 {
     std::vector<std::string> paths;
-    std::vector<std::string> stdlib = {"std/core", "std/math",       "std/containers",
-                                       "std/time", "std/interop/js", "escompat"};
-
 #ifdef USE_UNIX_SYSCALL
     for (auto const &path : stdlib) {
         auto resolvedPath = ResolveImportPath(path);
@@ -304,6 +300,7 @@ void ETSParser::CollectDefaultSources()
         }
 
         struct dirent *entry;
+        std::set<std::string> orderedFiles;
         while ((entry = readdir(dir)) != nullptr) {
             if (entry->d_type != DT_REG) {
                 continue;
@@ -311,7 +308,6 @@ void ETSParser::CollectDefaultSources()
 
             std::string fileName = entry->d_name;
             std::string::size_type pos = fileName.find_last_of('.');
-
             if (pos == std::string::npos || !IsCompitableExtension(fileName.substr(pos))) {
                 continue;
             }
@@ -319,16 +315,29 @@ void ETSParser::CollectDefaultSources()
             std::string filePath = path + "/" + entry->d_name;
 
             if (fileName == "Object.ets") {
-                parsedSources_.emplace(parsedSources_.begin(), filePath);
+                paths.emplace(paths.begin(), filePath);
             } else {
-                parsedSources_.emplace_back(filePath);
+                orderedFiles.emplace(filePath);
             }
         }
-
+        paths.insert(paths.end(), orderedFiles.begin(), orderedFiles.end());
         closedir(dir);
     }
+#endif
+    return paths;
+}
+
+std::vector<std::string> ETSParser::CollectDefaultSources()
+{
+    std::vector<std::string> stdlib = {"std/core", "std/math",       "std/containers",
+                                       "std/time", "std/interop/js", "escompat"};
+
+#ifdef USE_UNIX_SYSCALL
+    return UnixApiDefaultSources(stdlib);
 #else
+    std::vector<std::string> paths;
     for (auto const &path : stdlib) {
+        std::set<std::string> orderedFiles;
         for (auto const &entry : fs::directory_iterator(ResolveImportPath(path))) {
             if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
                 continue;
@@ -340,12 +349,14 @@ void ETSParser::CollectDefaultSources()
             baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
 
             if (entry.path().filename().string() == "Object.ets") {
-                parsedSources_.emplace(parsedSources_.begin(), baseName);
+                paths.emplace(paths.begin(), baseName);
             } else {
-                parsedSources_.emplace_back(baseName);
+                orderedFiles.emplace(baseName);
             }
         }
+        paths.insert(paths.end(), orderedFiles.begin(), orderedFiles.end());
     }
+    return paths;
 #endif
 }
 
@@ -464,7 +475,7 @@ void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &
 #ifdef USE_UNIX_SYSCALL
     DIR *dir = opendir(resolvedPath.c_str());
     bool isIndex = false;
-    std::vector<std::string> tmpPaths;
+    std::set<std::string> tmpPaths;
 
     if (dir == nullptr) {
         ThrowSyntaxError({"Cannot open folder: ", resolvedPath});
@@ -489,9 +500,9 @@ void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &
             isIndex = true;
             break;
         } else if (fileName == "Object.ets") {
-            tmpPaths.emplace(userPaths.begin(), filePath);
+            userPaths.emplace(userPaths.begin(), filePath);
         } else {
-            tmpPaths.emplace_back(filePath);
+            tmpPaths.insert(filePath);
         }
     }
 
@@ -531,6 +542,7 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
     } else if (fs::exists(resolvedPath + "/index.ts")) {
         userPaths.emplace_back(path + "/index.ts");
     } else {
+        std::set<std::string> orderedFiles;
         for (auto const &entry : fs::directory_iterator(resolvedPath)) {
             if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
                 continue;
@@ -540,8 +552,9 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
             std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
 
             baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
-            userPaths.emplace_back(baseName);
+            orderedFiles.emplace(baseName);
         }
+        userPaths.insert(userPaths.begin(), orderedFiles.begin(), orderedFiles.end());
     }
 #endif
     return {userPaths, false};
@@ -598,9 +611,7 @@ void ETSParser::ParseDefaultSources()
     ParseImportDeclarations(statements);
     GetContext().Status() &= ~ParserStatus::IN_DEFAULT_IMPORTS;
 
-    CollectDefaultSources();
-
-    ParseSources(parsedSources_, true);
+    ParseSources(CollectDefaultSources(), true);
 }
 
 void ETSParser::ParseSource(const SourceFile &sourceFile)
@@ -730,6 +741,11 @@ void ETSParser::ParseTopLevelNextTokenDefault(ArenaVector<ir::Statement *> &stat
         return;
     }
 
+    if (IsTypeKeyword()) {
+        ParseTopLevelType(statements, defaultExport, currentPos, &ETSParser::ParseTypeAliasDeclaration);
+        return;
+    }
+
     if (initFunction != nullptr) {
         if (auto *const statement = ParseTopLevelStatement(); statement != nullptr) {
             statement->SetParent(initFunction->Body());
@@ -796,10 +812,6 @@ lexer::SourcePosition ETSParser::ParseTopLevelNextTokenResolution(ArenaVector<ir
             ParseTopLevelType(statements, defaultExport, currentPos,
                               std::bind(&ETSParser::ParseTypeDeclaration, std::placeholders::_1, false));
             // NOLINTEND(modernize-avoid-bind)
-            break;
-        }
-        case lexer::TokenType::KEYW_TYPE: {
-            ParseTopLevelType(statements, defaultExport, currentPos, &ETSParser::ParseTypeAliasDeclaration);
             break;
         }
         default: {
@@ -2299,7 +2311,7 @@ ir::MethodDefinition *ETSParser::CreateProxyMethodDefinition(ir::MethodDefinitio
     }
 
     proxyMethod += ' ';
-    if (returnType != "void") {
+    if ((function->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0) {
         proxyMethod += "return ";
     }
 
@@ -4717,6 +4729,12 @@ bool ETSParser::IsStructKeyword() const
 {
     return (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
             Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STRUCT);
+}
+
+bool ETSParser::IsTypeKeyword() const
+{
+    return (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+            Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
 }
 
 void ETSParser::ValidateInstanceOfExpression(ir::Expression *expr)

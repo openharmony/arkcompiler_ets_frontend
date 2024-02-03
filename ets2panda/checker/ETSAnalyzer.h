@@ -36,6 +36,8 @@ public:
 #undef DECLARE_ETSANALYZER_CHECK_METHOD
     checker::Type *PreferredType(ir::ObjectExpression *expr) const;
     checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
+    void CheckObjectExprProps(const ir::ObjectExpression *expr) const;
+    std::tuple<Type *, ir::Expression *> CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr) const;
 
 private:
     ETSChecker *GetETSChecker() const;
@@ -44,6 +46,7 @@ private:
                                          bool isFunctionalInterface, bool isUnionTypeWithFunctionalInterface) const;
     checker::Type *GetReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const;
+    checker::Type *SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr, ETSObjectType *objectType) const;
 };
 
 }  // namespace panda::es2panda::checker

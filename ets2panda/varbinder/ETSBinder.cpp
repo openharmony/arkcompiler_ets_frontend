@@ -1036,7 +1036,7 @@ void ETSBinder::BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpres
 
 void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
 {
-    if (decl->Source()->Str() == Program()->AbsoluteName()) {
+    if (decl->Source()->Str() == Program()->SourceFile().GetAbsolutePath()) {
         return;
     }
 

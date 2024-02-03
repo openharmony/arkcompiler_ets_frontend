@@ -291,6 +291,19 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(ir::Expression *left, ir::
                                                       bool isEqualOp, checker::Type *const leftType,
                                                       checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
 {
+    // NOTE (mmartin): These need to be done for other binary expressions, but currently it's not defined precisely when
+    // to apply this conversion
+
+    if (leftType->IsETSEnumType()) {
+        left->AddAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE);
+        unboxedL = GlobalIntType();
+    }
+
+    if (rightType->IsETSEnumType()) {
+        right->AddAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE);
+        unboxedR = GlobalIntType();
+    }
+
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
         ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
     }
@@ -503,9 +516,9 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
 }
 
 Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, lexer::SourcePosition pos,
-                                                       checker::Type *const leftType, checker::Type *const rightType)
+                                                       checker::Type *leftType, checker::Type *rightType)
 {
-    if (!leftType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+    if (!leftType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) && !leftType->IsETSTypeParameter()) {
         ThrowTypeError("Left-hand side expression must be a reference type.", pos);
     }
 
@@ -519,12 +532,30 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, le
 
     if (rightType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         Relation()->SetNode(right);
-        auto boxedRightType = PrimitiveTypeAsETSBuiltinType(rightType);
+        auto *const boxedRightType = PrimitiveTypeAsETSBuiltinType(rightType);
         if (boxedRightType == nullptr) {
             ThrowTypeError("Invalid right-hand side expression", pos);
         }
         right->AddBoxingUnboxingFlags(GetBoxingFlag(boxedRightType));
-        return FindLeastUpperBound(nonNullishLeftType, boxedRightType);
+        rightType = boxedRightType;
+    }
+
+    if (rightType->IsETSNullType()) {
+        return CreateNullishType(nonNullishLeftType, TypeFlag::NULL_TYPE, Allocator(), Relation(),
+                                 GetGlobalTypesHolder());
+    }
+
+    if (rightType->IsETSUndefinedType()) {
+        return CreateNullishType(nonNullishLeftType, TypeFlag::UNDEFINED, Allocator(), Relation(),
+                                 GetGlobalTypesHolder());
+    }
+
+    if (nonNullishLeftType->IsETSTypeParameter()) {
+        nonNullishLeftType = nonNullishLeftType->AsETSTypeParameter()->GetConstraintType();
+    }
+
+    if (rightType->IsETSTypeParameter()) {
+        rightType = rightType->AsETSTypeParameter()->GetConstraintType();
     }
 
     return FindLeastUpperBound(nonNullishLeftType, rightType);

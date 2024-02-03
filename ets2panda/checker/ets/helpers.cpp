@@ -586,7 +586,8 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbi
         if (targetType->IsETSObjectType() && targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
             if (!type->IsETSFunctionType() &&
                 !(type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                ThrowError(ident);
+                ThrowTypeError({"Assigning a non-functional variable \"", ident->Name(), "\" to a functional type"},
+                               ident->Start());
             }
 
             return;
@@ -1010,9 +1011,11 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
             containingFunc->Signature()->SetReturnType(funcReturnType);
             containingFunc->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
         } else if (!Relation()->IsAssignableTo(argumentType, funcReturnType)) {
-            ThrowTypeError(
-                "Return statement type is not compatible with previous method's return statement "
-                "type(s).",
+            const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
+            const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(argumentType);
+
+            Relation()->RaiseError(
+                {"Function cannot have different primitive return types, found '", targetType, "', '", sourceType, "'"},
                 st->Argument()->Start());
         }
     } else {
@@ -1129,8 +1132,11 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (annotationType != nullptr) {
+        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(annotationType);
+        const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
+
         AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
-                          {"Initializers type is not assignable to the target type"});
+                          {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
         if (isConst && initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) &&
             annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
             bindingVar->SetTsType(init->TsType());
@@ -1157,11 +1163,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
                        init->Start());
     }
 
-    if (initType->IsNullish() || isConst) {
-        bindingVar->SetTsType(initType);
-    } else {
-        bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
-    }
+    (initType->IsNullish() || isConst) ? bindingVar->SetTsType(initType)
+                                       : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
 
     return bindingVar->TsType();
 }
@@ -2540,10 +2543,13 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         ASSERT(typeAnn->IsETSFunctionType());
         InferTypesForLambda(lambda, typeAnn->AsETSFunctionType());
         Type *const argType = arrowFuncExpr->Check(this);
+        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(signature->Params()[index]->TsType());
+        const std::initializer_list<TypeErrorMessageElement> msg = {
+            "Type '", argType, "' is not compatible with type '", targetType, "' at index ", index + 1};
 
-        checker::InvocationContext invokationCtx(
-            Relation(), arguments[index], argType, signature->Params()[index]->TsType(), arrowFuncExpr->Start(),
-            {"Call argument at index ", index, " is not compatible with the signature's type at that index"}, flags);
+        checker::InvocationContext invokationCtx(Relation(), arguments[index], argType,
+                                                 signature->Params()[index]->TsType(), arrowFuncExpr->Start(), msg,
+                                                 flags);
 
         invocable &= invokationCtx.IsInvocable();
     }
@@ -2630,6 +2636,108 @@ std::string GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiate
     }
     implicitInstantiateArgument.append("}");
     return implicitInstantiateArgument;
+}
+
+void ETSChecker::GenerateGetterSetterBody(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
+                                          ArenaVector<ir::Expression *> &params, ir::ClassProperty *const field,
+                                          varbinder::FunctionParamScope *paramScope, bool isSetter)
+{
+    if (!isSetter) {
+        stmts.push_back(checker->Allocator()->New<ir::ReturnStatement>(field->Key()));
+        return;
+    }
+
+    auto *paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+    paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
+    paramIdent->TypeAnnotation()->SetParent(paramIdent);
+
+    auto *paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+    paramExpression->SetRange(paramIdent->Range());
+    auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
+
+    paramIdent->SetVariable(paramVar);
+    paramExpression->SetVariable(paramVar);
+
+    params.push_back(paramExpression);
+
+    auto *assignmentExpression = checker->AllocNode<ir::AssignmentExpression>(
+        field->Key(), paramExpression, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+
+    assignmentExpression->SetRange({field->Start(), field->End()});
+
+    stmts.push_back(checker->AllocNode<ir::ExpressionStatement>(assignmentExpression));
+    stmts.push_back(checker->Allocator()->New<ir::ReturnStatement>(nullptr));
+}
+
+ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const field,
+                                                              varbinder::ClassScope *classScope, bool isSetter,
+                                                              ETSChecker *checker)
+{
+    auto *paramScope = checker->Allocator()->New<varbinder::FunctionParamScope>(checker->Allocator(), classScope);
+    auto *functionScope = checker->Allocator()->New<varbinder::FunctionScope>(checker->Allocator(), paramScope);
+
+    functionScope->BindParamScope(paramScope);
+    paramScope->BindFunctionScope(functionScope);
+
+    auto flags = ir::ModifierFlags::PUBLIC;
+
+    ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
+    ArenaVector<ir::Statement *> stmts(checker->Allocator()->Adapter());
+    checker->GenerateGetterSetterBody(checker, stmts, params, field, paramScope, isSetter);
+
+    auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
+    auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
+    auto *const returnTypeAnn = isSetter ? nullptr : field->TypeAnnotation();
+    auto *func =
+        checker->AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn), body,
+                                               funcFlags, flags, true, Language(Language::Id::ETS));
+
+    func->SetRange(field->Range());
+    func->SetScope(functionScope);
+    body->SetScope(functionScope);
+
+    auto *methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+    auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(
+        checker->Allocator(), field->Key()->AsIdentifier()->Name(),
+        field->Key()->AsIdentifier()->Variable()->Declaration()->Node());
+    auto *var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+
+    methodIdent->SetVariable(var);
+
+    auto *funcExpr = checker->AllocNode<ir::FunctionExpression>(func);
+    funcExpr->SetRange(func->Range());
+    func->AddFlag(ir::ScriptFunctionFlags::METHOD);
+
+    auto *method = checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, methodIdent, funcExpr,
+                                                            flags, checker->Allocator(), false);
+
+    method->Id()->SetMutator();
+    method->SetRange(field->Range());
+    method->Function()->SetIdent(method->Id());
+    method->Function()->AddModifier(method->Modifiers());
+    method->SetVariable(var);
+
+    paramScope->BindNode(func);
+    functionScope->BindNode(func);
+
+    checker->VarBinder()->AsETSBinder()->ResolveMethodDefinition(method);
+    functionScope->BindName(classScope->Node()->AsClassDefinition()->InternalName());
+    method->Check(checker);
+
+    return method;
+}
+
+const Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(const Type *type) const
+{
+    if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+        auto const propInvoke = type->AsETSObjectType()->GetProperty(util::StringView("invoke"),
+                                                                     PropertySearchFlags::SEARCH_INSTANCE_METHOD);
+        ASSERT(propInvoke != nullptr);
+
+        return propInvoke->TsType();
+    }
+
+    return type;
 }
 
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolvedType)

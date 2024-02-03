@@ -982,6 +982,13 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
 {
     auto ttctx = TargetTypeContext(this, targetType);
 
+    if (node->HasAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE)) {
+        Ra().Emit<CallAccShort, 0>(
+            node, node->AsExpression()->TsType()->AsETSEnumType()->GetValueMethod().globalSignature->InternalName(),
+            dummyReg_, 0);
+        node->RemoveAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE);
+    }
+
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
         ApplyBoxingConversion(node);
         return;
@@ -2380,8 +2387,12 @@ void ETSGen::StringBuilderAppend(const ir::AstNode *node, VReg builder)
         signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_BUILTIN_STRING;
     }
 
-    if ((GetAccumulatorType()->IsETSObjectType() || GetAccumulatorType()->IsETSTypeParameter()) &&
-        !GetAccumulatorType()->IsETSStringType()) {
+    const checker::Type *accumulatorType = GetAccumulatorType();
+    bool isNullOrUndefined = accumulatorType->ContainsNull() || accumulatorType->ContainsUndefined();
+    bool isETSRefType = accumulatorType->IsETSObjectType() || accumulatorType->IsETSTypeParameter() ||
+                        accumulatorType->IsETSArrayType();
+    bool isStringType = accumulatorType->IsETSStringType();
+    if (isETSRefType && (!isStringType || isNullOrUndefined)) {
         if (Checker()->MayHaveNullValue(GetAccumulatorType())) {
             Label *ifnull = AllocLabel();
             Label *end = AllocLabel();

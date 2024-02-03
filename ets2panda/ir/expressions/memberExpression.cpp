@@ -292,7 +292,11 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
     arguments.emplace_back(property_);
     if (isSetter) {
-        arguments.emplace_back(Parent()->AsAssignmentExpression()->Right());
+        //  Temporary change the parent of right assignment node to check if correct "$_set" function presents.
+        //  later on in lowering the entire assignment expression will be replace top the call to that method.
+        auto *value = Parent()->AsAssignmentExpression()->Right();
+        value->SetParent(this);
+        arguments.emplace_back(value);
     }
 
     auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
@@ -311,7 +315,13 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
         checker->CheckThrowingStatements(this);
     }
 
-    return isSetter ? signature->Params()[1]->TsType() : signature->ReturnType();
+    if (isSetter) {
+        //  Restore the right assignment node's parent to keep AST invariant valid.
+        Parent()->AsAssignmentExpression()->Right()->SetParent(Parent());
+        return signature->Params()[1]->TsType();
+    }
+
+    return signature->ReturnType();
 }
 
 checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *baseType)
@@ -330,14 +340,7 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 
         // NOTE(mmartin): this can be replaced with the general type mapper, once implemented
         if ((GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-            auto *const savedNode = checker->Relation()->GetNode();
-            if (savedNode == nullptr) {
-                checker->Relation()->SetNode(this);
-            }
-
             SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tupleTypeAtIdx));
-
-            checker->Relation()->SetNode(savedNode);
         }
 
         if (tupleTypeAtIdx->IsETSObjectType() && baseType->AsETSArrayType()->ElementType()->IsETSObjectType()) {

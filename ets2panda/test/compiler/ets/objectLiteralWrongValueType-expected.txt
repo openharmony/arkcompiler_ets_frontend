@@ -518,4 +518,4 @@
     }
   }
 }
-TypeError: value type is not assignable to the property type [objectLiteralWrongValueType.ets:21:8]
+TypeError: Type 'string' is not compatible with type 'int' at property 'f' [objectLiteralWrongValueType.ets:21:8]

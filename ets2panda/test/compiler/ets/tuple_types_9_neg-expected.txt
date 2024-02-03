@@ -737,4 +737,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [tuple_types_9_neg.ets:19:36]
+TypeError: Type '[double, String, ...Int[]]' cannot be assigned to type '[double, String, Int]' [tuple_types_9_neg.ets:19:36]

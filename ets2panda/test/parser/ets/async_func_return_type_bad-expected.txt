@@ -342,4 +342,4 @@
     }
   }
 }
-TypeError: Return statement type is not compatible with the enclosing method's return type. [async_func_return_type_bad.ets:17:12]
+TypeError: Type 'string' is not compatible with the enclosing method's return type 'Promise<Int> | Int' [async_func_return_type_bad.ets:17:12]

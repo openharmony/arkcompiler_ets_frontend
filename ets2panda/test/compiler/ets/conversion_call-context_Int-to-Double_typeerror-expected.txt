@@ -679,4 +679,4 @@
     }
   }
 }
-TypeError: Call argument at index 0 is not compatible with the signature's type at that index. [conversion_call-context_Int-to-Double_typeerror.ets:20:7]
+TypeError: Type 'Int' is not compatible with type 'Double' at index 1 [conversion_call-context_Int-to-Double_typeerror.ets:20:7]

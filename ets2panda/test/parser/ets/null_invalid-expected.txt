@@ -336,4 +336,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [null_invalid.ets:17:18]
+TypeError: Type 'Object|null' cannot be assigned to type 'Object' [null_invalid.ets:17:18]

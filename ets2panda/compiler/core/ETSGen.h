@@ -984,12 +984,66 @@ private:
     }
 
     template <typename Short, typename General, typename Range>
+    bool ResolveStringFromNullishBuiltin(const ir::AstNode *node, checker::Signature *signature,
+                                         const ArenaVector<ir::Expression *> &arguments)
+    {
+        if (signature->InternalName() != Signatures::BUILTIN_STRING_FROM_NULLISH_CTOR) {
+            return false;
+        }
+        auto argExpr = arguments[0];
+        if (argExpr->IsExpression()) {
+            if (argExpr->AsExpression()->IsNullLiteral()) {
+                LoadAccumulatorString(node, "null");
+                return true;
+            }
+            if (argExpr->AsExpression()->IsUndefinedLiteral()) {
+                LoadAccumulatorString(node, "undefined");
+                return true;
+            }
+        }
+
+        Label *isNull = AllocLabel();
+        Label *end = AllocLabel();
+#ifdef PANDA_WITH_ETS
+        Label *isUndefined = AllocLabel();
+#endif
+        COMPILE_ARG(0);
+        LoadAccumulator(node, arg0);
+        if (argExpr->TsType()->IsNullish()) {
+            BranchIfNull(node, isNull);
+#ifdef PANDA_WITH_ETS
+            Sa().Emit<EtsIsundefined>(node);
+            BranchIfTrue(node, isUndefined);
+#endif
+        }
+        LoadAccumulator(node, arg0);
+        CastToString(node);
+        StoreAccumulator(node, arg0);
+        Ra().Emit<Short, 1>(node, Signatures::BUILTIN_STRING_FROM_STRING_CTOR, arg0, dummyReg_);
+        JumpTo(node, end);
+        if (argExpr->TsType()->IsNullish()) {
+            SetLabel(node, isNull);
+            LoadAccumulatorString(node, "null");
+#ifdef PANDA_WITH_ETS
+            JumpTo(node, end);
+            SetLabel(node, isUndefined);
+            LoadAccumulatorString(node, "undefined");
+#endif
+        }
+        SetLabel(node, end);
+        return true;
+    }
+
+    template <typename Short, typename General, typename Range>
     void CallImpl(const ir::AstNode *node, checker::Signature *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);
-        const auto name = signature->InternalName();
+        if (ResolveStringFromNullishBuiltin<Short, General, Range>(node, signature, arguments)) {
+            return;
+        }
 
+        const auto name = signature->InternalName();
         switch (arguments.size()) {
             case 0U: {
                 Ra().Emit<Short, 0>(node, name, dummyReg_, dummyReg_);

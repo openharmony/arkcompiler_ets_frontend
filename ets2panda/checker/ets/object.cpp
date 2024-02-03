@@ -719,6 +719,7 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
         if (isGetterSetter && !functionOverridden) {
             for (auto *field : classType->Fields()) {
                 if (field->Name() == (*it)->Name()) {
+                    field->Declaration()->Node()->AddModifier(ir::ModifierFlags::SETTER);
                     it = abstractsToBeImplemented.erase(it);
                     functionOverridden = true;
                     break;
@@ -813,6 +814,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     }
 
     ValidateOverriding(classType, classDef->Start());
+    TransformProperties(classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);
     CheckGetterSetterProperties(classType);
@@ -1248,8 +1250,10 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
 {
     auto searchFlag = GetInitialSearchFlags(memberExpr);
     searchFlag |= PropertySearchFlags::SEARCH_IN_BASE | PropertySearchFlags::SEARCH_IN_INTERFACES;
-
-    if (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
+    if (targetRef != nullptr &&
+        (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
+         (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) &&
+          targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
         searchFlag &= ~(PropertySearchFlags::SEARCH_INSTANCE);
     } else if (memberExpr->Object()->IsThisExpression() ||
                (memberExpr->Object()->IsIdentifier() && memberExpr->ObjType()->GetDeclNode() != nullptr &&
@@ -1441,7 +1445,7 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
             continue;
         }
 
-        if (!IsSameDeclarationType(it, found)) {
+        if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
             const char *targetType {};
 
             if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
@@ -1465,6 +1469,64 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
                             it->Name(), " is inherited with a different declaration type"},
                            classDef->Super()->Start());
         }
+    }
+}
+
+void ETSChecker::TransformProperties(ETSObjectType *classType)
+{
+    auto propertyList = classType->Fields();
+    auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
+
+    for (auto *const field : propertyList) {
+        ASSERT(field->Declaration()->Node()->IsClassProperty());
+        auto *const classProp = field->Declaration()->Node()->AsClassProperty();
+
+        if ((field->Declaration()->Node()->Modifiers() & ir::ModifierFlags::SETTER) == 0U) {
+            continue;
+        }
+
+        field->AddFlag(varbinder::VariableFlags::GETTER_SETTER);
+
+        auto *const scope = this->Scope();
+        ASSERT(scope->IsClassScope());
+
+        ir::MethodDefinition *getter = GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), false, this);
+        classDef->Body().push_back(getter);
+        classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(getter->Variable()->AsLocalVariable());
+
+        auto *const methodScope = scope->AsClassScope()->InstanceMethodScope();
+        auto name = getter->Key()->AsIdentifier()->Name();
+
+        auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
+        auto *const var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
+        var->AddFlag(varbinder::VariableFlags::METHOD);
+
+        if (var == nullptr) {
+            auto *const prevDecl = methodScope->FindDecl(name);
+            ASSERT(prevDecl->IsFunctionDecl());
+            prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
+
+            if (!classProp->IsReadonly()) {
+                ir::MethodDefinition *const setter =
+                    GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
+
+                classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
+                prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
+            }
+
+            getter->Function()->Id()->SetVariable(
+                methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
+            continue;
+        }
+
+        if (!classProp->IsReadonly()) {
+            ir::MethodDefinition *const setter =
+                GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
+
+            classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
+            getter->AddOverload(setter);
+        }
+        getter->Function()->Id()->SetVariable(var);
     }
 }
 

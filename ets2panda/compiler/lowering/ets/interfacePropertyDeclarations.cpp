@@ -49,14 +49,12 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
         paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
         paramIdent->TypeAnnotation()->SetParent(paramIdent);
 
-        auto paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+        auto *const paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
         paramExpression->SetRange(paramIdent->Range());
-        const auto [_, __, param_var] = paramScope->AddParamDecl(checker->Allocator(), paramExpression);
-        (void)_;
-        (void)__;
+        auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
 
-        paramIdent->SetVariable(param_var);
-        paramExpression->SetVariable(param_var);
+        paramIdent->SetVariable(paramVar);
+        paramExpression->SetVariable(paramVar);
 
         params.push_back(paramExpression);
     }
@@ -122,6 +120,7 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
 
         auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(), name, getter);
         auto var = methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+        var->AddFlag(varbinder::VariableFlags::METHOD);
 
         if (var == nullptr) {
             auto prevDecl = methodScope->FindDecl(name);

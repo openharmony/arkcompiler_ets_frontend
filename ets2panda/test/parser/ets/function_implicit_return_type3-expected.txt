@@ -465,4 +465,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [function_implicit_return_type3.ets:18:27]
+TypeError: Type '(i: int) => void' cannot be assigned to type '(i: int) => int' [function_implicit_return_type3.ets:18:27]

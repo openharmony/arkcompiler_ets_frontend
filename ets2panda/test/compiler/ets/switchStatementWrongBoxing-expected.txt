@@ -696,4 +696,4 @@
     }
   }
 }
-TypeError: Switch case type byte is not comparable to discriminant type Int [switchStatementWrongBoxing.ets:21:18]
+TypeError: Switch case type 'byte' is not comparable to discriminant type 'Int' [switchStatementWrongBoxing.ets:21:18]

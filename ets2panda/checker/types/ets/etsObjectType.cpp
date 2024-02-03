@@ -272,38 +272,51 @@ std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties()
     return foreignProps;
 }
 
-std::unordered_map<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
+ArenaMap<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
 {
-    std::unordered_map<util::StringView, const varbinder::LocalVariable *> propMap;
+    ArenaMap<util::StringView, const varbinder::LocalVariable *> propMap(allocator_->Adapter());
     EnsurePropertiesInstantiated();
-    propMap.reserve(properties_.size());
-    Iterate([&propMap](const varbinder::LocalVariable *var) { propMap.insert({var->Name(), var}); });
+    Iterate([&propMap](const varbinder::LocalVariable *var) { propMap.emplace(var->Name(), var); });
 
     return propMap;
 }
 
 void ETSObjectType::ToString(std::stringstream &ss) const
 {
-    ss << name_;
+    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+        if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
+            !name_.Empty()) {
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+        }
+        GetFunctionalInterfaceInvokeType()->ToString(ss);
+    } else {
+        ss << name_;
+    }
 
     if (!typeArguments_.empty()) {
-        auto const typeArgumentsSize = typeArguments_.size();
         ss << compiler::Signatures::GENERIC_BEGIN;
-        typeArguments_[0]->ToString(ss);
-        for (std::size_t i = 1U; i < typeArgumentsSize; ++i) {
-            ss << ',';
-            typeArguments_[i]->ToString(ss);
+        for (auto arg = typeArguments_.cbegin(); arg != typeArguments_.cend(); ++arg) {
+            (*arg)->ToString(ss);
+
+            if (next(arg) != typeArguments_.cend()) {
+                ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_COMMA);
+            }
         }
         ss << compiler::Signatures::GENERIC_END;
     }
 
     if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
         !name_.Empty()) {
+        if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
+        }
         if (ContainsNull()) {
-            ss << "|null";
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
+               << lexer::TokenToString(lexer::TokenType::LITERAL_NULL);
         }
         if (ContainsUndefined()) {
-            ss << "|undefined";
+            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
+               << lexer::TokenToString(lexer::TokenType::KEYW_UNDEFINED);
         }
     }
 }
@@ -321,7 +334,7 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         return;
     }
 
-    if (relation->IgnoreTypeParameters() || (this == other)) {
+    if ((relation->IgnoreTypeParameters() && !HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) || (this == other)) {
         relation->Result(true);
         return;
     }
@@ -392,16 +405,18 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
     IdenticalUptoNullability(relation, other);
 }
 
-bool ETSObjectType::CheckIdenticalFlags(ETSObjectFlags target) const
+bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
 {
-    auto cleanedTargetFlags = static_cast<ETSObjectFlags>(target & (~ETSObjectFlags::COMPLETELY_RESOLVED));
-    cleanedTargetFlags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
-    cleanedTargetFlags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
-    cleanedTargetFlags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
-    auto cleanedSelfFlags = static_cast<ETSObjectFlags>(ObjectFlags() & (~ETSObjectFlags::COMPLETELY_RESOLVED));
-    cleanedSelfFlags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
-    cleanedSelfFlags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
-    cleanedSelfFlags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+    constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::COMPLETELY_RESOLVED | ETSObjectFlags::INCOMPLETE_INSTANTIATION |
+                                     ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
+                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
+
+    auto cleanedTargetFlags = target;
+    cleanedTargetFlags &= ~FLAGS_TO_REMOVE;
+
+    auto cleanedSelfFlags = ObjectFlags();
+    cleanedSelfFlags &= ~FLAGS_TO_REMOVE;
+
     return cleanedSelfFlags == cleanedTargetFlags;
 }
 
@@ -604,6 +619,40 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
     conversion::Forbidden(relation);
 }
 
+bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, TypeRelation *const relation,
+                                            Type *const source)
+{
+    // 3.8.3 Subtyping among Array Types
+    auto const *const base = GetConstOriginalBaseType();
+    if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
+        relation->Result(true);
+        return true;
+    }
+
+    if (source->IsETSTypeParameter()) {
+        IsSupertypeOf(relation, source->AsETSTypeParameter()->GetConstraintType());
+        return true;
+    }
+
+    if (!source->IsETSObjectType() ||
+        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
+                                                  ETSObjectFlags::NULL_TYPE)) {
+        return true;
+    }
+
+    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
+        return true;
+    }
+    // All classes and interfaces are subtypes of Object
+    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
+        relation->Result(true);
+        return true;
+    }
+
+    IdenticalUptoNullability(relation, source);
+    return relation->IsTrue();
+}
+
 void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
@@ -620,30 +669,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    // 3.8.3 Subtyping among Array Types
-    auto const *const base = GetConstOriginalBaseType();
-    if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
-        relation->Result(true);
-        return;
-    }
-
-    if (!source->IsETSObjectType() ||
-        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
-                                                  ETSObjectFlags::NULL_TYPE)) {
-        return;
-    }
-
-    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
-        return;
-    }
-    // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
-        relation->Result(true);
-        return;
-    }
-
-    IdenticalUptoNullability(relation, source);
-    if (relation->IsTrue()) {
+    if (DefaultObjectTypeChecks(etsChecker, relation, source)) {
         return;
     }
 
@@ -769,7 +795,8 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
                                                                const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const copiedPropType = checker->GetTypeOfVariable(prop)->Substitute(relation, substitution);
+    auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
+    auto *const copiedPropType = varType->Substitute(relation, substitution);
     auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
     copiedPropType->SetVariable(copiedProp);
     copiedProp->SetTsType(copiedPropType);

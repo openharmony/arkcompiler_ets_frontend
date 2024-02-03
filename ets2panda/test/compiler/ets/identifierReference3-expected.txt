@@ -586,4 +586,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [identifierReference3.ets:20:9]
+TypeError: Type 'string' cannot be assigned to type 'int' [identifierReference3.ets:20:9]

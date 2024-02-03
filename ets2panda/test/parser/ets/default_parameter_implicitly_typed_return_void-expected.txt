@@ -1100,8 +1100,8 @@
                           }
                         },
                         {
-                          "type": "ReturnStatement",
-                          "argument": {
+                          "type": "ExpressionStatement",
+                          "expression": {
                             "type": "CallExpression",
                             "callee": {
                               "type": "Identifier",

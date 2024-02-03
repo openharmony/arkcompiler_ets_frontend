@@ -15,7 +15,6 @@
 
 #include "etsTuple.h"
 
-#include "checker/ETSchecker.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "ir/astDump.h"
 
@@ -79,80 +78,6 @@ checker::Type *ETSTuple::Check([[maybe_unused]] checker::ETSChecker *const check
     return GetType(checker);
 }
 
-void ETSTuple::SetNullUndefinedFlags(std::pair<bool, bool> &containsNullOrUndefined, const checker::Type *const type)
-{
-    if (type->HasTypeFlag(checker::TypeFlag::NULLISH)) {
-        containsNullOrUndefined.first = true;
-    }
-
-    if (type->HasTypeFlag(checker::TypeFlag::UNDEFINED)) {
-        containsNullOrUndefined.second = true;
-    }
-}
-
-checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker,
-                                              ArenaVector<checker::Type *> &typeList, checker::Type *const spreadType)
-{
-    if (typeList.empty()) {
-        return spreadType == nullptr ? checker->GlobalETSObjectType() : spreadType;
-    }
-
-    std::pair<bool, bool> containsNullOrUndefined = {false, false};
-
-    bool allElementsAreSame =
-        std::all_of(typeList.begin(), typeList.end(),
-                    [this, &checker, &typeList, &containsNullOrUndefined](checker::Type *const element) {
-                        SetNullUndefinedFlags(containsNullOrUndefined, element);
-                        return checker->Relation()->IsIdenticalTo(typeList[0], element);
-                    });
-
-    if (spreadType != nullptr) {
-        SetNullUndefinedFlags(containsNullOrUndefined, spreadType);
-        allElementsAreSame = allElementsAreSame && checker->Relation()->IsIdenticalTo(typeList[0], spreadType);
-    }
-
-    // If only one type present in the tuple, that will be the holder array type. If any two not identical types
-    // present, primitives will be boxed, and LUB is calculated for all of them.
-    // That makes it possible to assign eg. `[int, int, ...int[]]` tuple type to `int[]` array type. Because a `short[]`
-    // array already isn't assignable to `int[]` array, that preserve that the `[int, short, ...int[]]` tuple type's
-    // element type will be calculated to `Object[]`, which is not assignable to `int[]` array either.
-    if (allElementsAreSame) {
-        return typeList[0];
-    }
-
-    auto *const savedRelationNode = checker->Relation()->GetNode();
-    checker->Relation()->SetNode(this);
-
-    auto getBoxedTypeOrType = [&checker](checker::Type *const type) {
-        auto *const boxedType = checker->PrimitiveTypeAsETSBuiltinType(type);
-        return boxedType == nullptr ? type : boxedType;
-    };
-
-    checker::Type *lubType = getBoxedTypeOrType(typeList[0]);
-
-    for (std::size_t idx = 1; idx < typeList.size(); ++idx) {
-        lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(typeList[idx]));
-    }
-
-    if (spreadType != nullptr) {
-        lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(spreadType));
-    }
-
-    const auto nullishUndefinedFlags =
-        (containsNullOrUndefined.first ? checker::TypeFlag::NULLISH | checker::TypeFlag::NULL_TYPE
-                                       : checker::TypeFlag::NONE) |
-        (containsNullOrUndefined.second ? checker::TypeFlag::UNDEFINED : checker::TypeFlag::NONE);
-
-    if (nullishUndefinedFlags != checker::TypeFlag::NONE) {
-        lubType = checker->CreateNullishType(lubType, nullishUndefinedFlags, checker->Allocator(), checker->Relation(),
-                                             checker->GetGlobalTypesHolder());
-    }
-
-    checker->Relation()->SetNode(savedRelationNode);
-
-    return lubType;
-}
-
 checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 {
     if (TsType() != nullptr) {
@@ -180,6 +105,83 @@ checker::Type *ETSTuple::GetType(checker::ETSChecker *const checker)
 
     SetTsType(tupleType);
     return TsType();
+}
+
+static void SetNullUndefinedFlags(std::pair<bool, bool> &containsNullOrUndefined, const checker::Type *const type)
+{
+    if (type->HasTypeFlag(checker::TypeFlag::NULLISH)) {
+        containsNullOrUndefined.first = true;
+    }
+
+    if (type->HasTypeFlag(checker::TypeFlag::UNDEFINED)) {
+        containsNullOrUndefined.second = true;
+    }
+}
+
+checker::Type *ETSTuple::CalculateLUBForTuple(checker::ETSChecker *const checker,
+                                              ArenaVector<checker::Type *> &typeList, checker::Type *const spreadType)
+{
+    if (typeList.empty()) {
+        return spreadType == nullptr ? checker->GlobalETSObjectType() : spreadType;
+    }
+
+    std::pair<bool, bool> containsNullOrUndefined = {false, false};
+
+    bool allElementsAreSame =
+        std::all_of(typeList.begin(), typeList.end(),
+                    [&checker, &typeList, &containsNullOrUndefined](checker::Type *const element) {
+                        SetNullUndefinedFlags(containsNullOrUndefined, element);
+                        return checker->Relation()->IsIdenticalTo(typeList[0], element);
+                    });
+
+    if (spreadType != nullptr) {
+        SetNullUndefinedFlags(containsNullOrUndefined, spreadType);
+        allElementsAreSame = allElementsAreSame && checker->Relation()->IsIdenticalTo(typeList[0], spreadType);
+    }
+
+    // If only one type present in the tuple, that will be the holder array type. If any two not identical types
+    // present, primitives will be boxed, and LUB is calculated for all of them.
+    // That makes it possible to assign eg. `[int, int, ...int[]]` tuple type to `int[]` array type. Because a
+    // `short[]` array already isn't assignable to `int[]` array, that preserve that the `[int, short, ...int[]]`
+    // tuple type's element type will be calculated to `Object[]`, which is not assignable to `int[]` array either.
+    if (allElementsAreSame) {
+        return typeList[0];
+    }
+
+    auto getBoxedTypeOrType = [&checker](checker::Type *const type) {
+        auto *const boxedType = checker->PrimitiveTypeAsETSBuiltinType(type);
+        return boxedType == nullptr ? type : boxedType;
+    };
+
+    checker::Type *lubType = getBoxedTypeOrType(typeList[0]);
+
+    for (std::size_t idx = 1; idx < typeList.size(); ++idx) {
+        if (typeList[idx]->IsETSTypeParameter()) {
+            lubType = typeList[idx]->AsETSTypeParameter()->GetConstraintType();
+            continue;
+        }
+        lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(typeList[idx]));
+    }
+
+    if (spreadType != nullptr) {
+        if (spreadType->IsETSTypeParameter()) {
+            lubType = spreadType->AsETSTypeParameter()->GetConstraintType();
+        } else {
+            lubType = checker->FindLeastUpperBound(lubType, getBoxedTypeOrType(spreadType));
+        }
+    }
+
+    const auto nullishUndefinedFlags =
+        (containsNullOrUndefined.first ? checker::TypeFlag::NULLISH | checker::TypeFlag::NULL_TYPE
+                                       : checker::TypeFlag::NONE) |
+        (containsNullOrUndefined.second ? checker::TypeFlag::UNDEFINED : checker::TypeFlag::NONE);
+
+    if (nullishUndefinedFlags != checker::TypeFlag::NONE) {
+        lubType = checker->CreateNullishType(lubType, nullishUndefinedFlags, checker->Allocator(), checker->Relation(),
+                                             checker->GetGlobalTypesHolder());
+    }
+
+    return lubType;
 }
 
 }  // namespace panda::es2panda::ir

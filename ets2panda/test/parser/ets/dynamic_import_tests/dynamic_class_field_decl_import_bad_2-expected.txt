@@ -1,1 +1,1 @@
-TypeError: Initializers type is not assignable to the target type [dynamic_class_field_decl_import_bad_2.ets:23:21]
+TypeError: Type 'double' cannot be assigned to type 'String' [dynamic_class_field_decl_import_bad_2.ets:23:21]

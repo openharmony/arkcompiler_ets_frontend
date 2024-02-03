@@ -1012,4 +1012,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [n_assignGenericWithNullableTypeParamToNonNullable.ets:21:19]
+TypeError: Type 'A<B|null>' cannot be assigned to type 'A<B>' [n_assignGenericWithNullableTypeParamToNonNullable.ets:21:19]

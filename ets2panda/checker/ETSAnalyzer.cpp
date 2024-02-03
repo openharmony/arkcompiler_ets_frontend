@@ -506,9 +506,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     checker->ValidateArrayIndex(expr->dimension_, true);
 
     if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && !elementType->IsNullish() &&
-        !elementType->HasTypeFlag(TypeFlag::GENERIC) && !elementType->HasTypeFlag(TypeFlag::ETS_ARRAY) &&
         elementType->ToAssemblerName().str() != "Ball") {
-        // Check only valid for ETS_PRIMITIVE and IsNullish, GENERIC and ETS_ARRAY are workaround checks for stdlib
         // Ball is workaround for koala ui lib
         if (elementType->IsETSObjectType()) {
             auto *calleeObj = elementType->AsETSObjectType();
@@ -725,7 +723,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
                         currentElement->Start());
                 }
 
-                const checker::CastingContext cast(
+                checker::AssignmentContext(
                     checker->Relation(), currentElement, elementType, compareType, currentElement->Start(),
                     {"Array initializer's type is not assignable to tuple type at index: ", idx});
 
@@ -823,18 +821,30 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *expr) const
         checker->ThrowTypeError("Setting the length of an array is not permitted", expr->Left()->Start());
     }
 
-    if (expr->Left()->IsIdentifier()) {
-        expr->target_ = expr->Left()->AsIdentifier()->Variable();
-    } else {
-        expr->target_ = expr->Left()->AsMemberExpression()->PropVar();
-    }
+    expr->target_ = expr->Left()->IsIdentifier() ? expr->Left()->AsIdentifier()->Variable()
+                                                 : expr->Left()->AsMemberExpression()->PropVar();
 
     if (expr->target_ != nullptr) {
         checker->ValidateUnaryOperatorOperand(expr->target_);
     }
 
+    auto [sourceType, relationNode] = CheckAssignmentExprOperatorType(expr);
+    const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(leftType);
+    const checker::Type *rightType = checker->TryGettingFunctionTypeFromInvokeFunction(sourceType);
+
+    checker::AssignmentContext(checker->Relation(), relationNode, sourceType, leftType, expr->Right()->Start(),
+                               {"Type '", rightType, "' cannot be assigned to type '", targetType, "'"});
+
+    expr->SetTsType(expr->Left()->TsType());
+    return expr->TsType();
+}
+
+std::tuple<Type *, ir::Expression *> ETSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
     checker::Type *sourceType {};
     ir::Expression *relationNode = expr->Right();
+    auto *leftType = expr->Left()->Check(checker);
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
         case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
@@ -875,11 +885,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *expr) const
         }
     }
 
-    checker::AssignmentContext(checker->Relation(), relationNode, sourceType, leftType, expr->Right()->Start(),
-                               {"Initializers type is not assignable to the target type"});
-
-    expr->SetTsType(expr->Left()->TsType());
-    return expr->TsType();
+    return {sourceType, relationNode};
 }
 
 checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
@@ -1145,6 +1151,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
 
     if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+        checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
         expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
         returnType = expr->Signature()->ReturnType();
         // NOTE(vpukhov): #14902 substituted signature is not updated
@@ -1255,6 +1262,15 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) c
     UNREACHABLE();
 }
 
+checker::Type *ETSAnalyzer::SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr,
+                                             ETSObjectType *objectType) const
+{
+    expr->SetObjectType(objectType);
+    auto [resType, resVar] = expr->ResolveObjectMember(checker);
+    expr->SetPropVar(resVar);
+    return expr->AdjustType(checker, resType);
+}
+
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1285,15 +1301,16 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
         return expr->AdjustType(checker, expr->CheckComputed(checker, baseType));
     }
 
-    if (baseType->IsETSArrayType() && expr->Property()->AsIdentifier()->Name().Is("length")) {
-        return expr->AdjustType(checker, checker->GlobalIntType());
+    if (baseType->IsETSArrayType()) {
+        if (expr->Property()->AsIdentifier()->Name().Is("length")) {
+            return expr->AdjustType(checker, checker->GlobalIntType());
+        }
+
+        return SetAndAdjustType(checker, expr, checker->GlobalETSObjectType());
     }
 
     if (baseType->IsETSObjectType()) {
-        expr->SetObjectType(baseType->AsETSObjectType());
-        auto [resType, resVar] = expr->ResolveObjectMember(checker);
-        expr->SetPropVar(resVar);
-        return expr->AdjustType(checker, resType);
+        return SetAndAdjustType(checker, expr, baseType->AsETSObjectType());
     }
 
     if (baseType->IsETSEnumType() || baseType->IsETSStringEnumType()) {
@@ -1338,7 +1355,9 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         checker->ThrowTypeError({"need to specify target type for class composite"}, expr->Start());
     }
     if (!expr->PreferredType()->IsETSObjectType()) {
-        checker->ThrowTypeError({"target type for class composite needs to be an object type"}, expr->Start());
+        checker->ThrowTypeError(
+            {"Target type for class composite needs to be an object type, found '", expr->PreferredType(), "'"},
+            expr->Start());
     }
 
     if (expr->PreferredType()->IsETSDynamicType()) {
@@ -1372,6 +1391,17 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         checker->ThrowTypeError({"type ", objType->Name(), " has no parameterless constructor"}, expr->Start());
     }
 
+    CheckObjectExprProps(expr);
+
+    expr->SetTsType(objType);
+    return objType;
+}
+
+void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
+    checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();
+
     for (ir::Expression *propExpr : expr->Properties()) {
         ASSERT(propExpr->IsProperty());
         ir::Property *prop = propExpr->AsProperty();
@@ -1404,12 +1434,13 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
             value->AsObjectExpression()->SetPreferredType(propType);
         }
         value->SetTsType(value->Check(checker));
-        checker::AssignmentContext(checker->Relation(), value, value->TsType(), propType, value->Start(),
-                                   {"value type is not assignable to the property type"});
-    }
 
-    expr->SetTsType(objType);
-    return objType;
+        const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(propType);
+
+        checker::AssignmentContext(
+            checker->Relation(), value, value->TsType(), propType, value->Start(),
+            {"Type '", value->TsType(), "' is not compatible with type '", targetType, "' at property '", pname, "'"});
+    }
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) const
@@ -2137,9 +2168,13 @@ void CheckReturnType(ETSChecker *checker, checker::Type *funcReturnType, checker
                                     stArgument->Start());
         }
     } else {
-        checker::AssignmentContext(checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
-                                   {"Return statement type is not compatible with the enclosing method's return type."},
-                                   checker::TypeRelationFlag::DIRECT_RETURN);
+        const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
+        const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
+
+        checker::AssignmentContext(
+            checker->Relation(), stArgument, argumentType, funcReturnType, stArgument->Start(),
+            {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
+            checker::TypeRelationFlag::DIRECT_RETURN);
     }
 }
 
@@ -2167,10 +2202,13 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
         auto arrowFunc = stArgument->AsArrowFunctionExpression();
         auto typeAnnotation = arrowFunc->CreateTypeAnnotation(checker);
         funcReturnType = typeAnnotation->GetType(checker);
-        checker::AssignmentContext(checker->Relation(), arrowFunc, arrowFunc->TsType(), funcReturnType,
-                                   stArgument->Start(),
-                                   {"Return statement type is not compatible with the enclosing method's return type."},
-                                   checker::TypeRelationFlag::DIRECT_RETURN);
+        const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(arrowFunc->TsType());
+        const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
+
+        checker::AssignmentContext(
+            checker->Relation(), arrowFunc, arrowFunc->TsType(), funcReturnType, stArgument->Start(),
+            {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
+            checker::TypeRelationFlag::DIRECT_RETURN);
     }
 
     containingFunc->Signature()->SetReturnType(funcReturnType);
@@ -2353,16 +2391,17 @@ checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
             } else {
                 checker::AssignmentContext(
                     checker->Relation(), st->discriminant_, caseType, unboxedDiscType, it->Test()->Start(),
-                    {"Switch case type ", caseType, " is not comparable to discriminant type ", comparedExprType},
+                    {"Switch case type '", caseType, "' is not comparable to discriminant type '", comparedExprType,
+                     "'"},
                     (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
                                                          : checker::TypeRelationFlag::NO_UNBOXING) |
                         checker::TypeRelationFlag::NO_BOXING);
             }
 
             if (!validCaseType) {
-                checker->ThrowTypeError(
-                    {"Switch case type ", caseType, " is not comparable to discriminant type ", comparedExprType},
-                    it->Test()->Start());
+                checker->ThrowTypeError({"Switch case type '", caseType, "' is not comparable to discriminant type '",
+                                         comparedExprType, "'"},
+                                        it->Test()->Start());
             }
         }
 
