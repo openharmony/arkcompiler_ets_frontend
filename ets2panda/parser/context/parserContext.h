@@ -98,7 +98,7 @@ public:
         program_ = program;
     }
 
-    Language GetLanguge() const
+    Language GetLanguage() const
     {
         return lang_;
     }

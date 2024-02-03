@@ -450,34 +450,51 @@ static void ResolveDeclaredMethodsOfObject(ETSChecker *checker, ETSObjectType *t
 {
     for (auto &[_, it] : scope->InstanceMethodScope()->Bindings()) {
         (void)_;
-        auto *node = it->Declaration()->Node()->AsMethodDefinition();
+        auto *method = it->Declaration()->Node()->AsMethodDefinition();
+        auto *function = method->Function();
 
-        if (node->Function()->IsProxy()) {
+        function->Id()->SetVariable(method->Id()->Variable());
+        for (ir::MethodDefinition *const overload : method->Overloads()) {
+            overload->Function()->Id()->SetVariable(overload->Id()->Variable());
+        }
+
+        if (function->IsProxy()) {
             continue;
         }
 
-        it->AddFlag(checker->GetAccessFlagFromNode(node));
-        auto *funcType = checker->BuildMethodSignature(node);
+        it->AddFlag(checker->GetAccessFlagFromNode(method));
+        auto *funcType = checker->BuildMethodSignature(method);
         it->SetTsType(funcType);
         funcType->SetVariable(it);
-        node->SetTsType(funcType);
+        method->SetTsType(funcType);
         type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
     }
 
     for (auto &[_, it] : scope->StaticMethodScope()->Bindings()) {
         (void)_;
-        if (!it->Declaration()->Node()->IsMethodDefinition() ||
-            it->Declaration()->Node()->AsMethodDefinition()->Function()->IsProxy()) {
+        if (!it->Declaration()->Node()->IsMethodDefinition()) {
             continue;
         }
-        auto *node = it->Declaration()->Node()->AsMethodDefinition();
-        it->AddFlag(checker->GetAccessFlagFromNode(node));
-        auto *funcType = checker->BuildMethodSignature(node);
+
+        auto *method = it->Declaration()->Node()->AsMethodDefinition();
+        auto *function = method->Function();
+
+        function->Id()->SetVariable(method->Id()->Variable());
+        for (ir::MethodDefinition *const overload : method->Overloads()) {
+            overload->Function()->Id()->SetVariable(overload->Id()->Variable());
+        }
+
+        if (function->IsProxy()) {
+            continue;
+        }
+
+        it->AddFlag(checker->GetAccessFlagFromNode(method));
+        auto *funcType = checker->BuildMethodSignature(method);
         it->SetTsType(funcType);
         funcType->SetVariable(it);
-        node->SetTsType(funcType);
+        method->SetTsType(funcType);
 
-        if (node->IsConstructor()) {
+        if (method->IsConstructor()) {
             type->AddConstructSignature(funcType->CallSignatures());
             continue;
         }
@@ -861,6 +878,7 @@ void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
         }
     }
     for (auto *it : asyncImpls) {
+        it->SetParent(classDef);
         it->Check(this);
         classDef->Body().push_back(it);
     }
@@ -1505,6 +1523,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
 
         ir::MethodDefinition *getter = GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), false, this);
         classDef->Body().push_back(getter);
+        getter->SetParent(classDef);
         classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(getter->Variable()->AsLocalVariable());
 
         auto *const methodScope = scope->AsClassScope()->InstanceMethodScope();
@@ -1522,6 +1541,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
             if (!classProp->IsReadonly()) {
                 ir::MethodDefinition *const setter =
                     GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
+                setter->SetParent(classDef);
 
                 classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
                 prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
@@ -1535,6 +1555,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
         if (!classProp->IsReadonly()) {
             ir::MethodDefinition *const setter =
                 GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
+            setter->SetParent(classDef);
 
             classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
             getter->AddOverload(setter);

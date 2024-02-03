@@ -266,6 +266,10 @@ private:
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                 ir::ModifierFlags memberModifiers, ir::Identifier *identNode,
                                 const lexer::SourcePosition &startLoc);
+
+    ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
+                                                               ir::TypeNode *typeReference,
+                                                               ir::TypeNode *baseTypeReference);
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();

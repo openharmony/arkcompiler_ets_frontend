@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,30 +15,24 @@
 
 #include "tsAsExpression.h"
 
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
-#include "checker/ets/castingContext.h"
-#include "checker/types/ets/etsUnionType.h"
+#include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literal.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/expressions/unaryExpression.h"
-#include "ir/typeNode.h"
-#include "ir/ets/etsFunctionType.h"
 
 namespace ark::es2panda::ir {
-Expression *TSAsExpression::Expr()
+Expression *TSAsExpression::Expr() noexcept
 {
     return expression_;
 }
 
-void TSAsExpression::SetExpr(Expression *expr)
+void TSAsExpression::SetExpr(Expression *expr) noexcept
 {
     expression_ = expr;
-    SetStart(expression_->Start());
+    if (expression_ != nullptr) {
+        SetStart(expression_->Start());
+        expression_->SetParent(this);
+    }
 }
 
 void TSAsExpression::TransformChildren(const NodeTransformer &cb)
@@ -81,5 +75,34 @@ checker::Type *TSAsExpression::Check([[maybe_unused]] checker::TSChecker *checke
 checker::Type *TSAsExpression::Check(checker::ETSChecker *const checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+TSAsExpression *TSAsExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expression = expression_ != nullptr ? expression_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *typeAnnotation = TypeAnnotation();
+    if (typeAnnotation != nullptr) {
+        typeAnnotation = typeAnnotation->Clone(allocator, nullptr);
+    }
+
+    if (auto *const clone = allocator->New<TSAsExpression>(expression, typeAnnotation, isConst_); clone != nullptr) {
+        if (expression != nullptr) {
+            expression->SetParent(clone);
+        }
+
+        if (typeAnnotation != nullptr) {
+            typeAnnotation->SetParent(clone);
+        }
+
+        clone->SetTsType(TsType());
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        clone->SetRange(Range());
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace ark::es2panda::ir

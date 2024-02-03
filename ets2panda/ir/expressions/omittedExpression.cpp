@@ -55,7 +55,6 @@ checker::Type *OmittedExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 OmittedExpression *OmittedExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<OmittedExpression>(); clone != nullptr) {

@@ -35,8 +35,7 @@ public:
         return src_;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] BigIntLiteral *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] BigIntLiteral *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

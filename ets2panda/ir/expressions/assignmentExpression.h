@@ -112,8 +112,7 @@ public:
         return target_;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] AssignmentExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] AssignmentExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     [[nodiscard]] bool ConvertibleToAssignmentPattern(bool mustBePattern = true);
 

@@ -2023,8 +2023,8 @@ extern "C" es2panda_AstNode *CreateScriptFunction(es2panda_Context *context, es2
     auto irModifierFlags = E2pToIrModifierFlags(modifierFlags);
 
     ir::FunctionSignature sig(irTypeParams, std::move(irParams), irReturnTypeAnnotation);
-    auto func = allocator->New<ir::ScriptFunction>(std::move(sig), nullptr, irFunctionFlags, irModifierFlags, isDeclare,
-                                                   Language::FromString("ets").value());
+    auto func = allocator->New<ir::ScriptFunction>(
+        std::move(sig), nullptr, ir::ScriptFunction::ScriptFunctionData {irFunctionFlags, irModifierFlags, isDeclare});
     return reinterpret_cast<es2panda_AstNode *>(func);
 }
 

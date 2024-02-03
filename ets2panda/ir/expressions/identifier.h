@@ -190,8 +190,7 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {

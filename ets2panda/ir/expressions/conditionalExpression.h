@@ -64,10 +64,10 @@ public:
     void SetTest(Expression *const test) noexcept
     {
         test_ = test;
+        test_->SetParent(this);
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ConditionalExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ConditionalExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

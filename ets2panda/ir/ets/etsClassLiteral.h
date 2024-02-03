@@ -38,8 +38,7 @@ public:
 
     explicit ETSClassLiteral(ir::TypeNode *const expr) : Expression(AstNodeType::ETS_CLASS_LITERAL), expr_(expr) {}
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSClassLiteral *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSClassLiteral *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;

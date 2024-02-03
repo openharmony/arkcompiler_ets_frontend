@@ -42,7 +42,6 @@ SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 SpreadElement *SpreadElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<SpreadElement>(Tag {}, *this, allocator); clone != nullptr) {

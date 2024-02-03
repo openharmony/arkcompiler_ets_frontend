@@ -74,13 +74,13 @@ checker::Type *NumberLiteral::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 NumberLiteral *NumberLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<NumberLiteral>(number_); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+        clone->SetRange(Range());
         return clone;
     }
 

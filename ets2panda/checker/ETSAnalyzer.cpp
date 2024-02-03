@@ -259,9 +259,14 @@ void CheckGetterSetterTypeConstrains(ETSChecker *checker, ir::ScriptFunction *sc
 checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
 {
     ETSChecker *checker = GetETSChecker();
+
     auto *scriptFunc = node->Function();
     if (scriptFunc->IsProxy()) {
         return nullptr;
+    }
+
+    if (node->Id()->Variable() == nullptr) {
+        node->Id()->SetVariable(scriptFunc->Id()->Variable());
     }
 
     // NOTE: aszilagyi. make it correctly check for open function not have body
@@ -557,7 +562,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
         auto *signature = checker->ResolveConstructExpression(calleeObj, expr->GetArguments(), expr->Start());
 
         checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
-        checker->AddUndefinedParamsForDefaultParams(signature, expr->arguments_, checker);
+        checker->AddUndefinedParamsForDefaultParams(signature, expr, expr->arguments_, checker);
 
         checker->ValidateSignatureAccessibility(calleeObj, nullptr, signature, expr->Start());
 
@@ -916,10 +921,19 @@ static checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir
                                                 checker::Type *calleeType)
 {
     auto *const arrowFunc = callee->AsArrowFunctionExpression()->Function();
-    auto origParams = arrowFunc->Params();
-    auto signature = ir::FunctionSignature(nullptr, std::move(origParams), arrowFunc->ReturnTypeAnnotation());
-    auto *funcType =
-        checker->Allocator()->New<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
+
+    ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
+    checker->CopyParams(arrowFunc->Params(), params);
+
+    auto *typeAnnotation = arrowFunc->ReturnTypeAnnotation();
+    if (typeAnnotation != nullptr) {
+        typeAnnotation = typeAnnotation->Clone(checker->Allocator(), nullptr);
+        typeAnnotation->SetTsType(arrowFunc->ReturnTypeAnnotation()->TsType());
+    }
+
+    auto signature = ir::FunctionSignature(nullptr, std::move(params), typeAnnotation);
+    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
+
     funcType->SetScope(arrowFunc->Scope()->AsFunctionScope()->ParamScope());
     auto *const funcIface = funcType->Check(checker);
     checker->Relation()->SetNode(callee);
@@ -1080,7 +1094,7 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
         ResolveSignature(checker, expr, calleeType, isFunctionalInterface, isUnionTypeWithFunctionalInterface);
 
     checker->CheckObjectLiteralArguments(signature, expr->Arguments());
-    checker->AddUndefinedParamsForDefaultParams(signature, expr->Arguments(), checker);
+    checker->AddUndefinedParamsForDefaultParams(signature, expr, expr->Arguments(), checker);
 
     if (!isFunctionalInterface) {
         checker::ETSObjectType *calleeObj = ChooseCalleeObj(checker, expr, calleeType, isConstructorCall);

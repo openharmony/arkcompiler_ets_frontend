@@ -116,10 +116,7 @@ public:
         signature_ = signature;
     }
 
-    void SetTypeParams(TSTypeParameterInstantiation *const typeParams) noexcept
-    {
-        typeParams_ = typeParams;
-    }
+    void SetTypeParams(TSTypeParameterInstantiation *typeParams) noexcept;
 
     [[nodiscard]] checker::Type *UncheckedType() const noexcept
     {
@@ -131,10 +128,7 @@ public:
         uncheckedType_ = type;
     }
 
-    void SetTrailingBlock(ir::BlockStatement *const block) noexcept
-    {
-        trailingBlock_ = block;
-    }
+    void SetTrailingBlock(ir::BlockStatement *const block) noexcept;
 
     [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
@@ -151,8 +145,7 @@ public:
         return isTrailingBlockInNewLine_;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

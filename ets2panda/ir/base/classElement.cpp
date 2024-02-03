@@ -22,12 +22,12 @@ namespace ark::es2panda::ir {
 
 Identifier *ClassElement::Id() noexcept
 {
-    return key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;
+    return key_ != nullptr && key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;
 }
 
 const Identifier *ClassElement::Id() const noexcept
 {
-    return key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;
+    return key_ != nullptr && key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;
 }
 
 bool ClassElement::IsPrivateElement() const noexcept

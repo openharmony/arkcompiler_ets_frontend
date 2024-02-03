@@ -17,15 +17,10 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
-#include "checker/types/ets/etsObjectType.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "ir/base/decorator.h"
-#include "ir/typeNode.h"
-#include "ir/expression.h"
-#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
 void ClassProperty::TransformChildren(const NodeTransformer &cb)
@@ -136,12 +131,11 @@ checker::Type *ClassProperty::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const key = key_->Clone(allocator)->AsExpression();
-    auto *const value = value_->Clone(allocator)->AsExpression();
-    auto *const typeAnnotation = typeAnnotation_->Clone(allocator, this);
+    auto *const key = key_->Clone(allocator, nullptr)->AsExpression();
+    auto *const value = value_->Clone(allocator, nullptr)->AsExpression();
+    auto *const typeAnnotation = typeAnnotation_->Clone(allocator, nullptr);
 
     if (auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
         clone != nullptr) {

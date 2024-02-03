@@ -484,9 +484,8 @@ public:
     [[nodiscard]] ir::BlockStatement *GetTopStatement();
     [[nodiscard]] const ir::BlockStatement *GetTopStatement() const;
 
-    // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] virtual AstNode *Clone([[maybe_unused]] ArenaAllocator *const allocator,
-                                         [[maybe_unused]] AstNode *const parent = nullptr)
+                                         [[maybe_unused]] AstNode *const parent)
     {
         UNREACHABLE();
     }

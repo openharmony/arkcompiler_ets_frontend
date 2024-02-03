@@ -117,6 +117,14 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
     }
 }
 
+void ClassDefinition::SetIdent(ir::Identifier *ident) noexcept
+{
+    ident_ = ident;
+    if (ident_ != nullptr) {
+        ident_->SetParent(this);
+    }
+}
+
 void ClassDefinition::Dump(ir::AstDumper *dumper) const
 {
     auto propFilter = [](AstNode *prop) -> bool {

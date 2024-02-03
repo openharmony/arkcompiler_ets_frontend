@@ -325,7 +325,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
 
     funcNode = AllocNode<ir::ScriptFunction>(
         ir::FunctionSignature(typeParamDecl, std::move(desc->params), returnTypeAnnotation), body,
-        arrowFunctionContext->Flags(), false, context_.GetLanguge());
+        arrowFunctionContext->Flags(), false, context_.GetLanguage());
     funcNode->SetRange({desc->startLoc, endLoc});
 
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(Allocator(), funcNode);

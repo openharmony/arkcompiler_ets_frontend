@@ -123,10 +123,7 @@ public:
         return ident_;
     }
 
-    void SetIdent(ir::Identifier *ident) noexcept
-    {
-        ident_ = ident;
-    }
+    void SetIdent(ir::Identifier *ident) noexcept;
 
     [[nodiscard]] const util::StringView &PrivateId() const noexcept
     {
@@ -156,6 +153,9 @@ public:
     void SetSuper(Expression *superClass)
     {
         superClass_ = superClass;
+        if (superClass_ != nullptr) {
+            superClass_->SetParent(this);
+        }
     }
 
     [[nodiscard]] bool IsGlobal() const noexcept

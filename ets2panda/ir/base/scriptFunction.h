@@ -36,31 +36,25 @@ class TypeNode;
 
 class ScriptFunction : public AstNode {
 public:
+    // Need to reduce the number of constructor parameters to pass OHOS CI code check
+    struct ScriptFunctionData {
+        ir::ScriptFunctionFlags funcFlags = ir::ScriptFunctionFlags::NONE;
+        ir::ModifierFlags flags = ir::ModifierFlags::NONE;
+        bool declare = false;
+        panda::es2panda::Language lang {Language::Id::ETS};
+    };
+
     ScriptFunction() = delete;
     ~ScriptFunction() override = default;
 
     NO_COPY_SEMANTIC(ScriptFunction);
     NO_MOVE_SEMANTIC(ScriptFunction);
 
-    explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ir::ScriptFunctionFlags funcFlags,
-                            bool declare, Language lang)
-        : AstNode(AstNodeType::SCRIPT_FUNCTION),
-          irSignature_(std::move(signature)),
-          body_(body),
-          funcFlags_(funcFlags),
-          declare_(declare),
-          lang_(lang)
-    {
-    }
+    explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ScriptFunctionData &&data);
 
     explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ir::ScriptFunctionFlags funcFlags,
-                            ir::ModifierFlags flags, bool declare, Language lang)
-        : AstNode(AstNodeType::SCRIPT_FUNCTION, flags),
-          irSignature_(std::move(signature)),
-          body_(body),
-          funcFlags_(funcFlags),
-          declare_(declare),
-          lang_(lang)
+                            bool declare, Language lang)
+        : ScriptFunction(std::move(signature), body, {funcFlags, {}, declare, lang})
     {
     }
 
@@ -129,10 +123,7 @@ public:
         return irSignature_.ReturnType();
     }
 
-    void SetReturnTypeAnnotation(TypeNode *node) noexcept
-    {
-        irSignature_.SetReturnType(node);
-    }
+    void SetReturnTypeAnnotation(TypeNode *node) noexcept;
 
     [[nodiscard]] bool IsEntryPoint() const noexcept
     {
@@ -254,10 +245,7 @@ public:
         return funcFlags_;
     }
 
-    void SetIdent(Identifier *id) noexcept
-    {
-        id_ = id;
-    }
+    void SetIdent(Identifier *id) noexcept;
 
     void SetSignature(checker::Signature *signature) noexcept
     {

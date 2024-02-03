@@ -57,7 +57,6 @@ checker::Type *SuperExpression::Check([[maybe_unused]] checker::ETSChecker *chec
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 SuperExpression *SuperExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<SuperExpression>(); clone != nullptr) {

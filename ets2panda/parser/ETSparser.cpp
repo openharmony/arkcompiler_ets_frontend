@@ -648,7 +648,7 @@ ir::ScriptFunction *ETSParser::AddInitMethod(ArenaVector<ir::AstNode *> &globalP
             auto *initBody = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
 
             initFunc = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                     initBody, functionFlags, false, GetContext().GetLanguge());
+                                                     initBody, functionFlags, false, GetContext().GetLanguage());
         }
 
         initFunc->SetIdent(initIdent);
@@ -656,8 +656,9 @@ ir::ScriptFunction *ETSParser::AddInitMethod(ArenaVector<ir::AstNode *> &globalP
 
         auto *funcExpr = AllocNode<ir::FunctionExpression>(initFunc);
 
-        auto *initMethod = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, initIdent, funcExpr,
-                                                           functionModifiers, Allocator(), false);
+        auto *initMethod = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD,
+                                                           initIdent->Clone(Allocator(), nullptr)->AsExpression(),
+                                                           funcExpr, functionModifiers, Allocator(), false);
 
         return std::make_pair(initFunc, initMethod);
     };
@@ -1017,9 +1018,6 @@ void ETSParser::CreateCCtor(ArenaVector<ir::AstNode *> &properties, const lexer:
     }
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-
-    auto *id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
-
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
     // Add the call to special '_$init$_' method containing all the top-level variable initializations (as assignments)
@@ -1044,10 +1042,12 @@ void ETSParser::CreateCCtor(ArenaVector<ir::AstNode *> &properties, const lexer:
         }
     }
 
+    auto *id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
-    auto *func = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                               ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
-                                               ir::ModifierFlags::STATIC, false, GetContext().GetLanguge());
+    auto *func = AllocNode<ir::ScriptFunction>(
+        ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
+        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
+                                                ir::ModifierFlags::STATIC, false, GetContext().GetLanguage()});
     func->SetIdent(id);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
@@ -1387,16 +1387,16 @@ lexer::SourcePosition ETSParser::InitializeGlobalVariable(ir::Identifier *fieldN
         ident->SetReference();
         ident->SetRange(fieldName->Range());
 
-        auto *assignmentExpression =
-            AllocNode<ir::AssignmentExpression>(ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
+            ident, initializer->Clone(Allocator(), nullptr)->AsExpression(), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
         endLoc = initializer->End();
         assignmentExpression->SetRange({fieldName->Start(), endLoc});
-        assignmentExpression->SetParent(funcBody);
 
         auto expressionStatement = AllocNode<ir::ExpressionStatement>(assignmentExpression);
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
             endLoc = Lexer()->GetToken().End();
         }
+        expressionStatement->SetParent(funcBody);
         expressionStatement->SetRange({startLoc, endLoc});
         funcBody->AsBlockStatement()->Statements().emplace_back(expressionStatement);
 
@@ -1440,7 +1440,8 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     if (className != nullptr) {
         func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
     }
-    auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName, funcExpr, modifiers, Allocator(), false);
+    auto *method = AllocNode<ir::MethodDefinition>(methodKind, methodName->Clone(Allocator(), nullptr)->AsExpression(),
+                                                   funcExpr, modifiers, Allocator(), false);
     method->SetRange(funcExpr->Range());
 
     fieldMap_.insert({methodName->Name(), method});
@@ -1489,7 +1490,7 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identif
     functionContext.AddFlag(throwMarker);
 
     auto *funcNode = AllocNode<ir::ScriptFunction>(std::move(signature), body, functionContext.Flags(), false,
-                                                   GetContext().GetLanguge());
+                                                   GetContext().GetLanguage());
     funcNode->SetRange({startLoc, endLoc});
 
     return funcNode;
@@ -1505,6 +1506,9 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
     }
 
     ir::ScriptFunction *func = ParseFunction(desc->newStatus);
+    if (propName->IsIdentifier()) {
+        func->SetIdent(propName->AsIdentifier()->Clone(Allocator(), nullptr));
+    }
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
@@ -1517,8 +1521,9 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
 
     *propEnd = func->End();
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-    auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
-                                                   desc->isComputed);
+    auto *method =
+        AllocNode<ir::MethodDefinition>(desc->methodKind, propName->Clone(Allocator(), nullptr)->AsExpression(),
+                                        funcExpr, desc->modifiers, Allocator(), desc->isComputed);
     method->SetRange(funcExpr->Range());
 
     return method;
@@ -1745,7 +1750,6 @@ ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<
 
     lexer::SourcePosition propEnd = methodName->End();
     ir::MethodDefinition *method = ParseClassMethod(&desc, properties, methodName, &propEnd);
-    method->Function()->SetIdent(methodName);
     method->Function()->AddModifier(desc.modifiers);
     method->SetRange({desc.propStart, propEnd});
     if (desc.methodKind == ir::MethodDefinitionKind::GET) {
@@ -1772,7 +1776,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
         method->Function()->AddFlag(ir::ScriptFunctionFlags::SETTER);
     }
 
-    method->Function()->SetIdent(method->Id());
+    method->Function()->SetIdent(method->Id()->Clone(Allocator(), nullptr));
     method->Function()->AddModifier(method->Modifiers());
 
     return method;
@@ -1964,7 +1968,7 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
 
     const auto isExternal = (GetContext().Status() & ParserStatus::IN_EXTERNAL);
     auto *interfaceDecl = AllocNode<ir::TSInterfaceDeclaration>(
-        Allocator(), name, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguge());
+        Allocator(), name, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguage());
 
     Lexer()->NextToken();
     GetContext().Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
@@ -2065,7 +2069,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         util::StringView(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
-        std::move(properties), modifiers, flags, GetContext().GetLanguge());
+        std::move(properties), modifiers, flags, GetContext().GetLanguage());
 
     classDefinition->SetRange(bodyRange);
 
@@ -2133,6 +2137,7 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     typeAnnotation = ParseTypeAnnotation(&options);
 
     name->SetTsTypeAnnotation(typeAnnotation);
+    typeAnnotation->SetParent(name);
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL) {
         ThrowSyntaxError("Initializers are not allowed on interface propertys.");
@@ -2144,7 +2149,8 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
         fieldModifiers |= ir::ModifierFlags::DECLARE;
     }
 
-    auto *field = AllocNode<ir::ClassProperty>(name, nullptr, typeAnnotation, fieldModifiers, Allocator(), false);
+    auto *field = AllocNode<ir::ClassProperty>(name, nullptr, typeAnnotation->Clone(Allocator(), nullptr),
+                                               fieldModifiers, Allocator(), false);
     field->SetEnd(Lexer()->GetToken().End());
 
     return field;
@@ -2181,8 +2187,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
 
     functionContext.AddFlag(throwMarker);
 
-    auto *func = AllocNode<ir::ScriptFunction>(std::move(signature), body, functionContext.Flags(), flags, true,
-                                               GetContext().GetLanguge());
+    auto *func = AllocNode<ir::ScriptFunction>(
+        std::move(signature), body,
+        ir::ScriptFunction::ScriptFunctionData {functionContext.Flags(), flags, true, GetContext().GetLanguage()});
 
     if ((flags & ir::ModifierFlags::STATIC) == 0 && body == nullptr) {
         func->AddModifier(ir::ModifierFlags::ABSTRACT);
@@ -2196,8 +2203,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
     func->SetIdent(name);
-    auto *method =
-        AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, name, funcExpr, flags, Allocator(), false);
+    auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD,
+                                                   name->Clone(Allocator(), nullptr)->AsExpression(), funcExpr, flags,
+                                                   Allocator(), false);
     method->SetRange(funcExpr->Range());
 
     ConsumeSemicolon(method);
@@ -3718,7 +3726,10 @@ void ETSParser::ParseCatchParamTypeAnnotation([[maybe_unused]] ir::AnnotatedExpr
         Lexer()->NextToken();  // eat ':'
 
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        param->SetTsTypeAnnotation(ParseTypeAnnotation(&options));
+        if (auto *typeAnnotation = ParseTypeAnnotation(&options); typeAnnotation != nullptr) {
+            typeAnnotation->SetParent(param);
+            param->SetTsTypeAnnotation(typeAnnotation);
+        }
     }
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -4196,6 +4207,53 @@ ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primaryExp
     return asExpression;
 }
 
+//  Extracted from 'ParseNewExpression()' to reduce function's size
+ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
+                                                                      ir::TypeNode *typeReference,
+                                                                      ir::TypeNode *baseTypeReference)
+{
+    lexer::SourcePosition endLoc = typeReference->End();
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+        if (baseTypeReference != nullptr) {
+            ThrowSyntaxError("Can not use 'new' on primitive types.", baseTypeReference->Start());
+        }
+
+        Lexer()->NextToken();
+
+        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            ir::Expression *argument = ParseExpression();
+            arguments.push_back(argument);
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+                Lexer()->NextToken();
+                continue;
+            }
+        }
+
+        endLoc = Lexer()->GetToken().End();
+        Lexer()->NextToken();
+    }
+
+    ir::ClassDefinition *classDefinition {};
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
+        auto modifiers = ir::ClassDefinitionModifiers::ANONYMOUS | ir::ClassDefinitionModifiers::HAS_SUPER;
+        auto [ctor, properties, bodyRange] = ParseClassBody(modifiers);
+
+        auto newIdent = AllocNode<ir::Identifier>("#0", Allocator());
+        classDefinition = AllocNode<ir::ClassDefinition>(
+            "#0", newIdent, nullptr, nullptr, std::move(implements), ctor,  // remove name
+            typeReference->Clone(Allocator(), nullptr), std::move(properties), modifiers, ir::ModifierFlags::NONE,
+            Language(Language::Id::ETS));
+
+        classDefinition->SetRange(bodyRange);
+    }
+
+    return classDefinition;
+}
+
 ir::Expression *ETSParser::ParseNewExpression()
 {
     lexer::SourcePosition start = Lexer()->GetToken().Start();
@@ -4242,43 +4300,8 @@ ir::Expression *ETSParser::ParseNewExpression()
     }
 
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
-    lexer::SourcePosition endLoc = typeReference->End();
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        if (baseTypeReference != nullptr) {
-            ThrowSyntaxError("Can not use 'new' on primitive types.", baseTypeReference->Start());
-        }
-
-        Lexer()->NextToken();
-
-        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ir::Expression *argument = ParseExpression();
-            arguments.push_back(argument);
-
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-                Lexer()->NextToken();
-                continue;
-            }
-        }
-
-        endLoc = Lexer()->GetToken().End();
-        Lexer()->NextToken();
-    }
-
-    ir::ClassDefinition *classDefinition {};
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
-        auto modifiers = ir::ClassDefinitionModifiers::ANONYMOUS | ir::ClassDefinitionModifiers::HAS_SUPER;
-        auto [ctor, properties, bodyRange] = ParseClassBody(modifiers);
-
-        auto newIdent = AllocNode<ir::Identifier>("#0", Allocator());
-        classDefinition = AllocNode<ir::ClassDefinition>(
-            "#0", newIdent, nullptr, nullptr, std::move(implements), ctor,  // remove name
-            typeReference, std::move(properties), modifiers, ir::ModifierFlags::NONE, Language(Language::Id::ETS));
-
-        classDefinition->SetRange(bodyRange);
-    }
+    ir::ClassDefinition *classDefinition =
+        CreateClassDefinitionForNewExpression(arguments, typeReference, baseTypeReference);
 
     auto *newExprNode =
         AllocNode<ir::ETSNewClassInstanceExpression>(typeReference, std::move(arguments), classDefinition);

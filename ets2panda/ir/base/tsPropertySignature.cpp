@@ -74,11 +74,10 @@ checker::Type *TSPropertySignature::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const typeAnnotation = TypeAnnotation()->Clone(allocator);
+    auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const typeAnnotation = TypeAnnotation()->Clone(allocator, nullptr);
 
     if (auto *const clone = allocator->New<TSPropertySignature>(key, typeAnnotation, computed_, optional_, readonly_);
         clone != nullptr) {

@@ -69,7 +69,7 @@ public:
     {
     }
 
-    explicit MemberExpression(Tag tag, MemberExpression const &other, Expression *object, Expression *property);
+    explicit MemberExpression(Tag tag, MemberExpression const &other, ArenaAllocator *allocator);
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class compiler::JSCompiler;
@@ -172,8 +172,7 @@ public:
 
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -200,7 +199,9 @@ protected:
         ignoreBox_ = other.ignoreBox_;
         propVar_ = other.propVar_;
         // Note! Probably, we need to do 'Instantiate(...)' but we haven't access to 'Relation()' here...
+        uncheckedType_ = other.uncheckedType_;
         objType_ = other.objType_;
+        tupleConvertedType_ = other.tupleConvertedType_;
     }
 
 private:

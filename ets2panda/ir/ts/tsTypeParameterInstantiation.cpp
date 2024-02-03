@@ -35,7 +35,6 @@ TSTypeParameterInstantiation::TSTypeParameterInstantiation([[maybe_unused]] Tag 
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TSTypeParameterInstantiation *TSTypeParameterInstantiation::Clone(ArenaAllocator *const allocator,
                                                                   AstNode *const parent)
 {

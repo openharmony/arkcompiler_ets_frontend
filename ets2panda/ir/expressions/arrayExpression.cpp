@@ -53,7 +53,6 @@ ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ArrayExpression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator); clone != nullptr) {

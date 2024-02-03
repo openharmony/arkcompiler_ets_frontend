@@ -96,15 +96,15 @@ ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstance
                                                              ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)), arguments_(allocator->Adapter()), signature_(other.signature_)
 {
-    typeReference_ = other.typeReference_->Clone(allocator, this)->AsExpression();
-    classDef_ = other.classDef_->Clone(allocator, this)->AsClassDefinition();
+    typeReference_ =
+        other.typeReference_ != nullptr ? other.typeReference_->Clone(allocator, this)->AsExpression() : nullptr;
+    classDef_ = other.classDef_ != nullptr ? other.classDef_->Clone(allocator, this)->AsClassDefinition() : nullptr;
 
     for (auto *const argument : other.arguments_) {
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSNewClassInstanceExpression *ETSNewClassInstanceExpression::Clone(ArenaAllocator *const allocator,
                                                                     AstNode *const parent)
 {

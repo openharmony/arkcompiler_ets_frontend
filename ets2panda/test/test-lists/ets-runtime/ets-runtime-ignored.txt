@@ -48,6 +48,10 @@ struct-init2.ets
 struct_implements.ets
 top_level_03.ets
 
+# lowering 'expandBrackets' should be repaired #15594
+array-new.ets
+array-new-catched.ets
+
 # Union with undefined
 OptionalCall.ets
 

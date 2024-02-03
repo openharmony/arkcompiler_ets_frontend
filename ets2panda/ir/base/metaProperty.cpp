@@ -71,7 +71,6 @@ checker::Type *MetaProperty::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 MetaProperty *MetaProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<MetaProperty>(kind_); clone != nullptr) {

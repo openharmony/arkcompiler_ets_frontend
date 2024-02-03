@@ -65,7 +65,6 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ObjectExpression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator); clone != nullptr) {

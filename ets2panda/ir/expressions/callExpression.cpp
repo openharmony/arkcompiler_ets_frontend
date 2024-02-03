@@ -108,27 +108,43 @@ CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *cons
       isTrailingBlockInNewLine_(other.isTrailingBlockInNewLine_)
 {
     callee_ = other.callee_->Clone(allocator, this)->AsExpression();
-    typeParams_ = other.typeParams_->Clone(allocator, this);
+    typeParams_ = other.typeParams_ != nullptr ? other.typeParams_->Clone(allocator, this) : nullptr;
 
     for (auto *const argument : other.arguments_) {
         arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
     }
 
-    if (other.trailingBlock_ != nullptr) {
-        trailingBlock_ = other.trailingBlock_->Clone(allocator, this)->AsBlockStatement();
-    }
+    trailingBlock_ =
+        other.trailingBlock_ != nullptr ? other.trailingBlock_->Clone(allocator, this)->AsBlockStatement() : nullptr;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 CallExpression *CallExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<CallExpression>(*this, allocator); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
+void CallExpression::SetTypeParams(TSTypeParameterInstantiation *const typeParams) noexcept
+{
+    typeParams_ = typeParams;
+    if (typeParams_ != nullptr) {
+        typeParams_->SetParent(this);
+    }
+}
+
+void CallExpression::SetTrailingBlock(ir::BlockStatement *const block) noexcept
+{
+    trailingBlock_ = block;
+    if (trailingBlock_ != nullptr) {
+        trailingBlock_->SetParent(this);
+    }
 }
 }  // namespace ark::es2panda::ir

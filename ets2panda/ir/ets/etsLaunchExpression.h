@@ -44,8 +44,7 @@ public:
     friend class checker::ETSAnalyzer;
     friend class compiler::ETSCompiler;
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSLaunchExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSLaunchExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

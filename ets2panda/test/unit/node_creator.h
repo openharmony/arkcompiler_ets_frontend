@@ -65,7 +65,9 @@ public:
         auto varDecl = CreateVarDecl(true, name);
         ArenaVector<ir::Statement *> tmp {alloc_->Adapter()};
         tmp.emplace_back(varDecl);
-        return alloc_->New<ir::BlockStatement>(alloc_, std::move(tmp));
+        auto *newBlock = alloc_->New<ir::BlockStatement>(alloc_, std::move(tmp));
+        varDecl->SetParent(newBlock);
+        return newBlock;
     }
 
     ir::ForUpdateStatement *CreateForUpdate()

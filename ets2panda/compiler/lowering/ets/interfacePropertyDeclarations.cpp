@@ -45,8 +45,8 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
 
     if (isSetter) {
-        auto paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
-        paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
+        auto paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
+        paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator(), nullptr));
         paramIdent->TypeAnnotation()->SetParent(paramIdent);
 
         auto *const paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
@@ -61,17 +61,17 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), isSetter ? nullptr : field->TypeAnnotation());
 
-    auto *func =
-        isSetter
-            ? checker->AllocNode<ir::ScriptFunction>(std::move(signature), nullptr, ir::ScriptFunctionFlags::SETTER,
-                                                     flags, true, Language(Language::Id::ETS))
-            : checker->AllocNode<ir::ScriptFunction>(std::move(signature), nullptr, ir::ScriptFunctionFlags::GETTER,
-                                                     flags, true, Language(Language::Id::ETS));
+    auto *func = isSetter ? checker->AllocNode<ir::ScriptFunction>(
+                                std::move(signature), nullptr,
+                                ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::SETTER, flags, true})
+                          : checker->AllocNode<ir::ScriptFunction>(
+                                std::move(signature), nullptr,
+                                ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::GETTER, flags, true});
     func->SetRange(field->Range());
 
     func->SetScope(functionScope);
 
-    auto methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
+    auto methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
     auto *decl = checker->Allocator()->New<varbinder::VarDecl>(field->Key()->AsIdentifier()->Name());
     auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
 
@@ -86,7 +86,7 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
 
     method->Id()->SetMutator();
     method->SetRange(field->Range());
-    method->Function()->SetIdent(method->Id());
+    method->Function()->SetIdent(method->Id()->Clone(checker->Allocator(), nullptr));
     method->Function()->AddModifier(method->Modifiers());
     paramScope->BindNode(func);
     functionScope->BindNode(func);

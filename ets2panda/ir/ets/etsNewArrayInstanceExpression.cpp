@@ -72,24 +72,27 @@ checker::Type *ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
                                                                     AstNode *const parent)
 {
-    auto *const typeRef = typeReference_ != nullptr ? typeReference_->Clone(allocator) : nullptr;
-    auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const typeRef = typeReference_ != nullptr ? typeReference_->Clone(allocator, nullptr) : nullptr;
+    auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(allocator, typeRef, dimension);
         clone != nullptr) {
         if (typeRef != nullptr) {
             typeRef->SetParent(clone);
         }
+
         if (dimension != nullptr) {
             dimension->SetParent(clone);
         }
+
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

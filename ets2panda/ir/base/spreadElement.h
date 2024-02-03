@@ -78,8 +78,7 @@ public:
         optional_ = optional;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] SpreadElement *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] SpreadElement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     ValidationInfo ValidateExpression();
     [[nodiscard]] bool ConvertibleToRest(bool isDeclaration, bool allowPattern = true);

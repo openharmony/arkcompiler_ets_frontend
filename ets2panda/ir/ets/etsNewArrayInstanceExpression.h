@@ -72,10 +72,12 @@ public:
     void SetDimension(ir::Expression *dimension)
     {
         dimension_ = dimension;
+        if (dimension_ != nullptr) {
+            dimension_->SetParent(this);
+        }
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSNewArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSNewArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

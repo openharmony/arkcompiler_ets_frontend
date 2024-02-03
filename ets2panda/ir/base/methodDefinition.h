@@ -45,6 +45,7 @@ public:
           kind_(kind),
           overloads_(allocator->Adapter())
     {
+        ASSERT(key_ != nullptr && value_ != nullptr);
     }
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -63,16 +64,6 @@ public:
     [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
         return kind_ == MethodDefinitionKind::EXTENSION_METHOD;
-    }
-
-    Expression const *Key() const
-    {
-        return key_;
-    }
-
-    Expression const *Value() const
-    {
-        return value_;
     }
 
     [[nodiscard]] const OverloadsT &Overloads() const noexcept
@@ -104,11 +95,12 @@ public:
     const ScriptFunction *Function() const;
     PrivateFieldKind ToPrivateFieldKind(bool isStatic) const override;
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
+    void ResolveReferences(const NodeTraverser &cb) const;
 
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;

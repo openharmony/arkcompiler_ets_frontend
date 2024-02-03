@@ -20,7 +20,6 @@
 
 namespace ark::es2panda::ir {
 
-// NOLINTNEXTLINE(google-default-arguments)
 TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const type = TsType(); type != nullptr) {

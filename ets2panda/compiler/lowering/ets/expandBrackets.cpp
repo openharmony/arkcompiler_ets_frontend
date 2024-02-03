@@ -61,7 +61,7 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
             "  throw new TypeError(\"Index fractional part should not be different from 0.0\");"
             "};"
             "(@@E5);",
-            parser::DEFAULT_SOURCE_FILE, ident, dimension, exprType, ident->Clone(allocator), newExpression);
+            parser::DEFAULT_SOURCE_FILE, ident, dimension, exprType, ident->Clone(allocator, nullptr), newExpression);
         sequenceExpr->SetParent(newExpression->Parent());
         InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
         checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(sequenceExpr, scope);

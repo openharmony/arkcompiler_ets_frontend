@@ -17,7 +17,6 @@
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
 #include "checker/checkerContext.h"
-#include "varbinder/enumMemberResult.h"
 #include "varbinder/scope.h"
 #include "checker/checker.h"
 #include "checker/ets/primitiveWrappers.h"
@@ -29,18 +28,8 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "lexer/token/tokenType.h"
-#include "util/enumbitops.h"
 #include "util/ustring.h"
-#include "utils/bit_utils.h"
 #include "checker/resolveResult.h"
-#include "macros.h"
-
-#include <cstdint>
-#include <initializer_list>
-#include <tuple>
-#include <unordered_map>
-#include <unordered_set>
-#include <type_traits>
 
 namespace ark::es2panda::varbinder {
 class VarBinder;
@@ -404,7 +393,8 @@ public:
         ArenaVector<ir::Expression *> &params, const lexer::SourceRange &pos, bool isStaticReference);
     ir::MethodDefinition *CreateLambdaInvokeProto(util::StringView invokeName);
     void CreateLambdaFuncDecl(ir::MethodDefinition *func, varbinder::LocalScope *scope);
-    void ResolveProxyMethod(ir::MethodDefinition *proxyMethod, ir::ArrowFunctionExpression *lambda);
+    void ResolveProxyMethod(ir::ClassDefinition *classDefinition, ir::MethodDefinition *proxyMethod,
+                            ir::ArrowFunctionExpression *lambda);
     void ResolveLambdaObject(ir::ClassDefinition *lambdaObject, Signature *signature,
                              ETSObjectType *functionalInterface, ir::AstNode *refNode);
     void ResolveLambdaObject(ir::ClassDefinition *lambdaObject, ETSObjectType *functionalInterface,
@@ -547,7 +537,7 @@ public:
     util::StringView GetHashFromFunctionType(ir::ETSFunctionType *type);
     ETSObjectType *GetOriginalBaseType(Type *object);
     Type *GetTypeFromTypeAnnotation(ir::TypeNode *typeAnnotation);
-    void AddUndefinedParamsForDefaultParams(const Signature *signature,
+    void AddUndefinedParamsForDefaultParams(const Signature *signature, ir::AstNode *parent,
                                             ArenaVector<ark::es2panda::ir::Expression *> &arguments,
                                             ETSChecker *checker);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
@@ -583,6 +573,8 @@ public:
                                                               ETSEnumInterface *enumType);
     [[nodiscard]] ETSEnumType::Method CreateEnumValuesMethod(ir::Identifier *itemsArrayIdent,
                                                              ETSEnumInterface *enumType);
+    [[nodiscard]] ir::StringLiteral *CreateEnumStringLiteral(ETSEnumInterface *const enumType,
+                                                             const ir::TSEnumMember *const member);
 
     // Dynamic interop
     template <typename T>
@@ -645,6 +637,11 @@ private:
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
     const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
     void BuildClass(util::StringView name, const ClassBuilder &builder);
+
+    template <bool IS_STATIC>
+    std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunction(varbinder::FunctionScope *scope,
+                                                                           ClassInitializerBuilder const &builder);
+
     template <bool IS_STATIC>
     std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> CreateClassInitializer(
         varbinder::ClassScope *classScope, const ClassInitializerBuilder &builder, ETSObjectType *type = nullptr);
@@ -653,9 +650,8 @@ private:
                                          checker::Type *type);
 
     template <bool IS_STATIC>
-    ir::MethodDefinition *CreateClassMethod(varbinder::ClassScope *classScope, std::string_view methodName,
-                                            ark::es2panda::ir::ModifierFlags modifierFlags,
-                                            const MethodBuilder &builder);
+    ir::MethodDefinition *CreateClassMethod(varbinder::ClassScope *classScope, std::string_view name,
+                                            ir::ModifierFlags modifierFlags, const MethodBuilder &builder);
 
     template <typename T>
     ir::ScriptFunction *CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
@@ -673,6 +669,8 @@ private:
                                                               Signature *invokeSignature,
                                                               ir::TypeNode *retTypeAnnotation);
 
+    void ClassInitializerFromImport(ir::ETSImportDeclaration *import, varbinder::FunctionScope *scope,
+                                    ArenaVector<ir::Statement *> *statements);
     void EmitDynamicModuleClassInitCall();
 
     DynamicCallIntrinsicsMap *DynamicCallIntrinsics(bool isConstruct)

@@ -36,7 +36,6 @@ NewExpression::NewExpression([[maybe_unused]] Tag const tag, NewExpression const
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 NewExpression *NewExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<NewExpression>(Tag {}, *this, allocator); clone != nullptr) {

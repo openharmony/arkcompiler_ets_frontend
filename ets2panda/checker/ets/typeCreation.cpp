@@ -389,28 +389,40 @@ ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const en
 
     auto *const namesArrayIdent = CreateEnumNamesArray(enumType);
 
-    auto const getNameMethod = CreateEnumGetNameMethod(namesArrayIdent, enumType);
+    auto *identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(namesArrayIdent->TsType());
+    auto const getNameMethod = CreateEnumGetNameMethod(identClone, enumType);
     enumType->SetGetNameMethod(getNameMethod);
 
-    auto const valueOfMethod = CreateEnumValueOfMethod(namesArrayIdent, enumType);
+    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(namesArrayIdent->TsType());
+    auto const valueOfMethod = CreateEnumValueOfMethod(identClone, enumType);
     enumType->SetValueOfMethod(valueOfMethod);
 
-    auto const fromIntMethod = CreateEnumFromIntMethod(namesArrayIdent, enumType);
+    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(namesArrayIdent->TsType());
+    auto const fromIntMethod = CreateEnumFromIntMethod(identClone, enumType);
     enumType->SetFromIntMethod(fromIntMethod);
 
     auto *const valuesArrayIdent = CreateEnumValuesArray(enumType);
 
-    auto const getValueMethod = CreateEnumGetValueMethod(valuesArrayIdent, enumType);
+    identClone = valuesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(valuesArrayIdent->TsType());
+    auto const getValueMethod = CreateEnumGetValueMethod(identClone, enumType);
     enumType->SetGetValueMethod(getValueMethod);
 
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumType);
 
-    auto const toStringMethod = CreateEnumToStringMethod(stringValuesArrayIdent, enumType);
+    identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(stringValuesArrayIdent->TsType());
+    auto const toStringMethod = CreateEnumToStringMethod(identClone, enumType);
     enumType->SetToStringMethod(toStringMethod);
 
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumType);
 
-    auto const valuesMethod = CreateEnumValuesMethod(itemsArrayIdent, enumType);
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(itemsArrayIdent->TsType());
+    auto const valuesMethod = CreateEnumValuesMethod(identClone, enumType);
     enumType->SetValuesMethod(valuesMethod);
 
     for (auto *const member : enumType->GetMembers()) {
@@ -444,24 +456,34 @@ ETSStringEnumType *ETSChecker::CreateETSStringEnumType(ir::TSEnumDeclaration con
 
     auto *const namesArrayIdent = CreateEnumNamesArray(enumType);
 
-    auto const getNameMethod = CreateEnumGetNameMethod(namesArrayIdent, enumType);
+    auto *identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(namesArrayIdent->TsType());
+    auto const getNameMethod = CreateEnumGetNameMethod(identClone, enumType);
     enumType->SetGetNameMethod(getNameMethod);
 
-    auto const valueOfMethod = CreateEnumValueOfMethod(namesArrayIdent, enumType);
+    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(namesArrayIdent->TsType());
+    auto const valueOfMethod = CreateEnumValueOfMethod(identClone, enumType);
     enumType->SetValueOfMethod(valueOfMethod);
 
-    auto const fromIntMethod = CreateEnumFromIntMethod(namesArrayIdent, enumType);
+    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(namesArrayIdent->TsType());
+    auto const fromIntMethod = CreateEnumFromIntMethod(identClone, enumType);
     enumType->SetFromIntMethod(fromIntMethod);
 
     auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumType);
 
-    auto const toStringMethod = CreateEnumToStringMethod(stringValuesArrayIdent, enumType);
+    identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(stringValuesArrayIdent->TsType());
+    auto const toStringMethod = CreateEnumToStringMethod(identClone, enumType);
     enumType->SetToStringMethod(toStringMethod);
     enumType->SetGetValueMethod(toStringMethod);
 
     auto *const itemsArrayIdent = CreateEnumItemsArray(enumType);
 
-    auto const valuesMethod = CreateEnumValuesMethod(itemsArrayIdent, enumType);
+    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(itemsArrayIdent->TsType());
+    auto const valuesMethod = CreateEnumValuesMethod(identClone, enumType);
     enumType->SetValuesMethod(valuesMethod);
 
     for (auto *const member : enumType->GetMembers()) {

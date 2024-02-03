@@ -28,8 +28,7 @@ public:
 
     explicit ThisExpression() : Expression(AstNodeType::THIS_EXPRESSION) {}
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ThisExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ThisExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

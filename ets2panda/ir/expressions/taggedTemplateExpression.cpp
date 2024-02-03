@@ -81,12 +81,11 @@ checker::Type *TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChec
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const tag = tag_ != nullptr ? tag_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator) : nullptr;
-    auto *const typeParams = typeParams_ != nullptr ? typeParams_->Clone(allocator) : nullptr;
+    auto *const tag = tag_ != nullptr ? tag_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator, nullptr) : nullptr;
+    auto *const typeParams = typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, typeParams); clone != nullptr) {
         if (tag != nullptr) {

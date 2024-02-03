@@ -60,8 +60,7 @@ public:
 
     [[nodiscard]] TSIndexSignatureKind Kind() const noexcept;
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] TSIndexSignature *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] TSIndexSignature *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

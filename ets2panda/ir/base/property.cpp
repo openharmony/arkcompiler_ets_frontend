@@ -31,11 +31,10 @@ Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expres
     value_ = value;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 Property *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const value = value_ != nullptr ? value_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<Property>(Tag {}, *this, key, value); clone != nullptr) {
         if (key != nullptr) {

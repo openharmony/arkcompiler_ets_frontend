@@ -53,8 +53,7 @@ public:
         v->Accept(this);
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] TSArrayType *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] TSArrayType *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     TypeNode *elementType_;

@@ -24,18 +24,11 @@
 
 namespace ark::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
-                                   Expression *const object, Expression *const property)
+                                   ArenaAllocator *allocator)
     : MemberExpression(other)
 {
-    object_ = object;
-    if (object_ != nullptr) {
-        object_->SetParent(this);
-    }
-
-    property_ = property;
-    if (property_ != nullptr) {
-        property_->SetParent(this);
-    }
+    object_ = other.object_ != nullptr ? other.object_->Clone(allocator, this)->AsExpression() : nullptr;
+    property_ = other.property_ != nullptr ? other.property_->Clone(allocator, this)->AsExpression() : nullptr;
 }
 
 bool MemberExpression::IsPrivateReference() const noexcept
@@ -394,24 +387,14 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const object = object_ != nullptr ? object_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const property = property_ != nullptr ? property_->Clone(allocator)->AsExpression() : nullptr;
-
-    if (auto *const clone =
-            allocator->New<MemberExpression>(object, property, kind_, computed_, MaybeOptionalExpression::IsOptional());
-        clone != nullptr) {
-        if (object != nullptr) {
-            object->SetParent(clone);
-        }
-        if (property != nullptr) {
-            property->SetParent(clone);
-        }
+    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

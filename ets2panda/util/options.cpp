@@ -190,7 +190,7 @@ bool Options::Parse(int argc, const char **argv)
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid");
     ark::PandArg<std::string> verifierErrors(
-        "verifier-errors", "ForLoopCorrectlyInitializedForAll",
+        "verifier-errors", "ForLoopCorrectlyInitializedForAll,NodeHasParentForAll,EveryChildHasValidParentForAll",
         "Print errors and stop compilation if AST tree is incorrect. "
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"

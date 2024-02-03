@@ -32,6 +32,7 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identO
     : Expression(AstNodeType::ETS_PARAMETER_EXPRESSION), initializer_(initializer)
 {
     ASSERT(identOrSpread != nullptr);
+    identOrSpread->SetParent(this);
 
     if (identOrSpread->IsIdentifier()) {
         ident_ = identOrSpread->AsIdentifier();
@@ -187,12 +188,12 @@ checker::Type *ETSParameterExpression::Check(checker::ETSChecker *const checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const identOrSpread = spread_ != nullptr ? spread_->Clone(allocator)->AsAnnotatedExpression()
-                                                   : ident_->Clone(allocator)->AsAnnotatedExpression();
-    auto *const initializer = initializer_ != nullptr ? initializer_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const identOrSpread = spread_ != nullptr ? spread_->Clone(allocator, nullptr)->AsAnnotatedExpression()
+                                                   : ident_->Clone(allocator, nullptr)->AsAnnotatedExpression();
+    auto *const initializer =
+        initializer_ != nullptr ? initializer_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<ETSParameterExpression>(identOrSpread, initializer); clone != nullptr) {
         identOrSpread->SetParent(clone);

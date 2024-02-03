@@ -132,7 +132,6 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ETSPrimitiveType>(type_); clone != nullptr) {
@@ -140,6 +139,7 @@ ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNo
             clone->SetParent(parent);
         }
 
+        clone->SetRange(Range());
         return clone;
     }
 

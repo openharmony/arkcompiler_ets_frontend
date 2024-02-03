@@ -64,10 +64,9 @@ checker::Type *ETSPackageDeclaration::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSPackageDeclaration *ETSPackageDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto const name = name_ != nullptr ? name_->Clone(allocator, this)->AsExpression() : nullptr;
+    auto const name = name_ != nullptr ? name_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     if (auto *const clone = allocator->New<ETSPackageDeclaration>(name); clone != nullptr) {
         if (name != nullptr) {
             name->SetParent(clone);

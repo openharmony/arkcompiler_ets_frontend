@@ -96,6 +96,8 @@ void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
 void ReturnStatement::SetArgument(Expression *arg)
 {
     argument_ = arg;
-    arg->SetParent(this);
+    if (argument_ != nullptr) {
+        argument_->SetParent(this);
+    }
 }
 }  // namespace ark::es2panda::ir

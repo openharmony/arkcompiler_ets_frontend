@@ -62,10 +62,9 @@ checker::Type *ClassExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ClassExpression *ClassExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const def = def_ != nullptr ? def_->Clone(allocator)->AsClassDefinition() : nullptr;
+    auto *const def = def_ != nullptr ? def_->Clone(allocator, nullptr)->AsClassDefinition() : nullptr;
 
     if (auto *const clone = allocator->New<ClassExpression>(def); clone != nullptr) {
         if (parent != nullptr) {

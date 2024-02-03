@@ -41,8 +41,7 @@ public:
         return statements_;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] BlockExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] BlockExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

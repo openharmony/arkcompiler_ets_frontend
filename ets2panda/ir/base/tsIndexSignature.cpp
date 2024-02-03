@@ -72,11 +72,10 @@ checker::Type *TSIndexSignature::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TSIndexSignature *TSIndexSignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const param = param_ != nullptr ? param_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const typeAnnotation = typeAnnotation_->Clone(allocator);
+    auto *const param = param_ != nullptr ? param_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const typeAnnotation = typeAnnotation_->Clone(allocator, nullptr);
 
     if (auto *const clone = allocator->New<TSIndexSignature>(param, typeAnnotation, readonly_); clone != nullptr) {
         if (parent != nullptr) {

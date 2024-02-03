@@ -167,7 +167,7 @@ ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *checker, ir:
 ir::BinaryExpression *GenInstanceofExpr(checker::ETSChecker *checker, ir::Expression *unionNode,
                                         checker::Type *constituentType)
 {
-    auto *const lhsExpr = unionNode->Clone(checker->Allocator())->AsExpression();
+    auto *const lhsExpr = unionNode->Clone(checker->Allocator(), nullptr)->AsExpression();
     lhsExpr->Check(checker);
     lhsExpr->SetBoxingUnboxingFlags(unionNode->GetBoxingUnboxingFlags());
     auto *rhsType = constituentType;
@@ -240,7 +240,6 @@ ir::BlockStatement *GenBlockStmtForAssignmentBinary(checker::ETSChecker *checker
     stmts.push_back(stmt);
     auto *const localBlockStmt = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
     localBlockStmt->SetScope(localCtx.GetScope());
-    stmt->SetParent(localBlockStmt);
     localBlockStmt->SetRange(stmt->Range());
     localCtx.GetScope()->BindNode(localBlockStmt);
     return localBlockStmt;
@@ -329,12 +328,7 @@ ir::BlockStatement *ReplaceBinaryExprInStmt(checker::ETSChecker *checker, ir::Ex
         clonedBinary->Check(checker);
         auto *const consequent = GenBlockStmtForAssignmentBinary(
             checker, varDeclId->AsIdentifier(), ProcessOperandsInBinaryExpr(checker, clonedBinary, uType));
-        instanceofTree = checker->Allocator()->New<ir::IfStatement>(test, consequent, instanceofTree);
-        test->SetParent(instanceofTree);
-        consequent->SetParent(instanceofTree);
-        if (instanceofTree->Alternate() != nullptr) {
-            instanceofTree->Alternate()->SetParent(instanceofTree);
-        }
+        instanceofTree = checker->AllocNode<ir::IfStatement>(test, consequent, instanceofTree);
     }
     ASSERT(instanceofTree != nullptr);
     // Replacing a binary expression with an identifier

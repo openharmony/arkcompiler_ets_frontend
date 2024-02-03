@@ -46,8 +46,7 @@ public:
         v->Accept(this);
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSPrimitiveType *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSPrimitiveType *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     PrimitiveType type_;

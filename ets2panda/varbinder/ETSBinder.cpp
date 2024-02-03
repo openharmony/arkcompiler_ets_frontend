@@ -275,9 +275,9 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
 
 void ETSBinder::ResolveMethodDefinition(ir::MethodDefinition *methodDef)
 {
-    auto *func = methodDef->Function();
-    ResolveReferences(methodDef);
+    methodDef->ResolveReferences([this](auto *childNode) { ResolveReference(childNode); });
 
+    auto *func = methodDef->Function();
     if (methodDef->IsStatic() || func->IsStaticBlock()) {
         return;
     }

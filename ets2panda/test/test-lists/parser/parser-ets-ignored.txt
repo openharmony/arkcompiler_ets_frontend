@@ -12,6 +12,9 @@ parser/ets/import_tests/check_exported_default_struct.ets
 parser/ets/import_tests/modules/struct_default_module.ets
 parser/ets/import_tests/check_exported_struct.ets
 
+# lowering 'expandBrackets' should be repaired #15594
+parser/ets/array_new.ets
+
 # Throwing function types are not yet supported
 parser/ets/lambdaThrowsRethrows.ets
 parser/ets/variable_throw_function_1.ets

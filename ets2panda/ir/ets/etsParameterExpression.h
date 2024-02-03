@@ -78,8 +78,7 @@ public:
         extraValue_ = value;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSParameterExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSParameterExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void TransformChildren(const NodeTransformer &cb) override;

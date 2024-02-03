@@ -40,7 +40,6 @@ BlockExpression::BlockExpression([[maybe_unused]] Tag const tag, BlockExpression
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 BlockExpression *BlockExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<BlockExpression>(Tag {}, *this, allocator); clone != nullptr) {

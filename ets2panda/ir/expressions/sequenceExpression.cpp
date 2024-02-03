@@ -32,7 +32,6 @@ SequenceExpression::SequenceExpression([[maybe_unused]] Tag const tag, SequenceE
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 SequenceExpression *SequenceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<SequenceExpression>(Tag {}, *this, allocator); clone != nullptr) {

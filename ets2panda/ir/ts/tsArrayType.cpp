@@ -78,10 +78,9 @@ checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
     return checker->CreateETSArrayType(elementType);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator) : nullptr;
+    auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone); clone != nullptr) {
         if (elementTypeClone != nullptr) {

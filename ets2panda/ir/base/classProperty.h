@@ -51,8 +51,7 @@ public:
         return isStatic ? PrivateFieldKind::STATIC_FIELD : PrivateFieldKind::FIELD;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ClassProperty *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ClassProperty *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

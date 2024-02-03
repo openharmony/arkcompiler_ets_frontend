@@ -110,17 +110,35 @@ static void Verify(const parser::Program &program, const CompilerContext &contex
     using NamedProgram = std::tuple<util::StringView, const parser::Program *>;
     ArenaVector<NamedProgram> toCheck {program.Allocator()->Adapter()};
     toCheck.push_back(std::make_tuple(program.SourceFilePath(), &program));
+
+    // collect list of checks
     for (const auto &externalSource : program.ExternalSources()) {
         for (const auto *external : externalSource.second) {
             toCheck.push_back(std::make_tuple(external->SourceFilePath(), external));
         }
     }
+
+    // check
     for (const auto &it : toCheck) {
         const auto &sourceName = std::get<0>(it);
         const auto &linkedProgram = std::get<1>(it);
         verificationCtx.Verify(context.Options()->verifierWarnings, context.Options()->verifierErrors,
                                linkedProgram->Ast(), phase->Name(), sourceName);
         verificationCtx.IntroduceNewInvariants(phase->Name());
+    }
+}
+
+static void Report(const CompilerContext &context, ASTVerifierContext &verificationCtx)
+{
+    if (!context.Options()->verifierWarnings.empty()) {
+        if (auto errors = verificationCtx.DumpWarningsJSON(); errors != "[]") {
+            LOG(ERROR, ES2PANDA) << errors;
+        }
+    }
+    if (!context.Options()->verifierErrors.empty()) {
+        if (auto errors = verificationCtx.DumpAssertsJSON(); errors != "[]") {
+            ASSERT_PRINT(false, errors);
+        }
     }
 }
 #endif
@@ -169,21 +187,14 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
             return nullptr;
         }
 #ifndef NDEBUG
-        Verify(program, context, phase, verificationCtx);
+        if (unit.ext == ScriptExtension::ETS) {
+            Verify(program, context, phase, verificationCtx);
+        }
 #endif
     }
 
 #ifndef NDEBUG
-    if (!context.Options()->verifierWarnings.empty()) {
-        if (auto errors = verificationCtx.DumpWarningsJSON(); errors != "[]") {
-            LOG(ERROR, ES2PANDA) << errors;
-        }
-    }
-    if (!context.Options()->verifierErrors.empty()) {
-        if (auto errors = verificationCtx.DumpAssertsJSON(); errors != "[]") {
-            ASSERT_PRINT(false, errors);
-        }
-    }
+    Report(context, verificationCtx);
 #endif
 
     emitter.GenAnnotation();

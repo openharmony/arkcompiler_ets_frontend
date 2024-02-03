@@ -102,8 +102,7 @@ public:
         return kind == PropertyKind::GET || kind == PropertyKind::SET;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Property *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] Property *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     bool ConvertibleToPatternProperty();
     ValidationInfo ValidateExpression();

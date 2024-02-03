@@ -90,7 +90,6 @@ ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
                                                                                     AstNode *const parent)
 {
@@ -98,6 +97,8 @@ ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Cl
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

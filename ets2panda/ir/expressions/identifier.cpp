@@ -15,7 +15,6 @@
 
 #include "identifier.h"
 
-#include "varbinder/scope.h"
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
@@ -36,13 +35,14 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
