@@ -1,0 +1,559 @@
+.language ECMAScript
+
+.function any .A(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	callruntime.callinit 0x0, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	newlexenv 0x1
+LABEL_2: 
+	ldhole
+	sta v7
+	defineclasswithbuffer 0x0, .A, _0, 0x0, v7
+	sta v5
+	sta v6
+	lda v5
+	ldobjbyname 0x1, prototype
+	sta v8
+	sta v8
+	definemethod 0x3, .instance_initializer, 0x0
+	stlexvar 0x0, 0x0
+	lda v5
+LABEL_3: 
+	jmp LABEL_5
+LABEL_4: 
+	poplexenv
+	throw
+LABEL_5: 
+	poplexenv
+	sttoglobalrecord 0x4, A
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_2, LABEL_3, LABEL_4
+
+.function any .instance_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x1
+	sta v0
+	lda v0
+	definefieldbyname 0x0, a1, a2
+	ldai 0x2
+	sta v1
+	lda v1
+	definefieldbyname 0x2, a2, a2
+	ldai 0x3
+	sta v2
+	lda v2
+	definefieldbyname 0x4, a3, a2
+	lda v0
+	definefieldbyname 0x6, a4, a2
+	lda v1
+	definefieldbyname 0x8, a5, a2
+	lda v2
+	definefieldbyname 0xa, a6, a2
+	lda v0
+	definefieldbyname 0xc, a7, a2
+	lda v1
+	definefieldbyname 0xe, a8, a2
+	lda v2
+	definefieldbyname 0x10, a9, a2
+	lda v0
+	definefieldbyname 0x12, a10, a2
+	lda v1
+	definefieldbyname 0x14, a11, a2
+	lda v2
+	definefieldbyname 0x16, a12, a2
+	lda v2
+	definefieldbyname 0x18, a13, a2
+	lda v0
+	definefieldbyname 0x1a, a14, a2
+	lda v1
+	definefieldbyname 0x1c, a15, a2
+	lda v2
+	definefieldbyname 0x1e, a16, a2
+	lda v0
+	definefieldbyname 0x20, a17, a2
+	lda v1
+	definefieldbyname 0x22, a18, a2
+	lda v2
+	definefieldbyname 0x24, a19, a2
+	lda v0
+	definefieldbyname 0x26, a21, a2
+	lda v1
+	definefieldbyname 0x28, a22, a2
+	lda v2
+	definefieldbyname 0x2a, a23, a2
+	lda v0
+	definefieldbyname 0x2c, a24, a2
+	lda v1
+	definefieldbyname 0x2e, a25, a2
+	lda v2
+	definefieldbyname 0x30, a26, a2
+	lda v0
+	definefieldbyname 0x32, a27, a2
+	lda v1
+	definefieldbyname 0x34, a28, a2
+	lda v2
+	definefieldbyname 0x36, a29, a2
+	lda v0
+	definefieldbyname 0x38, a31, a2
+	lda v1
+	definefieldbyname 0x3a, a32, a2
+	lda v2
+	definefieldbyname 0x3c, a33, a2
+	lda v0
+	definefieldbyname 0x3e, a34, a2
+	lda v1
+	definefieldbyname 0x40, a35, a2
+	lda v2
+	definefieldbyname 0x42, a36, a2
+	lda v0
+	definefieldbyname 0x44, a37, a2
+	lda v1
+	definefieldbyname 0x46, a38, a2
+	lda v2
+	definefieldbyname 0x48, a39, a2
+	lda v0
+	definefieldbyname 0x4a, a410, a2
+	lda v1
+	definefieldbyname 0x4c, a411, a2
+	lda v2
+	definefieldbyname 0x4e, a412, a2
+	lda v2
+	definefieldbyname 0x50, a413, a2
+	lda v0
+	definefieldbyname 0x52, a414, a2
+	lda v1
+	definefieldbyname 0x54, a415, a2
+	lda v2
+	definefieldbyname 0x56, a416, a2
+	lda v0
+	definefieldbyname 0x58, a417, a2
+	lda v1
+	definefieldbyname 0x5a, a418, a2
+	lda v2
+	definefieldbyname 0x5c, a419, a2
+	lda v0
+	definefieldbyname 0x5e, a421, a2
+	lda v1
+	definefieldbyname 0x60, a422, a2
+	lda v2
+	definefieldbyname 0x62, a423, a2
+	lda v0
+	definefieldbyname 0x64, a424, a2
+	lda v1
+	definefieldbyname 0x66, a425, a2
+	lda v2
+	definefieldbyname 0x68, a426, a2
+	lda v0
+	definefieldbyname 0x6a, a427, a2
+	lda v1
+	definefieldbyname 0x6c, a428, a2
+	lda v2
+	definefieldbyname 0x6e, a429, a2
+	lda v0
+	definefieldbyname 0x70, a41, a2
+	lda v1
+	definefieldbyname 0x72, a42, a2
+	lda v2
+	definefieldbyname 0x74, a43, a2
+	lda v0
+	definefieldbyname 0x76, a44, a2
+	lda v1
+	definefieldbyname 0x78, a45, a2
+	lda v2
+	definefieldbyname 0x7a, a46, a2
+	lda v0
+	definefieldbyname 0x7c, a47, a2
+	lda v1
+	definefieldbyname 0x7e, a48, a2
+	lda v2
+	definefieldbyname 0xffffff80, a49, a2
+	lda v0
+	definefieldbyname 0xffffff82, a110, a2
+	lda v1
+	definefieldbyname 0xffffff84, a111, a2
+	lda v2
+	definefieldbyname 0xffffff86, a112, a2
+	lda v2
+	definefieldbyname 0xffffff88, a113, a2
+	lda v0
+	definefieldbyname 0xffffff8a, a114, a2
+	lda v1
+	definefieldbyname 0xffffff8c, a115, a2
+	lda v2
+	definefieldbyname 0xffffff8e, a116, a2
+	lda v0
+	definefieldbyname 0xffffff90, a117, a2
+	lda v1
+	definefieldbyname 0xffffff92, a118, a2
+	lda v2
+	definefieldbyname 0xffffff94, a119, a2
+	lda v0
+	definefieldbyname 0xffffff96, a121, a2
+	lda v1
+	definefieldbyname 0xffffff98, a122, a2
+	lda v2
+	definefieldbyname 0xffffff9a, a123, a2
+	lda v0
+	definefieldbyname 0xffffff9c, a124, a2
+	lda v1
+	definefieldbyname 0xffffff9e, a125, a2
+	lda v2
+	definefieldbyname 0xffffffa0, a126, a2
+	lda v0
+	definefieldbyname 0xffffffa2, a127, a2
+	lda v1
+	definefieldbyname 0xffffffa4, a128, a2
+	lda v2
+	definefieldbyname 0xffffffa6, a129, a2
+	lda v0
+	definefieldbyname 0xffffffa8, a131, a2
+	lda v1
+	definefieldbyname 0xffffffaa, a132, a2
+	lda v2
+	definefieldbyname 0xffffffac, a133, a2
+	lda v0
+	definefieldbyname 0xffffffae, a134, a2
+	lda v1
+	definefieldbyname 0xffffffb0, a135, a2
+	lda v2
+	definefieldbyname 0xffffffb2, a136, a2
+	lda v0
+	definefieldbyname 0xffffffb4, a137, a2
+	lda v1
+	definefieldbyname 0xffffffb6, a138, a2
+	lda v2
+	definefieldbyname 0xffffffb8, a139, a2
+	lda v0
+	definefieldbyname 0xffffffba, a1410, a2
+	lda v1
+	definefieldbyname 0xffffffbc, a1411, a2
+	lda v2
+	definefieldbyname 0xffffffbe, a1412, a2
+	lda v2
+	definefieldbyname 0xffffffc0, a1413, a2
+	lda v0
+	definefieldbyname 0xffffffc2, a1414, a2
+	lda v1
+	definefieldbyname 0xffffffc4, a1415, a2
+	lda v2
+	definefieldbyname 0xffffffc6, a1416, a2
+	lda v0
+	definefieldbyname 0xffffffc8, a1417, a2
+	lda v1
+	definefieldbyname 0xffffffca, a1418, a2
+	lda v2
+	definefieldbyname 0xffffffcc, a1419, a2
+	lda v0
+	definefieldbyname 0xffffffce, a1421, a2
+	lda v1
+	definefieldbyname 0xffffffd0, a1422, a2
+	lda v2
+	definefieldbyname 0xffffffd2, a1423, a2
+	lda v0
+	definefieldbyname 0xffffffd4, a1424, a2
+	lda v1
+	definefieldbyname 0xffffffd6, a1425, a2
+	lda v2
+	definefieldbyname 0xffffffd8, a1426, a2
+	lda v0
+	definefieldbyname 0xffffffda, a1427, a2
+	lda v1
+	definefieldbyname 0xffffffdc, a1428, a2
+	lda v2
+	definefieldbyname 0xffffffde, a1429, a2
+	lda v0
+	definefieldbyname 0xffffffe0, a51, a2
+	lda v1
+	definefieldbyname 0xffffffe2, a52, a2
+	lda v2
+	definefieldbyname 0xffffffe4, a53, a2
+	lda v0
+	definefieldbyname 0xffffffe6, a54, a2
+	lda v1
+	definefieldbyname 0xffffffe8, a55, a2
+	lda v2
+	definefieldbyname 0xffffffea, a56, a2
+	lda v0
+	definefieldbyname 0xffffffec, a57, a2
+	lda v1
+	definefieldbyname 0xffffffee, a58, a2
+	lda v2
+	definefieldbyname 0xfffffff0, a59, a2
+	lda v0
+	definefieldbyname 0xfffffff2, a510, a2
+	lda v1
+	definefieldbyname 0xfffffff4, a511, a2
+	lda v2
+	definefieldbyname 0xfffffff6, a512, a2
+	lda v2
+	definefieldbyname 0xfffffff8, a513, a2
+	lda v0
+	definefieldbyname 0xfffffffa, a514, a2
+	lda v1
+	definefieldbyname 0xfffffffc, a515, a2
+	lda v2
+	definefieldbyname 0xffffffff, a516, a2
+	lda v0
+	definefieldbyname 0xffffffff, a517, a2
+	lda v1
+	definefieldbyname 0xffffffff, a518, a2
+	lda v2
+	definefieldbyname 0xffffffff, a519, a2
+	lda v0
+	definefieldbyname 0xffffffff, a521, a2
+	lda v1
+	definefieldbyname 0xffffffff, a522, a2
+	lda v2
+	definefieldbyname 0xffffffff, a523, a2
+	lda v0
+	definefieldbyname 0xffffffff, a524, a2
+	lda v1
+	definefieldbyname 0xffffffff, a525, a2
+	lda v2
+	definefieldbyname 0xffffffff, a526, a2
+	lda v0
+	definefieldbyname 0xffffffff, a527, a2
+	lda v1
+	definefieldbyname 0xffffffff, a528, a2
+	lda v2
+	definefieldbyname 0xffffffff, a529, a2
+	lda v0
+	definefieldbyname 0xffffffff, a531, a2
+	lda v1
+	definefieldbyname 0xffffffff, a532, a2
+	lda v2
+	definefieldbyname 0xffffffff, a533, a2
+	lda v0
+	definefieldbyname 0xffffffff, a534, a2
+	lda v1
+	definefieldbyname 0xffffffff, a535, a2
+	lda v2
+	definefieldbyname 0xffffffff, a536, a2
+	lda v0
+	definefieldbyname 0xffffffff, a537, a2
+	lda v1
+	definefieldbyname 0xffffffff, a538, a2
+	lda v2
+	definefieldbyname 0xffffffff, a539, a2
+	lda v0
+	definefieldbyname 0xffffffff, a5410, a2
+	lda v1
+	definefieldbyname 0xffffffff, a5411, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5412, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5413, a2
+	lda v0
+	definefieldbyname 0xffffffff, a5414, a2
+	lda v1
+	definefieldbyname 0xffffffff, a5415, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5416, a2
+	lda v0
+	definefieldbyname 0xffffffff, a5417, a2
+	lda v1
+	definefieldbyname 0xffffffff, a5418, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5419, a2
+	lda v0
+	definefieldbyname 0xffffffff, a5421, a2
+	lda v1
+	definefieldbyname 0xffffffff, a5422, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5423, a2
+	lda v0
+	definefieldbyname 0xffffffff, a5424, a2
+	lda v1
+	definefieldbyname 0xffffffff, a5425, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5426, a2
+	lda v0
+	definefieldbyname 0xffffffff, a5427, a2
+	lda v1
+	definefieldbyname 0xffffffff, a5428, a2
+	lda v2
+	definefieldbyname 0xffffffff, a5429, a2
+	lda v0
+	definefieldbyname 0xffffffff, a641, a2
+	lda v1
+	definefieldbyname 0xffffffff, a642, a2
+	lda v2
+	definefieldbyname 0xffffffff, a643, a2
+	lda v0
+	definefieldbyname 0xffffffff, a644, a2
+	lda v1
+	definefieldbyname 0xffffffff, a645, a2
+	lda v2
+	definefieldbyname 0xffffffff, a646, a2
+	lda v0
+	definefieldbyname 0xffffffff, a647, a2
+	lda v1
+	definefieldbyname 0xffffffff, a648, a2
+	lda v2
+	definefieldbyname 0xffffffff, a649, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6110, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6111, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6112, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6113, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6114, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6115, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6116, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6117, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6118, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6119, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6121, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6122, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6123, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6124, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6125, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6126, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6127, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6128, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6129, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6131, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6132, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6133, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6134, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6135, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6136, a2
+	lda v0
+	definefieldbyname 0xffffffff, a6137, a2
+	lda v1
+	definefieldbyname 0xffffffff, a6138, a2
+	lda v2
+	definefieldbyname 0xffffffff, a6139, a2
+	lda v0
+	definefieldbyname 0xffffffff, a61410, a2
+	lda v1
+	definefieldbyname 0xffffffff, a61411, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61412, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61413, a2
+	lda v0
+	definefieldbyname 0xffffffff, a61414, a2
+	lda v1
+	definefieldbyname 0xffffffff, a61415, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61416, a2
+	lda v0
+	definefieldbyname 0xffffffff, a61417, a2
+	lda v1
+	definefieldbyname 0xffffffff, a61418, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61419, a2
+	lda v0
+	definefieldbyname 0xffffffff, a61421, a2
+	lda v1
+	definefieldbyname 0xffffffff, a61422, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61423, a2
+	lda v0
+	definefieldbyname 0xffffffff, a61424, a2
+	lda v1
+	definefieldbyname 0xffffffff, a61425, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61426, a2
+	lda v0
+	definefieldbyname 0xffffffff, a61427, a2
+	lda v1
+	definefieldbyname 0xffffffff, a61428, a2
+	lda v2
+	definefieldbyname 0xffffffff, a61429, a2
+	lda v0
+	definefieldbyname 0xffffffff, a71, a2
+	lda v1
+	definefieldbyname 0xffffffff, a72, a2
+	lda v2
+	definefieldbyname 0xffffffff, a73, a2
+	lda v0
+	definefieldbyname 0xffffffff, a74, a2
+	lda v1
+	definefieldbyname 0xffffffff, a75, a2
+	lda v2
+	definefieldbyname 0xffffffff, a76, a2
+	lda v0
+	definefieldbyname 0xffffffff, a77, a2
+	lda v1
+	definefieldbyname 0xffffffff, a78, a2
+	lda v2
+	definefieldbyname 0xffffffff, a79, a2
+	lda v0
+	definefieldbyname 0xffffffff, a710, a2
+	lda v1
+	definefieldbyname 0xffffffff, a711, a2
+	lda v2
+	definefieldbyname 0xffffffff, a712, a2
+	lda v2
+	definefieldbyname 0xffffffff, a713, a2
+	lda v0
+	definefieldbyname 0xffffffff, a714, a2
+	lda v1
+	definefieldbyname 0xffffffff, a715, a2
+	lda v2
+	definefieldbyname 0xffffffff, a716, a2
+	lda v0
+	definefieldbyname 0xffffffff, a717, a2
+	lda v1
+	definefieldbyname 0xffffffff, a718, a2
+	lda v2
+	definefieldbyname 0xffffffff, a719, a2
+	lda v0
+	definefieldbyname 0xffffffff, a721, a2
+	lda v1
+	definefieldbyname 0xffffffff, a722, a2
+	lda v2
+	definefieldbyname 0xffffffff, a723, a2
+	lda v0
+	definefieldbyname 0xffffffff, a724, a2
+	lda v1
+	definefieldbyname 0xffffffff, a725, a2
+	lda v2
+	definefieldbyname 0xffffffff, a726, a2
+	lda v0
+	definefieldbyname 0xffffffff, a727, a2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+

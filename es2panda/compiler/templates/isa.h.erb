@@ -266,12 +266,15 @@ public:
     {
 % is_jit_ic = insn.properties.include?("jit_ic_slot")
 % is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")
+% is_8_bit_ic = insn.properties.include?("eight_bit_ic")
+% is_16_bit_ic = (!is_8_bit_ic) && insn.properties.include?("sixteen_bit_ic")
+% is_8_16_bit_ic = (!is_16_bit_ic) && insn.properties.include?("eight_sixteen_bit_ic")
 % if (!is_jit_ic && !is_ic)
         return 0;
 % else
 %   ret = insn.properties.include?("one_slot") ? 1 : 2;
         constexpr static ICSlot invalid = 0xFF;
-%   if (is_ic)
+%   if (is_16_bit_ic || is_8_16_bit_ic)
         if (slot <= 0xFF) {
             if ((slot + <%= ret %>) > 0xFF) {
                 <%= op_map['imm'][0] %> = 0x100;
@@ -290,7 +293,7 @@ public:
         <%= op_map['imm'][0] %> = invalid;
         return 0;
 %   end
-%   if (is_jit_ic && !is_ic)
+%   if (is_8_bit_ic)
         if (slot < 0xFF) {
             if ((slot + <%= ret %>) > 0xFF) {
                 <%= op_map['imm'][0] %> = invalid;
@@ -332,7 +335,12 @@ public:
     bool oneByteSlotOnly() override
     {
 % is_jit_ic = insn.properties.include?("jit_ic_slot")
-% if (is_jit_ic)
+% is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")
+% if (!is_jit_ic && !is_ic)
+        return false;
+% end
+% is_8_bit_ic = insn.properties.include?("eight_bit_ic")
+% if (is_8_bit_ic)
         return true;
 % else
         return false;
