@@ -17,6 +17,8 @@ import {FileUtils} from './FileUtils';
 
 export const NAME_CACHE_SUFFIX: string = '.cache.json';
 export const PROPERTY_CACHE_FILE: string = 'property.cache.json';
+export const IDENTIFIER_CACHE: string = 'IdentifierCache';
+export const MEM_METHOD_CACHE: string = 'MemberMethodCache';
 const spaceOfNameCache: number = 2;
 
 export function writeCache(cache: Map<string, string>, destFileName: string): void {

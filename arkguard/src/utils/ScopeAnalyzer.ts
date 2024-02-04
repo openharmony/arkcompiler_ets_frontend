@@ -23,7 +23,13 @@ import {
   isFunctionLike,
   isIdentifier,
   isMethodDeclaration,
-  SyntaxKind
+  SyntaxKind,
+  isVariableDeclaration,
+  isFunctionExpression,
+  isArrowFunction,
+  isGetAccessor,
+  isSetAccessor,
+  isPropertyDeclaration
 } from 'typescript';
 
 import type {
@@ -57,6 +63,7 @@ import type {
 
 import {NodeUtils} from './NodeUtils';
 import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
+import {globalMangledTable} from '../transformers/rename/RenamePropertiesTransformer'
 
 /**
  * kind of a scope
@@ -65,6 +72,7 @@ namespace secharmony {
   type ForLikeStatement = ForStatement | ForInOrOfStatement;
   type ClassLikeDeclaration = ClassDeclaration | ClassExpression;
   export const noSymbolIdentifier: Set<string> = new Set();
+  export let memberMethodCache: Map<string, string> = new Map();
 
   /**
    * type of scope
@@ -735,6 +743,52 @@ namespace secharmony {
       if (!overloading) {
         current = createScope(scopeName, node, ScopeKind.FUNCTION, true, current);
         scopes.push(current);
+      }
+
+      let symbol: Symbol;
+      if((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent)) {
+        symbol = checker.getSymbolAtLocation(node.parent.name);
+      } else {
+        symbol = checker.getSymbolAtLocation(node.name);
+      }
+      const sourceFile = NodeUtils.getSourceFileOfNode(node);
+      const startPosition = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+      const endPosition = sourceFile.getLineAndCharacterOfPosition(node.getEnd());
+      let startLine = startPosition.line + 1;
+      let startCharacter = startPosition.character + 1;
+      let endLine = endPosition.line + 1;
+      let endCharacter = endPosition.character + 1;
+
+      if (symbol) {
+        Reflect.set(symbol, "isFunction", true);
+        Reflect.set(symbol, "lineInfo", [startLine, startCharacter, endLine, endCharacter]);
+      }
+
+      let isProperty: boolean = isMethodDeclaration(node) || isGetAccessor(node) ||
+                                isSetAccessor(node) || (isConstructorDeclaration(node) &&
+                                !(isClassDeclaration(node.parent) && isViewPUBasedClass(node.parent)));
+      let isPropertyParent: boolean = (isFunctionExpression(node) || isArrowFunction(node)) &&
+                                      isPropertyDeclaration(node.parent);
+      if (isProperty || isPropertyParent) {
+        let gotNode;
+        if (node.kind == SyntaxKind.Constructor || 
+          ((node.kind == SyntaxKind.FunctionExpression ||
+            node.kind == SyntaxKind.ArrowFunction) &&
+            node.parent.kind == SyntaxKind.PropertyDeclaration)) {
+          gotNode = node.parent;
+        } else {
+          gotNode = node;
+        }
+        let valueName: string = (gotNode.name as Identifier).escapedText.toString();
+        let originalName: string = valueName;
+        for (const [key, val] of globalMangledTable.entries()) {
+          if (val == valueName) {
+            originalName = key;
+            break;
+          }
+        }
+        let keyName = originalName + ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
+        memberMethodCache.set(keyName, valueName);
       }
 
       addSymbolInScope(node);

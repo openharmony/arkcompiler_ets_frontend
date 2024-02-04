@@ -47,6 +47,8 @@ import {
   getMapFromJson,
   NAME_CACHE_SUFFIX,
   PROPERTY_CACHE_FILE,
+  IDENTIFIER_CACHE,
+  MEM_METHOD_CACHE,
   readCache, writeCache
 } from './utils/NameCacheUtil';
 import {ListUtil} from './utils/ListUtil';
@@ -64,7 +66,7 @@ export let orignalFilePathForSearching: string | undefined;
 type ObfuscationResultType = {
   content: string,
   sourceMap?: RawSourceMap,
-  nameCache?: { [k: string]: string },
+  nameCache?: { [k: string] : string | {} },
   filePath?: string
 };
 
@@ -217,8 +219,16 @@ export class ArkObfuscator {
 
     const nameCachePath: string = path.join(outputDir, FileUtils.getFileName(sourceFile) + NAME_CACHE_SUFFIX);
     const nameCache: Object = readCache(nameCachePath);
+    let historyNameCache = new Map<string, string>();
+    let identifierCache = nameCache ? Reflect.get(nameCache, IDENTIFIER_CACHE) : undefined;
+    if (identifierCache) {
+      for (const [key, value] of Object.entries(identifierCache)) {
+        let newKey = key.includes(':') ? key.split(':')[0] : key;
+        historyNameCache.set(newKey, value as string);
+      }
+    }
 
-    renameIdentifierModule.historyNameCache = getMapFromJson(nameCache);
+    renameIdentifierModule.historyNameCache = historyNameCache;
   }
 
   private readPropertyCache(outputDir: string): void {
@@ -235,7 +245,7 @@ export class ArkObfuscator {
     renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
   }
 
-  private produceNameCache(namecache: { [k: string]: string }, resultPath: string): void {
+  private produceNameCache(namecache: { [k: string]: string | {}}, resultPath: string): void {
     const nameCachePath: string = resultPath + NAME_CACHE_SUFFIX;
     fs.writeFileSync(nameCachePath, JSON.stringify(namecache, null, JSON_TEXT_INDENT_LENGTH));
   }
@@ -311,6 +321,29 @@ export class ArkObfuscator {
     return (suffix !== 'js' && suffix !== 'ts' && suffix !== 'ets');
   }
 
+  private convertLineInfoForCache(consumer: sourceMap.SourceMapConsumer, targetCache: string) : Object {
+    let originalCache : Map<string, string> = renameIdentifierModule.nameCache.get(targetCache);
+    let updatedCache: Object= {};
+    for (const [key, value] of originalCache) {
+      let newKey: string = key;
+      if (!key.includes(':')) {
+        updatedCache[newKey] = value;
+        continue;
+      }
+      const [scopeName, oldStartLine, oldStartColum, oldEndLine, oldEndColum] = key.split(':');
+      const startPosition = consumer.originalPositionFor({line: Number(oldStartLine), column: Number(oldStartColum)});
+      const startLine = startPosition.line;
+      const endPosition = consumer.originalPositionFor({line: Number(oldEndLine), column: Number(oldEndColum)});
+      const endLine = endPosition.line;
+      newKey = `${scopeName}:${startLine}:${endLine}`;
+      // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
+      if (startLine && endLine) {
+        updatedCache[newKey] = value;
+      }
+    }
+    return updatedCache;
+  }
+
   /**
    * Obfuscate single source file with path provided
    *
@@ -384,7 +417,7 @@ export class ArkObfuscator {
       return result;
     }
 
-    if (historyNameCache && this.mCustomProfiles.mNameObfuscation) {
+    if (historyNameCache && historyNameCache.size > 0 && this.mCustomProfiles.mNameObfuscation) {
       renameIdentifierModule.historyNameCache = historyNameCache;
     }
 
@@ -423,10 +456,15 @@ export class ArkObfuscator {
         sourceMapJson = await this.mergeSourceMap(previousStageSourceMap, sourceMapJson as sourceMap.RawSourceMap);
       }
       result.sourceMap = sourceMapJson;
-    }
-
-    if (this.mCustomProfiles.mEnableNameCache && renameIdentifierModule.nameCache) {
-      result.nameCache = Object.fromEntries(renameIdentifierModule.nameCache);
+      let nameCache = renameIdentifierModule.nameCache;
+      if (this.mCustomProfiles.mEnableNameCache && nameCache) {
+        const consumer = await new sourceMap.SourceMapConsumer(sourceMapJson as sourceMap.RawSourceMap);
+        let newIdentifierCache: Object = this.convertLineInfoForCache(consumer, IDENTIFIER_CACHE);
+        let newMemberMethodCache: Object = this.convertLineInfoForCache(consumer, MEM_METHOD_CACHE);
+        nameCache.set(IDENTIFIER_CACHE, newIdentifierCache);
+        nameCache.set(MEM_METHOD_CACHE, newMemberMethodCache);
+        result.nameCache = {[IDENTIFIER_CACHE]: newIdentifierCache, [MEM_METHOD_CACHE]: newMemberMethodCache};
+      }
     }
 
     // clear cache of text writer
