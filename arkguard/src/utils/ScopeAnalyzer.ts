@@ -676,7 +676,12 @@ namespace secharmony {
       current = createScope(scopeName, node, ScopeKind.MODULE, true, current);
       scopes.push(current);
       addSymbolInScope(node);
-      forEachChild(node, analyzeScope);
+      node.forEachChild((sub: Node) => {
+        if (isIdentifier(sub)) {
+          return;
+        }
+        analyzeScope(sub);
+      })
       current = current.parent || current;
     }
 
