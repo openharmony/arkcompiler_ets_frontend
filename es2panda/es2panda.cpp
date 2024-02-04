@@ -161,7 +161,7 @@ int Compiler::CompileFiles(CompilerOptions &options,
         symbolTable = new util::SymbolTable(options.patchFixOptions.symbolTable,
             options.patchFixOptions.dumpSymbolTable);
         if (!symbolTable->Initialize()) {
-            std::cerr << "Exits due to hot fix initialize failed!" << std::endl;
+            std::cerr << "Failed to initialize for Hotfix." << std::endl;
             return 1;
         }
     }

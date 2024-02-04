@@ -156,7 +156,7 @@ static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::
     const std::unique_ptr<panda::es2panda::aot::Options> &options, size_t expectedProgsCount)
 {
     if (programsInfo.size() != expectedProgsCount) {
-        std::cerr << "the size of programs is expected to be " << expectedProgsCount
+        std::cerr << "The size of programs is expected to be " << expectedProgsCount
                   << ", but is " << programsInfo.size() << std::endl;
         return false;
     }
