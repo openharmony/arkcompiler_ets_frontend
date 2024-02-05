@@ -19,8 +19,6 @@
 namespace ark::es2panda::checker {
 enum class OverrideErrorCode {
     NO_ERROR,
-    OVERRIDING_STATIC,
-    OVERRIDDEN_STATIC,
     OVERRIDDEN_FINAL,
     INCOMPATIBLE_RETURN,
     OVERRIDDEN_WEAKER,
