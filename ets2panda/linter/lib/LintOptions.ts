@@ -18,6 +18,7 @@ import type { CommandLineOptions } from './CommandLineOptions';
 import type { IncrementalLintInfo } from './IncrementalLintInfo';
 import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import type { IsFileFromModuleCallback } from './IsFileFromModuleCallback';
+import type { IsEtsFileCallback } from './IsEtsFileCallback';
 import type { TSCCompiledProgram } from './ts-diagnostics/TSCCompiledProgram';
 
 // common options interface, additional fields may be used by plugins
@@ -28,4 +29,5 @@ export interface LintOptions {
   incrementalLintInfo?: IncrementalLintInfo;
   reportAutofixCb?: ReportAutofixCallback;
   isFileFromModuleCb?: IsFileFromModuleCallback;
+  isEtsFileCb?: IsEtsFileCallback;
 }

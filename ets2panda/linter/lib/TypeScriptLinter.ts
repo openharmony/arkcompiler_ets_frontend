@@ -52,6 +52,7 @@ import {
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { LIMITED_STD_API } from './utils/consts/LimitedStdAPI';
+import type { IsEtsFileCallback } from './IsEtsFileCallback';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -120,7 +121,8 @@ export class TypeScriptLinter {
     private readonly cancellationToken?: ts.CancellationToken,
     private readonly incrementalLintInfo?: IncrementalLintInfo,
     private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>,
-    private readonly reportAutofixCb?: ReportAutofixCallback
+    private readonly reportAutofixCb?: ReportAutofixCallback,
+    private readonly isEtsFileCb?: IsEtsFileCallback
   ) {
     this.tsUtils = new TsUtils(this.tsTypeChecker, TypeScriptLinter.testMode, TypeScriptLinter.advancedClassChecks);
     this.currentErrorLine = 0;
@@ -1965,9 +1967,14 @@ export class TypeScriptLinter {
      */
     if (
       (ts.isVariableDeclaration(decl) && ts.isVariableStatement(decl.parent.parent) ||
-        ts.isPropertyDeclaration(decl)) &&
-      !decl.initializer
+        ts.isPropertyDeclaration(decl)) && !decl.initializer
     ) {
+      if (ts.isPropertyDeclaration(decl) &&
+        TsUtils.skipPropertyInferredTypeCheck(decl, this.sourceFile, this.isEtsFileCb)
+      ) {
+        return;
+      }
+
       this.incrementCounters(decl, FaultID.AnyType);
       return;
     }

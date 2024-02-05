@@ -111,7 +111,8 @@ export function lint(options: LintOptions): LintRunResult {
     cancellationToken,
     options.incrementalLintInfo,
     tscStrictDiagnostics,
-    options.reportAutofixCb
+    options.reportAutofixCb,
+    options.isEtsFileCb
   );
   const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
 

@@ -26,6 +26,7 @@ import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 import { FaultID } from '../Problems';
+import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
 export class TsUtils {
@@ -822,8 +823,13 @@ export class TsUtils {
   }
 
   private validateField(type: ts.Type, prop: ts.PropertyAssignment): boolean {
+    // Issue 15497: Use unescaped property name to find correpsponding property.
     const propNameSymbol = this.tsTypeChecker.getSymbolAtLocation(prop.name);
-    const propName = propNameSymbol?.escapedName.toString() ?? prop.name.getText();
+    const propName = propNameSymbol ?
+      ts.symbolName(propNameSymbol) :
+      ts.isMemberName(prop.name) ?
+        ts.idText(prop.name) :
+        prop.name.getText();
     const propSym = this.findProperty(type, propName);
     if (!propSym?.declarations?.length) {
       return false;
@@ -1068,6 +1074,8 @@ export class TsUtils {
       node = (nodeOrComment as ts.FunctionExpression).type;
     } else if (nodeOrComment.kind === ts.SyntaxKind.FunctionDeclaration) {
       node = (nodeOrComment as ts.FunctionDeclaration).name;
+    } else if (nodeOrComment.kind === ts.SyntaxKind.MethodDeclaration) {
+      node = (nodeOrComment as ts.MethodDeclaration).name;
     }
 
     if (node !== undefined) {
@@ -1541,5 +1549,11 @@ export class TsUtils {
     }
     // We allow computed property names if expression is string literal or string Enum member
     return ts.isStringLiteralLike(expr) || this.isEnumStringLiteral(computedProperty.expression);
+  }
+
+  static skipPropertyInferredTypeCheck(decl: ts.PropertyDeclaration, sourceFile: ts.SourceFile | undefined,
+    isEtsFileCb: IsEtsFileCallback | undefined): boolean {
+    return !!sourceFile && !!isEtsFileCb && isEtsFileCb(sourceFile) && sourceFile.isDeclarationFile &&
+      !!decl.modifiers?.some((m) => { return m.kind === ts.SyntaxKind.PrivateKeyword; });
   }
 }
