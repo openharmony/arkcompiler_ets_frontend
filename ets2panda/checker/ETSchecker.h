@@ -180,6 +180,8 @@ public:
     varbinder::Variable *ResolveInstanceExtension(const ir::MemberExpression *memberExpr);
     void CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig);
     void CheckValidInheritance(ETSObjectType *classType, ir::ClassDefinition *classDef);
+    void CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
+                         varbinder::LocalVariable *found, ETSObjectType *interfaceFound);
     void TransformProperties(ETSObjectType *classType);
     void CheckGetterSetterProperties(ETSObjectType *classType);
     void AddElementsToModuleObject(ETSObjectType *moduleObj, const util::StringView &str);

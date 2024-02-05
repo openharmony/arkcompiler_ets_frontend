@@ -331,6 +331,8 @@ private:
     void BindVarDecl(ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
                      varbinder::Variable *var) override;
     void DeclareClassMethod(ir::MethodDefinition *method);
+    void MaybeAddOverload(ir::MethodDefinition *method, ir::Identifier *methodName, varbinder::Variable *found,
+                          varbinder::ClassScope *clsScope, varbinder::LocalScope *targetScope);
 
     void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
     void VisitBlockExpression(ir::BlockExpression *blockExpr) override;

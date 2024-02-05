@@ -758,8 +758,11 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
 
     const auto methodName = method->Id();
     auto *const clsScope = VarBinder()->GetScope()->AsClassScope();
-    if (clsScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::VARIABLES |
-                                                    varbinder::ResolveBindingOptions::DECLARATION) != nullptr) {
+    auto options =
+        method->IsStatic()
+            ? varbinder::ResolveBindingOptions::STATIC_VARIABLES | varbinder::ResolveBindingOptions::STATIC_DECLARATION
+            : varbinder::ResolveBindingOptions::VARIABLES | varbinder::ResolveBindingOptions::DECLARATION;
+    if (clsScope->FindLocal(methodName->Name(), options) != nullptr) {
         VarBinder()->ThrowRedeclaration(methodName->Start(), methodName->Name());
     }
 
@@ -771,6 +774,13 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
     }
     auto *found = targetScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::BINDINGS);
 
+    MaybeAddOverload(method, methodName, found, clsScope, targetScope);
+}
+
+void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Identifier *methodName,
+                                          varbinder::Variable *found, varbinder::ClassScope *clsScope,
+                                          varbinder::LocalScope *targetScope)
+{
     if (found == nullptr) {
         auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), targetScope);
         [[maybe_unused]] auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(
@@ -839,7 +849,9 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 {
     auto *curScope = VarBinder()->GetScope();
     const auto methodName = method->Id();
-    auto res = curScope->Find(methodName->Name(), varbinder::ResolveBindingOptions::ALL);
+    auto res =
+        curScope->Find(methodName->Name(), method->IsStatic() ? varbinder::ResolveBindingOptions::ALL_STATIC
+                                                              : varbinder::ResolveBindingOptions::ALL_NON_STATIC);
     if (res.variable != nullptr && !res.variable->Declaration()->IsFunctionDecl() && res.scope == curScope) {
         VarBinder()->ThrowRedeclaration(methodName->Start(), res.name);
     }

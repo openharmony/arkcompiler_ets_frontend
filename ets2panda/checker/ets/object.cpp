@@ -1515,30 +1515,40 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
             continue;
         }
 
-        if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
-            const char *targetType {};
+        CheckProperties(classType, classDef, it, found, interfaceFound);
+    }
+}
 
-            if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
-                targetType = "field";
-            } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
-                targetType = "method";
-            } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
-                targetType = "class";
-            } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
-                targetType = "interface";
-            } else {
-                targetType = "enum";
-            }
-
-            if (interfaceFound != nullptr) {
-                ThrowTypeError({"Cannot inherit from interface ", interfaceFound->Name(), " because ", targetType, " ",
-                                it->Name(), " is inherited with a different declaration type"},
-                               interfaceFound->GetDeclNode()->Start());
-            }
-            ThrowTypeError({"Cannot inherit from class ", classType->SuperType()->Name(), ", because ", targetType, " ",
-                            it->Name(), " is inherited with a different declaration type"},
-                           classDef->Super()->Start());
+void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
+                                 varbinder::LocalVariable *found, ETSObjectType *interfaceFound)
+{
+    if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
+        if (IsVariableStatic(it) != IsVariableStatic(found)) {
+            return;
         }
+
+        const char *targetType {};
+
+        if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
+            targetType = "field";
+        } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
+            targetType = "method";
+        } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
+            targetType = "class";
+        } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
+            targetType = "interface";
+        } else {
+            targetType = "enum";
+        }
+
+        if (interfaceFound != nullptr) {
+            ThrowTypeError({"Cannot inherit from interface ", interfaceFound->Name(), " because ", targetType, " ",
+                            it->Name(), " is inherited with a different declaration type"},
+                           interfaceFound->GetDeclNode()->Start());
+        }
+        ThrowTypeError({"Cannot inherit from class ", classType->SuperType()->Name(), ", because ", targetType, " ",
+                        it->Name(), " is inherited with a different declaration type"},
+                       classDef->Super()->Start());
     }
 }
 

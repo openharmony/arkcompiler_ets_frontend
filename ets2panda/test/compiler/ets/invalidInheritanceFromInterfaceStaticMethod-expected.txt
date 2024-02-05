@@ -1103,4 +1103,3 @@
     }
   }
 }
-TypeError: Cannot inherit from interface A because field x is inherited with a different declaration type [invalidInheritanceFromInterfaceStaticMethod.ets:16:1]
