@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./folder",
+        "value": "./folder/re_export_7",
         "loc": {
           "start": {
             "line": 16,

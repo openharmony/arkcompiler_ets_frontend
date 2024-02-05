@@ -364,6 +364,7 @@ libes2panda_sources = [
   "util/declgenEts2Ts.cpp",
   "util/helpers.cpp",
   "util/path.cpp",
+  "util/pathHandler.cpp",
   "util/plugin.cpp",
   "util/ustring.cpp",
   "varbinder/ASBinder.cpp",

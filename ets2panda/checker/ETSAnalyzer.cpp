@@ -1839,7 +1839,7 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
     }
 
     auto *importDecl = st->Parent()->AsETSImportDeclaration();
-    auto importPath = importDecl->Source()->Str();
+    auto importPath = importDecl->ResolvedSource()->Str();
 
     if (importDecl->IsPureDynamic()) {
         auto *type = checker->GlobalBuiltinDynamicType(importDecl->Language());
@@ -1847,17 +1847,14 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
         return type;
     }
 
-    std::string packageName =
-        (importDecl->Module() == nullptr) ? importPath.Mutf8() : importDecl->Module()->Str().Mutf8();
+    auto [moduleName, isPackageModule] = checker->VarBinder()->AsETSBinder()->GetModuleNameFromSource(importPath);
 
-    std::replace(packageName.begin(), packageName.end(), '/', '.');
-    util::UString packagePath(packageName, checker->Allocator());
-    std::vector<util::StringView> syntheticNames = checker->GetNameForSynteticObjectType(packagePath.View());
+    std::vector<util::StringView> syntheticNames = checker->GetNameForSynteticObjectType(moduleName);
 
     ASSERT(!syntheticNames.empty());
 
     auto assemblerName = syntheticNames[0];
-    if (importDecl->Module() != nullptr) {
+    if (!isPackageModule) {
         assemblerName = util::UString(assemblerName.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL),
                                       checker->Allocator())
                             .View();
@@ -1879,11 +1876,7 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
         lastObjectType = CreateSyntheticType(checker, syntheticName, lastObjectType, st->Local()->AsIdentifier());
     }
 
-    checker->SetPropertiesForModuleObject(
-        lastObjectType,
-        (importDecl->Module() != nullptr)
-            ? util::UString(importPath.Mutf8() + importDecl->Module()->Str().Mutf8(), checker->Allocator()).View()
-            : importPath);
+    checker->SetPropertiesForModuleObject(lastObjectType, importPath);
     checker->SetrModuleObjectTsType(st->Local(), lastObjectType);
 
     return moduleObjectType;

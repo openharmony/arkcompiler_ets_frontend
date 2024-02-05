@@ -409,8 +409,14 @@ void ETSChecker::ClassInitializerFromImport(ir::ETSImportDeclaration *import, va
     auto *callee =
         AllocNode<ir::MemberExpression>(classId, methodId, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 
+    // Note(rsipka): this check could be avoided with appropriate language extensions
     ArenaVector<ir::Expression *> callParams(Allocator()->Adapter());
-    callParams.push_back(import->ResolvedSource());
+    if (ark::os::file::File::IsRegularFile(import->ResolvedSource()->Str().Mutf8())) {
+        callParams.push_back(AllocNode<ir::StringLiteral>(
+            util::UString(ark::os::RemoveExtension(import->ResolvedSource()->Str().Mutf8()), Allocator()).View()));
+    } else {
+        callParams.push_back(import->ResolvedSource());
+    }
 
     auto *loadCall = AllocNode<ir::CallExpression>(callee, std::move(callParams), nullptr, false);
 

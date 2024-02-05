@@ -122,10 +122,6 @@ public:
         publicContext_->emitter = context.GetEmitter();
 
         parser.ParseScript(unit.input, unit.options.compilationMode == CompilationMode::GEN_STD_LIB);
-        if constexpr (std::is_same_v<Parser, parser::ETSParser> && std::is_same_v<VarBinder, varbinder::ETSBinder>) {
-            reinterpret_cast<varbinder::ETSBinder *>(varbinder)->FillResolvedImportPathes(
-                parser.ResolvedParsedSourcesMap(), allocator_.get());
-        }
         for (auto *phase : getPhases) {
             if (!phase->Apply(publicContext_.get(), program)) {
                 return;

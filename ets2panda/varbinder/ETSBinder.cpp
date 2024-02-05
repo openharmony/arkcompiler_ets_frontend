@@ -497,33 +497,25 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
 
     std::unordered_set<std::string> exportedNames;
     for (auto item : ReExportImports()) {
-        if (auto source = import->ResolvedSource()->Str().Mutf8(),
-            program = item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.'));
-            source == program || (source + "/index") == program) {
-            // clang-format off
-            ir::StringLiteral dirName(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
-                                                        0, item->GetProgramPath().Mutf8().find_last_of('/'))),
-                                                    Allocator())
-                                            .View());
-            // clang-format on
-            dirName.SetStart(item->GetETSImportDeclarations()->Source()->Start());
+        // NOTE(rsipka): this should be refactored or eliminated
+        if (auto source = import->ResolvedSource()->Str(), program = item->GetProgramPath();
+            !source.Is(program.Mutf8())) {
+            continue;
+        }
 
-            for (auto it : item->GetETSImportDeclarations()->Specifiers()) {
-                if (it->IsImportNamespaceSpecifier() &&
-                    !specifier->AsImportNamespaceSpecifier()->Local()->Name().Empty()) {
-                    std::cerr << "Warning: import with alias cannot be used with re-export\n";
-                    continue;
-                }
+        for (auto it : item->GetETSImportDeclarations()->Specifiers()) {
+            if (it->IsImportNamespaceSpecifier() && !specifier->AsImportNamespaceSpecifier()->Local()->Name().Empty()) {
+                std::cerr << "Warning: import with alias cannot be used with re-export\n";
+                continue;
+            }
 
-                AddSpecifiersToTopBindings(it, item->GetETSImportDeclarations(),
-                                           dirName.Str().Is(".") ? item->GetETSImportDeclarations()->Source()
-                                                                 : &dirName);
-                if (it->IsImportSpecifier() &&
-                    !exportedNames.insert(it->AsImportSpecifier()->Local()->Name().Mutf8()).second) {
-                    ThrowError(import->Start(), "Ambiguous import \"" +
-                                                    it->AsImportSpecifier()->Local()->Name().Mutf8() +
-                                                    "\" has multiple matching exports");
-                }
+            AddSpecifiersToTopBindings(it, item->GetETSImportDeclarations(),
+                                       item->GetETSImportDeclarations()->Source());
+
+            if (it->IsImportSpecifier() &&
+                !exportedNames.insert(it->AsImportSpecifier()->Local()->Name().Mutf8()).second) {
+                ThrowError(import->Start(), "Ambiguous import \"" + it->AsImportSpecifier()->Local()->Name().Mutf8() +
+                                                "\" has multiple matching exports");
             }
         }
     }
@@ -607,23 +599,15 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
 
     if (var == nullptr) {
         for (auto item : ReExportImports()) {
-            if (auto source = import->ResolvedSource()->Str().Mutf8(),
-                program = item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.'));
-                source == program || (source + "/index") == program) {
-                // clang-format off
-                ir::StringLiteral dirName(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
-                                                            0, item->GetProgramPath().Mutf8().find_last_of('/'))),
-                                                        Allocator())
-                                            .View());
-                // clang-format on
-                dirName.SetStart(item->GetETSImportDeclarations()->Source()->Start());
-
-                viewedReExport.push_back(item->GetETSImportDeclarations());
-                AddSpecifiersToTopBindings(
-                    specifier, item->GetETSImportDeclarations(),
-                    dirName.Str().Is(".") ? item->GetETSImportDeclarations()->Source() : &dirName, viewedReExport);
-                return true;
+            if (auto source = import->ResolvedSource()->Str(), program = item->GetProgramPath();
+                !source.Is(program.Mutf8())) {
+                continue;
             }
+
+            viewedReExport.push_back(item->GetETSImportDeclarations());
+            AddSpecifiersToTopBindings(specifier, item->GetETSImportDeclarations(),
+                                       item->GetETSImportDeclarations()->Source(), viewedReExport);
+            return true;
         }
         ThrowError(importPath->Start(), "Cannot find imported element " + imported.Mutf8());
     }
@@ -656,30 +640,14 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
                                                              const ir::StringLiteral *importPath)
 {
     const auto &extRecords = globalRecordTable_.Program()->ExternalSources();
-    auto recordRes = [this, extRecords, sourceName]() {
-        auto res = extRecords.find(sourceName);
-        if (res != extRecords.end()) {
-            return res;
-        }
 
-        if (res = extRecords.find({sourceName.Mutf8() + "/index"}); res != extRecords.end()) {
-            return res;
-        }
-
-        res = extRecords.find(GetResolvedImportPath(sourceName));
-        if (res == extRecords.end()) {
-            res = extRecords.find(GetResolvedImportPath({sourceName.Mutf8() + "/index"}));
-        }
-
-        return res;
-    }();
-    if (recordRes == extRecords.end()) {
-        ThrowError(importPath->Start(), "Cannot find import: " + std::string(sourceName));
+    auto [name, _] = GetModuleNameFromSource(sourceName);
+    auto res = extRecords.find(name);
+    if (res == extRecords.end()) {
+        ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
     }
 
-    ASSERT(!recordRes->second.empty());
-
-    return recordRes->second;
+    return res->second;
 }
 
 void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
@@ -693,30 +661,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         return;
     }
 
-    const util::StringView sourceName = [import, importPath, this, &path]() {
-        if (import->Module() == nullptr) {
-            return importPath->Str();
-        }
-        char pathDelimiter = ark::os::file::File::GetPathDelim().at(0);
-        auto strImportPath = importPath->Str().Mutf8();
-        if (strImportPath.find(pathDelimiter) == (strImportPath.size() - 1)) {
-            return util::UString(strImportPath + import->Module()->Str().Mutf8(), Allocator()).View();
-        }
-
-        std::string importFilePath;
-        if (!import->Source()->Str().Is(path->Str().Mutf8()) && !import->Source()->Str().Empty() &&
-            import->Source()->Str().Mutf8().substr(0, 1) == ".") {
-            importFilePath =
-                import->Source()->Str().Mutf8().substr(import->Source()->Str().Mutf8().find_first_not_of('.'));
-            if (importFilePath.size() == 1) {
-                importFilePath = "";
-            }
-        }
-
-        return util::UString(strImportPath + importFilePath + pathDelimiter + import->Module()->Str().Mutf8(),
-                             Allocator())
-            .View();
-    }();
+    const util::StringView sourceName = import->ResolvedSource()->Str();
 
     auto record = GetExternalProgram(sourceName, importPath);
     const auto *const importProgram = record.front();

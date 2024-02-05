@@ -56,6 +56,7 @@ public:
     }
 
 private:
+    // NOTE(rsipka): this should use a singular name
     ETSImportDeclaration *etsImportDeclarations_;
     ArenaVector<util::StringView> userPaths_;
     util::StringView programPath_;

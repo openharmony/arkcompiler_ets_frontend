@@ -123,24 +123,6 @@
 #include "libpandabase/os/file.h"
 #include "generated/signatures.h"
 
-#if defined PANDA_TARGET_MOBILE
-#define USE_UNIX_SYSCALL
-#endif
-
-#ifdef USE_UNIX_SYSCALL
-#include <dirent.h>
-#include <sys/types.h>
-#include <unistd.h>
-#else
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif __has_include(<experimental/filesystem>)
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#endif
-#endif
-
 namespace ark::es2panda::parser {
 using namespace std::literals::string_literals;
 
@@ -166,57 +148,14 @@ void ETSParser::ParseProgram(ScriptKind kind)
     ParseDefaultSources();
 
     ParseETSGlobalScript(startLoc, statements);
+    GetProgram()->VarBinder()->AsETSBinder()->FillSourceList(this->GetPathes());
 }
 
 void ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
 {
-    auto paths = ParseImportDeclarations(statements);
+    ParseImportDeclarations(statements);
 
-    // clang-format off
-    auto removeParsedSources = [this](std::vector<std::string> &items) {
-        items.erase(remove_if(begin(items), end(items),
-                            [this](auto x) {
-                                auto resolved = ResolveImportPath(x);
-                                auto pathIter =
-                                    std::find_if(resolvedParsedSources_.begin(), resolvedParsedSources_.end(),
-                                                 [resolved](const auto &p) { return p.second == resolved; });
-                                auto found = pathIter != resolvedParsedSources_.end();
-                                if (found) {
-                                    resolvedParsedSources_.emplace(x, resolved);
-                                }
-                                return found;
-                            }),
-                    end(items));
-
-        for (const auto &item : items) {
-            auto resolved = ResolveImportPath(item);
-            resolvedParsedSources_.emplace(item, resolved);
-        }
-    };
-    // clang-format on
-
-    removeParsedSources(paths);
-
-    ParseSources(paths, false);
-
-    if (!GetProgram()->VarBinder()->AsETSBinder()->ReExportImports().empty()) {
-        std::vector<std::string> reExportPaths;
-
-        for (auto reExport : GetProgram()->VarBinder()->AsETSBinder()->ReExportImports()) {
-            if (std::find(paths.begin(), paths.end(), reExport->GetProgramPath().Mutf8()) != paths.end()) {
-                auto path =
-                    reExport->GetProgramPath().Mutf8().substr(0, reExport->GetProgramPath().Mutf8().find_last_of('/'));
-                for (auto item : reExport->GetUserPaths()) {
-                    reExportPaths.push_back(
-                        path + "/" + item.Mutf8().substr(item.Mutf8().find_first_of('/') + 1, item.Mutf8().length()));
-                }
-            }
-        }
-
-        removeParsedSources(reExportPaths);
-
-        ParseSources(reExportPaths, false);
-    }
+    ParseSources(false);
 
     ParseTopLevelDeclaration(statements);
 
@@ -255,23 +194,13 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
     }
 
     auto &extSources = globalProgram_->ExternalSources();
-    const util::StringView name = GetProgram()->SourceFileFolder();
 
-    auto res = extSources.end();
-    if (!statements.empty()) {
-        res = extSources.find(name);
-    } else {
-        auto path = GetProgram()->SourceFileFolder().Mutf8() + ark::os::file::File::GetPathDelim().at(0) +
-                    GetProgram()->GetPackageName().Mutf8();
-        auto resolved = ResolveImportPath(path);
-        resolvedParsedSources_.emplace(path, resolved);
-        GetProgram()->SetSource(GetProgram()->SourceCode(), GetProgram()->SourceFilePath(),
-                                util::UString(resolved, Allocator()).View());
-    }
-
+    const util::StringView name = statements.empty() ? GetProgram()->FileName() : GetProgram()->GetPackageName();
+    ASSERT(!name.Empty());
+    auto res = extSources.find(name);
     if (res == extSources.end()) {
         CreateGlobalClass();
-        auto insRes = extSources.emplace(GetProgram()->SourceFileFolder(), Allocator()->Adapter());
+        auto insRes = extSources.emplace(name, Allocator()->Adapter());
         insRes.first->second.push_back(GetProgram());
     } else {
         res->second.push_back(GetProgram());
@@ -281,84 +210,6 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
     }
 
     return statements;
-}
-
-static bool IsCompitableExtension(const std::string &extension)
-{
-    return extension == ".ets" || extension == ".ts";
-}
-
-std::vector<std::string> ETSParser::UnixApiDefaultSources([[maybe_unused]] const std::vector<std::string> &stdlib)
-{
-    std::vector<std::string> paths;
-#ifdef USE_UNIX_SYSCALL
-    for (auto const &path : stdlib) {
-        auto resolvedPath = ResolveImportPath(path);
-        DIR *dir = opendir(resolvedPath.c_str());
-
-        if (dir == nullptr) {
-            ThrowSyntaxError({"Cannot open folder: ", resolvedPath});
-        }
-
-        struct dirent *entry;
-        std::set<std::string> orderedFiles;
-        while ((entry = readdir(dir)) != nullptr) {
-            if (entry->d_type != DT_REG) {
-                continue;
-            }
-
-            std::string fileName = entry->d_name;
-            std::string::size_type pos = fileName.find_last_of('.');
-            if (pos == std::string::npos || !IsCompitableExtension(fileName.substr(pos))) {
-                continue;
-            }
-
-            std::string filePath = path + "/" + entry->d_name;
-
-            if (fileName == "Object.ets") {
-                paths.emplace(paths.begin(), filePath);
-            } else {
-                orderedFiles.emplace(filePath);
-            }
-        }
-        paths.insert(paths.end(), orderedFiles.begin(), orderedFiles.end());
-        closedir(dir);
-    }
-#endif
-    return paths;
-}
-
-std::vector<std::string> ETSParser::CollectDefaultSources()
-{
-    std::vector<std::string> stdlib = {"std/core",       "std/math",  "std/containers",        "std/time",
-                                       "std/interop/js", "std/debug", "std/debug/concurrency", "escompat"};
-
-#ifdef USE_UNIX_SYSCALL
-    return UnixApiDefaultSources(stdlib);
-#else
-    std::vector<std::string> paths;
-    for (auto const &path : stdlib) {
-        std::set<std::string> orderedFiles;
-        for (auto const &entry : fs::directory_iterator(ResolveImportPath(path))) {
-            if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
-                continue;
-            }
-
-            std::string baseName = path;
-            std::size_t pos = entry.path().string().find_last_of(ark::os::file::File::GetPathDelim());
-
-            baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
-
-            if (entry.path().filename().string() == "Object.ets") {
-                paths.emplace(paths.begin(), baseName);
-            } else {
-                orderedFiles.emplace(baseName);
-            }
-        }
-        paths.insert(paths.end(), orderedFiles.begin(), orderedFiles.end());
-    }
-    return paths;
-#endif
 }
 
 ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
@@ -385,205 +236,29 @@ ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
     return {ToLanguage(Extension()), path, true};
 }
 
-std::string ETSParser::ResolveFullPathFromRelative(const std::string &path)
-{
-    char pathDelimiter = ark::os::file::File::GetPathDelim().at(0);
-    auto resolvedFp = GetProgram()->ResolvedFilePath().Mutf8();
-    auto sourceFp = GetProgram()->SourceFileFolder().Mutf8();
-    if (resolvedFp.empty()) {
-        auto fp = sourceFp + pathDelimiter + path;
-        return util::Helpers::IsRealPath(fp) ? fp : path;
-    }
-    auto fp = resolvedFp + pathDelimiter + path;
-    if (util::Helpers::IsRealPath(fp)) {
-        return fp;
-    }
-    if (path.find(sourceFp) == 0) {
-        return resolvedFp + pathDelimiter + path.substr(sourceFp.size());
-    }
-    return path;
-}
-
-std::string ETSParser::ResolveImportPath(const std::string &path)
-{
-    char pathDelimiter = ark::os::file::File::GetPathDelim().at(0);
-    if (util::Helpers::IsRelativePath(path)) {
-        return util::Helpers::GetAbsPath(ResolveFullPathFromRelative(path));
-    }
-
-    std::string baseUrl;
-    // Resolve delimeter character to basePath.
-    if (path.find('/') == 0) {
-        baseUrl = ArkTSConfig()->BaseUrl();
-
-        baseUrl.append(path, 0, path.length());
-        return baseUrl;
-    }
-
-    auto &dynamicPaths = ArkTSConfig()->DynamicPaths();
-    auto it = dynamicPaths.find(path);
-    if (it != dynamicPaths.cend() && !it->second.HasDecl()) {
-        return path;
-    }
-
-    // Resolve the root part of the path.
-    // E.g. root part of std/math is std.
-    std::string::size_type pos = path.find('/');
-    bool containsDelim = (pos != std::string::npos);
-    std::string rootPart = containsDelim ? path.substr(0, pos) : path;
-
-    if (rootPart == "std" && !GetOptions().stdLib.empty()) {  // Get std path from CLI if provided
-        baseUrl = GetOptions().stdLib + "/std";
-    } else if (rootPart == "escompat" && !GetOptions().stdLib.empty()) {  // Get escompat path from CLI if provided
-        baseUrl = GetOptions().stdLib + "/escompat";
-    } else {
-        auto resolvedPath = ArkTSConfig()->ResolvePath(path);
-        if (resolvedPath.empty()) {
-            ThrowSyntaxError({"Can't find prefix for '", path, "' in ", ArkTSConfig()->ConfigPath()});
-        }
-        return resolvedPath;
-    }
-
-    if (containsDelim) {
-        baseUrl.append(1, pathDelimiter);
-        baseUrl.append(path, rootPart.length() + 1, path.length());
-    }
-
-    return baseUrl;
-}
-
-std::tuple<std::string, bool> ETSParser::GetSourceRegularPath(const std::string &path, const std::string &resolvedPath)
-{
-    if (!ark::os::file::File::IsRegularFile(resolvedPath)) {
-        std::string importExtension = ".ets";
-
-        if (!ark::os::file::File::IsRegularFile(resolvedPath + importExtension)) {
-            importExtension = ".ts";
-
-            if (!ark::os::file::File::IsRegularFile(resolvedPath + importExtension)) {
-                ThrowSyntaxError("Incorrect path: " + resolvedPath);
-            }
-        }
-        return {path + importExtension, true};
-    }
-    return {path, false};
-}
-
-void ETSParser::CollectUserSourcesFromIndex([[maybe_unused]] const std::string &path,
-                                            [[maybe_unused]] const std::string &resolvedPath,
-                                            [[maybe_unused]] std::vector<std::string> &userPaths)
-{
-#ifdef USE_UNIX_SYSCALL
-    DIR *dir = opendir(resolvedPath.c_str());
-    bool isIndex = false;
-    std::set<std::string> tmpPaths;
-
-    if (dir == nullptr) {
-        ThrowSyntaxError({"Cannot open folder: ", resolvedPath});
-    }
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != nullptr) {
-        if (entry->d_type != DT_REG) {
-            continue;
-        }
-
-        std::string fileName = entry->d_name;
-        std::string::size_type pos = fileName.find_last_of('.');
-        if (pos == std::string::npos || !IsCompitableExtension(fileName.substr(pos))) {
-            continue;
-        }
-
-        std::string filePath = path + "/" + entry->d_name;
-
-        if (fileName == "index.ets" || fileName == "index.ts") {
-            userPaths.emplace_back(filePath);
-            isIndex = true;
-            break;
-        } else if (fileName == "Object.ets") {
-            userPaths.emplace(userPaths.begin(), filePath);
-        } else {
-            tmpPaths.insert(filePath);
-        }
-    }
-
-    closedir(dir);
-
-    if (!isIndex) {
-        userPaths.insert(userPaths.end(), tmpPaths.begin(), tmpPaths.end());
-    }
-#endif
-}
-
-std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const std::string &path)
-{
-    std::vector<std::string> userPaths;
-
-    const std::string resolvedPath = ResolveImportPath(path);
-    resolvedParsedSources_.emplace(path, resolvedPath);
-    const auto data = GetImportData(resolvedPath);
-
-    if (!data.hasDecl) {
-        return {userPaths, false};
-    }
-
-    if (!ark::os::file::File::IsDirectory(resolvedPath)) {
-        std::string regularPath;
-        bool isModule = false;
-        std::tie(regularPath, isModule) = GetSourceRegularPath(path, resolvedPath);
-        userPaths.emplace_back(regularPath);
-        return {userPaths, isModule};
-    }
-
-#ifdef USE_UNIX_SYSCALL
-    CollectUserSourcesFromIndex(path, resolvedPath, userPaths);
-#else
-    if (fs::exists(resolvedPath + "/index.ets")) {
-        userPaths.emplace_back(path + "/index.ets");
-    } else if (fs::exists(resolvedPath + "/index.ts")) {
-        userPaths.emplace_back(path + "/index.ts");
-    } else {
-        std::set<std::string> orderedFiles;
-        for (auto const &entry : fs::directory_iterator(resolvedPath)) {
-            if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
-                continue;
-            }
-
-            std::string baseName = path;
-            std::size_t pos = entry.path().string().find_last_of(ark::os::file::File::GetPathDelim());
-
-            baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
-            orderedFiles.emplace(baseName);
-        }
-        userPaths.insert(userPaths.begin(), orderedFiles.begin(), orderedFiles.end());
-    }
-#endif
-    return {userPaths, false};
-}
-
-void ETSParser::ParseSources(const std::vector<std::string> &paths, bool isExternal)
+void ETSParser::ParseSources(bool isExternal)
 {
     GetContext().Status() |= isExternal ? ParserStatus::IN_EXTERNAL : ParserStatus::IN_IMPORT;
 
-    const std::size_t pathCount = paths.size();
-    for (std::size_t idx = 0; idx < pathCount; idx++) {
-        std::string resolvedPath = ResolveImportPath(paths[idx]);
-        resolvedParsedSources_.emplace(paths[idx], resolvedPath);
-
-        const auto data = GetImportData(resolvedPath);
+    for (const auto &path : pathHandler_->GetParseList()) {
+        // NOTE(rsipka): could be handled nicer, but need to avoid recursive parses
+        if (pathHandler_->IsParsed(path)) {
+            continue;
+        }
+        const auto data = GetImportData(path);
 
         if (!data.hasDecl) {
             continue;
         }
 
-        std::ifstream inputStream(resolvedPath.c_str());
+        std::ifstream inputStream(path);
 
-        if (GetProgram()->SourceFilePath().Is(resolvedPath)) {
+        if (GetProgram()->SourceFilePath().Is(path)) {
             break;
         }
 
         if (inputStream.fail()) {
-            ThrowSyntaxError({"Failed to open file: ", resolvedPath.c_str()});
+            ThrowSyntaxError({"Failed to open file: ", path});
         }
 
         std::stringstream ss;
@@ -591,7 +266,8 @@ void ETSParser::ParseSources(const std::vector<std::string> &paths, bool isExter
         auto externalSource = ss.str();
 
         auto currentLang = GetContext().SetLanguage(data.lang);
-        ParseSource({paths[idx].c_str(), externalSource.c_str(), resolvedPath.c_str(), false});
+        pathHandler_->MarkAsParsed(path);
+        ParseSource({path, externalSource.c_str(), path, false});
         GetContext().SetLanguage(currentLang);
     }
 
@@ -612,7 +288,9 @@ void ETSParser::ParseDefaultSources()
     ParseImportDeclarations(statements);
     GetContext().Status() &= ~ParserStatus::IN_DEFAULT_IMPORTS;
 
-    ParseSources(CollectDefaultSources(), true);
+    pathHandler_->CollectDefaultSources();
+
+    ParseSources(true);
 }
 
 void ETSParser::ParseSource(const SourceFile &sourceFile)
@@ -2963,10 +2641,7 @@ void ETSParser::ParseExport(lexer::SourcePosition startLoc)
     }
 
     // re-export directive
-    ir::ImportSource *reExportSource = nullptr;
-    std::vector<std::string> userPaths;
-
-    std::tie(reExportSource, userPaths) = ParseFromClause(true);
+    ir::ImportSource *reExportSource = ParseSourceFromClause(true);
 
     lexer::SourcePosition endLoc = reExportSource->Source()->End();
     auto *reExportDeclaration = AllocNode<ir::ETSImportDeclaration>(reExportSource, specifiers);
@@ -2979,9 +2654,11 @@ void ETSParser::ParseExport(lexer::SourcePosition startLoc)
 
     ConsumeSemicolon(reExportDeclaration);
 
-    auto *reExport = Allocator()->New<ir::ETSReExportDeclaration>(reExportDeclaration, userPaths,
+    auto *reExport = Allocator()->New<ir::ETSReExportDeclaration>(reExportDeclaration, std::vector<std::string>(),
                                                                   GetProgram()->SourceFilePath(), Allocator());
     varbinder->AddReExportImport(reExport);
+    // parse reexport sources which were added in the previous parsing method
+    ParseSources(false);
 }
 
 ir::Statement *ETSParser::ParseFunctionStatement([[maybe_unused]] const StatementParsingFlags flags)
@@ -2996,17 +2673,12 @@ void ETSParser::ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PACKAGE) {
         if (!IsETSModule() && GetProgram()->IsEntryPoint()) {
+            pathHandler_->SetModuleName(GetProgram()->AbsoluteName(), util::StringView(""), false);
             return;
         }
-
-        auto baseName = GetProgram()->SourceFilePath().Utf8();
-        baseName = baseName.substr(baseName.find_last_of(ark::os::file::File::GetPathDelim()) + 1);
-        const size_t idx = baseName.find_last_of('.');
-        if (idx != std::string::npos) {
-            baseName = baseName.substr(0, idx);
-        }
-
-        GetProgram()->SetPackageName(baseName);
+        pathHandler_->SetModuleName(GetProgram()->AbsoluteName(), GetProgram()->FileName(), false);
+        // NOTE(rsipka): setPackage should be eliminated from here, and should be reconsider its usage from program
+        GetProgram()->SetPackageName(GetProgram()->FileName());
 
         return;
     }
@@ -3021,14 +2693,15 @@ void ETSParser::ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements
     ConsumeSemicolon(packageDeclaration);
     statements.push_back(packageDeclaration);
 
-    if (name->IsIdentifier()) {
-        GetProgram()->SetPackageName(name->AsIdentifier()->Name());
-    } else {
-        GetProgram()->SetPackageName(name->AsTSQualifiedName()->ToString(Allocator()));
-    }
+    auto packageName =
+        name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->ToString(Allocator());
+
+    GetProgram()->SetPackageName(packageName);
+    pathHandler_->SetModuleName(GetProgram()->AbsoluteName(), packageName, true);
+    pathHandler_->SetModuleName(GetProgram()->ResolvedFilePath(), packageName, true);
 }
 
-std::tuple<ir::ImportSource *, std::vector<std::string>> ETSParser::ParseFromClause(bool requireFrom)
+ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
 {
     if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
         if (requireFrom) {
@@ -3043,53 +2716,21 @@ std::tuple<ir::ImportSource *, std::vector<std::string>> ETSParser::ParseFromCla
     }
 
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
-    std::vector<std::string> userPaths;
-    bool isModule = false;
     auto importPath = Lexer()->GetToken().Ident();
-    auto resolvedImportPath = ResolveImportPath(importPath.Mutf8());
-    resolvedParsedSources_.emplace(importPath.Mutf8(), resolvedImportPath);
+    auto resolvedImportPath = pathHandler_->AddPath(GetProgram()->AbsoluteName(), Lexer()->GetToken().Ident());
 
-    ir::StringLiteral *resolvedSource;
-    if (*importPath.Bytes() == '/') {
-        resolvedSource = AllocNode<ir::StringLiteral>(util::UString(resolvedImportPath, Allocator()).View());
-    } else {
-        resolvedSource = AllocNode<ir::StringLiteral>(importPath);
-    }
-
-    auto importData = GetImportData(resolvedImportPath);
-
-    if ((GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) == 0) {
-        std::tie(userPaths, isModule) = CollectUserSources(importPath.Mutf8());
-    }
-
-    ir::StringLiteral *module = nullptr;
-    if (isModule) {
-        auto pos = importPath.Mutf8().find_last_of(ark::os::file::File::GetPathDelim());
-
-        util::UString baseName(importPath.Mutf8().substr(0, pos), Allocator());
-        if (baseName.View().Is(".") || baseName.View().Is("..")) {
-            baseName.Append(ark::os::file::File::GetPathDelim());
-        }
-
-        module = AllocNode<ir::StringLiteral>(util::UString(importPath.Mutf8().substr(pos + 1), Allocator()).View());
-        importPath = baseName.View();
-    }
-
+    auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);
+    auto importData = GetImportData(resolvedImportPath.Mutf8());
     auto *source = AllocNode<ir::StringLiteral>(importPath);
     source->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
 
-    auto *importSource =
-        Allocator()->New<ir::ImportSource>(source, resolvedSource, importData.lang, importData.hasDecl, module);
-    ASSERT(importSource != nullptr);
-    return {importSource, userPaths};
+    return Allocator()->New<ir::ImportSource>(source, resolvedSource, importData.lang, importData.hasDecl);
 }
 
-std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Statement *> &statements)
+void ETSParser::ParseImportDeclarations(ArenaVector<ir::Statement *> &statements)
 {
-    std::vector<std::string> allUserPaths;
-    std::vector<std::string> userPaths;
     ArenaVector<ir::ETSImportDeclaration *> imports(Allocator()->Adapter());
 
     while (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPORT) {
@@ -3097,7 +2738,6 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
         Lexer()->NextToken();  // eat import
 
         ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
-        ir::ImportSource *importSource = nullptr;
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
             ParseNameSpaceSpecifier(&specifiers);
@@ -3107,9 +2747,8 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
             ParseImportDefaultSpecifier(&specifiers);
         }
 
-        std::tie(importSource, userPaths) = ParseFromClause(true);
+        ir::ImportSource *importSource = ParseSourceFromClause(true);
 
-        allUserPaths.insert(allUserPaths.end(), userPaths.begin(), userPaths.end());
         lexer::SourcePosition endLoc = importSource->Source()->End();
         auto *importDeclaration = AllocNode<ir::ETSImportDeclaration>(importSource, std::move(specifiers));
         importDeclaration->SetRange({startLoc, endLoc});
@@ -3130,11 +2769,6 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
         static_cast<varbinder::ETSBinder *>(GetProgram()->VarBinder())
             ->SetDefaultImports(std::move(imports));  // get rid of it
     }
-
-    sort(allUserPaths.begin(), allUserPaths.end());
-    allUserPaths.erase(unique(allUserPaths.begin(), allUserPaths.end()), allUserPaths.end());
-
-    return allUserPaths;
 }
 
 void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isExport)
@@ -3666,7 +3300,6 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
 
     ir::ImportSource *importSource = nullptr;
-    std::vector<std::string> userPaths;
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
         ir::AstNode *astNode = ParseImportSpecifiers(&specifiers);
@@ -3676,9 +3309,9 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
             ConsumeSemicolon(astNode->AsTSImportEqualsDeclaration());
             return astNode->AsTSImportEqualsDeclaration();
         }
-        std::tie(importSource, userPaths) = ParseFromClause(true);
+        importSource = ParseSourceFromClause(true);
     } else {
-        std::tie(importSource, userPaths) = ParseFromClause(false);
+        importSource = ParseSourceFromClause(false);
     }
 
     lexer::SourcePosition endLoc = importSource->Source()->End();
@@ -5082,4 +4715,3 @@ InnerSourceParser::~InnerSourceParser()
     parser_->GetProgram()->SetSource(savedSourceCode_, savedSourceFile_, savedSourceFilePath_);
 }
 }  // namespace ark::es2panda::parser
-#undef USE_UNIX_SYSCALL

@@ -109,6 +109,16 @@ public:
         return sourceFileFolder_;
     }
 
+    util::StringView FileName() const
+    {
+        return sourceFile_.GetFileName();
+    }
+
+    util::StringView AbsoluteName() const
+    {
+        return sourceFile_.GetAbsolutePath();
+    }
+
     util::StringView ResolvedFilePath() const
     {
         return resolvedFilePath_;

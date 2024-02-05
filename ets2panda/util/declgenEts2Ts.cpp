@@ -395,10 +395,6 @@ void TSDeclGen::GenImportDeclaration(const ir::ETSImportDeclaration *importDecla
     });
 
     auto source = importDeclaration->Source()->Str().Mutf8();
-    if (importDeclaration->Module() != nullptr) {
-        source += "/" + importDeclaration->Module()->Str().Mutf8();
-    }
-
     Out(" } from \"", source, "\";");
     OutEndl(2U);
 }

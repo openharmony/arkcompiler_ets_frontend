@@ -37,11 +37,7 @@ void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
         isRelative_ = true;
     }
 
-    if (isRelative_) {
-        absolutePath_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
-    } else {
-        absolutePath_ = path_;
-    }
+    absolutePath_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
 
     InitializeFileExtension();
     InitializeFileName();

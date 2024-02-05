@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./",
+        "value": "./test_lib1",
         "loc": {
           "start": {
             "line": 16,

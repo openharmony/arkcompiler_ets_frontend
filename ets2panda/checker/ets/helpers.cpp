@@ -701,20 +701,6 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
 
     ValidateResolvedIdentifier(ident, resolved);
 
-    if (resolved->HasFlag(varbinder::VariableFlags::METHOD)) {
-        ASSERT(resolved->TsType()->IsETSFunctionType() &&
-               !resolved->TsType()->AsETSFunctionType()->CallSignatures().empty());
-        const auto *const funcType = resolved->TsType()->AsETSFunctionType();
-        if (!funcType->CallSignatures().front()->Owner()->HasObjectFlag(checker::ETSObjectFlags::GLOBAL)) {
-            // In the case of function references, it is not enough to find the first method field and use it's function
-            // type, because at the position of the call we should be able to work with every possible signature, even
-            // with ones that came from base classes.
-            // NOTE: szd.  find a better way than making a synthetic variable
-            resolved = funcType->CallSignatures().front()->Owner()->CreateSyntheticVarFromEverySignature(
-                ident->Name(), PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::SEARCH_IN_BASE);
-        }
-    }
-
     ValidatePropertyAccess(resolved, Context().ContainingClass(), ident->Start());
     SaveCapturedVariable(resolved, ident->Start());
 
@@ -1355,10 +1341,9 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
     auto extRecords = etsBinder->GetGlobalRecordTable()->Program()->ExternalSources();
-    auto res = [etsBinder, extRecords, importPath]() {
-        auto r = extRecords.find(importPath);
-        return r != extRecords.end() ? r : extRecords.find(etsBinder->GetResolvedImportPath(importPath));
-    }();
+    auto [name, isPackageModule] = etsBinder->GetModuleNameFromSource(importPath);
+    auto res = extRecords.find(name);
+    ASSERT(res != extRecords.end());
 
     // Check imported properties before assigning them to module object
     res->second.front()->Ast()->Check(this);

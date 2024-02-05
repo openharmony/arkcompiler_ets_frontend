@@ -26,9 +26,8 @@ namespace ark::es2panda::ir {
 
 class ImportSource {
 public:
-    explicit ImportSource(ir::StringLiteral *source, ir::StringLiteral *resolvedSource, Language lang, bool hasDecl,
-                          ir::StringLiteral *module = nullptr)
-        : source_(source), resolvedSource_(resolvedSource), lang_(lang), hasDecl_(hasDecl), module_(module)
+    explicit ImportSource(ir::StringLiteral *source, ir::StringLiteral *resolvedSource, Language lang, bool hasDecl)
+        : source_(source), resolvedSource_(resolvedSource), lang_(lang), hasDecl_(hasDecl)
     {
     }
     NO_COPY_SEMANTIC(ImportSource);
@@ -55,16 +54,6 @@ public:
         return resolvedSource_;
     }
 
-    const ir::StringLiteral *Module() const
-    {
-        return module_;
-    }
-
-    ir::StringLiteral *Module()
-    {
-        return module_;
-    }
-
     es2panda::Language Language() const
     {
         return lang_;
@@ -80,7 +69,6 @@ private:
     ir::StringLiteral *resolvedSource_ {};
     es2panda::Language lang_;
     bool hasDecl_;
-    ir::StringLiteral *module_ {};
 };
 
 }  // namespace ark::es2panda::ir

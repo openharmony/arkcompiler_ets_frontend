@@ -57,6 +57,11 @@ public:
         return assemblerName_;
     }
 
+    StringLiteral *Source() const
+    {
+        return source_->Source();
+    }
+
     StringLiteral *ResolvedSource()
     {
         return source_->ResolvedSource();
@@ -65,16 +70,6 @@ public:
     const StringLiteral *ResolvedSource() const
     {
         return source_->ResolvedSource();
-    }
-
-    StringLiteral *Module()
-    {
-        return source_->Module();
-    }
-
-    const StringLiteral *Module() const
-    {
-        return source_->Module();
     }
 
     void Accept(ASTVisitorT *v) override

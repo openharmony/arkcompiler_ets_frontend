@@ -19,6 +19,7 @@
 #include <optional>
 #include "parserFlags.h"
 #include "util/arktsconfig.h"
+#include "util/pathHandler.h"
 #include "TypedParser.h"
 
 namespace ark::es2panda::ir {
@@ -43,6 +44,9 @@ public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
         : TypedParser(program, options, status), globalProgram_(GetProgram())
     {
+        pathHandler_ = std::make_unique<util::PathHandler>(Allocator());
+        pathHandler_->SetArkTsConfig(ArkTSConfig());
+        pathHandler_->SetStdLib(GetOptions().stdLib);
     }
 
     ETSParser() = delete;
@@ -54,6 +58,11 @@ public:
     [[nodiscard]] bool IsETSParser() const noexcept override
     {
         return true;
+    }
+
+    ArenaUnorderedMap<util::StringView, util::ParseInfo> GetPathes() const
+    {
+        return pathHandler_->GetPathes();
     }
 
     //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
@@ -121,21 +130,13 @@ private:
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
-    std::vector<std::string> UnixApiDefaultSources(const std::vector<std::string> &stdlib);
-    std::vector<std::string> CollectDefaultSources();
-    void CollectUserSourcesFromIndex(const std::string &path, const std::string &resolvedPath,
-                                     std::vector<std::string> &userPaths);
-    std::string ResolveImportPath(const std::string &path);
-    std::string ResolveFullPathFromRelative(const std::string &path);
     ImportData GetImportData(const std::string &path);
-    std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
-    std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolvedPath);
-    void ParseSources(const std::vector<std::string> &paths, bool isExternal = true);
-    std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
+    void ParseSources(bool isExternal = true);
+    ir::ImportSource *ParseSourceFromClause(bool requireFrom);
     void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isExport = false);
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
-    std::vector<std::string> ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
+    void ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
     void ParseDefaultSources();
     void ParseSource(const SourceFile &sourceFile);
     void CreateGlobalClass();
@@ -375,16 +376,10 @@ private:
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 
-public:
-    const std::unordered_map<std::string, std::string> &ResolvedParsedSourcesMap() const
-    {
-        return resolvedParsedSources_;
-    }
-
 private:
     parser::Program *globalProgram_;
     std::vector<ir::AstNode *> insertingNodes_ {};
-    std::unordered_map<std::string, std::string> resolvedParsedSources_;
+    std::unique_ptr<util::PathHandler> pathHandler_ {nullptr};
 };
 
 class ExternalSourceParser {

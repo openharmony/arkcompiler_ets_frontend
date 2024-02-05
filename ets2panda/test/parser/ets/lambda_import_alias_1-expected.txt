@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./",
+        "value": "./lambda_import_alias_1-2",
         "loc": {
           "start": {
             "line": 16,
