@@ -1377,7 +1377,9 @@ static std::pair<ArenaVector<ir::AstNode *>, bool> CreateLambdaObjectPropertiesF
             properties.push_back(checker->CreateLambdaCapturedField(it, classScope, idx, lambda->Start()));
             idx++;
         } else if (!it->HasFlag(varbinder::VariableFlags::STATIC) &&
-                   !checker->Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL)) {
+                   !checker->Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL) &&
+                   !(checker->Context().ContainingSignature() != nullptr &&
+                     checker->Context().ContainingSignature()->HasSignatureFlag(SignatureFlags::STATIC))) {
             saveThis = true;
         }
     }
