@@ -59,7 +59,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDefinition *node) cons
 void ETSCompiler::Compile(const ir::ClassProperty *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (st->Value() == nullptr || (st->IsStatic() && st->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT))) {
+    if (st->Value() == nullptr) {
         return;
     }
 
