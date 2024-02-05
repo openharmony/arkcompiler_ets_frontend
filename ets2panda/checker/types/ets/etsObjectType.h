@@ -315,7 +315,7 @@ public:
         return true;
     }
 
-    bool IsPropertyOfAscendant(const varbinder::Variable *var)
+    bool IsPropertyOfAscendant(const varbinder::Variable *var) const
     {
         if (this->SuperType() == nullptr) {
             return false;
@@ -342,7 +342,7 @@ public:
         return true;
     }
 
-    bool IsDescendantOf(const ETSObjectType *ascendant)
+    bool IsDescendantOf(const ETSObjectType *ascendant) const
     {
         if (this->SuperType() == nullptr) {
             return false;

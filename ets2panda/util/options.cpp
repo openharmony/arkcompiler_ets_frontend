@@ -192,7 +192,7 @@ bool Options::Parse(int argc, const char **argv)
     ark::PandArg<std::string> verifierErrors(
         "verifier-errors",
         "ForLoopCorrectlyInitializedForAll,SequenceExpressionHasLastTypeForAll,NodeHasTypeForAll,NodeHasParentForAll,"
-        "EveryChildHasValidParentForAll",
+        "EveryChildHasValidParentForAll,ModifierAccessValidForAll",
         "Print errors and stop compilation if AST tree is incorrect. "
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"

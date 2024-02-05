@@ -176,6 +176,107 @@ bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDec
            (packageNameCurrent == packageNameObject && !packageNameCurrent.Empty());
 }
 
+static const checker::Type *GetClassDefinitionType(const ir::AstNode *ast)
+{
+    const ir::AstNode *tmpNode = ast;
+    while (tmpNode->Parent() != nullptr && !tmpNode->IsClassDefinition()) {
+        tmpNode = tmpNode->Parent();
+    }
+    if (!tmpNode->IsClassDefinition()) {
+        return nullptr;
+    }
+    auto *classDefinition = tmpNode->AsClassDefinition();
+    return classDefinition->TsType();
+}
+
+static const checker::Type *GetTSInterfaceDeclarationType(const ir::AstNode *ast)
+{
+    const ir::AstNode *tmpNode = ast;
+    while (tmpNode->Parent() != nullptr && !tmpNode->IsTSInterfaceDeclaration()) {
+        tmpNode = tmpNode->Parent();
+    }
+    if (!tmpNode->IsTSInterfaceDeclaration()) {
+        return nullptr;
+    }
+    auto *tsInterfaceDeclaration = tmpNode->AsTSInterfaceDeclaration();
+    return tsInterfaceDeclaration->TsType();
+}
+
+static bool ValidateMethodAccessForClass(const ir::AstNode *ast, const ir::AstNode *ownerSignDeclNode,
+                                         checker::Signature *signature, const ir::AstNode *memberObjTypeDeclNode)
+{
+    // Check if the method is used where it is declared
+    if (IsContainedIn<const ir::AstNode>(ast, ownerSignDeclNode)) {
+        return true;
+    }
+    if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
+        return false;
+    }
+    if (signature->HasSignatureFlag(checker::SignatureFlags::PROTECTED)) {
+        // Check if the method is inherited and is used in class in which it is inherited
+        auto *classDefinitionType = GetClassDefinitionType(ast);
+        if (classDefinitionType == nullptr || !classDefinitionType->IsETSObjectType()) {
+            return false;
+        }
+        auto *classObjectType = classDefinitionType->AsETSObjectType();
+        return classObjectType->IsDescendantOf(signature->Owner());
+    }
+    if (signature->HasSignatureFlag(checker::SignatureFlags::INTERNAL)) {
+        return IsVisibleInternalNode(ast, memberObjTypeDeclNode);
+    }
+    return true;
+}
+
+static bool ValidateMethodAccessForTSInterface(const ir::AstNode *ast, const ir::AstNode *ownerSignDeclNode,
+                                               checker::Signature *signature, const ir::AstNode *memberObjTypeDeclNode)
+{
+    // Check if the method is used where it is declared
+    if (IsContainedIn<const ir::AstNode>(ast, ownerSignDeclNode)) {
+        return true;
+    }
+    if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
+        return false;
+    }
+    if (signature->HasSignatureFlag(checker::SignatureFlags::PROTECTED)) {
+        // Check if the method is inherited and is used in class in which it is inherited
+        auto *tsInterfaceDeclarationType = GetTSInterfaceDeclarationType(ast);
+        if (tsInterfaceDeclarationType == nullptr || !tsInterfaceDeclarationType->IsETSObjectType()) {
+            return false;
+        }
+        auto *tsInterfaceObjectType = tsInterfaceDeclarationType->AsETSObjectType();
+        return tsInterfaceObjectType->IsDescendantOf(signature->Owner());
+    }
+    if (signature->HasSignatureFlag(checker::SignatureFlags::INTERNAL)) {
+        return IsVisibleInternalNode(ast, memberObjTypeDeclNode);
+    }
+    return true;
+}
+
+static bool ValidatePropertyAccessForClass(const ir::AstNode *ast, const ir::AstNode *propVarDeclNode,
+                                           const ir::AstNode *propVarDeclNodeParent,
+                                           const varbinder::LocalVariable *propVar, const ir::AstNode *objTypeDeclNode)
+{
+    // Check if the variable is used where it is declared
+    if (IsContainedIn<const ir::AstNode>(ast, propVarDeclNodeParent)) {
+        return true;
+    }
+    if (propVarDeclNode->IsPrivate()) {
+        return false;
+    }
+    if (propVarDeclNode->IsProtected()) {
+        auto *classDefinitionType = GetClassDefinitionType(ast);
+        if (classDefinitionType == nullptr || !classDefinitionType->IsETSObjectType()) {
+            return false;
+        }
+        auto *classObjectType = classDefinitionType->AsETSObjectType();
+        return classObjectType->IsPropertyOfAscendant(propVar);
+    }
+    if (propVarDeclNode->IsInternal()) {
+        return IsVisibleInternalNode(ast, objTypeDeclNode);
+    }
+    return true;
+}
+
 static bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, const ir::MemberExpression *ast)
 {
     const auto *propVarDecl = propVar->Declaration();
@@ -194,25 +295,15 @@ static bool ValidateVariableAccess(const varbinder::LocalVariable *propVar, cons
     if (objTypeDeclNode == nullptr) {
         return false;
     }
-    const auto *propVarDeclNodeParent = propVarDeclNode->Parent();
-    if (propVarDeclNodeParent != nullptr && propVarDeclNodeParent->IsClassDefinition() &&
-        objTypeDeclNode->IsClassDefinition()) {
-        // Check if the variable is used where it is declared
-        if (IsContainedIn<const ir::AstNode>(ast, propVarDeclNodeParent->AsClassDefinition())) {
-            return true;
-        }
-        if (propVarDeclNode->IsPrivate()) {
-            return false;
-        }
-        if (propVarDeclNode->IsProtected()) {
-            // Check if the variable is inherited and is used in class in which it is inherited
-            auto ret = objType->IsPropertyInherited(propVar);
-            return ret && IsContainedIn<const ir::AstNode>(ast, objTypeDeclNode->AsClassDefinition());
-        }
-        if (propVarDeclNode->IsInternal()) {
-            return IsVisibleInternalNode(ast, objTypeDeclNode);
-        }
+    if (objTypeDeclNode->Parent() != nullptr && objTypeDeclNode->Parent()->IsImportNamespaceSpecifier()) {
         return true;
+    }
+    const auto *propVarDeclNodeParent = propVarDeclNode->Parent();
+    if (propVarDeclNodeParent == nullptr) {
+        return false;
+    }
+    if (propVarDeclNodeParent->IsClassDefinition() && objTypeDeclNode->IsClassDefinition()) {
+        return ValidatePropertyAccessForClass(ast, propVarDeclNode, propVarDeclNodeParent, propVar, objTypeDeclNode);
     }
     return false;
 }
@@ -233,6 +324,9 @@ static bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, c
     if (memberObjTypeDeclNode == nullptr) {
         return false;
     }
+    if (memberObjTypeDeclNode->Parent() != nullptr && memberObjTypeDeclNode->Parent()->IsImportNamespaceSpecifier()) {
+        return true;
+    }
     auto *signature = ast->Signature();
     if (signature == nullptr) {
         return false;
@@ -242,26 +336,19 @@ static bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, c
         return false;
     }
     auto *ownerSignDeclNode = ownerSign->GetDeclNode();
-    if (ownerSignDeclNode != nullptr && ownerSignDeclNode->IsClassDefinition() &&
-        memberObjTypeDeclNode->IsClassDefinition()) {
-        // Check if the method is used where it is declared
-        if (IsContainedIn<const ir::AstNode>(ast, ownerSignDeclNode->AsClassDefinition())) {
-            return true;
-        }
-        if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
-            return false;
-        }
-        if (signature->HasSignatureFlag(checker::SignatureFlags::PROTECTED)) {
-            // Check if the method is inherited and is used in class in which it is inherited
-            auto ret = memberObjType->IsSignatureInherited(signature);
-            return ret && IsContainedIn<const ir::AstNode>(ast, memberObjTypeDeclNode->AsClassDefinition());
-        }
-        if (signature->HasSignatureFlag(checker::SignatureFlags::INTERNAL)) {
-            return IsVisibleInternalNode(ast, memberObjTypeDeclNode);
-        }
-        return true;
+    if (ownerSignDeclNode == nullptr) {
+        return false;
     }
-    return false;
+    if (!ownerSignDeclNode->IsClassDefinition() && !ownerSignDeclNode->IsTSInterfaceDeclaration()) {
+        return false;
+    }
+    bool ret = false;
+    if (memberObjTypeDeclNode->IsClassDefinition()) {
+        ret = ValidateMethodAccessForClass(ast, ownerSignDeclNode, signature, memberObjTypeDeclNode);
+    } else if (memberObjTypeDeclNode->IsTSInterfaceDeclaration()) {
+        ret = ValidateMethodAccessForTSInterface(ast, ownerSignDeclNode, signature, memberObjTypeDeclNode);
+    }
+    return ret;
 }
 
 class NodeHasParent {

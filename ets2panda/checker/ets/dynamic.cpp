@@ -136,6 +136,7 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
     signature->AddSignatureFlag(SignatureFlags::STATIC);
 
     func->SetSignature(signature);
+    signature->SetOwner(Context().ContainingClass());
 
     return func;
 }
@@ -441,7 +442,7 @@ ir::ClassStaticBlock *ETSChecker::CreateDynamicModuleClassInitializer(
 }
 
 template <bool IS_STATIC>
-static void AddMethodToClass(varbinder::ClassScope *classScope, varbinder::Variable *methodVar)
+static void AddMethodToClass(varbinder::ClassScope *classScope, varbinder::Variable *methodVar, Signature *signature)
 {
     auto *classType = classScope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
     if constexpr (IS_STATIC) {
@@ -449,6 +450,7 @@ static void AddMethodToClass(varbinder::ClassScope *classScope, varbinder::Varia
     } else {
         classType->AddProperty<PropertyType::INSTANCE_METHOD>(methodVar->AsLocalVariable());
     }
+    signature->SetOwner(classType);
 }
 
 template <bool IS_STATIC>
@@ -508,7 +510,7 @@ ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *class
     func->Id()->SetVariable(var);
     method->Id()->SetVariable(var);
 
-    AddMethodToClass<IS_STATIC>(classScope, var);
+    AddMethodToClass<IS_STATIC>(classScope, var, signature);
 
     return method;
 }
