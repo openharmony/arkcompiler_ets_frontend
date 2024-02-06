@@ -190,6 +190,11 @@ public:
         flags_ |= flags;
     }
 
+    void SetInSendable()
+    {
+        inSendable_ = true;
+    }
+
     size_t FormalParamsLength() const;
     util::StringView GetName() const;
 
@@ -227,6 +232,11 @@ public:
         return concurrentModuleRequests_;
     }
 
+    bool InSendable() const
+    {
+        return inSendable_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -248,6 +258,7 @@ private:
     bool declare_;
     bool exportDefault_;
     std::vector<int> concurrentModuleRequests_;
+    bool inSendable_ {false};
 };
 
 }  // namespace panda::es2panda::ir

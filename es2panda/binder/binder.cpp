@@ -604,6 +604,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
     for (auto *iter : classDef->IndexSignatures()) {
         ResolveReference(classDef, iter);
     }
+    inSendable_ = false;
 }
 
 void Binder::BuildForUpdateLoop(ir::ForUpdateStatement *forUpdateStmt)
@@ -691,8 +692,17 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         }
         case ir::AstNodeType::SCRIPT_FUNCTION: {
             auto *scriptFunc = childNode->AsScriptFunction();
+            // Static initializer only be executed once. Treat it as unshared method.
+            if (inSendable_ && !scriptFunc->IsStaticInitializer()) {
+                scriptFunc->SetInSendable();
+            }
             util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc),
                                           Program()->GetLineIndex());
+
+            if (scriptFunc->IsConstructor() && util::Helpers::GetClassDefiniton(scriptFunc)->IsSendable()) {
+                scriptFunc->SetInSendable();
+                inSendable_ = true;
+            }
             auto *funcScope = scriptFunc->Scope();
 
             auto *outerScope = scope_;
@@ -1066,7 +1076,6 @@ ClassTdz::ClassTdz(const ir::AstNode *parent, const ir::AstNode *childNode, Scop
      */
     bool isClassTdz = (parent->IsClassProperty() && childNode == parent->AsClassProperty()->Key()) ||
         (parent->IsMethodDefinition() && childNode == parent->AsMethodDefinition()->Key());
-
     if (!isClassTdz) {
         return;
     }

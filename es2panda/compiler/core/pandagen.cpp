@@ -107,6 +107,16 @@ void PandaGen::SetFunctionKind()
     funcKind_ = panda::panda_file::FunctionKind::FUNCTION;
 }
 
+void PandaGen::SetInSendable()
+{
+    if (rootNode_->IsProgram()) {
+        return;
+    }
+
+    auto *func = rootNode_->AsScriptFunction();
+    inSendable_ = func->InSendable();
+}
+
 Label *PandaGen::AllocLabel()
 {
     std::string id = std::string {Label::PREFIX} + std::to_string(labelId_++);
@@ -1779,6 +1789,14 @@ void PandaGen::LoadLocalModuleVariable(const ir::AstNode *node, const binder::Mo
 void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
+
+    // Change the behavior of using imported object in sendable class since api12
+    if (inSendable_ && Binder()->Program()->TargetApiVersion() >= 12) {
+        index <= util::Helpers::MAX_INT8 ? ra_.Emit<CallruntimeLdsendableexternalmodulevar>(node, index) :
+                                       ra_.Emit<CallruntimeWideldsendableexternalmodulevar>(node, index);
+        return;
+    }
+
     if (Context()->IsTypeExtractorEnabled()) {
         const ir::Identifier *identifier = nullptr;
         const ir::AstNode *declareNode = Context()->TypeExtractor()->GetDeclNodeFromIdentifier(node->AsIdentifier(), &identifier);

@@ -564,7 +564,10 @@ int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const
 
         FieldType fieldType = FieldType::NONE;
         const auto *typeAnnotation = classProp->TypeAnnotation();
-        ASSERT(typeAnnotation != nullptr);
+        if (typeAnnotation == nullptr) {
+            util::Helpers::ThrowError(ErrorType::GENERIC, pg->Binder()->Program(), prop->Start(),
+                "Field in sendable class must have type annotation");
+        }
         if (typeAnnotation->IsTSUnionType()) {
             for (const auto *type : typeAnnotation->AsTSUnionType()->Types()) {
                 AddFieldType(fieldType, type);

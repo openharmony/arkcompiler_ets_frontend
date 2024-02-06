@@ -830,4 +830,13 @@ void Helpers::SendableCheckForClassStaticInitializer(const util::StringView name
     }
 }
 
+void Helpers::ThrowError(ErrorType type, const parser::Program *program, const lexer::SourcePosition &pos,
+    const std::string_view &msg)
+{
+    lexer::LineIndex index(program->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    throw Error {type, msg, loc.line, loc.col};
+}
+
 }  // namespace panda::es2panda::util

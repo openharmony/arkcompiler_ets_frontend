@@ -1,0 +1,34 @@
+.language ECMAScript
+
+.function any .A(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	callruntime.ldsendableexternalmodulevar 0x0
+	throw.undefinedifholewithname a
+	lda a2
+	return
+label_2: 
+}
+
+.function any .B(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	callruntime.ldsendableexternalmodulevar 0x0
+	throw.undefinedifholewithname a
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldhole
+	sta v0
+	callruntime.definesendableclass 0x0, .A, _2, 0x0, v0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+

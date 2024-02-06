@@ -260,6 +260,7 @@ public:
     }
 
     void SetFunctionKind();
+    void SetInSendable();
 
     bool IsDebug() const;
     bool isDebuggerEvaluateExpressionMode() const;
@@ -581,6 +582,7 @@ private:
     size_t labelId_ {0};
     panda::panda_file::FunctionKind funcKind_ {panda::panda_file::FunctionKind::NONE};
     bool icOverFlow_ {false};
+    bool inSendable_ {false};
 };
 }  // namespace panda::es2panda::compiler
 
