@@ -4278,7 +4278,7 @@ ir::Expression *ETSParser::ParseNewExpression()
         ExpectToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-            auto *arrInstance = AllocNode<ir::ETSNewArrayInstanceExpression>(Allocator(), typeReference, dimension);
+            auto *arrInstance = AllocNode<ir::ETSNewArrayInstanceExpression>(typeReference, dimension);
             arrInstance->SetRange({start, endLoc});
             return arrInstance;
         }

@@ -78,8 +78,7 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
     auto *const typeRef = typeReference_ != nullptr ? typeReference_->Clone(allocator, nullptr) : nullptr;
     auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(allocator, typeRef, dimension);
-        clone != nullptr) {
+    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(typeRef, dimension); clone != nullptr) {
         if (typeRef != nullptr) {
             typeRef->SetParent(clone);
         }
@@ -92,7 +91,9 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
             clone->SetParent(parent);
         }
 
+        clone->defaultConstructorSignature_ = defaultConstructorSignature_;
         clone->SetRange(Range());
+
         return clone;
     }
 

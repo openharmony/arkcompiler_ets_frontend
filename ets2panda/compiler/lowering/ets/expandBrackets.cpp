@@ -18,57 +18,164 @@
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/expressions/memberExpression.h"
 #include "parser/ETSparser.h"
 #include "varbinder/ETSBinder.h"
+#include "varbinder/scope.h"
 
 namespace ark::es2panda::compiler {
 
-bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
-{
-    auto *const checker = ctx->checker->AsETSChecker();
-    auto *const allocator = checker->Allocator();
-    auto *const parser = ctx->parser->AsETSParser();
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION[] =
+    "let @@I1: @@T2 = (@@E3);"
+    "if (!isSafeInteger(@@I4)) {"
+    "  throw new TypeError(\"Fractional part of index expression should be zero.\");"
+    "};";
+static constexpr char const FORMAT_NEW_ARRAY_EXPRESSION[] =
+    "let @@I1: @@T2 = (@@E3);"
+    "if (!isSafeInteger(@@I4)) {"
+    "  throw new TypeError(\"Fractional part of index expression should be zero.\");"
+    "};"
+    "(@@E5);";
+static constexpr char const CAST_NEW_DIMENSION_EXPRESSION[] = "@@I1 as int";
+static constexpr char const CAST_OLD_DIMENSION_EXPRESSION[] = "(@@E1) as int";
+// NOLINTEND(modernize-avoid-c-arrays)
 
-    program->Ast()->TransformChildrenRecursively([ctx, parser, checker, allocator](ir::AstNode *ast) -> ir::AstNode * {
-        if (!ast->IsETSNewArrayInstanceExpression()) {
-            return ast;
-        }
-        auto *newExpression = ast->AsETSNewArrayInstanceExpression();
-        auto *dimension = newExpression->Dimension();
+ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
+    parser::ETSParser *parser, checker::ETSChecker *checker,
+    ir::ETSNewArrayInstanceExpression *newInstanceExpression) const
+{
+    auto *dimension = newInstanceExpression->Dimension();
+    auto *dimType = dimension->TsType();
+    if (auto *unboxed = checker->ETSBuiltinTypeAsPrimitiveType(dimType); unboxed != nullptr) {
+        dimType = unboxed;
+    }
+    if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
+        return newInstanceExpression;
+    }
+
+    auto *scope = NearestScope(newInstanceExpression);
+    if (scope == nullptr) {
+        scope = checker->VarBinder()->VarScope() != nullptr ? checker->VarBinder()->VarScope()
+                                                            : checker->VarBinder()->TopScope();
+    }
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+
+    auto *ident = Gensym(checker->Allocator());
+    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
+    auto *const newInstanceParent = newInstanceExpression->Parent();
+
+    auto *blockExpression = parser->CreateFormattedExpression(
+        FORMAT_NEW_ARRAY_EXPRESSION, parser::DEFAULT_SOURCE_FILE, ident, exprType, dimension,
+        ident->Clone(checker->Allocator(), nullptr), newInstanceExpression);
+    blockExpression->SetParent(newInstanceParent);
+
+    auto *castedDimension = parser->CreateFormattedExpression(
+        CAST_NEW_DIMENSION_EXPRESSION, parser::DEFAULT_SOURCE_FILE, ident->Clone(checker->Allocator(), nullptr));
+    newInstanceExpression->SetDimension(castedDimension);
+
+    newInstanceExpression->SetTsType(nullptr);
+    InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, scope);
+    blockExpression->Check(checker);
+
+    return blockExpression;
+}
+
+ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
+    parser::ETSParser *parser, checker::ETSChecker *checker,
+    ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression) const
+{
+    ir::BlockExpression *returnExpression = nullptr;
+
+    auto *scope = NearestScope(newInstanceExpression);
+    if (scope == nullptr) {
+        scope = checker->VarBinder()->VarScope() != nullptr ? checker->VarBinder()->VarScope()
+                                                            : checker->VarBinder()->TopScope();
+    }
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+
+    for (std::size_t i = 0U; i < newInstanceExpression->Dimensions().size(); ++i) {
+        auto *dimension = newInstanceExpression->Dimensions()[i];
         auto *dimType = dimension->TsType();
         if (auto *unboxed = checker->ETSBuiltinTypeAsPrimitiveType(dimType); unboxed != nullptr) {
             dimType = unboxed;
         }
         if (!dimType->HasTypeFlag(checker::TypeFlag::ETS_FLOATING_POINT)) {
-            return ast;
+            continue;
         }
 
-        auto *castedDimension =
-            parser->CreateFormattedExpression("@@E1 as int", parser::DEFAULT_SOURCE_FILE, dimension);
-        castedDimension->Check(checker);
-        castedDimension->SetParent(dimension->Parent());
-        newExpression->SetDimension(castedDimension);
+        if (dimension->IsNumberLiteral()) {
+            auto *castedDimension = parser->CreateFormattedExpression(CAST_OLD_DIMENSION_EXPRESSION,
+                                                                      parser::DEFAULT_SOURCE_FILE, dimension);
+            castedDimension->SetParent(newInstanceExpression);
+            newInstanceExpression->Dimensions()[i] = castedDimension;
+        } else {
+            auto *ident = Gensym(checker->Allocator());
+            auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
 
-        auto *const scope = NearestScope(newExpression);
-        auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
-        auto *ident = Gensym(allocator);
-        auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
-        auto *sequenceExpr = parser->CreateFormattedExpression(
-            "let @@I1 = (@@E2) as @@T3;"
-            "if (!isSafeInteger(@@I4)) {"
-            "  throw new TypeError(\"Index fractional part should not be different from 0.0\");"
-            "};"
-            "(@@E5);",
-            parser::DEFAULT_SOURCE_FILE, ident, dimension, exprType, ident->Clone(allocator, nullptr), newExpression);
-        sequenceExpr->SetParent(newExpression->Parent());
-        InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
-        checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(sequenceExpr, scope);
-        sequenceExpr->Check(checker);
+            auto *blockExpression =
+                parser
+                    ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, parser::DEFAULT_SOURCE_FILE,
+                                                ident, exprType, dimension, ident->Clone(checker->Allocator(), nullptr))
+                    ->AsBlockExpression();
 
-        return sequenceExpr;
+            if (returnExpression == nullptr) {
+                returnExpression = blockExpression;
+            } else {
+                returnExpression->AddStatements(blockExpression->Statements());
+            }
+
+            auto *castedDimension =
+                parser->CreateFormattedExpression(CAST_NEW_DIMENSION_EXPRESSION, parser::DEFAULT_SOURCE_FILE,
+                                                  ident->Clone(checker->Allocator(), nullptr));
+            castedDimension->SetParent(newInstanceExpression);
+            newInstanceExpression->Dimensions()[i] = castedDimension;
+        }
+    }
+
+    if (returnExpression != nullptr) {
+        return CreateNewMultiDimArrayInstanceExpression(checker, newInstanceExpression, returnExpression, scope);
+    }
+
+    return newInstanceExpression;
+}
+
+//  NOTE: Just to reduce the size of 'ProcessNewMultiDimArrayInstanceExpression' method
+ir::Expression *ExpandBracketsPhase::CreateNewMultiDimArrayInstanceExpression(
+    checker::ETSChecker *checker, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
+    ir::BlockExpression *blockExpression, varbinder::Scope *scope) const
+{
+    blockExpression->SetParent(newInstanceExpression->Parent());
+    newInstanceExpression->SetTsType(nullptr);
+    blockExpression->AddStatement(checker->AllocNode<ir::ExpressionStatement>(newInstanceExpression));
+
+    InitScopesPhaseETS::RunExternalNode(blockExpression, checker->VarBinder());
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(blockExpression, scope);
+    blockExpression->Check(checker);
+
+    return blockExpression;
+}
+
+bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
+{
+    auto *const parser = ctx->parser->AsETSParser();
+    ASSERT(parser != nullptr);
+    auto *const checker = ctx->checker->AsETSChecker();
+    ASSERT(checker != nullptr);
+
+    program->Ast()->TransformChildrenRecursively([this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
+        if (ast->IsETSNewArrayInstanceExpression()) {
+            return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());
+        }
+
+        if (ast->IsETSNewMultiDimArrayInstanceExpression()) {
+            return ProcessNewMultiDimArrayInstanceExpression(parser, checker,
+                                                             ast->AsETSNewMultiDimArrayInstanceExpression());
+        }
+
+        return ast;
     });
+
     return true;
 }
 

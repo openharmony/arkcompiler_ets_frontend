@@ -41,6 +41,26 @@ public:
         return statements_;
     }
 
+    void AddStatements(ArenaVector<ir::Statement *> const &statements)
+    {
+        std::copy_if(statements.begin(), statements.end(), std::back_inserter(statements_),
+                     [this](ir::Statement *statement) {
+                         if (statement != nullptr) {
+                             statement->SetParent(this);
+                             return true;
+                         };
+                         return false;
+                     });
+    }
+
+    void AddStatement(ir::Statement *statement)
+    {
+        if (statement != nullptr) {
+            statement->SetParent(this);
+            statements_.emplace_back(statement);
+        }
+    }
+
     [[nodiscard]] BlockExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;

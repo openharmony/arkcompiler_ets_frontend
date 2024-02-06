@@ -554,7 +554,7 @@ public:
     void CallBigIntBinaryOperator(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
     void CallBigIntBinaryComparison(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
     void BuildTemplateString(const ir::TemplateLiteral *node);
-    void InitObject(const ir::AstNode *node, checker::Signature *signature,
+    void InitObject(const ir::AstNode *node, checker::Signature const *signature,
                     const ArenaVector<ir::Expression *> &arguments)
     {
         CallImpl<InitobjShort, Initobj, InitobjRange>(node, signature, arguments);
@@ -976,7 +976,7 @@ private:
     }
 
     template <typename Short, typename General, typename Range>
-    bool ResolveStringFromNullishBuiltin(const ir::AstNode *node, checker::Signature *signature,
+    bool ResolveStringFromNullishBuiltin(const ir::AstNode *node, checker::Signature const *signature,
                                          const ArenaVector<ir::Expression *> &arguments)
     {
         if (signature->InternalName() != Signatures::BUILTIN_STRING_FROM_NULLISH_CTOR) {
@@ -1027,7 +1027,7 @@ private:
     }
 
     template <typename Short, typename General, typename Range>
-    void CallImpl(const ir::AstNode *node, checker::Signature *signature,
+    void CallImpl(const ir::AstNode *node, checker::Signature const *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);

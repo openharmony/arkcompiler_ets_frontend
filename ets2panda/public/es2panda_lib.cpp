@@ -1833,8 +1833,7 @@ extern "C" es2panda_AstNode *CreateNewArrayInstanceExpression(es2panda_Context *
     auto *irTyperef = reinterpret_cast<ir::AstNode *>(typeReference)->AsExpression()->AsTypeNode();
     auto *irDim = reinterpret_cast<ir::AstNode *>(dimension)->AsExpression();
 
-    return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSNewArrayInstanceExpression>(allocator, irTyperef, irDim));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ETSNewArrayInstanceExpression>(irTyperef, irDim));
 }
 
 extern "C" es2panda_AstNode *NewArrayInstanceExpressionTypeReference(es2panda_AstNode *ast)

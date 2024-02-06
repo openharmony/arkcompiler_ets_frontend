@@ -37,44 +37,54 @@ public:
     NO_COPY_SEMANTIC(ETSNewArrayInstanceExpression);
     NO_MOVE_SEMANTIC(ETSNewArrayInstanceExpression);
 
-    explicit ETSNewArrayInstanceExpression(ArenaAllocator *allocator, ir::TypeNode *const typeReference,
-                                           ir::Expression *const dimension)
+    explicit ETSNewArrayInstanceExpression(ir::TypeNode *const typeReference, ir::Expression *const dimension)
         : Expression(AstNodeType::ETS_NEW_ARRAY_INSTANCE_EXPRESSION),
           typeReference_(typeReference),
-          dimension_(dimension),
-          allocator_(allocator)
+          dimension_(dimension)
     {
     }
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class compiler::ETSCompiler;
 
-    ir::TypeNode *TypeReference()
+    [[nodiscard]] ir::TypeNode *TypeReference() noexcept
     {
         return typeReference_;
     }
 
-    ir::TypeNode const *TypeReference() const
+    [[nodiscard]] ir::TypeNode const *TypeReference() const noexcept
     {
         return typeReference_;
     }
 
-    ir::Expression *Dimension()
+    [[nodiscard]] ir::Expression *Dimension() noexcept
     {
         return dimension_;
     }
 
-    ir::Expression const *Dimension() const
+    [[nodiscard]] ir::Expression const *Dimension() const noexcept
     {
         return dimension_;
     }
 
-    void SetDimension(ir::Expression *dimension)
+    [[nodiscard]] checker::Signature *Signature() const noexcept
+    {
+        return defaultConstructorSignature_;
+    }
+
+    [[nodiscard]] checker::Signature *Signature() noexcept
+    {
+        return defaultConstructorSignature_;
+    }
+
+    void SetDimension(ir::Expression *dimension) noexcept
     {
         dimension_ = dimension;
         if (dimension_ != nullptr) {
             dimension_->SetParent(this);
         }
+    }
+
+    void SetSignature(checker::Signature *signature) noexcept
+    {
+        defaultConstructorSignature_ = signature;
     }
 
     [[nodiscard]] ETSNewArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -97,7 +107,6 @@ private:
     ir::TypeNode *typeReference_;
     ir::Expression *dimension_;
     checker::Signature *defaultConstructorSignature_ {};
-    ArenaAllocator *allocator_;
 };
 }  // namespace ark::es2panda::ir
 

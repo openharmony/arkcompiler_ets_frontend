@@ -1028,7 +1028,7 @@ void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
         double value = num.GetDouble();
         double intpart;
         if (std::modf(value, &intpart) != 0.0) {
-            ThrowTypeError("Index fracional part should not be different from 0.0", expr->Start());
+            ThrowTypeError("Index fractional part should be zero.", expr->Start());
         }
         return;
     }

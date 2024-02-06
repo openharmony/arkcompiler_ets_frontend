@@ -16,14 +16,12 @@
 #include "ETSCompiler.h"
 
 #include "compiler/base/catchTable.h"
-#include "checker/types/ets/etsDynamicFunctionType.h"
-#include "checker/types/ets/etsObjectType.h"
-#include "checker/types/ts/enumLiteralType.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
+#include "checker/types/ets/etsDynamicFunctionType.h"
 
 namespace ark::es2panda::compiler {
 
@@ -217,14 +215,14 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
     compiler::RegScope rs(etsg);
     compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
 
-    expr->dimension_->Compile(etsg);
+    expr->Dimension()->Compile(etsg);
 
     compiler::VReg arr = etsg->AllocReg();
     compiler::VReg dim = etsg->AllocReg();
-    etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->dimension_->TsType());
+    etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->Dimension()->TsType());
     etsg->NewArray(expr, arr, dim, expr->TsType());
 
-    if (expr->defaultConstructorSignature_ != nullptr) {
+    if (expr->Signature() != nullptr) {
         compiler::VReg countReg = etsg->AllocReg();
         auto *startLabel = etsg->AllocLabel();
         auto *endLabel = etsg->AllocLabel();
@@ -237,10 +235,10 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 
         etsg->LoadAccumulator(expr, countReg);
         etsg->StoreAccumulator(expr, indexReg);
-        const compiler::TargetTypeContext ttctx2(etsg, expr->typeReference_->TsType());
-        ArenaVector<ir::Expression *> arguments(expr->allocator_->Adapter());
-        etsg->InitObject(expr, expr->defaultConstructorSignature_, arguments);
-        etsg->StoreArrayElement(expr, arr, indexReg, expr->typeReference_->TsType());
+        const compiler::TargetTypeContext ttctx2(etsg, expr->TypeReference()->TsType());
+        ArenaVector<ir::Expression *> arguments(GetCodeGen()->Allocator()->Adapter());
+        etsg->InitObject(expr, expr->Signature(), arguments);
+        etsg->StoreArrayElement(expr, arr, indexReg, expr->TypeReference()->TsType());
 
         etsg->IncrementImmediateRegister(expr, countReg, checker::TypeFlag::INT, static_cast<std::int32_t>(1));
         etsg->JumpTo(expr, startLabel);
@@ -335,7 +333,7 @@ void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 void ETSCompiler::Compile(const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    etsg->InitObject(expr, expr->signature_, expr->dimensions_);
+    etsg->InitObject(expr, expr->Signature(), expr->Dimensions());
     etsg->SetAccumulatorType(expr->TsType());
 }
 

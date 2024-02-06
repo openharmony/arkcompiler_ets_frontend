@@ -44,29 +44,26 @@ public:
           dimensions_(std::move(dimensions))
     {
     }
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class compiler::ETSCompiler;
 
     explicit ETSNewMultiDimArrayInstanceExpression(ETSNewMultiDimArrayInstanceExpression const &other,
                                                    ArenaAllocator *allocator);
 
-    ir::TypeNode *TypeReference()
+    [[nodiscard]] ir::TypeNode *TypeReference() noexcept
     {
         return typeReference_;
     }
 
-    ir::TypeNode const *TypeReference() const
+    [[nodiscard]] ir::TypeNode const *TypeReference() const noexcept
     {
         return typeReference_;
     }
 
-    ArenaVector<ir::Expression *> &Dimensions()
+    [[nodiscard]] ArenaVector<ir::Expression *> &Dimensions() noexcept
     {
         return dimensions_;
     }
 
-    ArenaVector<ir::Expression *> const &Dimension() const
+    [[nodiscard]] ArenaVector<ir::Expression *> const &Dimensions() const noexcept
     {
         return dimensions_;
     }
@@ -79,6 +76,11 @@ public:
     [[nodiscard]] const checker::Signature *Signature() const noexcept
     {
         return signature_;
+    }
+
+    void SetSignature(checker::Signature *signature) noexcept
+    {
+        signature_ = signature;
     }
 
     [[nodiscard]] ETSNewMultiDimArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;

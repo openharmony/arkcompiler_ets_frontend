@@ -500,8 +500,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
 
-    auto *elementType = expr->typeReference_->GetType(checker);
-    checker->ValidateArrayIndex(expr->dimension_, true);
+    auto *elementType = expr->TypeReference()->GetType(checker);
+    checker->ValidateArrayIndex(expr->Dimension(), true);
 
     if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && !elementType->IsNullish() &&
         elementType->ToAssemblerName().str() != "Ball") {
@@ -510,10 +510,9 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
             auto *calleeObj = elementType->AsETSObjectType();
             if (!calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
                 // A workaround check for new Interface[...] in test cases
-                expr->defaultConstructorSignature_ =
-                    checker->CollectParameterlessConstructor(calleeObj->ConstructSignatures(), expr->Start());
-                checker->ValidateSignatureAccessibility(calleeObj, nullptr, expr->defaultConstructorSignature_,
-                                                        expr->Start());
+                expr->SetSignature(
+                    checker->CollectParameterlessConstructor(calleeObj->ConstructSignatures(), expr->Start()));
+                checker->ValidateSignatureAccessibility(calleeObj, nullptr, expr->Signature(), expr->Start());
             }
         }
     }
@@ -589,15 +588,15 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
-    auto *elementType = expr->typeReference_->GetType(checker);
+    auto *elementType = expr->TypeReference()->GetType(checker);
 
-    for (auto *dim : expr->dimensions_) {
-        checker->ValidateArrayIndex(dim);
+    for (auto *dim : expr->Dimensions()) {
+        checker->ValidateArrayIndex(dim, true);
         elementType = checker->CreateETSArrayType(elementType);
     }
 
     expr->SetTsType(elementType);
-    expr->signature_ = checker->CreateBuiltinArraySignature(elementType->AsETSArrayType(), expr->dimensions_.size());
+    expr->SetSignature(checker->CreateBuiltinArraySignature(elementType->AsETSArrayType(), expr->Dimensions().size()));
     return expr->TsType();
 }
 
