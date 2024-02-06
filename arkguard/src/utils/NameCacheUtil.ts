@@ -49,3 +49,12 @@ export function getMapFromJson(jsonObj: Object): Map<string, string> {
 
   return new Map<string, string>(Object.entries(jsonObj));
 }
+
+export function deleteLineInfoForNameString(historyNameCache: Map<string, string>, identifierCache: Object | undefined): void {
+  if (identifierCache) {
+    for (const [key, value] of Object.entries(identifierCache)) {
+      let newKey = key.includes(':') ? key.split(':')[0] : key;
+      historyNameCache.set(newKey, value as string);
+    }
+  }
+}

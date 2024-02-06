@@ -404,11 +404,11 @@ namespace secharmony {
           return path;
         }
         let positions = Reflect.get(sym, 'lineInfo') as Array<number>;
-        let startLine = positions[0];
-        let startCharacter = positions[1];
-        let endLine = positions[2];
-        let endCharacter = positions[3];
-        return path + ':' +  startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
+        let startLine = positions[0]; // 0: startLine in lineInfo
+        let startCharacter = positions[1]; // 1: startCharacter in lineInfo
+        let endLine = positions[2]; // 2: endLine in lineInfo
+        let endCharacter = positions[3]; // 3: endCharacter in lineInfo
+        return path + ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
       }
 
       /**

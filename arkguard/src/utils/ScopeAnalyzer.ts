@@ -63,7 +63,7 @@ import type {
 
 import {NodeUtils} from './NodeUtils';
 import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
-import {globalMangledTable} from '../transformers/rename/RenamePropertiesTransformer'
+import {globalSwappedMangledTable} from '../transformers/rename/RenamePropertiesTransformer';
 
 /**
  * kind of a scope
@@ -751,8 +751,8 @@ namespace secharmony {
       }
 
       let symbol: Symbol;
-      if((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent)) {
-        symbol = checker.getSymbolAtLocation(node.parent.name);
+      if ((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent)) {
+        symbol = checker.getSymbolAtLocation(node.name ? node.name : node.parent.name);
       } else {
         symbol = checker.getSymbolAtLocation(node.name);
       }
@@ -765,35 +765,18 @@ namespace secharmony {
       let endCharacter = endPosition.character + 1;
 
       if (symbol) {
-        Reflect.set(symbol, "isFunction", true);
-        Reflect.set(symbol, "lineInfo", [startLine, startCharacter, endLine, endCharacter]);
+        Reflect.set(symbol, 'isFunction', true);
+        Reflect.set(symbol, 'lineInfo', [startLine, startCharacter, endLine, endCharacter]);
       }
 
       let isProperty: boolean = isMethodDeclaration(node) || isGetAccessor(node) ||
                                 isSetAccessor(node) || (isConstructorDeclaration(node) &&
                                 !(isClassDeclaration(node.parent) && isViewPUBasedClass(node.parent)));
-      let isPropertyParent: boolean = (isFunctionExpression(node) || isArrowFunction(node)) &&
-                                      isPropertyDeclaration(node.parent);
-      if (isProperty || isPropertyParent) {
-        let gotNode;
-        if (node.kind == SyntaxKind.Constructor || 
-          ((node.kind == SyntaxKind.FunctionExpression ||
-            node.kind == SyntaxKind.ArrowFunction) &&
-            node.parent.kind == SyntaxKind.PropertyDeclaration)) {
-          gotNode = node.parent;
-        } else {
-          gotNode = node;
-        }
-        let valueName: string = (gotNode.name as Identifier).escapedText.toString();
-        let originalName: string = valueName;
-        for (const [key, val] of globalMangledTable.entries()) {
-          if (val == valueName) {
-            originalName = key;
-            break;
-          }
-        }
-        let keyName = originalName + ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
-        memberMethodCache.set(keyName, valueName);
+      let isPropertyParent: boolean = isFunctionExpression(node) && isPropertyDeclaration(node.parent);
+      let isMemberMethod: boolean = isProperty || isPropertyParent;
+      if (isMemberMethod) {
+        let lineAndColum: string = ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
+        writeMemberMethodCache(node, lineAndColum);
       }
 
       addSymbolInScope(node);
@@ -817,6 +800,28 @@ namespace secharmony {
 
       excludeConstructorParameter(node);
       current = current.parent || current;
+    }
+
+    function writeMemberMethodCache(node: Node, lineAndColum: string) {
+      let gotNode;
+      if (node.kind === SyntaxKind.Constructor) {
+        gotNode = node.parent;
+      } else if ((node.kind === SyntaxKind.FunctionExpression && isPropertyDeclaration(node.parent))) {
+        gotNode = node.parent.initializer ? node.parent.initializer : node.parent;
+      } else {
+        gotNode = node;
+      }
+      let escapedText: string = gotNode.name?.escapedText;
+      if (!escapedText) {
+        return;
+      }
+      let valueName: string = escapedText.toString();
+      let originalName: string = valueName;
+      if (globalSwappedMangledTable.size !== 0 && globalSwappedMangledTable.has(valueName)) {
+        originalName = globalSwappedMangledTable.get(valueName);
+      }
+      let keyName = originalName + lineAndColum;
+      memberMethodCache.set(keyName, valueName);
     }
 
     function analyzeSwitch(node: CaseBlock): void {

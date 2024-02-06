@@ -13,13 +13,9 @@
  * limitations under the License.
  */
 
-function OutFunction() {
+const ExpFunc2 = function foo() {
     let a = 1;
-    console.log("out");
-    function inFunction() {
-        console.log("innner Function");
-    }
-    inFunction();
-}
-
-OutFunction();
+    return a;
+  }
+  
+ExpFunc2();

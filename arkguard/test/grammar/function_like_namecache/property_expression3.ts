@@ -13,13 +13,19 @@
  * limitations under the License.
  */
 
-function OutFunction() {
-    let a = 1;
-    console.log("out");
-    function inFunction() {
-        console.log("innner Function");
-    }
-    inFunction();
-}
+class Person7 {
+    0 = function () {
+        console.log('func_exp');
+    };
 
-OutFunction();
+    1 = () => {
+        console.log('arrow');
+    };
+
+    2 = class {
+        str_literal: string = 'myclass';
+        constructor () {
+            this.str_literal = 'newclass';
+        }
+    };
+}

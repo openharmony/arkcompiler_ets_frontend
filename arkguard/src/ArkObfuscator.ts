@@ -44,6 +44,7 @@ import {TransformerManager} from './transformers/TransformerManager';
 import {getSourceMapGenerator} from './utils/SourceMapUtil';
 
 import {
+  deleteLineInfoForNameString,
   getMapFromJson,
   NAME_CACHE_SUFFIX,
   PROPERTY_CACHE_FILE,
@@ -60,7 +61,7 @@ export const renameIdentifierModule = require('./transformers/rename/RenameIdent
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
 export const renameFileNameModule = require('./transformers/rename/RenameFileNameTransformer');
 
-export {getMapFromJson, readProjectPropertiesByCollectedPaths};
+export {getMapFromJson, readProjectPropertiesByCollectedPaths, deleteLineInfoForNameString};
 export let orignalFilePathForSearching: string | undefined;
 
 type ObfuscationResultType = {
@@ -221,12 +222,7 @@ export class ArkObfuscator {
     const nameCache: Object = readCache(nameCachePath);
     let historyNameCache = new Map<string, string>();
     let identifierCache = nameCache ? Reflect.get(nameCache, IDENTIFIER_CACHE) : undefined;
-    if (identifierCache) {
-      for (const [key, value] of Object.entries(identifierCache)) {
-        let newKey = key.includes(':') ? key.split(':')[0] : key;
-        historyNameCache.set(newKey, value as string);
-      }
-    }
+    deleteLineInfoForNameString(historyNameCache, identifierCache);
 
     renameIdentifierModule.historyNameCache = historyNameCache;
   }
@@ -323,7 +319,7 @@ export class ArkObfuscator {
 
   private convertLineInfoForCache(consumer: sourceMap.SourceMapConsumer, targetCache: string) : Object {
     let originalCache : Map<string, string> = renameIdentifierModule.nameCache.get(targetCache);
-    let updatedCache: Object= {};
+    let updatedCache: Object = {};
     for (const [key, value] of originalCache) {
       let newKey: string = key;
       if (!key.includes(':')) {

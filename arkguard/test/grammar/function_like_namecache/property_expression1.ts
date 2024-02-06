@@ -13,13 +13,26 @@
  * limitations under the License.
  */
 
-function OutFunction() {
-    let a = 1;
-    console.log("out");
-    function inFunction() {
-        console.log("innner Function");
-    }
-    inFunction();
-}
+class Person5 {
+    private age: number = 10;
+    name: string = 'Tony';
 
-OutFunction();
+    prop_func1 = function () {
+        console.log('func_exp');
+    };
+
+    prop_func2 = function foo () {
+        console.log('func_exp2');
+    };
+
+    prop_arrow = () => {
+        console.log('arrow');
+    };
+
+    prop_class = class {
+        #pri_prop: string = 'myproperty';
+        constructor () {
+            this.#pri_prop = 'newproperty';
+        }
+    };
+}

@@ -60,6 +60,7 @@ namespace secharmony {
    * global mangled properties table used by all files in a project
    */
   export let globalMangledTable: Map<string, string> = new Map();
+  export let globalSwappedMangledTable: Map<string, string> = new Map();
 
   // used for property cache
   export let historyMangledTable: Map<string, string> = undefined;
@@ -101,7 +102,16 @@ namespace secharmony {
         collectReservedNames(node);
 
         let ret: Node = renameProperties(node);
+        swapMangledTable();
         return setParentRecursive(ret, true);
+      }
+
+      function swapMangledTable(): void {
+        if (globalMangledTable.size !== 0) {
+          for (const [key, value] of globalMangledTable.entries()) {
+            globalSwappedMangledTable.set(value, key);
+          }
+        }
       }
 
       function renameProperties(node: Node): Node {

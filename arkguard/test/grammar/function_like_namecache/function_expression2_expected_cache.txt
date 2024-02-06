@@ -1,0 +1,8 @@
+{
+  "IdentifierCache": {
+    "#ExpFunc2": "p",
+    "#foo:16:19": "q",
+    "foo#a": "r"
+  },
+  "MemberMethodCache": {}
+}
