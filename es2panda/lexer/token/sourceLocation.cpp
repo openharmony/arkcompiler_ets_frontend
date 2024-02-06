@@ -47,14 +47,15 @@ LineIndex::LineIndex(const util::StringView &source) noexcept
 
     bool nextEntry = false;
     while (true) {
-        switch (iter.Next()) {
-            case util::StringView::Iterator::INVALID_CP: {
-                if (!nextEntry) {
-                    // Add the last entry if the ending character is not LEX_CHAR_LF / LEX_CHAR_PS / LEX_CHAR_LS
-                    entrys_.emplace_back(iter.Index());
-                }
-                return;
+        if (!iter.HasNext()) {
+            if (!nextEntry) {
+                // Add the last entry if the ending character is not LEX_CHAR_LF / LEX_CHAR_PS / LEX_CHAR_LS
+                entrys_.emplace_back(iter.Index());
             }
+            return;
+        }
+
+        switch (iter.Next()) {
             case LEX_CHAR_CR: {
                 if (iter.HasNext() && iter.Peek() == LEX_CHAR_LF) {
                     iter.Forward(1);
