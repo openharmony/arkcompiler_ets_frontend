@@ -71,7 +71,7 @@ public:
     void GenAnnotation() override;
 
 private:
-    using DynamicCallNamesMap = ArenaMap<ArenaVector<util::StringView>, uint32_t>;
+    using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 
     void GenExternalRecord(varbinder::RecordTable *recordTable);
     void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);

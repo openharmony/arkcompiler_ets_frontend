@@ -372,6 +372,7 @@ set(ES2PANDA_LIB_SRC
   checker/ets/castingContext.cpp
   checker/ets/conversion.cpp
   checker/ets/dynamic.cpp
+  checker/ets/dynamic/dynamicCall.cpp
   checker/ets/function.cpp
   checker/ets/enum.cpp
   checker/ets/helpers.cpp

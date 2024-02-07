@@ -54,7 +54,7 @@ using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<u
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
-using DynamicCallNamesMap = ArenaMap<ArenaVector<util::StringView>, uint32_t>;
+using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 
 class ETSChecker final : public Checker {
 public:
@@ -691,7 +691,6 @@ private:
     template <typename T>
     ir::ScriptFunction *CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                    Language lang);
-    void CreateDynamicCallQualifiedName(ir::Expression *callee, bool isConstruct);
     ir::ClassStaticBlock *CreateDynamicCallClassInitializer(varbinder::ClassScope *classScope, Language lang,
                                                             bool isConstruct);
     ir::ClassStaticBlock *CreateDynamicModuleClassInitializer(varbinder::ClassScope *classScope,
