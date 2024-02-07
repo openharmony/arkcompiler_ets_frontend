@@ -23,8 +23,6 @@ class IdeType():
 
 
 class Config():
-    log_direct = "buildTestData"
-    log_direct_data_format = "%Y-%m-%d-%H-%M-%S"
     send_mail = True
     run_list = ["HelloWorld"]
 
@@ -43,12 +41,12 @@ class Config():
         self.incremental_code_str = "let index = 5 + 6\n"
         self.incremental_code_start_pos = "let index = 5 + 6\n"
         self.incremental_code_end_pos = 'this.num = num'
-        self.cmd_debug_suffix = r' --mode module -p product=default module=entry@default -p buildMode=debug assembleHap ' + \
-            '--info --verbose-analyze --parallel --incremental --daemon'
-        self.cmd_release_suffix = r' --mode module -p product=default module=entry@default -p buildMode=release assembleHap ' + \
-            '--info --verbose-analyze --parallel --incremental --daemon'
+        self.cmd_debug_suffix = r' --mode module -p product=default module=entry@default -p' + \
+            ' buildMode=debug assembleHap --info --verbose-analyze --parallel --incremental --daemon'
+        self.cmd_release_suffix = r' --mode module -p product=default module=entry@default -p' + \
+            ' buildMode=release assembleHap --info --verbose-analyze --parallel --incremental --daemon'
         self.debug_package_path = r'entry/build/default/outputs/default/entry-default-signed.hap'
-        self.release_package_path = r'entry/build/default/outputs/default/app/entry-default.hap'
+        self.release_package_path = r'entry/build/default/outputs/default/entry-default-unsigned.hap'
         self.incremental_code_path = r'entry/src/main/ets/pages/Index.ets'
         self.json5_path = r'build-profile.json5'
 
@@ -97,7 +95,7 @@ class Config():
                         
                         # The following params is not neccessary to be modified
                         debug_package_path=r'entry/build/default/outputs/default/entry-default-unsigned.hap',
-                        release_package_path=r'entry/build/default/outputs/default/app/entry-default.hap',
+                        release_package_path=r'entry/build/default/outputs/default/entry-default-unsigned.hap',
                         incremental_code_path=r'entry/src/main/ets/pages/Index.ets',
                         incremental_code_end_pos='build() {',
                         incremental_code_str="a: number=5 + 6\n",
@@ -105,7 +103,7 @@ class Config():
 
                         # This app will show the time costs in html
                         # you can setting this as a global setting to show all applications.
-                        show_time_detail_filter = ["createProgram", "arkTSLinter", "tsProgramEmit",
+                        show_time_detail_filter=["createProgram", "arkTSLinter", "tsProgramEmit",
                             "generate content and source map information", "write obfuscated source code",
                             "write source map (async)", "generate merged abc by es2abc (async)", "total build cost"
                         ]

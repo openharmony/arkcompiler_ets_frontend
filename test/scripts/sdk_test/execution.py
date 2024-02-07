@@ -102,7 +102,7 @@ class IncrementalTest:
 
     @staticmethod
     def validate_compile_incremental_file(task, inc_task, is_debug, modified_files):
-        cache_extension = ''
+        cache_extention = ''
         if 'stage' in task.type:
             cache_extention = '.protoBin'
         elif 'fa' in task.type or 'compatible8' in task.type:
@@ -150,6 +150,7 @@ class IncrementalTest:
                     task.type, file_relative_path, modified_cache_files)
                 logging.debug(f"is file in list: {is_file_in_list}")
                 if not is_file_in_list:
+                    logging.debug(f"Unexpected file modified: {file_relative_path}")
                     inc_info.result = options.TaskResult.failed
                     inc_info.error_message = f'Incremental compile found unexpected file timestamp changed. \
                                              Changed file: {file_relative_path}'
@@ -291,7 +292,10 @@ class IncrementalTest:
             profile_data = json5.load(file)
         new_module_name = "new_entry"
         logging.debug(f"profile_data is: {profile_data}")
-        profile_data['modules'][0]['name'] = new_module_name
+        for module in profile_data['modules']:
+            if module['name'] == task.hap_module:
+                module['name'] = new_module_name
+                break
         with open(profile_file, 'w') as file:
             json5.dump(profile_data, file)
 
@@ -309,7 +313,8 @@ class IncrementalTest:
             json5.dump(config_data, file)
 
         try:
-            [stdout, stderr] = compile_project(task, is_debug)
+            cmd = get_hvigor_compile_cmd(task, is_debug, new_module_name)
+            [stdout, stderr] = compile_project(task, is_debug, cmd)
             IncrementalTest.validate_module_name_change(
                 task, inc_task, is_debug, stdout, stderr, new_module_name)
         except Exception as e:
@@ -394,12 +399,12 @@ class OtherTest:
 
         logging.info(f"==========> Running {test_name} for task: {task.name}")
         clean_compile(task)
-        cmd = get_hvigor_compile_cmd(task.path, is_debug)
+        cmd = get_hvigor_compile_cmd(task, is_debug)
         logging.debug(f'cmd: {cmd}')
         logging.debug(f"cmd execution path {task.path}")
         process = subprocess.Popen(cmd, shell=False, cwd=task.path,
                                    stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+                                   stderr=subprocess.STDOUT)
 
         for line in iter(process.stdout.readline, b''):
             if b'CompileArkTS' in line:
@@ -412,8 +417,6 @@ class OtherTest:
 
         logging.debug("first compile: stdcout: %s",
                       stdout.decode('utf-8', errors="ignore"))
-        logging.warning("first compile: stdcerr: %s",
-                        stderr.decode('utf-8', errors="ignore"))
 
         logging.debug("another compile")
         [stdout, stderr] = compile_project(task, is_debug)
@@ -475,7 +478,7 @@ class OtherTest:
         profile_file_backup = profile_file + ".bak"
         shutil.copyfile(profile_file, profile_file_backup)
 
-        with open(profile_file, 'r') as file:
+        with open(profile_file, 'r', encoding='utf-8') as file:
             profile_data = json5.load(file)
 
         long_str = 'default1234567890123456789012345678901234567890123456789012345678901234567890123456789' + \
@@ -483,10 +486,11 @@ class OtherTest:
         logging.debug("long_str: %s", long_str)
         profile_data['targets'][0]['name'] = long_str
 
-        with open(profile_file, 'w') as file:
+        with open(profile_file, 'w', encoding='utf-8') as file:
             json5.dump(profile_data, file)
 
-        [stdout, stderr] = compile_project(task, is_debug)
+        cmd = get_hvigor_compile_cmd(task, is_debug, task.hap_module, long_str)
+        [stdout, stderr] = compile_project(task, is_debug, cmd)
         # Only the Windows platform has a length limit
         if utils.is_windows():
             expected_error_message = 'The length of path exceeds the maximum length: 259'
@@ -803,18 +807,19 @@ def get_hvigor_path(project_path):
     return hvigor
 
 
-def get_hvigor_compile_cmd(project_path, is_debug):
-    cmd = [get_hvigor_path(project_path)]
-    if is_debug:
-        cmd.append('assembleHap')
-    else:
-        cmd.append('assembleApp')
+def get_hvigor_compile_cmd(task, is_debug, module_name='', module_target='default'):
+    cmd = [get_hvigor_path(task.path)]
+    build_mode = 'debug' if is_debug else 'release'
+    module = module_name if module_name else task.hap_module
+    cmd.extend(['--mode', 'module', '-p', 'product=default', '-p', f'module={module}@{module_target}', '-p',
+                f'buildMode={build_mode}', 'assembleHap',
+                '--info', '--verbose-analyze', '--parallel', '--incremental', '--daemon'])
     return cmd
 
 
 def compile_project(task, is_debug, cmd=''):
     if not cmd:
-        cmd = get_hvigor_compile_cmd(task.path, is_debug)
+        cmd = get_hvigor_compile_cmd(task, is_debug)
 
     logging.debug(f'cmd: {cmd}')
     logging.debug(f"cmd execution path {task.path}")

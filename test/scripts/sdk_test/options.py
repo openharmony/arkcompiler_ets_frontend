@@ -157,6 +157,7 @@ def create_test_tasks():
             task.name = hap['name']
             task.path = hap['path']
             task.type = hap['type']
+            task.hap_module = hap['hap_module']
             task.build_path = hap['build_path']
             task.cache_path = hap['cache_path']
             task.output_hap_path = hap['output_hap_path']
