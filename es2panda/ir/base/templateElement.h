@@ -49,6 +49,16 @@ public:
         return cooked_;
     }
 
+    bool EscapeError() const
+    {
+        return escapeError_;
+    }
+
+    void SetEscapeError(bool escapeError)
+    {
+        escapeError_ = escapeError;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -58,6 +68,7 @@ public:
 protected:
     util::StringView raw_ {};
     util::StringView cooked_ {};
+    bool escapeError_ {false};
 };
 
 }  // namespace panda::es2panda::ir

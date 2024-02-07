@@ -1,0 +1,1 @@
+SyntaxError: Invalid character escape sequence in strict mode [test_template_string1.js:16:15]
