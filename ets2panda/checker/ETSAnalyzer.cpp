@@ -1070,6 +1070,16 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     }
     auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
                                         isUnionTypeWithFunctionalInterface);
+    // Remove static signatures if the callee is a member expression and the object is initialized
+    if (expr->Callee()->IsMemberExpression() && expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
+        expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
+            varbinder::VariableFlags::INITIALIZED)) {
+        signatures.erase(
+            std::remove_if(signatures.begin(), signatures.end(),
+                           [](checker::Signature *signature) { return signature->Function()->IsStatic(); }),
+            signatures.end());
+    }
+
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
     if (signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"No matching call signature"}, expr->Start());
