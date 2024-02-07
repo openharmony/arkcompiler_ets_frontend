@@ -1,0 +1,1 @@
+SyntaxError: Invalid unicode escape sequence [test_template_string3.js:16:23]

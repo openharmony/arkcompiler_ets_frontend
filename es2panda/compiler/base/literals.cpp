@@ -48,8 +48,12 @@ void Literals::GetTemplateObject(PandaGen *pg, const ir::TaggedTemplateExpressio
 
         pg->LoadAccumulatorString(element, element->Raw());
         pg->StoreObjByValue(element, rawArr, indexReg);
-
-        pg->LoadAccumulatorString(element, element->Cooked());
+        // Generate ldundefined when element is escape error
+        if (element->EscapeError()) {
+            pg->LoadConst(element, compiler::Constant::JS_UNDEFINED);
+        } else {
+            pg->LoadAccumulatorString(element, element->Cooked());
+        }
         pg->StoreObjByValue(element, cookedArr, indexReg);
 
         elemIndex++;

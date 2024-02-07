@@ -30,6 +30,8 @@ enum class TokenFlags {
     HAS_ESCAPE = (1 << 2),
     NUMBER_BIGINT = (1 << 3),
     NUMBER_HAS_UNDERSCORE = (1 << 4),
+    ESCAPE_ERROR = (1 << 5),
+    TAGGED_TEMPLATE = (1 << 6),
 };
 
 DEFINE_BITOPS(TokenFlags)
@@ -104,6 +106,16 @@ public:
     bool NewLine() const
     {
         return flags_ & TokenFlags::NEW_LINE;
+    }
+
+    bool EscapeError() const
+    {
+        return flags_ & TokenFlags::ESCAPE_ERROR;
+    }
+
+    bool IsTaggedTemplate() const
+    {
+        return flags_ & TokenFlags::TAGGED_TEMPLATE;
     }
 
     bool IsAccessability() const;
