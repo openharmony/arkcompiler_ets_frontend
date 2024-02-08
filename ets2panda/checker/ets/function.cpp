@@ -75,9 +75,7 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (typeArgument->IsWildcardType()) {
         return true;
     }
-    if (!typeArgument->IsETSTypeParameter() && !IsReferenceType(typeArgument)) {
-        return false;
-    }
+    ASSERT(IsReferenceType(typeArgument));
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     return Relation()->IsSupertypeOf(constraint, typeArgument);
 }
@@ -86,6 +84,9 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
                                             Substitution *substitution)
 {
+    if (argumentType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        argumentType = PrimitiveTypeAsETSBuiltinType(argumentType);
+    }
     if (paramType->IsETSTypeParameter()) {
         auto *const tparam = paramType->AsETSTypeParameter();
         auto *const originalTparam = tparam->GetOriginal();
@@ -182,12 +183,19 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
         auto &argumentSignatures = argumentType->AsETSFunctionType()->CallSignatures();
         ASSERT(argumentSignatures.size() == 1);
         ASSERT(parameterSignatures.size() == 1);
-        bool res = true;
-        for (size_t idx = 0; idx < argumentSignatures[0]->GetSignatureInfo()->params.size(); idx++) {
-            res &= enhance(parameterSignatures[0]->GetSignatureInfo()->params[idx]->TsType(),
-                           argumentSignatures[0]->GetSignatureInfo()->params[idx]->TsType());
+        auto *argumentSignature = argumentSignatures[0];
+        auto *parameterSignature = parameterSignatures[0];
+        // NOTE(gogabr): handle rest parameter for argumentSignature
+        if (parameterSignature->GetSignatureInfo()->params.size() !=
+            argumentSignature->GetSignatureInfo()->params.size()) {
+            return false;
         }
-        res &= enhance(parameterSignatures[0]->ReturnType(), argumentSignatures[0]->ReturnType());
+        bool res = true;
+        for (size_t idx = 0; idx < argumentSignature->GetSignatureInfo()->params.size(); idx++) {
+            res &= enhance(parameterSignature->GetSignatureInfo()->params[idx]->TsType(),
+                           argumentSignature->GetSignatureInfo()->params[idx]->TsType());
+        }
+        res &= enhance(parameterSignature->ReturnType(), argumentSignature->ReturnType());
         return res;
     }
 
