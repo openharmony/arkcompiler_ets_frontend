@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSNullType : public TypeNode {
 public:
@@ -58,6 +58,6 @@ public:
     }
 };
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

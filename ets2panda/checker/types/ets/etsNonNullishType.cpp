@@ -20,7 +20,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 void ETSNonNullishType::ToString(std::stringstream &ss, bool precise) const
 {
@@ -111,4 +111,4 @@ Type *ETSNonNullishType::Instantiate([[maybe_unused]] ArenaAllocator *allocator,
     return allocator->New<ETSNonNullishType>(GetUnderlying());
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

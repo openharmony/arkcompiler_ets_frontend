@@ -20,7 +20,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 void ETSNullType::Identical(TypeRelation *relation, Type *other)
 {
@@ -124,4 +124,4 @@ Type *ETSUndefinedType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, 
     return allocator->New<ETSUndefinedType>();
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -22,7 +22,7 @@
 #include "parser/ETSparser.h"
 #include "varbinder/ETSBinder.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 std::string_view OptionalLowering::Name() const
 {
@@ -156,4 +156,4 @@ bool OptionalLowering::Postcondition(public_lib::Context *ctx, const parser::Pro
     });
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

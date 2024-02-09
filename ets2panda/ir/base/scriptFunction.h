@@ -41,7 +41,7 @@ public:
         ir::ScriptFunctionFlags funcFlags = ir::ScriptFunctionFlags::NONE;
         ir::ModifierFlags flags = ir::ModifierFlags::NONE;
         bool declare = false;
-        panda::es2panda::Language lang {Language::Id::ETS};
+        ark::es2panda::Language lang {Language::Id::ETS};
     };
 
     ScriptFunction() = delete;

@@ -203,9 +203,9 @@ bool Options::Parse(int argc, const char **argv)
         "verifier-all-checks", false,
         "Run verifier checks on every phase, monotonically expanding them on every phase");
     ark::PandArg<bool> verifierFullProgram("verifier-full-program", false,
-                                             "Analyze full program, including program AST and it's dependencies");
+                                           "Analyze full program, including program AST and it's dependencies");
     ark::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
-                                                 "Generate program dump before running phases in the list");
+                                               "Generate program dump before running phases in the list");
     ark::PandArg<std::string> dumpEtsSrcBeforePhases(
         "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
     ark::PandArg<std::string> dumpEtsSrcAfterPhases(

@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "ir/astNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSNullType : public Type {
 public:
@@ -57,6 +57,6 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

@@ -18,7 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSUndefinedType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 
 void ETSUndefinedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
@@ -89,4 +89,4 @@ checker::Type *ETSNullType::GetType([[maybe_unused]] checker::ETSChecker *checke
     return TsType();
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

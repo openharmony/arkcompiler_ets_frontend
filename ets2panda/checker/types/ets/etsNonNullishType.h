@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "ir/astNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSNonNullishType : public Type {
 public:
@@ -49,6 +49,6 @@ private:
     ETSTypeParameter *const tparam_;
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif
