@@ -17,7 +17,7 @@
 
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 OptionalChain::OptionalChain(PandaGen *pg, const ir::AstNode *node) : pg_(pg), node_(node), prev_(pg->optionalChain_)
 {
     pg->optionalChain_ = this;
@@ -55,4 +55,4 @@ void OptionalChain::Check(compiler::VReg obj)
     pg_->SetLabel(node_, coercibleLabel);
     pg_->LoadAccumulator(node_, obj);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

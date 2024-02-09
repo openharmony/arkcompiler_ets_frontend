@@ -16,7 +16,7 @@
 #include "ASchecker.h"
 #include "parser/program/program.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 bool ASChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
@@ -34,4 +34,4 @@ bool ASChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, c
     return false;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

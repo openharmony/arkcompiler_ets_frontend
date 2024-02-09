@@ -18,7 +18,7 @@
 
 #include "compiler/lowering/phase.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CheckerPhase : public Phase {
     std::string_view Name() override
     {
@@ -27,6 +27,6 @@ class CheckerPhase : public Phase {
 
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

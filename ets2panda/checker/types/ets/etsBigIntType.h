@@ -18,7 +18,7 @@
 
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSBigIntType : public ETSObjectType {
 public:
     explicit ETSBigIntType(ArenaAllocator *allocator, [[maybe_unused]] ETSObjectType *super)
@@ -61,6 +61,6 @@ public:
 private:
     util::StringView value_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

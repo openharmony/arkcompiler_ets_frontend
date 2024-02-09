@@ -18,7 +18,7 @@
 
 #include "ir/base/classElement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class ClassStaticBlock : public ClassElement {
@@ -53,6 +53,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

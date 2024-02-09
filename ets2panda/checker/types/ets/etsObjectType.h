@@ -23,7 +23,7 @@
 #include "varbinder/scope.h"
 #include "ir/base/classDefinition.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 enum class ETSObjectFlags : uint32_t {
     NO_OPTS = 0U,
@@ -569,6 +569,6 @@ private:
     mutable ArenaVector<Signature *> constructSignatures_;
     mutable PropertyHolder properties_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_FUNCTION_TYPE_H */

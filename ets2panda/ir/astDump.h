@@ -25,7 +25,7 @@
 #include <sstream>
 #include <variant>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstDumper {
 public:
     class Nullish {
@@ -247,6 +247,6 @@ private:
     int32_t indent_ {};
     bool isSrcEmpty_ = false;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif  // AST_DUMP_H

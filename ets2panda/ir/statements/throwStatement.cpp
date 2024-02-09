@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ThrowStatement::TransformChildren(const NodeTransformer &cb)
 {
     argument_ = cb(argument_)->AsExpression();
@@ -65,4 +65,4 @@ checker::Type *ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *check
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

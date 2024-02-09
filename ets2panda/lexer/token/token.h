@@ -23,7 +23,7 @@
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 enum class TokenFlags : uint32_t {
     NONE = 0U,
     NEW_LINE = 1U << 0U,
@@ -143,6 +143,6 @@ private:
     util::StringView src_ {};
     char16_t c16_ {};
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif /* TOKEN_H */

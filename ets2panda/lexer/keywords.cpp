@@ -17,7 +17,7 @@
 #include "lexer/keywordsUtil.h"
 #include "parser/context/parserContext.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 
 KeywordString JSKeywords::Handle_as([[maybe_unused]] const KeywordsUtil &util, std::string_view src,
                                     TokenType tokenType)
@@ -71,4 +71,4 @@ KeywordString ASKeywords::Handle_as(const KeywordsUtil &util, std::string_view s
     return JSKeywords::Handle_as(util, src, tokenType);
 }
 
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

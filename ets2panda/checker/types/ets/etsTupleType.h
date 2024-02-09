@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 #include "checker/types/ets/etsArrayType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSTupleType : public ETSArrayType {
     using TupleSizeType = int32_t;
@@ -95,6 +95,6 @@ private:
     TupleSizeType size_ {0};
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ES2PANDA_COMPILER_CHECKER_TYPES_ETS_TUPLE_TYPE_H */

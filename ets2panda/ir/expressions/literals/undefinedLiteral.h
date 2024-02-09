@@ -18,7 +18,7 @@
 
 #include "ir/expressions/literal.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class UndefinedLiteral : public Literal {
 public:
     explicit UndefinedLiteral() : Literal(AstNodeType::UNDEFINED_LITERAL) {}
@@ -39,6 +39,6 @@ public:
         v->Accept(this);
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

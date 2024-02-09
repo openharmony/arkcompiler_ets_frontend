@@ -20,7 +20,7 @@
 #include <string>
 #include "util/ustring.h"
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 const char PATH_DELIMITER =
 #ifdef _WIN32
     '\\';
@@ -67,6 +67,6 @@ private:
     void InitializeFileName();
     void InitializeFileExtension();
 };
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif

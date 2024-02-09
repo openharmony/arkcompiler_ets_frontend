@@ -18,7 +18,7 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 Identifier *ClassElement::Id() noexcept
 {
@@ -38,4 +38,4 @@ bool ClassElement::IsPrivateElement() const noexcept
 
     return key_->IsIdentifier() && key_->AsIdentifier()->IsPrivateIdent();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -18,11 +18,11 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSIndexSignature : public TypedAstNode {
 public:
     enum class TSIndexSignatureKind { NUMBER, STRING };
@@ -83,6 +83,6 @@ private:
     TypeNode *typeAnnotation_;
     bool readonly_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif /* TS_INDEX_SIGNATURE_H */

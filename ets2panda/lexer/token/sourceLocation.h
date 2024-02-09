@@ -23,7 +23,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 class SourcePosition {
 public:
     explicit SourcePosition() noexcept = default;
@@ -111,6 +111,6 @@ public:
 private:
     std::vector<OffsetEntry> entries_;
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

@@ -21,11 +21,11 @@
 #include <iostream>
 #include <thread>
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
 
 template <class T>
-T DirName(T const &path, T const &delims = panda::os::file::File::GetPathDelim())
+T DirName(T const &path, T const &delims = ark::os::file::File::GetPathDelim())
 {
     std::size_t pos = path.find_last_of(delims);
 
@@ -85,4 +85,4 @@ void Compiler::DumpAsm(const pandasm::Program *prog)
 {
     compiler::CompilerImpl::DumpAsm(prog);
 }
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda

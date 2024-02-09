@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ArrayType : public Type {
 public:
     explicit ArrayType(Type *elementType) : Type(TypeFlag::ARRAY), element_(elementType) {}
@@ -42,6 +42,6 @@ public:
 private:
     Type *element_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_ARRAY_TYPE_H */

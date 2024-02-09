@@ -25,23 +25,23 @@
 #include <functional>
 #include "macros.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 class ETSGen;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSChecker;
 class ETSChecker;
 class Type;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
 class Scope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline constexpr char const CLONE_ALLOCATION_ERROR[] = "Unsuccessful allocation during cloning.";
 // NOLINTEND(modernize-avoid-c-arrays)
@@ -645,5 +645,5 @@ protected:
     {
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 #endif

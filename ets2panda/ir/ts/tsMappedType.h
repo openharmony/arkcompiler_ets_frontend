@@ -19,7 +19,7 @@
 #include "ir/typeNode.h"
 #include "ir/ts/tsTypeParameter.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSMappedType : public TypeNode {
 public:
     explicit TSMappedType(TSTypeParameter *typeParameter, TypeNode *typeAnnotation, MappedOption readonly,
@@ -73,6 +73,6 @@ private:
     MappedOption readonly_;
     MappedOption optional_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

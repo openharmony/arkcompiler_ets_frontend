@@ -21,13 +21,13 @@
 #include "util/arktsconfig.h"
 #include "TypedParser.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ETSPackageDeclaration;
 enum class ClassDefinitionModifiers : uint32_t;
 enum class PrimitiveType;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline constexpr char const FORMAT_SIGNATURE = '@';
@@ -117,7 +117,7 @@ private:
                                                            ArenaVector<ir::AstNode *> &globalProperties,
                                                            ir::ScriptFunction *initFunction, size_t currentPos,
                                                            bool defaultExport);
-    void ParseTokenOfNative(panda::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers);
+    void ParseTokenOfNative(ark::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers);
     void ParseTokenOfFunction(ir::ModifierFlags memberModifiers, lexer::SourcePosition startLoc,
                               ArenaVector<ir::AstNode *> &globalProperties);
 #ifdef USE_FTW
@@ -425,5 +425,5 @@ private:
     util::StringView savedSourceFilePath_ {};
 };
 
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 #endif

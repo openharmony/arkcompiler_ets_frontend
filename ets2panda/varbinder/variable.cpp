@@ -19,7 +19,7 @@
 
 #include <utility>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 LocalVariable::LocalVariable(Decl *decl, VariableFlags flags) : Variable(decl, flags)
 {
     if (decl->IsConstDecl()) {
@@ -60,4 +60,4 @@ void EnumVariable::ResetDecl(Decl *decl)
 {
     decl_ = decl;
 }
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder

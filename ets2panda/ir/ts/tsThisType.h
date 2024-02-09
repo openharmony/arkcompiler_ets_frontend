@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSThisType : public TypeNode {
 public:
     explicit TSThisType() : TypeNode(AstNodeType::TS_THIS_TYPE) {}
@@ -39,6 +39,6 @@ public:
         v->Accept(this);
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

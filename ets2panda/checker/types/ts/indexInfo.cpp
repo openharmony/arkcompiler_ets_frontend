@@ -17,7 +17,7 @@
 
 #include <utility>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 IndexInfo *IndexInfo::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     return allocator->New<IndexInfo>(type_->Instantiate(allocator, relation, globalTypes), paramName_, readonly_);
@@ -49,4 +49,4 @@ void IndexInfo::AssignmentTarget(TypeRelation *relation, IndexInfo *source)
 {
     relation->IsAssignableTo(source->GetType(), type_);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

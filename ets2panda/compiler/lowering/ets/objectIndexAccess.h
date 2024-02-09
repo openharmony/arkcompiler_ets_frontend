@@ -19,11 +19,11 @@
 
 #include "compiler/lowering/phase.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class ETSParser;
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class ObjectIndexLowering : public Phase {
 public:
@@ -42,6 +42,6 @@ private:
                                           ir::AssignmentExpression *assignmentExpression) const;
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

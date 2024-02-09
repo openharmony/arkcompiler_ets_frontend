@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSModuleBlock::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : statements_) {
@@ -65,4 +65,4 @@ checker::Type *TSModuleBlock::Check([[maybe_unused]] checker::ETSChecker *checke
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

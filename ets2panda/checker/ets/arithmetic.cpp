@@ -21,7 +21,7 @@
 #include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
 {
@@ -762,4 +762,4 @@ void ETSChecker::FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::E
     }
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

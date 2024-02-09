@@ -26,7 +26,7 @@
 #include "ir/base/property.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void DestructuringContext::Prepare(ir::TypeNode *typeAnnotation, ir::Expression *initializer,
                                    const lexer::SourcePosition &loc)
 {
@@ -699,4 +699,4 @@ void ObjectDestructuringContext::Start()
         }
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

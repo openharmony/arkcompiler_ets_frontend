@@ -27,7 +27,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsClassImplements.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 const FunctionExpression *ClassDefinition::Ctor() const
 {
     return ctor_ != nullptr ? ctor_->Value()->AsFunctionExpression() : nullptr;
@@ -206,4 +206,4 @@ checker::Type *ClassDefinition::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

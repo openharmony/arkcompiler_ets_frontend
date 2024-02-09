@@ -18,7 +18,7 @@
 
 #include "varbinder/varbinder.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class ASBinder : public VarBinder {
 public:
     explicit ASBinder(ArenaAllocator *allocator) : VarBinder(allocator) {}
@@ -41,6 +41,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

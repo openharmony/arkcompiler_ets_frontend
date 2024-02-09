@@ -20,7 +20,7 @@
 #include "compiler/core/ASTCompiler.h"
 #include "compiler/core/regAllocator.h"
 #include "compiler/core/regScope.h"
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CatchTable;
 class DynamicContext;
 
@@ -195,6 +195,6 @@ private:
     friend class FunctionRegScope;
     friend class DynamicContext;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

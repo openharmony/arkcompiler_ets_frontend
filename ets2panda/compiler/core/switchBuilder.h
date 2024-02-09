@@ -23,11 +23,11 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/checker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class SwitchStatement;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 class Label;
 
@@ -101,6 +101,6 @@ private:
     const ir::SwitchStatement *stmt_;
     std::vector<Label *> caseLabels_;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

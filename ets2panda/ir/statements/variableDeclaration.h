@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class VariableDeclarator;
 
 class VariableDeclaration : public Statement {
@@ -90,6 +90,6 @@ private:
     ArenaVector<VariableDeclarator *> declarators_;
     bool declare_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

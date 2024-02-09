@@ -22,15 +22,15 @@
 #include "util/language.h"
 #include "scriptFunctionSignature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Signature;
 
-}  // namespace panda::es2panda::checker
-namespace panda::es2panda::compiler {
+}  // namespace ark::es2panda::checker
+namespace ark::es2panda::compiler {
 class ScopesInitPhase;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
 
@@ -312,7 +312,7 @@ public:
     }
 
 private:
-    friend panda::es2panda::compiler::ScopesInitPhase;
+    friend ark::es2panda::compiler::ScopesInitPhase;
 
 private:
     Identifier *id_ {};
@@ -324,6 +324,6 @@ private:
     bool declare_;
     es2panda::Language lang_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

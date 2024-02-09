@@ -21,7 +21,7 @@
 #include "util/language.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class StringLiteral;
 
 class ETSImportDeclaration : public ImportDeclaration {
@@ -86,6 +86,6 @@ private:
     ImportSource *source_;
     util::StringView assemblerName_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

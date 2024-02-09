@@ -19,7 +19,7 @@
 #include "checker/ets/narrowingConverter.h"
 #include "checker/ets/wideningConverter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class NarrowingWideningConverter : public NarrowingConverter {
 public:
     explicit NarrowingWideningConverter(ETSChecker *checker, TypeRelation *relation, Type *target, Type *source)
@@ -32,6 +32,6 @@ public:
         WideningConverter(checker, relation, target, source);
     }
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

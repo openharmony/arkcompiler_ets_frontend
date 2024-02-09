@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_IR_EXPRESSION_DIRECT_EVAL_H
 #define ES2PANDA_IR_EXPRESSION_DIRECT_EVAL_H
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class JSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #include "ir/expressions/callExpression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class DirectEvalExpression : public CallExpression {
 public:
     explicit DirectEvalExpression(Expression *callee, ArenaVector<Expression *> &&arguments,
@@ -48,6 +48,6 @@ public:
 private:
     uint32_t parserStatus_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

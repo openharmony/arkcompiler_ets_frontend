@@ -22,16 +22,16 @@
 #include "compiler/base/literals.h"
 #include "parser/parserImpl.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class VarBinder;
 class FunctionScope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Checker;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class Literal;
 class DebugInfo;
 class Emitter;
@@ -140,6 +140,6 @@ private:
     CompilerOptions options_;
     CodeGenCb codeGenCb_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

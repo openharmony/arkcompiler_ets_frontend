@@ -18,7 +18,7 @@
 
 #include "compiler/lowering/phase.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class PromiseVoidInferencePhase : public Phase {
 public:
@@ -33,6 +33,6 @@ public:
 private:
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

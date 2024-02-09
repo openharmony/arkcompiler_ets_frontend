@@ -38,7 +38,7 @@
 #include "ir/ts/tsAsExpression.h"
 #include "type_helper.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
 {
     // Create the name for the synthetic class node
@@ -435,4 +435,4 @@ bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Progra
     return true;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

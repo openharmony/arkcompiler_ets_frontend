@@ -18,7 +18,7 @@
 #include "checker/SemanticAnalyzer.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class TSAnalyzer final : public SemanticAnalyzer {
 public:
@@ -52,6 +52,6 @@ private:
     checker::Type *InferType(checker::TSChecker *checker, bool isConst, ir::TSEnumDeclaration *st) const;
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif  // ES2PANDA_CHECKER_TSSANALYZER_H

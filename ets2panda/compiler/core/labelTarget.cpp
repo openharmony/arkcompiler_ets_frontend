@@ -17,9 +17,9 @@
 
 #include "compiler/core/codeGen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 LabelTarget::LabelTarget(CodeGen *cg)
     : LabelPair(cg->AllocLabel(), cg->AllocLabel()), breakLabel_(BREAK_LABEL), continueLabel_(CONTINUE_LABEL)
 {
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

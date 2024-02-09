@@ -29,20 +29,20 @@
 
 #include <unordered_map>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class FunctionScope;
 class Scope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class ScriptFunction;
 class Statement;
 class Expression;
 class Identifier;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class FunctionBuilder;
 class CompilerContext;
 class DynamicContext;
@@ -277,6 +277,6 @@ private:
     friend class DynamicContext;
     friend class OptionalChain;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

@@ -18,7 +18,7 @@
 
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 enum class ElementFlags : uint32_t {
     NO_OPTS = 0U,
     REQUIRED = 1U << 0U,  // T
@@ -32,6 +32,6 @@ enum class ElementFlags : uint32_t {
 };
 
 DEFINE_BITOPS(ElementFlags)
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_ELEMENT_FLAGS_H */

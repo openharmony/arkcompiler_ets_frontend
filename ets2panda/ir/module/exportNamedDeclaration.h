@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class StringLiteral;
 class ExportSpecifier;
 
@@ -95,6 +95,6 @@ private:
     AstNode *decl_ {};
     ArenaVector<ExportSpecifier *> specifiers_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

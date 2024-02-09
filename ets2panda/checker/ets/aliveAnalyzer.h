@@ -21,16 +21,16 @@
 
 #include "utils/arena_containers.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class Statement;
 class ClassDefinition;
 class MethodDefinition;
 class DoWhileStatement;
 class VariableDeclaration;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class AliveAnalyzer : public BaseAnalyzer {
 public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
@@ -83,6 +83,6 @@ private:
     ETSChecker *checker_;
     LivenessStatus status_ {LivenessStatus::ALIVE};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

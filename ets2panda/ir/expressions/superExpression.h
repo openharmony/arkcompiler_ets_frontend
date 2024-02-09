@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class SuperExpression : public Expression {
 public:
     ~SuperExpression() override = default;
@@ -47,6 +47,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

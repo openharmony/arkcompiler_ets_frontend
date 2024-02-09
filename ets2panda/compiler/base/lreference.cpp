@@ -34,7 +34,7 @@
 #include "ir/statements/variableDeclarator.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode *node, bool isDeclaration)
 {
@@ -364,4 +364,4 @@ void ETSLReference::SetValue() const
     etsg_->StoreProperty(Node(), type, baseReg_, propName);
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

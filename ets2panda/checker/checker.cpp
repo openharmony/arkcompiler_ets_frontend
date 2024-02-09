@@ -32,7 +32,7 @@
 #include <initializer_list>
 #include <memory>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 Checker::Checker()
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
       context_(&allocator_, CheckerStatus::NO_OPTS),
@@ -95,7 +95,7 @@ void Checker::Warning(const std::string_view message, const lexer::SourcePositio
 
     // NOTE: This should go to stderr but currently the test system does not handle stderr messages
     auto fileName = program_->SourceFilePath().Utf8();
-    fileName = fileName.substr(fileName.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
+    fileName = fileName.substr(fileName.find_last_of(ark::os::file::File::GetPathDelim()) + 1);
     std::cout << "Warning: " << message << " [" << fileName << ":" << loc.line << ":" << loc.col << "]" << std::endl;
 }
 
@@ -226,4 +226,4 @@ checker::SemanticAnalyzer *Checker::GetAnalyzer() const
     return analyzer_;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

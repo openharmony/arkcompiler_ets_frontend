@@ -19,7 +19,7 @@
 #include "checker/ets/typeConverter.h"
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class BoxingConverter : public TypeConverter {
 public:
     BoxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source)
@@ -53,6 +53,6 @@ public:
 
     static checker::ETSObjectType *ETSTypeFromSource(ETSChecker const *checker, Type const *source);
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

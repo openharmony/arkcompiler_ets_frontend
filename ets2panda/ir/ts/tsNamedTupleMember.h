@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSNamedTupleMember : public TypeNode {
 public:
     explicit TSNamedTupleMember(Expression *label, TypeNode *elementType, bool optional)
@@ -65,6 +65,6 @@ private:
     TypeNode *elementType_;
     bool optional_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

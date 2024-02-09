@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeLiteral : public TypeNode {
 public:
     explicit TSTypeLiteral(ArenaVector<AstNode *> &&members)
@@ -49,6 +49,6 @@ public:
 private:
     ArenaVector<AstNode *> members_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

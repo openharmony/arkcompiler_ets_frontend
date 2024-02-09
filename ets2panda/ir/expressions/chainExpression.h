@@ -19,11 +19,11 @@
 #include "ir/expression.h"
 #include "ir/irnode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ChainExpression : public Expression {
 public:
     ChainExpression() = delete;
@@ -66,6 +66,6 @@ public:
 private:
     Expression *expression_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

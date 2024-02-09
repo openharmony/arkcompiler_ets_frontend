@@ -15,7 +15,7 @@
 
 #include "anyType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void AnyType::ToString(std::stringstream &ss) const
 {
     ss << "any";
@@ -49,4 +49,4 @@ Type *AnyType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_u
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

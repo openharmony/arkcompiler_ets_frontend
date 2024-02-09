@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class SwitchCaseStatement : public Statement {
@@ -70,6 +70,6 @@ private:
     Expression *test_;
     ArenaVector<Statement *> consequent_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

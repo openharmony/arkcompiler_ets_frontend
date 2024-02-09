@@ -37,30 +37,30 @@ public:
     {
         constexpr auto COMPILER_SIZE = 268435456;
 
-        panda::mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
-        panda::PoolManager::Initialize(panda::PoolType::MMAP);
+        ark::mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
+        ark::PoolManager::Initialize(ark::PoolType::MMAP);
     }
     ~ASTDumperTest() override
     {
-        panda::PoolManager::Finalize();
-        panda::mem::MemConfig::Finalize();
+        ark::PoolManager::Finalize();
+        ark::mem::MemConfig::Finalize();
     };
 
-    static panda::pandasm::Program *GetProgram(int argc, const char **argv, std::string_view fileName,
-                                               std::string_view src)
+    static ark::pandasm::Program *GetProgram(int argc, const char **argv, std::string_view fileName,
+                                             std::string_view src)
     {
-        auto options = std::make_unique<panda::es2panda::util::Options>();
+        auto options = std::make_unique<ark::es2panda::util::Options>();
         if (!options->Parse(argc, argv)) {
             std::cerr << options->ErrorMsg() << std::endl;
             return nullptr;
         }
 
-        panda::Logger::ComponentMask mask {};
-        mask.set(panda::Logger::Component::ES2PANDA);
-        panda::Logger::InitializeStdLogging(panda::Logger::LevelFromString(options->LogLevel()), mask);
+        ark::Logger::ComponentMask mask {};
+        mask.set(ark::Logger::Component::ES2PANDA);
+        ark::Logger::InitializeStdLogging(ark::Logger::LevelFromString(options->LogLevel()), mask);
 
-        panda::es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-        panda::es2panda::SourceFile input(fileName, src, options->ParseModule());
+        ark::es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
+        ark::es2panda::SourceFile input(fileName, src, options->ParseModule());
 
         return compiler.Compile(input, options->CompilerOptions());
     }
@@ -86,7 +86,7 @@ TEST_F(ASTDumperTest, DumpJsonSimple)
     // NOLINTNEXTLINE(modernize-avoid-c-arrays)
     const char *argv = "../../../bin/es2panda";
 
-    auto program = std::unique_ptr<panda::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
+    auto program = std::unique_ptr<ark::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
 
     ASSERT_NE(program, nullptr);
 
@@ -112,7 +112,7 @@ TEST_F(ASTDumperTest, DumpJsonUTF16Char)
     // NOLINTNEXTLINE(modernize-avoid-c-arrays)
     const char *argv = "../../../bin/es2panda";
 
-    auto program = std::unique_ptr<panda::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
+    auto program = std::unique_ptr<ark::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
 
     ASSERT_NE(program, nullptr);
 
@@ -139,7 +139,7 @@ TEST_F(ASTDumperTest, DumpEtsSrcSimple)
         "--dump-ets-src-before-phases=\"plugins-after-parse:lambda-lowering:checker:plugins-after-check:generate-ts-"
         "declarations:op-assignment:tuple-lowering:union-property-access:plugins-after-lowering\"";
 
-    auto program = std::unique_ptr<panda::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
+    auto program = std::unique_ptr<ark::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
 
     ASSERT_NE(program, nullptr);
 

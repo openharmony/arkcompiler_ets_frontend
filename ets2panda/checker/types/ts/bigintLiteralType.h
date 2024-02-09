@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class BigintLiteralType : public Type {
 public:
     BigintLiteralType(util::StringView value, bool negative)
@@ -47,6 +47,6 @@ private:
     util::StringView value_;
     bool negative_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_BIGINT_LITERAL_TYPE_H */

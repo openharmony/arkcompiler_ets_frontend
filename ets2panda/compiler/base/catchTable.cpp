@@ -17,7 +17,7 @@
 
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 TryLabelSet::TryLabelSet(CodeGen *cg)
     : try_(cg->AllocLabel(), cg->AllocLabel()), catch_(cg->AllocLabel(), cg->AllocLabel())
 {
@@ -27,4 +27,4 @@ TryLabelSet::TryLabelSet(CodeGen *cg, LabelPair tryLabelPair)
     : try_(tryLabelPair), catch_(cg->AllocLabel(), cg->AllocLabel())
 {
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

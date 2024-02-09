@@ -42,7 +42,7 @@
 #include "util/ustring.h"
 #include "generated/signatures.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 VariableScope *Scope::EnclosingVariableScope()
 {
     Scope *iter = this;
@@ -846,4 +846,4 @@ Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
 
     return AddLocal(allocator, currentVariable, newDecl, extension);
 }
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder

@@ -18,11 +18,11 @@
 
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
-namespace panda::es2panda::ir {
+}  // namespace ark::es2panda::checker
+namespace ark::es2panda::ir {
 class UpdateExpression : public Expression {
 public:
     UpdateExpression() = delete;
@@ -84,6 +84,6 @@ private:
     lexer::TokenType operator_;
     bool prefix_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

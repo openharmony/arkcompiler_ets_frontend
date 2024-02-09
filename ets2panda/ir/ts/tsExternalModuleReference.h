@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSExternalModuleReference : public Expression {
 public:
     explicit TSExternalModuleReference(Expression *expr)
@@ -48,6 +48,6 @@ public:
 private:
     Expression *expr_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

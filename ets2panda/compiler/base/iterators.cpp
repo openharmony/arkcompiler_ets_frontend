@@ -19,7 +19,7 @@
 #include "compiler/base/catchTable.h"
 #include "compiler/function/functionBuilder.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 // Iterator
 
 Iterator::Iterator(PandaGen *pg, const ir::AstNode *node, IteratorType type)
@@ -212,4 +212,4 @@ void DestructuringRestIterator::OnIterDone([[maybe_unused]] Label *doneTarget) c
 {
     pg_->Branch(node_, doneTarget);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

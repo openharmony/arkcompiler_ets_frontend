@@ -26,7 +26,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsNamedTupleMember.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTupleType::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : elementTypes_) {
@@ -141,4 +141,4 @@ checker::Type *TSTupleType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

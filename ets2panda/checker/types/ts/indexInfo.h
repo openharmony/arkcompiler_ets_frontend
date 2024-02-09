@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class IndexInfo {
 public:
     IndexInfo(Type *type, util::StringView paramName, bool readonly)
@@ -76,6 +76,6 @@ private:
     bool readonly_;
     const lexer::SourcePosition pos_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_INDEX_INFO_H */

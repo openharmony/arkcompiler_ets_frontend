@@ -21,12 +21,12 @@
 #include "lexer/token/sourceLocation.h"
 #include "macros.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class Program;
 enum class ScriptKind;
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class BlockStatement;
 class CatchClause;
@@ -41,9 +41,9 @@ class TSFunctionType;
 class ThisExpression;
 class MemberExpression;
 class ClassStaticBlock;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class ETSBinder;
 
 class VarBinder {
@@ -376,6 +376,6 @@ std::tuple<T *, varbinder::Variable *> VarBinder::NewVarDecl(const lexer::Source
 
     ThrowRedeclaration(pos, decl->Name());
 }
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

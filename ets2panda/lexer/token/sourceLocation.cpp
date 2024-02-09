@@ -19,7 +19,7 @@
 
 #include <cstdint>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 void OffsetEntry::AddCol(size_t offset)
 {
     size_t diff = offset - offset_;
@@ -99,4 +99,4 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
 
     return SourceLocation(line + 1, col + 1);
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

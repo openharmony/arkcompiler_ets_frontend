@@ -18,7 +18,7 @@
 
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 enum class TypeFacts : uint32_t {
     NONE = 0U,
     TYPEOF_EQ_STRING = 1U << 0U,        // typeof x === "string"
@@ -116,6 +116,6 @@ enum class TypeFacts : uint32_t {
 };
 
 DEFINE_BITOPS(TypeFacts)
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_TYPE_FACTS_H */

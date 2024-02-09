@@ -19,7 +19,7 @@
 #include "checker/ets/typeConverter.h"
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class UnboxingConverter : public TypeConverter {
 public:
@@ -51,6 +51,6 @@ public:
 
     checker::Type *GlobalTypeFromSource(ETSObjectFlags type);
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

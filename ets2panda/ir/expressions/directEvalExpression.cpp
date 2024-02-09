@@ -21,7 +21,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void DirectEvalExpression::Compile(compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);
@@ -42,4 +42,4 @@ checker::Type *DirectEvalExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

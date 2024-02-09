@@ -18,11 +18,11 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSIndexedAccessType : public TypeNode {
 public:
     explicit TSIndexedAccessType(TypeNode *objectType, TypeNode *indexType)
@@ -61,6 +61,6 @@ private:
     TypeNode *objectType_;
     TypeNode *indexType_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

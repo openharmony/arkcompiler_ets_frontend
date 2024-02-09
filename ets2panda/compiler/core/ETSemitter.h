@@ -18,28 +18,28 @@
 
 #include "emitter.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class RecordTable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassDefinition;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSObjectType;
 class ETSArrayType;
 class Signature;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::pandasm {
+namespace ark::pandasm {
 struct Field;
 struct Record;
 class ItemMetadata;
 class AnnotationData;
-}  // namespace panda::pandasm
+}  // namespace ark::pandasm
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class ETSFunctionEmitter : public FunctionEmitter {
 public:
@@ -90,6 +90,6 @@ private:
     pandasm::AnnotationData GenAnnotationAsync(ir::ScriptFunction *scriptFunc);
     ir::MethodDefinition *FindAsyncImpl(ir::ScriptFunction *asyncFunc);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

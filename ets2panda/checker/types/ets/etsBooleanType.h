@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSBooleanType : public Type {
 public:
     using UType = bool;
@@ -59,6 +59,6 @@ public:
 private:
     UType value_ {false};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

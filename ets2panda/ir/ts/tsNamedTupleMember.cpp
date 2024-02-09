@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSNamedTupleMember::TransformChildren(const NodeTransformer &cb)
 {
     label_ = cb(label_)->AsExpression();
@@ -67,4 +67,4 @@ checker::Type *TSNamedTupleMember::Check([[maybe_unused]] checker::ETSChecker *c
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void UndefinedLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void UndefinedLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -68,4 +68,4 @@ UndefinedLiteral *UndefinedLiteral::Clone(ArenaAllocator *allocator, AstNode *pa
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

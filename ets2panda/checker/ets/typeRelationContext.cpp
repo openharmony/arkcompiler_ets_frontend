@@ -22,7 +22,7 @@
 #include "ir/expressions/arrayExpression.h"
 #include "ir/ts/tsTypeParameter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,
                                                               ETSArrayType *target)
 {
@@ -175,4 +175,4 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
     type->GetInstantiationMap().try_emplace(hash, result_);
     result_->AddTypeFlag(TypeFlag::GENERIC);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

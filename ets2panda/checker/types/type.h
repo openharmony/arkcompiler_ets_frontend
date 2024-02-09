@@ -25,11 +25,11 @@
 #include <sstream>
 #include <variant>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ObjectDescriptor;
 class GlobalTypesHolder;
 class ETSDynamicType;
@@ -264,6 +264,6 @@ protected:
     uint64_t id_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_TYPE_H */

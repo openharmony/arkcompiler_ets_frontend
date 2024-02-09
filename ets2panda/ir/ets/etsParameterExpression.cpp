@@ -26,7 +26,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/base/spreadElement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const identOrSpread, Expression *const initializer)
     : Expression(AstNodeType::ETS_PARAMETER_EXPRESSION), initializer_(initializer)
@@ -211,4 +211,4 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

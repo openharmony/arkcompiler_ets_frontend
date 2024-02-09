@@ -20,7 +20,7 @@
 #include "assembly-program.h"
 #include "macros.h"
 
-namespace panda::es2panda::debuginfo {
+namespace ark::es2panda::debuginfo {
 
 using Value = std::variant<std::string, size_t, int32_t>;
 
@@ -48,6 +48,6 @@ private:
     int32_t indent_ {0};
 };
 
-}  // namespace panda::es2panda::debuginfo
+}  // namespace ark::es2panda::debuginfo
 
 #endif  // UTIL_DEBUGINFO_DUMPER_H

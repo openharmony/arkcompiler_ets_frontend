@@ -20,7 +20,7 @@
 #include "checker/ets/unboxingConverter.h"
 #include "checker/ets/wideningConverter.h"
 
-namespace panda::es2panda::checker::conversion {
+namespace ark::es2panda::checker::conversion {
 void Identity(TypeRelation *const relation, Type *const source, Type *const target)
 {
     relation->IsIdenticalTo(source, target);
@@ -351,4 +351,4 @@ void Forbidden(TypeRelation *const relation)
     relation->Result(false);
 }
 
-}  // namespace panda::es2panda::checker::conversion
+}  // namespace ark::es2panda::checker::conversion

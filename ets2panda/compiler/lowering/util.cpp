@@ -19,7 +19,7 @@
 
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast)
 {
@@ -49,4 +49,4 @@ util::UString GenName(ArenaAllocator *const allocator)
     return util::UString {GENSYM_CORE + std::to_string(++gensymCounter), allocator};
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

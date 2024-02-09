@@ -24,7 +24,7 @@
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/importDeclaration.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 void CompileImports(PandaGen *pg, varbinder::ModuleScope *scope)
 {
     for (const auto &[importDecl, decls] : scope->Imports()) {
@@ -83,4 +83,4 @@ void ModuleContext::Compile(PandaGen *pg, varbinder::ModuleScope *scope)
     CompileImports(pg, scope);
     CompileExports(pg, scope);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

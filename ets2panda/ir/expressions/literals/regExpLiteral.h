@@ -20,7 +20,7 @@
 #include "util/ustring.h"
 #include "lexer/regexp/regexp.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class RegExpLiteral : public Literal {
 public:
     RegExpLiteral() = delete;
@@ -66,6 +66,6 @@ private:
     lexer::RegExpFlags flags_;
     util::StringView flagsStr_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

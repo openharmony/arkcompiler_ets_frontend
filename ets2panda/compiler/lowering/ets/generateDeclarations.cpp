@@ -19,7 +19,7 @@
 #include "compiler/core/compilerContext.h"
 #include "util/declgenEts2Ts.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
@@ -28,4 +28,4 @@ bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Prog
             util::GenerateTsDeclarations(checker->AsETSChecker(), program, ctx->compilerContext->Options()->tsDeclOut));
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

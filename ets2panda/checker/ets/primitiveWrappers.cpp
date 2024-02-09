@@ -15,5 +15,5 @@
 
 #include "primitiveWrappers.h"
 
-namespace panda::es2panda::checker {
-}  // namespace panda::es2panda::checker
+namespace ark::es2panda::checker {
+}  // namespace ark::es2panda::checker

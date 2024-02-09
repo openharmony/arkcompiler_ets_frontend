@@ -18,7 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSBooleanType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsETSBooleanType()) {
@@ -72,4 +72,4 @@ Type *ETSBooleanType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -26,11 +26,11 @@
 #include <memory>
 #include <unordered_set>
 
-namespace panda::pandasm {
+namespace ark::pandasm {
 struct Program;
-}  // namespace panda::pandasm
+}  // namespace ark::pandasm
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 namespace parser {
 class ParserImpl;
 }  // namespace parser
@@ -230,6 +230,6 @@ private:
     Error error_;
     ScriptExtension ext_;
 };
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda
 
 #endif

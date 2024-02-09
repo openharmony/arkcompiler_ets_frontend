@@ -19,7 +19,7 @@
 #include "varbinder/scope.h"
 #include "ir/irnode.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class VirtualLoadVar {
@@ -36,6 +36,6 @@ public:
     static void Expand(PandaGen *pg, const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
                        bool isDecl);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

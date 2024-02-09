@@ -15,5 +15,5 @@
 
 #include "etsImportSource.h"
 
-namespace panda::es2panda::ir {
-}  // namespace panda::es2panda::ir
+namespace ark::es2panda::ir {
+}  // namespace ark::es2panda::ir

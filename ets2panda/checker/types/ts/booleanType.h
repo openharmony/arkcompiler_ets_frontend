@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class BooleanType : public Type {
 public:
     BooleanType() : Type(TypeFlag::BOOLEAN) {}
@@ -29,6 +29,6 @@ public:
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_BOOLEAN_TYPE_H */

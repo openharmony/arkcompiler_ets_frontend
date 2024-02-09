@@ -115,7 +115,7 @@
 #include "ir/ts/tsImportEqualsDeclaration.h"
 #include "ir/ts/tsExternalModuleReference.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 std::unique_ptr<lexer::Lexer> TSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
@@ -2947,4 +2947,4 @@ ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsin
     return importDeclaration;
 }
 
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

@@ -19,7 +19,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSTuple : public TypeNode {
 public:
@@ -90,6 +90,6 @@ private:
     TupleSizeType size_ {0};
 };
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif /* ES2PANDA_IR_ETS_TUPLE_H */

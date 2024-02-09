@@ -59,7 +59,7 @@
 #include "ir/base/tsSignatureDeclaration.h"
 #include "ir/base/tsMethodSignature.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 void VarBinder::InitTopScope()
 {
     if (program_->Kind() == parser::ScriptKind::MODULE) {
@@ -711,4 +711,4 @@ void VarBinder::AddMandatoryParams()
         LookUpMandatoryReferences(funcScope, lexicalFunctionObject);
     }
 }
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder

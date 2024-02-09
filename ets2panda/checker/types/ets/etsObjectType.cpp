@@ -24,7 +24,7 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 void ETSObjectType::Iterate(const PropertyTraverser &cb) const
 {
@@ -950,4 +950,4 @@ void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringVie
     ss << compiler::Signatures::MANGLE_SEPARATOR;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

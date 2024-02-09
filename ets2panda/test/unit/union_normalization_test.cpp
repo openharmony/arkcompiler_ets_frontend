@@ -32,7 +32,7 @@
 #include "util/generateBin.h"
 #include "varbinder/ETSBinder.h"
 
-namespace panda::es2panda {
+namespace ark::es2panda {
 
 class UnionNormalizationTest : public testing::Test {
 public:
@@ -82,15 +82,15 @@ public:
     void InitializeChecker(const char **argv, std::string_view fileName, std::string_view src,
                            checker::ETSChecker *checker, parser::Program *program)
     {
-        auto options = std::make_unique<panda::es2panda::util::Options>();
+        auto options = std::make_unique<ark::es2panda::util::Options>();
         if (!options->Parse(1, argv)) {
             std::cerr << options->ErrorMsg() << std::endl;
             return;
         }
 
-        panda::Logger::ComponentMask mask {};
-        mask.set(panda::Logger::Component::ES2PANDA);
-        panda::Logger::InitializeStdLogging(panda::Logger::LevelFromString(options->LogLevel()), mask);
+        ark::Logger::ComponentMask mask {};
+        mask.set(ark::Logger::Component::ES2PANDA);
+        ark::Logger::InitializeStdLogging(ark::Logger::LevelFromString(options->LogLevel()), mask);
 
         Compiler compiler(options->Extension(), options->ThreadCount());
         SourceFile input(fileName, src, options->ParseModule());
@@ -502,4 +502,4 @@ TEST_F(UnionNormalizationTest, UnionWithNever)
     ASSERT_EQ(normalizedType, checker.GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
 }
 
-}  // namespace panda::es2panda
+}  // namespace ark::es2panda

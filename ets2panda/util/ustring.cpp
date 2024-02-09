@@ -17,7 +17,7 @@
 
 #include <iterator>
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 std::string StringView::Mutf8() const noexcept
 {
@@ -79,12 +79,12 @@ void StringView::Iterator::SkipCp()
         return;
     }
 }
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 // NOLINTNEXTLINE(cert-dcl58-cpp)
 namespace std {
 
-ostream &operator<<(ostream &os, const panda::es2panda::util::StringView &us)
+ostream &operator<<(ostream &os, const ark::es2panda::util::StringView &us)
 {
     os << us.Utf8();
     return os;

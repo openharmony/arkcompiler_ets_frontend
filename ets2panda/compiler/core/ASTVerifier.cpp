@@ -48,7 +48,7 @@
 
 constexpr auto RECURSIVE_SUFFIX = "ForAll";
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 static bool IsNumericType(const ir::AstNode *ast)
 {
@@ -777,4 +777,4 @@ std::tuple<ASTVerifier::Errors, ASTVerifier::Errors> ASTVerifier::Verify(
     return std::make_tuple(warningCtx.GetErrors(), assertCtx.GetErrors());
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

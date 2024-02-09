@@ -19,7 +19,7 @@
 #include "ir/statement.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class StringLiteral;
 
 class ImportDeclaration : public Statement {
@@ -62,6 +62,6 @@ private:
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

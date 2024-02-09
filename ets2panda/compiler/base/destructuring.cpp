@@ -27,7 +27,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static void GenRestElement(PandaGen *pg, const ir::SpreadElement *restElement,
                            const DestructuringIterator &destIterator, bool isDeclaration)
 {
@@ -282,4 +282,4 @@ void Destructuring::Compile(PandaGen *pg, const ir::Expression *pattern)
 
     pg->LoadAccumulator(pattern, rhs);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

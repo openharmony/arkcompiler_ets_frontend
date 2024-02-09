@@ -76,7 +76,7 @@
 #include "ir/ts/tsClassImplements.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 std::unique_ptr<lexer::Lexer> ASParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
@@ -1723,4 +1723,4 @@ void ASParser::ThrowIllegalContinueError()
     ThrowSyntaxError("A 'continue' statement can only be used within an enclosing iteration statement");
 }
 
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

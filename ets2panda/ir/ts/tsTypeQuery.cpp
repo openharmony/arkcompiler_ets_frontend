@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeQuery::TransformChildren(const NodeTransformer &cb)
 {
     exprName_ = cb(exprName_)->AsExpression();
@@ -67,4 +67,4 @@ checker::Type *TSTypeQuery::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

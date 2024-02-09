@@ -18,7 +18,7 @@
 
 #include "compiler/lowering/phase.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class UnionLowering : public Phase {
 public:
@@ -31,6 +31,6 @@ public:
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

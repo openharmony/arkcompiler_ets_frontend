@@ -27,7 +27,7 @@
 #include "compiler/core/ASTVerifier.h"
 #include "parser/ETSparser.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
                                                            ir::AssignmentExpression *assignmentExpression) const
 {
@@ -131,4 +131,4 @@ bool ObjectIndexLowering::Postcondition(public_lib::Context *ctx, const parser::
     });
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

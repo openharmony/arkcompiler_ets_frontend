@@ -19,15 +19,15 @@
 #include "varbinder/scope.h"
 #include "ir/irnode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSObjectType;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 enum class ReferenceKind {
     MEMBER,
     PRIVATE,
@@ -152,6 +152,6 @@ private:
     VReg baseReg_ {};
     VReg propReg_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

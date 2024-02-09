@@ -24,7 +24,7 @@
 #include "checker/ETSchecker.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class ETSGen final : public CodeGen {
 public:
@@ -1224,6 +1224,6 @@ void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::T
     }
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

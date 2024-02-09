@@ -19,7 +19,7 @@
 #include "ir/expression.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TemplateElement : public Expression {
 public:
     ~TemplateElement() override = default;
@@ -65,6 +65,6 @@ private:
     util::StringView raw_ {};
     util::StringView cooked_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

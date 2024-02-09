@@ -24,7 +24,7 @@
 #include <sstream>
 #include <variant>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class SrcDumper {
 public:
@@ -49,6 +49,6 @@ private:
     std::stringstream ss_;
     std::string indent_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif  // ES2PANDA_IR_SRCDUMP_H

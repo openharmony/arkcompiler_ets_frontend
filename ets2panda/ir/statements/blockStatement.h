@@ -18,11 +18,11 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BlockStatement : public Statement {
 public:
     explicit BlockStatement(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList)
@@ -93,6 +93,6 @@ private:
     ArenaVector<Statement *> statements_;
     ArenaUnorderedMap<AstNode *, BlockStatement *> trailingBlocks_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -31,7 +31,7 @@
 #include "utils/json_builder.h"
 #include "varbinder/variable.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 /*
  * ASTVerifier used for checking various invariants that should hold during AST transformation in lowerings
@@ -245,6 +245,6 @@ private:
     ASTVerifier::InvariantSet accumulatedChecks_ {};
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif  // ES2PANDA_COMPILER_CORE_ASTVERIFIER_H

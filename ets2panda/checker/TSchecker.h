@@ -29,7 +29,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class VarBinder;
 class Decl;
 class EnumVariable;
@@ -37,9 +37,9 @@ class FunctionDecl;
 class LocalVariable;
 class Scope;
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class SpreadElement;
 class AssignmentExpression;
@@ -101,9 +101,9 @@ class ChainExpression;
 class VariableDeclarator;
 
 enum class AstNodeType;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class TSChecker : public Checker {
 public:
@@ -368,6 +368,6 @@ private:
     StringLiteralPool bigintLiteralMap_;
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* CHECKER_H */

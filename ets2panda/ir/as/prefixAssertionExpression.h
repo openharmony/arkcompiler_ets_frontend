@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class PrefixAssertionExpression : public Expression {
 public:
     explicit PrefixAssertionExpression(Expression *expr, TypeNode *type)
@@ -54,6 +54,6 @@ private:
     Expression *expr_;
     TypeNode *type_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

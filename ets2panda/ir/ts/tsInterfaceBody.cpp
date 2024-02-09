@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSInterfaceBody::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : body_) {
@@ -67,4 +67,4 @@ checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

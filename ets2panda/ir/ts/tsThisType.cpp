@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSThisType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TSThisType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -64,4 +64,4 @@ checker::Type *TSThisType::GetType([[maybe_unused]] checker::ETSChecker *checker
 {
     return checker->Context().ContainingClass();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

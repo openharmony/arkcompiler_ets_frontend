@@ -18,7 +18,7 @@
 
 #include "lexer/lexer.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 class TSLexer final : public Lexer {
 public:
     explicit TSLexer(const parser::ParserContext *parserContext) : Lexer(parserContext, false)
@@ -32,6 +32,6 @@ public:
     // NOLINTNEXTLINE(google-default-arguments)
     void NextToken(NextTokenFlags flags = NextTokenFlags::NONE) override;
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

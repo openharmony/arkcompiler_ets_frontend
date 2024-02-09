@@ -23,7 +23,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSImportType::TransformChildren(const NodeTransformer &cb)
 {
     param_ = cb(param_)->AsExpression();
@@ -88,4 +88,4 @@ checker::Type *TSImportType::Check([[maybe_unused]] checker::ETSChecker *checker
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

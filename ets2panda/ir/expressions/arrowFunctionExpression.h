@@ -18,11 +18,11 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ScriptFunction;
 
 class ArrowFunctionExpression : public Expression {
@@ -108,6 +108,6 @@ private:
     ir::ClassDefinition *resolvedLambda_ {nullptr};
     bool propagateThis_ {false};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

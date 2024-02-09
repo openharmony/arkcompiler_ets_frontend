@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void EmptyStatement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void EmptyStatement::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -54,4 +54,4 @@ checker::Type *EmptyStatement::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

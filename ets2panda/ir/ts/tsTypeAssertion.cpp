@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeAssertion::TransformChildren(const NodeTransformer &cb)
 {
     SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
@@ -64,4 +64,4 @@ checker::Type *TSTypeAssertion::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

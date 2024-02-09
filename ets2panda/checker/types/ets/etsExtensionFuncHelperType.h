@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSExtensionFuncHelperType : public Type {
 public:
     ETSExtensionFuncHelperType(ETSFunctionType *classMethodType, ETSFunctionType *extensionFunctionType)
@@ -45,6 +45,6 @@ private:
     ETSFunctionType *classMethodType_ {};
     ETSFunctionType *extensionFunctionType_ {};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

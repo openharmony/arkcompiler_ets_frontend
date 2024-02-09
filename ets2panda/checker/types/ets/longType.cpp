@@ -18,7 +18,7 @@
 #include "checker/ets/conversion.h"
 #include "checker/ets/narrowingWideningConverter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void LongType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsLongType()) {
@@ -100,4 +100,4 @@ Type *LongType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -20,7 +20,7 @@
 #include "checker/types/signature.h"
 #include "checker/checker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 bool ObjectType::EachSignatureRelatedToSomeSignature(TypeRelation *relation,
                                                      const ArenaVector<Signature *> &sourceSignatures,
                                                      const ArenaVector<Signature *> &targetSignatures)
@@ -254,4 +254,4 @@ void ObjectType::AssignmentTarget(TypeRelation *relation, Type *source)
         }
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

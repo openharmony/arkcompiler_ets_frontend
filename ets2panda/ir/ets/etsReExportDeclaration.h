@@ -21,7 +21,7 @@
 #include "ir/module/importDeclaration.h"
 #include "varbinder/varbinder.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSReExportDeclaration {
 public:
@@ -60,6 +60,6 @@ private:
     ArenaVector<util::StringView> userPaths_;
     util::StringView programPath_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

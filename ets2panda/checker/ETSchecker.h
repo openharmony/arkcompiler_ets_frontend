@@ -42,7 +42,7 @@
 #include <unordered_set>
 #include <type_traits>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class VarBinder;
 class Decl;
 class EnumVariable;
@@ -53,9 +53,9 @@ class Variable;
 class ETSBinder;
 class RecordTable;
 class FunctionParamScope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 using ComputedAbstracts =
     ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, std::unordered_set<ETSObjectType *>>>;
@@ -540,7 +540,7 @@ public:
     ETSObjectType *GetOriginalBaseType(Type *object);
     Type *GetTypeFromTypeAnnotation(ir::TypeNode *typeAnnotation);
     void AddUndefinedParamsForDefaultParams(const Signature *signature,
-                                            ArenaVector<panda::es2panda::ir::Expression *> &arguments,
+                                            ArenaVector<ark::es2panda::ir::Expression *> &arguments,
                                             ETSChecker *checker);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotationType);
     bool ExtensionETSFunctionType(checker::Type *type);
@@ -644,7 +644,7 @@ private:
 
     template <bool IS_STATIC>
     ir::MethodDefinition *CreateClassMethod(varbinder::ClassScope *classScope, std::string_view methodName,
-                                            panda::es2panda::ir::ModifierFlags modifierFlags,
+                                            ark::es2panda::ir::ModifierFlags modifierFlags,
                                             const MethodBuilder &builder);
 
     template <typename T>
@@ -716,6 +716,6 @@ private:
     std::recursive_mutex mtx_;
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* CHECKER_H */

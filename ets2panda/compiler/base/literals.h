@@ -21,20 +21,20 @@
 
 #include <variant>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Literal;
 class TaggedTemplateExpression;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSChecker;
 class Type;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 constexpr auto INVALID_LITERAL_BUFFER_ID = std::numeric_limits<uint32_t>::max();
 
-// must be kept in sync with panda::panda_file::LiteralTag
+// must be kept in sync with ark::panda_file::LiteralTag
 enum class LiteralTag {
     INVALID,
     TAGVALUE,
@@ -141,6 +141,6 @@ public:
 
     static void GetTemplateObject(PandaGen *pg, const ir::TaggedTemplateExpression *lit);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

@@ -19,19 +19,19 @@
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 class ETSGen;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSChecker;
 class Type;
 class ETSAnalyzer;
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class UnaryExpression : public Expression {
 public:
     UnaryExpression() = delete;
@@ -79,6 +79,6 @@ private:
     Expression *argument_;
     lexer::TokenType operator_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

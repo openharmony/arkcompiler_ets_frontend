@@ -19,7 +19,7 @@
 #include "checker/ets/typeConverter.h"
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class WideningConverter : public TypeConverter {
 public:
@@ -198,6 +198,6 @@ private:
         }
     }
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

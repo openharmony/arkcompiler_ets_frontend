@@ -19,7 +19,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSTypeParameter::ToString(std::stringstream &ss) const
 {
     ss << declNode_->Name()->Name();
@@ -169,4 +169,4 @@ ETSTypeParameter *ETSTypeParameter::GetOriginal() const
     return GetDeclNode()->Name()->Variable()->TsType()->AsETSTypeParameter();
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

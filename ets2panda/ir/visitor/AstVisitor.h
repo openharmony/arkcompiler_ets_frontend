@@ -21,7 +21,7 @@
 
 #include <tuple>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_CLASSES(nodeType, className) class className;
 
@@ -59,6 +59,6 @@ public:
 #undef DECLARE_CLASSES
 };
 }  // namespace visitor
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

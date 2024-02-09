@@ -22,7 +22,7 @@
 #include "compiler/base/iterators.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 FunctionBuilder::FunctionBuilder(PandaGen *pg, CatchTable *catchTable)
     : pg_(pg), catchTable_(catchTable), funcObj_(catchTable != nullptr ? pg_->AllocReg() : VReg(VReg::REG_START))
 {
@@ -307,4 +307,4 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
     // a. Return ? IteratorValue(innerResult).
     iterator.Value();
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -18,7 +18,7 @@
 
 #include "varbinder/varbinder.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class TypedBinder : public VarBinder {
 public:
     explicit TypedBinder(ArenaAllocator *allocator) : VarBinder(allocator) {}
@@ -31,6 +31,6 @@ protected:
     void HandleCustomNodes(ir::AstNode *childNode) override;
     void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *typeNode) override;
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

@@ -20,11 +20,11 @@
 #include "compiler/core/regSpiller.h"
 #include "macros.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CodeGen;
 
 class AllocatorBase {
@@ -129,6 +129,6 @@ public:
 private:
     void Run(IRNode *ins, VReg rangeStart, size_t argCount);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

@@ -19,11 +19,11 @@
 #include "macros.h"
 #include "ir/irnode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ScriptFunction;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 class CatchTable;
 enum class IteratorType;
@@ -86,6 +86,6 @@ protected:
 private:
     void ResumeGenerator(const ir::AstNode *node, VReg completionType, VReg completionValue) const;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

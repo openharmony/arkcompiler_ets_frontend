@@ -19,7 +19,7 @@
 #include "checker/ets/conversion.h"
 #include "ir/ets/etsTuple.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSTupleType::ToString(std::stringstream &ss) const
 {
     ss << "[";
@@ -211,4 +211,4 @@ Type *ETSTupleType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[ma
                                         ElementType()->Instantiate(allocator, relation, globalTypes), GetSpreadType());
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

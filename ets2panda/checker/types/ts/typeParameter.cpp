@@ -15,7 +15,7 @@
 
 #include "typeParameter.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void TypeParameter::ToString([[maybe_unused]] std::stringstream &ss) const
 {
     UNREACHABLE();
@@ -43,4 +43,4 @@ Type *TypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[m
     UNREACHABLE();
     return nullptr;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

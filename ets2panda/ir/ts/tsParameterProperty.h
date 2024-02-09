@@ -19,7 +19,7 @@
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 enum class AccessibilityOption { NO_OPTS, PUBLIC, PRIVATE, PROTECTED };
 
 class TSParameterProperty : public Expression {
@@ -81,6 +81,6 @@ private:
     bool static_;
     bool export_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class BooleanLiteralType : public Type {
 public:
     explicit BooleanLiteralType(bool value) : Type(TypeFlag::BOOLEAN_LITERAL), value_(value) {}
@@ -38,6 +38,6 @@ public:
 private:
     bool value_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_BOOLEAN_LITERAL_TYPE_H */

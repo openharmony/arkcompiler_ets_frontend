@@ -15,7 +15,7 @@
 
 #include "voidType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void VoidType::ToString(std::stringstream &ss) const
 {
     ss << "void";
@@ -40,4 +40,4 @@ Type *VoidType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

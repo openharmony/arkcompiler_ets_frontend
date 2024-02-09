@@ -20,7 +20,7 @@
 #include <sstream>
 #include <string>
 
-namespace panda::es2panda::debuginfo {
+namespace ark::es2panda::debuginfo {
 
 DebugInfoDumper::DebugInfoDumper(const pandasm::Program *prog) : prog_(prog) {}
 
@@ -230,4 +230,4 @@ void DebugInfoDumper::Indent()
     }
 }
 
-}  // namespace panda::es2panda::debuginfo
+}  // namespace ark::es2panda::debuginfo

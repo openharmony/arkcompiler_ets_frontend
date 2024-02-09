@@ -20,11 +20,11 @@
 #include "ir/statement.h"
 #include "util/language.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 class TSInterfaceBody;
 class TSInterfaceHeritage;
@@ -178,6 +178,6 @@ private:
     bool isExternal_;
     es2panda::Language lang_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

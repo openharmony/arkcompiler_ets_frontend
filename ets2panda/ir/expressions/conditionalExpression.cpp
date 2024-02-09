@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ConditionalExpression::TransformChildren(const NodeTransformer &cb)
 {
     test_ = cb(test_)->AsExpression();
@@ -107,4 +107,4 @@ ConditionalExpression *ConditionalExpression::Clone(ArenaAllocator *const alloca
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

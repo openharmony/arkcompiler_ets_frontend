@@ -25,7 +25,7 @@
 #include "ir/base/catchClause.h"
 #include "ir/statements/blockStatement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TryStatement::TransformChildren(const NodeTransformer &cb)
 {
     block_ = cb(block_)->AsBlockStatement();
@@ -124,4 +124,4 @@ void TryStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *ty
         }
     }
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

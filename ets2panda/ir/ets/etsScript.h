@@ -18,11 +18,11 @@
 
 #include "ir/statements/blockStatement.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class Program;
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ETSScript : public BlockStatement {
 public:
@@ -45,6 +45,6 @@ public:
 private:
     parser::Program *program_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

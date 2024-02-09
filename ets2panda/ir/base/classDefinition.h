@@ -22,7 +22,7 @@
 #include "util/bitset.h"
 #include "util/language.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassElement;
 class Identifier;
 class MethodDefinition;
@@ -302,6 +302,6 @@ private:
     ClassDefinitionModifiers modifiers_;
     es2panda::Language lang_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -20,7 +20,7 @@
 #include "ir/ts/tsConstructorType.h"
 #include "ir/ets/etsFunctionType.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 
 void TypedBinder::BuildSignatureDeclarationBaseParams(ir::AstNode *typeNode)
 {
@@ -79,4 +79,4 @@ void TypedBinder::HandleCustomNodes(ir::AstNode *childNode)
         }
     }
 }
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder

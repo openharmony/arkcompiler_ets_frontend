@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeAssertion : public AnnotatedExpression {
 public:
     explicit TSTypeAssertion(TypeNode *typeAnnotation, Expression *expression)
@@ -48,6 +48,6 @@ public:
 private:
     Expression *expression_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

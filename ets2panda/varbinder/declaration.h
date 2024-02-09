@@ -20,15 +20,15 @@
 #include "macros.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class ScriptFunction;
 class TSInterfaceDeclaration;
 class ImportDeclaration;
 class ETSImportDeclaration;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Scope;
 class LocalScope;
 
@@ -369,6 +369,6 @@ public:
 private:
     util::StringView exportName_;
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ImportExpression::TransformChildren(const NodeTransformer &cb)
 {
     source_ = cb(source_)->AsExpression();
@@ -78,4 +78,4 @@ ImportExpression *ImportExpression::Clone(ArenaAllocator *const allocator, AstNo
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

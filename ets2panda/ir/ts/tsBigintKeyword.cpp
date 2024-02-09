@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSBigintKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TSBigintKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -59,4 +59,4 @@ checker::Type *TSBigintKeyword::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

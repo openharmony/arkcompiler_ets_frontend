@@ -33,7 +33,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ts/destructuringContext.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void VariableDeclarator::TransformChildren(const NodeTransformer &cb)
 {
     id_ = cb(id_)->AsExpression();
@@ -94,4 +94,4 @@ checker::Type *VariableDeclarator::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

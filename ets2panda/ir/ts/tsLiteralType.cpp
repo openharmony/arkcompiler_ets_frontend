@@ -21,7 +21,7 @@
 #include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSLiteralType::TransformChildren(const NodeTransformer &cb)
 {
     literal_ = cb(literal_)->AsExpression();
@@ -71,4 +71,4 @@ checker::Type *TSLiteralType::Check([[maybe_unused]] checker::ETSChecker *checke
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

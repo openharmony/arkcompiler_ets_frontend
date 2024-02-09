@@ -15,7 +15,7 @@
 
 #include "castingContext.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
                                const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
                                TypeRelationFlag extraFlags)
@@ -39,4 +39,4 @@ bool CastingContext::UncheckedCast() const noexcept
 {
     return uncheckedCast_;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

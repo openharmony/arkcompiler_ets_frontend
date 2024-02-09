@@ -18,7 +18,7 @@
 
 #include "varbinder/TypedBinder.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class TSBinder : public TypedBinder {
 public:
     explicit TSBinder(ArenaAllocator *allocator) : TypedBinder(allocator) {}
@@ -39,6 +39,6 @@ public:
 
 protected:
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

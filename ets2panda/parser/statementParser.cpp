@@ -70,7 +70,7 @@
 
 #include "parserImpl.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 
 using namespace std::literals::string_literals;
 
@@ -1847,4 +1847,4 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 
     return importDeclaration;
 }
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

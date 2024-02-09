@@ -54,7 +54,7 @@
 
 using namespace std::literals::string_literals;
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 ParserImpl::ParserImpl(Program *program, const CompilerOptions &options, ParserStatus status)
     : program_(program), context_(program_, status), options_(options)
 {
@@ -1170,4 +1170,4 @@ bool ParserImpl::CheckModuleAsModifier()
     return true;
 }
 
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

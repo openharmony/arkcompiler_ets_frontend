@@ -21,7 +21,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 // AllocatorBase
 
 AllocatorBase::AllocatorBase(CodeGen *const cg) noexcept : cg_(cg) {}
@@ -251,4 +251,4 @@ void RangeRegAllocator::Run(IRNode *const ins, VReg rangeStart, const std::size_
 
     Spiller().Finalize();
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

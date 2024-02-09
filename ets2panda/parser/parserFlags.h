@@ -19,7 +19,7 @@
 #include <cstdint>
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 enum class LexicalScopeType {
     BLOCK,
     STRICT_BLOCK,
@@ -83,6 +83,6 @@ enum class ForStatementKind {
     IN,
     OF,
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

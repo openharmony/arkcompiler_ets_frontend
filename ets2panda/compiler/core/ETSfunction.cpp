@@ -34,7 +34,7 @@
 #include "ir/ts/tsEnumMember.h"
 #include "checker/types/ets/types.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 {
     RegScope rs(etsg);
@@ -170,4 +170,4 @@ void ETSFunction::Compile(ETSGen *etsg)
     etsg->SortCatchTables();
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

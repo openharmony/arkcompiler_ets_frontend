@@ -18,11 +18,11 @@
 
 #include "parserImpl.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSClassImplements;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class TypedParser : public ParserImpl {
 public:
     TypedParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
@@ -152,6 +152,6 @@ protected:
     {
     }
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

@@ -21,7 +21,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/astNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 BlockExpression::BlockExpression(ArenaVector<ir::Statement *> &&statements)
     : Expression(AstNodeType::BLOCK_EXPRESSION), statements_(std::move(statements))
@@ -109,4 +109,4 @@ checker::Type *BlockExpression::Check(checker::ETSChecker *checker)
     }
     return TsType();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

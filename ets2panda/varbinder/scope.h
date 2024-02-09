@@ -26,12 +26,12 @@
 #include <unordered_map>
 #include <vector>
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class IRNode;
 class CompilerContext;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_CLASSES(type, className) class className;
 SCOPE_TYPES(DECLARE_CLASSES)
@@ -1005,6 +1005,6 @@ Variable *Scope::PropagateBinding(ArenaAllocator *allocator, util::StringView na
     res->second->Reset(std::forward<Args>(args)...);
     return res->second;
 }
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

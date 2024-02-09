@@ -27,7 +27,7 @@
 #include "ir/expression.h"
 #include "ir/expressions/identifier.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ClassProperty::TransformChildren(const NodeTransformer &cb)
 {
     key_ = cb(key_)->AsExpression();
@@ -162,4 +162,4 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

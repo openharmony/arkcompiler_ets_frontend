@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ImportDefaultSpecifier::TransformChildren(const NodeTransformer &cb)
 {
     local_ = cb(local_)->AsIdentifier();
@@ -61,4 +61,4 @@ checker::Type *ImportDefaultSpecifier::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

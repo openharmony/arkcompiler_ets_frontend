@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Literal : public Expression {
 public:
     Literal() = delete;
@@ -35,6 +35,6 @@ public:
 protected:
     explicit Literal(AstNodeType const type) : Expression(type) {}
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

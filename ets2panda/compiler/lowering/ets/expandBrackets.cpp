@@ -23,7 +23,7 @@
 #include "parser/ETSparser.h"
 #include "varbinder/ETSBinder.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
@@ -72,4 +72,4 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
     return true;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

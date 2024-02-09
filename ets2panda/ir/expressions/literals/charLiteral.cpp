@@ -25,7 +25,7 @@
 #include <string>
 #include <utility>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void CharLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void CharLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
@@ -71,4 +71,4 @@ CharLiteral *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const 
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -20,7 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSPropertySignature::TransformChildren(const NodeTransformer &cb)
 {
     key_ = cb(key_)->AsExpression();
@@ -94,4 +94,4 @@ TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator,
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

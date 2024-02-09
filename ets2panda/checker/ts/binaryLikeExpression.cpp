@@ -18,7 +18,7 @@
 
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 Type *TSChecker::CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr,
                                      ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
 {
@@ -223,4 +223,4 @@ void TSChecker::CheckAssignmentOperator(lexer::TokenType op, ir::Expression *lef
         }
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

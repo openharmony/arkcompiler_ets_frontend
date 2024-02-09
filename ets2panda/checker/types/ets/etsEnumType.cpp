@@ -22,7 +22,7 @@
 #include "ir/expressions/memberExpression.h"
 #include "ir/ts/tsEnumMember.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 ETSEnumInterface::ETSEnumInterface(const ir::TSEnumDeclaration *const enumDecl, UType ordinal,
                                    const ir::TSEnumMember *const member, TypeFlag const typeFlag)
     : Type(typeFlag), decl_(enumDecl), ordinal_ {ordinal}, member_(member)
@@ -333,4 +333,4 @@ ETSFunctionType *ETSEnumInterface::LookupTypeMethod(ETSChecker *const checker, c
     checker->ThrowTypeError({"No enum type method called '", prop->Name(), "'"}, prop->Start());
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

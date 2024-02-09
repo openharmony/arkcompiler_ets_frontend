@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class StringLiteralType : public Type {
 public:
     explicit StringLiteralType(util::StringView value) : Type(TypeFlag::STRING_LITERAL), value_(value) {}
@@ -38,6 +38,6 @@ public:
 private:
     util::StringView value_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_STRING_LITERAL_TYPE_H */

@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSBooleanKeyword : public TypeNode {
 public:
     explicit TSBooleanKeyword() : TypeNode(AstNodeType::TS_BOOLEAN_KEYWORD) {}
@@ -37,6 +37,6 @@ public:
         v->Accept(this);
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

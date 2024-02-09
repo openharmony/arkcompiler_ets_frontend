@@ -19,7 +19,7 @@
 #include "ir/irnode.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 class Label;
 
@@ -39,6 +39,6 @@ private:
     Label *label_ {};
     OptionalChain *prev_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

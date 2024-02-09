@@ -26,7 +26,7 @@
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/objectExpression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const &other,
                              ArenaAllocator *const allocator)
     : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other), allocator), decorators_(allocator->Adapter())
@@ -170,4 +170,4 @@ checker::Type *SpreadElement::Check([[maybe_unused]] checker::ETSChecker *checke
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -20,7 +20,7 @@
 #include "ir/expression.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class BlockExpression : public Expression {
 private:
@@ -61,6 +61,6 @@ public:
 private:
     ArenaVector<ir::Statement *> statements_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

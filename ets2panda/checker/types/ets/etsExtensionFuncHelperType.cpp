@@ -17,7 +17,7 @@
 
 #include "etsFunctionType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 /*
     !NB etsExtensionFuncHelperType is to support extension function when we try to resolve a member expression
     like "a.b", there are different cases:
@@ -48,4 +48,4 @@ void ETSExtensionFuncHelperType::AssignmentTarget(TypeRelation *relation, Type *
         return;
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

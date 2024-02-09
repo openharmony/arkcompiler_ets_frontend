@@ -67,7 +67,7 @@
 #include "util/helpers.h"
 #include "util/language.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 static Type *MaybeBoxedType(ETSChecker *checker, Type *type, ir::Expression *expr)
 {
@@ -258,6 +258,6 @@ static varbinder::Scope *NodeScope(ir::AstNode *ast)
     return nullptr;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

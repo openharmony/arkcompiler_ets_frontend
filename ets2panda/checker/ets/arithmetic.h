@@ -18,7 +18,7 @@
 
 #include "checker/ETSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 template <typename TargetType>
 typename TargetType::UType ETSChecker::GetOperand(Type *type)
@@ -144,30 +144,30 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
 }
 
 template <>
-inline IntType::UType panda::es2panda::checker::ETSChecker::HandleModulo<IntType::UType>(IntType::UType leftValue,
-                                                                                         IntType::UType rightValue)
+inline IntType::UType ark::es2panda::checker::ETSChecker::HandleModulo<IntType::UType>(IntType::UType leftValue,
+                                                                                       IntType::UType rightValue)
 {
     ASSERT(rightValue != 0);
     return leftValue % rightValue;
 }
 
 template <>
-inline LongType::UType panda::es2panda::checker::ETSChecker::HandleModulo<LongType::UType>(LongType::UType leftValue,
-                                                                                           LongType::UType rightValue)
+inline LongType::UType ark::es2panda::checker::ETSChecker::HandleModulo<LongType::UType>(LongType::UType leftValue,
+                                                                                         LongType::UType rightValue)
 {
     ASSERT(rightValue != 0);
     return leftValue % rightValue;
 }
 
 template <>
-inline FloatType::UType panda::es2panda::checker::ETSChecker::HandleModulo<FloatType::UType>(
-    FloatType::UType leftValue, FloatType::UType rightValue)
+inline FloatType::UType ark::es2panda::checker::ETSChecker::HandleModulo<FloatType::UType>(FloatType::UType leftValue,
+                                                                                           FloatType::UType rightValue)
 {
     return std::fmod(leftValue, rightValue);
 }
 
 template <>
-inline DoubleType::UType panda::es2panda::checker::ETSChecker::HandleModulo<DoubleType::UType>(
+inline DoubleType::UType ark::es2panda::checker::ETSChecker::HandleModulo<DoubleType::UType>(
     DoubleType::UType leftValue, DoubleType::UType rightValue)
 {
     return std::fmod(leftValue, rightValue);
@@ -237,6 +237,6 @@ Type *ETSChecker::HandleBitWiseArithmetic(Type *left, Type *right, lexer::TokenT
 
     return Allocator()->New<IntegerType>(result);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

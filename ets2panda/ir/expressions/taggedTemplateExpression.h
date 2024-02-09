@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TemplateLiteral;
 class TSTypeParameterInstantiation;
 
@@ -72,6 +72,6 @@ private:
     TemplateLiteral *quasi_;
     TSTypeParameterInstantiation *typeParams_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

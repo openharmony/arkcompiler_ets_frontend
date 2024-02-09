@@ -36,14 +36,14 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 enum class TokenFlags : uint32_t;
 class LexerPosition;
 class Token;
 class Lexer;
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ArrowFunctionExpression;
 class AstNode;
 class BlockStatement;
@@ -99,13 +99,13 @@ enum class Primitives;
 enum class ClassDefinitionModifiers : uint32_t;
 enum class CatchClauseType;
 enum class VariableDeclaratorFlag;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 
 class ETSParser;
 
-using FunctionSignature = std::tuple<ir::FunctionSignature, panda::es2panda::ir::ScriptFunctionFlags>;
+using FunctionSignature = std::tuple<ir::FunctionSignature, ark::es2panda::ir::ScriptFunctionFlags>;
 
 class ClassElementDescriptor {
 public:
@@ -760,5 +760,5 @@ private:
                static_cast<ParserStatus>(currentStatus & (ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL));
     }
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 #endif

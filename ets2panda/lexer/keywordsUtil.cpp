@@ -20,7 +20,7 @@
 #include "unicode/uchar.h"
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 enum class AsciiFlags : uint32_t {
     NONE = 0U,
     ID_START = 1U << 0U,
@@ -300,4 +300,4 @@ char32_t KeywordsUtil::ScanUnicodeEscapeSequence()
 
     return lexer_->ScanUnicodeEscapeSequence();
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void FunctionDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : decorators_) {
@@ -73,4 +73,4 @@ checker::Type *FunctionDeclaration::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

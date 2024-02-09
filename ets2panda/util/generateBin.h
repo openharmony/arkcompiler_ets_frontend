@@ -19,12 +19,12 @@
 #include "parser/program/program.h"
 #include "util/options.h"
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 using ReporterFun = std::function<void(const std::string &)>;
 
-int GenerateProgram(panda::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter);
+int GenerateProgram(ark::pandasm::Program *prog, const util::Options *options, const ReporterFun &reporter);
 
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif  // ES2PANDA_UTIL_GENERATEBIN_H

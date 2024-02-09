@@ -164,7 +164,7 @@
 #include "ir/ts/tsUnknownKeyword.h"
 #include "ir/ts/tsVoidKeyword.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Checker;
 
 class SemanticAnalyzer {
@@ -196,6 +196,6 @@ protected:
 private:
     Checker *checker_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif  // ES2PANDA_CHECKER_SEMANTICANALYZER_H

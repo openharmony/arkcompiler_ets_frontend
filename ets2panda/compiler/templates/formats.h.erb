@@ -26,7 +26,7 @@
 
 #include "ir/irnode.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 % def get_operand_kind(op, insn)
 %   if op.reg?
 %     if op.src? and op.dst?
@@ -79,6 +79,6 @@ constexpr std::array<const Format, <%= formats.length %>> <%= get_format_name(mn
 }};
 %   end
 % end
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

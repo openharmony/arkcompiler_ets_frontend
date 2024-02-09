@@ -21,7 +21,7 @@
 #include <cerrno>
 #include <limits>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,bugprone-exception-escape)
 Number::Number(util::StringView str, const std::string &utf8, NumberFlags flags) noexcept : str_(str), flags_(flags)
 {
@@ -52,4 +52,4 @@ Number::Number(util::StringView str, const std::string &utf8, NumberFlags flags)
         num_ = std::numeric_limits<double>::infinity();
     }
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

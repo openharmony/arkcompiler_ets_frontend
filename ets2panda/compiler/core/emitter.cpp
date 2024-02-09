@@ -37,7 +37,7 @@
 #include <tuple>
 #include <utility>
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 using LiteralPair = std::pair<pandasm::LiteralArray::Literal, pandasm::LiteralArray::Literal>;
 
 static LiteralPair TransformLiteral(const compiler::Literal *literal)
@@ -356,7 +356,7 @@ Emitter::~Emitter()
     delete prog_;
 }
 
-static void UpdateLiteralBufferId([[maybe_unused]] panda::pandasm::Ins *ins, [[maybe_unused]] uint32_t offset)
+static void UpdateLiteralBufferId([[maybe_unused]] ark::pandasm::Ins *ins, [[maybe_unused]] uint32_t offset)
 {
 #ifdef PANDA_WITH_ECMASCRIPT
     switch (ins->opcode) {
@@ -480,4 +480,4 @@ pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, std::string_view globalC
     prog_ = nullptr;
     return prog;
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

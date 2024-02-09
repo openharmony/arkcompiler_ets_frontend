@@ -18,12 +18,12 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
 class TSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSArrayType : public TypeNode {
 public:
     explicit TSArrayType(TypeNode *elementType) : TypeNode(AstNodeType::TS_ARRAY_TYPE), elementType_(elementType) {}
@@ -59,6 +59,6 @@ public:
 private:
     TypeNode *elementType_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

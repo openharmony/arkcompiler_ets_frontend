@@ -19,7 +19,7 @@
 #include "varbinder/scope.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class TSModuleDeclaration : public Statement {
@@ -109,6 +109,6 @@ private:
     bool global_;
     bool isExternalAmbient_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

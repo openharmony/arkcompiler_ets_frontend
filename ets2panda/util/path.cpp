@@ -18,7 +18,7 @@
 #include "os/filesystem.h"
 #include "path.h"
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 Path::Path() = default;
 
@@ -170,4 +170,4 @@ const util::StringView &Path::GetAbsoluteParentFolder() const
     return absoluteParentFolder_;
 }
 
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util

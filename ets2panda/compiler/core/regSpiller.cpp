@@ -17,7 +17,7 @@
 #include "compiler/core/codeGen.h"
 #include "checker/types/type.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 CodeGen *RegSpiller::GetCodeGen() const noexcept
 {
@@ -133,4 +133,4 @@ void StaticRegSpiller::Finalize() noexcept
     SpillIndex() = 0;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -20,15 +20,15 @@
 #ifndef ES2PANDA_UTIL_DECLGEN_ETS2TS_H
 #define ES2PANDA_UTIL_DECLGEN_ETS2TS_H
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 
 // Consume program after checker stage and generate out_path typescript file with declarations
-bool GenerateTsDeclarations(checker::ETSChecker *checker, const panda::es2panda::parser::Program *program,
+bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
                             const std::string &outPath);
 
 class TSDeclGen {
 public:
-    TSDeclGen(checker::ETSChecker *checker, const panda::es2panda::parser::Program *program)
+    TSDeclGen(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program)
         : checker_(checker), program_(program)
     {
     }
@@ -78,7 +78,7 @@ private:
     }
     void OutEndl(const std::size_t count = 1)
     {
-        panda::os::file::File::GetEndLine(output_, count);
+        ark::os::file::File::GetEndLine(output_, count);
     }
 
     void ResetState()
@@ -95,8 +95,8 @@ private:
 
     std::stringstream output_ {};
     checker::ETSChecker *checker_ {};
-    const panda::es2panda::parser::Program *program_ {};
+    const ark::es2panda::parser::Program *program_ {};
 };
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif  // ES2PANDA_UTIL_DECLGEN_ETS2TS_H

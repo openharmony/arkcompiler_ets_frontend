@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TypeParameter : public Type {
 public:
     TypeParameter(Type *constraint, Type *defaultType)
@@ -56,6 +56,6 @@ private:
     Type *constraint_;
     Type *default_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_UNDEFINED_TYPE_H */

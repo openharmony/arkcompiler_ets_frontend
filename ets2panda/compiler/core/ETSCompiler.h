@@ -17,7 +17,7 @@
 
 #include "compiler/core/ASTCompiler.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class ETSCompiler final : public AstCompiler {
 public:
@@ -43,6 +43,6 @@ private:
     ETSGen *GetETSGen() const;
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif  // ES2PANDA_COMPILER_CORE_ETSCOMPILER_H

@@ -18,12 +18,12 @@
 
 #include "ir/astNode.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
 ir::Identifier *Gensym(ArenaAllocator *allocator);
 util::UString GenName(ArenaAllocator *allocator);
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif  // ES2PANDA_COMPILER_LOWERING_UTIL_H

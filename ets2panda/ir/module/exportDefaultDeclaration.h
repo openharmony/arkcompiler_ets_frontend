@@ -18,7 +18,7 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ExportDefaultDeclaration : public Statement {
 public:
     explicit ExportDefaultDeclaration(AstNode *decl, bool exportEquals)
@@ -59,6 +59,6 @@ private:
     AstNode *decl_;
     bool exportEquals_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

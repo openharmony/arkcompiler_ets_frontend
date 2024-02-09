@@ -19,7 +19,7 @@
 #include "varbinder/scope.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 static void HoistVar(PandaGen *pg, varbinder::Variable *var, const varbinder::VarDecl *decl)
 {
     auto *scope = pg->Scope();
@@ -76,4 +76,4 @@ void Hoisting::Hoist(PandaGen *pg)
         }
     }
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

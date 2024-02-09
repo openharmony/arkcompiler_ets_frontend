@@ -22,7 +22,7 @@
 #include "ir/expressions/literals/stringLiteral.h"
 #include "util/language.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 class ImportSource {
 public:
@@ -83,5 +83,5 @@ private:
     ir::StringLiteral *module_ {};
 };
 
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 #endif

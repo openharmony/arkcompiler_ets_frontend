@@ -17,7 +17,7 @@
 
 #include "compiler/core/compilerContext.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 void CompileJob::Run()
 {
@@ -46,4 +46,4 @@ void CompileJob::Signal()
 
     cond_.notify_one();
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

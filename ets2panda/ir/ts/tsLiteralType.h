@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSLiteralType : public TypeNode {
 public:
     explicit TSLiteralType(Expression *literal) : TypeNode(AstNodeType::TS_LITERAL_TYPE), literal_(literal) {}
@@ -46,6 +46,6 @@ public:
 private:
     Expression *literal_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

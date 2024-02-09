@@ -21,12 +21,12 @@
 
 #include <unordered_map>
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 class Identifier;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class LabelTarget;
 class CodeGen;
 
@@ -81,6 +81,6 @@ private:
     util::StringView breakLabel_ {};
     util::StringView continueLabel_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

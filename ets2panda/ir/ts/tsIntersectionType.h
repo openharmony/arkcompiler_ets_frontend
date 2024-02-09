@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSIntersectionType : public TypeNode {
 public:
     explicit TSIntersectionType(ArenaVector<Expression *> &&types)
@@ -50,6 +50,6 @@ public:
 private:
     ArenaVector<Expression *> types_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

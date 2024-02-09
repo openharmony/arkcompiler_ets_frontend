@@ -19,7 +19,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ValidationInfo {
 public:
     ValidationInfo() noexcept = default;
@@ -35,6 +35,6 @@ public:
     lexer::SourcePosition pos {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -19,7 +19,7 @@
 #include "varbinder/scope.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class BlockStatement;
 class Expression;
 
@@ -85,6 +85,6 @@ private:
     Expression *param_;
     BlockStatement *body_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

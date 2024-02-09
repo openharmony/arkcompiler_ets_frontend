@@ -20,12 +20,12 @@
 
 #include <vector>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class Variable;
 class ModuleScope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class ModuleContext {
@@ -34,6 +34,6 @@ public:
 
     static void Compile(PandaGen *pg, varbinder::ModuleScope *scope);
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

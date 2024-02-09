@@ -15,7 +15,7 @@
 
 #include "plugin_phase.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 bool PluginPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
@@ -35,4 +35,4 @@ bool PluginPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Pro
     return true;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

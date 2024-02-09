@@ -23,7 +23,7 @@
 #include "ir/typeNode.h"
 #include "ir/ts/tsTypeParameter.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSMappedType::TransformChildren(const NodeTransformer &cb)
 {
     typeParameter_ = cb(typeParameter_)->AsTSTypeParameter();
@@ -81,4 +81,4 @@ checker::Type *TSMappedType::Check([[maybe_unused]] checker::ETSChecker *checker
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

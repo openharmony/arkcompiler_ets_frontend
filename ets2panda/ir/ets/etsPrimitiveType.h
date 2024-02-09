@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 enum class PrimitiveType { BYTE, INT, LONG, SHORT, FLOAT, DOUBLE, BOOLEAN, CHAR, VOID };
 
 class ETSPrimitiveType : public TypeNode {
@@ -52,6 +52,6 @@ public:
 private:
     PrimitiveType type_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

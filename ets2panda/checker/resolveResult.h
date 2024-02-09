@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_CHECKER_RESOLVE_RESULT_H
 #define ES2PANDA_CHECKER_RESOLVE_RESULT_H
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 enum class OverrideErrorCode {
     NO_ERROR,
     OVERRIDING_STATIC,
@@ -50,6 +50,6 @@ private:
     ResolvedKind kind_ {};
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* ES2PANDA_CHECKER_RESOLVE_RESULT_H */

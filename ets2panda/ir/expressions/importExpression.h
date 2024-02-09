@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ImportExpression : public Expression {
 public:
     ImportExpression() = delete;
@@ -54,6 +54,6 @@ public:
 private:
     Expression *source_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

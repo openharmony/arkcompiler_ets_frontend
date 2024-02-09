@@ -19,7 +19,7 @@
 #include "checker/types/ts/indexInfo.h"
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 ArenaAllocator *TypeRelation::Allocator()
 {
     return checker_->Allocator();
@@ -205,4 +205,4 @@ void TypeRelation::RaiseError(std::initializer_list<TypeErrorMessageElement> lis
 {
     checker_->ThrowTypeError(list, loc);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

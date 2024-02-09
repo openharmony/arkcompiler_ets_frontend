@@ -30,7 +30,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void UpdateExpression::TransformChildren(const NodeTransformer &cb)
 {
     argument_ = cb(argument_)->AsExpression();
@@ -95,4 +95,4 @@ UpdateExpression *UpdateExpression::Clone(ArenaAllocator *const allocator, AstNo
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

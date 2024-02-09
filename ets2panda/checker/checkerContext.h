@@ -22,7 +22,7 @@
 
 #include <vector>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 class ETSObjectType;
 class Signature;
@@ -127,6 +127,6 @@ private:
     ETSObjectType *containingClass_ {nullptr};
     Signature *containingSignature_ {nullptr};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

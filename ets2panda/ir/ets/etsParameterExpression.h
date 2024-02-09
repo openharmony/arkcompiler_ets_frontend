@@ -18,11 +18,11 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 inline constexpr char const PROXY_PARAMETER_NAME[] = "$proxy_mask$";
 // NOLINTEND(modernize-avoid-c-arrays)
@@ -102,6 +102,6 @@ private:
     util::StringView savedLexer_ = "";
     std::size_t extraValue_ = 0U;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

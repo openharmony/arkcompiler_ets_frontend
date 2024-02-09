@@ -17,7 +17,7 @@
 
 #include "varbinder/ETSBinder.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void ETSStringType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsETSStringType()) {
@@ -43,4 +43,4 @@ Type *ETSStringType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[m
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

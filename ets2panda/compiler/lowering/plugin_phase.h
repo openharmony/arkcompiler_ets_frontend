@@ -20,7 +20,7 @@
 #include "compiler/lowering/phase.h"
 #include "util/plugin.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 class PluginPhase : public Phase {
 public:
@@ -43,6 +43,6 @@ private:
     void (util::Plugin::*methodCall_)(es2panda_Context *) const;
 };
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

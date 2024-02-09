@@ -19,12 +19,12 @@
 #include "macros.h"
 #include "compiler/base/literals.h"
 
-namespace panda::pandasm {
+namespace ark::pandasm {
 struct Ins;
 struct Function;
-}  // namespace panda::pandasm
+}  // namespace ark::pandasm
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ProgramElement {
 public:
     explicit ProgramElement() = default;
@@ -44,5 +44,5 @@ private:
     std::vector<LiteralBuffer> buffStorage_;
     pandasm::Function *func_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 #endif

@@ -25,7 +25,7 @@
 #include "ir/base/spreadElement.h"
 #include "ir/base/property.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 Type *ElaborationContext::GetBestMatchingType(Type *indexType, ir::Expression *sourceNode)
 {
     ArenaVector<Type *> bestMatchingType(checker_->Allocator()->Adapter());
@@ -170,4 +170,4 @@ void ObjectElaborationContext::RemoveUnnecessaryTypes()
         }
     }
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

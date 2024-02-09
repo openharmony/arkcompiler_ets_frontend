@@ -19,7 +19,7 @@
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class SpreadElement : public AnnotatedExpression {
 private:
     struct Tag {};
@@ -103,6 +103,6 @@ private:
     Expression *argument_ = nullptr;
     bool optional_ {false};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

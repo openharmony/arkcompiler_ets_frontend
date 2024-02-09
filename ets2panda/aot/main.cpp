@@ -28,7 +28,7 @@
 #include <memory>
 #include <optional>
 
-namespace panda::es2panda::aot {
+namespace ark::es2panda::aot {
 using mem::MemConfig;
 
 class MemManager {
@@ -157,10 +157,10 @@ static int Run(int argc, const char **argv)
     es2panda::SourceFile input(sourceFile, parserInput, options->ParseModule());
     return CompileFromSource(compiler, input, options.get());
 }
-}  // namespace panda::es2panda::aot
+}  // namespace ark::es2panda::aot
 
 int main(int argc, const char **argv)
 {
-    panda::es2panda::aot::MemManager mm;
-    return panda::es2panda::aot::Run(argc, argv);
+    ark::es2panda::aot::MemManager mm;
+    return ark::es2panda::aot::Run(argc, argv);
 }

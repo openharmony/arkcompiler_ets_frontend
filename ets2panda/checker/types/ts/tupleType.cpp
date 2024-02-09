@@ -17,7 +17,7 @@
 
 #include "checker/TSchecker.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 Type *TupleType::ConvertToArrayType(TSChecker *checker)
 {
     ArenaVector<Type *> unionTypes(checker->Allocator()->Adapter());
@@ -166,4 +166,4 @@ Type *TupleType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, 
     return allocator->New<TupleType>(copiedDesc, std::move(copiedElementFlags), combinedFlags_, minLength_,
                                      fixedLength_, readonly_, std::move(copiedNamedMemberPool));
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

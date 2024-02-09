@@ -19,7 +19,7 @@
 #include "checker/types/typeRelation.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class CastingContext {
 public:
     CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
@@ -33,6 +33,6 @@ private:
     bool uncheckedCast_ {true};
 };
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

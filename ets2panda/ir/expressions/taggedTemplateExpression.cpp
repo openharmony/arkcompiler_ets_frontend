@@ -27,7 +27,7 @@
 #include "ir/expressions/templateLiteral.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb)
 {
     if (typeParams_ != nullptr) {
@@ -106,4 +106,4 @@ TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const 
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

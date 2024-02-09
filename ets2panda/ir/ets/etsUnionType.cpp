@@ -19,7 +19,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSUnionType::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : types_) {
@@ -82,4 +82,4 @@ checker::Type *ETSUnionType::GetType([[maybe_unused]] checker::ETSChecker *check
     checker->Relation()->SetNode(nullptr);
     return TsType();
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

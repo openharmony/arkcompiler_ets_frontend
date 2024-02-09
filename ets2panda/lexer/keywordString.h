@@ -20,7 +20,7 @@
 #include "macros.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 struct KeywordString {
     constexpr KeywordString(std::string_view s, TokenType t) : KeywordString(s, t, t) {}
     constexpr KeywordString(std::string_view s, TokenType t, TokenType k) : str_(s), tokenType_(t), keywordType_(k) {}
@@ -47,6 +47,6 @@ private:
     TokenType tokenType_ {};
     TokenType keywordType_ {};
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

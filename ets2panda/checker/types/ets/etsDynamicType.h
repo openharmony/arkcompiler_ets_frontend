@@ -18,7 +18,7 @@
 
 #include "checker/types/ets/etsObjectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSDynamicType : public ETSObjectType {
 public:
     explicit ETSDynamicType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
@@ -58,6 +58,6 @@ private:
     es2panda::Language lang_;
     bool hasDecl_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

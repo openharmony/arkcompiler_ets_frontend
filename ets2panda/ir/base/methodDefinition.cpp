@@ -22,7 +22,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 
 ScriptFunction *MethodDefinition::Function()
 {
@@ -225,4 +225,4 @@ MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNo
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

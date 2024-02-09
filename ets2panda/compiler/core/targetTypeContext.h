@@ -18,11 +18,11 @@
 
 #include "macros.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Type;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class ETSGen;
 
 class TargetTypeContext {
@@ -40,6 +40,6 @@ private:
     ETSGen *etsg_;
     const checker::Type *prev_;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

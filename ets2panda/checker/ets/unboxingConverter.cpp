@@ -18,7 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 checker::Type *UnboxingConverter::GlobalTypeFromSource(ETSObjectFlags type)
 {
@@ -52,4 +52,4 @@ checker::Type *UnboxingConverter::GlobalTypeFromSource(ETSObjectFlags type)
     }
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

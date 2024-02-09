@@ -19,11 +19,11 @@
 #include "ir/irnode.h"
 #include "compiler/function/functionBuilder.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class YieldExpression;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 enum class GeneratorState {
@@ -57,6 +57,6 @@ protected:
         return BuilderType::GENERATOR;
     }
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

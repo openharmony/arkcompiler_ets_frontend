@@ -18,11 +18,11 @@
 
 #include "ir/statements/loopStatement.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class LoopScope;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Expression;
 
 class ForOfStatement : public LoopStatement {
@@ -94,6 +94,6 @@ private:
     Statement *body_;
     bool isAwait_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

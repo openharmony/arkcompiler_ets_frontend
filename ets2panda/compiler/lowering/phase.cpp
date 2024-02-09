@@ -34,7 +34,7 @@
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "utils/json_builder.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 static CheckerPhase g_checkerPhase;
 
@@ -180,4 +180,4 @@ void Phase::CheckOptionsAfterPhase(const CompilerOptions *options, const parser:
     }
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

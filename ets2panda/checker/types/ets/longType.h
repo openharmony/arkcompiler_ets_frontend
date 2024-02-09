@@ -18,7 +18,7 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class LongType : public Type {
 public:
     using UType = int64_t;
@@ -60,6 +60,6 @@ public:
 private:
     UType value_ {0};
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif

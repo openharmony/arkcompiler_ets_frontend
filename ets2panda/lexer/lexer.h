@@ -21,11 +21,11 @@
 #include "lexer/token/token.h"
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class ParserContext;
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 class Keywords;
 
 enum class NextTokenFlags : uint32_t {
@@ -573,6 +573,6 @@ inline bool Lexer::IsOctalDigit(char32_t ch)
 {
     return (ch >= LEX_CHAR_0 && ch <= LEX_CHAR_7);
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

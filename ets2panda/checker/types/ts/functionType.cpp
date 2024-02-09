@@ -17,7 +17,7 @@
 
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void FunctionType::ToString(std::stringstream &ss) const
 {
     static std::unordered_set<const FunctionType *> stack;
@@ -57,4 +57,4 @@ Type *FunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relatio
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
     return allocator->New<FunctionType>(copiedDesc);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

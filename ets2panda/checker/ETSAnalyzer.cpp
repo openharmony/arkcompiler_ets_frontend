@@ -23,7 +23,7 @@
 
 #include <memory>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
 {
@@ -2882,4 +2882,4 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) cons
     UNREACHABLE();
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

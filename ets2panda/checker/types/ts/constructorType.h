@@ -18,7 +18,7 @@
 
 #include "objectType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ConstructorType : public ObjectType {
 public:
     explicit ConstructorType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
@@ -27,6 +27,6 @@ public:
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_CONSTRUCTOR_TYPE_H */

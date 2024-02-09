@@ -50,7 +50,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/base/catchClause.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 void AliveAnalyzer::AnalyzeNodes(const ir::AstNode *node)
 {
@@ -491,4 +491,4 @@ void AliveAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
 
     status_ = isAlive ? LivenessStatus::ALIVE : LivenessStatus::DEAD;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

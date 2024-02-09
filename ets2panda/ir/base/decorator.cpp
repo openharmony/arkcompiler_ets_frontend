@@ -24,7 +24,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void Decorator::TransformChildren(const NodeTransformer &cb)
 {
     expr_ = cb(expr_)->AsExpression();
@@ -82,4 +82,4 @@ Decorator *Decorator::Clone(ArenaAllocator *const allocator, AstNode *const pare
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

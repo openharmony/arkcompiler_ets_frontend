@@ -19,7 +19,7 @@
 #include "ir/expressions/literal.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class CharLiteral : public Literal {
 public:
     ~CharLiteral() override = default;
@@ -60,6 +60,6 @@ public:
 private:
     char16_t const char_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

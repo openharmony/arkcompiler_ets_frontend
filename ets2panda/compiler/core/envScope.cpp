@@ -19,7 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "ir/statement.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 ScopeContext::ScopeContext(CodeGen *cg, varbinder::Scope *newScope) : cg_(cg), prevScope_(cg_->scope_)
 {
     cg->scope_ = newScope;
@@ -80,4 +80,4 @@ void LoopEnvScope::CopyPetIterationCtx()
     pg_->CopyLexEnv(scope_->Node());
     pg_->StoreAccumulator(scope_->Node(), lexEnv_);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSQualifiedName : public Expression {
 public:
     explicit TSQualifiedName(Expression *left, Identifier *right)
@@ -69,6 +69,6 @@ private:
     Expression *left_;
     Identifier *right_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

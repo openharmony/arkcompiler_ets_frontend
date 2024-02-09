@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSEnumMember::TransformChildren(const NodeTransformer &cb)
 {
     key_ = cb(key_)->AsExpression();
@@ -80,4 +80,4 @@ checker::Type *TSEnumMember::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

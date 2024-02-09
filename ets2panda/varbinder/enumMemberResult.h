@@ -20,9 +20,9 @@
 
 #include <variant>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 // Note: if the bool operand is present, the expression cannot be evaluated during compliation
 using EnumMemberResult = std::variant<double, util::StringView, bool>;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

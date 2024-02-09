@@ -140,7 +140,7 @@ namespace fs = std::experimental::filesystem;
 #endif
 #endif
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 using namespace std::literals::string_literals;
 
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
@@ -260,7 +260,7 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
     if (!statements.empty()) {
         res = extSources.find(name);
     } else {
-        auto path = GetProgram()->SourceFileFolder().Mutf8() + panda::os::file::File::GetPathDelim().at(0) +
+        auto path = GetProgram()->SourceFileFolder().Mutf8() + ark::os::file::File::GetPathDelim().at(0) +
                     GetProgram()->GetPackageName().Mutf8();
         auto resolved = ResolveImportPath(path);
         resolvedParsedSources_.emplace(path, resolved);
@@ -344,7 +344,7 @@ std::vector<std::string> ETSParser::CollectDefaultSources()
             }
 
             std::string baseName = path;
-            std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
+            std::size_t pos = entry.path().string().find_last_of(ark::os::file::File::GetPathDelim());
 
             baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
 
@@ -363,11 +363,11 @@ std::vector<std::string> ETSParser::CollectDefaultSources()
 ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
 {
     auto &dynamicPaths = ArkTSConfig()->DynamicPaths();
-    auto key = panda::os::NormalizePath(path);
+    auto key = ark::os::NormalizePath(path);
 
     auto it = dynamicPaths.find(key);
     if (it == dynamicPaths.cend()) {
-        key = panda::os::RemoveExtension(key);
+        key = ark::os::RemoveExtension(key);
     }
 
     while (it == dynamicPaths.cend() && !key.empty()) {
@@ -375,7 +375,7 @@ ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
         if (it != dynamicPaths.cend()) {
             break;
         }
-        key = panda::os::GetParentDir(key);
+        key = ark::os::GetParentDir(key);
     }
 
     if (it != dynamicPaths.cend()) {
@@ -386,7 +386,7 @@ ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
 
 std::string ETSParser::ResolveFullPathFromRelative(const std::string &path)
 {
-    char pathDelimiter = panda::os::file::File::GetPathDelim().at(0);
+    char pathDelimiter = ark::os::file::File::GetPathDelim().at(0);
     auto resolvedFp = GetProgram()->ResolvedFilePath().Mutf8();
     auto sourceFp = GetProgram()->SourceFileFolder().Mutf8();
     if (resolvedFp.empty()) {
@@ -405,7 +405,7 @@ std::string ETSParser::ResolveFullPathFromRelative(const std::string &path)
 
 std::string ETSParser::ResolveImportPath(const std::string &path)
 {
-    char pathDelimiter = panda::os::file::File::GetPathDelim().at(0);
+    char pathDelimiter = ark::os::file::File::GetPathDelim().at(0);
     if (util::Helpers::IsRelativePath(path)) {
         return util::Helpers::GetAbsPath(ResolveFullPathFromRelative(path));
     }
@@ -453,13 +453,13 @@ std::string ETSParser::ResolveImportPath(const std::string &path)
 
 std::tuple<std::string, bool> ETSParser::GetSourceRegularPath(const std::string &path, const std::string &resolvedPath)
 {
-    if (!panda::os::file::File::IsRegularFile(resolvedPath)) {
+    if (!ark::os::file::File::IsRegularFile(resolvedPath)) {
         std::string importExtension = ".ets";
 
-        if (!panda::os::file::File::IsRegularFile(resolvedPath + importExtension)) {
+        if (!ark::os::file::File::IsRegularFile(resolvedPath + importExtension)) {
             importExtension = ".ts";
 
-            if (!panda::os::file::File::IsRegularFile(resolvedPath + importExtension)) {
+            if (!ark::os::file::File::IsRegularFile(resolvedPath + importExtension)) {
                 ThrowSyntaxError("Incorrect path: " + resolvedPath);
             }
         }
@@ -526,7 +526,7 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
         return {userPaths, false};
     }
 
-    if (!panda::os::file::File::IsDirectory(resolvedPath)) {
+    if (!ark::os::file::File::IsDirectory(resolvedPath)) {
         std::string regularPath;
         bool isModule = false;
         std::tie(regularPath, isModule) = GetSourceRegularPath(path, resolvedPath);
@@ -549,7 +549,7 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
             }
 
             std::string baseName = path;
-            std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
+            std::size_t pos = entry.path().string().find_last_of(ark::os::file::File::GetPathDelim());
 
             baseName.append(entry.path().string().substr(pos, entry.path().string().size()));
             orderedFiles.emplace(baseName);
@@ -864,7 +864,7 @@ void ETSParser::ParseTopLevelNextToken(ArenaVector<ir::Statement *> &statements,
     }
 }
 
-void ETSParser::ParseTokenOfNative(panda::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers)
+void ETSParser::ParseTokenOfNative(ark::es2panda::lexer::TokenType tokenType, ir::ModifierFlags &memberModifiers)
 {
     bool isAsync = tokenType == lexer::TokenType::KEYW_ASYNC;
 
@@ -3124,7 +3124,7 @@ void ETSParser::ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements
         }
 
         auto baseName = GetProgram()->SourceFilePath().Utf8();
-        baseName = baseName.substr(baseName.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
+        baseName = baseName.substr(baseName.find_last_of(ark::os::file::File::GetPathDelim()) + 1);
         const size_t idx = baseName.find_last_of('.');
         if (idx != std::string::npos) {
             baseName = baseName.substr(0, idx);
@@ -3188,11 +3188,11 @@ std::tuple<ir::ImportSource *, std::vector<std::string>> ETSParser::ParseFromCla
 
     ir::StringLiteral *module = nullptr;
     if (isModule) {
-        auto pos = importPath.Mutf8().find_last_of(panda::os::file::File::GetPathDelim());
+        auto pos = importPath.Mutf8().find_last_of(ark::os::file::File::GetPathDelim());
 
         util::UString baseName(importPath.Mutf8().substr(0, pos), Allocator());
         if (baseName.View().Is(".") || baseName.View().Is("..")) {
-            baseName.Append(panda::os::file::File::GetPathDelim());
+            baseName.Append(ark::os::file::File::GetPathDelim());
         }
 
         module = AllocNode<ir::StringLiteral>(util::UString(importPath.Mutf8().substr(pos + 1), Allocator()).View());
@@ -5184,5 +5184,5 @@ InnerSourceParser::~InnerSourceParser()
     parser_->SetLexer(savedLexer_);
     parser_->GetProgram()->SetSource(savedSourceCode_, savedSourceFile_, savedSourceFilePath_);
 }
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 #undef USE_UNIX_SYSCALL

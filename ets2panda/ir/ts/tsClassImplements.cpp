@@ -23,7 +23,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSClassImplements::TransformChildren(const NodeTransformer &cb)
 {
     expression_ = cb(expression_)->AsExpression();
@@ -70,4 +70,4 @@ checker::Type *TSClassImplements::Check([[maybe_unused]] checker::ETSChecker *ch
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

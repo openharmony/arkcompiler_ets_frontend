@@ -22,7 +22,7 @@
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/unaryExpression.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 bool Condition::CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
     switch (binExpr->OperatorType()) {
@@ -296,4 +296,4 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *falseLa
     etsg->ResolveConditionalResultIfFalse(expr, falseLabel);
     etsg->BranchIfFalse(expr, falseLabel);
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

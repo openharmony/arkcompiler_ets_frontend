@@ -22,7 +22,7 @@
 #include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsTuple.h"
 
-namespace panda::es2panda::ir::visitor {
+namespace ark::es2panda::ir::visitor {
 
 /**
  * Children should declare VisitNode methods (might be virtual might be not)
@@ -63,6 +63,6 @@ public:
 };
 inline IterateAstVisitor::~IterateAstVisitor() = default;
 
-}  // namespace panda::es2panda::ir::visitor
+}  // namespace ark::es2panda::ir::visitor
 
 #endif

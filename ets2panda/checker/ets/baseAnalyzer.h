@@ -19,12 +19,12 @@
 #include "utils/arena_containers.h"
 #include "util/enumbitops.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
 enum class AstNodeType;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSChecker;
 
 enum class LivenessStatus { DEAD, ALIVE };
@@ -95,5 +95,5 @@ private:
     PendingExitsVector pendingExits_;
     PendingExitsVector oldPendingExits_;
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 #endif

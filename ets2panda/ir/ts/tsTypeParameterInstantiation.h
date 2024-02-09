@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterInstantiation : public Expression {
     struct Tag {};
 
@@ -62,6 +62,6 @@ public:
 private:
     ArenaVector<TypeNode *> params_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

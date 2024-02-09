@@ -23,7 +23,7 @@
 #include "ir/typeNode.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypePredicate::TransformChildren(const NodeTransformer &cb)
 {
     parameterName_ = cb(parameterName_)->AsExpression();
@@ -75,4 +75,4 @@ checker::Type *TSTypePredicate::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

@@ -20,7 +20,7 @@
 #include "ir/base/classElement.h"
 #include "ir/base/methodDefinition.h"
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 bool ClassPrivateContext::AddElement(const ir::ClassElement *elem)
 {
     bool newPropIsStatic = elem->IsStatic();
@@ -72,4 +72,4 @@ bool ClassPrivateContext::FindElement(const ir::Identifier *elem) const
 
     return false;
 }
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

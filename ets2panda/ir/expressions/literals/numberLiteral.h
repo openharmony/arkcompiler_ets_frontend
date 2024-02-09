@@ -20,7 +20,7 @@
 #include "lexer/token/number.h"
 #include "util/ustring.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class NumberLiteral : public Literal {
 public:
     NumberLiteral() = delete;
@@ -69,6 +69,6 @@ public:
 private:
     lexer::Number number_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif /* NUMBER_LITERAL_H */

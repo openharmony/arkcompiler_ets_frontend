@@ -29,7 +29,7 @@
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void UnaryExpression::TransformChildren(const NodeTransformer &cb)
 {
     argument_ = cb(argument_)->AsExpression();
@@ -88,4 +88,4 @@ UnaryExpression *UnaryExpression::Clone(ArenaAllocator *const allocator, AstNode
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

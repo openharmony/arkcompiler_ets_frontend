@@ -24,7 +24,7 @@
 #include "util/ustring.h"
 #include "utils/span.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 class Lexer;
 class Keywords;
 
@@ -108,6 +108,6 @@ private:
     char32_t cp_ {util::StringView::Iterator::INVALID_CP};
 };
 
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

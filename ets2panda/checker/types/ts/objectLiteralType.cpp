@@ -19,7 +19,7 @@
 #include "checker/types/ts/indexInfo.h"
 #include "checker/types/signature.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class TSChecker;
 
 void ObjectLiteralType::ToString(std::stringstream &ss) const
@@ -88,4 +88,4 @@ Type *ObjectLiteralType::Instantiate(ArenaAllocator *allocator, TypeRelation *re
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
     return allocator->New<ObjectLiteralType>(copiedDesc);
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

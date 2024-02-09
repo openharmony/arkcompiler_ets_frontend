@@ -48,7 +48,7 @@
 #include "checker/types/ets/wildcardType.h"
 #include "util/helpers.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
 {
     // TS specific types
@@ -622,4 +622,4 @@ void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *typ
     }
     globalTypes_.at(static_cast<size_t>(typeId->second)) = type;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -20,18 +20,18 @@
 #include "checker/types/ets/etsFunctionType.h"
 #include "ir/expression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class ETSAnalyzer;
 class TSAnalyzer;
 class Signature;
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class JSCompiler;
 class ETSCompiler;
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypeParameterInstantiation;
 
 class CallExpression : public MaybeOptionalExpression {
@@ -187,6 +187,6 @@ private:
     checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
                                              checker::Type *calleeType);
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -26,7 +26,7 @@
 #include "ir/ts/tsAsExpression.h"
 #include "type_helper.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 
 const char *const STRUCT_CLASS_NAME = "CommonStruct0";
 
@@ -105,4 +105,4 @@ bool StructLowering::Perform(public_lib::Context *ctx, parser::Program *program)
     return true;
 }
 
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

@@ -15,7 +15,7 @@
 
 #include "token.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 bool Token::IsAccessability() const
 {
     return (type_ == TokenType::LITERAL_IDENT &&
@@ -453,4 +453,4 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
             return "";
     }
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

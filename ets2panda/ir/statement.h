@@ -18,7 +18,7 @@
 
 #include "ir/astNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ClassElement;
 
 class Statement : public AstNode {
@@ -80,6 +80,6 @@ protected:
     {
     }
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

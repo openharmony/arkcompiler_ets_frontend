@@ -20,11 +20,11 @@
 #include "ir/statement.h"
 #include "varbinder/enumMemberResult.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class EnumVariable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 class TSEnumMember;
 
@@ -142,6 +142,6 @@ private:
     bool isConst_;
     bool isDeclare_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -16,11 +16,11 @@
 #include "ASLexer.h"
 #include "generated/keywords.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 // NOLINTNEXTLINE(google-default-arguments)
 void ASLexer::NextToken(NextTokenFlags flags)
 {
     ASKeywords kws(this, flags);
     Lexer::NextToken(&kws);
 }
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer

@@ -20,7 +20,7 @@
 
 #include <limits>
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class VReg final {
 public:
     using Index = uint32_t;
@@ -130,13 +130,13 @@ private:
 
     Index idx_;
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 template <>
-struct std::hash<panda::es2panda::compiler::VReg> {
-    std::size_t operator()(const panda::es2panda::compiler::VReg &vreg) const
+struct std::hash<ark::es2panda::compiler::VReg> {
+    std::size_t operator()(const ark::es2panda::compiler::VReg &vreg) const
     {
-        return std::hash<panda::es2panda::compiler::VReg::Index> {}(vreg.GetIndex());
+        return std::hash<ark::es2panda::compiler::VReg::Index> {}(vreg.GetIndex());
     }
 };
 

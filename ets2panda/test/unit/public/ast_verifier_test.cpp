@@ -25,30 +25,30 @@
 
 #include <gtest/gtest.h>
 
-using panda::es2panda::CompilerOptions;
-using panda::es2panda::ScriptExtension;
-using panda::es2panda::checker::ETSChecker;
-using panda::es2panda::compiler::ASTVerifier;
-using panda::es2panda::ir::AstNode;
-using panda::es2panda::ir::BinaryExpression;
-using panda::es2panda::ir::BooleanLiteral;
-using panda::es2panda::ir::ETSScript;
-using panda::es2panda::ir::Expression;
-using panda::es2panda::ir::Identifier;
-using panda::es2panda::ir::NumberLiteral;
-using panda::es2panda::ir::SequenceExpression;
-using panda::es2panda::ir::StringLiteral;
-using panda::es2panda::lexer::Number;
-using panda::es2panda::lexer::TokenType;
-using panda::es2panda::parser::ETSParser;
-using panda::es2panda::parser::Program;
-using panda::es2panda::util::StringView;
-using panda::es2panda::varbinder::ETSBinder;
-using panda::es2panda::varbinder::FunctionScope;
-using panda::es2panda::varbinder::LetDecl;
-using panda::es2panda::varbinder::LocalScope;
-using panda::es2panda::varbinder::LocalVariable;
-using panda::es2panda::varbinder::VariableFlags;
+using ark::es2panda::CompilerOptions;
+using ark::es2panda::ScriptExtension;
+using ark::es2panda::checker::ETSChecker;
+using ark::es2panda::compiler::ASTVerifier;
+using ark::es2panda::ir::AstNode;
+using ark::es2panda::ir::BinaryExpression;
+using ark::es2panda::ir::BooleanLiteral;
+using ark::es2panda::ir::ETSScript;
+using ark::es2panda::ir::Expression;
+using ark::es2panda::ir::Identifier;
+using ark::es2panda::ir::NumberLiteral;
+using ark::es2panda::ir::SequenceExpression;
+using ark::es2panda::ir::StringLiteral;
+using ark::es2panda::lexer::Number;
+using ark::es2panda::lexer::TokenType;
+using ark::es2panda::parser::ETSParser;
+using ark::es2panda::parser::Program;
+using ark::es2panda::util::StringView;
+using ark::es2panda::varbinder::ETSBinder;
+using ark::es2panda::varbinder::FunctionScope;
+using ark::es2panda::varbinder::LetDecl;
+using ark::es2panda::varbinder::LocalScope;
+using ark::es2panda::varbinder::LocalVariable;
+using ark::es2panda::varbinder::VariableFlags;
 
 class ASTVerifierTest : public testing::Test {
 public:
@@ -58,7 +58,7 @@ public:
         // NOLINTNEXTLINE(modernize-avoid-c-arrays)
         char const *argv[] = {"../../../bin/es2panda test"};
         cfg_ = impl_->CreateConfig(1, argv);
-        allocator_ = new panda::ArenaAllocator(panda::SpaceType::SPACE_TYPE_COMPILER);
+        allocator_ = new ark::ArenaAllocator(ark::SpaceType::SPACE_TYPE_COMPILER);
     }
     ~ASTVerifierTest() override
     {
@@ -66,7 +66,7 @@ public:
         impl_->DestroyConfig(cfg_);
     }
 
-    panda::ArenaAllocator *Allocator()
+    ark::ArenaAllocator *Allocator()
     {
         return allocator_;
     }
@@ -88,9 +88,9 @@ protected:
     }
 
     template <typename Type, typename... Args>
-    panda::ArenaVector<Type *> Nodes(Args &&...args)
+    ark::ArenaVector<Type *> Nodes(Args &&...args)
     {
-        auto v = panda::ArenaVector<Type *> {allocator_->Adapter()};
+        auto v = ark::ArenaVector<Type *> {allocator_->Adapter()};
         v.insert(v.end(), {std::forward<Args>(args)...});
         return v;
     }
@@ -98,7 +98,7 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     es2panda_Impl const *impl_;
     es2panda_Config *cfg_;
-    panda::ArenaAllocator *allocator_;
+    ark::ArenaAllocator *allocator_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -392,7 +392,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -430,7 +430,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -469,7 +469,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -508,7 +508,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PRIVATE);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -560,7 +560,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
         ->GetExpression()
         ->AsCallExpression()
         ->Signature()
-        ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PRIVATE);
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -613,7 +613,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
         ->GetExpression()
         ->AsCallExpression()
         ->Signature()
-        ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PRIVATE);
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -666,7 +666,7 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
         ->GetExpression()
         ->AsCallExpression()
         ->Signature()
-        ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PRIVATE);
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -703,7 +703,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -740,7 +740,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -779,7 +779,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -818,7 +818,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
         ->AsClassDefinition()
         ->Body()[0]
         ->AsClassProperty()
-        ->AddModifier(panda::es2panda::ir::ModifierFlags::PROTECTED);
+        ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -870,7 +870,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
         ->GetExpression()
         ->AsCallExpression()
         ->Signature()
-        ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PROTECTED);
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -923,7 +923,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
         ->GetExpression()
         ->AsCallExpression()
         ->Signature()
-        ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PROTECTED);
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");
@@ -976,7 +976,7 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
         ->GetExpression()
         ->AsCallExpression()
         ->Signature()
-        ->AddSignatureFlag(panda::es2panda::checker::SignatureFlags::PROTECTED);
+        ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
     ASTVerifier::InvariantSet checks;
     checks.insert("ModifierAccessValidForAll");

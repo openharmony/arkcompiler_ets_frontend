@@ -18,7 +18,7 @@
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/continueStatement.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void BaseAnalyzer::ClearPendingExits()
 {
     pendingExits_.clear();
@@ -83,4 +83,4 @@ LivenessStatus BaseAnalyzer::ResolveBreaks(const ir::AstNode *node)
     return ResolveJump(node, ir::AstNodeType::BREAK_STATEMENT);
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

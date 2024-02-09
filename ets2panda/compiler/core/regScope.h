@@ -19,11 +19,11 @@
 #include "macros.h"
 #include "varbinder/scope.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class AstNode;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class EnvScope;
 class PandaGen;
 class CodeGen;
@@ -93,6 +93,6 @@ private:
     void InitializeParams(const StoreParamCb &cb);
     EnvScope *envScope_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

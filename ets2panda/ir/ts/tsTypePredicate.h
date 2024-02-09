@@ -18,7 +18,7 @@
 
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class TSTypePredicate : public TypeNode {
 public:
     explicit TSTypePredicate(Expression *parameterName, TypeNode *typeAnnotation, bool asserts)
@@ -64,6 +64,6 @@ private:
     TypeNode *typeAnnotation_;
     bool asserts_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

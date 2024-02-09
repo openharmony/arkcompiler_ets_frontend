@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void InterfaceType::ToString(std::stringstream &ss) const
 {
     ss << name_;
@@ -239,4 +239,4 @@ TypeFacts InterfaceType::GetTypeFacts() const
 
     return TypeFacts::OBJECT_FACTS;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

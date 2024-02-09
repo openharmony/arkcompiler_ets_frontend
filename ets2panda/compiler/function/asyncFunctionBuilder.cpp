@@ -19,7 +19,7 @@
 #include "compiler/base/catchTable.h"
 #include "ir/base/scriptFunction.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
     pg_->AsyncFunctionResolve(node, funcObj_);
@@ -49,4 +49,4 @@ void AsyncFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
     pg_->EmitReturn(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler

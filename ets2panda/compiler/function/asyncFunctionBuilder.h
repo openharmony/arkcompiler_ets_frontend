@@ -19,7 +19,7 @@
 #include "ir/irnode.h"
 #include "compiler/function/functionBuilder.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class PandaGen;
 
 class AsyncFunctionBuilder : public FunctionBuilder {
@@ -41,6 +41,6 @@ protected:
         return BuilderType::ASYNC;
     }
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

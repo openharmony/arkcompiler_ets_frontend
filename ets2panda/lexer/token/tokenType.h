@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_TOKEN_TYPE_H
 #define ES2PANDA_PARSER_INCLUDE_TOKEN_TYPE_H
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 enum class TokenType {
     EOS,
 
@@ -220,6 +220,6 @@ enum class TokenType {
 };
 
 const char *TokenToString(TokenType type);
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

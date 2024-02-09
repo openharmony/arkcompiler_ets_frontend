@@ -19,12 +19,12 @@
 #include "TypedParser.h"
 #include "parserFlags.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Decorator;
 enum class TSTupleKind;
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 class TSParser : public TypedParser {
 public:
     TSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
@@ -150,6 +150,6 @@ private:
         return true;
     }
 };
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser
 
 #endif

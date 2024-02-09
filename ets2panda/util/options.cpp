@@ -26,7 +26,7 @@
 #include "compiler/compiler_options.h"
 #endif
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 template <class T>
 T RemoveExtension(T const &filename)
 {
@@ -36,7 +36,7 @@ T RemoveExtension(T const &filename)
 
 // Options
 
-Options::Options() : argparser_(new panda::PandArgParser()) {}
+Options::Options() : argparser_(new ark::PandArgParser()) {}
 
 Options::~Options()
 {
@@ -107,7 +107,7 @@ static void SplitArgs(int argc, const char *argv[], std::vector<std::string> &es
 template <class T>
 static bool ParseComponentArgs(const std::vector<std::string> &args, T &options)
 {
-    panda::PandArgParser parser;
+    ark::PandArgParser parser;
     options.AddOptions(&parser);
     if (!parser.Parse(args)) {
         std::cerr << parser.GetErrorString();
@@ -127,10 +127,10 @@ static bool ParseBCOCompilerOptions([[maybe_unused]] const std::vector<std::stri
                                     [[maybe_unused]] const std::vector<std::string> &bytecodeoptArgs)
 {
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-    if (!ParseComponentArgs(compilerArgs, panda::compiler::g_options)) {
+    if (!ParseComponentArgs(compilerArgs, ark::compiler::g_options)) {
         return false;
     }
-    if (!ParseComponentArgs(bytecodeoptArgs, panda::bytecodeopt::g_options)) {
+    if (!ParseComponentArgs(bytecodeoptArgs, ark::bytecodeopt::g_options)) {
         return false;
     }
 #endif
@@ -150,38 +150,38 @@ bool Options::Parse(int argc, const char **argv)
         return false;
     }
 
-    panda::PandArg<bool> opHelp("help", false, "Print this message and exit");
+    ark::PandArg<bool> opHelp("help", false, "Print this message and exit");
 
     // parser
-    panda::PandArg<std::string> inputExtension("extension", "",
-                                               "Parse the input as the given extension (options: js | ts | as | ets)");
-    panda::PandArg<bool> opModule("module", false, "Parse the input as module (JS only option)");
-    panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
-    panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
-    panda::PandArg<bool> opDumpAstOnlySilent("dump-ast-only-silent", false,
-                                             "Dump parsed AST with all dumpers available but don't print to stdout");
-    panda::PandArg<bool> opDumpCheckedAst("dump-dynamic-ast", false,
-                                          "Dump AST with synthetic nodes for dynamic languages");
-    panda::PandArg<bool> opListFiles("list-files", false, "Print names of files that are part of compilation");
+    ark::PandArg<std::string> inputExtension("extension", "",
+                                             "Parse the input as the given extension (options: js | ts | as | ets)");
+    ark::PandArg<bool> opModule("module", false, "Parse the input as module (JS only option)");
+    ark::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
+    ark::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
+    ark::PandArg<bool> opDumpAstOnlySilent("dump-ast-only-silent", false,
+                                           "Dump parsed AST with all dumpers available but don't print to stdout");
+    ark::PandArg<bool> opDumpCheckedAst("dump-dynamic-ast", false,
+                                        "Dump AST with synthetic nodes for dynamic languages");
+    ark::PandArg<bool> opListFiles("list-files", false, "Print names of files that are part of compilation");
 
     // compiler
-    panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
-    panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
-    panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
-    panda::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
-    panda::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
-    panda::PandArg<std::string> opTsDeclOut("gen-ts-decl", "", "For given .ets file, generate .ts interop file");
+    ark::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
+    ark::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
+    ark::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
+    ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
+    ark::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
+    ark::PandArg<std::string> opTsDeclOut("gen-ts-decl", "", "For given .ets file, generate .ts interop file");
 
     auto constexpr DEFAULT_THREAD_COUNT = 0;
-    panda::PandArg<int> opThreadCount("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
-    panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
-    panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
-    panda::PandArg<std::string> logLevel("log-level", "error", "Log-level");
-    panda::PandArg<std::string> stdLib("stdlib", "", "Path to standard library");
-    panda::PandArg<bool> genStdLib("gen-stdlib", false, "Gen standard library");
-    panda::PandArg<std::string> plugins("plugins", "", "Plugins");
-    panda::PandArg<std::string> skipPhases("skip-phases", "", "Phases to skip");
-    panda::PandArg<std::string> verifierWarnings(
+    ark::PandArg<int> opThreadCount("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
+    ark::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
+    ark::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
+    ark::PandArg<std::string> logLevel("log-level", "error", "Log-level");
+    ark::PandArg<std::string> stdLib("stdlib", "", "Path to standard library");
+    ark::PandArg<bool> genStdLib("gen-stdlib", false, "Gen standard library");
+    ark::PandArg<std::string> plugins("plugins", "", "Plugins");
+    ark::PandArg<std::string> skipPhases("skip-phases", "", "Phases to skip");
+    ark::PandArg<std::string> verifierWarnings(
         "verifier-warnings", "",
         "Print errors and continue compilation if AST tree is incorrect. "
         "Possible values: "
@@ -189,7 +189,7 @@ bool Options::Parse(int argc, const char **argv)
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid");
-    panda::PandArg<std::string> verifierErrors(
+    ark::PandArg<std::string> verifierErrors(
         "verifier-errors", "ForLoopCorrectlyInitializedForAll",
         "Print errors and stop compilation if AST tree is incorrect. "
         "Possible values: "
@@ -197,23 +197,23 @@ bool Options::Parse(int argc, const char **argv)
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid");
-    panda::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
-                                                 "Generate program dump before running phases in the list");
-    panda::PandArg<std::string> dumpEtsSrcBeforePhases(
+    ark::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
+                                               "Generate program dump before running phases in the list");
+    ark::PandArg<std::string> dumpEtsSrcBeforePhases(
         "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
-    panda::PandArg<std::string> dumpEtsSrcAfterPhases(
+    ark::PandArg<std::string> dumpEtsSrcAfterPhases(
         "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list");
-    panda::PandArg<std::string> dumpAfterPhases("dump-after-phases", "",
-                                                "Generate program dump after running phases in the list");
-    panda::PandArg<std::string> arktsConfig(
+    ark::PandArg<std::string> dumpAfterPhases("dump-after-phases", "",
+                                              "Generate program dump after running phases in the list");
+    ark::PandArg<std::string> arktsConfig(
         "arktsconfig",
-        panda::es2panda::JoinPaths(
-            panda::es2panda::ParentPath(argv[0]),  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        ark::es2panda::JoinPaths(
+            ark::es2panda::ParentPath(argv[0]),  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
             "arktsconfig.json"),
         "Path to arkts configuration file");
 
     // tail arguments
-    panda::PandArg<std::string> inputFile("input", "", "input file");
+    ark::PandArg<std::string> inputFile("input", "", "input file");
 
     argparser_->Add(&opHelp);
     argparser_->Add(&opModule);
@@ -410,7 +410,7 @@ bool Options::Parse(int argc, const char **argv)
         options_ |= OptionFlags::SIZE_STAT;
     }
 
-    compilerOptions_.arktsConfig = std::make_shared<panda::es2panda::ArkTsConfig>(arktsConfig.GetValue());
+    compilerOptions_.arktsConfig = std::make_shared<ark::es2panda::ArkTsConfig>(arktsConfig.GetValue());
     if (extension_ == es2panda::ScriptExtension::ETS) {
         if (!compilerOptions_.arktsConfig->Parse()) {
             errorMsg_ = "Invalid ArkTsConfig: ";
@@ -447,4 +447,4 @@ bool Options::Parse(int argc, const char **argv)
 
     return true;
 }
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util

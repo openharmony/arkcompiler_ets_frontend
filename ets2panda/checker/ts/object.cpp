@@ -37,7 +37,7 @@
 #include "checker/TSchecker.h"
 #include "checker/types/ts/indexInfo.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void TSChecker::CheckIndexConstraints(Type *type)
 {
     if (!type->IsObjectType()) {
@@ -540,4 +540,4 @@ bool TSChecker::ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder
                       locInfo);
     return false;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

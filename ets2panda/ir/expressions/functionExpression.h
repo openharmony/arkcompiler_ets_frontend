@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class ScriptFunction;
 
 class FunctionExpression : public Expression {
@@ -80,6 +80,6 @@ private:
     ScriptFunction *func_;
     ir::Identifier *exprName_ {};
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

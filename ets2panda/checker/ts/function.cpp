@@ -44,7 +44,7 @@
 #include <utility>
 #include <vector>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 Type *TSChecker::HandleFunctionReturn(ir::ScriptFunction *func)
 {
     if (func->ReturnTypeAnnotation() != nullptr) {
@@ -767,4 +767,4 @@ Type *TSChecker::ResolveCallOrNewExpression(const ArenaVector<Signature *> &sign
 
     return returnType;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

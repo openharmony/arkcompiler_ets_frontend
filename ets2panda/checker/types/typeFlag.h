@@ -20,7 +20,7 @@
 
 #include <cinttypes>
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 enum class TypeFlag : uint64_t {
     NONE = 0,
     NUMBER = 1ULL << 0ULL,               // x: number
@@ -134,6 +134,6 @@ enum class TypeFlag : uint64_t {
 };
 
 DEFINE_BITOPS(TypeFlag)
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_TYPE_FLAG_H */

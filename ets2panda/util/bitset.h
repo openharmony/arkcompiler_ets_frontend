@@ -21,7 +21,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace panda::es2panda::util {
+namespace ark::es2panda::util {
 class BitSet {
 public:
     explicit BitSet(size_t size);
@@ -44,6 +44,6 @@ private:
     uint8_t *data_;
     size_t size_;
 };
-}  // namespace panda::es2panda::util
+}  // namespace ark::es2panda::util
 
 #endif

@@ -24,7 +24,7 @@
 #include "ir/ts/tsQualifiedName.h"
 #include "ir/ets/etsTypeReferencePart.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void ETSTypeReference::TransformChildren(const NodeTransformer &cb)
 {
     part_ = cb(part_)->AsETSTypeReferencePart();
@@ -128,4 +128,4 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

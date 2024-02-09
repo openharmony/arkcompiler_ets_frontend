@@ -22,7 +22,7 @@
 #include "ir/srcDump.h"
 #include "ir/typeNode.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void PrefixAssertionExpression::TransformChildren(const NodeTransformer &cb)
 {
     type_ = static_cast<TypeNode *>(cb(type_));
@@ -64,4 +64,4 @@ checker::Type *PrefixAssertionExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

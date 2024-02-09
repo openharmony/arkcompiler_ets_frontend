@@ -15,7 +15,7 @@
 
 #include "neverType.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 void NeverType::ToString(std::stringstream &ss) const
 {
     ss << "never";
@@ -49,4 +49,4 @@ Type *NeverType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe
 {
     return this;
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

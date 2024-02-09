@@ -18,7 +18,7 @@
 
 #include <algorithm>
 
-namespace panda::es2panda::parser {
+namespace ark::es2panda::parser {
 
 ParserContext::ParserContext(const Program *program, ParserStatus status)
     : program_(program), status_(status), lang_(ToLanguage(program->Extension()))
@@ -42,4 +42,4 @@ const ParserContext *ParserContext::FindLabel(const util::StringView &label) con
 
     return nullptr;
 }
-}  // namespace panda::es2panda::parser
+}  // namespace ark::es2panda::parser

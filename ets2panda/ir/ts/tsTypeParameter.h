@@ -18,7 +18,7 @@
 
 #include "ir/expression.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 class Identifier;
 
 class TSTypeParameter : public Expression {
@@ -81,6 +81,6 @@ private:
     TypeNode *constraint_;
     TypeNode *defaultType_;
 };
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir
 
 #endif

@@ -19,7 +19,7 @@
 #include "lexer/lexer.h"
 #include "token/letters.h"
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 class ETSLexer final : public Lexer {
 public:
     explicit ETSLexer(const parser::ParserContext *parserContext) : Lexer(parserContext, false)
@@ -71,6 +71,6 @@ protected:
     void ScanExclamationPunctuator() override;
     bool ScanDollarPunctuator() override;
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

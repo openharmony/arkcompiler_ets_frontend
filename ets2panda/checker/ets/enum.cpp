@@ -46,7 +46,7 @@
 #include "parser/program/program.h"
 #include "ir/ets/etsParameterExpression.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 namespace {
 void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const node)
@@ -65,7 +65,7 @@ void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const no
     }
 }
 
-[[nodiscard]] ir::Identifier *MakeQualifiedIdentifier(panda::ArenaAllocator *const allocator,
+[[nodiscard]] ir::Identifier *MakeQualifiedIdentifier(ark::ArenaAllocator *const allocator,
                                                       const ir::TSEnumDeclaration *const enumDecl,
                                                       const util::StringView &name)
 {
@@ -128,7 +128,7 @@ template <typename ElementMaker>
     return param;
 }
 
-[[nodiscard]] ir::ETSTypeReference *MakeTypeReference(panda::ArenaAllocator *allocator, const util::StringView &name)
+[[nodiscard]] ir::ETSTypeReference *MakeTypeReference(ark::ArenaAllocator *allocator, const util::StringView &name)
 {
     auto *const ident = allocator->New<ir::Identifier>(name, allocator);
     auto *const referencePart = allocator->New<ir::ETSTypeReferencePart>(ident);
@@ -621,4 +621,4 @@ ETSEnumType::Method ETSChecker::CreateEnumValuesMethod(ir::Identifier *const ite
     return {MakeGlobalSignature(this, function, CreateETSArrayType(enumType)),
             MakeProxyFunctionType(this, ETSEnumType::VALUES_METHOD_NAME, {}, function, CreateETSArrayType(enumType))};
 }
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

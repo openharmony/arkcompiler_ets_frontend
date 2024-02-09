@@ -18,7 +18,7 @@
 
 #include "util/ustring.h"
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class PrivateBinding : public util::UString {
 public:
     explicit PrivateBinding(ArenaAllocator *allocator, uint32_t id)
@@ -34,6 +34,6 @@ public:
 
     static constexpr std::string_view PRIVATE_PREFIX = "#";
 };
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
 #endif

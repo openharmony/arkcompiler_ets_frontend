@@ -19,7 +19,7 @@
 #include "util/helpers.h"
 #include "checker/ets/primitiveWrappers.h"
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 
 checker::ETSObjectType *BoxingConverter::ETSTypeFromSource(ETSChecker const *checker, Type const *source)
 {
@@ -58,4 +58,4 @@ checker::ETSObjectType *BoxingConverter::ETSTypeFromSource(ETSChecker const *che
     return wrapMap.find(getSignature(checker::ETSChecker::TypeKind(source)))->second.first;
 }
 
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker

@@ -20,11 +20,11 @@
 #include "util/ustring.h"
 #include <vector>
 
-namespace panda::es2panda::varbinder {
+namespace ark::es2panda::varbinder {
 class LocalVariable;
-}  // namespace panda::es2panda::varbinder
+}  // namespace ark::es2panda::varbinder
 
-namespace panda::es2panda::checker {
+namespace ark::es2panda::checker {
 class Signature;
 class IndexInfo;
 class Type;
@@ -56,6 +56,6 @@ public:
     IndexInfo *numberIndexInfo {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
-}  // namespace panda::es2panda::checker
+}  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_OBJECT_DESCRIPTOR_H */

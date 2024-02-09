@@ -23,7 +23,7 @@
 #include "ir/srcDump.h"
 #include "ir/ts/tsTypeParameter.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeParameterDeclaration::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : params_) {
@@ -71,4 +71,4 @@ checker::Type *TSTypeParameterDeclaration::Check([[maybe_unused]] checker::ETSCh
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

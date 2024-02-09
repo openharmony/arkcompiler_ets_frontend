@@ -24,7 +24,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace panda::es2panda::lexer {
+namespace ark::es2panda::lexer {
 enum class NumberFlags : uint32_t {
     NONE,
     BIGINT = 1U << 0U,
@@ -199,6 +199,6 @@ private:
     std::variant<int32_t, int64_t, float, double> num_;
     NumberFlags flags_ {NumberFlags::NONE};
 };
-}  // namespace panda::es2panda::lexer
+}  // namespace ark::es2panda::lexer
 
 #endif

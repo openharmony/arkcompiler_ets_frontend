@@ -19,7 +19,7 @@
 #include "ir/irnode.h"
 #include "compiler/core/labelPair.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 class CodeGen;
 
 class TryLabelSet {
@@ -101,6 +101,6 @@ private:
     uint32_t depth_;
     util::StringView exceptionType_ {};
 };
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
 
 #endif

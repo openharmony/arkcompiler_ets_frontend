@@ -21,7 +21,7 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-namespace panda::es2panda::ir {
+namespace ark::es2panda::ir {
 void TSTypeOperator::TransformChildren(const NodeTransformer &cb)
 {
     type_ = static_cast<TypeNode *>(cb(type_));
@@ -69,4 +69,4 @@ checker::Type *TSTypeOperator::Check([[maybe_unused]] checker::ETSChecker *check
 {
     return checker->GetAnalyzer()->Check(this);
 }
-}  // namespace panda::es2panda::ir
+}  // namespace ark::es2panda::ir

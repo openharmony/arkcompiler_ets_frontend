@@ -23,7 +23,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/moduleContext.h"
 
-namespace panda::es2panda::compiler {
+namespace ark::es2panda::compiler {
 // RegScope
 
 RegScope::RegScope(CodeGen *cg) : cg_(cg), regBase_(cg_->usedRegs_) {}
@@ -165,4 +165,4 @@ FunctionRegScope::~FunctionRegScope()
         envScope_->~EnvScope();
     }
 }
-}  // namespace panda::es2panda::compiler
+}  // namespace ark::es2panda::compiler
