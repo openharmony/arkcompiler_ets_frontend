@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token [double_parenthesis_invocation_supposed_to_fail.ets:18:11]

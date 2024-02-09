@@ -1466,34 +1466,6 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     return field;
 }
 
-lexer::SourcePosition ETSParser::ParseEndLocInterfaceMethod(lexer::LexerPosition startPos, ir::ScriptFunction *func,
-                                                            ir::MethodDefinitionKind methodKind)
-{
-    if (func->HasBody()) {
-        return func->Body()->End();
-    }
-
-    if (func->ReturnTypeAnnotation() == nullptr) {
-        auto backupPos = Lexer()->Save();
-        Lexer()->Rewind(startPos);
-
-        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            Lexer()->NextToken();
-        }
-
-        auto endLoc = Lexer()->GetToken().End();
-        Lexer()->Rewind(backupPos);
-
-        if (methodKind != ir::MethodDefinitionKind::SET) {
-            ThrowSyntaxError("Interface method must have a return type", endLoc);
-        }
-
-        return endLoc;
-    }
-
-    return func->ReturnTypeAnnotation()->End();
-}
-
 ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
@@ -1504,7 +1476,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     FunctionContext functionContext(this, ParserStatus::FUNCTION);
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    lexer::LexerPosition startPos = Lexer()->Save();
 
     auto [signature, throwMarker] = ParseFunctionSignature(ParserStatus::NEED_RETURN_TYPE);
 
@@ -1538,9 +1509,10 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     if ((flags & ir::ModifierFlags::STATIC) == 0 && body == nullptr) {
         func->AddModifier(ir::ModifierFlags::ABSTRACT);
     }
-
-    auto endLoc = ParseEndLocInterfaceMethod(startPos, func, methodKind);
-    func->SetRange({startLoc, endLoc});
+    func->SetRange({startLoc, body != nullptr                           ? body->End()
+                              : func->ReturnTypeAnnotation() != nullptr ? func->ReturnTypeAnnotation()->End()
+                              : func->Params().empty()                  ? Lexer()->GetToken().End()
+                                                                        : (*func->Params().end())->End()});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
