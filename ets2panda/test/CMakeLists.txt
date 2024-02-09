@@ -37,6 +37,14 @@ endif()
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
 
 if(PANDA_WITH_ETS)
+    if (NOT (PANDA_ENABLE_ADDRESS_SANITIZER OR PANDA_ENABLE_THREAD_SANITIZER) OR
+        NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR
+        PANDA_CI_TESTING_MODE STREQUAL "Nightly")
+            set(PANDA_REGRESSION_TESTS 1)
+    endif()
+endif()
+
+if(PANDA_REGRESSION_TESTS)
     set(ETS_RESULT_FOLDER ${CMAKE_BINARY_DIR}/tests/es2panda-regression-tests)
     set(OPTIONS --parser
                 --processes=1
