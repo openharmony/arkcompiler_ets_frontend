@@ -1469,7 +1469,7 @@ void ETSChecker::ResolveLambdaObject(ir::ClassDefinition *lambdaObject, ETSObjec
     // Create the class type for the lambda
     auto *lambdaObjectType = Allocator()->New<checker::ETSObjectType>(Allocator(), lambdaObject->Ident()->Name(),
                                                                       lambdaObject->Ident()->Name(), lambdaObject,
-                                                                      checker::ETSObjectFlags::CLASS);
+                                                                      checker::ETSObjectFlags::CLASS, Relation());
 
     // Add the target function type to the implementing interfaces, this way, we can call the functional interface
     // virtual 'invoke' method and it will propagate the call to the currently stored lambda class 'invoke' function
@@ -2454,7 +2454,7 @@ void ETSChecker::ResolveLambdaObject(ir::ClassDefinition *lambdaObject, Signatur
     // Create the class type for the lambda
     auto *lambdaObjectType = Allocator()->New<checker::ETSObjectType>(Allocator(), lambdaObject->Ident()->Name(),
                                                                       lambdaObject->Ident()->Name(), lambdaObject,
-                                                                      checker::ETSObjectFlags::CLASS);
+                                                                      checker::ETSObjectFlags::CLASS, Relation());
 
     // Add the target function type to the implementing interfaces, this way, we can call the functional interface
     // virtual 'invoke' method and it will propagate the call to the currently stored lambda class 'invoke' function
@@ -2831,7 +2831,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
         return GlobalBuiltinPromiseType()->AsETSObjectType();
     }(asyncFuncRetTypeAnn);
 
-    auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), promiseType);
+    auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
     returnTypeAnn->SetTsType(retType);
 
     ir::MethodDefinition *implMethod =

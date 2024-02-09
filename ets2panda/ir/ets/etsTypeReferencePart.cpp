@@ -100,7 +100,11 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
         ASSERT(baseType != nullptr);
         if (baseType->IsETSObjectType()) {
             checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
-            return ctx.Result();
+            checker::ETSObjectType *ctxResult = ctx.Result();
+            if (!ctxResult->HasObjectFlag(checker::ETSObjectFlags::RESOLVED_MEMBERS)) {
+                checker->AddUnfinishedType(ctxResult);
+            }
+            return ctxResult;
         }
 
         return baseType;

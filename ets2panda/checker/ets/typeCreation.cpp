@@ -106,12 +106,12 @@ CharType *ETSChecker::CreateCharType(char16_t value)
 
 ETSBigIntType *ETSChecker::CreateETSBigIntLiteralType(util::StringView value)
 {
-    return Allocator()->New<ETSBigIntType>(Allocator(), GlobalBuiltinETSBigIntType(), value);
+    return Allocator()->New<ETSBigIntType>(Allocator(), GlobalBuiltinETSBigIntType(), Relation(), value);
 }
 
 ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
 {
-    return Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), value);
+    return Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), Relation(), value);
 }
 
 ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
@@ -336,7 +336,7 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView nam
             CreateNewETSObjectType(name, declNode, flags | ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING);
 
         GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_STRING)] =
-            Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType());
+            Allocator()->New<ETSStringType>(Allocator(), GlobalBuiltinETSStringType(), Relation());
         return GlobalBuiltinETSStringType();
     }
 
@@ -539,10 +539,12 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
     }
 
     if (lang.IsDynamic()) {
-        return Allocator()->New<ETSDynamicType>(Allocator(), name, assemblerName, declNode, flags, lang, hasDecl);
+        return Allocator()->New<ETSDynamicType>(Allocator(), name, assemblerName, declNode, flags, Relation(), lang,
+                                                hasDecl);
+        ;
     }
 
-    return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName, declNode, flags);
+    return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName, declNode, flags, Relation());
 }
 
 std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType,

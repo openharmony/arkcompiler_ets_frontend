@@ -340,8 +340,9 @@ void ETSChecker::BuildClass(util::StringView name, const ClassBuilder &builder)
                                                     ir::ModifierFlags::NONE, Language(Language::Id::ETS));
     classDef->SetScope(classCtx.GetScope());
 
-    auto *classDefType = Allocator()->New<checker::ETSObjectType>(
-        Allocator(), classDef->Ident()->Name(), classDef->Ident()->Name(), classDef, checker::ETSObjectFlags::CLASS);
+    auto *classDefType =
+        Allocator()->New<checker::ETSObjectType>(Allocator(), classDef->Ident()->Name(), classDef->Ident()->Name(),
+                                                 classDef, checker::ETSObjectFlags::CLASS, Relation());
     classDef->SetTsType(classDefType);
 
     auto *classDecl = AllocNode<ir::ClassDeclaration>(classDef, Allocator());

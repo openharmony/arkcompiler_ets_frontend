@@ -123,13 +123,25 @@ public:
     explicit ETSObjectType(ArenaAllocator *allocator) : ETSObjectType(allocator, ETSObjectFlags::NO_OPTS) {}
 
     explicit ETSObjectType(ArenaAllocator *allocator, ETSObjectFlags flags)
-        : ETSObjectType(allocator, "", "", nullptr, flags)
+        : ETSObjectType(allocator, "", "", nullptr, flags, nullptr)
+    {
+    }
+
+    explicit ETSObjectType(ArenaAllocator *allocator, ETSObjectFlags flags, TypeRelation *relation)
+        : ETSObjectType(allocator, "", "", nullptr, flags, relation)
     {
     }
 
     explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
                            ir::AstNode *declNode, ETSObjectFlags flags)
-        : ETSObjectType(allocator, name, assemblerName, declNode, flags,
+        : ETSObjectType(allocator, name, assemblerName, declNode, flags, nullptr,
+                        std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
+    {
+    }
+
+    explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
+                           ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation)
+        : ETSObjectType(allocator, name, assemblerName, declNode, flags, relation,
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
@@ -166,6 +178,16 @@ public:
     void SetEnclosingType(ETSObjectType *enclosingType)
     {
         enclosingType_ = enclosingType;
+    }
+
+    void SetRelation(TypeRelation *relation)
+    {
+        relation_ = relation;
+    }
+
+    TypeRelation *GetRelation()
+    {
+        return relation_;
     }
 
     PropertyMap InstanceMethods() const
@@ -522,7 +544,8 @@ protected:
 private:
     template <size_t... IS>
     explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
-                           ir::AstNode *declNode, ETSObjectFlags flags, [[maybe_unused]] std::index_sequence<IS...> s)
+                           ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation,
+                           [[maybe_unused]] std::index_sequence<IS...> s)
         : Type(TypeFlag::ETS_OBJECT),
           allocator_(allocator),
           name_(name),
@@ -532,6 +555,7 @@ private:
           flags_(flags),
           instantiationMap_(allocator->Adapter()),
           typeArguments_(allocator->Adapter()),
+          relation_(relation),
           constructSignatures_(allocator->Adapter()),
           properties_ {(void(IS), PropertyMap {allocator->Adapter()})...}
     {

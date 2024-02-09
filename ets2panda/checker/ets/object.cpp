@@ -312,6 +312,10 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
 
     interfaceType->SetSuperType(GlobalETSObjectType());
 
+    if (!interfaceType->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
+        AddUnfinishedType(interfaceType);
+    }
+
     return interfaceType;
 }
 
@@ -372,8 +376,8 @@ ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classD
         GetInterfacesOfClass(classType);
     }
 
-    if (classType->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
-        return classType;
+    if (!classType->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
+        AddUnfinishedType(classType);
     }
 
     return classType;
@@ -387,6 +391,7 @@ ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *classDef)
     checker::ScopeContext scopeCtx(this, classDef->Scope());
 
     ResolveDeclaredMembersOfObject(classType);
+
     return classType;
 }
 
@@ -520,7 +525,25 @@ static void ResolveDeclaredDeclsOfObject(ETSChecker *checker, ETSObjectType *typ
 
 void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
 {
+    RemoveUnfinishedType(type);
+
     if (type->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
+        return;
+    }
+
+    if (type->IsGeneric() && type != type->GetOriginalBaseType()) {
+        type->AddObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS);
+        auto baseType = type->GetOriginalBaseType();
+        ASSERT(baseType->GetRelation() != nullptr);
+        auto *baseDeclNode = baseType->GetDeclNode();
+        checker::CheckerStatus baseStatus = baseDeclNode->IsTSInterfaceDeclaration()
+                                                ? checker::CheckerStatus::IN_INTERFACE
+                                                : checker::CheckerStatus::IN_CLASS;
+        auto baseScope = baseDeclNode->IsTSInterfaceDeclaration() ? baseDeclNode->AsTSInterfaceDeclaration()->Scope()
+                                                                  : baseDeclNode->AsClassDefinition()->Scope();
+        auto savedContext = checker::SavedCheckerContext(this, baseStatus, baseType);
+        checker::ScopeContext scopeCtx(this, baseScope);
+        ResolveDeclaredMembersOfObject(baseType);
         return;
     }
 
@@ -795,6 +818,7 @@ void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implementedSi
 
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
+    ResolveUnfinishedTypes();
     auto *classType = classDef->TsType()->AsETSObjectType();
     auto *enclosingClass = Context().ContainingClass();
     auto newStatus = checker::CheckerStatus::IN_CLASS;

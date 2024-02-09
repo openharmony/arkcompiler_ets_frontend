@@ -1181,7 +1181,7 @@ Type *ETSChecker::GetTypeFromInterfaceReference(varbinder::Variable *var)
         return var->TsType();
     }
 
-    auto *interfaceType = BuildInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+    auto *interfaceType = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     var->SetTsType(interfaceType);
     return interfaceType;
 }
@@ -1192,7 +1192,7 @@ Type *ETSChecker::GetTypeFromClassReference(varbinder::Variable *var)
         return var->TsType();
     }
 
-    auto *classType = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
+    auto *classType = BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
     var->SetTsType(classType);
     return classType;
 }

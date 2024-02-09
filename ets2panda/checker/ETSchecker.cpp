@@ -458,4 +458,34 @@ Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
     }
 }
 
+void ETSChecker::AddUnfinishedType(ETSObjectType *type)
+{
+    if (!type->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
+        unfinishedTypes_.emplace(type);
+    }
+}
+
+void ETSChecker::RemoveUnfinishedType(ETSObjectType *type)
+{
+    unfinishedTypes_.erase(type);
+}
+
+void ETSChecker::ResolveUnfinishedTypes()
+{
+    while (!unfinishedTypes_.empty()) {
+        auto *unfinishedType = *(unfinishedTypes_.begin());
+        auto *declNode = unfinishedType->GetDeclNode();
+        if (declNode->IsClassDefinition()) {
+            auto savedContext = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_CLASS, unfinishedType);
+            checker::ScopeContext scopeCtx(this, declNode->AsClassDefinition()->Scope());
+            ResolveDeclaredMembersOfObject(unfinishedType);
+        } else if (declNode->IsTSInterfaceDeclaration()) {
+            auto savedContext =
+                checker::SavedCheckerContext(this, checker::CheckerStatus::IN_INTERFACE, unfinishedType);
+            checker::ScopeContext scopeCtx(this, unfinishedType->GetDeclNode()->AsTSInterfaceDeclaration()->Scope());
+            ResolveDeclaredMembersOfObject(unfinishedType);
+        }
+    }
+}
+
 }  // namespace ark::es2panda::checker

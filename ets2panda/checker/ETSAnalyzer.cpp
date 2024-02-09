@@ -66,7 +66,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
 {
     ETSChecker *checker = GetETSChecker();
     if (node->TsType() == nullptr) {
-        checker->BuildClassProperties(node);
+        checker->BuildBasicClassProperties(node);
     }
 
     checker->CheckClassDefinition(node);
@@ -502,7 +502,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 
     auto *elementType = expr->TypeReference()->GetType(checker);
     checker->ValidateArrayIndex(expr->Dimension(), true);
-
     if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && elementType->ToAssemblerName().str() != "Ball") {
         // Ball is workaround for koala ui lib
         if (elementType->IsETSObjectType()) {
@@ -523,12 +522,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
-
-    if (!calleeType->IsETSObjectType()) {
-        checker->ThrowTypeError("This expression is not constructible.", expr->Start());
-    }
-
+    auto *calleeType = GetCalleeType(checker, expr);
     auto *calleeObj = calleeType->AsETSObjectType();
     expr->SetTsType(calleeObj);
 
@@ -1820,7 +1814,7 @@ checker::ETSObjectType *CreateSyntheticType(ETSChecker *checker, util::StringVie
                                             checker::ETSObjectType *lastObjectType, ir::Identifier *id)
 {
     auto *syntheticObjType = checker->Allocator()->New<checker::ETSObjectType>(
-        checker->Allocator(), syntheticName, syntheticName, id, checker::ETSObjectFlags::NO_OPTS);
+        checker->Allocator(), syntheticName, syntheticName, id, checker::ETSObjectFlags::NO_OPTS, checker->Relation());
 
     auto *classDecl = checker->Allocator()->New<varbinder::ClassDecl>(syntheticName);
     varbinder::LocalVariable *var =
@@ -1864,9 +1858,9 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
                             .View();
     }
 
-    auto *moduleObjectType =
-        checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), syntheticNames[0], assemblerName,
-                                                          st->Local()->AsIdentifier(), checker::ETSObjectFlags::CLASS);
+    auto *moduleObjectType = checker->Allocator()->New<checker::ETSObjectType>(
+        checker->Allocator(), syntheticNames[0], assemblerName, st->Local()->AsIdentifier(),
+        checker::ETSObjectFlags::CLASS, checker->Relation());
 
     auto *rootDecl = checker->Allocator()->New<varbinder::ClassDecl>(syntheticNames[0]);
     varbinder::LocalVariable *rootVar =

@@ -17,6 +17,7 @@
 #define ES2PANDA_CHECKER_ETSANALYZER_H
 
 #include "checker/SemanticAnalyzer.h"
+#include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
 
@@ -47,6 +48,17 @@ private:
     checker::Type *GetReturnType(ir::CallExpression *expr, checker::Type *calleeType) const;
     checker::Type *GetFunctionReturnType(ir::ReturnStatement *st, ir::ScriptFunction *containingFunc) const;
     checker::Type *SetAndAdjustType(ETSChecker *checker, ir::MemberExpression *expr, ETSObjectType *objectType) const;
+
+    checker::Type *GetCalleeType(ETSChecker *checker, ir::ETSNewClassInstanceExpression *expr) const
+    {
+        checker::Type *calleeType = expr->GetTypeRef()->Check(checker);
+
+        if (!calleeType->IsETSObjectType()) {
+            checker->ThrowTypeError("This expression is not constructible.", expr->Start());
+        }
+
+        return calleeType;
+    }
 };
 
 }  // namespace ark::es2panda::checker

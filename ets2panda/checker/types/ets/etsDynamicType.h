@@ -22,8 +22,9 @@ namespace ark::es2panda::checker {
 class ETSDynamicType : public ETSObjectType {
 public:
     explicit ETSDynamicType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
-                            ir::AstNode *declNode, ETSObjectFlags flags, Language lang, bool hasDecl)
-        : ETSObjectType(allocator, name, assemblerName, declNode, flags | ETSObjectFlags::DYNAMIC),
+                            ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation, Language lang,
+                            bool hasDecl)
+        : ETSObjectType(allocator, name, assemblerName, declNode, flags | ETSObjectFlags::DYNAMIC, relation),
           propertiesCache_ {allocator->Adapter()},
           lang_(lang),
           hasDecl_(hasDecl)

@@ -848,11 +848,14 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
 
 void ETSObjectType::InstantiateProperties() const
 {
+    ASSERT(relation_ != nullptr);
+
     if (baseType_ == nullptr || baseType_ == this) {
+        relation_->GetChecker()->AsETSChecker()->ResolveUnfinishedTypes();
         return;
     }
     ASSERT(!propertiesInstantiated_);
-    ASSERT(relation_ != nullptr);
+    relation_->GetChecker()->AsETSChecker()->ResolveUnfinishedTypes();
 
     for (auto *const it : baseType_->ConstructSignatures()) {
         auto *newSig = it->Substitute(relation_, substitution_);

@@ -28,9 +28,11 @@ public:
         SetSuperType(super);
     }
 
-    explicit ETSBigIntType(ArenaAllocator *allocator, ETSObjectType *super, util::StringView value)
+    explicit ETSBigIntType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
+                           util::StringView value)
         : ETSObjectType(allocator,
-                        ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER),
+                        ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER,
+                        relation),
           value_(value)
     {
         SetSuperType(super);

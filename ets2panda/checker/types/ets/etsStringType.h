@@ -28,8 +28,18 @@ public:
         SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
     }
 
-    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, util::StringView value)
-        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER),
+    explicit ETSStringType(ArenaAllocator *allocator, [[maybe_unused]] ETSObjectType *super, TypeRelation *relation)
+        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
+                        relation)
+    {
+        SetSuperType(super);
+        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
+    }
+
+    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
+                           util::StringView value)
+        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
+                        relation),
           value_(value)
     {
         SetSuperType(super);
