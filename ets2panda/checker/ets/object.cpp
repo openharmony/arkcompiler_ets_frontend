@@ -747,14 +747,25 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
             }
         }
 
-        if (isGetterSetter && !functionOverridden) {
-            for (auto *field : classType->Fields()) {
-                if (field->Name() == (*it)->Name()) {
-                    field->Declaration()->Node()->AddModifier(ir::ModifierFlags::SETTER);
-                    it = abstractsToBeImplemented.erase(it);
-                    functionOverridden = true;
-                    break;
+        if (functionOverridden) {
+            continue;
+        }
+
+        if (!isGetterSetter) {
+            it++;
+            continue;
+        }
+
+        for (auto *field : classType->Fields()) {
+            if (field->Name() == (*it)->Name()) {
+                if (!field->HasFlag(varbinder::VariableFlags::PUBLIC)) {
+                    ThrowTypeError("Interface property implementation cannot be generated as non-public",
+                                   field->Declaration()->Node()->Start());
                 }
+                field->Declaration()->Node()->AddModifier(ir::ModifierFlags::SETTER);
+                it = abstractsToBeImplemented.erase(it);
+                functionOverridden = true;
+                break;
             }
         }
 
@@ -805,6 +816,7 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
 
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
+    classDef->SetClassDefinitionChecked();
     auto *classType = classDef->TsType()->AsETSObjectType();
     auto newStatus = checker::CheckerStatus::IN_CLASS;
     classType->SetEnclosingType(Context().ContainingClass());
@@ -814,11 +826,8 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         classType->AddObjectFlag(checker::ETSObjectFlags::INNER);
     }
 
-    if (classDef->IsGlobal()) {
-        classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL);
-    } else {
-        CheckLocalClass(classDef, newStatus);
-    }
+    classDef->IsGlobal() ? classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL)
+                         : CheckLocalClass(classDef, newStatus);
 
     checker::ScopeContext scopeCtx(this, classDef->Scope());
     auto savedContext = SavedCheckerContext(this, newStatus, classType);
@@ -833,6 +842,10 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     if (classDef->IsStatic() && !Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL)) {
         AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
     }
+
+    ValidateOverriding(classType, classDef->Start());
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    TransformProperties(classType);
 
     for (auto *it : classDef->Body()) {
         if (it->IsClassProperty()) {
@@ -859,9 +872,6 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         }
     }
 
-    ValidateOverriding(classType, classDef->Start());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    TransformProperties(classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);
     CheckGetterSetterProperties(classType);
@@ -1415,6 +1425,17 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         return resolveRes;
     }
 
+    varbinder::Variable *globalFunctionVar = nullptr;
+
+    if (memberExpr->Parent()->IsCallExpression()) {
+        if (memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
+            globalFunctionVar = ResolveInstanceExtension(memberExpr);
+        }
+    } else if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
+               !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
+        this->CheckClassDefinition(target->GetDeclNode()->AsClassDefinition());
+    }
+
     const auto *const targetRef = GetTargetRef(memberExpr);
     auto searchFlag = GetSearchFlags(memberExpr, targetRef);
 
@@ -1423,11 +1444,6 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     }
 
     auto *const prop = target->GetProperty(memberExpr->Property()->AsIdentifier()->Name(), searchFlag);
-    varbinder::Variable *globalFunctionVar = nullptr;
-
-    if (memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
-        globalFunctionVar = ResolveInstanceExtension(memberExpr);
-    }
 
     if (globalFunctionVar == nullptr ||
         (targetRef != nullptr && targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE))) {
@@ -1559,59 +1575,19 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
 
     for (auto *const field : propertyList) {
         ASSERT(field->Declaration()->Node()->IsClassProperty());
-        auto *const classProp = field->Declaration()->Node()->AsClassProperty();
+        auto *const originalProp = field->Declaration()->Node()->AsClassProperty();
 
-        if ((field->Declaration()->Node()->Modifiers() & ir::ModifierFlags::SETTER) == 0U) {
+        if ((originalProp->Modifiers() & ir::ModifierFlags::SETTER) == 0U) {
             continue;
         }
+        classType->RemoveProperty<checker::PropertyType::INSTANCE_FIELD>(field);
+        GenerateGetterSetterPropertyAndMethod(originalProp, classType);
+    }
 
-        field->AddFlag(varbinder::VariableFlags::GETTER_SETTER);
-
-        auto *const scope = this->Scope();
-        ASSERT(scope->IsClassScope());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        ir::MethodDefinition *getter = GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), false, this);
-        classDef->Body().push_back(getter);
-        getter->SetParent(classDef);
-        classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(getter->Variable()->AsLocalVariable());
-
-        auto *const methodScope = scope->AsClassScope()->InstanceMethodScope();
-        auto name = getter->Key()->AsIdentifier()->Name();
-
-        auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
-        auto *const var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
-        var->AddFlag(varbinder::VariableFlags::METHOD);
-
-        if (var == nullptr) {
-            auto *const prevDecl = methodScope->FindDecl(name);
-            ASSERT(prevDecl->IsFunctionDecl());
-            prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
-
-            if (!classProp->IsReadonly()) {
-                ir::MethodDefinition *const setter =
-                    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                    GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
-                setter->SetParent(classDef);
-
-                classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
-                prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
-            }
-
-            getter->Function()->Id()->SetVariable(
-                methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
-            continue;
+    for (auto it = classDef->Body().begin(); it != classDef->Body().end(); ++it) {
+        if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::SETTER) != 0U) {
+            classDef->Body().erase(it);
         }
-
-        if (!classProp->IsReadonly()) {
-            ir::MethodDefinition *const setter =
-                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
-            setter->SetParent(classDef);
-
-            classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
-            getter->AddOverload(setter);
-        }
-        getter->Function()->Id()->SetVariable(var);
     }
 }
 

@@ -380,7 +380,9 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         return nullptr;
     }
 
-    auto *baseProp = prop->Declaration()->Node()->AsClassProperty()->Id()->Variable();
+    auto *baseProp = prop->Declaration()->Node()->IsClassProperty()
+                         ? prop->Declaration()->Node()->AsClassProperty()->Id()->Variable()
+                         : prop->Declaration()->Node()->AsMethodDefinition()->Variable();
     if (baseProp == prop) {
         return nullptr;
     }
@@ -2798,13 +2800,44 @@ ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVaria
     return argExpr;
 }
 
+ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope)
+{
+    classProp->Key()->AsIdentifier()->SetName(
+        util::UString("<property>" + classProp->Key()->AsIdentifier()->Name().Mutf8(), Allocator()).View());
+    classProp->AddModifier(ir::ModifierFlags::PRIVATE);
+
+    auto *fieldDecl = Allocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());
+    fieldDecl->BindNode(classProp);
+
+    auto fieldVar = scope->InstanceFieldScope()->AddDecl(Allocator(), fieldDecl, ScriptExtension::ETS);
+    fieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
+
+    classProp->Key()->SetVariable(fieldVar);
+    classProp->Key()->AsIdentifier()->SetVariable(fieldVar);
+    fieldVar->SetTsType(classProp->TsType());
+
+    fieldVar->AddFlag(varbinder::VariableFlags::GETTER_SETTER);
+    return classProp;
+}
+
 void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                           ir::ClassProperty *const field, varbinder::FunctionParamScope *paramScope,
                                           bool isSetter)
 {
+    auto *classDef = field->Parent()->AsClassDefinition();
+    auto *thisExpression = Allocator()->New<ir::ThisExpression>();
+    thisExpression->SetParent(classDef);
+    thisExpression->SetTsType(classDef->TsType());
+
+    auto *memberExpression =
+        AllocNode<ir::MemberExpression>(thisExpression, field->Key()->AsIdentifier()->Clone(Allocator(), nullptr),
+                                        ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    memberExpression->SetTsType(field->TsType());
+    memberExpression->SetPropVar(field->Key()->Variable()->AsLocalVariable());
+    memberExpression->SetRange(classDef->Range());
+
     if (!isSetter) {
-        auto *clone = field->Key()->Clone(Allocator(), nullptr)->AsExpression();
-        stmts.push_back(AllocNode<ir::ReturnStatement>(clone));
+        stmts.push_back(AllocNode<ir::ReturnStatement>(memberExpression));
         return;
     }
 
@@ -2820,8 +2853,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     params.push_back(paramExpression);
 
     auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
-        field->Key()->Clone(Allocator(), nullptr)->AsExpression(), paramExpression->Clone(Allocator(), nullptr),
-        lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        memberExpression, paramExpression->Clone(Allocator(), nullptr), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     assignmentExpression->SetRange({field->Start(), field->End()});
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2830,7 +2862,8 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     stmts.push_back(Allocator()->New<ir::ReturnStatement>(nullptr));
 }
 
-ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const field,
+ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const property,
+                                                              ir::ClassProperty *const field,
                                                               varbinder::ClassScope *classScope, bool isSetter,
                                                               ETSChecker *checker)
 {
@@ -2858,10 +2891,10 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     func->SetScope(functionScope);
     body->SetScope(functionScope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
+    auto *methodIdent = property->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
     auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(
-        checker->Allocator(), field->Key()->AsIdentifier()->Name(),
-        field->Key()->AsIdentifier()->Variable()->Declaration()->Node());
+        checker->Allocator(), property->Key()->AsIdentifier()->Name(),
+        property->Key()->AsIdentifier()->Variable()->Declaration()->Node());
     auto *var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
 
     methodIdent->SetVariable(var);
@@ -2887,6 +2920,68 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     method->Check(checker);
 
     return method;
+}
+
+void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType)
+{
+    auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
+    auto *interfaceProp = originalProp->Clone(Allocator(), originalProp->Parent());
+    interfaceProp->SetModifiers(
+        static_cast<ir::ModifierFlags>(interfaceProp->Modifiers() & ~(ir::ModifierFlags::SETTER)));
+
+    ASSERT(Scope()->IsClassScope());
+    auto *const scope = Scope()->AsClassScope();
+    scope->InstanceFieldScope()->EraseBinding(interfaceProp->Key()->AsIdentifier()->Name());
+    interfaceProp->SetRange(originalProp->Range());
+
+    auto *const classProp =
+        ClassPropToImplementationProp(interfaceProp->Clone(Allocator(), originalProp->Parent()), scope);
+    classType->AddProperty<PropertyType::INSTANCE_FIELD>(classProp->Key()->Variable()->AsLocalVariable());
+    classDef->Body().push_back(classProp);
+
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    ir::MethodDefinition *getter = GenerateDefaultGetterSetter(interfaceProp, classProp, scope, false, this);
+    classDef->Body().push_back(getter);
+    getter->SetParent(classDef);
+    getter->TsType()->AddTypeFlag(TypeFlag::GETTER);
+    getter->Variable()->SetTsType(getter->TsType());
+    classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(getter->Variable()->AsLocalVariable());
+
+    auto *const methodScope = scope->InstanceMethodScope();
+    auto name = getter->Key()->AsIdentifier()->Name();
+
+    auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
+    auto *const var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
+
+    ir::MethodDefinition *setter = nullptr;
+    if (!classProp->IsReadonly()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        setter = GenerateDefaultGetterSetter(interfaceProp, classProp, scope, true, this);
+
+        setter->SetParent(classDef);
+        setter->TsType()->AddTypeFlag(TypeFlag::SETTER);
+        getter->Variable()->TsType()->AsETSFunctionType()->AddCallSignature(
+            setter->TsType()->AsETSFunctionType()->CallSignatures()[0]);
+        classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
+
+        getter->AddOverload(setter);
+    }
+
+    if (var == nullptr) {
+        auto *const prevDecl = methodScope->FindDecl(name);
+        ASSERT(prevDecl->IsFunctionDecl());
+        prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
+
+        if (setter != nullptr) {
+            prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
+        }
+
+        getter->Function()->Id()->SetVariable(methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
+        return;
+    }
+
+    var->AddFlag(varbinder::VariableFlags::METHOD);
+    getter->Function()->Id()->SetVariable(var);
 }
 
 const Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(const Type *type) const

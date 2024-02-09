@@ -562,13 +562,15 @@ public:
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
     const Type *TryGettingFunctionTypeFromInvokeFunction(const Type *type) const;
-
+    ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
                                                    const std::string &className);
     void GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                   ir::ClassProperty *field, varbinder::FunctionParamScope *paramScope, bool isSetter);
-    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *field, varbinder::ClassScope *scope,
+    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *const property,
+                                                             ir::ClassProperty *field, varbinder::ClassScope *scope,
                                                              bool isSetter, ETSChecker *checker);
+    void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
 
     bool IsInLocalClass(const ir::AstNode *node) const;
     // Exception

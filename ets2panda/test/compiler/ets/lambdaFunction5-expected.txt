@@ -247,9 +247,37 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "c",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "ThisExpression",
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 24
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 28
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "c",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 29
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 30
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 20,
@@ -257,7 +285,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 25
+                              "column": 30
                             }
                           }
                         },
@@ -268,7 +296,7 @@
                           },
                           "end": {
                             "line": 20,
-                            "column": 25
+                            "column": 30
                           }
                         }
                       },
@@ -279,7 +307,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 26
+                          "column": 31
                         }
                       }
                     }
@@ -607,9 +635,37 @@
                     {
                       "type": "ReturnStatement",
                       "argument": {
-                        "type": "Identifier",
-                        "name": "a",
-                        "decorators": [],
+                        "type": "MemberExpression",
+                        "object": {
+                          "type": "ThisExpression",
+                          "loc": {
+                            "start": {
+                              "line": 24,
+                              "column": 16
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 20
+                            }
+                          }
+                        },
+                        "property": {
+                          "type": "Identifier",
+                          "name": "a",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 24,
+                              "column": 21
+                            },
+                            "end": {
+                              "line": 24,
+                              "column": 22
+                            }
+                          }
+                        },
+                        "computed": false,
+                        "optional": false,
                         "loc": {
                           "start": {
                             "line": 24,
@@ -617,7 +673,7 @@
                           },
                           "end": {
                             "line": 24,
-                            "column": 17
+                            "column": 22
                           }
                         }
                       },
@@ -628,7 +684,7 @@
                         },
                         "end": {
                           "line": 24,
-                          "column": 18
+                          "column": 23
                         }
                       }
                     }
@@ -870,9 +926,37 @@
                         {
                           "type": "ReturnStatement",
                           "argument": {
-                            "type": "Identifier",
-                            "name": "a",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "ThisExpression",
+                              "loc": {
+                                "start": {
+                                  "line": 28,
+                                  "column": 16
+                                },
+                                "end": {
+                                  "line": 28,
+                                  "column": 20
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "a",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 28,
+                                  "column": 21
+                                },
+                                "end": {
+                                  "line": 28,
+                                  "column": 22
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 28,
@@ -880,7 +964,7 @@
                               },
                               "end": {
                                 "line": 28,
-                                "column": 17
+                                "column": 22
                               }
                             }
                           },
@@ -891,7 +975,7 @@
                             },
                             "end": {
                               "line": 28,
-                              "column": 18
+                              "column": 23
                             }
                           }
                         }

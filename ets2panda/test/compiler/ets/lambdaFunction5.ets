@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,15 +17,15 @@ class A {
     c = 1;
 
     a: (a: int, b: int) => int = (a: int, b:int): int => {
-        return a + b + c;
+        return a + b + this.c;
     }
 
     foo(): (b: int, c: int) => int {
-        return a;
+        return this.a;
     }
 
     foo(d: int): (b: int, c: int) => int {
-        return a;
+        return this.a;
     }
 }
 
