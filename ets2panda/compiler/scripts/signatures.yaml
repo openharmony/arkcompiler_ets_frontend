@@ -267,7 +267,7 @@ builtins:
     package: PKG_ESCOMPAT
     ref: BUILTIN_BIGINT
   - name: AssertionError
-    package: PKG_ESCOMPAT
+    package: PKG_STD_CORE
     ref: BUILTIN_ASSERTION_ERROR
   - name: Runtime
     package: PKG_STD_CORE

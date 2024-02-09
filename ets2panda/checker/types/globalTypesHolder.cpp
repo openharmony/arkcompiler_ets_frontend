@@ -142,7 +142,6 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("Error", GlobalTypeId::ETS_ERROR_BUILTIN);
     builtinNameMappings_.emplace("OutOfMemoryError", GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN);
     builtinNameMappings_.emplace("NoSuchMethodError", GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("AssertionError", GlobalTypeId::ETS_ASSERTION_ERROR_BUILTIN);
     builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
     builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
     builtinNameMappings_.emplace("UncatchedExceptionError", GlobalTypeId::ETS_UNCATCHED_EXCEPTION_ERROR_BUILTIN);
