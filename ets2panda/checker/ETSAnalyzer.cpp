@@ -615,6 +615,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
         } else {
             paramType = !expr->IsRestParameter() ? expr->Ident()->Check(checker) : expr->spread_->Check(checker);
             if (expr->IsDefault()) {
+                std::cout << __LINE__ << std::endl;
                 [[maybe_unused]] auto *const initType = expr->Initializer()->Check(checker);
             }
         }
