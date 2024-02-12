@@ -183,7 +183,8 @@ private:
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool isRethrowsAllowed) override;
     ir::Expression *CreateParameterThis(util::StringView className) override;
-
+    lexer::SourcePosition ParseEndLocInterfaceMethod(lexer::LexerPosition startPos, ir::ScriptFunction *func,
+                                                     ir::MethodDefinitionKind methodKind);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
                                    ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *initFunction = nullptr,
