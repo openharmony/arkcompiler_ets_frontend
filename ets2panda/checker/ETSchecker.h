@@ -149,9 +149,9 @@ public:
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(const ETSObjectType *type);
-    int32_t GetTupleElementAccessValue(const Type *type) const;
+    int32_t GetTupleElementAccessValue(const Type *type, const lexer::SourcePosition &pos);
     void ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
-    void ValidateTupleIndex(const ETSTupleType *tuple, const ir::MemberExpression *expr);
+    void ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
