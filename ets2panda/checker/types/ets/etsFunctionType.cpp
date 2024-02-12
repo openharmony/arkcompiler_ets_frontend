@@ -49,7 +49,7 @@ void ETSFunctionType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    callSignatures_[0]->Identical(relation, other->AsETSFunctionType()->CallSignatures()[0]);
+    callSignatures_[0]->Compatible(relation, other->AsETSFunctionType()->CallSignatures()[0]);
 }
 
 bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)

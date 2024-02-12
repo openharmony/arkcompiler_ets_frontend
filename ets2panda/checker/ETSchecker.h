@@ -351,8 +351,8 @@ public:
     void ThrowOverrideError(Signature *signature, Signature *overriddenSignature, const OverrideErrorCode &errorCode);
     void CheckOverride(Signature *signature);
     bool CheckOverride(Signature *signature, ETSObjectType *site);
-    std::tuple<bool, OverrideErrorCode> CheckOverride(Signature *signature, Signature *other);
-    bool IsMethodOverridesOther(Signature *target, Signature *source);
+    OverrideErrorCode CheckOverride(Signature *signature, Signature *other);
+    bool IsMethodOverridesOther(Signature *base, Signature *derived);
     bool IsOverridableIn(Signature *signature);
     [[nodiscard]] bool AreOverrideEquivalent(Signature *s1, Signature *s2);
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);

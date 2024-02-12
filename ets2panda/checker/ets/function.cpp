@@ -992,7 +992,7 @@ Signature *ETSChecker::CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *
 
         bool isOverridden = false;
         for (auto sourceSig : source->CallSignatures()) {
-            Relation()->IsIdenticalTo(*targetSig, sourceSig);
+            Relation()->IsCompatibleTo(*targetSig, sourceSig);
             if (Relation()->IsTrue() && (*targetSig)->Function()->Id()->Name() == sourceSig->Function()->Id()->Name()) {
                 target->CallSignatures().erase(targetSig);
                 isOverridden = true;
@@ -1023,31 +1023,32 @@ bool ETSChecker::IsOverridableIn(Signature *signature)
     return signature->HasSignatureFlag(SignatureFlags::PROTECTED);
 }
 
-bool ETSChecker::IsMethodOverridesOther(Signature *target, Signature *source)
+bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
 {
-    if (source->Function()->IsConstructor()) {
+    if (derived->Function()->IsConstructor()) {
         return false;
     }
 
-    if (target == source) {
+    if (base == derived) {
         return true;
     }
 
-    if (source->HasSignatureFlag(SignatureFlags::STATIC) != target->HasSignatureFlag(SignatureFlags::STATIC)) {
+    if (derived->HasSignatureFlag(SignatureFlags::STATIC) != base->HasSignatureFlag(SignatureFlags::STATIC)) {
         return false;
     }
 
-    if (IsOverridableIn(target)) {
-        SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
-        Relation()->IsIdenticalTo(target, source);
+    if (IsOverridableIn(base)) {
+        SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK |
+                                                                    TypeRelationFlag::OVERRIDING_CONTEXT);
+        Relation()->IsCompatibleTo(base, derived);
         if (Relation()->IsTrue()) {
-            CheckThrowMarkers(source, target);
+            CheckThrowMarkers(derived, base);
 
-            if (source->HasSignatureFlag(SignatureFlags::STATIC)) {
+            if (derived->HasSignatureFlag(SignatureFlags::STATIC)) {
                 return false;
             }
 
-            source->Function()->SetOverride();
+            derived->Function()->SetOverride();
             return true;
         }
     }
@@ -1070,26 +1071,26 @@ void ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
     }
 }
 
-std::tuple<bool, OverrideErrorCode> ETSChecker::CheckOverride(Signature *signature, Signature *other)
+OverrideErrorCode ETSChecker::CheckOverride(Signature *signature, Signature *other)
 {
     if (other->HasSignatureFlag(SignatureFlags::STATIC)) {
         ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
-        return {true, OverrideErrorCode::NO_ERROR};
+        return OverrideErrorCode::NO_ERROR;
     }
 
     if (other->IsFinal()) {
-        return {false, OverrideErrorCode::OVERRIDDEN_FINAL};
+        return OverrideErrorCode::OVERRIDDEN_FINAL;
     }
 
     if (!IsReturnTypeSubstitutable(signature, other)) {
-        return {false, OverrideErrorCode::INCOMPATIBLE_RETURN};
+        return OverrideErrorCode::INCOMPATIBLE_RETURN;
     }
 
     if (signature->ProtectionFlag() > other->ProtectionFlag()) {
-        return {false, OverrideErrorCode::OVERRIDDEN_WEAKER};
+        return OverrideErrorCode::OVERRIDDEN_WEAKER;
     }
 
-    return {true, OverrideErrorCode::NO_ERROR};
+    return OverrideErrorCode::NO_ERROR;
 }
 
 Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *target)
@@ -1149,6 +1150,7 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         return isOverridingAnySignature;
     }
 
+    bool suitableSignatureFound = false;
     for (auto *it : target->TsType()->AsETSFunctionType()->CallSignatures()) {
         auto *itSubst = AdjustForTypeParameters(signature, it);
 
@@ -1169,9 +1171,10 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
             continue;
         }
 
-        auto [success, errorCode] = CheckOverride(signature, itSubst);
-
-        if (!success) {
+        auto errorCode = CheckOverride(signature, itSubst);
+        if (errorCode == OverrideErrorCode::NO_ERROR) {
+            suitableSignatureFound = true;
+        } else if (!suitableSignatureFound) {
             ThrowOverrideError(signature, it, errorCode);
         }
 
@@ -2749,7 +2752,8 @@ bool ETSChecker::AreOverrideEquivalent(Signature *const s1, Signature *const s2)
     // types are also the same (after the formal parameter types of N are adapted to the type parameters of M).
     // Signatures s1 and s2 are override-equivalent only if s1 and s2 are the same.
 
-    return s1->Function()->Id()->Name() == s2->Function()->Id()->Name() && Relation()->IsIdenticalTo(s1, s2);
+    SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::OVERRIDING_CONTEXT);
+    return s1->Function()->Id()->Name() == s2->Function()->Id()->Name() && Relation()->IsCompatibleTo(s1, s2);
 }
 
 bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const s2)

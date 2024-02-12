@@ -139,7 +139,7 @@ static void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecke
     const auto *const funcType = variable->TsType()->AsETSFunctionType();
     for (auto *funcSignature : funcType->CallSignatures()) {
         signature->SetReturnType(funcSignature->ReturnType());
-        if (!checker->Relation()->IsIdenticalTo(signature, funcSignature)) {
+        if (!checker->Relation()->IsCompatibleTo(signature, funcSignature)) {
             continue;
         }
 
