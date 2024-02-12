@@ -2328,12 +2328,17 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
         const checker::SavedTypeRelationFlagsContext savedFlagsCtx(
             checker->Relation(), checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
-        st->TypeAnnotation()->Check(checker);
+        if (st->TypeAnnotation()->TsType() == nullptr) {
+            st->TypeAnnotation()->Check(checker);
+        }
 
         return nullptr;
     }
 
-    st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+    if (st->TypeParameterTypes().empty()) {
+        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+    }
+
     for (auto *const param : st->TypeParams()->Params()) {
         const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
             if (!node->IsIdentifier()) {
@@ -2353,7 +2358,9 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     const checker::SavedTypeRelationFlagsContext savedFlagsCtx(checker->Relation(),
                                                                checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
-    st->TypeAnnotation()->Check(checker);
+    if (st->TypeAnnotation()->TsType() == nullptr) {
+        st->TypeAnnotation()->Check(checker);
+    }
 
     return nullptr;
 }

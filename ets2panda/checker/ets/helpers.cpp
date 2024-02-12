@@ -2249,7 +2249,7 @@ bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbind
 void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target)
 {
     auto boxingResult = PrimitiveTypeAsETSBuiltinType(target);
-    if (boxingResult != nullptr) {
+    if ((boxingResult != nullptr) && !relation->OnlyCheckBoxingUnboxing()) {
         relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxingResult));
         relation->Result(true);
     }
@@ -2258,7 +2258,7 @@ void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *targ
 void ETSChecker::AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self)
 {
     auto unboxingResult = UnboxingConverter(this, relation, source, self).Result();
-    if ((unboxingResult != nullptr) && relation->IsTrue()) {
+    if ((unboxingResult != nullptr) && relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
         relation->GetNode()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxingResult));
     }
 }
@@ -2298,7 +2298,9 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     ASSERT(relation != nullptr);
     checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(
         relation, (relation->ApplyWidening() ? TypeRelationFlag::WIDENING : TypeRelationFlag::NONE) |
-                      (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
+                      (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE) |
+                      (relation->OnlyCheckBoxingUnboxing() ? TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING
+                                                           : TypeRelationFlag::NONE));
     auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
     if (boxedSourceType == nullptr) {
         return;
@@ -2309,7 +2311,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
         return;
     }
     relation->IsAssignableTo(boxedSourceType, target);
-    if (relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
+    if (relation->IsTrue()) {
         AddBoxingFlagToPrimitiveType(relation, boxedSourceType);
     } else {
         auto unboxedTargetType = ETSBuiltinTypeAsPrimitiveType(target);
