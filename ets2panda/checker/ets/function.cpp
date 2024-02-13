@@ -392,10 +392,10 @@ Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> 
 ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> &signatures,
                                                        const ir::TSTypeParameterInstantiation *typeArguments,
                                                        const ArenaVector<ir::Expression *> &arguments,
-                                                       std::vector<bool> &argTypeInferenceRequired,
                                                        const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
 {
     ArenaVector<Signature *> compatibleSignatures(Allocator()->Adapter());
+    std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
 
     auto collectSignatures = [&](TypeRelationFlag relationFlags) {
         for (auto *sig : signatures) {
@@ -432,9 +432,9 @@ ArenaVector<Signature *> ETSChecker::CollectSignatures(ArenaVector<Signature *> 
 
 Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compatibleSignatures,
                                                 const ArenaVector<ir::Expression *> &arguments,
-                                                std::vector<bool> &argTypeInferenceRequired,
                                                 const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags)
 {
+    std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
     Signature *mostSpecificSignature = ChooseMostSpecificSignature(compatibleSignatures, argTypeInferenceRequired, pos);
 
     if (mostSpecificSignature == nullptr) {
@@ -454,11 +454,9 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
                                           const lexer::SourcePosition &pos, std::string_view signatureKind,
                                           TypeRelationFlag resolveFlags)
 {
-    std::vector<bool> argTypeInferenceRequired = FindTypeInferenceArguments(arguments);
-    auto compatibleSignatures =
-        CollectSignatures(signatures, typeArguments, arguments, argTypeInferenceRequired, pos, resolveFlags);
+    auto compatibleSignatures = CollectSignatures(signatures, typeArguments, arguments, pos, resolveFlags);
     if (!compatibleSignatures.empty()) {
-        return GetMostSpecificSignature(compatibleSignatures, arguments, argTypeInferenceRequired, pos, resolveFlags);
+        return GetMostSpecificSignature(compatibleSignatures, arguments, pos, resolveFlags);
     }
 
     if ((resolveFlags & TypeRelationFlag::NO_THROW) == 0 && !arguments.empty() && !signatures.empty()) {

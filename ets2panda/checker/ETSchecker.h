@@ -540,6 +540,8 @@ public:
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
     const Type *TryGettingFunctionTypeFromInvokeFunction(const Type *type) const;
 
+    ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
+                                                   const std::string &className);
     void GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                   ir::ClassProperty *field, varbinder::FunctionParamScope *paramScope, bool isSetter);
     static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *field, varbinder::ClassScope *scope,
@@ -697,12 +699,10 @@ private:
     ETSObjectType *AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)(Args...), Args... args) const;
     Signature *GetMostSpecificSignature(ArenaVector<Signature *> &compatibleSignatures,
                                         const ArenaVector<ir::Expression *> &arguments,
-                                        std::vector<bool> &argTypeInferenceRequired, const lexer::SourcePosition &pos,
-                                        TypeRelationFlag resolveFlags);
+                                        const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags);
     ArenaVector<Signature *> CollectSignatures(ArenaVector<Signature *> &signatures,
                                                const ir::TSTypeParameterInstantiation *typeArguments,
                                                const ArenaVector<ir::Expression *> &arguments,
-                                               std::vector<bool> &argTypeInferenceRequired,
                                                const lexer::SourcePosition &pos, TypeRelationFlag resolveFlags);
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *callExpr);

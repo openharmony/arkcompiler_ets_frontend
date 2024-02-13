@@ -2548,7 +2548,8 @@ void ETSChecker::ModifyPreferredType(ir::ArrayExpression *const arrayExpr, Type 
     }
 }
 
-std::string GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod, const std::string &className)
+ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
+                                                           const std::string &className)
 {
     auto callSignatures = instantiateMethod->TsType()->AsETSFunctionType()->CallSignatures();
     ASSERT(!callSignatures.empty());
@@ -2558,7 +2559,14 @@ std::string GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiate
         implicitInstantiateArgument.append(" as " + methodOwner);
     }
     implicitInstantiateArgument.append("}");
-    return implicitInstantiateArgument;
+
+    parser::Program program(Allocator(), VarBinder());
+    es2panda::CompilerOptions options;
+    auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
+    auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
+    compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
+
+    return argExpr;
 }
 
 void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
@@ -2714,14 +2722,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     callExpr->SetCallee(transformedCallee);
 
     if (instantiateMethod != nullptr) {
-        std::string implicitInstantiateArgument =
-            GenerateImplicitInstantiateArg(instantiateMethod, std::string(className));
-
-        parser::Program program(Allocator(), VarBinder());
-        es2panda::CompilerOptions options;
-        auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
-        auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
-        compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
+        auto *argExpr = GenerateImplicitInstantiateArg(instantiateMethod, std::string(className));
 
         argExpr->SetParent(callExpr);
         argExpr->SetRange(ident->Range());
