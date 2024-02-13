@@ -421,6 +421,22 @@ public:
     }
 };
 
+class NodeHasSourceRange {
+public:
+    explicit NodeHasSourceRange([[maybe_unused]] ArenaAllocator &allocator) {}
+
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        const auto hasRange =
+            ast->Start().line != 0 || ast->Start().index != 0 || ast->End().line != 0 || ast->End().index != 0;
+        if (!hasRange) {
+            ctx.AddCheckMessage("NULL_RANGE", *ast, ast->Start());
+            return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+        }
+        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+    }
+};
+
 class IdentifierHasVariable {
 public:
     explicit IdentifierHasVariable([[maybe_unused]] ArenaAllocator &allocator) {}
@@ -669,6 +685,37 @@ public:
 
 private:
     ArenaAllocator &allocator_;
+};
+
+class EveryChildInParentRange {
+public:
+    explicit EveryChildInParentRange([[maybe_unused]] ArenaAllocator &allocator) {}
+
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
+        if (ast->Parent() == nullptr) {
+            return result;
+        }
+        ast->Iterate([&](const ir::AstNode *node) {
+            if (ast != node->Parent()) {
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+            if (ast->Start().line > node->Start().line || ast->End().line < node->End().line) {
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+            if (ast->Start().line == node->Start().line && ast->Start().index > node->Start().index) {
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+            if (ast->End().line == node->End().line && ast->End().index < node->End().index) {
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+            ctx.AddCheckMessage("INCORRECT_CHILD_RANGE", *node, node->Start());
+        });
+        return result;
+    }
+
+private:
 };
 
 class EveryChildHasValidParent {
@@ -1082,10 +1129,12 @@ private:
 ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
 {
     AddInvariant<NodeHasParent>(allocator, "NodeHasParent");
+    AddInvariant<NodeHasSourceRange>(allocator, "NodeHasSourceRange");
     AddInvariant<NodeHasType>(allocator, "NodeHasType");
     AddInvariant<IdentifierHasVariable>(allocator, "IdentifierHasVariable");
     AddInvariant<VariableHasScope>(allocator, "VariableHasScope");
     AddInvariant<EveryChildHasValidParent>(allocator, "EveryChildHasValidParent");
+    AddInvariant<EveryChildInParentRange>(allocator, "EveryChildInParentRange");
     AddInvariant<VariableHasEnclosingScope>(allocator, "VariableHasEnclosingScope");
     AddInvariant<ForLoopCorrectlyInitialized>(allocator, "ForLoopCorrectlyInitialized");
     AddInvariant<ModifierAccessValid>(allocator, "ModifierAccessValid");
