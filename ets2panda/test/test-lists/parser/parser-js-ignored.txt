@@ -61,7 +61,7 @@ parser/ets/dynamic_import_tests/dynamic_decl_import.ets
 parser/ets/dynamic_import_tests/dynamic_func_decl_import_bad.ets
 parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.ets
 
-# Disabled temporarily #11468
+# Requires smart casts
 parser/ets/null-coalesc-negative.ets
 
 # Lambda tests, disabled because crash during compiler
@@ -88,7 +88,7 @@ compiler/ets/tuple_types_7.ets
 compiler/ets/tuple_types_9_neg.ets
 parser/ets/tuple_type_1.ets
 
-# 15642 broken ast varbinder scopes in etsglobal
+# 15771 broken ast varbinder scopes in etsglobal
 parser/ets/optional-chaining-array.ets
 parser/ets/optional_chaining_invalid_property.ets
 parser/ets/optional_chaining_nested_property.ets

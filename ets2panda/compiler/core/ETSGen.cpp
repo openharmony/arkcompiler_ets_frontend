@@ -907,6 +907,7 @@ void ETSGen::InternalCheckCast(const ir::AstNode *node, const es2panda::checker:
 // optimized specialization for object and [] targets
 void ETSGen::CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target)
 {
+    ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
     const RegScope rs(this);
     const auto srcReg = AllocReg();
     StoreAccumulator(node, srcReg);

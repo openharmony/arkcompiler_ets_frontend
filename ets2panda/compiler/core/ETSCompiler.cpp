@@ -151,7 +151,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSScript *node) const
 void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    if (expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+    if (expr->expr_->TsType()->IsETSReferenceType()) {
         expr->expr_->Compile(etsg);
         etsg->GetType(expr, false);
     } else {

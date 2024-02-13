@@ -191,8 +191,8 @@ bool Type::PossiblyETSString() const
 
 bool Type::IsETSReferenceType() const
 {
-    return HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || IsETSNullType() || IsETSUndefinedType() ||
-           IsETSStringType() || IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType();
+    return IsETSObjectType() || IsETSArrayType() || IsETSNullType() || IsETSUndefinedType() || IsETSStringType() ||
+           IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType();
 }
 
 bool Type::IsETSUnboxableObject() const
@@ -1076,12 +1076,11 @@ Type *ETSChecker::HandleBooleanLogicalOperators(Type *leftType, Type *rightType,
 void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::Type *argumentType,
                                         ir::ScriptFunction *containingFunc, ir::ReturnStatement *st)
 {
-    if (funcReturnType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) ||
-        argumentType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+    if (funcReturnType->IsETSReferenceType() || argumentType->IsETSReferenceType()) {
         // function return type should be of reference (object) type
         Relation()->SetFlags(checker::TypeRelationFlag::NONE);
 
-        if (!argumentType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        if (!argumentType->IsETSReferenceType()) {
             argumentType = PrimitiveTypeAsETSBuiltinType(argumentType);
             if (argumentType == nullptr) {
                 ThrowTypeError("Invalid return statement expression", st->Argument()->Start());
@@ -1089,7 +1088,7 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
             st->Argument()->AddBoxingUnboxingFlags(GetBoxingFlag(argumentType));
         }
 
-        if (!funcReturnType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        if (!funcReturnType->IsETSReferenceType()) {
             funcReturnType = PrimitiveTypeAsETSBuiltinType(funcReturnType);
             if (funcReturnType == nullptr) {
                 ThrowTypeError("Invalid return function expression", st->Start());

@@ -360,8 +360,7 @@ Type *ETSUnionType::FindTypeIsCastableToThis(ir::Expression *node, TypeRelation 
     // Prioritize object to object conversion
     auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [relation, source](Type *target) {
         relation->IsCastableTo(source, target);
-        return relation->IsTrue() && source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-               target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT);
+        return relation->IsTrue() && source->IsETSReferenceType() && target->IsETSReferenceType();
     });
     if (it != constituentTypes_.end()) {
         if (nodeWasSet) {
@@ -401,11 +400,11 @@ Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelat
         return r->IsTrue();
     };
     // Prioritize object to object conversion
-    auto it = std::find_if(
-        constituentTypes_.begin(), constituentTypes_.end(), [relation, target, &isCastablePred](Type *source) {
-            return isCastablePred(relation, source, target) && source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-                   target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT);
-        });
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(),
+                           [relation, target, &isCastablePred](Type *source) {
+                               return isCastablePred(relation, source, target) && source->IsETSReferenceType() &&
+                                      target->IsETSReferenceType();
+                           });
     if (it != constituentTypes_.end()) {
         if (nodeWasSet) {
             relation->SetNode(nullptr);

@@ -2068,8 +2068,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 
     auto *const sourceType = expr->Expr()->Check(checker);
 
-    if (targetType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) &&
-        sourceType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::TYPE_PARAMETER)) {
+    if (targetType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) && sourceType->IsETSReferenceType()) {
         auto *const boxedTargetType = checker->PrimitiveTypeAsETSBuiltinType(targetType);
         if (!checker->Relation()->IsIdenticalTo(sourceType, boxedTargetType)) {
             expr->Expr()->AddAstNodeFlags(ir::AstNodeFlags::CHECKCAST);
