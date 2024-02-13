@@ -253,17 +253,6 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
     if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {
         checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.", property_->Start());
     }
-
-    if (object_->IsIdentifier() &&
-        object_->AsIdentifier()->Variable()->Declaration()->Node()->Parent()->IsVariableDeclarator()) {
-        auto const varDecl =
-            object_->AsIdentifier()->Variable()->Declaration()->Node()->Parent()->AsVariableDeclarator();
-        if (varDecl->Init() != nullptr && varDecl->Init()->IsArrayExpression() &&
-            varDecl->Init()->AsArrayExpression()->Elements().size() <= index) {
-            checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.",
-                                    property_->Start());
-        }
-    }
 }
 
 checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *checker)
