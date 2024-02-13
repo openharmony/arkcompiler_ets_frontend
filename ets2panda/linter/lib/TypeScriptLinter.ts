@@ -117,7 +117,6 @@ export class TypeScriptLinter {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly autofixesInfo: AutofixInfoSet,
-    readonly strictMode: boolean,
     private readonly cancellationToken?: ts.CancellationToken,
     private readonly incrementalLintInfo?: IncrementalLintInfo,
     private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>,
@@ -184,7 +183,9 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.SetAccessor, this.handleSetAccessor],
     [ts.SyntaxKind.ConstructSignature, this.handleConstructSignature],
     [ts.SyntaxKind.ExpressionWithTypeArguments, this.handleExpressionWithTypeArguments],
-    [ts.SyntaxKind.ComputedPropertyName, this.handleComputedPropertyName]
+    [ts.SyntaxKind.ComputedPropertyName, this.handleComputedPropertyName],
+    [ts.SyntaxKind.Constructor, this.handleConstructorDeclaration],
+    [ts.SyntaxKind.PrivateIdentifier, this.handlePrivateIdentifier]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -200,11 +201,6 @@ export class TypeScriptLinter {
     autofixable: boolean = false,
     autofix?: Autofix[]
   ): void {
-    if (!this.strictMode && faultsAttrs[faultId].migratable) {
-      // In relax mode skip migratable
-      return;
-    }
-
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (TypeScriptLinter.ideMode) {
@@ -360,6 +356,9 @@ export class TypeScriptLinter {
     if (ts.isIdentifier(ident2) && ts.isPrivateIdentifier(ident1)) {
       return ident2.text === ident1.text.substring(1);
     }
+    if (ts.isPrivateIdentifier(ident1) && ts.isPrivateIdentifier(ident2)) {
+      return ident1.text.substring(1) === ident2.text.substring(1);
+    }
     return false;
   }
 
@@ -371,29 +370,59 @@ export class TypeScriptLinter {
   }
 
   private countClassMembersWithDuplicateName(tsClassDecl: ts.ClassDeclaration): void {
-    const nClassMembers = tsClassDecl.members.length;
-    const isNodeReported = new Array<boolean>(nClassMembers);
-    for (let curIdx = 0; curIdx < nClassMembers; ++curIdx) {
-      const tsCurrentMember = tsClassDecl.members[curIdx];
-      if (!TypeScriptLinter.isIdentifierOrPrivateIdentifier(tsCurrentMember.name)) {
+    for (const currentMember of tsClassDecl.members) {
+      if (this.classMemberHasDuplicateName(currentMember, tsClassDecl)) {
+        this.incrementCounters(currentMember, FaultID.DeclWithDuplicateName);
+      }
+    }
+  }
+
+  private classMemberHasDuplicateName(
+    targetMember: ts.ClassElement, tsClassLikeDecl: ts.ClassLikeDeclaration, classType?: ts.Type
+  ): boolean {
+
+    /*
+     * If two class members have the same name where one is a private identifer,
+     * then such members are considered to have duplicate names.
+     */
+    if (!TypeScriptLinter.isIdentifierOrPrivateIdentifier(targetMember.name)) {
+      return false;
+    }
+
+    for (const classMember of tsClassLikeDecl.members) {
+      if (targetMember === classMember) {
         continue;
       }
-      if (isNodeReported[curIdx]) {
+
+      // Check constructor parameter properties.
+      if (ts.isConstructorDeclaration(classMember) && classMember.parameters.some((x) => {
+        return ts.isIdentifier(x.name) && TsUtils.hasAccessModifier(x) &&
+          TypeScriptLinter.isPrivateIdentifierDuplicateOfIdentifier(targetMember.name as ts.Identifier, x.name);
+      })) {
+        return true;
+      }
+
+      if (!TypeScriptLinter.isIdentifierOrPrivateIdentifier(classMember.name)) {
         continue;
       }
-      for (let idx = curIdx + 1; idx < nClassMembers; ++idx) {
-        const tsClassMember = tsClassDecl.members[idx];
-        if (!TypeScriptLinter.isIdentifierOrPrivateIdentifier(tsClassMember.name)) {
-          continue;
-        }
-        if (TypeScriptLinter.isPrivateIdentifierDuplicateOfIdentifier(tsCurrentMember.name, tsClassMember.name)) {
-          this.incrementCounters(tsCurrentMember, FaultID.DeclWithDuplicateName);
-          this.incrementCounters(tsClassMember, FaultID.DeclWithDuplicateName);
-          isNodeReported[idx] = true;
-          break;
+
+      if (TypeScriptLinter.isPrivateIdentifierDuplicateOfIdentifier(targetMember.name, classMember.name)) {
+        return true;
+      }
+    }
+
+    classType ??= this.tsTypeChecker.getTypeAtLocation(tsClassLikeDecl);
+    if (classType) {
+      const baseType = TsUtils.getBaseClassType(classType);
+      if (baseType) {
+        const baseDecl = baseType.getSymbol()?.valueDeclaration as ts.ClassLikeDeclaration;
+        if (baseDecl) {
+          return this.classMemberHasDuplicateName(targetMember, baseDecl);
         }
       }
     }
+
+    return false;
   }
 
   private isPrototypePropertyAccess(
@@ -533,16 +562,6 @@ export class TypeScriptLinter {
     const tsParam = node as ts.ParameterDeclaration;
     if (ts.isArrayBindingPattern(tsParam.name) || ts.isObjectBindingPattern(tsParam.name)) {
       this.incrementCounters(node, FaultID.DestructuringParameter);
-    }
-    const tsParamMods = ts.getModifiers(tsParam);
-    if (
-      tsParamMods &&
-      (TsUtils.hasModifier(tsParamMods, ts.SyntaxKind.PublicKeyword) ||
-        TsUtils.hasModifier(tsParamMods, ts.SyntaxKind.ProtectedKeyword) ||
-        TsUtils.hasModifier(tsParamMods, ts.SyntaxKind.ReadonlyKeyword) ||
-        TsUtils.hasModifier(tsParamMods, ts.SyntaxKind.PrivateKeyword))
-    ) {
-      this.incrementCounters(node, FaultID.ParameterProperties);
     }
     this.handleDeclarationInferredType(tsParam);
   }
@@ -923,6 +942,10 @@ export class TypeScriptLinter {
   private handleMissingReturnType(
     funcLikeDecl: ts.FunctionLikeDeclaration | ts.MethodSignature
   ): [boolean, ts.TypeNode | undefined] {
+    if (funcLikeDecl.type) {
+      return [false, funcLikeDecl.type];
+    }
+
     // Note: Return type can't be inferred for function without body.
     const isSignature = ts.isMethodSignature(funcLikeDecl);
     if (isSignature || !funcLikeDecl.body) {
@@ -960,11 +983,12 @@ export class TypeScriptLinter {
         hasLimitedRetTypeInference = true;
       } else if (hasLimitedRetTypeInference) {
         newRetTypeNode = this.tsTypeChecker.typeToTypeNode(tsRetType, funcLikeDecl, ts.NodeBuilderFlags.None);
-        if (newRetTypeNode && !isFuncExpr) {
-          autofixable = true;
-          if (this.autofixesInfo.shouldAutofix(funcLikeDecl, FaultID.LimitedReturnTypeInference)) {
-            autofix = [Autofixer.fixReturnType(funcLikeDecl, newRetTypeNode)];
-          }
+        autofixable = !!newRetTypeNode;
+
+        if (newRetTypeNode && !isFuncExpr &&
+          this.autofixesInfo.shouldAutofix(funcLikeDecl, FaultID.LimitedReturnTypeInference)
+        ) {
+          autofix = [Autofixer.fixMissingReturnType(funcLikeDecl, newRetTypeNode)];
         }
       }
     }
@@ -1208,7 +1232,7 @@ export class TypeScriptLinter {
      * In TS catch clause doesn't permit specification of the exception varible type except 'any' or 'unknown'.
      * It is not compatible with STS 'catch' where the exception variable has to be of type
      * Error or derived from it.
-     * So each 'catch' which has explicit type for the exception object goes to problems in strict mode.
+     * So each 'catch' which has explicit type for the exception object goes to problems.
      */
     if (tsCatch.variableDeclaration?.type) {
       let autofix: Autofix[] | undefined;
@@ -2116,6 +2140,69 @@ export class TypeScriptLinter {
       return isClassLike || isFunctionLike || isModuleDecl;
     };
     forEachNodeInSubtree(scope, callback, stopCondition);
+  }
+
+  private handleConstructorDeclaration(node: ts.Node): void {
+    const ctorDecl = node as ts.ConstructorDeclaration;
+
+    if (ctorDecl.parameters.some((x) => {
+      return TsUtils.hasAccessModifier(x);
+    })) {
+      let paramTypes: ts.TypeNode[] | undefined;
+      if (ctorDecl.body) {
+        paramTypes = this.collectCtorParamTypes(ctorDecl);
+      }
+
+      const autofixable = !!paramTypes;
+      let autofix: Autofix[] | undefined;
+
+      if (autofixable && paramTypes !== undefined &&
+        this.autofixesInfo.shouldAutofix(node, FaultID.ParameterProperties)
+      ) {
+        autofix = Autofixer.fixCtorParameterProperties(ctorDecl, paramTypes);
+      }
+
+      this.incrementCounters(node, FaultID.ParameterProperties, autofixable, autofix);
+    }
+  }
+
+  private collectCtorParamTypes(ctorDecl: ts.ConstructorDeclaration): ts.TypeNode[] | undefined {
+    const paramTypes: ts.TypeNode[] = [];
+
+    for (const param of ctorDecl.parameters) {
+      let paramTypeNode = param.type;
+      if (!paramTypeNode) {
+        const paramType = this.tsTypeChecker.getTypeAtLocation(param);
+        paramTypeNode = this.tsTypeChecker.typeToTypeNode(paramType, param, ts.NodeBuilderFlags.None);
+      }
+      if (!paramTypeNode || !this.tsUtils.isSupportedType(paramTypeNode)) {
+        return undefined;
+      }
+      paramTypes.push(paramTypeNode);
+    }
+
+    return paramTypes;
+  }
+
+  private handlePrivateIdentifier(node: ts.Node): void {
+    const ident = node as ts.PrivateIdentifier;
+    let autofix: Autofix[] | undefined;
+    let autofixable = false;
+
+    const classMember = this.tsTypeChecker.getSymbolAtLocation(ident);
+    if (classMember && (classMember.getFlags() & ts.SymbolFlags.ClassMember) !== 0 && classMember.valueDeclaration) {
+      const memberDecl = classMember.valueDeclaration as ts.ClassElement;
+      const parentDecl = memberDecl.parent;
+      if (ts.isClassLike(parentDecl) && !this.classMemberHasDuplicateName(memberDecl, parentDecl)) {
+        autofixable = true;
+
+        if (this.autofixesInfo.shouldAutofix(node, FaultID.PrivateIdentifier)) {
+          autofix = [Autofixer.fixPrivateIdentifier(ident)];
+        }
+      }
+    }
+
+    this.incrementCounters(node, FaultID.PrivateIdentifier, autofixable, autofix);
   }
 
   lint(sourceFile: ts.SourceFile): void {

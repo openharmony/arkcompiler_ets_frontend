@@ -16,11 +16,12 @@
 // generated from recipes.rst
 export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [1, 'Replace property name with identifier'],
+  [3, 'Replace with \'private\' modifier'],
+  [25, 'Replace with field declaration'],
   [29, 'Replace with dot notation'],
   [46, 'Convert to arrow function'],
   [53, 'Replace to \'as\' expression'],
   [79, 'Remove type annotation'],
-  [87, 'Wrap in \'Error\''],
   [90, 'Annotate return type'],
   [120, 'Replace with explicit import']
 ]);

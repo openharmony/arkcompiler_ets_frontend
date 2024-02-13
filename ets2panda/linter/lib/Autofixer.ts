@@ -17,6 +17,7 @@ import * as ts from 'typescript';
 import type { AutofixInfo } from './autofixes/AutofixInfo';
 import { FaultID } from './Problems';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
+import { TsUtils } from './utils/TsUtils';
 
 export const AUTOFIX_ALL: AutofixInfo = {
   problemID: '',
@@ -31,7 +32,11 @@ export const AUTOFIX_ALL: AutofixInfo = {
  * algorithm is improved to guarantee that fixes can be applied
  * safely and won't break program code.
  */
-const UNSAFE_FIXES: FaultID[] = [FaultID.LiteralAsPropertyName, FaultID.PropertyAccessByIndex];
+const UNSAFE_FIXES: FaultID[] = [
+  FaultID.LiteralAsPropertyName,
+  FaultID.PropertyAccessByIndex,
+  FaultID.PrivateIdentifier
+];
 
 export interface Autofix {
   replacementText: string;
@@ -113,7 +118,7 @@ export function fixFunctionExpression(
   return { start: funcExpr.getStart(), end: funcExpr.getEnd(), replacementText: text };
 }
 
-export function fixReturnType(funcLikeDecl: ts.FunctionLikeDeclaration, typeNode: ts.TypeNode): Autofix {
+export function fixMissingReturnType(funcLikeDecl: ts.FunctionLikeDeclaration, typeNode: ts.TypeNode): Autofix {
   const text = ': ' + printer.printNode(ts.EmitHint.Unspecified, typeNode, funcLikeDecl.getSourceFile());
   const pos = getReturnTypePosition(funcLikeDecl);
   return { start: pos, end: pos, replacementText: text };
@@ -219,5 +224,117 @@ function needsParentheses(node: ts.FunctionExpression): boolean {
     ts.isAwaitExpression(parent) ||
     ts.isCallExpression(parent) && node === parent.expression ||
     ts.isBinaryExpression(parent) && !isAssignmentOperator(parent.operatorToken)
+  );
+}
+
+export function fixCtorParameterProperties(
+  ctorDecl: ts.ConstructorDeclaration, paramTypes: ts.TypeNode[]
+): Autofix[] | undefined {
+  const fieldInitStmts: ts.Statement[] = [];
+  const newFieldPos = ctorDecl.getStart();
+  const autofixes: Autofix[] = [{ start: newFieldPos, end: newFieldPos, replacementText: '' }];
+
+  for (let i = 0; i < ctorDecl.parameters.length; i++) {
+    const param = ctorDecl.parameters[i];
+
+    // Parameter property can not be a destructuring parameter.
+    if (!ts.isIdentifier(param.name)) {
+      continue;
+    }
+
+    if (TsUtils.hasAccessModifier(param)) {
+      const propIdent = ts.factory.createIdentifier(param.name.text);
+
+      const newFieldNode = ts.factory.createPropertyDeclaration(
+        ts.getModifiers(param), propIdent, undefined, paramTypes[i], undefined
+      );
+      const newFieldText = printer.printNode(ts.EmitHint.Unspecified, newFieldNode, ctorDecl.getSourceFile()) + '\n';
+      autofixes[0].replacementText += newFieldText;
+
+      const newParamDecl = ts.factory.createParameterDeclaration(
+        undefined, undefined, param.name, param.questionToken, param.type, param.initializer
+      );
+      const newParamText = printer.printNode(ts.EmitHint.Unspecified, newParamDecl, ctorDecl.getSourceFile());
+      autofixes.push({ start: param.getStart(), end: param.getEnd(), replacementText: newParamText });
+
+      fieldInitStmts.push(ts.factory.createExpressionStatement(ts.factory.createAssignment(
+        ts.factory.createPropertyAccessExpression(
+          ts.factory.createThis(),
+          propIdent
+        ),
+        propIdent
+      )));
+    }
+  }
+
+  // Note: Bodyless ctors can't have parameter properties.
+  if (ctorDecl.body) {
+    const newBody = ts.factory.createBlock(fieldInitStmts.concat(ctorDecl.body.statements), true);
+    const newBodyText = printer.printNode(ts.EmitHint.Unspecified, newBody, ctorDecl.getSourceFile());
+    autofixes.push({ start: ctorDecl.body.getStart(), end: ctorDecl.body.getEnd(), replacementText: newBodyText });
+  }
+
+  return autofixes;
+}
+
+export function fixPrivateIdentifier(ident: ts.PrivateIdentifier): Autofix {
+  if (
+    ts.isPropertyDeclaration(ident.parent) || ts.isMethodDeclaration(ident.parent) ||
+    ts.isGetAccessorDeclaration(ident.parent) || ts.isSetAccessorDeclaration(ident.parent)
+  ) {
+    // Note: 'private' modifier should always be first.
+    const mods = ts.getModifiers(ident.parent);
+    let newMods: ts.Modifier[] = [ts.factory.createModifier(ts.SyntaxKind.PrivateKeyword)];
+    if (mods) {
+      newMods = newMods.concat(mods);
+    }
+
+    const newName = ident.text.slice(1, ident.text.length);
+    const newDecl = replacePrivateIdentInDeclarationName(newMods, newName, ident.parent);
+    const text = printer.printNode(ts.EmitHint.Unspecified, newDecl, ident.getSourceFile());
+    return { start: ident.parent.getStart(), end: ident.parent.getEnd(), replacementText: text };
+  }
+
+  return { start: ident.getStart(), end: ident.getEnd(), replacementText: ident.text.slice(1, ident.text.length) };
+}
+
+function replacePrivateIdentInDeclarationName(
+  mods: ts.Modifier[],
+  name: string,
+  oldDecl: ts.PropertyDeclaration | ts.MethodDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration
+): ts.Declaration {
+  if (ts.isPropertyDeclaration(oldDecl)) {
+    return ts.factory.createPropertyDeclaration(
+      mods,
+      ts.factory.createIdentifier(name),
+      oldDecl.questionToken ?? oldDecl.exclamationToken,
+      oldDecl.type,
+      oldDecl.initializer
+    );
+  } else if (ts.isMethodDeclaration(oldDecl)) {
+    return ts.factory.createMethodDeclaration(
+      mods,
+      oldDecl.asteriskToken,
+      ts.factory.createIdentifier(name),
+      oldDecl.questionToken,
+      oldDecl.typeParameters,
+      oldDecl.parameters,
+      oldDecl.type,
+      oldDecl.body
+    );
+  } else if (ts.isGetAccessorDeclaration(oldDecl)) {
+    return ts.factory.createGetAccessorDeclaration(
+      mods,
+      ts.factory.createIdentifier(name),
+      oldDecl.parameters,
+      oldDecl.type,
+      oldDecl.body
+    );
+  }
+  return ts.factory.createSetAccessorDeclaration(
+    mods,
+    ts.factory.createIdentifier(name),
+    oldDecl.parameters,
+    oldDecl.body
   );
 }

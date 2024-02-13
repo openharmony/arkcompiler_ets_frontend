@@ -66,11 +66,6 @@ function countProblems(linter: TypeScriptLinter): [number, number] {
   let errorNodesTotal = 0;
   let warningNodes = 0;
   for (let i = 0; i < FaultID.LAST_ID; i++) {
-    // if Strict mode - count all cases
-    if (!linter.strictMode && faultsAttrs[i].migratable) {
-      // In relax mode skip migratable
-      continue;
-    }
     switch (faultsAttrs[i].severity) {
       case ProblemSeverity.ERROR:
         errorNodesTotal += linter.nodeCounters[i];
@@ -107,7 +102,6 @@ export function lint(options: LintOptions): LintRunResult {
   const linter = new TypeScriptLinter(
     tsProgram.getTypeChecker(),
     new AutofixInfoSet(cmdOptions.autofixInfo),
-    !!cmdOptions.strictMode,
     cancellationToken,
     options.incrementalLintInfo,
     tscStrictDiagnostics,
@@ -236,11 +230,6 @@ function logTotalProblemsInfo(errorNodes: number, warningNodes: number, linter: 
 function logProblemsPercentageByFeatures(linter: TypeScriptLinter): void {
   consoleLog('\nPercent by features: ');
   for (let i = 0; i < FaultID.LAST_ID; i++) {
-    // if Strict mode - count all cases
-    if (!linter.strictMode && faultsAttrs[i].migratable) {
-      continue;
-    }
-
     const nodes = linter.nodeCounters[i];
     const lines = linter.lineCounters[i];
     const pecentage = (nodes / linter.totalVisitedNodes * 100).toFixed(2).padEnd(7, ' ');

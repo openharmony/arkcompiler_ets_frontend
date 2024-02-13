@@ -18,7 +18,6 @@ import type { AutofixInfo } from './autofixes/AutofixInfo';
 
 export interface CommandLineOptions {
   testMode?: boolean;
-  strictMode?: boolean;
   ideMode?: boolean;
   logTscErrors?: boolean;
   warningsAsErrors: boolean;

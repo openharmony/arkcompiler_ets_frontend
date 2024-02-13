@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-class Params {
+class A {
   constructor(
     public readonly x: number,
     protected y: number,
@@ -25,11 +25,24 @@ class Params {
   }
 }
 
-class DerivedParams extends Params {
-  bar(): void {
-    console.log(this.x + this.y);
+const a = new A(1, 2, 3);
+console.log(a.x);
+
+class B {
+  public f: number = 10;
+
+  constructor(q: number, public w = 'default', e: boolean, private readonly r: number[] = [1, 2, 3]) {
+    console.log(q, this.w, e, this.r, this.f);
   }
 }
 
-const a = new Params(1, 2, 3);
-console.log(a.x);
+const b = new B(1, '2', true, []);
+console.log(b.w);
+
+class C {
+  constructor(public a: any) {} // not fixable
+}
+
+class D {
+  constructor(public a: number, private b: {x: string}) {} // not fixable
+}

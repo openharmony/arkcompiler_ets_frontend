@@ -1009,8 +1009,14 @@ export class TsUtils {
     [FaultID.DeclWithDuplicateName, TsUtils.getDeclWithDuplicateNameHighlightRange],
     [FaultID.ObjectLiteralNoContextType, TsUtils.getObjectLiteralNoContextTypeHighlightRange],
     [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange],
-    [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange]
+    [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange],
+    [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange]
   ]);
+
+  static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
+    const start = this.getStartPos(nodeOrComment);
+    return [start, start + keyword.length];
+  }
 
   static getVarDeclarationHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
     return this.getKeywordHighlightRange(nodeOrComment, 'var');
@@ -1120,9 +1126,12 @@ export class TsUtils {
     return this.getKeywordHighlightRange(nodeOrComment, 'static');
   }
 
-  static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
-    const start = this.getStartPos(nodeOrComment);
-    return [start, start + keyword.length];
+  static getParameterPropertiesHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    const params = (nodeOrComment as ts.ConstructorDeclaration).parameters;
+    if (params.length) {
+      return [params[0].getStart(), params[params.length - 1].getEnd()];
+    }
+    return undefined;
   }
 
   isStdRecordType(type: ts.Type): boolean {
@@ -1555,5 +1564,45 @@ export class TsUtils {
     isEtsFileCb: IsEtsFileCallback | undefined): boolean {
     return !!sourceFile && !!isEtsFileCb && isEtsFileCb(sourceFile) && sourceFile.isDeclarationFile &&
       !!decl.modifiers?.some((m) => { return m.kind === ts.SyntaxKind.PrivateKeyword; });
+  }
+
+  static hasAccessModifier(decl: ts.HasModifiers): boolean {
+    const modifiers = ts.getModifiers(decl);
+    return (
+      !!modifiers &&
+      (TsUtils.hasModifier(modifiers, ts.SyntaxKind.PublicKeyword) ||
+        TsUtils.hasModifier(modifiers, ts.SyntaxKind.ProtectedKeyword) ||
+        TsUtils.hasModifier(modifiers, ts.SyntaxKind.PrivateKeyword))
+    );
+  }
+
+  static getModifier(
+    modifiers: readonly ts.Modifier[] | undefined, modifierKind: ts.SyntaxKind
+  ): ts.Modifier | undefined {
+    if (!modifiers) {
+      return undefined;
+    }
+    return modifiers.find((x) => {
+      return x.kind === modifierKind;
+    });
+  }
+
+  static getAccessModifier(modifiers: readonly ts.Modifier[] | undefined): ts.Modifier | undefined {
+    return TsUtils.getModifier(modifiers, ts.SyntaxKind.PublicKeyword) ??
+      TsUtils.getModifier(modifiers, ts.SyntaxKind.ProtectedKeyword) ??
+      TsUtils.getModifier(modifiers, ts.SyntaxKind.PrivateKeyword);
+  }
+
+  static getBaseClassType(type: ts.Type): ts.InterfaceType | undefined {
+    const baseTypes = type.getBaseTypes();
+    if (baseTypes) {
+      for (const baseType of baseTypes) {
+        if (baseType.isClass()) {
+          return baseType;
+        }
+      }
+    }
+
+    return undefined;
   }
 }
