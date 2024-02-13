@@ -20,6 +20,7 @@
 /docs/**
 /node_modules/**
 /scripts/**
+/third_party/**
 /test/**
 /test_extended_features/**
 /test_rules/**
