@@ -37,6 +37,11 @@ void CharType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *s
 bool CharType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     if (relation->InAssignmentContext()) {
+        if (target->IsETSStringType()) {
+            conversion::Boxing(relation, this);
+            relation->GetNode()->AddAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
+            return relation->Result(true);
+        }
         relation->GetChecker()->AsETSChecker()->CheckUnboxedTypeWidenable(relation, target, this);
         if (!relation->IsTrue()) {
             return false;
@@ -64,6 +69,11 @@ void CharType::Cast(TypeRelation *const relation, Type *const target)
 
     if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
         conversion::WideningPrimitive(relation, this, target);
+        return;
+    }
+
+    if (target->IsETSStringType()) {
+        conversion::String(relation, this);
         return;
     }
 

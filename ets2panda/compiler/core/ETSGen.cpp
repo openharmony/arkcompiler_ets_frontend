@@ -1124,6 +1124,12 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
 
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
         ApplyBoxingConversion(node);
+
+        if (node->HasAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING)) {
+            CastToString(node);
+            node->RemoveAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
+        }
+
         return;
     }
 
@@ -1865,6 +1871,11 @@ void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *c
         CastToDynamic(node, targetType->AsETSDynamicType());
         return;
     }
+
+    if (targetType->IsETSStringType() && !sourceType->IsETSStringType()) {
+        CastToString(node);
+    }
+
     if (!unchecked) {
         CheckedReferenceNarrowing(node, targetType);
         return;
