@@ -3518,6 +3518,24 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
     }
 }
 
+bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
+{
+    switch (tokenType) {
+        case lexer::TokenType::PUNCTUATOR_COLON:
+        case lexer::TokenType::PUNCTUATOR_COMMA:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool ETSParser::IsArrowFunctionExpressionStart()
 {
     const auto savedPos = Lexer()->Save();
@@ -3557,12 +3575,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
     }
 
     while (tokenType != lexer::TokenType::EOS && tokenType != lexer::TokenType::PUNCTUATOR_ARROW) {
-        if (lexer::Token::IsPunctuatorToken(tokenType) && tokenType != lexer::TokenType::PUNCTUATOR_COLON &&
-            tokenType != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
-            tokenType != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET &&
-            tokenType != lexer::TokenType::PUNCTUATOR_LESS_THAN &&
-            tokenType != lexer::TokenType::PUNCTUATOR_GREATER_THAN &&
-            tokenType != lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        if (lexer::Token::IsPunctuatorToken(tokenType) && !IsPunctuartorSpecialCharacter(tokenType)) {
             break;
         }
         Lexer()->NextToken();
