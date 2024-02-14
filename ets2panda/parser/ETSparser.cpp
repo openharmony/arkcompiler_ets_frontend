@@ -4128,6 +4128,7 @@ ir::ThisExpression *ETSParser::ParseThisExpression()
         case lexer::TokenType::PUNCTUATOR_COMMA:
         case lexer::TokenType::PUNCTUATOR_QUESTION_MARK:
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
+        case lexer::TokenType::KEYW_INSTANCEOF:
         case lexer::TokenType::KEYW_AS: {
             break;
         }
