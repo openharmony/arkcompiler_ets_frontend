@@ -1,0 +1,1 @@
+SyntaxError: Type import requires selective binding to define the required imported elements. [import_type_with_invalid_syntax.ets:16:13]

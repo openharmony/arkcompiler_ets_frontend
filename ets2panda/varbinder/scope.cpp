@@ -551,7 +551,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
     if (!isDynamic && isForeign && !var->Declaration()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
         const auto *const node = var->Declaration()->Node();
 
-        if (!(node->IsExported() || node->IsDefaultExported())) {
+        if (!(node->IsExported() || node->IsDefaultExported() || node->IsExportedType())) {
             return Scope::InsertResult {Bindings().end(), false};
         }
     }

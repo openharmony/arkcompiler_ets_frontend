@@ -659,8 +659,12 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     if (var->Declaration()->Node()->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
     }
+    if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
+        ThrowError(importPath->Start(),
+                   "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
+    }
 
-    if (!var->Declaration()->Node()->IsExported()) {
+    if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
         ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
     }
 

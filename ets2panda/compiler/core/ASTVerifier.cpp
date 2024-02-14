@@ -1005,7 +1005,7 @@ private:
         if (node == nullptr) {
             return false;
         }
-        return node->IsExported();
+        return node->IsExported() || node->IsExportedType();
     }
 
     bool InvariantImportExportMethod(const std::unordered_set<std::string> &importedVariables,

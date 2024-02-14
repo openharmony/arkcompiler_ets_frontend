@@ -26,8 +26,9 @@ class StringLiteral;
 
 class ETSImportDeclaration : public ImportDeclaration {
 public:
-    explicit ETSImportDeclaration(ImportSource *source, const ArenaVector<AstNode *> &specifiers)
-        : ImportDeclaration(source->Source(), specifiers), source_(source)
+    explicit ETSImportDeclaration(ImportSource *source, const ArenaVector<AstNode *> &specifiers,
+                                  const ImportKinds importKind = ImportKinds::VALUE)
+        : ImportDeclaration(source->Source(), specifiers, importKind), source_(source)
     {
         SetType(AstNodeType::ETS_IMPORT_DECLARATION);
     }

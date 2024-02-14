@@ -1,0 +1,1 @@
+SyntaxError: Can only type export class or interface! [export_type_enum.ets:18:14]

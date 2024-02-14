@@ -30,6 +30,15 @@ AstNode::AstNode(AstNode const &other)
     // boxing_unboxing_flags_ {};  leave default value!
 }
 
+[[nodiscard]] bool ir::AstNode::IsExportedType() const noexcept
+{
+    if (UNLIKELY(IsClassDefinition())) {
+        return this->parent_->IsExportedType();
+    }
+
+    return (flags_ & ModifierFlags::EXPORT_TYPE) != 0;
+}
+
 template <typename R, typename T>
 static R GetTopStatementImpl(T *self)
 {
