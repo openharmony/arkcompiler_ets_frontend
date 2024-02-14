@@ -2243,18 +2243,7 @@ std::string ETSChecker::GetStringFromLiteral(ir::Expression *caseTest) const
 
 bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare)
 {
-    if (target->Declaration()->Type() != compare->Declaration()->Type()) {
-        return false;
-    }
-
-    if ((target->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE) &&
-         !compare->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE)) ||
-        (!target->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE) &&
-         compare->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE))) {
-        return false;
-    }
-
-    return true;
+    return target->Declaration()->Type() == compare->Declaration()->Type();
 }
 
 void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target)

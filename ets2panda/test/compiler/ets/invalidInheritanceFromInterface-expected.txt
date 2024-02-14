@@ -1101,4 +1101,4 @@
     }
   }
 }
-TypeError: Cannot inherit from interface A because field x is inherited with a different declaration type [invalidInheritanceFromInterface.ets:16:1]
+TypeError: This expression is not callable. [invalidInheritanceFromInterface.ets:25:15]

@@ -860,4 +860,4 @@
     }
   }
 }
-TypeError: Property 'foo' does not exist on type 'B' [identifierReference12.ets:24:20]
+TypeError: This expression is not callable. [identifierReference12.ets:24:13]
