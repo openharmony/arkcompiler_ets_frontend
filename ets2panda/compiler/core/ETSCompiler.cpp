@@ -68,7 +68,7 @@ void ETSCompiler::Compile(const ir::ClassProperty *st) const
 
     if (!etsg->TryLoadConstantExpression(st->Value())) {
         st->Value()->Compile(etsg);
-        etsg->ApplyConversion(st->Value(), nullptr);
+        etsg->ApplyConversion(st->Value(), st->TsType());
     }
 
     if (st->IsStatic()) {
