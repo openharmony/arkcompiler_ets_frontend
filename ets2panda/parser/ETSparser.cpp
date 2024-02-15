@@ -2511,7 +2511,6 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         char32_t nextCp = Lexer()->Lookahead();
-
         if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
             auto *method = ParseInterfaceMethod(ir::ModifierFlags::PUBLIC, ir::MethodDefinitionKind::METHOD);
             method->SetStart(startLoc);
@@ -4994,7 +4993,6 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode, std
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
     auto const statementNumber = statements.size();
-
     if (statementNumber == 0U) {
         return nullptr;
     }

@@ -56,7 +56,7 @@ public:
     {
     }
 
-    ~FunctionEmitter() = default;
+    virtual ~FunctionEmitter() = default;
     NO_COPY_SEMANTIC(FunctionEmitter);
     NO_MOVE_SEMANTIC(FunctionEmitter);
 

@@ -181,7 +181,7 @@ private:
     BoundContext *prev_;
     RecordTable *recordTable_;
     RecordTable::RecordHolder savedRecord_ {nullptr};
-    ir::Identifier *recordIdent_;
+    ir::Identifier *recordIdent_ {nullptr};
 };
 
 }  // namespace ark::es2panda::varbinder

@@ -163,7 +163,7 @@ varbinder::VarBinder *CodeGen::VarBinder() const noexcept
     return context_->VarBinder();
 }
 
-std::int32_t CodeGen::AddLiteralBuffer(LiteralBuffer &&buf)
+std::uint32_t CodeGen::AddLiteralBuffer(LiteralBuffer &&buf)
 {
     programElement_->BuffStorage().emplace_back(std::move(buf));
     return literalBufferIdx_++;

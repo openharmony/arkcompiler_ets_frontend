@@ -1477,7 +1477,7 @@ void PandaGen::SetClassComputedFields(const ir::AstNode *node, VReg classReg, VR
     Ra().Emit<EcmaSetclasscomputedfields>(node, classReg, computedInstanceFieldArray);
 }
 
-void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx,
+void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, uint32_t litIdx,
                                      VReg lexenv, VReg base)
 {
     Ra().Emit<EcmaDefineclasswithbuffer>(node, ctorId, litIdx, lexenv, base);
@@ -1488,7 +1488,7 @@ void PandaGen::LoadClassComputedInstanceFields(const ir::AstNode *node, VReg cto
     Sa().Emit<EcmaLoadclasscomputedinstancefields>(node, ctor);
 }
 
-void PandaGen::DefineClassPrivateFields(const ir::AstNode *node, int32_t privateBufIdx)
+void PandaGen::DefineClassPrivateFields(const ir::AstNode *node, uint32_t privateBufIdx)
 {
     Sa().Emit<EcmaDefineclassprivatefields>(node, util::Helpers::ToStringView(Allocator(), privateBufIdx), LexEnv());
 }

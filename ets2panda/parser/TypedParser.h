@@ -71,7 +71,7 @@ protected:
 
     ir::ModifierFlags ParseModifiers() override;
     ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seenOptional) override;
-    ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr) override;
+    ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpression) override;
 
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseSuperClass() override;
     ir::Expression *ParseSuperClassReference() override;

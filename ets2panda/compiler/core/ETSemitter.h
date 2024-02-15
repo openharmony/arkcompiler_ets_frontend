@@ -44,7 +44,7 @@ namespace ark::es2panda::compiler {
 class ETSFunctionEmitter : public FunctionEmitter {
 public:
     ETSFunctionEmitter(const CodeGen *cg, ProgramElement *programElement) : FunctionEmitter(cg, programElement) {}
-    ~ETSFunctionEmitter() = default;
+    ~ETSFunctionEmitter() override = default;
     NO_COPY_SEMANTIC(ETSFunctionEmitter);
     NO_MOVE_SEMANTIC(ETSFunctionEmitter);
 
