@@ -318,7 +318,7 @@ protected:
                                                                   ArrowFunctionDescriptor *desc,
                                                                   ir::TSTypeParameterDeclaration *typeParamDecl,
                                                                   ir::TypeNode *returnTypeAnnotation);
-    ir::Expression *ParseAssignmentExpression(ir::Expression *expression,
+    ir::Expression *ParseAssignmentExpression(ir::Expression *lhsExpression,
                                               ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::SequenceExpression *ParseSequenceExpression(ir::Expression *startExpr, bool acceptRest = false);
     ir::FunctionExpression *ParseFunctionExpression(ParserStatus newStatus = ParserStatus::NO_OPTS);

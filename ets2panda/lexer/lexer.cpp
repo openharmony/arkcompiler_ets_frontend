@@ -154,7 +154,6 @@ void Lexer::SkipMultiLineComment()
         switch (Iterator().Next()) {
             case util::StringView::Iterator::INVALID_CP: {
                 ThrowError("Unterminated multi-line comment");
-                break;
             }
             case LEX_CHAR_LF:
             case LEX_CHAR_CR:
@@ -1010,7 +1009,6 @@ void Lexer::ScanRegExpPattern()
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
                 ThrowError("Unterminated RegExp");
-                break;
             }
             case LEX_CHAR_SLASH: {
                 if (!isCharClass) {

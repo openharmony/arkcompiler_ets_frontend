@@ -53,7 +53,7 @@ public:
 
     NO_COPY_SEMANTIC(ETSBinder);
     NO_MOVE_SEMANTIC(ETSBinder);
-    ~ETSBinder() = default;
+    ~ETSBinder() override = default;
 
     ScriptExtension Extension() const override
     {

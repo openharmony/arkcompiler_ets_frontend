@@ -80,7 +80,7 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
         auto *memberVar =
             varbinder::Scope::CreateVar(checker->Allocator(), memberIndex, varbinder::VariableFlags::PROPERTY, it);
 
-        checker::ElementFlags memberFlag = checker::ElementFlags::NO_OPTS;
+        checker::ElementFlags memberFlag;
         if (it->IsTSNamedTupleMember()) {
             auto *namedMember = it->AsTSNamedTupleMember();
             checker::Type *memberType = namedMember->ElementType()->GetType(checker);

@@ -25,7 +25,7 @@ public:
 
     NO_COPY_SEMANTIC(JSBinder);
     NO_MOVE_SEMANTIC(JSBinder);
-    ~JSBinder() = default;
+    ~JSBinder() override = default;
 
 private:
 };

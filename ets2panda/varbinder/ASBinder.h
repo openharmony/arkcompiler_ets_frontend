@@ -25,7 +25,7 @@ public:
 
     NO_COPY_SEMANTIC(ASBinder);
     NO_MOVE_SEMANTIC(ASBinder);
-    ~ASBinder() = default;
+    ~ASBinder() override = default;
 
     ScriptExtension Extension() const override
     {

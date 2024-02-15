@@ -70,14 +70,14 @@ public:
     void LoadProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                       const util::StringView &fullName);
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                              const util::StringView &name);
+                              const util::StringView &propName);
     void LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                              const util::StringView &propName);
 
     void StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index);
     void LoadElementDynamic(const ir::AstNode *node, VReg objectReg);
 
-    void StoreUnionProperty(const ir::AstNode *node, VReg objReg, const util::StringView &name);
+    void StoreUnionProperty(const ir::AstNode *node, VReg objReg, const util::StringView &propName);
     void LoadUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                            const util::StringView &propName);
 
@@ -435,7 +435,7 @@ public:
 
     void EmitLocalBoxCtor(ir::AstNode const *node);
     void EmitLocalBoxGet(ir::AstNode const *node, checker::Type const *contentType);
-    void EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *lhs);
+    void EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *lhsVar);
 
     void LoadArrayLength(const ir::AstNode *node, VReg arrayReg);
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);

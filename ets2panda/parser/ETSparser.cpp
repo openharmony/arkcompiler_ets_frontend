@@ -1205,7 +1205,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
             return flags;
         }
 
-        ir::ModifierFlags currentFlag = ir::ModifierFlags::NONE;
+        ir::ModifierFlags currentFlag;
 
         lexer::TokenFlags tokenFlags = Lexer()->GetToken().Flags();
         if ((tokenFlags & lexer::TokenFlags::HAS_ESCAPE) != 0) {
@@ -3205,6 +3205,7 @@ std::tuple<ir::ImportSource *, std::vector<std::string>> ETSParser::ParseFromCla
 
     auto *importSource =
         Allocator()->New<ir::ImportSource>(source, resolvedSource, importData.lang, importData.hasDecl, module);
+    ASSERT(importSource != nullptr);
     return {importSource, userPaths};
 }
 
