@@ -17,6 +17,7 @@
 
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
+#include "ir/module/importSpecifier.h"
 #include "ir/ts/tsQualifiedName.h"
 #include "ir/expressions/memberExpression.h"
 

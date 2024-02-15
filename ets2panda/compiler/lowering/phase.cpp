@@ -15,7 +15,9 @@
 
 #include "phase.h"
 #include "checker/checker.h"
-#include "compiler/core/compilerContext.h"
+#include "compiler/core/ASTVerifier.h"
+#include "ets/defaultParameterLowering.h"
+#include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
@@ -36,8 +38,6 @@
 #include "compiler/lowering/ets/unionLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "ets/defaultParameterLowering.h"
-#include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
 
 namespace ark::es2panda::compiler {
@@ -79,9 +79,9 @@ static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
 
-static void CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
+static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
                                     const std::string &name);
-static void CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
+static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
                                    const std::string &name);
 
 std::vector<Phase *> GetETSPhaseList()
@@ -154,9 +154,9 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
-    const auto *options = ctx->compilerContext->Options();
+    const auto &options = ctx->config->options->CompilerOptions();
     const auto name = std::string {Name()};
-    if (options->skipPhases.count(name) > 0) {
+    if (options.skipPhases.count(name) > 0) {
         return true;
     }
 
@@ -185,30 +185,30 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     return true;
 }
 
-static void CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
+static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser::Program *program,
                                     const std::string &name)
 {
-    if (options->dumpBeforePhases.count(name) > 0) {
+    if (options.dumpBeforePhases.count(name) > 0) {
         std::cout << "Before phase " << name << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
 
-    if (options->dumpEtsSrcBeforePhases.count(name) > 0) {
+    if (options.dumpEtsSrcBeforePhases.count(name) > 0) {
         std::cout << "Before phase " << name << " ets source"
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }
 }
 
-static void CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
+static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
                                    const std::string &name)
 {
-    if (options->dumpAfterPhases.count(name) > 0) {
+    if (options.dumpAfterPhases.count(name) > 0) {
         std::cout << "After phase " << name << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
 
-    if (options->dumpEtsSrcAfterPhases.count(name) > 0) {
+    if (options.dumpEtsSrcAfterPhases.count(name) > 0) {
         std::cout << "After phase " << name << " ets source"
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;

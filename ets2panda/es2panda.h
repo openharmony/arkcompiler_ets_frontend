@@ -31,13 +31,15 @@ struct Program;
 }  // namespace ark::pandasm
 
 namespace ark::es2panda {
+namespace util {
+class Options;
+}  // namespace util
 namespace parser {
 class ParserImpl;
 }  // namespace parser
 
 namespace compiler {
 class CompilerImpl;
-class CompilerContext;
 }  // namespace compiler
 
 namespace varbinder {
@@ -239,14 +241,7 @@ public:
     NO_COPY_SEMANTIC(Compiler);
     NO_MOVE_SEMANTIC(Compiler);
 
-    pandasm::Program *Compile(const SourceFile &input, const CompilerOptions &options, uint32_t parseStatus = 0);
-
-    inline pandasm::Program *Compile(const SourceFile &input)
-    {
-        CompilerOptions options;
-
-        return Compile(input, options, 0);
-    }
+    pandasm::Program *Compile(const SourceFile &input, const util::Options &options, uint32_t parseStatus = 0);
 
     static void DumpAsm(const pandasm::Program *prog);
 

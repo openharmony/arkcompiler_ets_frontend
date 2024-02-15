@@ -82,9 +82,9 @@ public:
     }
 
     template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
-    compiler::CompilerContext::CodeGenCb MakeCompileJob()
+    public_lib::Context::CodeGenCb MakeCompileJob()
     {
-        return [this](compiler::CompilerContext *context, varbinder::FunctionScope *scope,
+        return [this](public_lib::Context *context, varbinder::FunctionScope *scope,
                       compiler::ProgramElement *programElement) -> void {
             RegSpiller regSpiller;
             AstCompiler astcompiler;
@@ -111,34 +111,34 @@ public:
 
         Compiler compiler(options->Extension(), options->ThreadCount());
         SourceFile input(fileName, src, options->ParseModule());
-        compiler::CompilationUnit unit {input, options->CompilerOptions(), 0, options->Extension()};
+        compiler::CompilationUnit unit {input, *options, 0, options->Extension()};
         auto getPhases = compiler::GetPhaseList(ScriptExtension::ETS);
 
         program->MarkEntry();
-        auto parser = Parser(program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
+        auto parser =
+            Parser(program, unit.options.CompilerOptions(), static_cast<parser::ParserStatus>(unit.rawParserStatus));
         auto analyzer = Analyzer(checker);
         checker->SetAnalyzer(&analyzer);
 
         auto *varbinder = program->VarBinder();
         varbinder->SetProgram(program);
 
-        compiler::CompilerContext context(varbinder, checker, unit.options,
-                                          MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>());
-        varbinder->SetCompilerContext(&context);
+        varbinder->SetContext(publicContext_.get());
 
-        auto emitter = Emitter(&context);
-        context.SetEmitter(&emitter);
-        context.SetParser(&parser);
+        auto emitter = Emitter(publicContext_.get());
 
+        auto config = public_lib::ConfigImpl {};
+        publicContext_->config = &config;
+        publicContext_->config->options = &unit.options;
         publicContext_->sourceFile = &unit.input;
         publicContext_->allocator = allocator_.get();
         publicContext_->parser = &parser;
-        publicContext_->checker = context.Checker();
+        publicContext_->checker = checker;
         publicContext_->analyzer = publicContext_->checker->GetAnalyzer();
-        publicContext_->compilerContext = &context;
-        publicContext_->emitter = context.GetEmitter();
+        publicContext_->emitter = &emitter;
+        publicContext_->parserProgram = program;
 
-        parser.ParseScript(unit.input, unit.options.compilationMode == CompilationMode::GEN_STD_LIB);
+        parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
         for (auto *phase : getPhases) {
             if (!phase->Apply(publicContext_.get(), program)) {
                 return;

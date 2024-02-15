@@ -838,7 +838,7 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
         ss << util::Helpers::FunctionName(Allocator(), func);
     }
 
-    signature->ToAssemblerType(GetCompilerContext(), ss);
+    signature->ToAssemblerType(GetContext(), ss);
 
     util::UString internalName(ss.str(), Allocator());
     funcScope->BindInternalName(internalName.View());

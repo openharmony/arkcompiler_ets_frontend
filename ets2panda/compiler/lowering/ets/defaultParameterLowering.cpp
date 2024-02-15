@@ -65,9 +65,9 @@ std::pair<bool, std::size_t> DefaultParameterLowering::HasDefaultParam(const ir:
 }
 
 ir::TSTypeParameterDeclaration *DefaultParameterLowering::CreateParameterDeclaraion(ir::MethodDefinition *method,
-                                                                                    CompilerContext *ctx)
+                                                                                    public_lib::Context *ctx)
 {
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
     if (method->Function()->TypeParams() == nullptr || method->Function()->TypeParams()->Params().empty()) {
         return nullptr;
     }
@@ -91,9 +91,9 @@ ir::TSTypeParameterDeclaration *DefaultParameterLowering::CreateParameterDeclara
 
 ir::FunctionSignature DefaultParameterLowering::CreateFunctionSignature(ir::MethodDefinition *method,
                                                                         ArenaVector<ir::Expression *> funcParam,
-                                                                        CompilerContext *ctx)
+                                                                        public_lib::Context *ctx)
 {
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
 
     ir::TSTypeParameterDeclaration *typeParamDecl = CreateParameterDeclaraion(method, ctx);
     auto *returnTypeAnnotation =
@@ -105,9 +105,9 @@ ir::FunctionSignature DefaultParameterLowering::CreateFunctionSignature(ir::Meth
 }
 
 ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterInstantiation(
-    ir::MethodDefinition *method, CompilerContext *ctx)
+    ir::MethodDefinition *method, public_lib::Context *ctx)
 {
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
     ArenaVector<ir::TypeNode *> params(checker->Allocator()->Adapter());
 
     if (method->Function()->TypeParams() == nullptr || method->Function()->TypeParams()->Params().empty()) {
@@ -131,10 +131,10 @@ ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterI
     return checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(selfParams));
 }
 
-ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefinition *method, CompilerContext *ctx,
+ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefinition *method, public_lib::Context *ctx,
                                                                  ArenaVector<ir::Expression *> funcCallArgs)
 {
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
     ArenaVector<ir::Statement *> funcStatements(checker->Allocator()->Adapter());
 
     ir::CallExpression *callExpression = nullptr;
@@ -188,14 +188,14 @@ ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefin
 }
 
 ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
-    ir::MethodDefinition *method, CompilerContext *ctx, ArenaVector<ir::Expression *> funcDefinitionArgs,
+    ir::MethodDefinition *method, public_lib::Context *ctx, ArenaVector<ir::Expression *> funcDefinitionArgs,
     ArenaVector<ir::Expression *> funcCallArgs)
 {
     lexer::SourcePosition startLoc(method->Start().line, method->Start().index);
     lexer::SourcePosition endLoc = startLoc;
     ir::FunctionSignature signature = CreateFunctionSignature(method, std::move(funcDefinitionArgs), ctx);
 
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
     ir::Identifier *id = nullptr;
 
     ir::BlockStatement *body = nullptr;
@@ -218,9 +218,9 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
 void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *method,
                                                       ArenaVector<ir::Expression *> funcCallArgs,
                                                       ArenaVector<ir::Expression *> funcDefinitionArgs,
-                                                      CompilerContext *ctx)
+                                                      public_lib::Context *ctx)
 {
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
     auto *funcExpression =
         CreateFunctionExpression(method, ctx, std::move(funcDefinitionArgs), std::move(funcCallArgs));
     auto *ident = funcExpression->Function()->Id()->Clone(checker->Allocator(), nullptr);
@@ -248,9 +248,9 @@ void DefaultParameterLowering::RemoveInitializers(ArenaVector<ir::Expression *> 
     });
 }
 
-void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, CompilerContext *ctx)
+void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, public_lib::Context *ctx)
 {
-    auto *checker = ctx->Checker()->AsETSChecker();
+    auto *checker = ctx->checker->AsETSChecker();
     auto params = method->Function()->Params();
 
     // go through default parameters list and create overloading for each combination of them
@@ -364,7 +364,7 @@ bool DefaultParameterLowering::Perform(public_lib::Context *ctx, parser::Program
     });
 
     for (auto &it : foundNodes) {
-        ProcessGlobalFunctionDefinition(it, ctx->compilerContext);
+        ProcessGlobalFunctionDefinition(it, ctx);
     }
     return true;
 }

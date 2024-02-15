@@ -16,7 +16,6 @@
 #include "lambdaLowering.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/ASTVerifier.h"
-#include "compiler/core/compilerContext.h"
 
 namespace ark::es2panda::compiler {
 static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::ArrowFunctionExpression *const arrow)

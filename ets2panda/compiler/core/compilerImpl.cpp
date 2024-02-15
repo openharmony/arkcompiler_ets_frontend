@@ -19,7 +19,6 @@
 #include "es2panda.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/TSAnalyzer.h"
-#include "compiler/core/compilerContext.h"
 #include "compiler/core/compileQueue.h"
 #include "compiler/core/compilerImpl.h"
 #include "compiler/core/pandagen.h"
@@ -47,19 +46,19 @@
 
 namespace ark::es2panda::compiler {
 
-void CompilerImpl::HandleContextLiterals(CompilerContext *context)
+void CompilerImpl::HandleContextLiterals(public_lib::Context *context)
 {
-    auto *emitter = context->GetEmitter();
+    auto *emitter = context->emitter;
 
     uint32_t index = 0;
-    for (const auto &buff : context->ContextLiterals()) {
+    for (const auto &buff : context->contextLiterals) {
         emitter->AddLiteralBuffer(buff, index++);
     }
 
-    emitter->LiteralBufferIndex() += context->ContextLiterals().size();
+    emitter->LiteralBufferIndex() += context->contextLiterals.size();
 }
 
-ark::pandasm::Program *CompilerImpl::Emit(CompilerContext *context)
+ark::pandasm::Program *CompilerImpl::Emit(public_lib::Context *context)
 {
     HandleContextLiterals(context);
 
@@ -67,10 +66,10 @@ ark::pandasm::Program *CompilerImpl::Emit(CompilerContext *context)
 
     /* Main thread can also be used instead of idling */
     queue_.Consume();
-    auto *emitter = context->GetEmitter();
+    auto *emitter = context->emitter;
     queue_.Wait([emitter](CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
 
-    return emitter->Finalize(context->DumpDebugInfo(), Signatures::ETS_GLOBAL);
+    return emitter->Finalize(context->config->options->CompilerOptions().dumpDebugInfo, Signatures::ETS_GLOBAL);
 }
 
 class ASTVerificationRunner {
@@ -103,11 +102,11 @@ public:
     using AstToCheck = ArenaMap<AstPath, const ir::AstNode *>;
     using GroupedMessages = std::map<Source, ast_verifier::Messages>;
 
-    ASTVerificationRunner(ArenaAllocator &allocator, const CompilerContext &context)
-        : checkFullProgram_ {context.Options()->verifierFullProgram},
+    ASTVerificationRunner(ArenaAllocator &allocator, const public_lib::Context &context)
+        : checkFullProgram_ {context.config->options->CompilerOptions().verifierFullProgram},
           verifier_ {&allocator},
-          treatAsWarnings_ {context.Options()->verifierWarnings},
-          treatAsErrors_ {context.Options()->verifierErrors}
+          treatAsWarnings_ {context.config->options->CompilerOptions().verifierWarnings},
+          treatAsErrors_ {context.config->options->CompilerOptions().verifierErrors}
     {
     }
 
@@ -173,46 +172,30 @@ private:
 };
 
 template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
-static CompilerContext::CodeGenCb MakeCompileJob()
+static public_lib::Context::CodeGenCb MakeCompileJob()
 {
-    return [](CompilerContext *context, varbinder::FunctionScope *scope,
+    return [](public_lib::Context *context, varbinder::FunctionScope *scope,
               compiler::ProgramElement *programElement) -> void {
         RegSpiller regSpiller;
         ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         AstCompiler astcompiler;
-        CodeGen cg(&allocator, &regSpiller, context, scope, programElement, &astcompiler);
+        CodeGen cg(&allocator, &regSpiller, context, std::make_tuple(scope, programElement, &astcompiler));
         FunctionEmitter funcEmitter(&cg, programElement);
         funcEmitter.Generate();
     };
 }
 
-static void SetupPublicContext(public_lib::Context *context, const SourceFile *sourceFile, ArenaAllocator *allocator,
-                               CompileQueue *queue, std::vector<util::Plugin> const *plugins,
-                               parser::ParserImpl *parser, CompilerContext *compilerContext)
-{
-    context->sourceFile = sourceFile;
-    context->allocator = allocator;
-    context->queue = queue;
-    context->plugins = plugins;
-    context->parser = parser;
-    context->checker = compilerContext->Checker();
-    context->analyzer = context->checker->GetAnalyzer();
-    context->compilerContext = compilerContext;
-    context->emitter = compilerContext->GetEmitter();
-}
-
 #ifndef NDEBUG
 
-static bool RunVerifierAndPhases(ArenaAllocator &allocator, const CompilerContext &context,
-                                 public_lib::Context &publicContext, const std::vector<Phase *> &phases,
-                                 parser::Program &program)
+static bool RunVerifierAndPhases(ArenaAllocator &allocator, public_lib::Context &context,
+                                 const std::vector<Phase *> &phases, parser::Program &program)
 {
     auto runner = ASTVerificationRunner(allocator, context);
     auto verificationCtx = ast_verifier::VerificationContext {};
-    const auto runAllChecks = context.Options()->verifierAllChecks;
+    const auto runAllChecks = context.config->options->CompilerOptions().verifierAllChecks;
 
     for (auto *phase : phases) {
-        if (!phase->Apply(&publicContext, &program)) {
+        if (!phase->Apply(&context, &program)) {
             return false;
         }
 
@@ -241,7 +224,7 @@ static bool RunVerifierAndPhases(ArenaAllocator &allocator, const CompilerContex
 }
 #endif
 
-using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
+using EmitCb = std::function<pandasm::Program *(public_lib::Context *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
@@ -252,7 +235,8 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
     program.MarkEntry();
-    auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
+    auto parser =
+        Parser(&program, unit.options.CompilerOptions(), static_cast<parser::ParserStatus>(unit.rawParserStatus));
     auto checker = Checker();
     auto analyzer = Analyzer(&checker);
     checker.SetAnalyzer(&analyzer);
@@ -260,35 +244,42 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     auto *varbinder = program.VarBinder();
     varbinder->SetProgram(&program);
 
-    CompilerContext context(varbinder, &checker, unit.options,
-                            MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>());
-    varbinder->SetCompilerContext(&context);
+    public_lib::Context context;
+
+    auto config = public_lib::ConfigImpl {};
+    context.config = &config;
+    context.config->options = &unit.options;
+    context.sourceFile = &unit.input;
+    context.allocator = &allocator;
+    context.queue = compilerImpl->Queue();
+    context.plugins = &compilerImpl->Plugins();
+    context.parser = &parser;
+    context.checker = &checker;
+    context.analyzer = checker.GetAnalyzer();
+    context.parserProgram = &program;
+    context.codeGenCb = MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>();
 
     auto emitter = Emitter(&context);
-    context.SetEmitter(&emitter);
-    context.SetParser(&parser);
+    context.emitter = &emitter;
 
-    public_lib::Context publicContext;
-    SetupPublicContext(&publicContext, &unit.input, &allocator, compilerImpl->Queue(), &compilerImpl->Plugins(),
-                       &parser, &context);
+    varbinder->SetContext(&context);
 
-    parser.ParseScript(unit.input, unit.options.compilationMode == CompilationMode::GEN_STD_LIB);
-    const auto phases = getPhases(unit.ext);
+    parser.ParseScript(unit.input, unit.options.CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB);
 #ifndef NDEBUG
     if (unit.ext == ScriptExtension::ETS) {
-        if (!RunVerifierAndPhases(allocator, context, publicContext, phases, program)) {
+        if (!RunVerifierAndPhases(allocator, context, getPhases(unit.ext), program)) {
             return nullptr;
         }
     } else {
-        for (auto *phase : phases) {
-            if (!phase->Apply(&publicContext, &program)) {
+        for (auto *phase : getPhases(unit.ext)) {
+            if (!phase->Apply(&context, &program)) {
                 return nullptr;
             }
         }
     }
 #else
-    for (auto *phase : phases) {
-        if (!phase->Apply(&publicContext, &program)) {
+    for (auto *phase : getPhases(unit.ext)) {
+        if (!phase->Apply(&context, &program)) {
             return nullptr;
         }
     }

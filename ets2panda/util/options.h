@@ -79,6 +79,11 @@ public:
         return compilerOptions_;
     }
 
+    void SetCompilerOptions(const es2panda::CompilerOptions &options)
+    {
+        compilerOptions_ = options;
+    }
+
     const std::string &ParserInput() const
     {
         return parserInput_;

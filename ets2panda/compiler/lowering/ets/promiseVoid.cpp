@@ -17,7 +17,6 @@
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
 #include "compiler/core/ASTVerifier.h"
-#include "compiler/core/compilerContext.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ets/etsTypeReference.h"

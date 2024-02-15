@@ -20,6 +20,7 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "checker/ETSchecker.h"
+#include "public/public.h"
 
 namespace ark::es2panda::checker {
 
@@ -92,6 +93,24 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     result->ownerVar_ = ownerVar_;
 
     return result;
+}
+
+void Signature::ToAssemblerType(public_lib::Context *context, std::stringstream &ss) const
+{
+    ss << compiler::Signatures::MANGLE_BEGIN;
+
+    for (const auto *param : signatureInfo_->params) {
+        MaybeBoxedType(context->checker, param)->ToAssemblerTypeWithRank(ss);
+        ss << compiler::Signatures::MANGLE_SEPARATOR;
+    }
+
+    if (signatureInfo_->restVar != nullptr) {
+        MaybeBoxedType(context->checker, signatureInfo_->restVar)->ToAssemblerTypeWithRank(ss);
+        ss << compiler::Signatures::MANGLE_SEPARATOR;
+    }
+
+    returnType_->ToAssemblerTypeWithRank(ss);
+    ss << compiler::Signatures::MANGLE_SEPARATOR;
 }
 
 Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)

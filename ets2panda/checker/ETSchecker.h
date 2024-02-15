@@ -21,6 +21,9 @@
 #include "checker/types/ets/types.h"
 #include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
+#include "util/helpers.h"
+
+#include <mutex>
 
 namespace ark::es2panda::varbinder {
 class VarBinder;

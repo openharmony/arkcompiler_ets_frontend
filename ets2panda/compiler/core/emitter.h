@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_EMITTER_H
 
 #include "compiler/base/literals.h"
+
 #include "util/ustring.h"
 
 #include <list>
@@ -40,12 +41,15 @@ class Scope;
 class LocalVariable;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
+
 namespace ark::es2panda::compiler {
 class CodeGen;
 class DebugInfo;
 class Label;
 class IRNode;
-class CompilerContext;
 class ProgramElement;
 class RegSpiller;
 
@@ -111,21 +115,21 @@ public:
     virtual void GenAnnotation() = 0;
 
 protected:
-    explicit Emitter(const CompilerContext *context);
+    explicit Emitter(const public_lib::Context *context);
 
     pandasm::Program *Program() const
     {
         return prog_;
     }
 
-    const CompilerContext *Context() const
+    const public_lib::Context *Context() const
     {
         return context_;
     }
 
 private:
     pandasm::Program *prog_;
-    const CompilerContext *context_;
+    const public_lib::Context *context_;
     uint32_t literalBufferIndex_ {};
 };
 }  // namespace ark::es2panda::compiler

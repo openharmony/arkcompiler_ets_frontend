@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,8 +29,11 @@ namespace ark::es2panda::varbinder {
 class FunctionScope;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
+
 namespace ark::es2panda::compiler {
-class CompilerContext;
 
 class CompileQueue {
 public:
@@ -41,7 +44,7 @@ public:
     NO_MOVE_SEMANTIC(CompileQueue);
     ~CompileQueue();
 
-    void Schedule(CompilerContext *context);
+    void Schedule(public_lib::Context *context);
     void Consume();
     void Wait(const JobsFinishedCb &onFinishedCb);
 

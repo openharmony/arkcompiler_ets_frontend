@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,8 +27,11 @@ namespace ark::es2panda::varbinder {
 class FunctionScope;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
+
 namespace ark::es2panda::compiler {
-class CompilerContext;
 class ProgramElement;
 
 class CompileJob {
@@ -48,7 +51,7 @@ public:
         return &programElement_;
     }
 
-    void SetContext(CompilerContext *context, varbinder::FunctionScope *scope)
+    void SetContext(public_lib::Context *context, varbinder::FunctionScope *scope)
     {
         context_ = context;
         scope_ = scope;
@@ -61,7 +64,7 @@ public:
 private:
     std::mutex m_;
     std::condition_variable cond_;
-    CompilerContext *context_ {};
+    public_lib::Context *context_ {};
     varbinder::FunctionScope *scope_ {};
     ProgramElement programElement_;
     CompileJob *dependant_ {};

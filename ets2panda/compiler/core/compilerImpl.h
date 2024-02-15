@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,18 +30,17 @@ struct Program;
 
 namespace ark::es2panda::compiler {
 class CompileQueue;
-class CompilerContext;
 
 class CompilationUnit {
 public:
-    explicit CompilationUnit(const SourceFile &i, const CompilerOptions &o, uint32_t s, ScriptExtension e)
+    explicit CompilationUnit(const SourceFile &i, const util::Options &o, uint32_t s, ScriptExtension e)
         : input(i), options(o), rawParserStatus(s), ext(e)
     {
     }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     const SourceFile &input;
-    const CompilerOptions &options;
+    const util::Options &options;
     uint32_t rawParserStatus;
     ScriptExtension ext;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
@@ -66,7 +65,7 @@ public:
 
     static void DumpAsm(const ark::pandasm::Program *prog);
 
-    ark::pandasm::Program *Emit(CompilerContext *context);
+    ark::pandasm::Program *Emit(public_lib::Context *context);
 
     CompileQueue *Queue()
     {
@@ -74,7 +73,7 @@ public:
     }
 
 private:
-    static void HandleContextLiterals(CompilerContext *context);
+    static void HandleContextLiterals(public_lib::Context *context);
 
     CompileQueue queue_;
     std::vector<util::Plugin> const *plugins_;

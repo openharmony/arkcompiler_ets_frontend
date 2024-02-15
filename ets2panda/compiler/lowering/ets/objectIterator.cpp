@@ -143,7 +143,8 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
 
 bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+    const auto &options = ctx->config->options->CompilerOptions();
+    if (options.compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {
@@ -156,7 +157,7 @@ bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *
     ASSERT(parser != nullptr);
     auto *const checker = ctx->checker->AsETSChecker();
     ASSERT(checker != nullptr);
-    auto *const varbinder = ctx->compilerContext->VarBinder()->AsETSBinder();
+    auto *const varbinder = ctx->checker->VarBinder()->AsETSBinder();
     ASSERT(varbinder != nullptr);
 
     program->Ast()->TransformChildrenRecursively(

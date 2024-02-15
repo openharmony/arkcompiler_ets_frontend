@@ -65,7 +65,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
 
 bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {
@@ -112,7 +112,7 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
 
 bool ObjectIndexLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, extPrograms] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : extPrograms) {

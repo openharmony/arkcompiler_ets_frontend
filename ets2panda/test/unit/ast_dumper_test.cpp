@@ -135,7 +135,7 @@ public:
         ark::es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
         ark::es2panda::SourceFile input(fileName, src, options->ParseModule());
 
-        return compiler.Compile(input, options->CompilerOptions());
+        return compiler.Compile(input, *options);
     }
 
     NO_COPY_SEMANTIC(ASTDumperTest);

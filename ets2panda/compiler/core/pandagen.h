@@ -44,13 +44,12 @@ class Identifier;
 
 namespace ark::es2panda::compiler {
 class FunctionBuilder;
-class CompilerContext;
 class DynamicContext;
 
 class PandaGen final : public CodeGen {
 public:
-    explicit PandaGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                      varbinder::FunctionScope *scope, ProgramElement *programElement, AstCompiler *astcompiler);
+    explicit PandaGen(ArenaAllocator *allocator, RegSpiller *spiller, public_lib::Context *context,
+                      std::tuple<varbinder::FunctionScope *, ProgramElement *, AstCompiler *> toCompile);
 
     ~PandaGen() override = default;
     NO_COPY_SEMANTIC(PandaGen);

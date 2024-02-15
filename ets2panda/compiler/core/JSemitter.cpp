@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,8 @@
 #include "compiler/core/pandagen.h"
 #include "varbinder/varbinder.h"
 #include "parser/program/program.h"
-#include "compiler/core/compilerContext.h"
 #include "assembly-program.h"
+#include "public/public.h"
 
 namespace ark::es2panda::compiler {
 pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
@@ -77,7 +77,7 @@ void JSEmitter::GenAnnotation()
 #ifdef PANDA_WITH_ECMASCRIPT
     Program()->lang = panda_file::SourceLang::ECMASCRIPT;
     GenESAnnotationRecord();
-    GenESModuleModeRecord(Context()->VarBinder()->Program()->Kind() == parser::ScriptKind::MODULE);
+    GenESModuleModeRecord(Context()->parserProgram->Kind() == parser::ScriptKind::MODULE);
 #else
     UNREACHABLE();
 #endif

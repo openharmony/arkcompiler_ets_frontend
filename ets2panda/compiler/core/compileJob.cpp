@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,7 @@
  */
 
 #include "compileQueue.h"
-
-#include "compiler/core/compilerContext.h"
+#include "public/public.h"
 
 namespace ark::es2panda::compiler {
 
@@ -24,7 +23,7 @@ void CompileJob::Run()
     std::unique_lock<std::mutex> lock(m_);
     cond_.wait(lock, [this] { return dependencies_ == 0; });
 
-    context_->GetCodeGenCb()(context_, scope_, &programElement_);
+    context_->codeGenCb(context_, scope_, &programElement_);
 
     if (dependant_ != nullptr) {
         dependant_->Signal();

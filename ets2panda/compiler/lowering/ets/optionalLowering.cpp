@@ -52,7 +52,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
 {
     auto *const allocator = ctx->allocator;
     auto *const parser = ctx->parser->AsETSParser();
-    auto *const varbinder = ctx->compilerContext->VarBinder();
+    auto *const varbinder = ctx->parserProgram->VarBinder();
 
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(expr));
     auto *tmpIdent = Gensym(allocator);
@@ -65,7 +65,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
         "(@@I2 == null ? undefined : 0);",
         tmpIdent, tmpIdentClone);
     sequenceExpr->SetParent(chain->Parent());
-    InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
+    InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->parserProgram->VarBinder());
 
     auto const &stmts = sequenceExpr->AsBlockExpression()->Statements();
     stmts[0]->AsVariableDeclaration()->Declarators()[0]->SetInit(getSource(expr));

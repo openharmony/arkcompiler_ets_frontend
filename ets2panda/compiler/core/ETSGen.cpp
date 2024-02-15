@@ -32,7 +32,6 @@
 #include "compiler/base/lreference.h"
 #include "compiler/base/catchTable.h"
 #include "compiler/core/dynamicContext.h"
-#include "compiler/core/compilerContext.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 #include "checker/types/type.h"
@@ -45,6 +44,7 @@
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
 #include "checker/types/globalTypesHolder.h"
+#include "public/public.h"
 
 namespace ark::es2panda::compiler {
 
@@ -53,9 +53,9 @@ static constexpr auto TYPE_FLAG_BYTECODE_REF = checker::TypeFlag::ETS_ARRAY | ch
                                                checker::TypeFlag::ETS_NONNULLISH | checker::TypeFlag::ETS_NULL |
                                                checker::TypeFlag::ETS_UNDEFINED;
 
-ETSGen::ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-               varbinder::FunctionScope *scope, ProgramElement *programElement, AstCompiler *astcompiler) noexcept
-    : CodeGen(allocator, spiller, context, scope, programElement, astcompiler),
+ETSGen::ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, public_lib::Context *context,
+               std::tuple<varbinder::FunctionScope *, ProgramElement *, AstCompiler *> toCompile) noexcept
+    : CodeGen(allocator, spiller, context, toCompile),
       containingObjectType_(util::Helpers::GetContainingObjectType(RootNode()))
 {
     ETSFunction::Compile(this);
@@ -100,12 +100,12 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
 
 const checker::ETSChecker *ETSGen::Checker() const noexcept
 {
-    return Context()->Checker()->AsETSChecker();
+    return Context()->checker->AsETSChecker();
 }
 
 const varbinder::ETSBinder *ETSGen::VarBinder() const noexcept
 {
-    return Context()->VarBinder()->AsETSBinder();
+    return Context()->parserProgram->VarBinder()->AsETSBinder();
 }
 
 const checker::Type *ETSGen::ReturnType() const noexcept

@@ -23,7 +23,6 @@
 #include "varbinder/ETSBinder.h"
 #include "compiler/lowering/scopesInit/savedBindingsCtx.h"
 #include "checker/checker.h"
-#include "compiler/core/compilerContext.h"
 #include "ir/visitor/IterateAstVisitor.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/blockExpression.h"

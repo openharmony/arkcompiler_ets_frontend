@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@
 #include "compiler/core/emitter.h"
 #include "compiler/core/regAllocator.h"
 #include "compiler/core/regScope.h"
-#include "compiler/core/compilerContext.h"
+#include "public/public.h"
 #include "compiler/core/dynamicContext.h"
 #include "compiler/base/catchTable.h"
 #include "ir/base/scriptFunction.h"
@@ -119,7 +119,7 @@ Label *CodeGen::AllocLabel()
 
 bool CodeGen::IsDebug() const noexcept
 {
-    return context_->IsDebug();
+    return context_->config->options->CompilerOptions().isDebug;
 }
 
 std::uint32_t CodeGen::ParamCount() const noexcept
@@ -160,7 +160,7 @@ const util::StringView &CodeGen::FunctionName() const noexcept
 
 varbinder::VarBinder *CodeGen::VarBinder() const noexcept
 {
-    return context_->VarBinder();
+    return context_->parserProgram->VarBinder();
 }
 
 std::uint32_t CodeGen::AddLiteralBuffer(LiteralBuffer &&buf)
@@ -328,7 +328,7 @@ const RangeRegAllocator &CodeGen::Rra() const noexcept
     return rra_;
 }
 
-CompilerContext *CodeGen::Context() const noexcept
+public_lib::Context *CodeGen::Context() const noexcept
 {
     return context_;
 }

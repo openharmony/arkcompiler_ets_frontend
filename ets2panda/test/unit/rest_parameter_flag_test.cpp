@@ -89,7 +89,7 @@ private:
         es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
         es2panda::SourceFile input(fileName, src, options->ParseModule());
 
-        return std::unique_ptr<pandasm::Program>(compiler.Compile(input, options->CompilerOptions()));
+        return std::unique_ptr<pandasm::Program>(compiler.Compile(input, *options));
     }
 
     pandasm::Function *GetFunction(std::string_view functionName)

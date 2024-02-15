@@ -24,7 +24,7 @@
 #include "compiler/base/catchTable.h"
 #include "compiler/base/lexenv.h"
 #include "compiler/base/literals.h"
-#include "compiler/core/compilerContext.h"
+#include "public/public.h"
 #include "compiler/core/labelTarget.h"
 #include "compiler/core/regAllocator.h"
 #include "compiler/function/asyncFunctionBuilder.h"
@@ -256,10 +256,9 @@ using EcmaLdevalbindings = EcmaDisabled;
 using EcmaDirecteval = EcmaDisabled;
 #endif
 
-PandaGen::PandaGen(ArenaAllocator *const allocator, RegSpiller *const spiller, CompilerContext *const context,
-                   varbinder::FunctionScope *const scope, ProgramElement *const programElement,
-                   AstCompiler *astcompiler)
-    : CodeGen(allocator, spiller, context, scope, programElement, astcompiler)
+PandaGen::PandaGen(ArenaAllocator *const allocator, RegSpiller *const spiller, public_lib::Context *const context,
+                   std::tuple<varbinder::FunctionScope *, ProgramElement *, AstCompiler *> toCompile)
+    : CodeGen(allocator, spiller, context, toCompile)
 {
     Function::Compile(this);
 }
@@ -1805,19 +1804,19 @@ void PandaGen::LoadLexicalContext(const ir::AstNode *node)
 
 bool PandaGen::IsDirectEval() const
 {
-    return Context()->IsDirectEval();
+    return Context()->config->options->CompilerOptions().isDirectEval;
 }
 
 bool PandaGen::IsEval() const
 {
-    return Context()->IsEval();
+    return Context()->config->options->CompilerOptions().isEval;
 }
 
 const checker::Type *PandaGen::GetVRegType(VReg vreg) const
 {
     // We assume that all used regs have any type
     if (vreg.GetIndex() > NextReg().GetIndex()) {
-        return Context()->Checker()->GetGlobalTypesHolder()->GlobalAnyType();
+        return Context()->checker->GetGlobalTypesHolder()->GlobalAnyType();
     }
 
     return nullptr;
