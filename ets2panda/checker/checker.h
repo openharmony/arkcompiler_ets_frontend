@@ -279,12 +279,12 @@ public:
     {
     }
 
-    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus, ETSObjectType *containingClass)
+    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus, const ETSObjectType *containingClass)
         : SavedCheckerContext(checker, newStatus, containingClass, nullptr)
     {
     }
 
-    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus, ETSObjectType *containingClass,
+    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus, const ETSObjectType *containingClass,
                                  Signature *containingSignature)
         : checker_(checker), prev_(checker->context_)
     {

@@ -34,17 +34,16 @@ enum class ETSObjectFlags : uint32_t {
     GLOBAL = 1U << 4U,
     ENUM = 1U << 5U,
     FUNCTIONAL = 1U << 6U,
-    RESOLVED_MEMBERS = 1U << 7U,
-    RESOLVED_INTERFACES = 1U << 8U,
-    RESOLVED_SUPER = 1U << 9U,
-    RESOLVED_TYPE_PARAMS = 1U << 10U,
-    CHECKED_COMPATIBLE_ABSTRACTS = 1U << 11U,
-    STRING = 1U << 12U,
-    INCOMPLETE_INSTANTIATION = 1U << 13U,
-    INNER = 1U << 14U,
-    DYNAMIC = 1U << 15U,
-    ASYNC_FUNC_RETURN_TYPE = 1U << 16U,
-    CHECKED_INVOKE_LEGITIMACY = 1U << 17U,
+    RESOLVED_INTERFACES = 1U << 7U,
+    RESOLVED_SUPER = 1U << 8U,
+    RESOLVED_TYPE_PARAMS = 1U << 9U,
+    CHECKED_COMPATIBLE_ABSTRACTS = 1U << 10U,
+    STRING = 1U << 11U,
+    INCOMPLETE_INSTANTIATION = 1U << 12U,
+    INNER = 1U << 13U,
+    DYNAMIC = 1U << 14U,
+    ASYNC_FUNC_RETURN_TYPE = 1U << 15U,
+    CHECKED_INVOKE_LEGITIMACY = 1U << 16U,
 
     BUILTIN_BIGINT = 1U << 22U,
     BUILTIN_STRING = 1U << 23U,
@@ -64,7 +63,7 @@ enum class ETSObjectFlags : uint32_t {
         BUILTIN_BYTE | BUILTIN_CHAR | BUILTIN_SHORT | BUILTIN_INT | BUILTIN_LONG | BUILTIN_STRING | ENUM,
     GLOBAL_CLASS = CLASS | GLOBAL,
     FUNCTIONAL_INTERFACE = INTERFACE | ABSTRACT | FUNCTIONAL,
-    COMPLETELY_RESOLVED = RESOLVED_MEMBERS | RESOLVED_INTERFACES | RESOLVED_SUPER | RESOLVED_TYPE_PARAMS,
+    RESOLVED_HEADER = RESOLVED_INTERFACES | RESOLVED_SUPER | RESOLVED_TYPE_PARAMS,
 };
 
 DEFINE_BITOPS(ETSObjectFlags)
@@ -152,7 +151,7 @@ public:
         propertiesInstantiated_ = true;
     }
 
-    void AddConstructSignature(const ArenaVector<Signature *> &signatures)
+    void AddConstructSignature(const ArenaVector<Signature *> &signatures) const
     {
         constructSignatures_.insert(constructSignatures_.end(), signatures.begin(), signatures.end());
         propertiesInstantiated_ = true;
@@ -185,7 +184,7 @@ public:
         relation_ = relation;
     }
 
-    TypeRelation *GetRelation()
+    TypeRelation *GetRelation() const
     {
         return relation_;
     }
@@ -311,7 +310,7 @@ public:
 
     ETSObjectType const *GetConstOriginalBaseType() const noexcept;
 
-    ETSObjectType *GetOriginalBaseType() noexcept
+    ETSObjectType *GetOriginalBaseType() const noexcept
     {
         return const_cast<ETSObjectType *>(GetConstOriginalBaseType());
     }
@@ -466,7 +465,7 @@ public:
     }
 
     template <PropertyType TYPE>
-    void AddProperty(varbinder::LocalVariable *prop)
+    void AddProperty(varbinder::LocalVariable *prop) const
     {
         properties_[static_cast<size_t>(TYPE)].emplace(prop->Name(), prop);
         propertiesInstantiated_ = true;
@@ -536,6 +535,11 @@ public:
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
         return {false, false};
+    }
+
+    bool IsPropertiesInstantiated() const
+    {
+        return propertiesInstantiated_;
     }
 
 protected:

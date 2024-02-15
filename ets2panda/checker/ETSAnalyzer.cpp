@@ -2634,7 +2634,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     checker::ETSObjectType *interfaceType {};
 
     if (st->TsType() == nullptr) {
-        interfaceType = checker->BuildInterfaceProperties(st);
+        interfaceType = checker->BuildBasicInterfaceProperties(st);
         ASSERT(interfaceType != nullptr);
         interfaceType->SetSuperType(checker->GlobalETSObjectType());
         checker->CheckInvokeMethodsLegitimacy(interfaceType);

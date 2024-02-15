@@ -54,7 +54,6 @@ using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<u
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
-using UnfinishedTypesSet = ArenaUnorderedSet<ETSObjectType *>;
 
 class ETSChecker final : public Checker {
 public:
@@ -69,8 +68,7 @@ public:
           dynamicNewIntrinsics_(Allocator()->Adapter()),
           dynamicLambdaSignatureCache_(Allocator()->Adapter()),
           functionalInterfaceCache_(Allocator()->Adapter()),
-          apparentTypes_(Allocator()->Adapter()),
-          unfinishedTypes_(Allocator()->Adapter())
+          apparentTypes_(Allocator()->Adapter())
     {
     }
 
@@ -139,17 +137,15 @@ public:
 
     // Object
     ETSObjectType *BuildBasicClassProperties(ir::ClassDefinition *classDef);
-    ETSObjectType *BuildClassProperties(ir::ClassDefinition *classDef);
     ETSObjectType *BuildAnonymousClassProperties(ir::ClassDefinition *classDef, ETSObjectType *superType);
     ETSObjectType *BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
-    ETSObjectType *BuildInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl);
     ETSObjectType *GetSuperType(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfaces(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfacesOfClass(ETSObjectType *type);
     ArenaVector<ETSObjectType *> GetInterfacesOfInterface(ETSObjectType *type);
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
-    void ResolveDeclaredMembersOfObject(ETSObjectType *type);
+    void ResolveDeclaredMembersOfObject(const ETSObjectType *type);
     int32_t GetTupleElementAccessValue(const Type *type) const;
     void ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
     void ValidateTupleIndex(const ETSTupleType *tuple, const ir::MemberExpression *expr);
@@ -607,10 +603,6 @@ public:
     ETSObjectType *GetCachedFunctionlInterface(ir::ETSFunctionType *type);
     void CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType);
 
-    void AddUnfinishedType(ETSObjectType *type);
-    void RemoveUnfinishedType(ETSObjectType *type);
-    void ResolveUnfinishedTypes();
-
 private:
     using ClassBuilder = std::function<void(varbinder::ClassScope *, ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder = std::function<void(varbinder::FunctionScope *, ArenaVector<ir::Statement *> *,
@@ -636,6 +628,8 @@ private:
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
     const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
     void BuildClass(util::StringView name, const ClassBuilder &builder);
+    Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
+    void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
 
     template <bool IS_STATIC>
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunction(varbinder::FunctionScope *scope,
@@ -721,7 +715,6 @@ private:
     DynamicLambdaObjectSignatureMap dynamicLambdaSignatureCache_;
     FunctionalInterfaceMap functionalInterfaceCache_;
     TypeMapping apparentTypes_;
-    UnfinishedTypesSet unfinishedTypes_;
     std::recursive_mutex mtx_;
 };
 

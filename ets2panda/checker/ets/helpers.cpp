@@ -249,14 +249,51 @@ Type *ETSChecker::GetNonConstantTypeFromPrimitiveType(Type *type)
     return type;
 }
 
+Type *ETSChecker::GetTypeOfSetterGetter(varbinder::Variable *const var)
+{
+    auto *propType = var->TsType()->AsETSFunctionType();
+    if (propType->HasTypeFlag(checker::TypeFlag::GETTER)) {
+        return propType->FindGetter()->ReturnType();
+    }
+    return propType->FindSetter()->Params()[0]->TsType();
+}
+
+void ETSChecker::IterateInVariableContext(varbinder::Variable *const var)
+{
+    // Before computing the given variables type, we have to make a new checker context frame so that the checking is
+    // done in the proper context, and have to enter the scope where the given variable is declared, so reference
+    // resolution works properly
+    auto *iter = var->Declaration()->Node()->Parent();
+    while (iter != nullptr) {
+        if (iter->IsMethodDefinition()) {
+            auto *methodDef = iter->AsMethodDefinition();
+            ASSERT(methodDef->TsType());
+            Context().SetContainingSignature(methodDef->Function()->Signature());
+        }
+
+        if (iter->IsClassDefinition()) {
+            auto *classDef = iter->AsClassDefinition();
+            ETSObjectType *containingClass {};
+
+            if (classDef->TsType() == nullptr) {
+                containingClass = BuildBasicClassProperties(classDef);
+                ResolveDeclaredMembersOfObject(containingClass);
+            } else {
+                containingClass = classDef->TsType()->AsETSObjectType();
+            }
+
+            ASSERT(classDef->TsType());
+            Context().SetContainingClass(containingClass);
+        }
+
+        iter = iter->Parent();
+    }
+}
+
 Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
 {
     if (IsVariableGetterSetter(var)) {
-        auto *propType = var->TsType()->AsETSFunctionType();
-        if (propType->HasTypeFlag(checker::TypeFlag::GETTER)) {
-            return propType->FindGetter()->ReturnType();
-        }
-        return propType->FindSetter()->Params()[0]->TsType();
+        return GetTypeOfSetterGetter(var);
     }
 
     if (var->TsType() != nullptr) {
@@ -271,67 +308,39 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         }
     }
 
-    varbinder::Decl *decl = var->Declaration();
-
-    // Before computing the given variables type, we have to make a new checker context frame so that the checking is
-    // done in the proper context, and have to enter the scope where the given variable is declared, so reference
-    // resolution works properly
     checker::SavedCheckerContext savedContext(this, CheckerStatus::NO_OPTS);
     checker::ScopeContext scopeCtx(this, var->GetScope());
-    auto *iter = decl->Node()->Parent();
-    while (iter != nullptr) {
-        if (iter->IsMethodDefinition()) {
-            auto *methodDef = iter->AsMethodDefinition();
-            ASSERT(methodDef->TsType());
-            Context().SetContainingSignature(methodDef->Function()->Signature());
-        }
+    IterateInVariableContext(var);
 
-        if (iter->IsClassDefinition()) {
-            auto *classDef = iter->AsClassDefinition();
-            ETSObjectType *containingClass {};
-
-            if (classDef->TsType() == nullptr) {
-                containingClass = BuildClassProperties(classDef);
-            } else {
-                containingClass = classDef->TsType()->AsETSObjectType();
-            }
-
-            ASSERT(classDef->TsType());
-            Context().SetContainingClass(containingClass);
-        }
-
-        iter = iter->Parent();
-    }
-
-    switch (decl->Type()) {
+    switch (var->Declaration()->Type()) {
         case varbinder::DeclType::CLASS: {
-            auto *classDef = decl->Node()->AsClassDefinition();
-            BuildClassProperties(classDef);
+            auto *classDef = var->Declaration()->Node()->AsClassDefinition();
+            BuildBasicClassProperties(classDef);
             return classDef->TsType();
         }
         case varbinder::DeclType::ENUM_LITERAL:
         case varbinder::DeclType::CONST:
         case varbinder::DeclType::LET:
         case varbinder::DeclType::VAR: {
-            auto *declNode = decl->Node();
+            auto *declNode = var->Declaration()->Node();
 
-            if (decl->Node()->IsIdentifier()) {
+            if (var->Declaration()->Node()->IsIdentifier()) {
                 declNode = declNode->Parent();
             }
 
             return declNode->Check(this);
         }
         case varbinder::DeclType::FUNC: {
-            return decl->Node()->Check(this);
+            return var->Declaration()->Node()->Check(this);
         }
         case varbinder::DeclType::IMPORT: {
-            return decl->Node()->Check(this);
+            return var->Declaration()->Node()->Check(this);
         }
         case varbinder::DeclType::TYPE_ALIAS: {
             return GetTypeFromTypeAliasReference(var);
         }
         case varbinder::DeclType::INTERFACE: {
-            return BuildInterfaceProperties(decl->Node()->AsTSInterfaceDeclaration());
+            return BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
         }
         default: {
             UNREACHABLE();

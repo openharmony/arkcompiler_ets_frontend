@@ -47,11 +47,8 @@ static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signat
     return iterator->first;
 }
 
-static void SetupFunctionalInterface(ETSChecker *checker, ETSObjectType *type)
+static void SetupFunctionalInterface(ETSObjectType *type)
 {
-    auto savedContext = SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, type);
-    checker::ScopeContext scopeCtx(checker, type->GetDeclNode()->Scope());
-    checker->ResolveDeclaredMembersOfObject(type);
     type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
     auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
     auto *invokeType = invoke->TsType()->AsETSFunctionType();
@@ -60,22 +57,11 @@ static void SetupFunctionalInterface(ETSChecker *checker, ETSObjectType *type)
     signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
 }
 
-static void SetupBuiltinMember(ETSChecker *checker, varbinder::Variable *var)
+static void SetupBuiltinMember(varbinder::Variable *var)
 {
     auto *type = var->TsType();
     if (type == nullptr || !type->IsETSObjectType()) {
         return;
-    }
-    auto *objType = type->AsETSObjectType();
-    auto *declNode = var->Declaration()->Node();
-    if (declNode->IsClassDefinition()) {
-        auto savedContext = SavedCheckerContext(checker, checker::CheckerStatus::IN_CLASS, objType);
-        checker::ScopeContext scopeCtx(checker, declNode->Scope());
-        checker->ResolveDeclaredMembersOfObject(objType);
-    } else if (declNode->IsTSInterfaceDeclaration()) {
-        auto savedContext = SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, objType);
-        checker::ScopeContext scopeCtx(checker, declNode->Scope());
-        checker->ResolveDeclaredMembersOfObject(objType);
     }
 }
 
@@ -114,12 +100,12 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
     for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
          id <= static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
         auto *type = GetGlobalTypesHolder()->GlobalFunctionBuiltinType(nargs)->AsETSObjectType();
-        SetupFunctionalInterface(this, type);
+        SetupFunctionalInterface(type);
     }
 
     for (const auto &[name, var] : varMap) {
         (void)name;
-        SetupBuiltinMember(this, var);
+        SetupBuiltinMember(var);
     }
 
     for (const auto &[name, var] : varMap) {
@@ -143,10 +129,10 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
 {
     Type *type {nullptr};
     if (var->Declaration()->Node()->IsClassDefinition()) {
-        type = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
+        type = BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
     } else {
         ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
-        type = BuildInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+        type = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     }
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
 }
@@ -454,36 +440,6 @@ Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
         }
         default: {
             return type;
-        }
-    }
-}
-
-void ETSChecker::AddUnfinishedType(ETSObjectType *type)
-{
-    if (!type->HasObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS)) {
-        unfinishedTypes_.emplace(type);
-    }
-}
-
-void ETSChecker::RemoveUnfinishedType(ETSObjectType *type)
-{
-    unfinishedTypes_.erase(type);
-}
-
-void ETSChecker::ResolveUnfinishedTypes()
-{
-    while (!unfinishedTypes_.empty()) {
-        auto *unfinishedType = *(unfinishedTypes_.begin());
-        auto *declNode = unfinishedType->GetDeclNode();
-        if (declNode->IsClassDefinition()) {
-            auto savedContext = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_CLASS, unfinishedType);
-            checker::ScopeContext scopeCtx(this, declNode->AsClassDefinition()->Scope());
-            ResolveDeclaredMembersOfObject(unfinishedType);
-        } else if (declNode->IsTSInterfaceDeclaration()) {
-            auto savedContext =
-                checker::SavedCheckerContext(this, checker::CheckerStatus::IN_INTERFACE, unfinishedType);
-            checker::ScopeContext scopeCtx(this, unfinishedType->GetDeclNode()->AsTSInterfaceDeclaration()->Scope());
-            ResolveDeclaredMembersOfObject(unfinishedType);
         }
     }
 }

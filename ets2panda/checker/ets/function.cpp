@@ -805,7 +805,7 @@ Type *ETSChecker::ComposeReturnType(ir::ScriptFunction *func, util::StringView f
             const auto builtinVoid = varMap.find(compiler::Signatures::BUILTIN_VOID_CLASS);
             ASSERT(builtinVoid != varMap.end());
 
-            BuildClassProperties(builtinVoid->second->Declaration()->Node()->AsClassDefinition());
+            BuildBasicClassProperties(builtinVoid->second->Declaration()->Node()->AsClassDefinition());
 
             ASSERT(GlobalBuiltinVoidType() != nullptr);
             returnType = GlobalBuiltinVoidType();

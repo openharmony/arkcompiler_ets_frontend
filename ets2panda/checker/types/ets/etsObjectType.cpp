@@ -358,7 +358,7 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 
 bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
 {
-    constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::COMPLETELY_RESOLVED | ETSObjectFlags::INCOMPLETE_INSTANTIATION |
+    constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::INCOMPLETE_INSTANTIATION |
                                      ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                      ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
 
@@ -849,13 +849,15 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
 void ETSObjectType::InstantiateProperties() const
 {
     ASSERT(relation_ != nullptr);
+    auto *checker = relation_->GetChecker()->AsETSChecker();
 
     if (baseType_ == nullptr || baseType_ == this) {
-        relation_->GetChecker()->AsETSChecker()->ResolveUnfinishedTypes();
+        checker->ResolveDeclaredMembersOfObject(this);
         return;
     }
+
     ASSERT(!propertiesInstantiated_);
-    relation_->GetChecker()->AsETSChecker()->ResolveUnfinishedTypes();
+    checker->ResolveDeclaredMembersOfObject(this);
 
     for (auto *const it : baseType_->ConstructSignatures()) {
         auto *newSig = it->Substitute(relation_, substitution_);
