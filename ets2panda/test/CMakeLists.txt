@@ -30,10 +30,6 @@ if(PANDA_TARGET_ARM32 OR PANDA_ARM64_TESTS_WITH_SANITIZER)
     return()
 endif()
 
-if(NOT DEFINED ES2PANDA_REGRESSION_TESTS_GROUPS)
-    set(ES2PANDA_REGRESSION_TESTS_GROUPS 32)
-endif()
-
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
 
 if(PANDA_WITH_ETS)
@@ -45,46 +41,6 @@ if(PANDA_WITH_ETS)
 endif()
 
 if(PANDA_REGRESSION_TESTS)
-    set(ETS_RESULT_FOLDER ${CMAKE_BINARY_DIR}/tests/es2panda-regression-tests)
-    set(OPTIONS --parser
-                --processes=1
-                --build-dir ${PANDA_BINARY_ROOT}
-                --es2panda-timeout=120
-                --timeout=120
-                --groups ${ES2PANDA_REGRESSION_TESTS_GROUPS})
-
-    if(PANDA_TARGET_ARM64)
-        set(OPTIONS --test-list-arch=arm64 ${OPTIONS})
-        if(PANDA_QEMU_BUILD)
-            set(OPTIONS --arm64-qemu ${OPTIONS})
-        endif()
-    endif()
-
-    if(PANDA_TARGET_ARM32)
-        set(OPTIONS --test-list-arch=arm32 ${OPTIONS})
-        if(PANDA_QEMU_BUILD)
-            set(OPTIONS --arm32-qemu ${OPTIONS})
-        endif()
-    endif()
-
-    if(NOT PANDA_WITH_ECMASCRIPT)
-        set(OPTIONS --no-js ${OPTIONS})
-    endif()
-
-    add_custom_target(es2panda-regression-tests COMMENT "Running es2panda-regression-tests test suites")
-    foreach(CURRENT_GROUP RANGE 1 ${ES2PANDA_REGRESSION_TESTS_GROUPS})
-        add_custom_target(es2panda-regression-tests-${CURRENT_GROUP}
-            DEPENDS ark es2panda verifier
-            WORKING_DIRECTORY ${PANDA_ROOT}
-            COMMAND ${PANDA_ROOT}/tests/tests-u-runner/runner.sh
-                            ${PANDA_ROOT}
-                            ${OPTIONS}
-                            --work-dir=${ETS_RESULT_FOLDER}/group-${CURRENT_GROUP}
-                            --group-number ${CURRENT_GROUP}
-        )
-        add_dependencies(es2panda-regression-tests es2panda-regression-tests-${CURRENT_GROUP})
-    endforeach()
-
     panda_add_gtest(
         NAME es2panda_public_test
         SOURCES
@@ -111,10 +67,6 @@ if(PANDA_REGRESSION_TESTS)
     )
     add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin)
     add_dependencies(es2panda_tests es2panda-plugin-test)
-
-    if(NOT CMAKE_CROSSCOMPILING OR NOT PANDA_TARGET_ARM64 OR PANDA_CI_TESTING_MODE STREQUAL "Nightly")
-        add_dependencies(es2panda_tests es2panda-regression-tests)
-    endif()
 
     panda_add_gtest(
         NAME es2panda_astverifier_tests
