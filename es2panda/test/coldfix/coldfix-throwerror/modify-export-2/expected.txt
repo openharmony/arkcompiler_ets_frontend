@@ -14,4 +14,4 @@
 [Patch] Found import/export expression changed in _ESModuleRecord, not supported!
 [Patch] Found unsupported change in file, will not generate patch!
 Error:  [base_mod.js:0:0]
-the size of programs is expected to be 1, but is 0
+The size of programs is expected to be 1, but is 0
