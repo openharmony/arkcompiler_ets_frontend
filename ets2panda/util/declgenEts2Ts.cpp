@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,7 +51,7 @@ void TSDeclGen::Generate()
 {
     std::stringstream license;
     license << "/*\n";
-    license << " * Copyright (c) 2023 Huawei Device Co., Ltd.\n";
+    license << " * Copyright (c) 2023-2024 Huawei Device Co., Ltd.\n";
     license << " * Licensed under the Apache License, Version 2.0 (the \"License\");\n";
     license << " * you may not use this file except in compliance with the License.\n";
     license << " * You may obtain a copy of the License at\n";
