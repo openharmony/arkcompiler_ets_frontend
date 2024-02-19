@@ -174,6 +174,24 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expre
     return true;
 }
 
+void ETSChecker::CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
+                                                            const ir::Expression *left, const ir::Expression *right)
+{
+    std::stringstream ss;
+    if (leftType->IsETSUnionType()) {
+        leftType->AsETSUnionType()->ToString(ss, false);
+        ThrowTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
+                           "). Unions are not allowed in binary expressions except equality.",
+                       left->Start());
+    }
+    if (rightType->IsETSUnionType()) {
+        rightType->AsETSUnionType()->ToString(ss, false);
+        ThrowTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
+                           "). Unions are not allowed in binary expressions except equality.",
+                       right->Start());
+    }
+}
+
 checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(ir::Expression *left, ir::Expression *right,
                                                         lexer::TokenType operationType, lexer::SourcePosition pos,
                                                         bool isEqualOp, checker::Type *const leftType,
@@ -186,9 +204,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(ir::Expression *left, ir
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
-    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
-    }
+    CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right);
 
     if (promotedType == nullptr && !bothConst) {
         ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
@@ -216,9 +232,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(ir::Expression *left, ir::Exp
         return HandleStringConcatenation(leftType, rightType);
     }
 
-    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
-    }
+    CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right);
 
     auto [promotedType, bothConst] =
         ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_NUMERIC, !isEqualOp);
