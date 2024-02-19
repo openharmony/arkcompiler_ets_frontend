@@ -21,6 +21,7 @@
 #include "binder/binder.h"
 #include "binder/scope.h"
 #include "ir/astNode.h"
+#include "ir/base/classDefinition.h"
 #include "ir/base/methodDefinition.h"
 #include "parser/module/sourceTextModuleRecord.h"
 #include "parser/parserFlags.h"
@@ -43,6 +44,8 @@ using ComputedPropertyMap = std::unordered_map<ir::Statement *, util::StringView
 
 struct ClassInfo {
     util::StringView name;
+    util::StringView aliasName;
+    const ir::ClassDefinition *node;
     size_t propertyIndex;
     PrivateElementMap *bindNameMap;
     ComputedPropertyMap *computedPropertyMap;
@@ -58,10 +61,11 @@ struct MethodInfo {
 
 class DuringClass {
 public:
-    explicit DuringClass(ArenaVector<ClassInfo> *classList, util::StringView name)
+    explicit DuringClass(ArenaVector<ClassInfo> *classList, util::StringView name,
+                         util::StringView aliasName, ir::ClassDefinition *node)
     {
         classList_ = classList;
-        classList_->push_back({name, 0, &bindNameMap_, &computedPropertyMap_});
+        classList_->push_back({name, aliasName, node, 0, &bindNameMap_, &computedPropertyMap_});
     }
 
     ~DuringClass()
@@ -136,6 +140,8 @@ private:
                                                                util::StringView name);
     void VisitPrivateElement(ir::ClassDefinition *node);
     void VisitComputedProperty(ir::ClassDefinition *node);
+    util::StringView CreateClassAliasName(ir::ClassDeclaration *node);
+    const ir::ClassDefinition *GetClassReference(util::StringView name) const;
     size_t GetInsertPosForConstructor(ir::ClassDefinition *node);
     void FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall);
     void FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
@@ -254,6 +260,11 @@ private:
         return (tsEnumList_.size() != 0);
     }
 
+    bool InClass() const
+    {
+        return (classList_.size() != 0);
+    }
+
     template <typename T, typename... Args>
     T *AllocNode(Args &&... args)
     {
@@ -345,6 +356,25 @@ private:
         auto res = classInfo.computedPropertyMap->find(property);
         ASSERT(res != classInfo.computedPropertyMap->end());
         return res->second;
+    }
+
+    util::StringView GetClassAliasName() const
+    {
+        return classList_.back().aliasName;
+    }
+
+    util::StringView GetClassAliasName(util::StringView originName, const ir::ClassDefinition *node) const
+    {
+        if (node == nullptr) {
+            return originName;
+        }
+
+        for (int i = classList_.size() - 1; i >= 0; i--) {
+            if (classList_[i].node == node) {
+                return classList_[i].aliasName;
+            }
+        }
+        return originName;
     }
 
     Program *program_;
