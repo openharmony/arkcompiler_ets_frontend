@@ -190,7 +190,12 @@ one line.
 
 #### -remove-log
 
-Specifies to remove all `console.*` statements.
+Delete the expressions involving direct calls to console.* statements in the following scenarios:
+1. Calls at the toplevel level of a file.
+2. Calls within a block.
+3. Calls within a module.
+4. Calls within a switch statement.
+and the return value of console.* should not be called
 
 #### `-print-namecache` filepath
 
