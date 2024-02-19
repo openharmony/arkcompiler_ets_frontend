@@ -25,11 +25,15 @@ void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
     pg_->AsyncFunctionResolve(node, funcObj_); // retVal is in acc
     pg_->NotifyConcurrentResult(node);
+    // The INVALID_SOURCE_LOCATION is set in the implicitReturn method. When implicitReturn
+    // invokes the DirectReturn method, the EmitReturn needs to be associated with a valid node
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     pg_->EmitReturn(node);
 }
 
 void AsyncFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 {
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg_->LoadConst(node, Constant::JS_UNDEFINED);
     DirectReturn(node);
 }

@@ -51,7 +51,9 @@ void GeneratorFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 
 void GeneratorFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 {
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg_->LoadConst(node, Constant::JS_UNDEFINED);
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     DirectReturn(node);
 }
 
