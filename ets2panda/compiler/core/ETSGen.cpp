@@ -655,13 +655,6 @@ void ETSGen::CreateLambdaObjectFromMemberReference(const ir::AstNode *node, ir::
     SetAccumulatorType(lambdaObj->TsType());
 }
 
-// NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
-#define CONV_LAMBDA_CTOR_ARG(idx)                                \
-    ASSERT((idx) < arguments.size());                            \
-    auto *paramType##idx = signature->Params()[(idx)]->TsType(); \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);   \
-    ApplyConversion(node, paramType##idx)
-
 void ETSGen::InitLambdaObject(const ir::AstNode *node, checker::Signature *signature, std::vector<VReg> &arguments)
 {
     RegScope rs(this);
@@ -673,28 +666,18 @@ void ETSGen::InitLambdaObject(const ir::AstNode *node, checker::Signature *signa
             break;
         }
         case 1: {
-            CONV_LAMBDA_CTOR_ARG(0);
             Ra().Emit<InitobjShort>(node, name, arguments[0], VReg::RegStart());
             break;
         }
         case 2U: {
-            CONV_LAMBDA_CTOR_ARG(0);
-            CONV_LAMBDA_CTOR_ARG(1);
             Ra().Emit<InitobjShort>(node, name, arguments[0], arguments[1]);
             break;
         }
         case 3U: {
-            CONV_LAMBDA_CTOR_ARG(0);
-            CONV_LAMBDA_CTOR_ARG(1);
-            CONV_LAMBDA_CTOR_ARG(2);
             Ra().Emit<Initobj>(node, name, arguments[0], arguments[1], arguments[2U], VReg::RegStart());
             break;
         }
         case 4U: {
-            CONV_LAMBDA_CTOR_ARG(0);
-            CONV_LAMBDA_CTOR_ARG(1);
-            CONV_LAMBDA_CTOR_ARG(2);
-            CONV_LAMBDA_CTOR_ARG(3);
             Ra().Emit<Initobj>(node, name, arguments[0], arguments[1], arguments[2U], arguments[3U]);
             break;
         }
@@ -712,9 +695,6 @@ void ETSGen::InitLambdaObject(const ir::AstNode *node, checker::Signature *signa
         }
     }
 }
-
-#undef CONV_LAMBDA_CTOR_ARG
-// NOLINTEND(cppcoreguidelines-macro-usage, readability-container-size-empty)
 
 VReg ETSGen::GetThisReg() const
 {
