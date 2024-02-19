@@ -431,7 +431,7 @@ private:
                                            bool isDeclare = false);
     ir::Expression *ParsePatternElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
                                         bool allowDefault = true, bool isDeclare = false);
-    ir::TemplateLiteral *ParseTemplateLiteral();
+    ir::TemplateLiteral *ParseTemplateLiteral(bool isTaggedTemplate = false);
     ir::Expression *ParseImportExpression();
     ir::ObjectExpression *ParseImportAssertionForDynamicImport();
     void ValidateImportAssertionForDynamicImport(ir::ObjectExpression *importAssertion);

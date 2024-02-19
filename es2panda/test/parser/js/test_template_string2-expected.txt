@@ -1,0 +1,1 @@
+SyntaxError: Octal escape sequences are not allowed in strict mode [test_template_string2.js:16:15]
