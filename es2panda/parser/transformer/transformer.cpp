@@ -19,7 +19,6 @@
 
 #include "binder/scope.h"
 #include "ir/base/catchClause.h"
-#include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/decorator.h"
@@ -200,11 +199,19 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
     switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = childNode->AsIdentifier();
-            if (!ident->IsReference() || (!IsTsModule() && !IsTsEnum())) {
+            if (!ident->IsReference() || (!IsTsModule() && !IsTsEnum() && !InClass())) {
                 return VisitTSNodes(childNode);
             }
 
             auto name = ident->Name();
+            if (InClass()) {
+                auto *classDefinition = GetClassReference(name);
+                auto aliasName = GetClassAliasName(name, classDefinition);
+                if (classDefinition != nullptr && aliasName != name) {
+                    ident->SetName(aliasName);
+                }
+            }
+
             if (IsTsEnum()) {
                 auto scope = FindEnumMemberScope(name);
                 if (scope) {
@@ -306,7 +313,8 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             if (node->Definition()->Declare()) {
                 return node;
             }
-            DuringClass duringClass(&classList_, node->Definition()->GetName());
+            DuringClass duringClass(&classList_, node->Definition()->GetName(),
+                                    CreateClassAliasName(node), node->Definition());
             node = VisitTSNodes(node)->AsClassDeclaration();
             auto res = VisitClassDeclaration(node);
             SetOriginalNode(res, childNode);
@@ -315,7 +323,8 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         }
         case ir::AstNodeType::CLASS_EXPRESSION: {
             auto *node = childNode->AsClassExpression();
-            DuringClass duringClass(&classList_, node->Definition()->GetName());
+            DuringClass duringClass(&classList_, node->Definition()->GetName(),
+                                    node->Definition()->GetName(), node->Definition());
             node = VisitTSNodes(node)->AsClassExpression();
             auto res = VisitClassExpression(node);
             SetOriginalNode(res, childNode);
@@ -505,6 +514,35 @@ void Transformer::VisitComputedProperty(ir::ClassDefinition *node)
             AddComputedPropertyBinding(it, name);
         }
     }
+}
+
+const ir::ClassDefinition *Transformer::GetClassReference(util::StringView name) const
+{
+    auto *scope = Scope();
+    while (scope != nullptr) {
+        auto *v = scope->FindLocal(name, binder::ResolveBindingOptions::BINDINGS);
+        if (v != nullptr) {
+            if (v->Declaration() != nullptr && v->Declaration()->Node() != nullptr &&
+                v->Declaration()->Node()->IsClassDefinition()) {
+                ASSERT(v->Declaration()->Node()->AsClassDefinition()->GetName() == name);
+                return v->Declaration()->Node()->AsClassDefinition();
+            } else {
+                return nullptr;
+            }
+        }
+
+        scope = scope->Parent();
+    }
+
+    return nullptr;
+}
+
+util::StringView Transformer::CreateClassAliasName(ir::ClassDeclaration *node)
+{
+    if (node->HasDecorators()) {
+        return CreateUniqueName(std::string(NEW_VAR_PREFIX) + std::string(NEW_VAR_HEAD));
+    }
+    return node->Definition()->GetName();
 }
 
 void Transformer::VisitPrivateElement(ir::ClassDefinition *node)
@@ -1031,10 +1069,13 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
     std::vector<ir::AstNode *> res;
     bool hasClassDecorators = node->HasDecorators();
     if (hasClassDecorators) {
-        auto definiton = node->Definition();
-        auto *clsExpression = AllocNode<ir::ClassExpression>(definiton);
+        auto aliasName = GetClassAliasName();
+        res.push_back(CreateVariableDeclarationWithIdentify(aliasName, VariableParsingFlags::VAR, nullptr, false));
+        auto *clsExpression = AllocNode<ir::ClassExpression>(node->Definition());
+        auto *assignExpr = AllocNode<ir::AssignmentExpression>(CreateReferenceIdentifier(aliasName), clsExpression,
+                                                               lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
         res.push_back(CreateVariableDeclarationWithIdentify(name, VariableParsingFlags::LET, node, false,
-            clsExpression, false));
+            assignExpr, false));
     } else {
         res.push_back(node);
     }
@@ -1554,7 +1595,10 @@ std::vector<ir::AstNode *> Transformer::CreateClassDecorators(ir::ClassDeclarati
         auto left = CreateReferenceIdentifier(name);
         auto id = CreateReferenceIdentifier(name);
         auto right = AllocNode<ir::BinaryExpression>(callExpr, id, lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
-        auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right,
+        auto middle = CreateReferenceIdentifier(GetClassAliasName());
+        auto innerAssignExpr = AllocNode<ir::AssignmentExpression>(middle, right,
+            lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, innerAssignExpr,
             lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
         res.push_back(AllocNode<ir::ExpressionStatement>(assignExpr));
