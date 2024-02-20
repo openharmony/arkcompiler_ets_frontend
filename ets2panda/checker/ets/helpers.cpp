@@ -2656,10 +2656,25 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         typeAnn = DerefETSTypeReference(typeAnn);
     }
     if (!typeAnn->IsETSFunctionType()) {
+        if (typeAnn->IsETSUnionType()) {
+            return CheckLambdaAssignableUnion(typeAnn, lambda);
+        }
+
         return false;
     }
     ir::ETSFunctionType *calleeType = typeAnn->AsETSFunctionType();
     return lambda->Params().size() == calleeType->Params().size();
+}
+
+bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda)
+{
+    for (auto *type : typeAnn->AsETSUnionType()->Types()) {
+        if (type->IsETSFunctionType()) {
+            return lambda->Params().size() == type->AsETSFunctionType()->Params().size();
+        }
+    }
+
+    return false;
 }
 
 void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType)

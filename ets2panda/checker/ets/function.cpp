@@ -232,6 +232,24 @@ Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, co
     return signature;
 }
 
+bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index)
+{
+    if (argument->IsArrowFunctionExpression()) {
+        auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
+
+        if (ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+            CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
+            if (arrowFuncExpr->TsType() != nullptr) {
+                arrowFuncExpr->Check(this);
+                CreateLambdaObjectForLambdaReference(arrowFuncExpr, arrowFuncExpr->Function()->Signature()->Owner());
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                                  const ArenaVector<ir::Expression *> &arguments, TypeRelationFlag flags,
                                                  const std::vector<bool> &argTypeInferenceRequired, bool throwError)
@@ -282,6 +300,9 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
             {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
         if (!invocationCtx.IsInvocable()) {
+            if (CheckOptionalLambdaFunction(argument, substitutedSig, index)) {
+                continue;
+            }
             return false;
         }
     }
