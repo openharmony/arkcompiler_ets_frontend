@@ -62,8 +62,12 @@ Note:If the text contains special characters, please escape them according to th
                     <filteritem type="filepath" name="legacy_bin/api8/bin/win/js2abc.exe" desc="js2abc for win"/>
             </filefilter>
             <filefilter name="copyrightPolicyFilter" desc="" >
+                <filteritem type="filepath" name="legacy_bin/api8/src/index.js" desc="third-party"/>
+                <filteritem type="filepath" name="es2panda/test/compiler/js/cocos_worker_test.js" desc="third-party"/>
             </filefilter>
             <filefilter name="defaultPolicyFilter" desc="" >
+                <filteritem type="filepath" name="legacy_bin/api8/src/index.js" desc="third-party"/>
+                <filteritem type="filepath" name="es2panda/test/compiler/js/cocos_worker_test.js" desc="third-party"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
