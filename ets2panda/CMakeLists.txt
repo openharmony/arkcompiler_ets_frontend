@@ -364,6 +364,7 @@ set(ES2PANDA_LIB_SRC
   checker/ASchecker.cpp
   checker/TSAnalyzer.cpp
   checker/JSchecker.cpp
+  checker/typeChecker/TypeChecker.cpp
   checker/ets/aliveAnalyzer.cpp
   checker/ets/arithmetic.cpp
   checker/ets/baseAnalyzer.cpp
