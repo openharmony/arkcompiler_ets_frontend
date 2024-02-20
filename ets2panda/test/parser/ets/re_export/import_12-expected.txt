@@ -5,44 +5,59 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./re_export_5",
+        "value": "./re_export_7",
         "loc": {
           "start": {
             "line": 16,
-            "column": 15
+            "column": 19
           },
           "end": {
             "line": 16,
-            "column": 30
+            "column": 34
           }
         }
       },
       "specifiers": [
         {
-          "type": "ImportNamespaceSpecifier",
+          "type": "ImportSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "",
+            "name": "foo",
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 9
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 12
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "foo",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9
+              },
+              "end": {
+                "line": 16,
+                "column": 12
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 8
+              "column": 9
             },
             "end": {
               "line": 16,
-              "column": 14
+              "column": 12
             }
           }
         }
@@ -54,7 +69,7 @@
         },
         "end": {
           "line": 16,
-          "column": 30
+          "column": 34
         }
       }
     },
@@ -219,72 +234,56 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSPrimitiveType",
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "void",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 18,
+                          "column": 19
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 23
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 18,
+                        "column": 19
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 2
+                      }
+                    }
+                  },
                   "loc": {
                     "start": {
                       "line": 18,
                       "column": 19
                     },
                     "end": {
-                      "line": 18,
-                      "column": 23
+                      "line": 19,
+                      "column": 2
                     }
                   }
                 },
                 "body": {
                   "type": "BlockStatement",
-                  "statements": [
-                    {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "Identifier",
-                          "name": "foo",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 20,
-                              "column": 5
-                            },
-                            "end": {
-                              "line": 20,
-                              "column": 8
-                            }
-                          }
-                        },
-                        "arguments": [],
-                        "optional": false,
-                        "loc": {
-                          "start": {
-                            "line": 20,
-                            "column": 5
-                          },
-                          "end": {
-                            "line": 20,
-                            "column": 10
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 20,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 20,
-                          "column": 11
-                        }
-                      }
-                    }
-                  ],
+                  "statements": [],
                   "loc": {
                     "start": {
                       "line": 19,
                       "column": 1
                     },
                     "end": {
-                      "line": 21,
+                      "line": 20,
                       "column": 2
                     }
                   }
@@ -295,7 +294,7 @@
                     "column": 14
                   },
                   "end": {
-                    "line": 21,
+                    "line": 20,
                     "column": 2
                   }
                 }
@@ -306,7 +305,7 @@
                   "column": 14
                 },
                 "end": {
-                  "line": 21,
+                  "line": 20,
                   "column": 2
                 }
               }
@@ -319,7 +318,7 @@
                 "column": 1
               },
               "end": {
-                "line": 21,
+                "line": 20,
                 "column": 2
               }
             }
@@ -354,9 +353,8 @@
       "column": 1
     },
     "end": {
-      "line": 22,
+      "line": 23,
       "column": 1
     }
   }
 }
-TypeError: Function already declared. [export.ets:16:13]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-export function foo():void
+import {foo} from "./re_export_5"
+
+function main() : void
 {
 }
 
-export function foo2():void
-{
-}
+// NOTE: ttamas - Duplication check disabled

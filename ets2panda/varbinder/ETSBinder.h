@@ -130,6 +130,10 @@ public:
                                                    const parser::Program *importProgram,
                                                    const varbinder::GlobalScope *importGlobalScope,
                                                    const ir::ETSImportDeclaration *import);
+    ir::ETSImportDeclaration *FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
+                                                        std::vector<ir::ETSImportDeclaration *> &viewedReExport,
+                                                        const util::StringView &imported,
+                                                        const ir::StringLiteral *const importPath);
     bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
                                           const ir::ETSImportDeclaration *import,
                                           const ArenaVector<parser::Program *> &recordRes,
