@@ -66,12 +66,20 @@ char32_t Lexer::ScanUnicodeCodePointEscape()
         constexpr auto multiplier = 16;
         code = code * multiplier + HexValue(cp);
         if (code > UNICODE_CODE_POINT_MAX) {
+            if (CheckTokenIsTaggedTemplate()) {
+                AssignTokenEscapeError();
+                break;
+            }
             ThrowError("Invalid unicode escape sequence");
         }
     }
-
     if (cp != LEX_CHAR_RIGHT_BRACE) {
-        ThrowError("Invalid unicode escape sequence");
+        if (CheckTokenIsTaggedTemplate()) {
+            AssignTokenEscapeError();
+            return static_cast<char32_t>(code);
+        } else {
+            ThrowError("Invalid unicode escape sequence");
+        }
     }
 
     Iterator().Forward(1);
@@ -602,6 +610,10 @@ void Lexer::ScanStringUnicodePart(util::UString *str)
             }
 
             if (isOctal) {
+                if (CheckTokenIsTaggedTemplate()) {
+                    AssignTokenEscapeError();
+                    break;
+                }
                 ThrowError("Octal escape sequences are not allowed in strict mode");
             }
 
@@ -609,6 +621,10 @@ void Lexer::ScanStringUnicodePart(util::UString *str)
         }
         default: {
             if (IsDecimalDigit(Iterator().Peek())) {
+                if (CheckTokenIsTaggedTemplate()) {
+                    AssignTokenEscapeError();
+                    break;
+                }
                 ThrowError("Invalid character escape sequence in strict mode");
             }
 
@@ -1659,6 +1675,21 @@ void Lexer::NextToken(LexerNextTokenFlags flags)
 
     SetTokenEnd();
     SkipWhiteSpaces();
+}
+
+void Lexer::AssignTokenEscapeError()
+{
+    GetToken().flags_ |= TokenFlags::ESCAPE_ERROR;
+}
+
+void Lexer::AssignTokenTaggedTemplate()
+{
+    GetToken().flags_ |= TokenFlags::TAGGED_TEMPLATE;
+}
+
+bool Lexer::CheckTokenIsTaggedTemplate() const
+{
+    return GetToken().IsTaggedTemplate();
 }
 
 }  // namespace panda::es2panda::lexer

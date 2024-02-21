@@ -91,6 +91,7 @@ public:
     LexerTemplateString ScanTemplateString();
     void ScanTemplateStringEnd();
     void PushTemplateContext(TemplateLiteralParserContext *ctx);
+    void AssignTokenTaggedTemplate();
 
 private:
     ArenaAllocator *Allocator();
@@ -102,6 +103,7 @@ private:
 
     void SetTokenStart();
     void SetTokenEnd();
+    bool CheckTokenIsTaggedTemplate() const;
 
     inline util::StringView::Iterator &Iterator()
     {
@@ -161,6 +163,7 @@ private:
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allowNumericSeparator);
     void CheckNumberLiteralEnd();
+    void AssignTokenEscapeError();
 
     inline static uint32_t HexValue(char32_t ch);
     inline static bool IsDecimalDigit(uint32_t cp);
@@ -312,7 +315,12 @@ char32_t Lexer::ScanHexEscape()
         Iterator().Forward(1);
 
         if (!IsHexDigit(cp)) {
-            ThrowError("Invalid unicode escape sequence");
+            // Should not throw error in tagged template in ES2021
+            if (CheckTokenIsTaggedTemplate()) {
+                AssignTokenEscapeError();
+            } else {
+                ThrowError("Invalid unicode escape sequence");
+            }
         }
 
         constexpr auto MULTIPLIER = 16;

@@ -863,7 +863,7 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
     return lhsExpression;
 }
 
-ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
+ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral(bool isTaggedTemplate)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
@@ -873,14 +873,18 @@ ir::TemplateLiteral *ParserImpl::ParseTemplateLiteral()
     while (true) {
         lexer_->ResetTokenEnd();
         const auto startPos = lexer_->Save();
-
+        if (isTaggedTemplate) {
+            lexer_->AssignTokenTaggedTemplate();
+        }
         lexer_->ScanString<LEX_CHAR_BACK_TICK>();
         util::StringView cooked = lexer_->GetToken().String();
+        bool escapeError = lexer_->GetToken().EscapeError();
 
         lexer_->Rewind(startPos);
         auto [raw, end, scanExpression] = lexer_->ScanTemplateString();
 
         auto *element = AllocNode<ir::TemplateElement>(raw.View(), cooked);
+        element->SetEscapeError(escapeError);
         element->SetRange({lexer::SourcePosition {startPos.iterator.Index(), startPos.line},
                            lexer::SourcePosition {end, lexer_->Line()}});
         quasis.push_back(element);
@@ -1620,7 +1624,7 @@ bool ParserImpl::ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpr
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
-        ir::TemplateLiteral *propertyNode = ParseTemplateLiteral();
+        ir::TemplateLiteral *propertyNode = ParseTemplateLiteral(true);
         lexer::SourcePosition endLoc = propertyNode->End();
 
         *returnExpression = AllocNode<ir::TaggedTemplateExpression>(*returnExpression, propertyNode, typeParams);
@@ -1718,7 +1722,7 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
                 continue;
             }
             case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
-                ir::TemplateLiteral *propertyNode = ParseTemplateLiteral();
+                ir::TemplateLiteral *propertyNode = ParseTemplateLiteral(true);
                 lexer::SourcePosition endLoc = propertyNode->End();
 
                 returnExpression = AllocNode<ir::TaggedTemplateExpression>(returnExpression, propertyNode, nullptr);
