@@ -642,6 +642,13 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    if (checker->HasStatus(checker::CheckerStatus::IN_LAMBDA)) {
+        ASSERT(checker->Context().ContainingLambda() != nullptr);
+        checker->Context().ContainingLambda()->AddChildLambda(expr);
+        expr->SetParentLambda(checker->Context().ContainingLambda());
+    }
+
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
@@ -681,6 +688,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
                                               checker->Context().ContainingClass());
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
     checker->Context().SetContainingSignature(funcType->CallSignatures()[0]);
+    checker->Context().SetContainingLambda(expr);
 
     expr->Function()->Body()->Check(checker);
 
@@ -689,7 +697,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 
     for (auto [var, _] : checker->Context().CapturedVars()) {
         (void)_;
-        expr->CapturedVars().push_back(var);
+        expr->AddCapturedVar(var);
     }
 
     expr->SetTsType(funcType);

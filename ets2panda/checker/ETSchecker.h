@@ -389,14 +389,13 @@ public:
                                                            ArenaVector<ir::Expression *> &proxyParams,
                                                            ArenaVector<ir::AstNode *> &captured, bool isStatic);
     void ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body, const ArenaVector<ir::Expression *> &proxyParams,
-                                                  const ArenaVector<ir::Expression *> &lambdaParams,
-                                                  ArenaVector<varbinder::Variable *> &captured);
+                                                  ir::ArrowFunctionExpression *lambda);
     void ReplaceIdentifierReferencesInProxyMethod(
         ir::AstNode *node, const ArenaVector<ir::Expression *> &proxyParams,
-        std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences);
+        const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences);
     void ReplaceIdentifierReferenceInProxyMethod(
         ir::AstNode *node, const ArenaVector<ir::Expression *> &proxyParams,
-        std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences);
+        const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences);
     ir::Statement *CreateLambdaCtorFieldInit(util::StringView name, varbinder::Variable *var);
     varbinder::FunctionParamScope *CreateLambdaCtorImplicitParams(ArenaVector<ir::Expression *> &params,
                                                                   ArenaVector<ir::AstNode *> &properties);

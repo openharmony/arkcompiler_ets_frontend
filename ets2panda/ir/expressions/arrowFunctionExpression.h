@@ -34,7 +34,10 @@ public:
     NO_MOVE_SEMANTIC(ArrowFunctionExpression);
 
     explicit ArrowFunctionExpression(ArenaAllocator *const allocator, ScriptFunction *const func)
-        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func), capturedVars_(allocator->Adapter())
+        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION),
+          func_(func),
+          capturedVars_(allocator->Adapter()),
+          childLambdas_(allocator->Adapter())
     {
     }
 
@@ -63,6 +66,8 @@ public:
         return resolvedLambda_;
     }
 
+    void AddCapturedVar(varbinder::Variable *var);
+
     [[nodiscard]] ArenaVector<varbinder::Variable *> &CapturedVars() noexcept
     {
         return capturedVars_;
@@ -83,6 +88,21 @@ public:
         propagateThis_ = true;
     }
 
+    [[nodiscard]] ArenaVector<ArrowFunctionExpression *> ChildLambdas() const noexcept
+    {
+        return childLambdas_;
+    }
+
+    [[nodiscard]] ArrowFunctionExpression *ParentLambda() const noexcept
+    {
+        return parentLambda_;
+    }
+
+    void SetParentLambda(ArrowFunctionExpression *parentLambda) noexcept
+    {
+        parentLambda_ = parentLambda;
+    }
+
     [[nodiscard]] ArrowFunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -95,6 +115,7 @@ public:
     checker::Type *Check(checker::ETSChecker *checker) override;
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
     ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType);
+    void AddChildLambda(ArrowFunctionExpression *childLambda);
 
     void Accept(ASTVisitorT *v) override
     {
@@ -104,6 +125,8 @@ public:
 private:
     ScriptFunction *func_;
     ArenaVector<varbinder::Variable *> capturedVars_;
+    ArenaVector<ArrowFunctionExpression *> childLambdas_;
+    ArrowFunctionExpression *parentLambda_ {nullptr};
     ir::ClassDefinition *resolvedLambda_ {nullptr};
     bool propagateThis_ {false};
 };

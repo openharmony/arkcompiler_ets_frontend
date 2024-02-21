@@ -72,6 +72,7 @@ checker::Type *ArrowFunctionExpression::Check(checker::ETSChecker *checker)
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
     : Expression(static_cast<Expression const &>(other)),
       capturedVars_(allocator->Adapter()),
+      childLambdas_(allocator->Adapter()),
       propagateThis_(other.propagateThis_)
 {
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
@@ -141,5 +142,18 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), returnNode);
     auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
     return funcType;
+}
+
+void ArrowFunctionExpression::AddCapturedVar(varbinder::Variable *var)
+{
+    capturedVars_.push_back(var);
+    if (parentLambda_ != nullptr) {
+        parentLambda_->AddCapturedVar(var);
+    }
+}
+
+void ArrowFunctionExpression::AddChildLambda(ArrowFunctionExpression *childLambda)
+{
+    childLambdas_.push_back(childLambda);
 }
 }  // namespace ark::es2panda::ir
