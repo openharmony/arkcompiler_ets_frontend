@@ -44,15 +44,17 @@ void FunctionBuilder::DirectReturn(const ir::AstNode *node) const
 void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 {
     const auto *rootNode = pg_->RootNode();
-
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     if (!rootNode->IsScriptFunction() || !rootNode->AsScriptFunction()->IsConstructor()) {
         if (pg_->isDebuggerEvaluateExpressionMode()) {
             pg_->NotifyConcurrentResult(node);
+            pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
             pg_->EmitReturn(node);
             return;
         }
         pg_->LoadConst(node, Constant::JS_UNDEFINED);
         pg_->NotifyConcurrentResult(node);
+        pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
         pg_->EmitReturnUndefined(node);
         return;
     }
@@ -64,6 +66,7 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
     }
 
     pg_->NotifyConcurrentResult(node);
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     pg_->EmitReturn(node);
 }
 
