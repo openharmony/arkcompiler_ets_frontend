@@ -121,6 +121,14 @@ AstNode *AstNode::FindChild(const NodePredicate &cb) const
     return found;
 }
 
+varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr)
+{
+    while (expr != nullptr && !expr->IsScopeBearer()) {
+        expr = expr->Parent();
+    }
+    return expr != nullptr ? expr->Scope() : nullptr;
+}
+
 std::string AstNode::DumpJSON() const
 {
     ir::AstDumper dumper {this};

@@ -465,6 +465,8 @@ public:
         return reinterpret_cast<const ir::ClassElement *>(this);
     }
 
+    static varbinder::Scope *EnclosingScope(const ir::AstNode *expr);
+
     [[nodiscard]] virtual bool IsScopeBearer() const noexcept
     {
         return false;

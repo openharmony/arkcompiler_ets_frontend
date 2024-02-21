@@ -73,6 +73,17 @@ const VariableScope *Scope::EnclosingVariableScope() const
     return nullptr;
 }
 
+bool Scope::IsSuperscopeOf(const varbinder::Scope *subscope) const
+{
+    while (subscope != nullptr) {
+        if (subscope == this) {
+            return true;
+        }
+        subscope = ir::AstNode::EnclosingScope(subscope->Node()->Parent());
+    }
+    return false;
+}
+
 // NOTE(psiket): Duplication
 ClassScope *Scope::EnclosingClassScope()
 {
