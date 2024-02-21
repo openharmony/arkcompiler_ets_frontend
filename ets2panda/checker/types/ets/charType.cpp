@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,7 @@
 #include "charType.h"
 
 #include "checker/ets/conversion.h"
-#include "checker/ets/narrowingConverter.h"
+#include "checker/ets/narrowingWideningConverter.h"
 
 namespace ark::es2panda::checker {
 void CharType::Identical(TypeRelation *relation, Type *other)
@@ -31,7 +31,7 @@ void CharType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *s
     if (relation->ApplyUnboxing()) {
         relation->GetChecker()->AsETSChecker()->AddUnboxingFlagToPrimitiveType(relation, source, this);
     }
-    NarrowingConverter(relation->GetChecker()->AsETSChecker(), relation, this, source);
+    NarrowingWideningConverter(relation->GetChecker()->AsETSChecker(), relation, this, source);
 }
 
 bool CharType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
