@@ -2966,4 +2966,16 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     return true;
 }
+
+void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions,
+                                          ir::CatchClause *catchClause, checker::Type *clauseType)
+{
+    for (auto *exception : exceptions) {
+        this->Relation()->IsIdenticalTo(clauseType, exception);
+        if (this->Relation()->IsTrue()) {
+            this->ThrowTypeError("Redeclaration of exception type", catchClause->Start());
+        }
+    }
+}
+
 }  // namespace ark::es2panda::checker

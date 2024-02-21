@@ -537,6 +537,8 @@ public:
     void CheckNumberOfTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                     const lexer::SourcePosition &pos);
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *startFrom, const ir::AstNode *p);
+    void CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions, ir::CatchClause *catchClause,
+                                  checker::Type *clauseType);
     void CheckRethrowingFunction(ir::ScriptFunction *func);
     ETSObjectType *GetRelevantArgumentedTypeFromChild(ETSObjectType *child, ETSObjectType *target);
     util::StringView GetHashFromTypeArguments(const ArenaVector<Type *> &typeArgTypes);
