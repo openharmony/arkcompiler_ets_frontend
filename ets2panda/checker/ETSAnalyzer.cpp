@@ -502,8 +502,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 
     auto *elementType = expr->TypeReference()->GetType(checker);
     checker->ValidateArrayIndex(expr->Dimension(), true);
-    if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && elementType->ToAssemblerName().str() != "Ball") {
-        // Ball is workaround for koala ui lib
+    if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         if (elementType->IsETSObjectType()) {
             auto *calleeObj = elementType->AsETSObjectType();
             if (!calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
