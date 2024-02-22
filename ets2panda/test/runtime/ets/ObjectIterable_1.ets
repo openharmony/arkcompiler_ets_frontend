@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,9 +63,9 @@ function main(): void {
     it += ": in for";
 
     if (i == 0) {
-       assert(it == "one: in for"); 
+       assert(it == "one: in for");
     } else if (i == 1) {
-       assert(it == "two: in for") 
+       assert(it == "two: in for")
     } else if (i == 2) {
        assert(it == "three: in for")
     } else {
