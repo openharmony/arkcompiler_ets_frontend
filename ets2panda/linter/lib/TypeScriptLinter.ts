@@ -1125,6 +1125,10 @@ export class TypeScriptLinter {
     while (tsParentNode && tsParentNode.kind === ts.SyntaxKind.BinaryExpression) {
       tsExprNode = tsParentNode;
       tsParentNode = tsExprNode.parent;
+      if ((tsExprNode as ts.BinaryExpression).operatorToken.kind === ts.SyntaxKind.CommaToken) {
+        // Need to return if one comma enclosed in expression with another comma to avoid multiple reports on one line
+        return;
+      }
     }
     if (tsParentNode && tsParentNode.kind === ts.SyntaxKind.ForStatement) {
       const tsForNode = tsParentNode as ts.ForStatement;
@@ -1132,6 +1136,15 @@ export class TypeScriptLinter {
         return;
       }
     }
+    if (tsParentNode && tsParentNode.kind === ts.SyntaxKind.ExpressionStatement) {
+      let autofix: Autofix[] | undefined = undefined;
+      if (this.autofixesInfo.shouldAutofix(tsExprNode, FaultID.CommaOperator)) {
+        autofix = Autofixer.fixCommaOperator(tsExprNode);
+      }
+      this.incrementCounters(tsExprNode, FaultID.CommaOperator, true, autofix);
+      return;
+    }
+
     this.incrementCounters(tsBinaryExpr as ts.Node, FaultID.CommaOperator);
   }
 
