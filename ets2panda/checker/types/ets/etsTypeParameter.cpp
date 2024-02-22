@@ -20,26 +20,19 @@
 #include "checker/ets/conversion.h"
 
 namespace ark::es2panda::checker {
-void ETSTypeParameter::ToString(std::stringstream &ss) const
-{
-    ss << declNode_->Name()->Name();
 
-    if (IsNullish()) {
-        if (ContainsNull()) {
-            ss << "|null";
-        }
-        if (ContainsUndefined()) {
-            ss << "|undefined";
-        }
+void ETSTypeParameter::ToString(std::stringstream &ss, bool precise) const
+{
+    // Need source file name to avoid clashes
+    if (precise) {
+        ss << declNode_->Range().start.index << "." << declNode_->Range().start.line << ".";
     }
+    ss << declNode_->Name()->Name();
 }
 
 void ETSTypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
-    if ((ContainsNull() != other->ContainsNull()) || (ContainsUndefined() != other->ContainsUndefined())) {
-        return;
-    }
-
+    relation->Result(false);
     if (other->IsETSTypeParameter() && other->AsETSTypeParameter()->GetOriginal() == GetOriginal()) {
         relation->Result(true);
     }
@@ -52,19 +45,6 @@ bool ETSTypeParameter::AssignmentSource([[maybe_unused]] TypeRelation *relation,
 
 void ETSTypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
-    if (source->IsETSNullType()) {
-        relation->Result(ContainsNull());
-        return;
-    }
-    if (source->IsETSUndefinedType()) {
-        relation->Result(ContainsUndefined());
-        return;
-    }
-
-    if ((source->ContainsNull() && !ContainsNull()) || (source->ContainsUndefined() && !ContainsUndefined())) {
-        relation->Result(false);
-        return;
-    }
     if (source->IsETSTypeParameter() && source->AsETSTypeParameter()->GetOriginal() == GetOriginal()) {
         relation->Result(true);
         return;
@@ -125,38 +105,20 @@ Type *ETSTypeParameter::Instantiate([[maybe_unused]] ArenaAllocator *allocator, 
     return copiedType;
 }
 
-Type *ETSTypeParameter::Substitute(TypeRelation *relation, const Substitution *substitution)
+Type *ETSTypeParameter::Substitute([[maybe_unused]] TypeRelation *relation, const Substitution *substitution)
 {
     if (substitution == nullptr || substitution->empty()) {
         return this;
     }
-    auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *original = GetOriginal();
-    if (auto repl = substitution->find(original); repl != substitution->end()) {
-        auto *replType = repl->second;
-        /* Any other flags we need to copy? */
-
-        /* The check this != base is a kludge to distinguish bare type parameter T
-           with a nullish constraint (like the default Object?) from explicitly nullish T?
-        */
-        if (this != original && ((ContainsNull() && !replType->ContainsNull()) ||
-                                 (ContainsUndefined() && !replType->ContainsUndefined()))) {
-            // this type is explicitly marked as nullish
-            ASSERT(ETSChecker::IsReferenceType(replType));
-            auto nullishFlags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
-            auto *newReplType = checker->CreateNullishType(replType, nullishFlags, checker->Allocator(), relation,
-                                                           checker->GetGlobalTypesHolder());
-            replType = newReplType;
-        }
-        return replType;
+    if (auto repl = substitution->find(GetOriginal()); repl != substitution->end()) {
+        return repl->second;
     }
-
     return this;
 }
 
 void ETSTypeParameter::ToAssemblerType(std::stringstream &ss) const
 {
-    GetConstraintType()->ToAssemblerType(ss);
+    GetConstraintType()->ToAssemblerTypeWithRank(ss);
 }
 
 void ETSTypeParameter::ToDebugInfoType(std::stringstream &ss) const

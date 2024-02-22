@@ -263,6 +263,9 @@ builtins:
   - name: AssertionError
     package: PKG_ESCOMPAT
     ref: BUILTIN_ASSERTION_ERROR
+  - name: Runtime
+    package: PKG_STD_CORE
+    ref: BUILTIN_RUNTIME
   - name: JSRuntime
     package: PKG_STD_INTEROP_JS
     ref: BUILTIN_JSRUNTIME
@@ -296,6 +299,60 @@ builtins:
   - name: DoubleBox
     package: PKG_STD_CORE
     ref: BUILTIN_DOUBLE_BOX
+  - name: Function0
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION0
+  - name: Function1
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION1
+  - name: Function2
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION2
+  - name: Function3
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION3
+  - name: Function4
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION4
+  - name: Function5
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION5
+  - name: Function6
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION6
+  - name: Function7
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION7
+  - name: Function8
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION8
+  - name: Function9
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION9
+  - name: Function10
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION10
+  - name: Function11
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION11
+  - name: Function12
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION12
+  - name: Function13
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION13
+  - name: Function14
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION14
+  - name: Function15
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION15
+  - name: Function16
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTION16
+  - name: FunctionN
+    package: PKG_STD_CORE
+    ref: BUILTIN_FUNCTIONN
 
 signatures:
   - callee: BUILTIN_OBJECT
@@ -351,6 +408,12 @@ signatures:
     params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_ASSERTION_ERROR_CTOR
+
+  - callee: BUILTIN_RUNTIME
+    method_name: failedTypeCastException
+    params: [BUILTIN_OBJECT, BUILTIN_STRING]
+    return_type: BUILTIN_CLASS_CAST_EXCEPTION
+    ref: BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION
 
   - callee: BUILTIN_BIGINT
     method_name: $CTOR
@@ -492,7 +555,7 @@ signatures:
 
   - callee: BUILTIN_CLASS_CAST_EXCEPTION
     method_name: $CTOR
-    params: []
+    params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_CLASS_CAST_EXCEPTION_CTOR
 
@@ -1029,12 +1092,6 @@ signatures:
     params: [BUILTIN_STRING]
     return_type: BUILTIN_VOID
     ref: BUILTIN_JSRUNTIME_INIT_DYNAMIC_NEW_CLASS
-
-  - callee: BUILTIN_JSRUNTIME
-    method_name: __createLambdaProxy
-    params: [BUILTIN_OBJECT]
-    return_type: BUILTIN_JSVALUE
-    ref: BUILTIN_JSRUNTIME_CREATE_LAMBDA_PROXY
 
   - callee: BUILTIN_JSRUNTIME
     method_name: loadModule

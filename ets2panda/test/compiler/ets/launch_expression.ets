@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+* Copyright (c) 2022-2024 Huawei Device Co., Ltd.
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at 
@@ -35,7 +35,7 @@ function ufib(n: int) : Int {
     }
     let result = 0
     for (let i = 0; i < count; ++i) {
-        result = result + p[i].awaitResolution() * a[i];
+        result = result + p[i]!.awaitResolution() * a[i];
     }
     return result;
 }

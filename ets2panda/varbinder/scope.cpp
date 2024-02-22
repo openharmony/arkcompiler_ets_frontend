@@ -100,7 +100,12 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
 Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable *const var)
 {
     ASSERT(var != nullptr);
-    return bindings_.emplace(name, var);
+    auto insertResult = bindings_.emplace(name, var);
+    if (insertResult.second) {
+        decls_.push_back(var->Declaration());
+    }
+
+    return insertResult;
 }
 
 Scope::InsertResult Scope::TryInsertBinding(const util::StringView &name, Variable *const var)
@@ -326,6 +331,7 @@ Variable *ParamScope::AddParam(ArenaAllocator *allocator, Variable *currentVaria
     }
 
     auto *param = allocator->New<LocalVariable>(newDecl, flags);
+    param->SetScope(this);
 
     params_.push_back(param);
     InsertBinding(newDecl->Name(), param);

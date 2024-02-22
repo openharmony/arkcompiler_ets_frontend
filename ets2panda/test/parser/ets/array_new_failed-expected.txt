@@ -371,4 +371,4 @@
     }
   }
 }
-TypeError: Index fracional part should not be different from 0.0 [array_new_failed.ets:17:19]
+TypeError: Index fractional part should be zero. [array_new_failed.ets:17:19]

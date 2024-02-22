@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,10 +62,9 @@ checker::Type *FunctionExpression::Check([[maybe_unused]] checker::ETSChecker *c
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const func = func_->Clone(allocator)->AsScriptFunction();
+    auto *const func = func_->Clone(allocator, nullptr)->AsScriptFunction();
 
     if (auto *const clone = allocator->New<FunctionExpression>(func); clone != nullptr) {
         func->SetParent(clone);

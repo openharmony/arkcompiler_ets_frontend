@@ -19,6 +19,7 @@
 #include <optional>
 #include "parserFlags.h"
 #include "util/arktsconfig.h"
+#include "util/pathHandler.h"
 #include "TypedParser.h"
 
 namespace ark::es2panda::ir {
@@ -43,6 +44,9 @@ public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
         : TypedParser(program, options, status), globalProgram_(GetProgram())
     {
+        pathHandler_ = std::make_unique<util::PathHandler>(Allocator());
+        pathHandler_->SetArkTsConfig(ArkTSConfig());
+        pathHandler_->SetStdLib(GetOptions().stdLib);
     }
 
     ETSParser() = delete;
@@ -54,6 +58,11 @@ public:
     [[nodiscard]] bool IsETSParser() const noexcept override
     {
         return true;
+    }
+
+    ArenaUnorderedMap<util::StringView, util::ParseInfo> GetPathes() const
+    {
+        return pathHandler_->GetPathes();
     }
 
     //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
@@ -71,9 +80,7 @@ public:
     ir::Expression *CreateFormattedExpression(std::string_view const sourceCode, std::string_view const fileName,
                                               Args &&...args)
     {
-        std::vector<ir::AstNode *> insertingNodes {};
-        insertingNodes.reserve(sizeof...(Args));
-        (insertingNodes.emplace_back(std::forward<Args>(args)), ...);
+        std::vector<ir::AstNode *> insertingNodes {args...};
         return CreateFormattedExpression(sourceCode, insertingNodes, fileName);
     }
 
@@ -88,8 +95,7 @@ public:
     ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view const sourceCode,
                                                            std::string_view const fileName, Args &&...args)
     {
-        std::vector<ir::AstNode *> insertingNodes {};
-        (insertingNodes.emplace(std::forward<Args>(args)), ...);
+        std::vector<ir::AstNode *> insertingNodes {args...};
         return CreateFormattedStatements(sourceCode, insertingNodes, fileName);
     }
 
@@ -124,21 +130,13 @@ private:
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
 #endif
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
-    std::vector<std::string> UnixApiDefaultSources(const std::vector<std::string> &stdlib);
-    std::vector<std::string> CollectDefaultSources();
-    void CollectUserSourcesFromIndex(const std::string &path, const std::string &resolvedPath,
-                                     std::vector<std::string> &userPaths);
-    std::string ResolveImportPath(const std::string &path);
-    std::string ResolveFullPathFromRelative(const std::string &path);
     ImportData GetImportData(const std::string &path);
-    std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
-    std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolvedPath);
-    void ParseSources(const std::vector<std::string> &paths, bool isExternal = true);
-    std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
+    void ParseSources(bool isExternal = true);
+    ir::ImportSource *ParseSourceFromClause(bool requireFrom);
     void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isExport = false);
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
-    std::vector<std::string> ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
+    void ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
     void ParseDefaultSources();
     void ParseSource(const SourceFile &sourceFile);
     void CreateGlobalClass();
@@ -194,12 +192,8 @@ private:
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
-    ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *const method,
-                                                      ir::Identifier const *const identNode);
-    ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *const method);
-    void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *identNode = nullptr);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
-    std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation, bool adjust = true) const;
+    std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation) const;
     std::string GetNameForETSUnionType(const ir::TypeNode *typeAnnotation) const;
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool isStatic);
     bool IsArrowFunctionExpressionStart();
@@ -231,8 +225,11 @@ private:
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
     void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isReExport = false);
     bool CheckModuleAsModifier();
+    ir::Expression *ParseFunctionParameterExpression(ir::AnnotatedExpression *paramIdent,
+                                                     ir::ETSUndefinedType *defaultUndef);
     ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
+    ir::ETSUnionType *CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation, ir::ETSUndefinedType *defaultUndef);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
@@ -266,6 +263,10 @@ private:
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
                                 ir::ModifierFlags memberModifiers, ir::Identifier *identNode,
                                 const lexer::SourcePosition &startLoc);
+
+    ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
+                                                               ir::TypeNode *typeReference,
+                                                               ir::TypeNode *baseTypeReference);
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
@@ -346,7 +347,6 @@ private:
     // and correct parent and, probably, variable set to the node(s) after obtaining
     // NOLINTBEGIN(modernize-avoid-c-arrays)
     inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
-    inline static constexpr char const DEFAULT_PROXY_FILE[] = "<default_method>.ets";
     // NOLINTEND(modernize-avoid-c-arrays)
 
     // NOLINTBEGIN(google-default-arguments)
@@ -376,16 +376,10 @@ private:
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 
-public:
-    const std::unordered_map<std::string, std::string> &ResolvedParsedSourcesMap() const
-    {
-        return resolvedParsedSources_;
-    }
-
 private:
     parser::Program *globalProgram_;
     std::vector<ir::AstNode *> insertingNodes_ {};
-    std::unordered_map<std::string, std::string> resolvedParsedSources_;
+    std::unique_ptr<util::PathHandler> pathHandler_ {nullptr};
 };
 
 class ExternalSourceParser {

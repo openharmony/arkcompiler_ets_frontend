@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,11 +47,9 @@ enum class ModifierFlags : uint32_t {
     IN = 1U << 17U,
     OUT = 1U << 18U,
     INTERNAL = 1U << 19U,
-    NULL_ASSIGNABLE = 1U << 20U,
-    UNDEFINED_ASSIGNABLE = 1U << 21U,
-    EXPORT = 1U << 22U,
-    SETTER = 1U << 23U,
-    DEFAULT_EXPORT = 1U << 24U,
+    EXPORT = 1U << 20U,
+    SETTER = 1U << 21U,
+    DEFAULT_EXPORT = 1U << 22U,
     ACCESS = PUBLIC | PROTECTED | PRIVATE | INTERNAL,
     ALL = STATIC | ASYNC | ACCESS | DECLARE | READONLY | ABSTRACT,
     ALLOWED_IN_CTOR_PARAMETER = ACCESS | READONLY,
@@ -80,10 +78,9 @@ enum class ScriptFunctionFlags : uint32_t {
     RETHROWS = 1U << 14U,
     GETTER = 1U << 15U,
     SETTER = 1U << 16U,
-    DEFAULT_PARAM_PROXY = 1U << 17U,
-    ENTRY_POINT = 1U << 18U,
-    INSTANCE_EXTENSION_METHOD = 1U << 19U,
-    HAS_RETURN = 1U << 20U
+    ENTRY_POINT = 1U << 17U,
+    INSTANCE_EXTENSION_METHOD = 1U << 18U,
+    HAS_RETURN = 1U << 19U
 };
 
 enum class TSOperatorType { READONLY, KEYOF, UNIQUE };

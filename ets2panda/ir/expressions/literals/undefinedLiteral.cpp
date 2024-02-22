@@ -63,6 +63,7 @@ UndefinedLiteral *UndefinedLiteral::Clone(ArenaAllocator *allocator, AstNode *pa
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+        clone->SetRange(Range());
         return clone;
     }
 

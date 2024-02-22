@@ -299,6 +299,19 @@
                                         "column": 29
                                       }
                                     }
+                                  },
+                                  {
+                                    "type": "ETSNullType",
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 29
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 33
+                                      }
+                                    }
                                   }
                                 ],
                                 "loc": {
@@ -308,7 +321,7 @@
                                   },
                                   "end": {
                                     "line": 17,
-                                    "column": 29
+                                    "column": 33
                                   }
                                 }
                               },

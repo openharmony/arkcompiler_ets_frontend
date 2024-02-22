@@ -928,4 +928,4 @@
     }
   }
 }
-TypeError: Reference to foo is ambiguous [lambda-type-inference-neg.ets:23:5]
+TypeError: Function with this assembly signature already declared. [lambda-type-inference-neg.ets:19:1]

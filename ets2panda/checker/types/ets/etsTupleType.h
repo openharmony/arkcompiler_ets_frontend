@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,7 +58,7 @@ public:
         return size_ + (spreadType_ == nullptr ? 0 : 1);
     }
 
-    [[nodiscard]] ArenaVector<Type *> GetTupleTypesList() const
+    [[nodiscard]] ArenaVector<Type *> const &GetTupleTypesList() const
     {
         return typeList_;
     }
@@ -80,7 +80,7 @@ public:
 
     [[nodiscard]] Type *GetTypeAtIndex(int32_t index) const;
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, bool precise) const override;
 
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
@@ -90,7 +90,7 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
-    ArenaVector<Type *> typeList_;
+    ArenaVector<Type *> const typeList_;
     Type *spreadType_ {};
     TupleSizeType size_ {0};
 };

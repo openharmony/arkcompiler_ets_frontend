@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -110,13 +110,12 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
     return checker->GetReferencedTypeFromBase(baseType, name_);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const nameClone = name_ != nullptr ? name_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const nameClone = name_ != nullptr ? name_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     auto *const typeParamsClone =
-        typeParams_ != nullptr ? typeParams_->Clone(allocator)->AsTSTypeParameterInstantiation() : nullptr;
-    auto *const prevClone = prev_ != nullptr ? prev_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+        typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr)->AsTSTypeParameterInstantiation() : nullptr;
+    auto *const prevClone = prev_ != nullptr ? prev_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
     if (auto *const clone = allocator->New<ETSTypeReferencePart>(nameClone, typeParamsClone, prevClone);
         clone != nullptr) {
         if (nameClone != nullptr) {
@@ -135,6 +134,7 @@ ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocato
             clone->SetParent(parent);
         }
 
+        clone->SetRange(Range());
         return clone;
     }
 

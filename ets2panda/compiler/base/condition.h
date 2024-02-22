@@ -43,6 +43,7 @@ private:
     static void CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static void CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static bool CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
+    static void CompileInstanceofExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
 };
 }  // namespace ark::es2panda::compiler
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,17 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-function null_test(): void {
-  let Byte_   = null as Byte;
-  let Short_  = null as Short;
-  let Char_   = null as Char;
-  let Int_    = null as Int;
-  let Long_   = null as Long;
-  let Float_  = null as Float;
-  let Double_ = null as Double;
-  let Object  = null as Object;
-}
 
 function byte_test(): void {
   let byte_: byte = 42;

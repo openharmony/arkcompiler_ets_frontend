@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "scriptFunction.h"
 
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -23,6 +22,27 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
+
+ScriptFunction::ScriptFunction(FunctionSignature &&signature, AstNode *body, ScriptFunctionData &&data)
+    : AstNode(AstNodeType::SCRIPT_FUNCTION, data.flags),
+      irSignature_(std::move(signature)),
+      body_(body),
+      funcFlags_(data.funcFlags),
+      declare_(data.declare),
+      lang_(data.lang)
+{
+    for (auto *param : irSignature_.Params()) {
+        param->SetParent(this);
+    }
+
+    if (auto *returnType = irSignature_.ReturnType(); returnType != nullptr) {
+        returnType->SetParent(this);
+    }
+
+    if (auto *typeParams = irSignature_.TypeParams(); typeParams != nullptr) {
+        typeParams->SetParent(this);
+    }
+}
 
 std::size_t ScriptFunction::FormalParamsLength() const noexcept
 {
@@ -37,6 +57,12 @@ std::size_t ScriptFunction::FormalParamsLength() const noexcept
     }
 
     return length;
+}
+
+void ScriptFunction::SetIdent(Identifier *id) noexcept
+{
+    id_ = id;
+    id_->SetParent(this);
 }
 
 void ScriptFunction::TransformChildren(const NodeTransformer &cb)
@@ -59,6 +85,12 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
     if (body_ != nullptr) {
         cb(body_);
     }
+}
+
+void ScriptFunction::SetReturnTypeAnnotation(TypeNode *node) noexcept
+{
+    irSignature_.SetReturnType(node);
+    node->SetParent(this);
 }
 
 void ScriptFunction::Dump(ir::AstDumper *dumper) const

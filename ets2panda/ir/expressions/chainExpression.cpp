@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,9 @@ void ChainExpression::Dump(ir::AstDumper *dumper) const
 
 void ChainExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ChainExpression");
+    dumper->Add("(");  // affects precedence
+    expression_->Dump(dumper);
+    dumper->Add(")");
 }
 
 void ChainExpression::Compile(compiler::PandaGen *pg) const
@@ -76,10 +78,9 @@ checker::Type *ChainExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ChainExpression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expression = expression_ != nullptr ? expression_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const expression = expression_ != nullptr ? expression_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<ChainExpression>(expression); clone != nullptr) {
         if (expression != nullptr) {

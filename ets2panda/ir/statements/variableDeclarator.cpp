@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -73,6 +73,26 @@ void VariableDeclarator::Dump(ir::SrcDumper *dumper) const
         dumper->Add(" = ");
         init_->Dump(dumper);
     }
+}
+
+VariableDeclarator *VariableDeclarator::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const id = id_ != nullptr ? id_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const init = init_ != nullptr ? init_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+
+    if (auto *const clone = allocator->New<VariableDeclarator>(flag_, id, init); clone != nullptr) {
+        if (id != nullptr) {
+            id->SetParent(clone);
+        }
+        if (init != nullptr) {
+            init->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
 void VariableDeclarator::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -386,4 +386,4 @@
     }
   }
 }
-TypeError: Bad operand type, the operand of the non-null expression must be a nullable type [n_ensureNotNullLocalNotNullable.ets:18:3]
+TypeError: Bad operand type, the operand of the non-nullish expression must be a nullish type [n_ensureNotNullLocalNotNullable.ets:18:3]

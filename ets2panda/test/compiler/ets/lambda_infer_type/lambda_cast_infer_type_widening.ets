@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,7 +19,7 @@ class A {
 
 class B extends A {
     main () {
-        let a = (a : B) => { return a} as (a : A) => A
-        let expected : (a : A) => A = a
+        let a = (a : A) => { return new B } as (a : A) => A
+        let expected : (a : B) => A = a
     }
 }

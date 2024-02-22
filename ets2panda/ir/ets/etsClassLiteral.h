@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,8 +38,7 @@ public:
 
     explicit ETSClassLiteral(ir::TypeNode *const expr) : Expression(AstNodeType::ETS_CLASS_LITERAL), expr_(expr) {}
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSClassLiteral *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSClassLiteral *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;

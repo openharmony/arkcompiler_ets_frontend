@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -48,8 +48,8 @@ function bar(p: C<Object>): void {
     let p1: C<Object> | null = p.then<Object>(new Object());
     let p2: C<A<A<Object>>> = new C<A<A<Object>>>();
     p1 = p2.then<Object>(new Object());
-    p1 = p2.value.bar().baz().then<Object>(new Object());
-    p1 = p2.value.bar().baz().then<Object>(new Object());
+    p1 = p2.value.bar().baz()!.then<Object>(new Object());
+    p1 = p2.value.bar().baz()!.then<Object>(new Object());
 
     let p3: C<Double> | null = p.then<Double>(new Double());
     let p4: C<A<A<Double>>> = new C<A<A<Double>>>();

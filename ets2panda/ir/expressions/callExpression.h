@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,6 +74,7 @@ public:
     void SetCallee(Expression *callee) noexcept
     {
         callee_ = callee;
+        callee_->SetParent(this);
     }
 
     [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept
@@ -116,10 +117,7 @@ public:
         signature_ = signature;
     }
 
-    void SetTypeParams(TSTypeParameterInstantiation *const typeParams) noexcept
-    {
-        typeParams_ = typeParams;
-    }
+    void SetTypeParams(TSTypeParameterInstantiation *typeParams) noexcept;
 
     [[nodiscard]] checker::Type *UncheckedType() const noexcept
     {
@@ -131,10 +129,7 @@ public:
         uncheckedType_ = type;
     }
 
-    void SetTrailingBlock(ir::BlockStatement *const block) noexcept
-    {
-        trailingBlock_ = block;
-    }
+    void SetTrailingBlock(ir::BlockStatement *const block) noexcept;
 
     [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
@@ -151,8 +146,7 @@ public:
         return isTrailingBlockInNewLine_;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

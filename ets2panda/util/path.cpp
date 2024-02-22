@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,11 +37,7 @@ void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
         isRelative_ = true;
     }
 
-    if (isRelative_) {
-        absolutePath_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
-    } else {
-        absolutePath_ = path_;
-    }
+    absolutePath_ = util::UString(os::GetAbsolutePath(path_.Utf8()), allocator_).View();
 
     InitializeFileExtension();
     InitializeFileName();

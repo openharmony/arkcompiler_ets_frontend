@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -108,6 +108,36 @@ void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
     if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsBlockExpression())) {
         dumper->Add(";");
     }
+}
+
+VariableDeclaration::VariableDeclaration([[maybe_unused]] Tag const tag, VariableDeclaration const &other,
+                                         ArenaAllocator *const allocator)
+    : Statement(static_cast<Statement const &>(other)),
+      kind_(other.kind_),
+      decorators_(allocator->Adapter()),
+      declarators_(allocator->Adapter()),
+      declare_(other.declare_)
+{
+    for (auto const &d : other.decorators_) {
+        decorators_.emplace_back(d->Clone(allocator, nullptr));
+        decorators_.back()->SetParent(this);
+    }
+
+    for (auto const &d : other.declarators_) {
+        declarators_.emplace_back(d->Clone(allocator, nullptr)->AsVariableDeclarator());
+        declarators_.back()->SetParent(this);
+    }
+}
+
+VariableDeclaration *VariableDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<VariableDeclaration>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
 void VariableDeclaration::Compile(compiler::PandaGen *pg) const

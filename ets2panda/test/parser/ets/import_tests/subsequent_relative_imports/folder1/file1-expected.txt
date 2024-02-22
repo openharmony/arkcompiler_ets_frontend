@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "../folder2",
+        "value": "../folder2/file2",
         "loc": {
           "start": {
             "line": 16,

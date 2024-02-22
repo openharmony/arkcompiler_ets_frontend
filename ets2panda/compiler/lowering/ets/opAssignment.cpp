@@ -71,8 +71,21 @@ static lexer::TokenType OpEqualToOp(const lexer::TokenType opEqual)
     UNREACHABLE();
 }
 
-void AdjustBoxingUnboxingFlags(ir::Expression *newExpr, const ir::Expression *oldExpr)
+void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Expression *oldExpr)
 {
+    ir::AssignmentExpression *newAssignment = nullptr;
+    if (loweringResult->IsAssignmentExpression()) {
+        newAssignment = loweringResult->AsAssignmentExpression();
+    } else if (loweringResult->IsBlockExpression() && !loweringResult->AsBlockExpression()->Statements().empty()) {
+        auto *statement = loweringResult->AsBlockExpression()->Statements().back();
+        if (statement->IsExpressionStatement() &&
+            statement->AsExpressionStatement()->GetExpression()->IsAssignmentExpression()) {
+            newAssignment = statement->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
+        }
+    } else {
+        UNREACHABLE();
+    }
+
     // NOTE: gogabr. make sure that the checker never puts both a boxing and an unboxing flag on the same node.
     // Then this function will become unnecessary.
     const ir::BoxingUnboxingFlags oldBoxingFlag {oldExpr->GetBoxingUnboxingFlags() &
@@ -80,11 +93,47 @@ void AdjustBoxingUnboxingFlags(ir::Expression *newExpr, const ir::Expression *ol
     const ir::BoxingUnboxingFlags oldUnboxingFlag {oldExpr->GetBoxingUnboxingFlags() &
                                                    ir::BoxingUnboxingFlags::UNBOXING_FLAG};
 
-    if (newExpr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        newExpr->SetBoxingUnboxingFlags(oldBoxingFlag);
-    } else if (newExpr->TsType()->IsETSObjectType()) {
-        newExpr->SetBoxingUnboxingFlags(oldUnboxingFlag);
+    if (newAssignment->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        newAssignment->SetBoxingUnboxingFlags(oldBoxingFlag);
+    } else if (newAssignment->TsType()->IsETSObjectType()) {
+        newAssignment->SetBoxingUnboxingFlags(oldUnboxingFlag);
     }
+}
+
+static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir::Expression *expr)
+{
+    auto *lcType = expr->TsType();
+    if (auto *lcTypeAsPrimitive = checker->ETSBuiltinTypeAsPrimitiveType(lcType); lcTypeAsPrimitive != nullptr) {
+        lcType = lcTypeAsPrimitive;
+    }
+    return checker->AllocNode<ir::OpaqueTypeNode>(lcType);
+}
+
+static std::string GenerateStringForLoweredAssignment(lexer::TokenType opEqual, bool hasProperty, ir::Expression *expr)
+{
+    std::string leftHand = "@@I5";
+    std::string rightHand = "@@I7";
+
+    if (hasProperty) {
+        auto const kind = expr->AsMemberExpression()->Kind();
+        if (kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
+            leftHand += ".@@I6";
+            rightHand += ".@@I8";
+        } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
+            leftHand += "[@@I6]";
+            rightHand += "[@@I8]";
+        } else {
+            UNREACHABLE();
+        }
+    }
+
+    return leftHand + " = (" + rightHand + ' ' + std::string {lexer::TokenToString(OpEqualToOp(opEqual))} +
+           " (@@E9)) as @@T10";
+}
+
+static ir::Identifier *GetClone(ArenaAllocator *allocator, ir::Identifier *node)
+{
+    return node != nullptr ? node->Clone(allocator, nullptr) : nullptr;
 }
 
 ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker *checker, parser::ETSParser *parser,
@@ -136,71 +185,25 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
         UNREACHABLE();
     }
 
-    // Create proxy TypeNode for left hand of assignment expression
-    auto *lcType = left->TsType();
-    if (auto *lcTypeAsPrimitive = checker->ETSBuiltinTypeAsPrimitiveType(lcType); lcTypeAsPrimitive != nullptr) {
-        lcType = lcTypeAsPrimitive;
-    }
-    auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(lcType);
+    auto *exprType = CreateProxyTypeNode(checker, left);
 
     // Generate ArkTS code string for new lowered assignment expression:
-    std::string leftHand = "@@I5";
-    std::string rightHand = "@@I7";
-
-    if (ident2 != nullptr) {
-        if (auto const kind = left->AsMemberExpression()->Kind(); kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
-            leftHand += ".@@I6";
-            rightHand += ".@@I8";
-        } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            leftHand += "[@@I6]";
-            rightHand += "[@@I8]";
-        } else {
-            UNREACHABLE();
-        }
-    }
-
-    newAssignmentStatements += leftHand + " = (" + rightHand + ' ' +
-                               std::string {lexer::TokenToString(OpEqualToOp(opEqual))} + " (@@E9)) as @@T10";
-    // std::cout << "Lowering statements: " << new_assignment_statements << std::endl;
+    newAssignmentStatements += GenerateStringForLoweredAssignment(opEqual, ident2 != nullptr, left);
 
     // Parse ArkTS code string and create and process corresponding AST node(s)
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
-    auto *loweringResult = parser->CreateFormattedExpression(
-        newAssignmentStatements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2, property,
-        ident1->Clone(allocator), ident2 != nullptr ? ident2->Clone(allocator) : nullptr, ident1->Clone(allocator),
-        ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, exprType);
+    auto *loweringResult =
+        parser->CreateFormattedExpression(newAssignmentStatements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2,
+                                          property, GetClone(allocator, ident1), GetClone(allocator, ident2),
+                                          GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
     loweringResult->SetParent(assignment->Parent());
     InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, scope);
     loweringResult->Check(checker);
 
-    // Adjust [un]boxing flag
-    ir::AssignmentExpression *newAssignment;
-    if (loweringResult->IsAssignmentExpression()) {
-        newAssignment = loweringResult->AsAssignmentExpression();
-    } else if (loweringResult->IsBlockExpression() && !loweringResult->AsBlockExpression()->Statements().empty() &&
-               loweringResult->AsBlockExpression()->Statements().back()->IsExpressionStatement() &&
-               loweringResult->AsBlockExpression()
-                   ->Statements()
-                   .back()
-                   ->AsExpressionStatement()
-                   ->GetExpression()
-                   ->IsAssignmentExpression()) {
-        newAssignment = loweringResult->AsBlockExpression()
-                            ->Statements()
-                            .back()
-                            ->AsExpressionStatement()
-                            ->GetExpression()
-                            ->AsAssignmentExpression();
-    } else {
-        UNREACHABLE();
-    }
-
-    // NOTE(gogabr): make sure that the checker never puts both a boxing and an unboxing flag on the same node.
-    // Then this code will become unnecessary.
-    AdjustBoxingUnboxingFlags(newAssignment, assignment);
+    AdjustBoxingUnboxingFlags(loweringResult, assignment);
 
     return loweringResult;
 }

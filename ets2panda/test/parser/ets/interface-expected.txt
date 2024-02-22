@@ -156,7 +156,7 @@
                 "type": "ETSTypeReferencePart",
                 "name": {
                   "type": "Identifier",
-                  "name": "Function",
+                  "name": "FunctioN",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -375,4 +375,4 @@
     }
   }
 }
-SyntaxError: Cannot find type 'Function'. [interface.ets:17:39]
+SyntaxError: Cannot find type 'FunctioN'. [interface.ets:17:39]

@@ -1705,4 +1705,4 @@
     }
   }
 }
-TypeError: Type 'string' is not compatible with type 'int' at index 2 [lambdaFunction5.ets:35:17]
+TypeError: Type 'string' is not compatible with type 'Int' at index 2 [lambdaFunction5.ets:35:17]

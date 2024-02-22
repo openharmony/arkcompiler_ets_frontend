@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -90,27 +90,15 @@ checker::Type *ETSTypeReference::Check(checker::ETSChecker *checker)
 
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
+    if (TsType() == nullptr) {
+        SetTsType(part_->GetType(checker));
     }
-
-    checker::Type *type = part_->GetType(checker);
-    if (IsNullAssignable() || IsUndefinedAssignable()) {
-        auto nullishFlags = (IsNullAssignable() ? checker::TypeFlag::NULL_TYPE : checker::TypeFlag(0)) |
-                            (IsUndefinedAssignable() ? checker::TypeFlag::UNDEFINED : checker::TypeFlag(0));
-
-        type = checker->CreateNullishType(type, nullishFlags, checker->Allocator(), checker->Relation(),
-                                          checker->GetGlobalTypesHolder());
-    }
-
-    SetTsType(type);
-    return type;
+    return TsType();
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const partClone = part_ != nullptr ? part_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+    auto *const partClone = part_ != nullptr ? part_->Clone(allocator, nullptr)->AsETSTypeReferencePart() : nullptr;
 
     if (auto *const clone = allocator->New<ETSTypeReference>(partClone); clone != nullptr) {
         if (partClone != nullptr) {
@@ -123,6 +111,7 @@ ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNo
             clone->SetParent(parent);
         }
 
+        clone->SetRange(Range());
         return clone;
     }
 

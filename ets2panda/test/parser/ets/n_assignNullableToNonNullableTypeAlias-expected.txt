@@ -156,13 +156,38 @@
         }
       },
       "typeAnnotation": {
-        "type": "ETSTypeReference",
-        "part": {
-          "type": "ETSTypeReferencePart",
-          "name": {
-            "type": "Identifier",
-            "name": "A",
-            "decorators": [],
+        "type": "ETSUnionType",
+        "types": [
+          {
+            "type": "ETSTypeReference",
+            "part": {
+              "type": "ETSTypeReferencePart",
+              "name": {
+                "type": "Identifier",
+                "name": "A",
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 18,
+                    "column": 11
+                  },
+                  "end": {
+                    "line": 18,
+                    "column": 12
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 11
+                },
+                "end": {
+                  "line": 18,
+                  "column": 14
+                }
+              }
+            },
             "loc": {
               "start": {
                 "line": 18,
@@ -170,21 +195,24 @@
               },
               "end": {
                 "line": 18,
-                "column": 12
+                "column": 14
               }
             }
           },
-          "loc": {
-            "start": {
-              "line": 18,
-              "column": 11
-            },
-            "end": {
-              "line": 18,
-              "column": 14
+          {
+            "type": "ETSNullType",
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 15
+              },
+              "end": {
+                "line": 18,
+                "column": 19
+              }
             }
           }
-        },
+        ],
         "loc": {
           "start": {
             "line": 18,
@@ -192,7 +220,7 @@
           },
           "end": {
             "line": 18,
-            "column": 14
+            "column": 19
           }
         }
       },
@@ -566,7 +594,7 @@
                                 "type": "ETSTypeReferencePart",
                                 "name": {
                                   "type": "Identifier",
-                                  "name": "AN",
+                                  "name": "A",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -575,7 +603,7 @@
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 25
+                                      "column": 24
                                     }
                                   }
                                 },
@@ -586,7 +614,7 @@
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 26
+                                    "column": 25
                                   }
                                 }
                               },
@@ -597,7 +625,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 26
+                                  "column": 25
                                 }
                               }
                             },
@@ -609,7 +637,7 @@
                               },
                               "end": {
                                 "line": 22,
-                                "column": 28
+                                "column": 27
                               }
                             }
                           },
@@ -620,7 +648,7 @@
                             },
                             "end": {
                               "line": 22,
-                              "column": 28
+                              "column": 27
                             }
                           }
                         }
@@ -633,7 +661,7 @@
                         },
                         "end": {
                           "line": 22,
-                          "column": 28
+                          "column": 27
                         }
                       }
                     },

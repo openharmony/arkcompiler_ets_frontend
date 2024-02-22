@@ -28,9 +28,11 @@ public:
         SetSuperType(super);
     }
 
-    explicit ETSBigIntType(ArenaAllocator *allocator, ETSObjectType *super, util::StringView value)
+    explicit ETSBigIntType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
+                           util::StringView value)
         : ETSObjectType(allocator,
-                        ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER),
+                        ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER,
+                        relation),
           value_(value)
     {
         SetSuperType(super);
@@ -43,7 +45,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
-    void ToString(std::stringstream &ss) const override
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override
     {
         ss << lexer::TokenToString(lexer::TokenType::KEYW_BIGINT);
     }

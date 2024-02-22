@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,10 @@
 #include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker {
-void UnionType::ToString(std::stringstream &ss) const
+void UnionType::ToString(std::stringstream &ss, bool precise) const
 {
     for (auto it = constituentTypes_.begin(); it != constituentTypes_.end(); it++) {
-        (*it)->ToString(ss);
+        (*it)->ToString(ss, precise);
         if (std::next(it) != constituentTypes_.end()) {
             ss << " | ";
         }

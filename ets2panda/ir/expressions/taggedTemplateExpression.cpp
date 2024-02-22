@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -81,12 +81,11 @@ checker::Type *TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChec
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TaggedTemplateExpression *TaggedTemplateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const tag = tag_ != nullptr ? tag_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator) : nullptr;
-    auto *const typeParams = typeParams_ != nullptr ? typeParams_->Clone(allocator) : nullptr;
+    auto *const tag = tag_ != nullptr ? tag_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator, nullptr) : nullptr;
+    auto *const typeParams = typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, typeParams); clone != nullptr) {
         if (tag != nullptr) {

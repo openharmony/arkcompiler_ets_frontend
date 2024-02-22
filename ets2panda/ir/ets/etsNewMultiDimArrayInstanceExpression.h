@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,29 +44,26 @@ public:
           dimensions_(std::move(dimensions))
     {
     }
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class compiler::ETSCompiler;
 
     explicit ETSNewMultiDimArrayInstanceExpression(ETSNewMultiDimArrayInstanceExpression const &other,
                                                    ArenaAllocator *allocator);
 
-    ir::TypeNode *TypeReference()
+    [[nodiscard]] ir::TypeNode *TypeReference() noexcept
     {
         return typeReference_;
     }
 
-    ir::TypeNode const *TypeReference() const
+    [[nodiscard]] ir::TypeNode const *TypeReference() const noexcept
     {
         return typeReference_;
     }
 
-    ArenaVector<ir::Expression *> &Dimensions()
+    [[nodiscard]] ArenaVector<ir::Expression *> &Dimensions() noexcept
     {
         return dimensions_;
     }
 
-    ArenaVector<ir::Expression *> const &Dimension() const
+    [[nodiscard]] ArenaVector<ir::Expression *> const &Dimensions() const noexcept
     {
         return dimensions_;
     }
@@ -81,9 +78,12 @@ public:
         return signature_;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSNewMultiDimArrayInstanceExpression *Clone(ArenaAllocator *allocator,
-                                                               AstNode *parent = nullptr) override;
+    void SetSignature(checker::Signature *signature) noexcept
+    {
+        signature_ = signature;
+    }
+
+    [[nodiscard]] ETSNewMultiDimArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

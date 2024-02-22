@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,11 +47,10 @@ private:
     std::string GetKeyName(const ir::Expression *key);
 
     void GenType(const checker::Type *checkerType);
-    void GenTypeNonNullish(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
-    void GenTypeParameterType(const checker::ETSTypeParameter *typeParam);
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenEnumType(const checker::ETSEnumType *enumType);
+    void GenUnionType(const checker::ETSUnionType *unionType);
 
     void GenImportDeclaration(const ir::ETSImportDeclaration *importDeclaration);
     void GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAlias);

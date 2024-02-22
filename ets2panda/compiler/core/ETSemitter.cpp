@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -88,6 +88,23 @@ static uint32_t TranslateModifierFlags(ir::ModifierFlags modifierFlags)
     return accessFlags;
 }
 
+static pandasm::Type PandasmTypeWithRank(checker::Type const *type)
+{
+    if (type->IsETSTypeParameter()) {
+        return PandasmTypeWithRank(type->AsETSTypeParameter()->GetConstraintType());
+    }
+    if (type->IsETSNonNullishType()) {
+        return PandasmTypeWithRank(type->AsETSNonNullishType()->GetUnderlying());
+    }
+    if (type->IsETSUnionType()) {
+        return PandasmTypeWithRank(type->AsETSUnionType()->GetAssemblerLUB());
+    }
+
+    std::stringstream ss;
+    type->ToAssemblerType(ss);
+    return pandasm::Type(ss.str(), type->Rank());
+}
+
 static pandasm::Function GenScriptFunction(CompilerContext const *context, const ir::ScriptFunction *scriptFunc)
 {
     auto *funcScope = scriptFunc->Scope();
@@ -98,21 +115,14 @@ static pandasm::Function GenScriptFunction(CompilerContext const *context, const
     func.params.reserve(paramScope->Params().size());
 
     for (const auto *var : paramScope->Params()) {
-        std::stringstream ss;
-        context->Checker()->AsETSChecker()->MaybeBoxedType(var)->ToAssemblerType(ss);
-        func.params.emplace_back(pandasm::Type(ss.str(), var->TsType()->Rank()), EXTENSION);
+        func.params.emplace_back(PandasmTypeWithRank(context->Checker()->AsETSChecker()->MaybeBoxedType(var)),
+                                 EXTENSION);
     }
-
-    std::stringstream ss;
 
     if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock()) {
         func.returnType = pandasm::Type(Signatures::PRIMITIVE_VOID, 0);
     } else {
-        const auto *returnType = scriptFunc->Signature()->ReturnType();
-
-        returnType->ToAssemblerType(ss);
-        ASSERT(!ss.str().empty());
-        func.returnType = pandasm::Type(ss.str(), returnType->Rank());
+        func.returnType = PandasmTypeWithRank(scriptFunc->Signature()->ReturnType());
     }
 
     if (!scriptFunc->IsStaticBlock()) {
@@ -170,16 +180,9 @@ static pandasm::Function GenExternalFunction(checker::Signature *signature, bool
     auto func = pandasm::Function(signature->InternalName().Mutf8(), EXTENSION);
 
     for (auto param : signature->Params()) {
-        auto *paramType = param->TsType();
-
-        std::stringstream ss;
-        paramType->ToAssemblerType(ss);
-        func.params.emplace_back(pandasm::Type(ss.str(), paramType->Rank()), EXTENSION);
+        func.params.emplace_back(PandasmTypeWithRank(param->TsType()), EXTENSION);
     }
-
-    std::stringstream ss;
-    signature->ReturnType()->ToAssemblerType(ss);
-    func.returnType = pandasm::Type(ss.str(), signature->ReturnType()->Rank());
+    func.returnType = PandasmTypeWithRank(signature->ReturnType());
 
     if (isCtor) {
         func.metadata->SetAttribute(Signatures::CONSTRUCTOR);
@@ -343,11 +346,9 @@ void ETSEmitter::GenField(const checker::Type *tsType, const util::StringView &n
                           uint32_t accesFlags, pandasm::Record &record, bool external)
 {
     auto field = pandasm::Field(Program()->lang);
-    std::stringstream ss;
-    tsType->ToAssemblerType(ss);
 
     field.name = name.Mutf8();
-    field.type = pandasm::Type(ss.str(), tsType->Rank());
+    field.type = PandasmTypeWithRank(tsType);
 
     field.metadata->SetAccessFlags(accesFlags);
 
@@ -388,11 +389,7 @@ void ETSEmitter::GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker:
 
     arrayRecord.metadata->SetAttribute(Signatures::EXTERNAL);
     Program()->recordTable.emplace(arrayRecord.name, std::move(arrayRecord));
-
-    std::stringstream ss2;
-    arrayType->ElementType()->ToAssemblerType(ss2);
-    ark::pandasm::Type atypePa(ss2.str(), arrayType->Rank());
-    Program()->arrayTypes.emplace(std::move(atypePa));
+    Program()->arrayTypes.emplace(PandasmTypeWithRank(arrayType));
 }
 
 void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceDecl, bool external)

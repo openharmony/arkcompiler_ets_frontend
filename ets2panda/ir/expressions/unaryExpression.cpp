@@ -15,19 +15,12 @@
 
 #include "unaryExpression.h"
 
-#include "varbinder/variable.h"
-#include "checker/types/typeFlag.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/bigIntLiteral.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/memberExpression.h"
 
 namespace ark::es2panda::ir {
 void UnaryExpression::TransformChildren(const NodeTransformer &cb)
@@ -71,18 +64,20 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 UnaryExpression *UnaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<UnaryExpression>(argument, operator_); clone != nullptr) {
         if (argument != nullptr) {
             argument->SetParent(clone);
         }
+
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

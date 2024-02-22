@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "util/ustring.h"
 #include "varbinder/ETSBinder.h"
 #include "varbinder/variable.h"
 #include "checker/ETSchecker.h"
@@ -65,16 +66,16 @@ void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const no
     }
 }
 
-[[nodiscard]] ir::Identifier *MakeQualifiedIdentifier(ark::ArenaAllocator *const allocator,
+[[nodiscard]] ir::Identifier *MakeQualifiedIdentifier(ETSChecker *const checker,
                                                       const ir::TSEnumDeclaration *const enumDecl,
                                                       const util::StringView &name)
 {
-    util::UString qualifiedName(util::StringView("#"), allocator);
+    util::UString qualifiedName(util::StringView("#"), checker->Allocator());
     AppendParentNames(qualifiedName, enumDecl->Parent());
     qualifiedName.Append(enumDecl->Key()->Name());
     qualifiedName.Append('#');
     qualifiedName.Append(name);
-    return allocator->New<ir::Identifier>(qualifiedName.View(), allocator);
+    return checker->AllocNode<ir::Identifier>(qualifiedName.View(), checker->Allocator());
 }
 
 template <typename ElementMaker>
@@ -88,13 +89,13 @@ template <typename ElementMaker>
         elements.push_back(elementMaker(member->AsTSEnumMember()));
     }
 
-    auto *const arrayExpr = checker->Allocator()->New<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+    auto *const arrayExpr = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
     arrayExpr->SetPreferredType(elementType);
     arrayExpr->SetTsType(checker->CreateETSArrayType(elementType));
 
-    auto *const arrayIdent = MakeQualifiedIdentifier(checker->Allocator(), enumType->GetDecl(), name);
+    auto *const arrayIdent = MakeQualifiedIdentifier(checker, enumType->GetDecl(), name);
 
-    auto *const arrayClassProp = checker->Allocator()->New<ir::ClassProperty>(
+    auto *const arrayClassProp = checker->AllocNode<ir::ClassProperty>(
         arrayIdent, arrayExpr, nullptr,
         ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC | ir::ModifierFlags::CONST, checker->Allocator(), false);
     arrayClassProp->SetTsType(arrayExpr->TsType());
@@ -118,8 +119,8 @@ template <typename ElementMaker>
                                                             const util::StringView &name, Type *const type)
 {
     const auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(varbinder, scope, false);
-    auto *const paramIdent = checker->Allocator()->New<ir::Identifier>(name, checker->Allocator());
-    auto *const param = checker->Allocator()->New<ir::ETSParameterExpression>(paramIdent, nullptr);
+    auto *const paramIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+    auto *const param = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
     auto *const paramVar = std::get<1>(varbinder->AddParamDecl(param));
     paramVar->SetTsType(type);
     param->Ident()->SetVariable(paramVar);
@@ -128,11 +129,13 @@ template <typename ElementMaker>
     return param;
 }
 
-[[nodiscard]] ir::ETSTypeReference *MakeTypeReference(ark::ArenaAllocator *allocator, const util::StringView &name)
+[[nodiscard]] ir::ETSTypeReference *MakeTypeReference(ETSChecker *const checker, const util::StringView &name)
 {
-    auto *const ident = allocator->New<ir::Identifier>(name, allocator);
-    auto *const referencePart = allocator->New<ir::ETSTypeReferencePart>(ident);
-    return allocator->New<ir::ETSTypeReference>(referencePart);
+    auto *const ident = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+    ident->SetReference();
+    auto *const referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
+
+    return checker->AllocNode<ir::ETSTypeReference>(referencePart);
 }
 
 [[nodiscard]] ir::ScriptFunction *MakeFunction(ETSChecker *const checker, varbinder::ETSBinder *const varbinder,
@@ -145,7 +148,7 @@ template <typename ElementMaker>
     functionScope->BindParamScope(paramScope);
     paramScope->BindFunctionScope(functionScope);
 
-    auto *const bodyBlock = checker->Allocator()->New<ir::BlockStatement>(checker->Allocator(), std::move(body));
+    auto *const bodyBlock = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(body));
     bodyBlock->SetScope(functionScope);
 
     auto flags = ir::ModifierFlags::PUBLIC;
@@ -154,9 +157,9 @@ template <typename ElementMaker>
         flags |= ir::ModifierFlags::DECLARE;
     }
 
-    auto *const function = checker->Allocator()->New<ir::ScriptFunction>(
+    auto *const function = checker->AllocNode<ir::ScriptFunction>(
         ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation), bodyBlock,
-        ir::ScriptFunctionFlags::METHOD, flags, isDeclare, Language(Language::Id::ETS));
+        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, flags, isDeclare});
     function->SetScope(functionScope);
 
     varbinder->AsETSBinder()->BuildInternalName(function);
@@ -170,19 +173,21 @@ template <typename ElementMaker>
 void MakeMethodDef(ETSChecker *const checker, varbinder::ETSBinder *const varbinder, ir::Identifier *const ident,
                    ir::ScriptFunction *const function)
 {
-    auto *const functionExpr = checker->Allocator()->New<ir::FunctionExpression>(function);
-    function->SetParent(functionExpr);
+    auto *const functionExpr = checker->AllocNode<ir::FunctionExpression>(function);
+    auto *const identClone = ident->Clone(checker->Allocator(), nullptr);
+    identClone->SetTsType(ident->TsType());
 
-    auto *const methodDef = checker->Allocator()->New<ir::MethodDefinition>(
-        ir::MethodDefinitionKind::METHOD, ident, functionExpr, ir::ModifierFlags::PUBLIC, checker->Allocator(), false);
+    auto *const methodDef =
+        checker->AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, identClone, functionExpr,
+                                                 ir::ModifierFlags::PUBLIC, checker->Allocator(), false);
     methodDef->SetParent(varbinder->Program()->GlobalClass());
-    functionExpr->SetParent(methodDef);
 
     auto *const methodVar = std::get<1>(varbinder->NewVarDecl<varbinder::FunctionDecl>(
         methodDef->Start(), checker->Allocator(), methodDef->Id()->Name(), methodDef));
     methodVar->AddFlag(varbinder::VariableFlags::STATIC | varbinder::VariableFlags::SYNTHETIC |
                        varbinder::VariableFlags::METHOD);
     methodDef->Function()->Id()->SetVariable(methodVar);
+    methodDef->Id()->SetVariable(methodVar);
 }
 
 [[nodiscard]] ETSFunctionType *MakeProxyFunctionType(ETSChecker *const checker, const util::StringView &name,
@@ -224,7 +229,7 @@ ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumInterface const *const e
     return MakeArray(this, VarBinder()->AsETSBinder(), enumType, "NamesArray", GlobalBuiltinETSStringType(),
                     [this](const ir::TSEnumMember *const member) {
                         auto *const enumNameStringLiteral =
-                            Allocator()->New<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
+                            AllocNode<ir::StringLiteral>(member->Key()->AsIdentifier()->Name());
                         enumNameStringLiteral->SetTsType(GlobalBuiltinETSStringType());
                         return enumNameStringLiteral;
                     });
@@ -236,7 +241,7 @@ ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enumType)
     return MakeArray(
         this, VarBinder()->AsETSBinder(), enumType, "ValuesArray", GlobalIntType(),
         [this](const ir::TSEnumMember *const member) {
-            auto *const enumValueLiteral = Allocator()->New<ir::NumberLiteral>(lexer::Number(
+            auto *const enumValueLiteral = AllocNode<ir::NumberLiteral>(lexer::Number(
                 member->AsTSEnumMember()->Init()->AsNumberLiteral()->Number().GetValue<ETSEnumType::ValueType>()));
             enumValueLiteral->SetTsType(GlobalIntType());
             return enumValueLiteral;
@@ -246,17 +251,19 @@ ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enumType)
 ir::Identifier *ETSChecker::CreateEnumStringValuesArray(ETSEnumInterface *const enumType)
 {
     return MakeArray(this, VarBinder()->AsETSBinder(), enumType, "StringValuesArray", GlobalETSStringLiteralType(),
-                     [this, isStringEnum = enumType->IsETSStringEnumType()](const ir::TSEnumMember *const member) {
-                         auto const stringValue =
-                             isStringEnum ? member->AsTSEnumMember()->Init()->AsStringLiteral()->Str()
-                                          : util::UString(std::to_string(member->AsTSEnumMember()
-                                                                             ->Init()
-                                                                             ->AsNumberLiteral()
-                                                                             ->Number()
-                                                                             .GetValue<ETSEnumType::ValueType>()),
-                                                          Allocator())
-                                                .View();
-                         auto *const enumValueStringLiteral = Allocator()->New<ir::StringLiteral>(stringValue);
+                     [this, enumType](const ir::TSEnumMember *const member) {
+                         auto *const init = member->AsTSEnumMember()->Init();
+                         util::StringView stringValue;
+
+                         if (enumType->IsETSStringEnumType()) {
+                             stringValue = init->AsStringLiteral()->Str();
+                         } else {
+                             auto str =
+                                 std::to_string(init->AsNumberLiteral()->Number().GetValue<ETSEnumType::ValueType>());
+                             stringValue = util::UString(str, Allocator()).View();
+                         }
+
+                         auto *const enumValueStringLiteral = AllocNode<ir::StringLiteral>(stringValue);
                          enumValueStringLiteral->SetTsType(GlobalETSStringLiteralType());
                          return enumValueStringLiteral;
                      });
@@ -264,17 +271,20 @@ ir::Identifier *ETSChecker::CreateEnumStringValuesArray(ETSEnumInterface *const 
 
 ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumInterface *const enumType)
 {
-    auto *const enumTypeIdent = Allocator()->New<ir::Identifier>(enumType->GetName(), Allocator());
-    enumTypeIdent->SetTsType(enumType);
-
     return MakeArray(
         this, VarBinder()->AsETSBinder(), enumType, "ItemsArray", enumType,
-        [this, enumTypeIdent](const ir::TSEnumMember *const member) {
+        [this, enumType](const ir::TSEnumMember *const member) {
+            auto *const enumTypeIdent = AllocNode<ir::Identifier>(enumType->GetName(), Allocator());
+            enumTypeIdent->SetTsType(enumType);
+            enumTypeIdent->SetReference();
+
             auto *const enumMemberIdent =
-                Allocator()->New<ir::Identifier>(member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
-            auto *const enumMemberExpr = Allocator()->New<ir::MemberExpression>(
+                AllocNode<ir::Identifier>(member->AsTSEnumMember()->Key()->AsIdentifier()->Name(), Allocator());
+            enumMemberIdent->SetReference();
+            auto *const enumMemberExpr = AllocNode<ir::MemberExpression>(
                 enumTypeIdent, enumMemberIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
             enumMemberExpr->SetTsType(member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType());
+
             return enumMemberExpr;
         });
 }
@@ -289,37 +299,41 @@ ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const na
         MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "ordinal", GlobalIntType());
 
     auto *const inArraySizeExpr = [this, namesArrayIdent, inputOrdinalIdent]() {
-        auto *const lengthIdent = Allocator()->New<ir::Identifier>("length", Allocator());
-        auto *const valuesArrayLengthExpr = Allocator()->New<ir::MemberExpression>(
+        auto *const lengthIdent = AllocNode<ir::Identifier>("length", Allocator());
+        auto *const valuesArrayLengthExpr = AllocNode<ir::MemberExpression>(
             namesArrayIdent, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-        auto *const expr = Allocator()->New<ir::BinaryExpression>(inputOrdinalIdent, valuesArrayLengthExpr,
-                                                                  lexer::TokenType::PUNCTUATOR_LESS_THAN);
+        auto *const expr = AllocNode<ir::BinaryExpression>(inputOrdinalIdent, valuesArrayLengthExpr,
+                                                           lexer::TokenType::PUNCTUATOR_LESS_THAN);
         expr->SetOperationType(GlobalIntType());
         expr->SetTsType(GlobalETSBooleanType());
         return expr;
     }();
 
     auto *const returnEnumStmt = [this, inputOrdinalIdent, enumType]() {
-        inputOrdinalIdent->SetTsType(enumType);
-        return Allocator()->New<ir::ReturnStatement>(inputOrdinalIdent);
+        auto *const identClone = inputOrdinalIdent->Clone(Allocator(), nullptr);
+        identClone->SetTsType(enumType);
+        return AllocNode<ir::ReturnStatement>(identClone);
     }();
 
-    auto *const ifOrdinalExistsStmt = Allocator()->New<ir::IfStatement>(inArraySizeExpr, returnEnumStmt, nullptr);
+    auto *const ifOrdinalExistsStmt = AllocNode<ir::IfStatement>(inArraySizeExpr, returnEnumStmt, nullptr);
 
     auto *const throwNoEnumStmt = [this, inputOrdinalIdent, enumType]() {
-        auto *const exceptionReference = MakeTypeReference(Allocator(), "Exception");
+        auto *const exceptionReference = MakeTypeReference(this, "Exception");
 
         util::UString messageString(util::StringView("No enum constant in "), Allocator());
         messageString.Append(enumType->GetName());
         messageString.Append(" with ordinal value ");
 
-        auto *const message = Allocator()->New<ir::StringLiteral>(messageString.View());
+        auto *const identClone = inputOrdinalIdent->Clone(Allocator(), nullptr);
+        identClone->SetTsType(GlobalIntType());
+
+        auto *const message = AllocNode<ir::StringLiteral>(messageString.View());
         auto *const newExprArg =
-            Allocator()->New<ir::BinaryExpression>(message, inputOrdinalIdent, lexer::TokenType::PUNCTUATOR_PLUS);
+            AllocNode<ir::BinaryExpression>(message, identClone, lexer::TokenType::PUNCTUATOR_PLUS);
         ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
         newExprArgs.push_back(newExprArg);
 
-        auto *const newExpr = Allocator()->New<ir::ETSNewClassInstanceExpression>(
+        auto *const newExpr = AllocNode<ir::ETSNewClassInstanceExpression>(
             exceptionReference, std::move(newExprArgs),
             GlobalBuiltinExceptionType()->GetDeclNode()->AsClassDefinition());
 
@@ -327,28 +341,32 @@ ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const na
             ResolveConstructExpression(GlobalBuiltinExceptionType(), newExpr->GetArguments(), newExpr->Start()));
         newExpr->SetTsType(GlobalBuiltinExceptionType());
 
-        return Allocator()->New<ir::ThrowStatement>(newExpr);
+        return AllocNode<ir::ThrowStatement>(newExpr);
     }();
 
+    auto *const identClone = inputOrdinalIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(inputOrdinalIdent->TsType());
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputOrdinalIdent);
+    params.push_back(identClone);
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(ifOrdinalExistsStmt);
     body.push_back(throwNoEnumStmt);
     body.push_back(returnEnumStmt);
 
-    auto *const enumTypeAnnotation = MakeTypeReference(Allocator(), enumType->GetName());
+    auto *const enumTypeAnnotation = MakeTypeReference(this, enumType->GetName());
 
     auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
                                         std::move(body), enumTypeAnnotation, enumType->GetDecl()->IsDeclare());
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
 
-    auto *const ident = MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::FROM_INT_METHOD_NAME);
+    auto *const ident = MakeQualifiedIdentifier(this, enumType->GetDecl(), ETSEnumType::FROM_INT_METHOD_NAME);
     function->SetIdent(ident);
     function->Scope()->BindInternalName(ident->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), ident, function);
+
+    ident->SetReference();
 
     return {MakeGlobalSignature(this, function, enumType), nullptr};
 }
@@ -362,29 +380,32 @@ ETSEnumType::Method ETSChecker::CreateEnumToStringMethod(ir::Identifier *const s
     auto *const inputEnumIdent = MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "ordinal", enumType);
 
     auto *const returnStmt = [this, inputEnumIdent, stringValuesArrayIdent]() {
-        auto *const arrayAccessExpr = Allocator()->New<ir::MemberExpression>(
+        auto *const arrayAccessExpr = AllocNode<ir::MemberExpression>(
             stringValuesArrayIdent, inputEnumIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
         arrayAccessExpr->SetTsType(GlobalETSStringLiteralType());
 
-        return Allocator()->New<ir::ReturnStatement>(arrayAccessExpr);
+        return AllocNode<ir::ReturnStatement>(arrayAccessExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
+    auto *const identClone = inputEnumIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(enumType);
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputEnumIdent);
+    params.push_back(identClone);
 
-    auto *const stringTypeAnnotation = MakeTypeReference(Allocator(), GlobalBuiltinETSStringType()->Name());
+    auto *const stringTypeAnnotation = MakeTypeReference(this, GlobalBuiltinETSStringType()->Name());
     auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
                                         std::move(body), stringTypeAnnotation, enumType->GetDecl()->IsDeclare());
 
-    auto *const functionIdent =
-        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::TO_STRING_METHOD_NAME);
+    auto *const functionIdent = MakeQualifiedIdentifier(this, enumType->GetDecl(), ETSEnumType::TO_STRING_METHOD_NAME);
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {
         MakeGlobalSignature(this, function, GlobalETSStringLiteralType()),
@@ -400,29 +421,32 @@ ETSEnumType::Method ETSChecker::CreateEnumGetValueMethod(ir::Identifier *const v
     auto *const inputEnumIdent = MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "e", enumType);
 
     auto *const returnStmt = [this, inputEnumIdent, valuesArrayIdent]() {
-        auto *const arrayAccessExpr = Allocator()->New<ir::MemberExpression>(
+        auto *const arrayAccessExpr = AllocNode<ir::MemberExpression>(
             valuesArrayIdent, inputEnumIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
         arrayAccessExpr->SetTsType(GlobalIntType());
 
-        return Allocator()->New<ir::ReturnStatement>(arrayAccessExpr);
+        return AllocNode<ir::ReturnStatement>(arrayAccessExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
+    auto *const identClone = inputEnumIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(enumType);
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputEnumIdent);
+    params.push_back(identClone);
 
-    auto *const intTypeAnnotation = Allocator()->New<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
+    auto *const intTypeAnnotation = AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::INT);
     auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
                                         std::move(body), intTypeAnnotation, enumType->GetDecl()->IsDeclare());
 
-    auto *const functionIdent =
-        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::GET_VALUE_METHOD_NAME);
+    auto *const functionIdent = MakeQualifiedIdentifier(this, enumType->GetDecl(), ETSEnumType::GET_VALUE_METHOD_NAME);
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {MakeGlobalSignature(this, function, GlobalIntType()),
             MakeProxyFunctionType(this, ETSEnumType::GET_VALUE_METHOD_NAME, {}, function, GlobalIntType())};
@@ -437,30 +461,33 @@ ETSEnumType::Method ETSChecker::CreateEnumGetNameMethod(ir::Identifier *const na
     auto *const inputEnumIdent = MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "ordinal", enumType);
 
     auto *const returnStmt = [this, inputEnumIdent, namesArrayIdent]() {
-        auto *const arrayAccessExpr = Allocator()->New<ir::MemberExpression>(
+        auto *const arrayAccessExpr = AllocNode<ir::MemberExpression>(
             namesArrayIdent, inputEnumIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
         arrayAccessExpr->SetTsType(GlobalBuiltinETSStringType());
 
-        return Allocator()->New<ir::ReturnStatement>(arrayAccessExpr);
+        return AllocNode<ir::ReturnStatement>(arrayAccessExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
+    auto *const identClone = inputEnumIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(enumType);
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputEnumIdent);
+    params.push_back(identClone);
 
-    auto *const stringTypeAnnotation = MakeTypeReference(Allocator(), GlobalBuiltinETSStringType()->Name());
+    auto *const stringTypeAnnotation = MakeTypeReference(this, GlobalBuiltinETSStringType()->Name());
 
     auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
                                         std::move(body), stringTypeAnnotation, enumType->GetDecl()->IsDeclare());
 
-    auto *const functionIdent =
-        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::GET_NAME_METHOD_NAME);
+    auto *const functionIdent = MakeQualifiedIdentifier(this, enumType->GetDecl(), ETSEnumType::GET_NAME_METHOD_NAME);
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {MakeGlobalSignature(this, function, GlobalBuiltinETSStringType()),
             MakeProxyFunctionType(this, ETSEnumType::GET_NAME_METHOD_NAME, {}, function, GlobalBuiltinETSStringType())};
@@ -472,13 +499,10 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
     auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const inputNameIdent =
-        MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "name", GlobalBuiltinETSStringType());
-
     varbinder::LexicalScope<varbinder::LoopDeclarationScope> loopDeclScope(VarBinder());
 
     auto *const forLoopIIdent = [this]() {
-        auto *const ident = Allocator()->New<ir::Identifier>("i", Allocator());
+        auto *const ident = AllocNode<ir::Identifier>("i", Allocator());
         ident->SetTsType(GlobalIntType());
         auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
         ident->SetVariable(var);
@@ -490,24 +514,23 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
     }();
 
     auto *const forLoopInitVarDecl = [this, forLoopIIdent]() {
-        auto *const init = Allocator()->New<ir::NumberLiteral>("0");
+        auto *const init = AllocNode<ir::NumberLiteral>("0");
         init->SetTsType(GlobalIntType());
-        auto *const decl =
-            Allocator()->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, forLoopIIdent, init);
+        auto *const decl = AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, forLoopIIdent, init);
         decl->SetTsType(GlobalIntType());
         ArenaVector<ir::VariableDeclarator *> decls(Allocator()->Adapter());
         decls.push_back(decl);
-        return Allocator()->New<ir::VariableDeclaration>(ir::VariableDeclaration::VariableDeclarationKind::LET,
-                                                         Allocator(), std::move(decls), false);
+        return AllocNode<ir::VariableDeclaration>(ir::VariableDeclaration::VariableDeclarationKind::LET, Allocator(),
+                                                  std::move(decls), false);
     }();
 
     auto *const forLoopTest = [this, namesArrayIdent, forLoopIIdent]() {
-        auto *const lengthIdent = Allocator()->New<ir::Identifier>("length", Allocator());
-        auto *const arrayLengthExpr = Allocator()->New<ir::MemberExpression>(
+        auto *const lengthIdent = AllocNode<ir::Identifier>("length", Allocator());
+        auto *const arrayLengthExpr = AllocNode<ir::MemberExpression>(
             namesArrayIdent, lengthIdent, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         arrayLengthExpr->SetTsType(GlobalIntType());
-        auto *const binaryExpr = Allocator()->New<ir::BinaryExpression>(forLoopIIdent, arrayLengthExpr,
-                                                                        lexer::TokenType::PUNCTUATOR_LESS_THAN);
+        auto *const binaryExpr =
+            AllocNode<ir::BinaryExpression>(forLoopIIdent, arrayLengthExpr, lexer::TokenType::PUNCTUATOR_LESS_THAN);
         binaryExpr->SetOperationType(GlobalIntType());
         binaryExpr->SetTsType(GlobalETSBooleanType());
         return binaryExpr;
@@ -515,30 +538,34 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
 
     auto *const forLoopUpdate = [this, forLoopIIdent]() {
         auto *const incrementExpr =
-            Allocator()->New<ir::UpdateExpression>(forLoopIIdent, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, true);
+            AllocNode<ir::UpdateExpression>(forLoopIIdent, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, true);
         incrementExpr->SetTsType(GlobalIntType());
         return incrementExpr;
     }();
 
+    auto *const inputNameIdent =
+        MakeFunctionParam(this, VarBinder()->AsETSBinder(), paramScope, "name", GlobalBuiltinETSStringType());
+
     auto *const ifStmt = [this, namesArrayIdent, forLoopIIdent, inputNameIdent]() {
-        auto *const namesArrayElementExpr = Allocator()->New<ir::MemberExpression>(
-            namesArrayIdent, forLoopIIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+        auto *const identClone = namesArrayIdent->Clone(this->Allocator(), nullptr);
+        identClone->SetTsType(namesArrayIdent->TsType());
+        auto *const namesArrayElementExpr = AllocNode<ir::MemberExpression>(
+            identClone, forLoopIIdent, ir::MemberExpressionKind::ELEMENT_ACCESS, true, false);
         namesArrayElementExpr->SetTsType(GlobalBuiltinETSStringType());
 
-        auto *const namesEqualExpr = Allocator()->New<ir::BinaryExpression>(inputNameIdent, namesArrayElementExpr,
-                                                                            lexer::TokenType::PUNCTUATOR_EQUAL);
+        auto *const namesEqualExpr =
+            AllocNode<ir::BinaryExpression>(inputNameIdent, namesArrayElementExpr, lexer::TokenType::PUNCTUATOR_EQUAL);
         namesEqualExpr->SetOperationType(GlobalBuiltinETSStringType());
         namesEqualExpr->SetTsType(GlobalETSBooleanType());
 
-        auto *const returnStmt = Allocator()->New<ir::ReturnStatement>(forLoopIIdent);
-        return Allocator()->New<ir::IfStatement>(namesEqualExpr, returnStmt, nullptr);
+        auto *const returnStmt = AllocNode<ir::ReturnStatement>(forLoopIIdent);
+        return AllocNode<ir::IfStatement>(namesEqualExpr, returnStmt, nullptr);
     }();
 
     varbinder::LexicalScope<varbinder::LoopScope> loopScope(VarBinder());
     loopScope.GetScope()->BindDecls(loopDeclScope.GetScope());
 
-    auto *const forLoop =
-        Allocator()->New<ir::ForUpdateStatement>(forLoopInitVarDecl, forLoopTest, forLoopUpdate, ifStmt);
+    auto *const forLoop = AllocNode<ir::ForUpdateStatement>(forLoopInitVarDecl, forLoopTest, forLoopUpdate, ifStmt);
     loopScope.GetScope()->BindNode(forLoop);
     forLoop->SetScope(loopScope.GetScope());
     loopScope.GetScope()->DeclScope()->BindNode(forLoop);
@@ -548,44 +575,49 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
         messageString.Append(enumType->GetName());
         messageString.Append('.');
 
-        auto *const message = Allocator()->New<ir::StringLiteral>(messageString.View());
+        auto *const identClone = inputNameIdent->Clone(Allocator(), nullptr);
+        identClone->SetTsType(inputNameIdent->TsType());
+        auto *const message = AllocNode<ir::StringLiteral>(messageString.View());
         auto *const newExprArg =
-            Allocator()->New<ir::BinaryExpression>(message, inputNameIdent, lexer::TokenType::PUNCTUATOR_PLUS);
+            AllocNode<ir::BinaryExpression>(message, identClone, lexer::TokenType::PUNCTUATOR_PLUS);
 
         ArenaVector<ir::Expression *> newExprArgs(Allocator()->Adapter());
         newExprArgs.push_back(newExprArg);
 
-        auto *const exceptionReference = MakeTypeReference(Allocator(), "Exception");
+        auto *const exceptionReference = MakeTypeReference(this, "Exception");
 
-        auto *const newExpr = Allocator()->New<ir::ETSNewClassInstanceExpression>(
+        auto *const newExpr = AllocNode<ir::ETSNewClassInstanceExpression>(
             exceptionReference, std::move(newExprArgs),
             GlobalBuiltinExceptionType()->GetDeclNode()->AsClassDefinition());
         newExpr->SetSignature(
             ResolveConstructExpression(GlobalBuiltinExceptionType(), newExpr->GetArguments(), newExpr->Start()));
         newExpr->SetTsType(GlobalBuiltinExceptionType());
 
-        return Allocator()->New<ir::ThrowStatement>(newExpr);
+        return AllocNode<ir::ThrowStatement>(newExpr);
     }();
 
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(forLoop);
     body.push_back(throwStmt);
 
+    auto *const identClone = inputNameIdent->Clone(Allocator(), nullptr);
+    identClone->SetTsType(inputNameIdent->TsType());
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    params.push_back(inputNameIdent);
+    params.push_back(identClone);
 
-    auto *const enumTypeAnnotation = MakeTypeReference(Allocator(), enumType->GetName());
+    auto *const enumTypeAnnotation = MakeTypeReference(this, enumType->GetName());
 
     auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
                                         std::move(body), enumTypeAnnotation, enumType->GetDecl()->IsDeclare());
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
 
-    auto *const functionIdent =
-        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::VALUE_OF_METHOD_NAME);
+    auto *const functionIdent = MakeQualifiedIdentifier(this, enumType->GetDecl(), ETSEnumType::VALUE_OF_METHOD_NAME);
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {MakeGlobalSignature(this, function, enumType),
             MakeProxyFunctionType(this, ETSEnumType::VALUE_OF_METHOD_NAME,
@@ -599,24 +631,24 @@ ETSEnumType::Method ETSChecker::CreateEnumValuesMethod(ir::Identifier *const ite
     auto *const paramScope =
         VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const returnStmt = Allocator()->New<ir::ReturnStatement>(itemsArrayIdent);
+    auto *const returnStmt = AllocNode<ir::ReturnStatement>(itemsArrayIdent);
     ArenaVector<ir::Statement *> body(Allocator()->Adapter());
     body.push_back(returnStmt);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto *const enumArrayTypeAnnotation =
-        Allocator()->New<ir::TSArrayType>(MakeTypeReference(Allocator(), enumType->GetName()));
+    auto *const enumArrayTypeAnnotation = AllocNode<ir::TSArrayType>(MakeTypeReference(this, enumType->GetName()));
 
     auto *const function = MakeFunction(this, VarBinder()->AsETSBinder(), paramScope, std::move(params),
                                         std::move(body), enumArrayTypeAnnotation, enumType->GetDecl()->IsDeclare());
 
-    auto *const functionIdent =
-        MakeQualifiedIdentifier(Allocator(), enumType->GetDecl(), ETSEnumType::VALUES_METHOD_NAME);
+    auto *const functionIdent = MakeQualifiedIdentifier(this, enumType->GetDecl(), ETSEnumType::VALUES_METHOD_NAME);
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
     MakeMethodDef(this, VarBinder()->AsETSBinder(), functionIdent, function);
+
+    functionIdent->SetReference();
 
     return {MakeGlobalSignature(this, function, CreateETSArrayType(enumType)),
             MakeProxyFunctionType(this, ETSEnumType::VALUES_METHOD_NAME, {}, function, CreateETSArrayType(enumType))};

@@ -28,7 +28,8 @@
 using ark::es2panda::CompilerOptions;
 using ark::es2panda::ScriptExtension;
 using ark::es2panda::checker::ETSChecker;
-using ark::es2panda::compiler::ASTVerifier;
+using ark::es2panda::compiler::ast_verifier::ASTVerifier;
+using ark::es2panda::compiler::ast_verifier::InvariantNameSet;
 using ark::es2panda::ir::AstNode;
 using ark::es2panda::ir::BinaryExpression;
 using ark::es2panda::ir::BooleanLiteral;
@@ -104,18 +105,18 @@ protected:
 
 TEST_F(ASTVerifierTest, NullParent)
 {
-    ASTVerifier verifier {Allocator()};
+    ark::es2panda::compiler::ast_verifier::ASTVerifier verifier {Allocator()};
     StringLiteral emptyNode;
 
     const auto check = "NodeHasParent";
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = ark::es2panda::compiler::ast_verifier::InvariantNameSet {};
     checks.insert(check);
-    const auto [warnings, errors] = verifier.Verify({{"NodeHasParent"}}, {{}}, &emptyNode, checks);
-    bool hasParent = warnings.empty();
+    const auto &messages = verifier.Verify(&emptyNode, checks);
+    bool hasParent = messages.empty();
     ASSERT_FALSE(hasParent);
-    ASSERT_EQ(warnings.size(), 1);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_EQ(warnings[0].GetName(), check);
+    ASSERT_EQ(messages[0].Invariant(), check);
 }
 
 TEST_F(ASTVerifierTest, NullType)
@@ -124,14 +125,14 @@ TEST_F(ASTVerifierTest, NullType)
     StringLiteral emptyNode;
 
     auto check = "NodeHasType";
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert(check);
-    const auto [warnings, errors] = verifier.Verify({{"NodeHasType"}}, {{}}, &emptyNode, checks);
-    bool hasType = warnings.empty();
+    const auto &messages = verifier.Verify(&emptyNode, checks);
+    bool hasType = messages.empty();
     ASSERT_EQ(hasType, false);
-    ASSERT_NE(warnings.size(), 0);
+    ASSERT_NE(messages.size(), 0);
 
-    ASSERT_EQ(warnings[0].GetName(), check);
+    ASSERT_EQ(messages[0].Invariant(), check);
 }
 
 TEST_F(ASTVerifierTest, WithoutScope)
@@ -139,11 +140,11 @@ TEST_F(ASTVerifierTest, WithoutScope)
     ASTVerifier verifier {Allocator()};
     StringLiteral emptyNode;
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("VariableHasScope");
-    const auto [warnings, errors] = verifier.Verify({{"VariableHasScope"}}, {{}}, &emptyNode, checks);
+    const auto &messages = verifier.Verify(&emptyNode, checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ScopeTest)
@@ -162,11 +163,11 @@ TEST_F(ASTVerifierTest, ScopeTest)
 
     local.SetScope(&scope);
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("VariableHasScope");
-    const auto [warnings, errors] = verifier.Verify({{"VariableHasScope"}}, {{}}, &ident, checks);
+    const auto &messages = verifier.Verify(&ident, checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ScopeNodeTest)
@@ -186,11 +187,11 @@ TEST_F(ASTVerifierTest, ScopeNodeTest)
 
     local.SetScope(&scope);
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("VariableHasEnclosingScope");
-    const auto [warnings, errors] = verifier.Verify({{"VariableHasEnclosingScope"}}, {{}}, &ident, checks);
+    const auto &messages = verifier.Verify(&ident, checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
@@ -207,11 +208,10 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect1)
     left.SetTsType(etschecker.GlobalIntType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto [warnings, errors] =
-        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
-    ASSERT_EQ(warnings.size(), 0);
+    const auto &messages = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
+    ASSERT_EQ(messages.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
@@ -235,11 +235,10 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionCorrect2)
     left2.SetTsType(etschecker.GlobalIntType());
     right2.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto [warnings, errors] =
-        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
-    ASSERT_EQ(warnings.size(), 0);
+    const auto &messages = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
+    ASSERT_EQ(messages.size(), 0);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
@@ -258,12 +257,11 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative1)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto [warnings, errors] =
-        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
+    const auto &messages = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 1);
 }
 
 TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
@@ -279,12 +277,11 @@ TEST_F(ASTVerifierTest, ArithmeticExpressionNegative2)
     left.SetTsType(etschecker.GlobalETSStringLiteralType());
     right.SetTsType(etschecker.GlobalIntType());
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("ArithmeticOperationValid");
-    const auto [warnings, errors] =
-        verifier.Verify({{"ArithmeticOperationValid"}}, {{}}, arithmeticExpression.AsBinaryExpression(), checks);
+    const auto &messages = verifier.Verify(arithmeticExpression.AsBinaryExpression(), checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 1);
 }
 
 TEST_F(ASTVerifierTest, SequenceExpressionType)
@@ -298,12 +295,11 @@ TEST_F(ASTVerifierTest, SequenceExpressionType)
     last->SetTsType(checker.GlobalIntType());
     sequenceExpression->SetTsType(checker.GlobalIntType());
 
-    auto checks = ASTVerifier::InvariantSet {};
+    auto checks = InvariantNameSet {};
     checks.insert("SequenceExpressionHasLastType");
-    const auto [warnings, errors] =
-        verifier.Verify({{"SequenceExpressionHasLastType"}}, {{}}, sequenceExpression, checks);
+    const auto &messages = verifier.Verify(sequenceExpression, checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 0);
 }
 
 constexpr char const *PRIVATE_PROTECTED_PUBLIC_TEST =
@@ -359,11 +355,11 @@ TEST_F(ASTVerifierTest, PrivateProtectedPublicAccessTestCorrect)
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
 
     auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    const auto &messages = verifier.Verify(ast, checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 0);
     impl_->DestroyContext(ctx);
 }
 
@@ -394,12 +390,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative1)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -432,12 +428,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative2)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -471,12 +467,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative3)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -510,12 +506,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative4)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -562,12 +558,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative5)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -615,12 +611,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative6)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -668,12 +664,12 @@ TEST_F(ASTVerifierTest, PrivateAccessTestNegative7)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PRIVATE);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -705,11 +701,11 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestCorrect)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
+    const auto &messages = verifier.Verify(ast, checks);
 
-    ASSERT_EQ(warnings.size(), 0);
+    ASSERT_EQ(messages.size(), 0);
 
     impl_->DestroyContext(ctx);
 }
@@ -742,12 +738,12 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative1)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -781,12 +777,12 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative2)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -820,12 +816,12 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative3)
         ->AsClassProperty()
         ->AddModifier(ark::es2panda::ir::ModifierFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -872,12 +868,12 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative4)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -925,12 +921,12 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative5)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }
@@ -978,13 +974,13 @@ TEST_F(ASTVerifierTest, ProtectedAccessTestNegative6)
         ->Signature()
         ->AddSignatureFlag(ark::es2panda::checker::SignatureFlags::PROTECTED);
 
-    ASTVerifier::InvariantSet checks;
+    InvariantNameSet checks;
     checks.insert("ModifierAccessValidForAll");
 
-    const auto [warnings, errors] = verifier.Verify({{"ModifierAccessValidForAll"}}, {{}}, ast, checks);
-    ASSERT_EQ(warnings.size(), 1);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
 
-    ASSERT_NE(checks.find(warnings[0].GetName() + "ForAll"), checks.end());
+    ASSERT_NE(checks.find(messages[0].Invariant()), checks.end());
 
     impl_->DestroyContext(ctx);
 }

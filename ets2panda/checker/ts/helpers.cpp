@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -132,7 +132,7 @@ Type *TSChecker::ExtractDefinitelyFalsyTypes(Type *type)
         return GlobalZeroBigintType();
     }
 
-    if (type == GlobalFalseType() || type->IsNullish() || type->HasTypeFlag(TypeFlag::ANY_OR_UNKNOWN) ||
+    if (type == GlobalFalseType() || type->DefinitelyETSNullish() || type->HasTypeFlag(TypeFlag::ANY_OR_UNKNOWN) ||
         type->HasTypeFlag(TypeFlag::VOID) ||
         (type->IsStringLiteralType() && IsTypeIdenticalTo(type, GlobalEmptyStringType())) ||
         (type->IsNumberLiteralType() && IsTypeIdenticalTo(type, GlobalZeroType())) ||

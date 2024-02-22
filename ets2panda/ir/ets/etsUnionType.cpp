@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -81,5 +81,22 @@ checker::Type *ETSUnionType::GetType([[maybe_unused]] checker::ETSChecker *check
     SetTsType(checker->CreateETSUnionType(std::move(types)));
     checker->Relation()->SetNode(nullptr);
     return TsType();
+}
+
+ETSUnionType *ETSUnionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    ArenaVector<ir::TypeNode *> types(allocator->Adapter());
+    for (auto *it : types_) {
+        auto *type = it->Clone(allocator, nullptr);
+        types.push_back(type);
+    }
+    ETSUnionType *const clone = allocator->New<ir::ETSUnionType>(std::move(types));
+    if (parent != nullptr) {
+        clone->SetParent(parent);
+    }
+    for (auto *it : clone->types_) {
+        it->SetParent(clone);
+    }
+    return clone;
 }
 }  // namespace ark::es2panda::ir

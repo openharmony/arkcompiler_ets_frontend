@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "methodDefinition.h"
 
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -52,13 +51,29 @@ PrivateFieldKind MethodDefinition::ToPrivateFieldKind(bool const isStatic) const
     }
 }
 
-void MethodDefinition::Iterate(const NodeTraverser &cb) const
+void MethodDefinition::ResolveReferences(const NodeTraverser &cb) const
 {
     cb(key_);
     cb(value_);
 
     for (auto *it : overloads_) {
         cb(it);
+    }
+
+    for (auto *it : decorators_) {
+        cb(it);
+    }
+}
+
+void MethodDefinition::Iterate(const NodeTraverser &cb) const
+{
+    cb(key_);
+    cb(value_);
+
+    for (auto *it : overloads_) {
+        if (it->Parent() == this) {
+            cb(it);
+        }
     }
 
     for (auto *it : decorators_) {
@@ -192,11 +207,10 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const value = value_ != nullptr ? value_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<MethodDefinition>(kind_, key, value, flags_, allocator, isComputed_);
         clone != nullptr) {

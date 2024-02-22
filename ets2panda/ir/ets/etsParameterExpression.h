@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,9 +23,6 @@ class ETSAnalyzer;
 }  // namespace ark::es2panda::checker
 
 namespace ark::es2panda::ir {
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-inline constexpr char const PROXY_PARAMETER_NAME[] = "$proxy_mask$";
-// NOLINTEND(modernize-avoid-c-arrays)
 
 class ETSParameterExpression final : public Expression {
 public:
@@ -78,8 +75,7 @@ public:
         extraValue_ = value;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ETSParameterExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ETSParameterExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void TransformChildren(const NodeTransformer &cb) override;
@@ -89,6 +85,10 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+    void SetInitializer(Expression *initExpr = nullptr)
+    {
+        initializer_ = initExpr;
+    };
 
     void Accept(ASTVisitorT *v) override
     {

@@ -47,3 +47,12 @@ struct-init.ets
 struct-init2.ets
 struct_implements.ets
 top_level_03.ets
+
+# Union with undefined
+OptionalCall.ets
+
+# Functional type with rest parameter
+lambdaExpressionWithRestParameter.ets
+
+# Non-trivial cast sequence
+castSequence.ets

@@ -1801,35 +1801,63 @@
                             "decorators": [],
                             "loc": {
                               "start": {
-                                "line": 32,
+                                "line": 33,
                                 "column": 13
                               },
                               "end": {
-                                "line": 32,
+                                "line": 33,
                                 "column": 15
                               }
                             }
                           },
                           "typeAnnotation": {
-                            "type": "ETSPrimitiveType",
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "Double",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 33,
+                                    "column": 19
+                                  },
+                                  "end": {
+                                    "line": 33,
+                                    "column": 25
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 33,
+                                  "column": 19
+                                },
+                                "end": {
+                                  "line": 33,
+                                  "column": 26
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
-                                "line": 32,
+                                "line": 33,
                                 "column": 19
                               },
                               "end": {
-                                "line": 32,
-                                "column": 25
+                                "line": 33,
+                                "column": 26
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 32,
+                              "line": 33,
                               "column": 12
                             },
                             "end": {
-                              "line": 32,
+                              "line": 33,
                               "column": 26
                             }
                           }
@@ -1839,22 +1867,22 @@
                           "value": 3.14,
                           "loc": {
                             "start": {
-                              "line": 32,
+                              "line": 33,
                               "column": 30
                             },
                             "end": {
-                              "line": 32,
+                              "line": 33,
                               "column": 34
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 32,
+                            "line": 33,
                             "column": 12
                           },
                           "end": {
-                            "line": 32,
+                            "line": 33,
                             "column": 34
                           }
                         }
@@ -1864,22 +1892,22 @@
                         "value": "Error! Must be `3.14`",
                         "loc": {
                           "start": {
-                            "line": 32,
+                            "line": 33,
                             "column": 36
                           },
                           "end": {
-                            "line": 32,
+                            "line": 33,
                             "column": 59
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 32,
+                          "line": 33,
                           "column": 5
                         },
                         "end": {
-                          "line": 32,
+                          "line": 33,
                           "column": 60
                         }
                       }
@@ -1891,7 +1919,7 @@
                       "column": 17
                     },
                     "end": {
-                      "line": 33,
+                      "line": 34,
                       "column": 2
                     }
                   }
@@ -1902,7 +1930,7 @@
                     "column": 14
                   },
                   "end": {
-                    "line": 33,
+                    "line": 34,
                     "column": 2
                   }
                 }
@@ -1913,7 +1941,7 @@
                   "column": 14
                 },
                 "end": {
-                  "line": 33,
+                  "line": 34,
                   "column": 2
                 }
               }
@@ -1926,7 +1954,7 @@
                 "column": 1
               },
               "end": {
-                "line": 33,
+                "line": 34,
                 "column": 2
               }
             }
@@ -1961,7 +1989,7 @@
       "column": 1
     },
     "end": {
-      "line": 34,
+      "line": 35,
       "column": 1
     }
   }

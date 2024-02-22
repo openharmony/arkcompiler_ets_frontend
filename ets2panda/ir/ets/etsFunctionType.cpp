@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -97,20 +97,20 @@ checker::Type *ETSFunctionType::GetType(checker::ETSChecker *checker)
     return Check(checker);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     ArenaVector<Expression *> paramsClone(allocator->Adapter());
 
     for (auto *const param : signature_.Params()) {
-        paramsClone.emplace_back(param->Clone(allocator)->AsExpression());
+        paramsClone.emplace_back(param->Clone(allocator, nullptr)->AsExpression());
     }
 
-    auto *const typeParamsClone = signature_.TypeParams() != nullptr
-                                      ? signature_.TypeParams()->Clone(allocator)->AsTSTypeParameterDeclaration()
-                                      : nullptr;
+    auto *const typeParamsClone =
+        signature_.TypeParams() != nullptr
+            ? signature_.TypeParams()->Clone(allocator, nullptr)->AsTSTypeParameterDeclaration()
+            : nullptr;
     auto *const returnTypeClone =
-        signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator)->AsTypeNode() : nullptr;
+        signature_.ReturnType() != nullptr ? signature_.ReturnType()->Clone(allocator, nullptr)->AsTypeNode() : nullptr;
 
     if (auto *const clone = allocator->New<ETSFunctionType>(
             FunctionSignature(typeParamsClone, std::move(paramsClone), returnTypeClone), funcFlags_);
@@ -121,6 +121,10 @@ ETSFunctionType *ETSFunctionType::Clone(ArenaAllocator *const allocator, AstNode
 
         if (returnTypeClone != nullptr) {
             returnTypeClone->SetParent(clone);
+        }
+
+        for (auto *param : clone->Params()) {
+            param->SetParent(clone);
         }
 
         if (parent != nullptr) {

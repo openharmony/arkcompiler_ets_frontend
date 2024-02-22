@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,7 +38,8 @@ private:
     void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const;
     void CompileCastUnboxable(const ir::TSAsExpression *expr) const;
     void CompileCast(const ir::TSAsExpression *expr) const;
-    void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, bool isStatic) const;
+    void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, bool isStatic,
+                  checker::Signature *signature, bool isReference) const;
 
     ETSGen *GetETSGen() const;
 };

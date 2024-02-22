@@ -20,41 +20,6 @@
 #include "checker/types/ets/etsObjectType.h"
 
 namespace ark::es2panda::checker {
-bool Type::IsETSNullType() const
-{
-    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::NULL_TYPE);
-}
-
-bool Type::IsETSUndefinedType() const
-{
-    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNDEFINED_TYPE);
-}
-
-bool Type::IsETSNullLike() const
-{
-    // NOTE: vpukhov. should be true for 'null|undefined'
-    return IsETSUndefinedType() || IsETSNullType();
-}
-
-bool Type::IsNullish() const
-{
-    return HasTypeFlag(TypeFlag::NULLISH);
-}
-
-bool Type::IsNullishOrNullLike() const
-{
-    return IsNullish() || IsETSNullLike();
-}
-
-bool Type::ContainsNull() const
-{
-    return HasTypeFlag(TypeFlag::NULL_TYPE);
-}
-
-bool Type::ContainsUndefined() const
-{
-    return HasTypeFlag(TypeFlag::UNDEFINED);
-}
 
 bool Type::IsETSStringType() const
 {
@@ -83,9 +48,35 @@ bool Type::IsLambdaObject() const
     return false;
 }
 
+void Type::ToString(std::stringstream &ss) const
+{
+    ToString(ss, false);
+}
+
 void Type::ToStringAsSrc(std::stringstream &ss) const
 {
     ToString(ss);
+}
+
+std::string Type::ToString() const
+{
+    std::stringstream ss;
+    ToString(ss);
+    return ss.str();
+}
+
+std::string Type::ToStringAsSrc() const
+{
+    std::stringstream ss;
+    ToStringAsSrc(ss);
+    return ss.str();
+}
+
+std::string Type::ToStringPrecise() const
+{
+    std::stringstream ss;
+    ToString(ss, true);
+    return ss.str();
 }
 
 void Type::Identical(TypeRelation *relation, Type *other)

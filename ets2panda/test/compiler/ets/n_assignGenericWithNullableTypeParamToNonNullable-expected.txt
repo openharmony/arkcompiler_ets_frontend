@@ -553,13 +553,38 @@
                                   "type": "TSTypeParameterInstantiation",
                                   "params": [
                                     {
-                                      "type": "ETSTypeReference",
-                                      "part": {
-                                        "type": "ETSTypeReferencePart",
-                                        "name": {
-                                          "type": "Identifier",
-                                          "name": "B",
-                                          "decorators": [],
+                                      "type": "ETSUnionType",
+                                      "types": [
+                                        {
+                                          "type": "ETSTypeReference",
+                                          "part": {
+                                            "type": "ETSTypeReferencePart",
+                                            "name": {
+                                              "type": "Identifier",
+                                              "name": "B",
+                                              "decorators": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 20,
+                                                  "column": 15
+                                                },
+                                                "end": {
+                                                  "line": 20,
+                                                  "column": 16
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 20,
+                                                "column": 15
+                                              },
+                                              "end": {
+                                                "line": 20,
+                                                "column": 18
+                                              }
+                                            }
+                                          },
                                           "loc": {
                                             "start": {
                                               "line": 20,
@@ -567,21 +592,24 @@
                                             },
                                             "end": {
                                               "line": 20,
-                                              "column": 16
+                                              "column": 18
                                             }
                                           }
                                         },
-                                        "loc": {
-                                          "start": {
-                                            "line": 20,
-                                            "column": 15
-                                          },
-                                          "end": {
-                                            "line": 20,
-                                            "column": 18
+                                        {
+                                          "type": "ETSNullType",
+                                          "loc": {
+                                            "start": {
+                                              "line": 20,
+                                              "column": 19
+                                            },
+                                            "end": {
+                                              "line": 20,
+                                              "column": 23
+                                            }
                                           }
                                         }
-                                      },
+                                      ],
                                       "loc": {
                                         "start": {
                                           "line": 20,
@@ -589,7 +617,7 @@
                                         },
                                         "end": {
                                           "line": 20,
-                                          "column": 18
+                                          "column": 23
                                         }
                                       }
                                     }
@@ -1012,4 +1040,4 @@
     }
   }
 }
-TypeError: Type 'A<B|null>' cannot be assigned to type 'A<B>' [n_assignGenericWithNullableTypeParamToNonNullable.ets:21:19]
+TypeError: Type 'A<B>' cannot be assigned to type 'A<B|null>' [n_assignGenericWithNullableTypeParamToNonNullable.ets:20:27]

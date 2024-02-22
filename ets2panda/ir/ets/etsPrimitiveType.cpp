@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -132,7 +132,6 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ETSPrimitiveType>(type_); clone != nullptr) {
@@ -140,6 +139,7 @@ ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNo
             clone->SetParent(parent);
         }
 
+        clone->SetRange(Range());
         return clone;
     }
 

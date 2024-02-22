@@ -76,13 +76,14 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
-    static checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
-                                               checker::Type *spreadType);
-
     void Accept(ASTVisitorT *v) override
     {
         v->Accept(this);
     }
+
+    // NOTE(vpukhov): hide in TypeCreation
+    static checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &typeList,
+                                               checker::Type **spreadTypePtr);
 
 private:
     ArenaVector<TypeNode *> typeAnnotationList_;

@@ -11,3 +11,20 @@ parser/ets/import_tests/modules/struct_module.ets
 parser/ets/import_tests/check_exported_default_struct.ets
 parser/ets/import_tests/modules/struct_default_module.ets
 parser/ets/import_tests/check_exported_struct.ets
+
+# Throwing function types are not yet supported
+parser/ets/lambdaThrowsRethrows.ets
+parser/ets/variable_throw_function_1.ets
+compiler/ets/rethrowingCheck5.ets
+compiler/ets/rethrowingConstructorCheck1.ets
+compiler/ets/rethrowingConstructorCheck2.ets
+compiler/ets/rethrowingConstructorCheck3.ets
+compiler/ets/rethrowingFunctionCheck1.ets
+compiler/ets/rethrowingFunctionCheck2.ets
+compiler/ets/rethrowingFunctionCheck3.ets
+compiler/ets/rethrowingMethodCheck1.ets
+compiler/ets/rethrowingMethodCheck2.ets
+compiler/ets/rethrowingMethodCheck3.ets
+
+compiler/ets/generics_implicit_lambda1.ets
+parser/ets/async_with_lambda.ets

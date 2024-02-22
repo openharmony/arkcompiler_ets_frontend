@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,10 +64,9 @@ checker::Type *ETSPackageDeclaration::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSPackageDeclaration *ETSPackageDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto const name = name_ != nullptr ? name_->Clone(allocator, this)->AsExpression() : nullptr;
+    auto const name = name_ != nullptr ? name_->Clone(allocator, nullptr)->AsExpression() : nullptr;
     if (auto *const clone = allocator->New<ETSPackageDeclaration>(name); clone != nullptr) {
         if (name != nullptr) {
             name->SetParent(clone);

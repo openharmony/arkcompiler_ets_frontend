@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,27 +13,27 @@
  * limitations under the License.
  */
 
-async function asyncFoo(): Promise<Object> | null {
-    let promise: Promise<Object> | null = null;
-    let obj: Object = await promise;
+async function asyncFoo(): Promise<Object | null> {
+    let promise: Promise<Object | null> | null = null;
+    let obj: Object | null = await promise!;
     return promise;
 }
 
-let asyncLambda: () => Promise<Object> | null = async (): Promise<Object> | null => {
-    let promise: Promise<Object> | null = null;
-    let obj: Object = await promise;
+let asyncLambda: () => Promise<Object | null> = async (): Promise<Object | null> => {
+    let promise: Promise<Object | null> | null = null;
+    let obj: Object | null = await promise!;
     return promise;
 }
 
 function foo(): void {
-    let promise: Promise<Object> | null = null;
-    let obj: Object = await promise;
+    let promise: Promise<Object | null> | null = null;
+    let obj: Object | null = await promise!;
 }
 
 let lambda: () => void = (): void => {
-    let promise: Promise<Object> | null = null;
-    let obj: Object = await promise;
+    let promise: Promise<Object | null> | null = null;
+    let obj: Object | null = await promise!;
 }
 
-let promise: Promise<Object> | null = null;
-let obj: Object = await promise;
+let promise: Promise<Object | null> | null = null;
+let obj: Object | null = await promise!;

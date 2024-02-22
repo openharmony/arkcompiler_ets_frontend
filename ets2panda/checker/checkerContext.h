@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,12 +58,12 @@ public:
     {
     }
 
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, ETSObjectType *containingClass)
+    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, const ETSObjectType *containingClass)
         : CheckerContext(allocator, newStatus, containingClass, nullptr)
     {
     }
 
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, ETSObjectType *containingClass,
+    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, const ETSObjectType *containingClass,
                             Signature *containingSignature)
         : status_(newStatus),
           capturedVars_(allocator->Adapter()),
@@ -89,7 +89,7 @@ public:
 
     ETSObjectType *ContainingClass() const
     {
-        return containingClass_;
+        return const_cast<ETSObjectType *>(containingClass_);
     }
 
     Signature *ContainingSignature() const
@@ -124,7 +124,7 @@ public:
 private:
     CheckerStatus status_;
     CapturedVarsMap capturedVars_;
-    ETSObjectType *containingClass_ {nullptr};
+    const ETSObjectType *containingClass_ {nullptr};
     Signature *containingSignature_ {nullptr};
 };
 }  // namespace ark::es2panda::checker

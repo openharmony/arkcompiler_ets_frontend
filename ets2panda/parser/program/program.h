@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -107,6 +107,16 @@ public:
     util::StringView SourceFileFolder() const
     {
         return sourceFileFolder_;
+    }
+
+    util::StringView FileName() const
+    {
+        return sourceFile_.GetFileName();
+    }
+
+    util::StringView AbsoluteName() const
+    {
+        return sourceFile_.GetAbsolutePath();
     }
 
     util::StringView ResolvedFilePath() const

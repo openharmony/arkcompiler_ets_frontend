@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "import_tests/modules",
+        "value": "import_tests/modules/class_default_module",
         "loc": {
           "start": {
             "line": 16,

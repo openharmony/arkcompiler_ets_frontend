@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -542,6 +542,18 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReference *expr) cons
 
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReferencePart *expr) const
 {
+    UNREACHABLE();
+}
+
+void JSCompiler::Compile(const ir::ETSNullType *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
+void JSCompiler::Compile(const ir::ETSUndefinedType *node) const
+{
+    (void)node;
     UNREACHABLE();
 }
 

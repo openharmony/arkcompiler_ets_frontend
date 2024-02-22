@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./modules",
+        "value": "./modules/test_lib1",
         "loc": {
           "start": {
             "line": 16,
@@ -77,7 +77,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./modules",
+        "value": "./modules/test_lib2",
         "loc": {
           "start": {
             "line": 17,

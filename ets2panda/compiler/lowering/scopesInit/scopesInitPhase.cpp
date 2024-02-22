@@ -400,7 +400,7 @@ void ScopesInitPhase::VisitFunctionExpression(ir::FunctionExpression *funcExpr)
         auto id = funcExpr->Id();
         auto *funcParamScope = func->Scope()->ParamScope();
         funcParamScope->BindName(Allocator(), id->Name());
-        func->SetIdent(id);
+        func->SetIdent(id->Clone(Allocator(), nullptr));
     }
 }
 
@@ -734,16 +734,23 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
     Iterate(importSpec);
 }
 
+//  Auxiliary method to avoid extra nested levels and too large function size
+void AddOverload(ir::MethodDefinition *overload, varbinder::Variable *variable) noexcept
+{
+    auto *currentNode = variable->Declaration()->Node();
+    currentNode->AsMethodDefinition()->AddOverload(overload);
+    overload->Id()->SetVariable(variable);
+}
+
 void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
 {
-    const auto methodName = method->Id();
-
     ASSERT(VarBinder()->GetScope()->IsClassScope());
 
-    if (method->AsMethodDefinition()->Function()->IsDefaultParamProxy()) {
+    if ((method->AsMethodDefinition()->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD) != 0) {
         return;
     }
 
+    const auto methodName = method->Id();
     auto *const clsScope = VarBinder()->GetScope()->AsClassScope();
     if (clsScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::VARIABLES |
                                                     varbinder::ResolveBindingOptions::DECLARATION) != nullptr) {
@@ -758,23 +765,15 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
     }
     auto *found = targetScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::BINDINGS);
 
-    auto addOverload = [](ir::MethodDefinition *overload, varbinder::Variable *of) {
-        auto *currentNode = of->Declaration()->Node();
-        currentNode->AsMethodDefinition()->AddOverload(overload);
-        overload->Id()->SetVariable(of);
-        overload->SetParent(currentNode);
-    };
-
     if (found == nullptr) {
         auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), targetScope);
-        auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(methodName->Start(), Allocator(),
-                                                                         methodName->Name(), method);
-        (void)_;
+        [[maybe_unused]] auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(
+            methodName->Start(), Allocator(), methodName->Name(), method);
         var->SetScope(clsScope);
         var->AddFlag(varbinder::VariableFlags::METHOD);
         methodName->SetVariable(var);
         for (auto *overload : method->Overloads()) {
-            ASSERT(overload->Function()->IsDefaultParamProxy());
+            ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
             overload->Id()->SetVariable(var);
             overload->SetParent(var->Declaration()->Node());
         }
@@ -782,13 +781,13 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
         if (methodName->Name().Is(compiler::Signatures::MAIN) && clsScope->Parent()->IsGlobalScope()) {
             ThrowSyntaxError("Main overload is not enabled", methodName->Start());
         }
-        addOverload(method, found);
+        AddOverload(method, found);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 
-        // default params proxy
+        // default params overloads
         for (auto *overload : method->Overloads()) {
-            ASSERT(overload->Function()->IsDefaultParamProxy());
-            addOverload(overload, found);
+            ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
+            AddOverload(overload, found);
         }
         method->ClearOverloads();
     }
@@ -861,6 +860,7 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
         BindScopeNode(classScope, classDef);
         classDef->SetInternalName(anonymousName.View());
         classDef->Ident()->SetName(anonymousName.View());
+        classDef->Ident()->SetReference();
         CallNode(classDef);
     }
 }

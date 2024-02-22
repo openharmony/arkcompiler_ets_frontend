@@ -81,13 +81,16 @@ static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir
     // Clone argument of update expression (conversion flag might be added to it, so we need to duplicate it to not make
     // conversions on 'line 3', that belongs to 'line 1' )
     auto *const memberExpr = argument->AsMemberExpression();
-    auto *const argumentClone =
-        checker->AllocNode<ir::MemberExpression>(memberExpr->Object(), memberExpr->Property(), memberExpr->Kind(),
-                                                 memberExpr->IsComputed(), memberExpr->IsOptional());
-    argumentClone->SetPropVar(memberExpr->PropVar());
-    argumentClone->SetParent(memberExpr->Parent());
+    auto *const argumentClone = memberExpr->Clone(checker->Allocator(), memberExpr->Parent());
+    argumentClone->Object()->SetTsType(memberExpr->Object()->TsType());
+    if (argumentClone->Object()->IsIdentifier()) {
+        argumentClone->Object()->AsIdentifier()->SetVariable(memberExpr->Object()->AsIdentifier()->Variable());
+    }
+    argumentClone->Property()->SetTsType(memberExpr->Property()->TsType());
+    if (argumentClone->Property()->IsIdentifier()) {
+        argumentClone->Property()->AsIdentifier()->SetVariable(memberExpr->Property()->AsIdentifier()->Variable());
+    }
     argumentClone->SetTsType(memberExpr->TsType());
-    argumentClone->SetObjectType(memberExpr->ObjType());
     // --------------
 
     // Generate temporary symbols
@@ -113,20 +116,29 @@ static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir
     // --------------
 
     // make node: let gensym2 = (gensym)++;
-    auto *gensymUpdate = checker->AllocNode<ir::UpdateExpression>(gensym, update->OperatorType(), update->IsPrefix());
+    auto *identClone = gensym->Clone(checker->Allocator(), nullptr);
+    identClone->SetTsType(tmpVar->TsType());
+    auto *gensymUpdate =
+        checker->AllocNode<ir::UpdateExpression>(identClone, update->OperatorType(), update->IsPrefix());
     auto *const gensym2Assignment =
         checker->AllocNode<ir::AssignmentExpression>(gensym2, gensymUpdate, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     // --------------
 
     // make node: tuple[n] = (gensym as <tuple type at index n>) as <tuple element_type>;
-    auto *gensymAs = checker->AllocNode<ir::TSAsExpression>(gensym, tupleTypeAtIdxNode, false);
+    identClone = gensym->Clone(checker->Allocator(), nullptr);
+    identClone->SetTsType(tmpVar->TsType());
+    auto *gensymAs = checker->AllocNode<ir::TSAsExpression>(
+        identClone, tupleTypeAtIdxNode->Clone(checker->Allocator(), nullptr), false);
     auto *gensymAsTupleTypeAtIdx = checker->AllocNode<ir::TSAsExpression>(gensymAs, tupleElementTypeNode, false);
     auto *const tupleAssignment = checker->AllocNode<ir::AssignmentExpression>(
         argument, gensymAsTupleTypeAtIdx, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     // --------------
 
     // make node: gensym2 as <tuple type at index n>;
-    auto *const finalTupleNode = checker->AllocNode<ir::TSAsExpression>(gensym2, tupleTypeAtIdxNode, false);
+    identClone = gensym2->Clone(checker->Allocator(), nullptr);
+    identClone->SetTsType(tmpVar2->TsType());
+    auto *const finalTupleNode = checker->AllocNode<ir::TSAsExpression>(
+        identClone, tupleTypeAtIdxNode->Clone(checker->Allocator(), nullptr), false);
     // --------------
 
     // Construct sequence expression order

@@ -1,3 +1,4 @@
 ./build/lib/module1/lib.abc
 ./build/lib/module2/lib.abc
+./build/lib/module22/lib.abc
 ./build/main.abc

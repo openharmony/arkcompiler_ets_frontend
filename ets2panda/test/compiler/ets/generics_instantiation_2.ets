@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,5 +34,5 @@ class A<T> {
 function bar(p: Foo<Object>): void {
     let p1: Foo<Object> | null = p.then<Object>();
     let p2: Foo<A<A<Object>>> = new Foo<A<A<Object>>>();
-    p1 = p2.value.bar().baz().then<Object>();
+    p1 = p2.value.bar()!.baz()!.then<Object>();
 }

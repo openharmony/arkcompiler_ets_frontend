@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,6 @@
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/expressions/identifier.h"
-#include "ir/expressions/thisExpression.h"
 #include "ir/statements/variableDeclarator.h"
 
 namespace ark::es2panda::ir {
@@ -86,7 +85,6 @@ ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &
     }
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ArrowFunctionExpression>(*this, allocator); clone != nullptr) {
@@ -105,11 +103,9 @@ ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChec
     Construct a synthetic Node with the correct ts_type_.
     */
     ASSERT(returnType != nullptr);
-    ir::TypeNode *returnNode = nullptr;
-    auto *ident = checker->Allocator()->New<ir::Identifier>(util::StringView(""), checker->Allocator());
-    ir::ETSTypeReferencePart *part = checker->Allocator()->New<ir::ETSTypeReferencePart>(ident);
-    returnNode = checker->Allocator()->New<ir::ETSTypeReference>(part);
-    part->SetParent(returnNode);
+    auto *ident = checker->AllocNode<ir::Identifier>(util::StringView(""), checker->Allocator());
+    auto *const part = checker->AllocNode<ir::ETSTypeReferencePart>(ident);
+    auto *returnNode = checker->AllocNode<ir::ETSTypeReference>(part);
     returnNode->SetTsType(returnType);
     return returnNode;
 }
@@ -135,14 +131,15 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
         */
         returnNode = CreateReturnNodeFromType(checker, Function()->Signature()->ReturnType());
     } else {
-        returnNode = Function()->ReturnTypeAnnotation();
+        returnNode = Function()->ReturnTypeAnnotation()->Clone(checker->Allocator(), nullptr);
+        returnNode->SetTsType(Function()->ReturnTypeAnnotation()->TsType());
     }
 
-    auto origParams = Function()->Params();
-    auto signature = ir::FunctionSignature(nullptr, std::move(origParams), returnNode);
-    auto *funcType =
-        checker->Allocator()->New<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
-    returnNode->SetParent(funcType);
+    ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
+    checker->CopyParams(Function()->Params(), params);
+
+    auto signature = ir::FunctionSignature(nullptr, std::move(params), returnNode);
+    auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
     return funcType;
 }
 }  // namespace ark::es2panda::ir

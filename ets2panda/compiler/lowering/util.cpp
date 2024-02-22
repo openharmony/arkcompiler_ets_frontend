@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include <cstring>
-
 #include "util.h"
 
 #include "ir/expressions/identifier.h"
@@ -23,16 +21,11 @@ namespace ark::es2panda::compiler {
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast)
 {
-    if (ast == nullptr) {
-        return nullptr;
-    }
-
-    while (!ast->IsScopeBearer()) {
+    while (ast != nullptr && !ast->IsScopeBearer()) {
         ast = ast->Parent();
-        ASSERT(ast != nullptr);
     }
 
-    return ast->Scope();
+    return ast == nullptr ? nullptr : ast->Scope();
 }
 
 ir::Identifier *Gensym(ArenaAllocator *const allocator)

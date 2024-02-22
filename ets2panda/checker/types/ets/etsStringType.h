@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,8 +28,18 @@ public:
         SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
     }
 
-    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, util::StringView value)
-        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER),
+    explicit ETSStringType(ArenaAllocator *allocator, [[maybe_unused]] ETSObjectType *super, TypeRelation *relation)
+        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
+                        relation)
+    {
+        SetSuperType(super);
+        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
+    }
+
+    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
+                           util::StringView value)
+        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
+                        relation),
           value_(value)
     {
         SetSuperType(super);
@@ -43,12 +53,12 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
-    void ToString(std::stringstream &ss) const override
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override
     {
         ss << lexer::TokenToString(lexer::TokenType::KEYW_STRING);
     }
 
-    void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
+    void ToAssemblerType(std::stringstream &ss) const override
     {
         ss << compiler::Signatures::BUILTIN_STRING;
     }
@@ -60,10 +70,6 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        if (IsNullish()) {
-            return {false, false};
-        }
-
         return {IsConstantType(), IsConstantType() ? (GetValue().Length() != 0) : false};
     }
 

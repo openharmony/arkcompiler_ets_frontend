@@ -281,14 +281,12 @@ ArenaMap<util::StringView, const varbinder::LocalVariable *> ETSObjectType::Coll
     return propMap;
 }
 
-void ETSObjectType::ToString(std::stringstream &ss) const
+void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
 {
     if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
-            !name_.Empty()) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
-        }
-        GetFunctionalInterfaceInvokeType()->ToString(ss);
+        GetFunctionalInterfaceInvokeType()->ToString(ss, precise);
+    } else if (precise) {
+        ss << assemblerName_;  // NOTE(gogabr): need full qualified name
     } else {
         ss << name_;
     }
@@ -296,7 +294,7 @@ void ETSObjectType::ToString(std::stringstream &ss) const
     if (!typeArguments_.empty()) {
         ss << compiler::Signatures::GENERIC_BEGIN;
         for (auto arg = typeArguments_.cbegin(); arg != typeArguments_.cend(); ++arg) {
-            (*arg)->ToString(ss);
+            (*arg)->ToString(ss, precise);
 
             if (next(arg) != typeArguments_.cend()) {
                 ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_COMMA);
@@ -304,24 +302,9 @@ void ETSObjectType::ToString(std::stringstream &ss) const
         }
         ss << compiler::Signatures::GENERIC_END;
     }
-
-    if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
-        !name_.Empty()) {
-        if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
-        }
-        if (ContainsNull()) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
-               << lexer::TokenToString(lexer::TokenType::LITERAL_NULL);
-        }
-        if (ContainsUndefined()) {
-            ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_BITWISE_OR)
-               << lexer::TokenToString(lexer::TokenType::KEYW_UNDEFINED);
-        }
-    }
 }
 
-void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other)
+void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *other)
 {
     relation->Result(false);
     if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType()->ObjectFlags())) {
@@ -339,59 +322,9 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         return;
     }
 
-    auto const otherTypeArguments = other->AsETSObjectType()->TypeArguments();
-
-    if (HasTypeFlag(TypeFlag::GENERIC) || IsNullish()) {
-        if (!HasTypeFlag(TypeFlag::GENERIC)) {
-            relation->Result(true);
-            return;
-        }
-        if (typeArguments_.empty() != otherTypeArguments.empty()) {
-            return;
-        }
-
-        auto const argsNumber = typeArguments_.size();
-        ASSERT(argsNumber == otherTypeArguments.size());
-
-        for (size_t idx = 0U; idx < argsNumber; ++idx) {
-            if (typeArguments_[idx]->IsWildcardType() || otherTypeArguments[idx]->IsWildcardType()) {
-                continue;
-            }
-
-            // checking the nullishness of type args before getting their original base types
-            // because most probably GetOriginalBaseType will return the non-nullish version of the type
-            if (!typeArguments_[idx]->IsNullish() && otherTypeArguments[idx]->IsNullish()) {
-                return;
-            }
-
-            const auto getOriginalBaseTypeOrType = [&relation](Type *const originalType) {
-                auto *const baseType = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(originalType);
-                return baseType == nullptr ? originalType : baseType;
-            };
-
-            auto *const typeArgType = getOriginalBaseTypeOrType(typeArguments_[idx]);
-            auto *const otherTypeArgType = getOriginalBaseTypeOrType(otherTypeArguments[idx]);
-
-            typeArgType->Identical(relation, otherTypeArgType);
-            if (!relation->IsTrue()) {
-                return;
-            }
-        }
-    } else {
-        if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            auto getInvokeSignature = [](const ETSObjectType *type) {
-                auto const propInvoke =
-                    type->GetProperty(util::StringView("invoke"), PropertySearchFlags::SEARCH_INSTANCE_METHOD);
-                ASSERT(propInvoke != nullptr);
-                return propInvoke->TsType()->AsETSFunctionType()->CallSignatures()[0];
-            };
-
-            auto *const thisInvokeSignature = getInvokeSignature(this);
-            auto *const otherInvokeSignature = getInvokeSignature(other->AsETSObjectType());
-
-            relation->IsIdenticalTo(thisInvokeSignature, otherInvokeSignature);
-            return;
-        }
+    auto const sourceTypeArguments = other->AsETSObjectType()->TypeArguments();
+    if (typeArguments_.empty() != sourceTypeArguments.empty()) {
+        return;
     }
 
     relation->Result(true);
@@ -399,15 +332,33 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
 
 void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 {
-    if ((ContainsNull() != other->ContainsNull()) || (ContainsUndefined() != other->ContainsUndefined())) {
+    IdenticalUptoTypeArguments(relation, other);
+
+    if (!relation->IsTrue() || !HasTypeFlag(TypeFlag::GENERIC)) {
         return;
     }
-    IdenticalUptoNullability(relation, other);
+
+    auto const otherTypeArguments = other->AsETSObjectType()->TypeArguments();
+
+    auto const argsNumber = typeArguments_.size();
+    ASSERT(argsNumber == otherTypeArguments.size());
+
+    for (size_t idx = 0U; idx < argsNumber; ++idx) {
+        if (typeArguments_[idx]->IsWildcardType() || otherTypeArguments[idx]->IsWildcardType()) {
+            continue;
+        }
+        typeArguments_[idx]->Identical(relation, otherTypeArguments[idx]);
+        if (!relation->IsTrue()) {
+            return;
+        }
+    }
+
+    relation->Result(true);
 }
 
 bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
 {
-    constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::COMPLETELY_RESOLVED | ETSObjectFlags::INCOMPLETE_INSTANTIATION |
+    constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::INCOMPLETE_INSTANTIATION |
                                      ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                      ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
 
@@ -420,33 +371,21 @@ bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
     return cleanedSelfFlags == cleanedTargetFlags;
 }
 
-bool ETSObjectType::AssignmentSource(TypeRelation *const relation, Type *const target)
+bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unused]] Type *const target)
 {
-    relation->Result((IsETSNullType() && target->ContainsNull()) ||
-                     (IsETSUndefinedType() && target->ContainsUndefined()));
-
-    return relation->IsTrue();
+    return relation->Result(false);
 }
 
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
-    if (source->IsETSNullType()) {
-        relation->Result(ContainsNull());
-        return;
-    }
-    if (source->IsETSUndefinedType()) {
-        relation->Result(ContainsUndefined());
-        return;
-    }
-
-    if ((source->ContainsNull() && !ContainsNull()) || (source->ContainsUndefined() && !ContainsUndefined())) {
-        return;
-    }
-
     if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         EnsurePropertiesInstantiated();
-        auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find("invoke");
+        auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find(
+            FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
         ASSERT(found != properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].end());
+        if (source->IsETSFunctionType()) {
+            source = source->AsETSFunctionType()->BoxPrimitives(relation->GetChecker()->AsETSChecker());
+        }
         relation->IsAssignableTo(source, found->second->TsType());
         return;
     }
@@ -474,10 +413,14 @@ bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *co
 
 bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
 {
-    if (this->IsNullish()) {
+    if (!target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
+                             TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
         return false;
     }
-
+    Identical(relation, target);
+    if (relation->IsTrue()) {
+        return true;
+    }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
         if (target->HasTypeFlag(TypeFlag::BYTE)) {
             conversion::Unboxing(relation, this);
@@ -493,63 +436,42 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             return true;
         }
     }
-    TypeFlag unboxFlags = TypeFlag::NONE;
-    TypeFlag wideningFlags = TypeFlag::NONE;
-    TypeFlag narrowingFlags = TypeFlag::NONE;
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
-        unboxFlags = TypeFlag::SHORT;
-        wideningFlags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowingFlags = TypeFlag::BYTE | TypeFlag::CHAR;
-        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
-            return true;
-        }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT) &&
+        CastWideningNarrowing(relation, target, TypeFlag::SHORT,
+                              TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE,
+                              TypeFlag::BYTE | TypeFlag::CHAR)) {
+        return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
-        unboxFlags = TypeFlag::CHAR;
-        wideningFlags = TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT;
-        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
-            return true;
-        }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR) &&
+        CastWideningNarrowing(relation, target, TypeFlag::CHAR,
+                              TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE,
+                              TypeFlag::BYTE | TypeFlag::SHORT)) {
+        return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
-        unboxFlags = TypeFlag::INT;
-        wideningFlags = TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR;
-        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
-            return true;
-        }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT) &&
+        CastWideningNarrowing(relation, target, TypeFlag::INT, TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE,
+                              TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR)) {
+        return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
-        unboxFlags = TypeFlag::LONG;
-        wideningFlags = TypeFlag::FLOAT | TypeFlag::DOUBLE;
-        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT;
-        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
-            return true;
-        }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG) &&
+        CastWideningNarrowing(relation, target, TypeFlag::LONG, TypeFlag::FLOAT | TypeFlag::DOUBLE,
+                              TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT)) {
+        return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
-        unboxFlags = TypeFlag::FLOAT;
-        wideningFlags = TypeFlag::DOUBLE;
-        narrowingFlags = TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG;
-        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
-            return true;
-        }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT) &&
+        CastWideningNarrowing(relation, target, TypeFlag::FLOAT, TypeFlag::DOUBLE,
+                              TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG)) {
+        return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
-        unboxFlags = TypeFlag::DOUBLE;
-        wideningFlags = TypeFlag::NONE;
-        narrowingFlags =
+    if (auto narrowingFlags =
             TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT;
-        if (CastWideningNarrowing(relation, target, unboxFlags, wideningFlags, narrowingFlags)) {
-            return true;
-        }
+        this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
+        CastWideningNarrowing(relation, target, TypeFlag::DOUBLE, TypeFlag::NONE, narrowingFlags)) {
+        return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)) {
-        if (target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN) && target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
+        conversion::Unboxing(relation, this);
+        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
         if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
@@ -584,17 +506,6 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
-    if (this->IsETSNullLike()) {
-        if (target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-            relation->GetNode()->SetTsType(target);
-            relation->Result(true);
-            return;
-        }
-
-        conversion::Forbidden(relation);
-        return;
-    }
-
     if (CastNumericObject(relation, target)) {
         return;
     }
@@ -622,6 +533,8 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
 bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, TypeRelation *const relation,
                                             Type *const source)
 {
+    relation->Result(false);
+
     // 3.8.3 Subtyping among Array Types
     auto const *const base = GetConstOriginalBaseType();
     if (base == etsChecker->GlobalETSObjectType() && source->IsETSArrayType()) {
@@ -635,21 +548,20 @@ bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, 
     }
 
     if (!source->IsETSObjectType() ||
-        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
-                                                  ETSObjectFlags::NULL_TYPE)) {
+        !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE)) {
         return true;
     }
 
-    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
-        return true;
-    }
     // All classes and interfaces are subtypes of Object
-    if (base == etsChecker->GlobalETSObjectType() || base == etsChecker->GlobalETSNullishObjectType()) {
+    if (base == etsChecker->GlobalETSObjectType()) {
         relation->Result(true);
         return true;
     }
 
-    IdenticalUptoNullability(relation, source);
+    Identical(relation, source);
+    if (relation->IsTrue() && HasTypeFlag(TypeFlag::GENERIC)) {
+        IsGenericSupertypeOf(relation, source);
+    }
     return relation->IsTrue();
 }
 
@@ -657,17 +569,6 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
     auto *const etsChecker = relation->GetChecker()->AsETSChecker();
-
-    if (source->IsETSUnionType()) {
-        bool res = std::all_of(source->AsETSUnionType()->ConstituentTypes().begin(),
-                               source->AsETSUnionType()->ConstituentTypes().end(), [this, relation](Type *ct) {
-                                   relation->Result(false);
-                                   IsSupertypeOf(relation, ct);
-                                   return relation->IsTrue();
-                               });
-        relation->Result(res);
-        return;
-    }
 
     if (DefaultObjectTypeChecks(etsChecker, relation, source)) {
         return;
@@ -687,6 +588,51 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
             }
         }
     }
+}
+
+void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
+{
+    ASSERT(HasTypeFlag(TypeFlag::GENERIC));
+
+    auto *sourceType = source->AsETSObjectType();
+    auto const sourceTypeArguments = sourceType->TypeArguments();
+    ASSERT(typeArguments_.size() == sourceTypeArguments.size());
+
+    ASSERT(declNode_ == sourceType->GetDeclNode());
+
+    auto *typeParamsDecl = GetTypeParams();
+    ASSERT(typeParamsDecl != nullptr || typeArguments_.empty());
+
+    if (typeParamsDecl == nullptr) {
+        return;
+    }
+
+    auto &typeParams = typeParamsDecl->Params();
+    ASSERT(typeParams.size() == typeArguments_.size());
+
+    for (size_t idx = 0; idx < typeArguments_.size(); idx++) {
+        auto *typeArg = typeArguments_[idx];
+        auto *sourceTypeArg = sourceTypeArguments[idx];
+        auto *typeParam = typeParams[idx];
+
+        relation->Result(false);
+
+        if (!(typeArg->IsWildcardType() || sourceTypeArg->IsWildcardType())) {
+            if (typeParam->IsOut()) {
+                typeArg->IsSupertypeOf(relation, sourceTypeArg);
+            } else if (typeParam->IsIn()) {
+                sourceTypeArg->IsSupertypeOf(relation, typeArg);
+            } else {
+                typeArg->Identical(relation, sourceTypeArg);
+            }
+
+            if (!relation->IsTrue()) {
+                return;
+            }
+        }
+    }
+
+    relation->Result(true);
 }
 
 Type *ETSObjectType::AsSuper(Checker *checker, varbinder::Variable *sourceVar)
@@ -761,7 +707,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     std::lock_guard guard {*checker->Mutex()};
     auto *const base = GetOriginalBaseType();
 
-    if (!relation->TypeInstantiationPossible(base) || IsETSNullLike()) {
+    if (!relation->TypeInstantiationPossible(base)) {
         return this;
     }
     relation->IncreaseTypeRecursionCount(base);
@@ -845,7 +791,7 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
     copiedType->substitution_ = substitution;
 }
 
-Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution)
+ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution, bool cache)
 {
     if (substitution == nullptr || substitution->empty()) {
         return this;
@@ -864,18 +810,23 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
     }
 
     const util::StringView hash = checker->GetHashFromSubstitution(substitution);
-    if (auto *inst = GetInstantiatedType(hash); inst != nullptr) {
-        return inst;
+    if (cache) {
+        if (auto *inst = GetInstantiatedType(hash); inst != nullptr) {
+            return inst;
+        }
     }
 
-    if (!relation->TypeInstantiationPossible(base) || IsETSNullLike()) {
+    if (!relation->TypeInstantiationPossible(base)) {
         return this;
     }
     relation->IncreaseTypeRecursionCount(base);
 
     auto *const copiedType = checker->CreateNewETSObjectType(name_, declNode_, flags_);
     SetCopiedTypeProperties(relation, copiedType, newTypeArgs, substitution);
-    GetInstantiationMap().try_emplace(hash, copiedType);
+
+    if (cache) {
+        GetInstantiationMap().try_emplace(hash, copiedType);
+    }
 
     if (superType_ != nullptr) {
         copiedType->SetSuperType(superType_->Substitute(relation, substitution)->AsETSObjectType());
@@ -890,13 +841,23 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
     return copiedType;
 }
 
+ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution)
+{
+    return Substitute(relation, substitution, true);
+}
+
 void ETSObjectType::InstantiateProperties() const
 {
+    ASSERT(relation_ != nullptr);
+    auto *checker = relation_->GetChecker()->AsETSChecker();
+
     if (baseType_ == nullptr || baseType_ == this) {
+        checker->ResolveDeclaredMembersOfObject(this);
         return;
     }
+
     ASSERT(!propertiesInstantiated_);
-    ASSERT(relation_ != nullptr);
+    checker->ResolveDeclaredMembersOfObject(this);
 
     for (auto *const it : baseType_->ConstructSignatures()) {
         auto *newSig = it->Substitute(relation_, substitution_);

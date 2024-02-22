@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -75,18 +75,20 @@ bool ETSLaunchExpression::IsStaticCall() const
     return expr_->Signature()->HasSignatureFlag(checker::SignatureFlags::STATIC);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ETSLaunchExpression *ETSLaunchExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator) : nullptr;
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<ETSLaunchExpression>(expr); clone != nullptr) {
         if (expr != nullptr) {
             expr->SetParent(clone);
         }
+
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

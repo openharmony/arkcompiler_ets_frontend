@@ -44,6 +44,7 @@
 #include "checker/types/ets/etsStringType.h"
 #include "checker/types/ets/etsBigIntType.h"
 #include "checker/types/ets/etsVoidType.h"
+#include "checker/types/ets/etsNullishTypes.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/wildcardType.h"
 #include "util/helpers.h"
@@ -91,16 +92,8 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     globalTypes_[static_cast<size_t>(GlobalTypeId::CHAR)] = allocator->New<CharType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_BOOLEAN)] = allocator->New<ETSBooleanType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_VOID)] = allocator->New<ETSVoidType>();
-    auto *globalNullType = allocator->New<ETSObjectType>(allocator);
-    globalNullType->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NULL_TYPE);
-    globalNullType->AsETSObjectType()->SetName("null");
-    globalNullType->AsETSObjectType()->SetAssemblerName("null has no symbol!");
-    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NULL)] = globalNullType;
-    auto *globalUndefinedType = allocator->New<ETSObjectType>(allocator);
-    globalUndefinedType->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::UNDEFINED_TYPE);
-    globalUndefinedType->AsETSObjectType()->SetName("undefined");
-    globalUndefinedType->AsETSObjectType()->SetAssemblerName("undefined has no symbol!");
-    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = globalUndefinedType;
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_NULL)] = allocator->New<ETSNullType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = allocator->New<ETSUndefinedType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ETS_WILDCARD)] = allocator->New<WildcardType>();
 
     builtinNameMappings_.emplace("Boolean", GlobalTypeId::ETS_BOOLEAN_BUILTIN);
@@ -157,6 +150,18 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("Map", GlobalTypeId::ETS_MAP_BUILTIN);
     builtinNameMappings_.emplace("RegExp", GlobalTypeId::ETS_REGEXP_BUILTIN);
     builtinNameMappings_.emplace("Set", GlobalTypeId::ETS_SET_BUILTIN);
+
+    // ETS functional types
+    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
+         id < static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
+        std::stringstream ss;
+        ss << "Function";
+        ss << nargs;
+
+        builtinNameMappings_.emplace(util::UString(ss.str(), allocator).View(), static_cast<GlobalTypeId>(id));
+    }
+
+    builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
 
     // ETS interop js specific types
     builtinNameMappings_.emplace("JSRuntime", GlobalTypeId::ETS_INTEROP_JSRUNTIME_BUILTIN);
@@ -611,6 +616,20 @@ Type *GlobalTypesHolder::GlobalDoubleBoxBuiltinType()
 Type *GlobalTypesHolder::GlobalBuiltinNeverType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NEVER_BUILTIN));
+}
+
+size_t GlobalTypesHolder::VariadicFunctionTypeThreshold()
+{
+    return static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) -
+           static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
+}
+
+Type *GlobalTypesHolder::GlobalFunctionBuiltinType(size_t nargs)
+{
+    if (nargs >= VariadicFunctionTypeThreshold()) {
+        return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS));
+    }
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS) + nargs);
 }
 
 void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *type)

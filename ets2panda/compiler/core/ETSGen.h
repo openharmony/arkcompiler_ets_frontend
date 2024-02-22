@@ -91,7 +91,10 @@ public:
     void LoadBuiltinVoid(const ir::AstNode *node);
     void ReturnAcc(const ir::AstNode *node);
 
-    void EmitIsInstance(const ir::AstNode *node, VReg objReg);
+    void BranchIfIsInstance(const ir::AstNode *node, VReg srcReg, const checker::Type *target, Label *ifTrue);
+    void IsInstance(const ir::AstNode *node, VReg srcReg, checker::Type const *target);
+    void IsInstanceDynamic(const ir::AstNode *node, VReg srcReg, VReg tgtReg);
+    void EmitFailedTypeCastException(const ir::AstNode *node, VReg src, checker::Type const *target);
 
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
     void Unary(const ir::AstNode *node, lexer::TokenType op);
@@ -104,8 +107,7 @@ public:
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT>
     void ResolveConditionalResultFloat(const ir::AstNode *node, Label *realEndLabel)
     {
-        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
-                                                                                       : GetAccumulatorType();
+        auto type = GetAccumulatorType();
         VReg tmpReg = AllocReg();
         StoreAccumulator(node, tmpReg);
         if (type->IsFloatType()) {
@@ -131,9 +133,7 @@ public:
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
     void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse, Label **end)
     {
-        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
-                                                                                       : GetAccumulatorType();
-
+        auto type = GetAccumulatorType();
         auto realEndLabel = [end, ifFalse, this](bool useFalseLabel) {
             if (useFalseLabel) {
                 return ifFalse;
@@ -159,72 +159,53 @@ public:
     }
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT>
-    void ResolveConditionalResultObject(const ir::AstNode *node)
+    void ResolveConditionalResultReference(const ir::AstNode *node)
     {
-        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
-                                                                                       : GetAccumulatorType();
-        if (type->IsETSStringType()) {
+        auto const testString = [this, node]() {
             LoadStringLength(node);
             if constexpr (BEFORE_LOGICAL_NOT) {
                 Label *zeroLenth = AllocLabel();
                 BranchIfFalse(node, zeroLenth);
                 ToBinaryResult(node, zeroLenth);
             }
-        } else if (node->IsExpression() && node->AsExpression()->IsIdentifier() &&
-                   node->AsExpression()->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::VAR)) {
-            Label *isString = AllocLabel();
-            Label *end = AllocLabel();
-            compiler::VReg objReg = AllocReg();
-            StoreAccumulator(node, objReg);
+        };
 
-            Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinETSStringType()->AsETSStringType()->AssemblerName());
-            BranchIfTrue(node, isString);
+        auto type = GetAccumulatorType();
+        if (!type->PossiblyETSString()) {
             Sa().Emit<Ldai>(node, 1);
-            Branch(node, end);
-            SetLabel(node, isString);
-            LoadAccumulator(node, objReg);
-            CastToString(node);
-            LoadStringLength(node);
-            if constexpr (BEFORE_LOGICAL_NOT) {
-                Label *zeroLenth = AllocLabel();
-                BranchIfFalse(node, zeroLenth);
-                ToBinaryResult(node, zeroLenth);
-            }
-            SetLabel(node, end);
-        } else {
-            Sa().Emit<Ldai>(node, 1);
-        }
-    }
-
-    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
-    void ResolveConditionalResultExpression(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse)
-    {
-        auto exprNode = node->AsExpression();
-        if (Checker()->IsNullLikeOrVoidExpression(exprNode)) {
-            if constexpr (USE_FALSE_LABEL) {
-                Branch(node, ifFalse);
-            } else {
-                Sa().Emit<Ldai>(node, 0);
-            }
             return;
         }
+        if (type->IsETSStringType()) {  // should also be valid for string|null|undefined
+            testString();
+            return;
+        }
+
+        Label *isString = AllocLabel();
+        Label *end = AllocLabel();
+        compiler::VReg objReg = AllocReg();
+        StoreAccumulator(node, objReg);
+
+        Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinETSStringType()->AssemblerName());
+        BranchIfTrue(node, isString);
+        Sa().Emit<Ldai>(node, 1);
+        Branch(node, end);
+        SetLabel(node, isString);
+        LoadAccumulator(node, objReg);
+        InternalCheckCast(node, Checker()->GlobalBuiltinETSStringType());  // help verifier
+        testString();
+        SetLabel(node, end);
     }
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
     void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse)
     {
-        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
-                                                                                       : GetAccumulatorType();
+        auto type = GetAccumulatorType();
         if (type->IsETSBooleanType()) {
             return;
         }
-
-        if (node->IsExpression()) {
-            ResolveConditionalResultExpression<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, ifFalse);
-        }
         Label *ifNullish {nullptr};
         Label *end {nullptr};
-        if (Checker()->MayHaveNulllikeValue(type)) {
+        if (type->PossiblyETSNullish()) {
             if constexpr (USE_FALSE_LABEL) {
                 BranchIfNullish(node, ifFalse);
             } else {
@@ -233,12 +214,10 @@ public:
                 BranchIfNullish(node, ifNullish);
             }
         }
-        if (type->IsETSArrayType()) {
-            compiler::VReg objReg = AllocReg();
-            StoreAccumulator(node, objReg);
-            LoadArrayLength(node, objReg);
-        } else if (type->IsETSObjectType()) {
-            ResolveConditionalResultObject<CondCompare, BEFORE_LOGICAL_NOT>(node);
+        if (type->DefinitelyETSNullish()) {
+            // skip
+        } else if (type->IsETSReferenceType()) {
+            ResolveConditionalResultReference<CondCompare, BEFORE_LOGICAL_NOT>(node);
         } else {
             ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, ifFalse, &end);
         }
@@ -286,7 +265,7 @@ public:
 
     void BranchIfNullish(const ir::AstNode *node, Label *ifNullish);
     void BranchIfNotNullish(const ir::AstNode *node, Label *ifNotNullish);
-    void ConvertToNonNullish(const ir::AstNode *node);
+    void AssumeNonNullish(const ir::AstNode *node, checker::Type const *targetType);
 
     void JumpTo(const ir::AstNode *node, Label *labelTo)
     {
@@ -299,44 +278,6 @@ public:
     }
 
     void EmitNullishException(const ir::AstNode *node);
-    void EmitNullishGuardian(const ir::AstNode *node);
-
-    template <typename F>
-    void EmitMaybeOptional(const ir::Expression *node, F const &compile, bool isOptional)
-    {
-        auto *const type = GetAccumulatorType();
-
-        if (!Checker()->MayHaveNulllikeValue(type)) {
-            compile();
-        } else if (type->IsETSNullLike()) {
-            if (isOptional) {
-                LoadAccumulatorUndefined(node);
-            } else {  // NOTE: vpukhov. should be a CTE
-                EmitNullishException(node);
-                LoadAccumulatorUndefined(node);
-            }
-            SetAccumulatorType(node->TsType());
-        } else if (!isOptional) {  // NOTE: vpukhov. should be a CTE
-            EmitNullishGuardian(node);
-            compile();
-        } else {
-            compiler::Label *ifNotNullish = AllocLabel();
-            compiler::Label *endLabel = AllocLabel();
-
-            BranchIfNotNullish(node, ifNotNullish);
-            LoadAccumulatorUndefined(node);
-            Branch(node, endLabel);
-
-            SetLabel(node, ifNotNullish);
-            SetAccumulatorType(type);
-            ConvertToNonNullish(node);
-            compile();
-            ApplyConversion(node, node->TsType());
-            SetLabel(node, endLabel);
-            SetAccumulatorType(node->TsType());
-        }
-    }
-
     void ThrowException(const ir::Expression *expr);
     bool ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalNode, Label *prevFinnaly = nullptr);
 
@@ -544,9 +485,10 @@ public:
     void CastToString(const ir::AstNode *node);
     void CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicType *type);
     void CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag typeFlag);
-    void CastToArrayOrObject(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
+    void CastToReftype(const ir::AstNode *node, const checker::Type *targetType, bool unchecked);
     void CastDynamicToObject(const ir::AstNode *node, const checker::Type *targetType);
 
+    void InternalIsInstance(const ir::AstNode *node, const checker::Type *target);
     void InternalCheckCast(const ir::AstNode *node, const checker::Type *target);
     void CheckedReferenceNarrowing(const ir::AstNode *node, const checker::Type *target);
     void GuardUncheckedType(const ir::AstNode *node, const checker::Type *unchecked, const checker::Type *target);
@@ -559,7 +501,7 @@ public:
     void CallBigIntBinaryOperator(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
     void CallBigIntBinaryComparison(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
     void BuildTemplateString(const ir::TemplateLiteral *node);
-    void InitObject(const ir::AstNode *node, checker::Signature *signature,
+    void InitObject(const ir::AstNode *node, checker::Signature const *signature,
                     const ArenaVector<ir::Expression *> &arguments)
     {
         CallImpl<InitobjShort, Initobj, InitobjRange>(node, signature, arguments);
@@ -665,7 +607,6 @@ public:
 private:
     const VReg dummyReg_ = VReg::RegStart();
 
-    void EmitIsInstanceNonNullish(const ir::AstNode *node, VReg objReg, checker::ETSObjectType const *clsType);
     void EmitUnboxedCall(const ir::AstNode *node, std::string_view signatureFlag, const checker::Type *targetType,
                          const checker::Type *boxedType);
 
@@ -679,6 +620,18 @@ private:
     void UnaryDollarDollar(const ir::AstNode *node);
 
     util::StringView ToAssemblerType(const es2panda::checker::Type *type) const;
+    void TestIsInstanceConstituent(const ir::AstNode *node, Label *ifTrue, Label *ifFalse, checker::Type const *target,
+                                   bool acceptUndefined);
+    void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
+
+    void EmitIsUndefined([[maybe_unused]] const ir::AstNode *node)
+    {
+#ifdef PANDA_WITH_ETS
+        Sa().Emit<EtsIsundefined>(node);
+#else
+        UNREACHABLE();
+#endif  // PANDA_WITH_ETS
+    }
 
     template <typename T>
     void StoreValueIntoArray(const ir::AstNode *const node, const VReg arr, const VReg index)
@@ -765,18 +718,18 @@ private:
     template <typename ObjCompare, typename IntCompare, typename CondCompare>
     void BinaryEqualityCondition(const ir::AstNode *node, VReg lhs, Label *ifFalse)
     {
+        if (targetType_->IsETSReferenceType()) {
+            RegScope rs(this);
+            VReg arg0 = AllocReg();
+            StoreAccumulator(node, arg0);
+            BinaryEqualityRef(node, !std::is_same_v<CondCompare, Jeqz>, lhs, arg0, ifFalse);
+            SetAccumulatorType(Checker()->GlobalETSBooleanType());
+            return;
+        }
+
         auto typeKind = checker::ETSChecker::TypeKind(targetType_);
 
         switch (typeKind) {
-            case checker::TypeFlag::ETS_OBJECT:
-            case checker::TypeFlag::ETS_TYPE_PARAMETER:
-            case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-                RegScope rs(this);
-                VReg arg0 = AllocReg();
-                StoreAccumulator(node, arg0);
-                BinaryEqualityRef(node, !std::is_same_v<CondCompare, Jeqz>, lhs, arg0, ifFalse);
-                return;
-            }
             case checker::TypeFlag::DOUBLE: {
                 BinaryFloatingPointComparison<FcmpgWide, FcmplWide, CondCompare>(node, lhs, ifFalse);
                 break;
@@ -937,7 +890,7 @@ private:
     arguments[idx]->Compile(this);                                                                            \
     VReg arg##idx = AllocReg();                                                                               \
     ApplyConversion(arguments[idx], nullptr);                                                                 \
-    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
     void CallThisImpl(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
@@ -970,11 +923,8 @@ private:
                 break;
             }
             default: {
-                for (const auto *arg : arguments) {
-                    auto ttctx = TargetTypeContext(this, arg->TsType());
-                    VReg argReg = AllocReg();
-                    arg->Compile(this);
-                    StoreAccumulator(node, argReg);
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ARG(idx);
                 }
 
                 Rra().Emit<Range>(node, ctor, arguments.size() + 1, name, ctor);
@@ -984,7 +934,7 @@ private:
     }
 
     template <typename Short, typename General, typename Range>
-    bool ResolveStringFromNullishBuiltin(const ir::AstNode *node, checker::Signature *signature,
+    bool ResolveStringFromNullishBuiltin(const ir::AstNode *node, checker::Signature const *signature,
                                          const ArenaVector<ir::Expression *> &arguments)
     {
         if (signature->InternalName() != Signatures::BUILTIN_STRING_FROM_NULLISH_CTOR) {
@@ -1004,38 +954,32 @@ private:
 
         Label *isNull = AllocLabel();
         Label *end = AllocLabel();
-#ifdef PANDA_WITH_ETS
         Label *isUndefined = AllocLabel();
-#endif
         COMPILE_ARG(0);
         LoadAccumulator(node, arg0);
-        if (argExpr->TsType()->IsNullish()) {
+        if (argExpr->TsType()->PossiblyETSNullish()) {
             BranchIfNull(node, isNull);
-#ifdef PANDA_WITH_ETS
-            Sa().Emit<EtsIsundefined>(node);
+            EmitIsUndefined(node);
             BranchIfTrue(node, isUndefined);
-#endif
         }
         LoadAccumulator(node, arg0);
         CastToString(node);
         StoreAccumulator(node, arg0);
         Ra().Emit<Short, 1>(node, Signatures::BUILTIN_STRING_FROM_STRING_CTOR, arg0, dummyReg_);
         JumpTo(node, end);
-        if (argExpr->TsType()->IsNullish()) {
+        if (argExpr->TsType()->PossiblyETSNullish()) {
             SetLabel(node, isNull);
             LoadAccumulatorString(node, "null");
-#ifdef PANDA_WITH_ETS
             JumpTo(node, end);
             SetLabel(node, isUndefined);
             LoadAccumulatorString(node, "undefined");
-#endif
         }
         SetLabel(node, end);
         return true;
     }
 
     template <typename Short, typename General, typename Range>
-    void CallImpl(const ir::AstNode *node, checker::Signature *signature,
+    void CallImpl(const ir::AstNode *node, checker::Signature const *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);
@@ -1043,28 +987,27 @@ private:
             return;
         }
 
-        const auto name = signature->InternalName();
         switch (arguments.size()) {
             case 0U: {
-                Ra().Emit<Short, 0>(node, name, dummyReg_, dummyReg_);
+                Ra().Emit<Short, 0>(node, signature->InternalName(), dummyReg_, dummyReg_);
                 break;
             }
             case 1U: {
                 COMPILE_ARG(0);
-                Ra().Emit<Short, 1>(node, name, arg0, dummyReg_);
+                Ra().Emit<Short, 1>(node, signature->InternalName(), arg0, dummyReg_);
                 break;
             }
             case 2U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
-                Ra().Emit<Short>(node, name, arg0, arg1);
+                Ra().Emit<Short>(node, signature->InternalName(), arg0, arg1);
                 break;
             }
             case 3U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
-                Ra().Emit<General, 3U>(node, name, arg0, arg1, arg2, dummyReg_);
+                Ra().Emit<General, 3U>(node, signature->InternalName(), arg0, arg1, arg2, dummyReg_);
                 break;
             }
             case 4U: {
@@ -1072,20 +1015,17 @@ private:
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
                 COMPILE_ARG(3);
-                Ra().Emit<General>(node, name, arg0, arg1, arg2, arg3);
+                Ra().Emit<General>(node, signature->InternalName(), arg0, arg1, arg2, arg3);
                 break;
             }
             default: {
                 VReg argStart = NextReg();
 
-                for (const auto *arg : arguments) {
-                    auto ttctx = TargetTypeContext(this, arg->TsType());
-                    VReg argReg = AllocReg();
-                    arg->Compile(this);
-                    StoreAccumulator(node, argReg);
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ARG(idx);
                 }
 
-                Rra().Emit<Range>(node, argStart, arguments.size(), name, argStart);
+                Rra().Emit<Range>(node, argStart, arguments.size(), signature->InternalName(), argStart);
                 break;
             }
         }
@@ -1100,7 +1040,7 @@ private:
     auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
     VReg arg##idx = AllocReg();                                                                                \
     arguments[idx]->Compile(this);                                                                             \
-    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
     void CallDynamicImpl(const ir::AstNode *node, VReg &obj, VReg &param2, checker::Signature *signature,
@@ -1134,6 +1074,7 @@ private:
                     // + 2U since we need to skip first 2 args in signature; first args is obj,
                     // second arg is param2
                     auto *argType = signature->Params()[index + 2U]->TsType();
+                    ApplyConversion(arg, nullptr);
                     ApplyConversionAndStoreAccumulator(node, argReg, argType);
                     index++;
                 }

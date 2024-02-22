@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,12 @@ class ETSCompiler;
 namespace ark::es2panda::ir {
 class TSAsExpression : public AnnotatedExpression {
 public:
+    TSAsExpression() = delete;
+    ~TSAsExpression() override = default;
+
+    NO_COPY_SEMANTIC(TSAsExpression);
+    NO_MOVE_SEMANTIC(TSAsExpression);
+
     explicit TSAsExpression(Expression *expression, TypeNode *typeAnnotation, bool isConst)
         : AnnotatedExpression(AstNodeType::TS_AS_EXPRESSION, typeAnnotation), expression_(expression), isConst_(isConst)
     {
@@ -36,17 +42,25 @@ public:
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
     friend class compiler::ETSCompiler;
-    const Expression *Expr() const
+
+    [[nodiscard]] const Expression *Expr() const noexcept
     {
         return expression_;
     }
 
-    Expression *Expr();
-    void SetExpr(Expression *expr);
+    [[nodiscard]] Expression *Expr() noexcept;
+    void SetExpr(Expression *expr) noexcept;
 
-    bool IsConst() const
+    [[nodiscard]] bool IsConst() const noexcept
     {
         return isConst_;
+    }
+
+    [[nodiscard]] TSAsExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
+
+    void SetUncheckedCast(bool isUncheckedCast) noexcept
+    {
+        isUncheckedCast_ = isUncheckedCast;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;

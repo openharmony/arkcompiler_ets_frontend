@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,13 +19,13 @@
 #include "checker/types/ts/objectType.h"
 
 namespace ark::es2panda::checker {
-void ArrayType::ToString(std::stringstream &ss) const
+void ArrayType::ToString(std::stringstream &ss, bool precise) const
 {
     bool elemIsUnion = (element_->TypeFlags() == TypeFlag::UNION);
     if (elemIsUnion) {
         ss << "(";
     }
-    ElementType()->ToString(ss);
+    ElementType()->ToString(ss, precise);
     if (elemIsUnion) {
         ss << ")";
     }

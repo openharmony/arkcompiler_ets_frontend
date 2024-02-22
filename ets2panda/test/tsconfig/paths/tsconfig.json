@@ -3,7 +3,8 @@
         "outDir": "build",
         "paths": {
             "@package/component1/*": ["./lib/module1/*"],
-            "@package/component2": ["./lib/module2/"]
+            "@package/component2": ["./lib/module2/"],
+            "@package/component22": ["./lib/module22/"]
         }
     },
     "include": [

@@ -119,8 +119,7 @@ public:
         return true;
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] ArrayExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ArrayExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     [[nodiscard]] bool ConvertibleToArrayPattern();
     [[nodiscard]] ValidationInfo ValidateExpression();

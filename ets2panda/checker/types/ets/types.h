@@ -36,6 +36,8 @@
 #include "etsArrayType.h"
 #include "wildcardType.h"
 #include "etsTypeParameter.h"
+#include "etsNonNullishType.h"
+#include "etsNullishTypes.h"
 #include "checker/types/signature.h"
 
 #endif /* TYPES_H */

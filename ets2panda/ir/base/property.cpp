@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,11 +31,10 @@ Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expres
     value_ = value;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 Property *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const value = value_ != nullptr ? value_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const key = key_ != nullptr ? key_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<Property>(Tag {}, *this, key, value); clone != nullptr) {
         if (key != nullptr) {

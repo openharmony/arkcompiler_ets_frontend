@@ -22,14 +22,25 @@ namespace ark::es2panda::compiler {
 
 class ExpandBracketsPhase : public Phase {
 public:
-    std::string_view Name() override
+    std::string_view Name() const override
     {
         return "ExpandBracketsPhase";
     }
 
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-};
 
+private:
+    ir::Expression *ProcessNewArrayInstanceExpression(parser::ETSParser *parser, checker::ETSChecker *checker,
+                                                      ir::ETSNewArrayInstanceExpression *newInstanceExpression) const;
+
+    ir::Expression *ProcessNewMultiDimArrayInstanceExpression(
+        parser::ETSParser *parser, checker::ETSChecker *checker,
+        ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression) const;
+
+    ir::Expression *CreateNewMultiDimArrayInstanceExpression(
+        checker::ETSChecker *checker, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
+        ir::BlockExpression *blockExpression, varbinder::Scope *scope) const;
+};
 }  // namespace ark::es2panda::compiler
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,6 @@ class A<T> {}
 class B {}
 
 function main(): void {
-  let abn : A<B | null> = new A<B>(); // should work: non nullable B is the subtype of nullable B
+  let abn : A<B | null> = new A<B>(); // should not work: non nullable B is the subtype of nullable B, but T has no variance mark
   let ab : A<B> = abn; // should not work: nullable B (the type of abn) is not the subtype of non nullable B
 }

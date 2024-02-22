@@ -202,6 +202,11 @@ public:
         return (flags_ & TypeRelationFlag::UNCHECKED_CAST) != 0;
     }
 
+    [[nodiscard]] bool NoThrow() const noexcept
+    {
+        return (flags_ & TypeRelationFlag::NO_THROW) != 0;
+    }
+
     [[nodiscard]] bool NoThrowGenericTypeAlias() const noexcept
     {
         return (flags_ & TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS) != 0;

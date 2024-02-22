@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -75,25 +75,29 @@ checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const left = left_ != nullptr ? left_->Clone(allocator)->AsExpression() : nullptr;
-    auto *const right = right_ != nullptr ? right_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<BinaryExpression>(left, right, operator_); clone != nullptr) {
         if (operationType_ != nullptr) {
             clone->SetOperationType(operationType_);
         }
+
         if (right != nullptr) {
             right->SetParent(clone);
         }
+
         if (left != nullptr) {
             left->SetParent(clone);
         }
+
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

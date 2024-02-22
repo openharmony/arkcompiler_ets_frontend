@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +22,9 @@ namespace ark::es2panda::ir {
 class VariableDeclarator;
 
 class VariableDeclaration : public Statement {
+private:
+    struct Tag {};
+
 public:
     enum class VariableDeclarationKind { CONST, LET, VAR };
 
@@ -34,6 +37,8 @@ public:
           declare_(declare)
     {
     }
+
+    explicit VariableDeclaration(Tag tag, VariableDeclaration const &other, ArenaAllocator *allocator);
 
     const ArenaVector<VariableDeclarator *> &Declarators() const
     {
@@ -83,6 +88,8 @@ public:
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] VariableDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     VariableDeclarationKind kind_;

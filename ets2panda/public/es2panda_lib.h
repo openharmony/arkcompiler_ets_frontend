@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,8 +74,6 @@ enum es2panda_ModifierFlags {
     ES2PANDA_MODIFIER_IN = 1U << 17U,
     ES2PANDA_MODIFIER_OUT = 1U << 18U,
     ES2PANDA_MODIFIER_INTERNAL = 1U << 19U,
-    ES2PANDA_MODIFIER_NULL_ASSIGNABLE = 1U << 20U,
-    ES2PANDA_MODIFIER_UNDEFINED_ASSIGNABLE = 1U << 21U,
     ES2PANDA_MODIFIER_EXPORT = 1U << 22U,
     ES2PANDA_MODIFIER_SETTER = 1U << 23U,
     ES2PANDA_MODIFIER_DEFAULT_EXPORT = 1U << 24U,
@@ -102,10 +100,9 @@ enum es2panda_ScriptFunctionFlags {
     ES2PANDA_SCRIPT_FUNCTION_RETHROWS = 1U << 14U,
     ES2PANDA_SCRIPT_FUNCTION_GETTER = 1U << 15U,
     ES2PANDA_SCRIPT_FUNCTION_SETTER = 1U << 16U,
-    ES2PANDA_SCRIPT_FUNCTION_DEFAULT_PARAM_PROXY = 1U << 17U,
-    ES2PANDA_SCRIPT_FUNCTION_ENTRY_POINT = 1U << 18U,
-    ES2PANDA_SCRIPT_FUNCTION_INSTANCE_EXTENSION_METHOD = 1U << 19U,
-    ES2PANDA_SCRIPT_FUNCTION_HAS_RETURN = 1U << 20U
+    ES2PANDA_SCRIPT_FUNCTION_ENTRY_POINT = 1U << 17U,
+    ES2PANDA_SCRIPT_FUNCTION_INSTANCE_EXTENSION_METHOD = 1U << 18U,
+    ES2PANDA_SCRIPT_FUNCTION_HAS_RETURN = 1U << 19U
 };
 typedef enum es2panda_ScriptFunctionFlags es2panda_ScriptFunctionFlags;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +31,7 @@ public:
             return;
         }
 
-        SetResult(GlobalTypeFromSource(source->AsETSObjectType()->BuiltInKind()));
+        SetResult(GlobalTypeFromSource(checker, source->AsETSObjectType()));
         relation->Result(source != Result());
     }
 
@@ -44,12 +44,12 @@ public:
             return;
         }
 
-        SetResult(GlobalTypeFromSource(Source()->AsETSObjectType()->BuiltInKind()));
+        SetResult(GlobalTypeFromSource(checker, source->AsETSObjectType()));
 
         Relation()->Result(Result()->TypeFlags() == target->TypeFlags());
     }
 
-    checker::Type *GlobalTypeFromSource(ETSObjectFlags type);
+    static checker::Type *GlobalTypeFromSource(checker::ETSChecker const *checker, ETSObjectType *type);
 };
 }  // namespace ark::es2panda::checker
 

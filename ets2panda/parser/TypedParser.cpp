@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -462,7 +462,7 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
 
     const auto isExternal = (GetContext().Status() & ParserStatus::IN_EXTERNAL);
     auto *interfaceDecl = AllocNode<ir::TSInterfaceDeclaration>(
-        Allocator(), id, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguge());
+        Allocator(), id, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguage());
     interfaceDecl->SetRange({interfaceStart, Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
@@ -880,7 +880,7 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         privateBinding.View(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
-        std::move(properties), modifiers, flags, GetContext().GetLanguge());
+        std::move(properties), modifiers, flags, GetContext().GetLanguage());
 
     classDefinition->SetRange(bodyRange);
 
@@ -1170,6 +1170,7 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
             propName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         }
 
+        propName->SetReference();
         propName->SetRange(Lexer()->GetToken().Loc());
 
         typeName = AllocNode<ir::TSQualifiedName>(typeName, propName);

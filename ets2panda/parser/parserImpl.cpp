@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -466,7 +466,11 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElementDescriptor *desc,
 
     *propEnd = func->End();
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-    auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
+
+    auto *ident = !propName->IsArrowFunctionExpression() && !propName->IsFunctionExpression()
+                      ? propName->Clone(Allocator(), nullptr)->AsExpression()
+                      : propName;
+    auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, ident, funcExpr, desc->modifiers, Allocator(),
                                                    desc->isComputed);
     method->SetRange(funcExpr->Range());
 
@@ -569,8 +573,9 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     auto *func =
         AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                      ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
-                                      ir::ModifierFlags::STATIC, false, context_.GetLanguge());
+                                      ir::ScriptFunction::ScriptFunctionData {
+                                          ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
+                                          ir::ModifierFlags::STATIC, false, context_.GetLanguage()});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *staticBlock = AllocNode<ir::ClassStaticBlock>(funcExpr, Allocator());
@@ -656,13 +661,13 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     auto *func = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
                                                ir::ScriptFunctionFlags::CONSTRUCTOR |
                                                    ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
-                                               false, context_.GetLanguge());
+                                               false, context_.GetLanguage());
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
 
     if ((modifiers & ir::ClassDefinitionModifiers::SET_CTOR_ID) != 0U) {
-        func->SetIdent(key);
+        func->SetIdent(key->Clone(Allocator(), nullptr));
     }
 
     auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
@@ -763,7 +768,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         privateBinding.View(), identNode, nullptr, superTypeParams, std::move(implements), ctor, superClass,
-        std::move(properties), modifiers, flags, GetContext().GetLanguge());
+        std::move(properties), modifiers, flags, GetContext().GetLanguage());
 
     classDefinition->SetRange(bodyRange);
 
@@ -912,7 +917,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
 
     functionContext.AddFlag(throw_marker);
     auto *funcNode = AllocNode<ir::ScriptFunction>(std::move(signature), body, functionContext.Flags(),
-                                                   isDeclare && letDeclare, context_.GetLanguge());
+                                                   isDeclare && letDeclare, context_.GetLanguage());
     funcNode->SetRange({startLoc, endLoc});
 
     return funcNode;

@@ -56,13 +56,14 @@ checker::Type *BigIntLiteral::Check([[maybe_unused]] checker::ETSChecker *checke
     return checker->GetAnalyzer()->Check(this);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 BigIntLiteral *BigIntLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<BigIntLiteral>(src_); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRange(Range());
         return clone;
     }
 

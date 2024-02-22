@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,9 +33,9 @@ Signature *ETSFunctionType::FirstAbstractSignature()
     return nullptr;
 }
 
-void ETSFunctionType::ToString(std::stringstream &ss) const
+void ETSFunctionType::ToString(std::stringstream &ss, bool precise) const
 {
-    callSignatures_[0]->ToString(ss, nullptr);
+    callSignatures_[0]->ToString(ss, nullptr, false, precise);
 }
 
 void ETSFunctionType::Identical(TypeRelation *relation, Type *other)
@@ -86,17 +86,16 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
 
         if (!it->GetSignatureInfo()->typeParams.empty()) {
             auto *substitution = relation->GetChecker()->AsETSChecker()->NewSubstitution();
-            auto *instantiatedTypeParams = relation->GetChecker()->AsETSChecker()->NewInstantiatedTypeParamsSet();
             bool res = true;
             for (size_t ix = 0; ix < target->MinArgCount(); ix++) {
                 res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->typeParams, it->GetSignatureInfo()->params[ix]->TsType(),
-                    target->GetSignatureInfo()->params[ix]->TsType(), substitution, instantiatedTypeParams);
+                    target->GetSignatureInfo()->params[ix]->TsType(), substitution);
             }
             if (target->RestVar() != nullptr) {
                 res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->typeParams, it->RestVar()->TsType(), target->RestVar()->TsType(),
-                    substitution, instantiatedTypeParams);
+                    substitution);
             }
             if (!res) {
                 continue;
@@ -106,7 +105,7 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
 
         size_t idx = 0;
         for (; idx != target->MinArgCount(); idx++) {
-            if (!relation->IsIdenticalTo(target->Params()[idx]->TsType(), it->Params()[idx]->TsType())) {
+            if (!relation->IsAssignableTo(target->Params()[idx]->TsType(), it->Params()[idx]->TsType())) {
                 break;
             }
         }
@@ -116,11 +115,11 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
         }
 
         if (target->RestVar() != nullptr &&
-            !relation->IsIdenticalTo(target->RestVar()->TsType(), it->RestVar()->TsType())) {
+            !relation->IsAssignableTo(target->RestVar()->TsType(), it->RestVar()->TsType())) {
             continue;
         }
 
-        if (!relation->IsAssignableTo(target->ReturnType(), it->ReturnType())) {
+        if (!relation->IsAssignableTo(it->ReturnType(), target->ReturnType())) {
             continue;
         }
 
@@ -128,6 +127,27 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
         break;
     }
     return match;
+}
+
+static ETSObjectType *SubstitutedFunctionalInterfaceForSignature(TypeRelation *relation, Signature *signature,
+                                                                 ETSObjectType *functionalInterface)
+{
+    auto &interfaceArgs = functionalInterface->TypeArguments();
+    auto *checker = relation->GetChecker()->AsETSChecker();
+    Substitution *substitution = checker->NewSubstitution();
+    size_t i = 0;
+    for (auto *param : signature->Params()) {
+        auto *paramType = (param->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE))
+                              ? checker->PrimitiveTypeAsETSBuiltinType(param->TsType())
+                              : param->TsType();
+        substitution->emplace(interfaceArgs[i++]->AsETSTypeParameter(), paramType);
+    }
+    auto *retType = (signature->ReturnType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE))
+                        ? checker->PrimitiveTypeAsETSBuiltinType(signature->ReturnType())
+                        : signature->ReturnType();
+    substitution->emplace(interfaceArgs[i]->AsETSTypeParameter(), retType);
+
+    return functionalInterface->Substitute(relation, substitution);
 }
 
 void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
@@ -150,8 +170,9 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
         return;
     }
 
-    if (!target->Function()->IsThrowing()) {
-        if (match->Function()->IsThrowing() || match->Function()->IsRethrowing()) {
+    if (!(target->Function()->IsThrowing() || target->HasSignatureFlag(SignatureFlags::THROWS))) {
+        if (match->Function()->IsThrowing() || match->Function()->IsRethrowing() ||
+            match->HasSignatureFlag(SignatureFlags::THROWS) || match->HasSignatureFlag(SignatureFlags::RETHROWS)) {
             relation->GetChecker()->ThrowTypeError(
                 "Functions that can throw exceptions cannot be assigned to non throwing functions.",
                 relation->GetNode()->Start());
@@ -160,12 +181,15 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
 
     ASSERT(relation->GetNode() != nullptr);
     if (!sourceIsFunctional) {
+        auto *substitutedFuncInterface =
+            SubstitutedFunctionalInterfaceForSignature(relation, match, callSignatures_[0]->Owner());
+
         if (relation->GetNode()->IsArrowFunctionExpression()) {
             relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(
-                relation->GetNode()->AsArrowFunctionExpression(), callSignatures_[0]->Owner());
+                relation->GetNode()->AsArrowFunctionExpression(), substitutedFuncInterface);
         } else {
             relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForFunctionReference(relation->GetNode(), match,
-                                                                                           callSignatures_[0]->Owner());
+                                                                                           substitutedFuncInterface);
         }
     }
 
@@ -206,19 +230,22 @@ ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Subst
     return anyChange ? copiedType : this;
 }
 
-checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relation, Type *target)
+checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relation, Signature *targetInvokeSig)
 {
-    auto *targetType = target->AsETSObjectType();
-    auto *body = targetType->GetDeclNode()->AsTSInterfaceDeclaration()->Body();
-    auto targetParams = body->AsTSInterfaceBody()->Body()[0]->AsMethodDefinition()->Function()->Params();
-    for (size_t i = 0; i < targetType->TypeArguments().size(); i++) {
-        relation->Result(RelationResult::FALSE);
-        callSignatures_[0]->Function()->Params()[i]->TsType()->Cast(
-            relation, targetParams[i]->AsETSParameterExpression()->Check(relation->GetChecker()->AsETSChecker()));
-        if (relation->IsTrue()) {
-            continue;
-        }
+    auto *ourSig = callSignatures_[0];
+    auto &ourParams = ourSig->Params();
+    auto &theirParams = targetInvokeSig->Params();
+    if (ourParams.size() != theirParams.size()) {
         return RelationResult::FALSE;
+    }
+    for (size_t i = 0; i < theirParams.size(); i++) {
+        relation->Result(RelationResult::FALSE);
+        auto savedBoxFlags = relation->GetNode()->GetBoxingUnboxingFlags();
+        relation->IsCastableTo(ourParams[i]->TsType(), theirParams[i]->TsType());
+        relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
+        if (!relation->IsTrue()) {
+            return RelationResult::FALSE;
+        }
     }
     return RelationResult::TRUE;
 }
@@ -226,23 +253,39 @@ checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relati
 void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
 {
     ASSERT(relation->GetNode()->IsArrowFunctionExpression());
+    auto *savedNode = relation->GetNode();
+    conversion::Forbidden(relation);
     if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
         auto *targetType = target->AsETSObjectType();
-        auto *body = targetType->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->AsTSInterfaceBody();
-        auto targetParams = body->AsTSInterfaceBody()->Body()[0]->AsMethodDefinition()->Function()->Params();
-        if (targetType->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE) &&
-            targetParams.size() == callSignatures_[0]->Function()->Params().size()) {
-            relation->Result(CastFunctionParams(relation, target));
+        if (targetType->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+            auto *targetInvokeVar = targetType->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
+                                                            PropertySearchFlags::SEARCH_INSTANCE_METHOD);
+            if (targetInvokeVar == nullptr || !targetInvokeVar->TsType()->IsETSFunctionType()) {
+                return;
+            }
+            auto *targetInvokeSig = targetInvokeVar->TsType()->AsETSFunctionType()->CallSignatures()[0];
+            relation->Result(CastFunctionParams(relation, targetInvokeSig));
+            auto *targetReturnType = targetInvokeSig->ReturnType();
+            auto savedBoxFlags = relation->GetNode()->GetBoxingUnboxingFlags();
+            relation->IsCastableTo(callSignatures_[0]->ReturnType(), targetReturnType);
+            relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
         }
-        relation->Result(RelationResult::FALSE);
-        auto targetReturnType = body->Body()[0]->AsMethodDefinition()->Function()->ReturnTypeAnnotation();
-        callSignatures_[0]->ReturnType()->Cast(relation, targetReturnType->TsType());
         if (relation->IsTrue()) {
             relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(
                 relation->GetNode()->AsArrowFunctionExpression(), targetType->AsETSObjectType());
+            relation->SetNode(savedNode);
             return;
         }
     }
-    conversion::Forbidden(relation);
+}
+
+ETSFunctionType *ETSFunctionType::BoxPrimitives(ETSChecker *checker)
+{
+    auto *allocator = checker->Allocator();
+    auto *ret = allocator->New<ETSFunctionType>(name_, allocator);
+    for (auto *sig : callSignatures_) {
+        ret->AddCallSignature(sig->BoxPrimitives(checker));
+    }
+    return ret;
 }
 }  // namespace ark::es2panda::checker

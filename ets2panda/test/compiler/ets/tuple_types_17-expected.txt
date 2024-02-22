@@ -22,13 +22,38 @@
         "type": "ETSTuple",
         "types": [
           {
-            "type": "ETSTypeReference",
-            "part": {
-              "type": "ETSTypeReferencePart",
-              "name": {
-                "type": "Identifier",
-                "name": "Int",
-                "decorators": [],
+            "type": "ETSUnionType",
+            "types": [
+              {
+                "type": "ETSTypeReference",
+                "part": {
+                  "type": "ETSTypeReferencePart",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "Int",
+                    "decorators": [],
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 13
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 16
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 17
+                    }
+                  }
+                },
                 "loc": {
                   "start": {
                     "line": 16,
@@ -36,21 +61,24 @@
                   },
                   "end": {
                     "line": 16,
-                    "column": 16
+                    "column": 17
                   }
                 }
               },
-              "loc": {
-                "start": {
-                  "line": 16,
-                  "column": 13
-                },
-                "end": {
-                  "line": 16,
-                  "column": 17
+              {
+                "type": "ETSUndefinedType",
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 17
+                  },
+                  "end": {
+                    "line": 16,
+                    "column": 26
+                  }
                 }
               }
-            },
+            ],
             "loc": {
               "start": {
                 "line": 16,
@@ -58,7 +86,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 17
+                "column": 26
               }
             }
           },

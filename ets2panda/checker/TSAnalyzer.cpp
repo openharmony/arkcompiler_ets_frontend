@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -298,6 +298,18 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReference *node) co
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node) const
 {
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check(ir::ETSNullType *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check(ir::ETSUndefinedType *node) const
+{
+    (void)node;
     UNREACHABLE();
 }
 

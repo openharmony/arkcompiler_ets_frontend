@@ -5,7 +5,7 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./",
+        "value": "./selective_export_2",
         "loc": {
           "start": {
             "line": 16,

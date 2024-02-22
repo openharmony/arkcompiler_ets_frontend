@@ -21,6 +21,11 @@
 namespace ark::es2panda::ir {
 class UndefinedLiteral : public Literal {
 public:
+    ~UndefinedLiteral() override = default;
+
+    NO_COPY_SEMANTIC(UndefinedLiteral);
+    NO_MOVE_SEMANTIC(UndefinedLiteral);
+
     explicit UndefinedLiteral() : Literal(AstNodeType::UNDEFINED_LITERAL) {}
 
     [[nodiscard]] UndefinedLiteral *Clone(ArenaAllocator *allocator, AstNode *parent) override;

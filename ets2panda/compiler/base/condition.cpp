@@ -235,6 +235,13 @@ bool Condition::CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpress
     return true;
 }
 
+void Condition::CompileInstanceofExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
+{
+    ASSERT(binExpr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF);
+    binExpr->Compile(etsg);
+    etsg->BranchIfFalse(binExpr, falseLabel);
+}
+
 bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel)
 {
     if (CompileBinaryExprForBigInt(etsg, binExpr, falseLabel)) {
@@ -247,8 +254,7 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binE
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
         case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
-        case lexer::TokenType::KEYW_INSTANCEOF: {
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
             auto ttctx = TargetTypeContext(etsg, binExpr->OperationType());
 
             RegScope rs(etsg);
@@ -267,6 +273,10 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binE
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
             CompileLogicalOrExpr(etsg, binExpr, falseLabel);
+            return true;
+        }
+        case lexer::TokenType::KEYW_INSTANCEOF: {
+            CompileInstanceofExpr(etsg, binExpr, falseLabel);
             return true;
         }
         default: {

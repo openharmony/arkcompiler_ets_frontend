@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@
 #include "varbinder/recordTable.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "util/pathHandler.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -46,7 +47,7 @@ public:
           lambdaObjects_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
           importSpecifiers_(Allocator()->Adapter()),
-          resolvedImportPathesMap_(Allocator()->Adapter())
+          sourceList_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -158,8 +159,6 @@ public:
     void AddInvokeFunctionThisParam(ir::ScriptFunction *func);
     void BuildLambdaObjectName(const ir::AstNode *refNode);
     void FormLambdaName(util::UString &name, const util::StringView &signature);
-    void FormFunctionalInterfaceName(util::UString &name, const util::StringView &signature);
-    void BuildFunctionalInterfaceName(ir::ETSFunctionType *funcType);
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports)
     {
@@ -202,24 +201,20 @@ public:
         defaultExport_ = defaultExport;
     }
 
-    const ArenaUnorderedMap<util::StringView, util::StringView> &ResolvedImportPathesMap() const
+    void FillSourceList(const ArenaUnorderedMap<util::StringView, util::ParseInfo> &pathes)
     {
-        return resolvedImportPathesMap_;
-    }
-
-    const util::StringView &GetResolvedImportPath(const util::StringView &path) const
-    {
-        ASSERT(resolvedImportPathesMap_.find(path) != resolvedImportPathesMap_.end());
-
-        return resolvedImportPathesMap_.find(path)->second;
-    }
-
-    void FillResolvedImportPathes(const std::unordered_map<std::string, std::string> &map, ArenaAllocator *allocator)
-    {
-        for (const auto &path : map) {
-            resolvedImportPathesMap_.emplace(util::UString(path.first, allocator).View(),
-                                             util::UString(path.second, allocator).View());
+        for (const auto path : pathes) {
+            sourceList_.emplace(path.first, std::tuple<util::StringView, bool>(path.second.ModuleName(),
+                                                                               path.second.IsPackageModule()));
         }
+    }
+
+    std::tuple<const util::StringView, const bool> GetModuleNameFromSource(const util::StringView &path) const
+    {
+        auto it = sourceList_.find(path);
+        ASSERT(it != sourceList_.end());
+
+        return it->second;
     }
 
     bool IsDynamicModuleVariable(const Variable *var) const;
@@ -262,7 +257,7 @@ private:
     DynamicImportVariables dynamicImportVars_;
     ir::Identifier *thisParam_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
-    ArenaUnorderedMap<util::StringView, util::StringView> resolvedImportPathesMap_;
+    ArenaUnorderedMap<util::StringView, std::tuple<const util::StringView, const bool>> sourceList_;
     ir::AstNode *defaultExport_ {};
 };
 

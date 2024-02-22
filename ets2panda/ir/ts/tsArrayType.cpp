@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -73,15 +73,12 @@ checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 {
-    auto *const elementType = checker->GetTypeFromTypeAnnotation(elementType_);
-
-    return checker->CreateETSArrayType(elementType);
+    return checker->CreateETSArrayType(elementType_->GetType(checker));
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator) : nullptr;
+    auto *const elementTypeClone = elementType_ != nullptr ? elementType_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<TSArrayType>(elementTypeClone); clone != nullptr) {
         if (elementTypeClone != nullptr) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,7 @@
 
 let global: int;
 
-async function func(param: int): Promise<String> | null {
+async function func(param: int): Promise<String | null> {
     let local: int;
     let lambda: () => void = (): void => {
         param;
@@ -23,7 +23,7 @@ async function func(param: int): Promise<String> | null {
         global;
         let x = 0;
     }
-    let async_lambda: () => Promise<Object> | null = async (): Promise<Object> | null => {
+    let async_lambda: () => Promise<Object | null> = async (): Promise<Object | null> => {
         param;
         local;
         global;

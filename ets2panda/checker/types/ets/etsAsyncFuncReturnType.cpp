@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,11 +18,11 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 namespace ark::es2panda::checker {
-void ETSAsyncFuncReturnType::ToString(std::stringstream &ss) const
+void ETSAsyncFuncReturnType::ToString(std::stringstream &ss, bool precise) const
 {
-    promiseType_->ToString(ss);
+    promiseType_->ToString(ss, precise);
     ss << " | ";
-    GetPromiseTypeArg()->ToString(ss);
+    GetPromiseTypeArg()->ToString(ss, precise);
 }
 
 void ETSAsyncFuncReturnType::Identical(TypeRelation *relation, Type *other)

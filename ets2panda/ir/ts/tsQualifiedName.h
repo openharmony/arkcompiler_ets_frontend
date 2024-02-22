@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,28 +20,38 @@
 
 namespace ark::es2panda::ir {
 class TSQualifiedName : public Expression {
+    struct Tag {};
+
 public:
+    TSQualifiedName() = delete;
+    ~TSQualifiedName() override = default;
+
+    NO_COPY_SEMANTIC(TSQualifiedName);
+    NO_MOVE_SEMANTIC(TSQualifiedName);
+
     explicit TSQualifiedName(Expression *left, Identifier *right)
         : Expression(AstNodeType::TS_QUALIFIED_NAME), left_(left), right_(right)
     {
     }
 
-    const Expression *Left() const
+    explicit TSQualifiedName(Tag tag, TSQualifiedName const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const Expression *Left() const noexcept
     {
         return left_;
     }
 
-    Expression *Left()
+    [[nodiscard]] Expression *Left() noexcept
     {
         return left_;
     }
 
-    const Identifier *Right() const
+    [[nodiscard]] const Identifier *Right() const noexcept
     {
         return right_;
     }
 
-    Identifier *Right()
+    [[nodiscard]] Identifier *Right() noexcept
     {
         return right_;
     }
@@ -50,6 +60,8 @@ public:
     util::StringView BaseToString(ArenaAllocator *allocator) const;
     ir::TSQualifiedName *ResolveLeftMostQualifiedName();
     const ir::TSQualifiedName *ResolveLeftMostQualifiedName() const;
+
+    [[nodiscard]] TSQualifiedName *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
