@@ -22,6 +22,7 @@ import copy
 import logging
 import os
 import time
+import zipfile
 
 import pandas
 
@@ -213,20 +214,32 @@ def generate_detail_data(test_tasks):
             '[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = full_compilation_release.time
         task_result_data['[Debug]'] = get_result_symbol(
             full_compilation_debug.result)
+        task_result_data['[Debug-runtime]'] = get_result_symbol(
+            full_compilation_debug.runtime_result)
         task_result_data['[Release]'] = get_result_symbol(
             full_compilation_release.result)
+        task_result_data['[Release-runtime]'] = get_result_symbol(
+            full_compilation_release.runtime_result)
 
         for test in incremetal_compile_tests:
             debug_result = options.TaskResult.undefind
+            debug_runtime_result = options.TaskResult.undefind
             release_result = options.TaskResult.undefind
+            release_runtime_result = options.TaskResult.undefind
             if test in task.incre_compilation_info.keys():
                 inc_task_info = task.incre_compilation_info[test]
                 debug_result = inc_task_info.debug_info.result
+                debug_runtime_result = inc_task_info.debug_info.runtime_result
                 release_result = inc_task_info.release_info.result
+                release_runtime_result = inc_task_info.release_info.runtime_result
             task_result_data[f'[Debug]\n{test}'] = get_result_symbol(
                 debug_result)
+            task_result_data[f'[Debug-runtime]\n{test}'] = get_result_symbol(
+                debug_runtime_result)
             task_result_data[f'[Release]\n{test}'] = get_result_symbol(
                 release_result)
+            task_result_data[f'[Release-runtime]\n{test}'] = get_result_symbol(
+                release_runtime_result)
 
             if test == 'add_oneline':
                 debug_test_time = 0
@@ -243,10 +256,14 @@ def generate_detail_data(test_tasks):
 
         for test in other_tests:
             result = options.TaskResult.undefind
+            runtime_result = options.TaskResult.undefind
             if test in task.other_tests.keys():
                 task_info = task.other_tests[test]
                 result = task_info.result
+                # todo
+                runtime_result = task_info.runtime_result
             task_result_data[f'{test}'] = get_result_symbol(result)
+            task_result_data[f'{test}-runtime'] = get_result_symbol(runtime_result)
 
         task_time_size_data['[Abc Size(byte)]\n[Debug]'] = full_compilation_debug.abc_size
         task_time_size_data['[Abc Size(byte)]\n[Release]'] = full_compilation_release.abc_size
@@ -258,6 +275,52 @@ def generate_detail_data(test_tasks):
         'time_size_data': time_size_data
     }
     return detail_data
+
+
+def rotate_data(df):
+    num_rows, num_cols = df.shape
+    rotated_df = pandas.DataFrame(columns=range(num_rows), index=range(num_cols))
+    for i in range(num_rows):
+        for j in range(num_cols):
+            rotated_df.iloc[j, i] = df.iloc[i, j]
+    return rotated_df
+
+
+def get_merge_data(rotated_df):
+    data = rotated_df.iloc[3:, :].values.tolist()
+    merged_data = []
+    for i in range(0, len(data) - 1, 2):
+        row = [value for sublist in zip(data[i], data[i + 1]) for value in sublist]
+        merged_data.append(row)
+    return merged_data
+
+
+def get_result_table_content(result_df_rotate):
+    merged_data = get_merge_data(result_df_rotate)
+    content = '<tr><th colspan="2" rowspan="2">Full Compilation</th><th>[Debug]</th>' + \
+    ''.join(
+        [f'<th>{column}</th>' for column in merged_data[0]]) + '</tr>'
+    content += '<tr><th>[Release]</th>' + \
+              ''.join(
+                  [f'<th>{column}</th>' for column in merged_data[1]]) + '</tr>'
+    content += f'<tr><th rowspan={len(incremetal_compile_tests) * 2}>Incremental Compilation</th>'
+    start_index = 2
+    for index, item in enumerate(incremetal_compile_tests):
+        content += f'<th rowspan="2">{item}</th><th>[Debug]</th>' + \
+                  ''.join(
+                      [f'<th>{column}</th>' for column in merged_data[start_index]]) + '</tr>'
+        content += '<tr><th>[Release]</th>' + \
+                   ''.join(
+                       [f'<th>{column}</th>' for column in merged_data[start_index+1]]) + '</tr>'
+        start_index = start_index + 2
+    content += f'<tr><th colspan=2 rowspan={len(other_tests) * 2}>Other Tests</th>'
+    for index, item in enumerate(other_tests):
+        content += f'<th>{item}</th>' + \
+                   ''.join(
+                       [f'<th>{column}</th>' for column in merged_data[start_index]]) + '</tr>'
+        start_index = start_index + 1
+
+    return content
 
 
 def generate_data_html(summary_data, detail_data):
@@ -291,22 +354,20 @@ def generate_data_html(summary_data, detail_data):
     # result table
     result_data = detail_data.get('result_data')
     result_df = pandas.DataFrame(result_data)
+    result_df_rotate = rotate_data(result_df)
 
-    result_table_header = '<tr>' + \
-        ''.join(
-            [f'<th rowspan="2">{column}</th>' for column in result_df.columns[:3]])
-    result_table_header += '<th colspan="2">Full Compilation</th>' + \
-        f'<th colspan={len(incremetal_compile_tests) * 2}>Incremental Compilation</th>' + \
-        f'<th colspan={len(other_tests)}>Other Tests</th></tr>'
+    result_table_header = '<tr><th colspan="3">Task Index</th>' + \
+            ''.join(
+            [f'<th colspan="2">{column}</th>' for column in result_df.iloc[:, 0].tolist()]) + '</tr>'
+    result_table_header += '<tr><th colspan="3">Task Name</th>' + \
+           ''.join(
+               [f'<th colspan="2">{column}</th>' for column in result_df.iloc[:, 1].tolist()]) + '</tr>'
+    result_table_header += '<tr><th colspan="3">Task Type</th>' + \
+                           ''.join(
+                               [f'<th colspan="2">{column}</th>' for column in result_df.iloc[:, 2].tolist()]) + '</tr>'
+    result_table_sub_header = f"<tr><th colspan=3>Build && Run </th>{'<th>[build]</th><th>[runtime]</th>' * result_df.shape[0]}</tr>"
+    result_table_content = get_result_table_content(result_df_rotate)
 
-    result_table_sub_header = '<tr>' + \
-        ''.join(
-            [f'<th>{column}</th>' for column in result_df.columns[3:]]) + '</tr>'
-    result_table_content = ''.join([
-        '<tr>' + ''.join([f'<td>{value}</td>' for _,
-                         value in row.items()]) + '</tr>'
-        for _, row in result_df.iterrows()
-    ])
     result_table = f'<table id=sdk> \
         {result_table_header}{result_table_sub_header}{result_table_content}</table>'
 
@@ -320,6 +381,7 @@ def generate_report_html(summary_data, detail_data):
     html_content = f'''
     <html>
     <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <style>
     #sdk body {{
         font-family: Arial, sans-serif;
@@ -394,3 +456,4 @@ def process_test_result(test_tasks, start_time):
     collect_result(test_result, test_tasks, start_time)
     print_result(test_result, test_tasks)
     generate_result_reports(test_result, test_tasks)
+

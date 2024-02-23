@@ -15,12 +15,19 @@
 
 # environment settings
 deveco_path: D:\Software\Deveco-0602\DevEco Studio
-deveco_sdk_path: D:\deveco-sdk\deveco-sdk-0602
+deveco_harmonyos_sdk_path: D:\SDK\HarmonyOS_SDK
+deveco_openharmony_sdk_path: D:\SDK\openHarmony_SDK
 node_js_path: D:\Software\nodejs  # The nodejs which is used in Deveco
+# the mapping between API and file name
+api_version_file_name_map:
+  '4.0.0(10)': "HarmonyOS-NEXT-DP0"
+  '4.1.0(11)': "HarmonyOS-NEXT-DP1"
+  '5.0.0(12)': "HarmonyOS-NEXT-DB0"
 
 # output settings
 output_html_file: ./sdk_test_report.html
 log_file: ./sdk_test_log.txt
+pictures_dic: ./pictures
 
 # descriptions about test haps list
 # each hap have the following attributes:
@@ -67,8 +74,11 @@ haps:
     path: D:\sdk-test\DemoApplication_EmptyAbility
     type: [stage, ohosTest, exceed_length_error, error]
     build_path: [entry, build, default]
+    bundle_name: com.example.idestagedemoemptyability
+    ability_name: EntryAbility
     cache_path: [cache, default, default@CompileArkTS, esmodule]
     output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_hap_path_signed: [outputs, default, entry-default-signed.hap]
     output_app_path: [outputs, default, app, entry-default.hap]
     inc_modify_file: [entry, src, main, ets, pages, Index.ets]
     description:
@@ -77,8 +87,11 @@ haps:
     path: D:\sdk-test\DemoApplication_EmptyAbility_fa
     type: [fa, ohosTest, exceed_length_error, error]
     build_path: [entry, build, default]
+    bundle_name: com.example.idefademoemptyability
+    ability_name: com.example.idefademoemptyability.MainAbility
     cache_path: [cache, default, default@LegacyCompileArkTS, jsbundle]
     output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_hap_path_signed: [outputs, default, entry-default-signed.hap]
     output_app_path: [outputs, default, app, entry-default.hap]
     inc_modify_file: [entry, src, main, ets, MainAbility, pages, index.ets]
     description:
@@ -87,17 +100,23 @@ haps:
     path: D:\sdk-test\DemoApplication_EmptyAbility_compatible8
     type: [compatible8, ohosTest, exceed_length_error, error]
     build_path: [entry, build, default]
+    bundle_name: com.example.idecompatible8demoemptyability
+    ability_name: com.example.idecompatible8demoemptyability.MainAbility
     cache_path: [cache, default, default@LegacyCompileArkTS, jsbundle]
     output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_hap_path_signed: [outputs, default, entry-default-signed.hap]
     output_app_path: [outputs, default, app, entry-default.hap]
     inc_modify_file: [entry, src, main, ets, MainAbility, pages, index.ets]
     description:
   - idedemo_03:
     name: IdeJsDemoEmptyAbility
-    path:  D:\sdk-test\DemoApplication_EmptyAbility_js
+    path: D:\sdk-test\DemoApplication_EmptyAbility_js
     type: [js, ohosTest, exceed_length_error, error]
     build_path: [entry, build, default]
+    bundle_name: com.example.idejsdemoemptyability
+    ability_name: com.example.idejsdemoemptyability.MainAbility
     cache_path: [cache, default, default@LegacyCompileJS, jsbundle]
+    output_hap_path_signed: [ outputs, default, entry-default-signed.hap]
     output_hap_path: [outputs, default, entry-default-unsigned.hap]
     output_app_path: [outputs, default, app, entry-default.hap]
     inc_modify_file: [entry, src, main, js, MainAbility, pages, index, index.js]

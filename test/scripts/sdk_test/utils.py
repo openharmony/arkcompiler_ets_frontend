@@ -18,7 +18,6 @@ limitations under the License.
 Description: utils for test suite
 """
 
-import datetime
 import json
 import logging
 import os
@@ -28,9 +27,7 @@ import subprocess
 import sys
 
 import gzip
-import httpx
-import requests
-import tqdm
+from PIL import Image
 
 
 def get_log_level(arg_log_level):
@@ -84,85 +81,10 @@ def is_esmodule(hap_type):
     return 'stage' in hap_type
 
 
-def get_sdk_url():
-    now_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    last_hour = (datetime.datetime.now() +
-                 datetime.timedelta(hours=-24)).strftime('%Y%m%d%H%M%S')
-    url = 'http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds'
-    downnload_job = {
-        'pageNum': 1,
-        'pageSize': 1000,
-        'startTime': '',
-        'endTime': '',
-        'projectName': 'openharmony',
-        'branch': 'master',
-        'component': '',
-        'deviceLevel': '',
-        'hardwareBoard': '',
-        'buildStatus': '',
-        'buildFailReason': '',
-        'testResult': '',
-    }
-    downnload_job['startTime'] = str(last_hour)
-    downnload_job['endTime'] = str(now_time)
-    post_result = requests.post(url, data=downnload_job)
-    post_data = json.loads(post_result.text)
-    sdk_url_suffix = ''
-    for ohos_sdk_list in post_data['result']['dailyBuildVos']:
-        try:
-            if get_remote_sdk_name() in ohos_sdk_list['obsPath']:
-                sdk_url_suffix = ohos_sdk_list['obsPath']
-                break
-        except BaseException as err:
-            logging.error(err)
-    sdk_url = 'http://download.ci.openharmony.cn/' + sdk_url_suffix
-    return sdk_url
-
-
-def get_api_version(json_path):
-    with open(json_path, 'r') as uni:
-        uni_cont = uni.read()
-        uni_data = json.loads(uni_cont)
-        api_version = uni_data['apiVersion']
-    return api_version
-
-
-def check_gzip_file(file_path):
-    try:
-        with gzip.open(file_path, 'rb') as gzfile:
-            gzfile.read(1)
-    except Exception as e:
-        logging.exception(e)
-        return False
-    return True
-
-
 def is_file_timestamps_same(file_a, file_b):
     file_a_mtime = os.stat(file_a).st_mtime
     file_b_mtime = os.stat(file_b).st_mtime
     return file_a_mtime == file_b_mtime
-
-
-def download(url, temp_file, temp_file_name):
-    with httpx.stream('GET', url) as response:
-        with open(temp_file, "wb") as temp:
-            total_length = int(response.headers.get("content-length"))
-            with tqdm.tqdm(total=total_length, unit="B", unit_scale=True) as pbar:
-                pbar.set_description(temp_file_name)
-                chunk_sum = 0
-                count = 0
-                for chunk in response.iter_bytes():
-                    temp.write(chunk)
-                    chunk_sum += len(chunk)
-                    percentage = chunk_sum / total_length * 100
-                    while str(percentage).startswith(str(count)):
-                        if str(percentage).startswith('100'):
-                            logging.info(f'SDK Download Complete {percentage: .1f}%')
-                            break
-                        else:
-                            logging.info(f'SDK Downloading... {percentage: .1f}%')
-                        count += 1
-                    pbar.update(len(chunk))
 
 
 def add_executable_permission(file_path):
@@ -171,11 +93,78 @@ def add_executable_permission(file_path):
     os.chmod(file_path, new_mode)
 
 
-def get_remote_sdk_name():
-    if is_windows():
-        return 'ohos-sdk-full.tar.gz'
-    elif is_mac():
-        return 'L2-MAC-SDK-FULL.tar.gz'
+def run_cmd(cmd):
+    subprocess.run(cmd, shell=False)
+
+
+def get_running_screenshot(task, image_name):
+    run_cmd(['hdc', 'shell', 'power-shell', 'wakeup;power-shell', 'setmode 602'])
+    run_cmd(['hdc', 'shell', 'uinput', '-T', '-m', '420', '1000', '420',
+             '400;uinput', '-T', '-m', '420', '400', '420', '1000'])
+
+    build_path = os.path.join(task.path, *task.build_path)
+    out_path = os.path.join(build_path, *task.output_hap_path_signed)
+
+    run_cmd(['hdc', 'install', f'{out_path}'])
+    run_cmd(['hdc', 'shell', 'aa', 'start', '-a', f'{task.ability_name}', '-b', f'{task.bundle_name}'])
+    time.sleep(3)
+
+    screen_path = f'/data/local/tmp/{image_name}.jpeg'
+    run_cmd(['hdc', 'shell', 'snapshot_display', '-f', f'{screen_path}'])
+    time.sleep(3)
+
+    run_cmd(['hdc', 'file', 'recv', f'{screen_path}', f'{image_name}.jpeg'])
+    run_cmd(['hdc', 'shell', 'aa', 'force-stop', f'{task.bundle_name}'])
+    run_cmd(['hdc', 'shell', 'bm', 'uninstall', '-n', f'{task.bundle_name}'])
+
+    pic_save_dic = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pictures')
+    if not os.path.exists(pic_save_dic):
+        os.mkdir(pic_save_dic)
+
+    pic_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'pictures\{task.name}')
+    if not os.path.exists(pic_save_path):
+        os.mkdir(pic_save_path)
+
+    shutil.move(f'{image_name}.jpeg', pic_save_path)
+
+
+def compare_screenshot(runtime_picture_path, picture_reference_path, threshold=0.95):
+    try:
+        runtime_picture = Image.open(runtime_picture_path).convert('RGB')
+        picture_reference_path = Image.open(picture_reference_path).convert('RGB')
+    except Exception:
+        logging.error(f'open image {runtime_picture_path} failed')
+        return False
+    runtime_picture.thumbnail((256, 256))
+    picture_reference_path.thumbnail((256, 256))
+
+    runtime_pixel = runtime_picture.load()
+    reference_pixel = picture_reference_path.load()
+    width, height = runtime_picture.size
+
+    similar_pixels = 0
+    total_pixels = width * height
+
+    for x in range(width):
+        for y in range(height):
+            if runtime_pixel[x, y] == reference_pixel[x, y]:
+                similar_pixels += 1
+
+    similarity = similar_pixels / total_pixels
+
+    if similarity >= threshold:
+        return True
     else:
-        logging.error('Unsuport platform to get sdk from daily build')
-        return ''
+        return False
+
+
+def verify_runtime(task, picture_name):
+    pic_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            f'pictures/{task.name}/{picture_name}.jpeg')
+    pic_path_reference = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                      f'pictures_reference/{task.name}/{picture_name}.jpeg')
+    passed = compare_screenshot(pic_path, pic_path_reference, threshold=0.95)
+    if not passed:
+        logging.error(f'{task.name} get error when running')
+        return False
+    return True

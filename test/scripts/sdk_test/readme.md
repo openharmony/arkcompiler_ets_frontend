@@ -11,12 +11,13 @@ The SDK test automation script runs on Windows, Python 3.9 and above.
 ### Test Preparation
 1. Ensure that Deveco is installed in the environment.
 2. Install dependencies of the test suite:
-`python3 -m pip install pyyaml validators requests httpx tqdm json5 pandas`
+`python3 -m pip install pyyaml validators requests httpx tqdm json5 pandas pillow`
 3. Modify the configuration file `config.yaml`, configure relevant parameters of Deveco and the test application. Detailed configuration instructions can be found in the file.
 4. To add a new test application, you can modify the config.yaml configuration file and add the configuration under the “haps” field. You can refer to the existing application configurations for guidance.
 
 ### Running Tests
 The test suite supports daily and manual runs.
+The test functionality requires a connection to the RK board for testing. You can control whether to execute the test by using the "runHap" parameter.
 
 #### Daily Run
 The daily run will download the SDK built on the current day from the trunk branch and use it to perform a full test verification.

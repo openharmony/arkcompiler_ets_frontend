@@ -25,13 +25,11 @@ import utils
 
 
 def run():
-    sdk_url = utils.get_sdk_url()
-
     cmd = ['python', 'run.py']
-    cmd.extend(['--sdkPath', sdk_url])
     cmd.extend(['--hapMode', 'all'])
     cmd.extend(['--compileMode', 'all'])
     cmd.extend(['--logLevel', 'debug'])
+    cmd.extend(['--runHaps'])
     cmd.extend(['--logFile', 'log' + '_' + utils.get_time_string() + '.txt'])
 
     current_dir = os.path.dirname(os.path.abspath(__file__))

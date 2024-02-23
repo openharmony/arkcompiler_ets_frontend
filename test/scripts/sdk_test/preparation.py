@@ -21,14 +21,9 @@ Description: prepare environment for test
 import logging
 import os
 import shutil
-import tarfile
-import zipfile
-
-import validators
 
 import options
-from utils import is_linux, is_mac, get_time_string, add_executable_permission
-from utils import get_api_version, check_gzip_file, download, get_remote_sdk_name
+from utils import is_mac, is_linux
 
 
 def setup_env():
@@ -62,93 +57,11 @@ def check_deveco_env():
     return True
 
 
-def get_sdk_from_remote(sdk_url):
-    deveco_sdk_path = options.configs.get('deveco_sdk_path')
-    temp_floder = deveco_sdk_path + '_temp'
-    sdk_name = get_remote_sdk_name()
-    sdk_zip_path_list = [temp_floder, 'ohos-sdk', 'windows']
-    if is_mac():
-        sdk_zip_path_list = [temp_floder, 'sdk',
-                             'packages', 'ohos-sdk', 'darwin']
-    sdk_temp_file = os.path.join(temp_floder, sdk_name)
-
-    if os.path.exists(temp_floder):
-        shutil.rmtree(temp_floder)
-    os.mkdir(temp_floder)
-    download(sdk_url, sdk_temp_file, sdk_name)
-    if not check_gzip_file(sdk_temp_file):
-        logging.error('The downloaded file is not a valid gzip file.')
-        return '', ''
-    with tarfile.open(sdk_temp_file, 'r:gz') as tar:
-        tar.extractall(temp_floder)
-
-    sdk_floder = os.path.join(temp_floder, 'SDK_TEMP')
-    sdk_zip_path = os.path.join(*sdk_zip_path_list)
-    for item in os.listdir(sdk_zip_path):
-        if item != '.DS_Store':
-            logging.info(f'Unpacking {item}')
-            with zipfile.ZipFile(os.path.join(sdk_zip_path, item)) as zip_file:
-                zip_file.extractall(os.path.join(sdk_floder))
-            logging.info(f'Decompression {item} completed')
-
-    api_version = get_api_version(os.path.join(
-        *[sdk_floder, 'ets', 'oh-uni-package.json']))
-    return sdk_floder, api_version
-
-
-def update_sdk_to_deveco(sdk_path, api_version):
-    deveco_sdk_path = options.configs.get('deveco_sdk_path')
-    deveco_sdk_version_path = os.path.join(deveco_sdk_path, api_version)
-    for sdk_item in os.listdir(deveco_sdk_path):
-        if sdk_item.startswith(f'{api_version}-'):
-            shutil.rmtree(os.path.join(deveco_sdk_path, sdk_item))
-    if os.path.exists(deveco_sdk_version_path):
-        shutil.move(deveco_sdk_version_path,
-                    deveco_sdk_version_path + '-' + get_time_string())
-    for item in os.listdir(sdk_path):
-        if item != '.DS_Store':
-            if is_mac():
-                if item == 'toolchains':
-                    add_executable_permission(
-                        os.path.join(sdk_path, item, 'restool'))
-                    add_executable_permission(
-                        os.path.join(sdk_path, item, 'ark_disasm'))
-                elif item == 'ets':
-                    add_executable_permission(os.path.join(sdk_path, item, 'build-tools',
-                            'ets-loader', 'bin', 'ark', 'build-mac', 'bin', 'es2abc'))
-                    add_executable_permission(os.path.join(sdk_path, item, 'build-tools',
-                            'ets-loader', 'bin', 'ark', 'build-mac', 'legacy_api8', 'bin', 'js2abc'))
-                elif item == 'js':
-                    add_executable_permission(os.path.join(sdk_path, item, 'build-tools',
-                            'ace-loader', 'bin', 'ark', 'build-mac', 'bin', 'es2abc'))
-                    add_executable_permission(os.path.join(sdk_path, item, 'build-tools',
-                            'ace-loader', 'bin', 'ark', 'build-mac', 'legacy_api8', 'bin', 'js2abc'))
-            shutil.move(os.path.join(sdk_path, item),
-                        os.path.join(deveco_sdk_version_path, item))
-
-
-def prepare_sdk():
-    sdk_arg = options.arguments.sdk_path
-    if sdk_arg == '':
-        return True  # use the sdk specified in config.yaml
-
-    api_version = '9'
-    sdk_path = sdk_arg
-    if validators.url(sdk_arg):
-        sdk_path, api_version = get_sdk_from_remote(sdk_arg)
-
-    if not sdk_path or not os.path.exists(sdk_path):
-        return False
-
-    update_sdk_to_deveco(sdk_path, api_version)
-    return True
-
-
 def prepare_image():
     if options.arguments.run_haps:
         return True
 
-    # TODO: 1)download image, 2)flash image
+    # TODO: get pictures reference
 
     return True
 
@@ -156,15 +69,18 @@ def prepare_image():
 def clean_log():
     output_log_file = options.configs.get('log_file')
     daily_report_file = options.configs.get('output_html_file')
+    pictures_dic = options.configs.get('pictures_dic')
     if os.path.exists(output_log_file):
         os.remove(output_log_file)
     if os.path.exists(daily_report_file):
         os.remove(daily_report_file)
+    if os.path.exists(pictures_dic):
+        shutil.rmtree(pictures_dic)
 
 
 def prepare_test_env():
     clean_log()
     prepared = check_deveco_env()
     setup_env()
-    prepared = prepared and prepare_sdk() and prepare_image()
+    prepared = prepared and prepare_image()
     return prepared
