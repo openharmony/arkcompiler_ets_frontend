@@ -1524,6 +1524,7 @@ def main():
         runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
         runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
         runner.add_directory("parser/unicode", "js", ["--parse-only"])
+        runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
 
         runners.append(runner)
 
