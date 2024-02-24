@@ -15,13 +15,14 @@
 # limitations under the License.
 
 
-import json5
 import os
 import subprocess
 import sys
 import time
 import traceback
 import zipfile
+
+import json5
 
 import performance_config
 
@@ -36,7 +37,6 @@ class PerformanceBuild():
         self.all_size_dic = {}
         self.mail_helper = None
         self.mail_msg = ''
-        self.developing_test_data_path = ''
         self.mail_helper = mail_obj
         self.config = config_input
         self.prj_name = ''
@@ -56,7 +56,6 @@ class PerformanceBuild():
         dic[key].append(value)
 
     def init(self):
-        self.developing_test_data_path = os.path.join(os.path.dirname(__file__), self.config.developing_test_data_path)
         if self.config.ide == performance_config.IdeType.DevEco:
             os.environ['path'] = self.config.node_js_path + ";" + os.environ['path']
         os.chdir(self.config.project_path)
@@ -67,7 +66,7 @@ class PerformanceBuild():
         self.config.release_package_path = os.path.join(self.config.project_path, self.config.release_package_path)
         self.config.incremental_code_path = os.path.join(self.config.project_path, self.config.incremental_code_path)
         self.config.json5_path = os.path.join(self.config.project_path, self.config.json5_path)
-        if self.developing_test_data_path:
+        if self.config.developing_test_data_path:
             self.config.build_times = 3
         else:
             subprocess.Popen((self.config.cmd_prefix + " --stop-daemon").split(" "),
@@ -80,7 +79,7 @@ class PerformanceBuild():
             content = modified_file.read()
             add_str_end_pos = content.find(end_pos)
             if add_str_end_pos == -1:
-                print('Can not find code : {end_pos} in {code_path}, please check config')
+                print(f'Can not find code : {end_pos} in {code_path}, please check config')
                 return
             add_str_start_pos = content.find(start_pos)
             if add_str_start_pos == -1:
@@ -118,14 +117,14 @@ class PerformanceBuild():
         self.revert_incremental_code()
 
     def clean_project(self):
-        if not self.developing_test_data_path:
+        if not self.config.developing_test_data_path:
             print(self.config.cmd_prefix + " clean")
             subprocess.Popen((self.config.cmd_prefix + " clean").split(" "),
                              stderr=sys.stderr,
                              stdout=sys.stdout).communicate(timeout=self.timeout)
 
     def get_bytecode_size(self, is_debug):
-        if self.developing_test_data_path:
+        if self.config.developing_test_data_path:
             # test data for size
             PerformanceBuild.append_into_dic("ets/mudules.abc rawSize", 44444, self.all_size_dic)
             PerformanceBuild.append_into_dic("ets/mudules.abc Compress_size", 33333, self.all_size_dic)
@@ -143,37 +142,40 @@ class PerformanceBuild():
                 PerformanceBuild.append_into_dic(name_str2, info.compress_size, self.all_size_dic)
 
     def collect_build_data(self, is_debug, report_path):
+        event_obj = None
         with open(report_path, 'r+', encoding='UTF-8') as report:
             event_obj = json5.load(report)['events']
-            found_error = False
-            for node in event_obj:
-                if node['head']['type'] == "log" and node['additional']['logType'] == 'error':
-                    self.error_log_str = self.error_log_str + node['head']['name']
-                    found_error = True
-                if found_error:
-                    continue
+        if not event_obj:
+            raise Exception('Open report json failed')
+        found_error = False
+        for node in event_obj:
+            if node['head']['type'] == "log" and node['additional']['logType'] == 'error':
+                self.error_log_str = self.error_log_str + node['head']['name']
+                found_error = True
+            if found_error:
+                continue
 
-                build_time = 0
-                task_name = node['head']['name']
-                if node['head']['type'] == "mark":
-                    if node['additional']['markType'] == 'history':
-                        build_time = (node['body']['endTime'] - node['body']['startTime']) / 1000000000
-                        task_name = "total build cost"
-                    else:
-                        continue
-                elif node['head']['type'] == "continual":
-                    build_time = node['additional']['totalTime'] / 1000000000
+            build_time = 0
+            task_name = node['head']['name']
+            if node['head']['type'] == "mark":
+                if node['additional']['markType'] == 'history':
+                    build_time = (node['body']['endTime'] - node['body']['startTime']) / 1000000000
+                    task_name = "total build cost"
                 else:
                     continue
-                PerformanceBuild.append_into_dic(task_name, build_time, self.all_time_dic)
-            if found_error:
-                raise Exception('Build Failed')
+            elif node['head']['type'] == "continual":
+                build_time = node['additional']['totalTime'] / 1000000000
+            else:
+                continue
+            PerformanceBuild.append_into_dic(task_name, build_time, self.all_time_dic)
+        if found_error:
+            raise Exception('Build Failed')
         self.get_bytecode_size(is_debug)
 
     def start_build(self, is_debug):
-        if self.developing_test_data_path:
+        if self.config.developing_test_data_path:
             # test data
-            self.collect_build_data(is_debug, os.path.join(os.path.dirname(__file__), self.developing_test_data_path))
+            self.collect_build_data(is_debug, os.path.join(os.path.dirname(__file__), self.config.developing_test_data_path))
             return True
         reports_before = []
         report_dir = '.hvigor/report'
@@ -190,7 +192,7 @@ class PerformanceBuild():
         
 
     def get_millisecond(self, time_string):
-        if self.config.ide != performance_config.IdeType.DevEco and not self.developing_test_data_path:
+        if self.config.ide != performance_config.IdeType.DevEco and not self.config.developing_test_data_path:
             return int(time_string)
         else:
             cost_time = 0
@@ -305,7 +307,7 @@ class PerformanceBuild():
             full_size = dic[key][0]
         self.mail_helper.add_pic_data(self.config.name, is_debug, [full_size])
 
-    def write_mail_files(self, dic, is_Time_dic):
+    def write_mail_files(self, dic):
         if not hasattr(self.config, 'show_time_detail_filter'):
             return ''
         msg = ''
@@ -318,8 +320,8 @@ class PerformanceBuild():
 
         show_dic = []
         for k in self.config.show_time_detail_filter:
-             if k in dic:
-                 show_dic.append(k)
+            if k in dic:
+                show_dic.append(k)
         for key in show_dic:
             content_row = PerformanceBuild.add_th(key)
             for v in dic[key]:
@@ -360,7 +362,7 @@ class PerformanceBuild():
         self.write_logs_from_dic(path_prefix, self.config.log_filename[2], self.all_time_dic, False)
         # write avg build time, html msg and picture data
         self.write_logs_from_dic(path_prefix, self.config.log_filename[3], self.time_avg_dic, True)
-        temp_mail_msg += self.write_mail_files(self.time_avg_dic, True)
+        temp_mail_msg += self.write_mail_files(self.time_avg_dic)
         self.add_time_pic_data(self.time_avg_dic, is_debug)
         # write all size of abc log
         self.write_logs_from_dic(path_prefix, self.config.log_filename[0], self.all_size_dic, False)

@@ -39,6 +39,7 @@ pictures_dic: ./pictures
 #        -error: indicates this hap need to test whether compile error is correctly generated as well
 #        -exceed_length_error: indicates this hap need to test whether compile error is correctly generated when path exceed the limit
 #        -ohosTest: indicates this hap needed to compile ohosTest as well
+# -hap_module: specify one module to build in the test.
 # -build_path: path to build path, in form of list
 # -cache_path: path to cache path, in form of list
 # -output_hap_path: path of output hap(debug mode), in form of list
@@ -51,6 +52,7 @@ haps:
     name: Calendar
     path: D:\haps\calendar
     type: [stage]
+    hap_module: entry
     build_path:
     cache_path:
     output_hap_path:
@@ -62,6 +64,7 @@ haps:
     name: WidgetDemo
     path: D:\haps\WidgetDemo
     type: [stage, widget]
+    hap_module: entry
     build_path:
     cache_path:
     output_hap_path:
@@ -73,6 +76,7 @@ haps:
     name: IdeStageDemoEmptyAbility
     path: D:\sdk-test\DemoApplication_EmptyAbility
     type: [stage, ohosTest, exceed_length_error, error]
+    hap_module: entry
     build_path: [entry, build, default]
     bundle_name: com.example.idestagedemoemptyability
     ability_name: EntryAbility
@@ -86,6 +90,7 @@ haps:
     name: IdeFaDemoEmptyAbility
     path: D:\sdk-test\DemoApplication_EmptyAbility_fa
     type: [fa, ohosTest, exceed_length_error, error]
+    hap_module: entry
     build_path: [entry, build, default]
     bundle_name: com.example.idefademoemptyability
     ability_name: com.example.idefademoemptyability.MainAbility
@@ -99,6 +104,7 @@ haps:
     name: IdeCompatible8DemoEmptyAbility
     path: D:\sdk-test\DemoApplication_EmptyAbility_compatible8
     type: [compatible8, ohosTest, exceed_length_error, error]
+    hap_module: entry
     build_path: [entry, build, default]
     bundle_name: com.example.idecompatible8demoemptyability
     ability_name: com.example.idecompatible8demoemptyability.MainAbility
@@ -112,6 +118,7 @@ haps:
     name: IdeJsDemoEmptyAbility
     path: D:\sdk-test\DemoApplication_EmptyAbility_js
     type: [js, ohosTest, exceed_length_error, error]
+    hap_module: entry
     build_path: [entry, build, default]
     bundle_name: com.example.idejsdemoemptyability
     ability_name: com.example.idejsdemoemptyability.MainAbility

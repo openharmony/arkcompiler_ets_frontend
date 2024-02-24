@@ -36,6 +36,7 @@ class MailHelper():
         self.mail_msg = ''
         self.logs_file = {}
         self.failed_prjs = ''
+        self.data_count_in_line_graph = 10
         MailHelper.remove_files()
 
     @staticmethod
@@ -177,8 +178,9 @@ class MailHelper():
                 if len(dic) > 0:
                     df_inserted = pd.DataFrame(dic, index=self.time_index)
                     df = df._append(df_inserted)
-                    if len(df) > 10:
-                        df = df[1:len(df)]
+                df_length = len(df)
+                if df_length > self.data_count_in_line_graph:
+                    df = df[(df_length - self.data_count_in_line_graph) : df_length]
                 df.to_csv(csv_filename)
                 y_lable = 'build time (s)' if log_type < performance_config.LogType.SIZE else 'size (Byte)'
                 self.draw_pic(df, pic_name, title_name, y_lable)

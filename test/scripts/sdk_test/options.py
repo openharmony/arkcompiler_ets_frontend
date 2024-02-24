@@ -169,6 +169,7 @@ def create_test_tasks():
             task.bundle_name = hap['bundle_name']
             task.ability_name = hap['ability_name']
             task.type = hap['type']
+            task.hap_module = hap['hap_module']
             task.build_path = hap['build_path']
             task.cache_path = hap['cache_path']
             task.output_hap_path = hap['output_hap_path']

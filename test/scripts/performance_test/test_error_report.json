@@ -88,7 +88,7 @@
         ,{
             "head": {
                 "id": "22",
-                "name": "build failed2\r\naabb",
+                "name": "This is error log\r\nThis is the same log in another line",
                 "type": "log"
             },
 
