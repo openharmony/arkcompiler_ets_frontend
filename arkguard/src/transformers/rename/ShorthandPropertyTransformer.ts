@@ -37,6 +37,8 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
+import { performancePrinter } from '../../ArkObfuscator';
+import { EventList, TimeSumPrinter } from '../../utils/PrinterUtils';
 
 namespace secharmony {
   const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> {
@@ -51,7 +53,11 @@ namespace secharmony {
       return shorthandPropertyTransformer;
 
       function shorthandPropertyTransformer(node: Node): Node {
-        return setParentRecursive(transformShortHandProperty(node), true);
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
+        let ret = transformShortHandProperty(node);
+        let parentNodes = setParentRecursive(ret, true);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
+        return parentNodes;
       }
 
       function transformShortHandProperty(node: Node): Node {

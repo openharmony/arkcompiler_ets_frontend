@@ -53,8 +53,9 @@ import { NameGeneratorType, getNameGenerator } from '../../generator/NameFactory
 import type { INameGenerator, NameGeneratorOptions } from '../../generator/INameGenerator';
 import { FileUtils } from '../../utils/FileUtils';
 import { NodeUtils } from '../../utils/NodeUtils';
-import { orignalFilePathForSearching } from '../../ArkObfuscator';
+import { orignalFilePathForSearching, performancePrinter } from '../../ArkObfuscator';
 import type { PathAndExtension } from '../../common/type';
+import { EventList } from '../../utils/PrinterUtils';
 namespace secharmony {
 
   // global mangled file name table used by all files in a project
@@ -110,13 +111,16 @@ namespace secharmony {
           globalFileNameMangledTable = new Map<string, string>();
         }
 
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = updateNodeInfo(node);
         if (isSourceFile(ret)) {
           const orignalAbsPath = ret.fileName;
           const mangledAbsPath: string = getMangleCompletePath(orignalAbsPath);
           ret.fileName = mangledAbsPath;
         }
-        return setParentRecursive(ret, true);
+        let parentNodes = setParentRecursive(ret, true);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
+        return parentNodes;
       }
 
       function updateNodeInfo(node: Node): Node {

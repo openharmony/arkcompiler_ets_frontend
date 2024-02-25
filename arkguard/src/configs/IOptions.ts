@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import type {IFileNameObfuscationOption, INameObfuscationOption} from './INameObfuscationOption';
+import type {IFileNameObfuscationOption, INameObfuscationOption, IPrinterOption} from './INameObfuscationOption';
 
 export interface IOptions {
   // Whether to generate compact code
@@ -56,4 +56,7 @@ export interface IOptions {
 
   // Whether to obfuscate the names or properties of the exported content
   readonly mExportObfuscation?: boolean;
+  
+  // Time&Memory printer option
+  readonly mPerformancePrinter?: IPrinterOption;
 }

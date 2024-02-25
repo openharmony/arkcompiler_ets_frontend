@@ -44,6 +44,8 @@ import {TransformerOrder} from '../TransformPlugin';
 import {OhPackType, isCommentedNode} from '../../utils/TransformUtil';
 import {findOhImportStatement} from '../../utils/OhsUtil';
 import { NodeUtils } from '../../utils/NodeUtils';
+import { performancePrinter } from '../../ArkObfuscator';
+import { EventList } from '../../utils/PrinterUtils';
 
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
@@ -69,8 +71,11 @@ namespace secharmony {
         }
 
         sourceFile = node;
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.REMOVE_HILOG, performancePrinter.timeSumPrinter);
         let resultAst: Node = visitAst(node);
-        return setParentRecursive(resultAst, true);
+        let parentNodes = setParentRecursive(resultAst, true);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.REMOVE_HILOG, performancePrinter.timeSumPrinter);
+        return parentNodes;
       }
 
       function visitAst(node: Node): Node {
