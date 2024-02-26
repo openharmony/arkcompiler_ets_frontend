@@ -67,11 +67,8 @@ def convert_to_datetime(date_str):
 
 
 def get_download_url(task_name, image_date):
-    if image_date is None:
-        image_date = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    else:
-        time_str = datetime.datetime.strptime(image_date, '%Y-%m-%d')
-        image_date = time_str.strftime('%Y%m%d') + '235959'
+    image_date = datetime.datetime.now().strftime('%Y%m%d%H%M%S') if image_date is None else \
+        datetime.datetime.strptime(image_date, '%Y-%m-%d').strftime('%Y%m%d') + '235959'
     last_hour = (convert_to_datetime(image_date) +
                  datetime.timedelta(hours=-24)).strftime('%Y%m%d%H%M%S')
     url = 'http://ci.openharmony.cn/api/daily_build/build/tasks'
@@ -135,7 +132,9 @@ def download_progress_bar(response, temp, temp_file_name):
 
 def download(download_url, temp_file, temp_file_name):
     with httpx.stream('GET', download_url) as response:
-        with open(temp_file, "wb") as temp:
+        flags = os.O_WRONLY | os.O_CREAT
+        mode = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(temp_file, flags, mode), 'wb') as temp:
             download_progress_bar(response, temp, temp_file_name)
     return True
 
@@ -154,7 +153,7 @@ def check_zip_file(file_path):
     try:
         if zipfile.is_zipfile(file_path):
             with zipfile.ZipFile(file_path, 'r') as zip_file:
-                pass
+                return True
         else:
             return False
     except Exception as e:
@@ -171,6 +170,7 @@ def get_remote_download_name(task_name):
     elif is_mac():
         if 'sdk' in task_name:
             return 'L2-MAC-SDK-FULL.tar.gz'
+        return 'dayu200.tar.gz'
     else:
         print('Unsuport platform to get sdk from daily build')
         return ''
@@ -281,7 +281,9 @@ def delete_redundant_files(task_name, file_name, download_save_path, is_save):
 def write_download_url_to_txt(task_name, download_url):
     download_url_txt = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                     'download_url.txt')
-    with open(download_url_txt, 'a+') as file:
+    flags = os.O_WRONLY | os.O_CREAT
+    mode = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open(download_url_txt, flags, mode), 'a+', encoding='utf-8') as file:
         file.write(f'{task_name}, {download_url}\n')
 
 
