@@ -16,7 +16,6 @@
 if (PANDA_TARGET_ARM32)
   add_custom_target(ets_tests_arm32_punctuator_any_equal
       COMMAND ${PANDA_ROOT}/tests/tests-u-runner/runner.sh
-              ${PANDA_ROOT}
               --build-dir ${PANDA_BINARY_ROOT}
               --arm32-qemu
               --ets-runtime
