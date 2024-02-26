@@ -71,7 +71,6 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
 
                             return false;
                         });
-
         if (!foundProp) {
             relation->Result(false);
             return;

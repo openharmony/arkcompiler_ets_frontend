@@ -291,7 +291,6 @@ binder::Variable *Checker::GetPropertyOfUnionType(UnionType *type, const util::S
                                                   binder::VariableFlags propagateFlags)
 {
     auto found = type->CachedSyntheticPropertis().find(name);
-
     if (found != type->CachedSyntheticPropertis().end()) {
         return found->second;
     }
@@ -352,7 +351,6 @@ binder::Variable *Checker::GetPropertyOfUnionType(UnionType *type, const util::S
 Type *Checker::CheckComputedPropertyName(const ir::Expression *key)
 {
     auto found = nodeCache_.find(key);
-
     if (found != nodeCache_.end()) {
         return found->second;
     }

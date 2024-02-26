@@ -83,7 +83,6 @@ util::StringView Helpers::LiteralToPropName(ArenaAllocator *allocator, const ir:
         case ir::AstNodeType::NUMBER_LITERAL: {
             auto str = lit->AsNumberLiteral()->Str();
             auto number = lit->AsNumberLiteral()->Number();
-
             // "e" and "E" represent scientific notation.
             if ((str.Find("e") == std::string::npos && str.Find("E") == std::string::npos) &&
                 Helpers::IsInteger<uint32_t>(number) && number != 0) {
@@ -748,7 +747,6 @@ std::wstring Helpers::Utf8ToUtf16(const std::string &utf8)
     const int utf8Length = static_cast<int>(utf8.length());
     constexpr DWORD kFlags = MB_ERR_INVALID_CHARS;
     const int utf16Length = MultiByteToWideChar(CP_UTF8, kFlags, utf8.data(), utf8Length, nullptr, 0);
-
     if (utf16Length == 0) {
         std::cerr << "The filename: " << utf8 << " is not a valid utf8 encoding string" << std::endl;
         return utf16;

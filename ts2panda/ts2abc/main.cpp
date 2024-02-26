@@ -107,7 +107,6 @@ int main(int argc, const char *argv[])
         return panda::ts2abc::RETURN_SUCCESS;
     }
 
-
     if ((options.GetOptLevelArg() < static_cast<int>(panda::ts2abc::OptLevel::O_LEVEL0)) ||
         (options.GetOptLevelArg() > static_cast<int>(panda::ts2abc::OptLevel::O_LEVEL2))) {
         std::cerr << "Incorrect optimization level value" << std::endl;

@@ -280,7 +280,6 @@ std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> Checker::Chec
     if (typeAnnotation) {
         typeAnnotation->Check(this);
         restType = typeAnnotation->AsTypeNode()->GetType(this);
-
         if (!restType->IsArrayType()) {
             // TODO(aszilagyi): handle tuple type for rest
             ThrowTypeError("A rest parameter must be of an array type", param->Start());
@@ -367,7 +366,6 @@ std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> Checker::Chec
     const ir::Expression *param, SignatureInfo *signatureInfo)
 {
     auto found = nodeCache_.find(param);
-
     if (found != nodeCache_.end()) {
         ASSERT(found->second->Variable());
         binder::Variable *var = found->second->Variable();
