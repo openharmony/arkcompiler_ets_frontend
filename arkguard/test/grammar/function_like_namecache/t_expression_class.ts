@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-class Person5 {
-    private age: number = 10;
-    name: string = "Tony";
+const clsEpx1 = class AAA {
+    constructor() {}
+}
 
-    prop_func = function () {
-        console.log('func_exp')
-    }
+const clsEpx2 = class {
+    constructor() {}
 }

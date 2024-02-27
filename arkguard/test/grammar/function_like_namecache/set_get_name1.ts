@@ -13,13 +13,14 @@
  * limitations under the License.
  */
 
-function OutFunction() {
-    let a = 1;
-    console.log("out");
-    function inFunction() {
-        console.log("innner Function");
-    }
-    inFunction();
-}
+class Person9 {
+  age: number;
+  name: string; 
+  get [1]() {
+    return this.age;
+  }
 
-OutFunction();
+  set 0(inputage: number) {
+    this.age = inputage;
+  }
+}

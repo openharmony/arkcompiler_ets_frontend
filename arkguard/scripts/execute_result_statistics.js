@@ -83,13 +83,14 @@ function compareContent(filePath) {
   const sourcePathAndExtension = FileUtils.getFileSuffix(sourcePath);
   const expectationPath = sourcePathAndExtension.path + '_expected.txt';
   const resultPathAndExtension = FileUtils.getFileSuffix(filePath);
-  const resultCachePath = resultPathAndExtension.path + '.cache.json';
+  const resultCachePath = resultPathAndExtension.path + '.ts.cache.json';
   const expectationCachePath = sourcePathAndExtension.path + '_expected_cache.txt';
   const hasExpectationFile = fs.existsSync(expectationPath);
   const hasExpectationCache = fs.existsSync(expectationCachePath);
   const hasResultCache = fs.existsSync(resultCachePath);
   if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
-    let actual,expectation;
+    let actual;
+    let expectation;
     if (hasExpectationFile) {
       actual = fs.readFileSync(filePath).toString();
       expectation = fs.readFileSync(expectationPath).toString();
