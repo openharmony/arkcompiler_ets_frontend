@@ -79,7 +79,6 @@ public:
 
         for (auto *base : bases_) {
             resultProp = base->GetProperty(name, true);
-
             if (resultProp) {
                 return resultProp;
             }

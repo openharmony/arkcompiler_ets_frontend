@@ -811,7 +811,8 @@ static void ParseFunctionDeclaredType(const Json::Value &function, panda::pandas
     }
 }
 
-static void ParseFunctionKind(const Json::Value &function, panda::pandasm::Function &pandaFunc) {
+static void ParseFunctionKind(const Json::Value &function, panda::pandasm::Function &pandaFunc)
+{
     panda::panda_file::FunctionKind funcKind {};
     if (function.isMember("kind") && function["kind"].isInt()) {
         funcKind = static_cast<panda::panda_file::FunctionKind>(function["kind"].asUInt());
@@ -819,7 +820,8 @@ static void ParseFunctionKind(const Json::Value &function, panda::pandasm::Funct
     }
 }
 
-static void ParseFunctionIcSize(const Json::Value &function, panda::pandasm::Function &pandaFunc) {
+static void ParseFunctionIcSize(const Json::Value &function, panda::pandasm::Function &pandaFunc)
+{
     if (function.isMember("icSize") && function["icSize"].isInt()) {
         size_t icSize = static_cast<size_t>(function["icSize"].asUInt());
         pandaFunc.SetSlotsNum(icSize);

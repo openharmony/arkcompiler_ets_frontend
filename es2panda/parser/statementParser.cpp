@@ -965,7 +965,6 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON ||
         lexer_->GetToken().Type() == lexer::TokenType::EOS || lexer_->GetToken().NewLine() ||
         lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-
         if (!allowBreak && Extension() == ScriptExtension::JS) {
             ThrowSyntaxError("Illegal break statement");
         }
@@ -1208,7 +1207,6 @@ void ParserImpl::AddFunctionToBinder(ir::ScriptFunction *func, ParserStatus newS
             }
 
             decl = currentDecl->AsFunctionDecl();
-
             if (!decl->Node()->AsScriptFunction()->IsOverload()) {
                 Binder()->ThrowRedeclaration(startLoc, currentDecl->Name());
             }

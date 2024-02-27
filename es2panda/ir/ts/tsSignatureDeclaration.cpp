@@ -55,7 +55,6 @@ void TSSignatureDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) co
 checker::Type *TSSignatureDeclaration::Check(checker::Checker *checker) const
 {
     auto found = checker->NodeCache().find(this);
-
     if (found != checker->NodeCache().end()) {
         return found->second;
     }

@@ -47,7 +47,6 @@ void TSIndexSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSIndexSignature::Check(checker::Checker *checker) const
 {
     auto found = checker->NodeCache().find(this);
-
     if (found != checker->NodeCache().end()) {
         return found->second;
     }

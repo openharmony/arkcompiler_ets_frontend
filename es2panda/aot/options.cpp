@@ -289,7 +289,6 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->EnableRemainder();
 
     bool parseStatus = argparser_->Parse(argc, argv);
-
     if (parseStatus && (bcVersion.GetValue() || bcMinVersion.GetValue())) {
         compilerOptions_.bcVersion = bcVersion.GetValue();
         compilerOptions_.bcMinVersion = bcMinVersion.GetValue();
