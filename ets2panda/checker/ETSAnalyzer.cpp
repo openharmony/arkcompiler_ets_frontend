@@ -1593,6 +1593,24 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
     }
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    expr->Argument()->Check(checker);
+    auto *unboxedType = checker->ETSBuiltinTypeAsPrimitiveType(expr->Argument()->TsType());
+
+    if (unboxedType != nullptr && unboxedType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        checker->FlagExpressionWithUnboxing(expr->Argument()->TsType(), unboxedType, expr->Argument());
+    }
+    expr->SetTsType(GetETSChecker()->GlobalETSStringLiteralType());
+
+    return expr->TsType();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();

@@ -224,6 +224,9 @@ builtins:
   - name: StringBuilder
     package: PKG_STD_CORE
     ref: BUILTIN_STRING_BUILDER
+  - name: Runtime
+    package: PKG_STD_CORE
+    ref: BUILTIN_RUNTIME
   - name: Type
     package: PKG_STD_CORE
     ref: BUILTIN_TYPE
@@ -546,6 +549,12 @@ signatures:
     params: []
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_THROWABLE_CTOR
+
+  - callee: BUILTIN_RUNTIME
+    method_name: typeOf
+    params: [BUILTIN_OBJECT]
+    return_type: BUILTIN_STRING
+    ref: BUILTIN_RUNTIME_TYPEOF
 
   - callee: BUILTIN_NULLPOINTER_EXCEPTION
     method_name: $CTOR

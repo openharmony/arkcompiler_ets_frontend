@@ -230,6 +230,7 @@ private:
     ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
     ir::ETSUnionType *CreateOptionalParameterTypeNode(ir::TypeNode *typeAnnotation, ir::ETSUndefinedType *defaultUndef);
+    ir::Expression *ResolveArgumentUnaryExpr(ExpressionParseFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
@@ -237,6 +238,7 @@ private:
     ir::Expression *ParseDefaultPrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    ir::Expression *ParsePrimaryExpressionWithLiterals(ExpressionParseFlags flags) override;
     ir::Expression *ParsePostPrimaryExpression(ir::Expression *primaryExpr, lexer::SourcePosition startLoc,
                                                bool ignoreCallExpression, bool *isChainExpression) override;
     ir::Expression *ParsePotentialAsExpression(ir::Expression *primaryExpr) override;

@@ -439,7 +439,7 @@ public:
     Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *typeParams);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
-    Type *GetNonConstantTypeFromPrimitiveType(Type *type);
+    Type *GetNonConstantTypeFromPrimitiveType(Type *type) const;
     bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
@@ -482,7 +482,9 @@ public:
     Type *PrimitiveTypeAsETSBuiltinType(Type *objectType);
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
+    Type *GetBoxedType(ir::BoxingUnboxingFlags flag) const;
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
+    util::StringView TypeToName(Type *type) const;
     Type *MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const;
     Type *MaybeBoxedType(const varbinder::Variable *var)
     {
