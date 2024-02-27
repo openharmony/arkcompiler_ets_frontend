@@ -359,6 +359,7 @@ set(ES2PANDA_LIB_SRC
   checker/checker.cpp
   checker/checkerContext.cpp
   checker/ETSAnalyzer.cpp
+  checker/ETSAnalyzerHelpers.cpp
   checker/ETSchecker.cpp
   checker/TSchecker.cpp
   checker/ASchecker.cpp

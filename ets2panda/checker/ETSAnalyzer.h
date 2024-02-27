@@ -18,6 +18,7 @@
 
 #include "checker/SemanticAnalyzer.h"
 #include "checker/ETSchecker.h"
+#include "ETSAnalyzerHelpers.h"
 
 namespace ark::es2panda::checker {
 

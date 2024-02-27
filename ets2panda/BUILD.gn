@@ -27,6 +27,7 @@ config("libes2panda_public_config") {
 libes2panda_sources = [
   "checker/ASchecker.cpp",
   "checker/ETSAnalyzer.cpp",
+  "checker/ETSAnalyzerHelpers.cpp",
   "checker/ETSchecker.cpp",
   "checker/JSchecker.cpp",
   "checker/TSAnalyzer.cpp",
