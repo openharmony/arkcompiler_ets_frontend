@@ -153,9 +153,11 @@ public:
 
     void BuildFunctionName(const ir::ScriptFunction *func) const;
     void BuildFunctionType(ir::ETSFunctionType *funcType);
-    void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic);
-    void BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lambdaObject, checker::Signature *signature);
-    void AddLambdaFunctionThisParam(ir::ScriptFunction *func);
+    void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic,
+                          bool isExternal);
+    void BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lambdaObject, checker::Signature *signature,
+                           bool isExternal);
+    void AddLambdaFunctionThisParam(const ir::ScriptFunction *func, bool isExternal);
     void AddInvokeFunctionThisParam(ir::ScriptFunction *func);
     void BuildLambdaObjectName(const ir::AstNode *refNode);
     void FormLambdaName(util::UString &name, const util::StringView &signature);

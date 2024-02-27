@@ -14,7 +14,6 @@
  */
 
 #include "ETSparser.h"
-#include <utility>
 
 #include "macros.h"
 #include "parser/parserFlags.h"
@@ -77,6 +76,7 @@
 #include "ir/statements/throwStatement.h"
 #include "ir/statements/tryStatement.h"
 #include "ir/statements/whileStatement.h"
+#include "ir/statements/forOfStatement.h"
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/continueStatement.h"
@@ -1021,7 +1021,7 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
     ir::Expression *initializer = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         Lexer()->NextToken();  // eat '='
-        initializer = ParseInitializer();
+        initializer = ParseExpression();
     } else if (typeAnnotation == nullptr) {
         ThrowSyntaxError("Field type annotation expected");
     }
@@ -2407,6 +2407,16 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
     return tupleType;
 }
 
+std::optional<lexer::SourcePosition> ETSParser::GetDefaultParamPosition(ArenaVector<ir::Expression *> params)
+{
+    for (auto &param : params) {
+        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->IsDefault()) {
+            return param->AsETSParameterExpression()->Initializer()->Start();
+        }
+    }
+    return {};
+}
+
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
@@ -2475,6 +2485,11 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
                  Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
                 typeAnnotation = ParseFunctionType();
                 typeAnnotation->SetStart(startLoc);
+
+                if (auto position = GetDefaultParamPosition(typeAnnotation->AsETSFunctionType()->Params())) {
+                    ThrowSyntaxError("Default parameters can not be used in functional type", position.value());
+                }
+
                 return std::make_pair(typeAnnotation, false);
             }
 
@@ -2483,6 +2498,10 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
                 typeAnnotation = ParseUnionType(typeAnnotation);
+            }
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+                ThrowSyntaxError("Default parameters can not be used in functional type");
             }
 
             ParseRightParenthesis(options, typeAnnotation, savedPos);
@@ -3106,45 +3125,6 @@ ir::AnnotatedExpression *ETSParser::ParseVariableDeclaratorKey([[maybe_unused]] 
     return init;
 }
 
-ir::Expression *ETSParser::ParseInitializer()
-{
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
-        return ParseArrayLiteral();
-    }
-
-    return ParseExpression();
-}
-
-ir::ArrayExpression *ETSParser::ParseArrayLiteral()
-{
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
-
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-
-    ArenaVector<ir::Expression *> elements(Allocator()->Adapter());
-
-    Lexer()->NextToken();
-
-    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        elements.push_back(ParseInitializer());
-
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken();  // eat comma
-            continue;
-        }
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            ThrowSyntaxError("Comma is mandatory between elements in an array literal");
-        }
-    }
-
-    auto *arrayLiteral = AllocNode<ir::ArrayExpression>(std::move(elements), Allocator());
-    arrayLiteral->SetRange({startLoc, Lexer()->GetToken().End()});
-    Lexer()->NextToken();
-
-    return arrayLiteral;
-}
-
 ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                       const lexer::SourcePosition &startLoc)
 {
@@ -3154,7 +3134,7 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclaratorInitializer(ir::Expres
 
     Lexer()->NextToken();
 
-    ir::Expression *initializer = ParseInitializer();
+    ir::Expression *initializer = ParseExpression();
 
     lexer::SourcePosition endLoc = initializer->End();
 
@@ -3519,6 +3499,24 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
     }
 }
 
+bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
+{
+    switch (tokenType) {
+        case lexer::TokenType::PUNCTUATOR_COLON:
+        case lexer::TokenType::PUNCTUATOR_COMMA:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool ETSParser::IsArrowFunctionExpressionStart()
 {
     const auto savedPos = Lexer()->Save();
@@ -3558,12 +3556,7 @@ bool ETSParser::IsArrowFunctionExpressionStart()
     }
 
     while (tokenType != lexer::TokenType::EOS && tokenType != lexer::TokenType::PUNCTUATOR_ARROW) {
-        if (lexer::Token::IsPunctuatorToken(tokenType) && tokenType != lexer::TokenType::PUNCTUATOR_COLON &&
-            tokenType != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
-            tokenType != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET &&
-            tokenType != lexer::TokenType::PUNCTUATOR_LESS_THAN &&
-            tokenType != lexer::TokenType::PUNCTUATOR_GREATER_THAN &&
-            tokenType != lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        if (lexer::Token::IsPunctuatorToken(tokenType) && !IsPunctuartorSpecialCharacter(tokenType)) {
             break;
         }
         Lexer()->NextToken();
@@ -4129,6 +4122,7 @@ ir::ThisExpression *ETSParser::ParseThisExpression()
         case lexer::TokenType::PUNCTUATOR_COMMA:
         case lexer::TokenType::PUNCTUATOR_QUESTION_MARK:
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
+        case lexer::TokenType::KEYW_INSTANCEOF:
         case lexer::TokenType::KEYW_AS: {
             break;
         }
@@ -4188,22 +4182,26 @@ bool ETSParser::CheckClassElement(ir::AstNode *property, [[maybe_unused]] ir::Me
 
     //  Check the special '$_get' and '$_set' methods using for object's index access
     if (method->Kind() == ir::MethodDefinitionKind::METHOD) {
-        CheckIndexAccessMethod(function, property->Start());
+        CheckPredefinedMethods(function, property->Start());
     }
 
     return false;  // resolve overloads later on scopes stage
 }
 
-void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const
+void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const
 {
     auto const name = function->Id()->Name();
 
-    if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
+    auto const checkAsynchronous = [this, function, &name, &position]() -> void {
         if (function->IsAsyncFunc()) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
-                                 std::string {ir::INDEX_ACCESS_ERROR_2},
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
+                                 std::string {"' cannot be asynchronous."},
                              position);
         }
+    };
+
+    if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
+        checkAsynchronous();
 
         bool isValid = function->Params().size() == 1U;
         if (isValid) {
@@ -4212,16 +4210,12 @@ void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const
         }
 
         if (!isValid) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
                                  std::string {"' should have exactly one required parameter."},
                              position);
         }
     } else if (name.Is(compiler::Signatures::SET_INDEX_METHOD)) {
-        if (function->IsAsyncFunc()) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
-                                 std::string {ir::INDEX_ACCESS_ERROR_2},
-                             position);
-        }
+        checkAsynchronous();
 
         bool isValid = function->Params().size() == 2U;
         if (isValid) {
@@ -4232,8 +4226,16 @@ void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const
         }
 
         if (!isValid) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
                                  std::string {"' should have exactly two required parameters."},
+                             position);
+        }
+    } else if (name.Is(compiler::Signatures::ITERATOR_METHOD)) {
+        checkAsynchronous();
+
+        if (!function->Params().empty()) {
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
+                                 std::string {"' should not have parameters."},
                              position);
         }
     }
@@ -4564,6 +4566,10 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode, std
 
     auto *const blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     blockStmt->SetRange({startLoc, lexer->GetToken().End()});
+
+    for (auto *statement : blockStmt->Statements()) {
+        statement->SetParent(blockStmt);
+    }
 
     return blockStmt;
 }

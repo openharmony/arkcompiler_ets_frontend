@@ -31,17 +31,17 @@
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 12
+                  "column": 5
                 },
                 "end": {
                   "line": 17,
-                  "column": 15
+                  "column": 8
                 }
               }
             },
             "kind": "method",
             "accessibility": "public",
-            "static": true,
+            "static": false,
             "optional": false,
             "computed": false,
             "value": {
@@ -55,11 +55,11 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 12
+                      "column": 5
                     },
                     "end": {
                       "line": 17,
-                      "column": 15
+                      "column": 8
                     }
                   }
                 },
@@ -78,33 +78,33 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 19
+                          "column": 12
                         },
                         "end": {
                           "line": 17,
-                          "column": 23
+                          "column": 16
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 17,
-                        "column": 19
+                        "column": 12
                       },
                       "end": {
                         "line": 17,
-                        "column": 25
+                        "column": 18
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 19
+                      "column": 12
                     },
                     "end": {
                       "line": 17,
-                      "column": 25
+                      "column": 18
                     }
                   }
                 },
@@ -114,33 +114,33 @@
                   "loc": {
                     "start": {
                       "line": 17,
-                      "column": 24
+                      "column": 17
                     },
                     "end": {
                       "line": 17,
-                      "column": 26
+                      "column": 19
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 17,
-                    "column": 15
+                    "column": 8
                   },
                   "end": {
                     "line": 17,
-                    "column": 26
+                    "column": 19
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 17,
-                  "column": 15
+                  "column": 8
                 },
                 "end": {
                   "line": 17,
-                  "column": 26
+                  "column": 19
                 }
               }
             },
@@ -153,7 +153,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 26
+                "column": 19
               }
             }
           },
@@ -343,17 +343,17 @@
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 5
+                  "column": 12
                 },
                 "end": {
                   "line": 21,
-                  "column": 8
+                  "column": 15
                 }
               }
             },
             "kind": "method",
             "accessibility": "public",
-            "static": false,
+            "static": true,
             "optional": false,
             "computed": false,
             "value": {
@@ -367,11 +367,11 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 5
+                      "column": 12
                     },
                     "end": {
                       "line": 21,
-                      "column": 8
+                      "column": 15
                     }
                   }
                 },
@@ -390,33 +390,33 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 12
+                          "column": 19
                         },
                         "end": {
                           "line": 21,
-                          "column": 16
+                          "column": 23
                         }
                       }
                     },
                     "loc": {
                       "start": {
                         "line": 21,
-                        "column": 12
+                        "column": 19
                       },
                       "end": {
                         "line": 21,
-                        "column": 18
+                        "column": 25
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 12
+                      "column": 19
                     },
                     "end": {
                       "line": 21,
-                      "column": 18
+                      "column": 25
                     }
                   }
                 },
@@ -426,33 +426,33 @@
                   "loc": {
                     "start": {
                       "line": 21,
-                      "column": 17
+                      "column": 24
                     },
                     "end": {
                       "line": 21,
-                      "column": 19
+                      "column": 26
                     }
                   }
                 },
                 "loc": {
                   "start": {
                     "line": 21,
-                    "column": 8
+                    "column": 15
                   },
                   "end": {
                     "line": 21,
-                    "column": 19
+                    "column": 26
                   }
                 }
               },
               "loc": {
                 "start": {
                   "line": 21,
-                  "column": 8
+                  "column": 15
                 },
                 "end": {
                   "line": 21,
-                  "column": 19
+                  "column": 26
                 }
               }
             },
@@ -465,7 +465,7 @@
               },
               "end": {
                 "line": 21,
-                "column": 19
+                "column": 26
               }
             }
           },
@@ -735,4 +735,3 @@
     }
   }
 }
-TypeError: bar(): void in BClass cannot override bar(): void in AClass because overridden method is static. [static_function_hide_3.ets:21:8]

@@ -283,9 +283,7 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     // Determine compilation mode
-    auto compilationMode = genStdLib.GetValue()           ? CompilationMode::GEN_STD_LIB
-                           : inputFile.GetValue().empty() ? CompilationMode::PROJECT
-                                                          : CompilationMode::SINGLE_FILE;
+    auto compilationMode = DetermineCompilationMode(genStdLib, inputFile);
 
     sourceFile_ = inputFile.GetValue();
     std::ifstream inputStream;
@@ -315,118 +313,37 @@ bool Options::Parse(int argc, const char **argv)
         compilerOutput_ = RemoveExtension(BaseName(sourceFile_)).append(".abc");
     }
 
-    if (const auto logLevelStr = logLevel.GetValue(); !logLevelStr.empty()) {
-        if (logLevelStr == "debug") {
-            logLevel_ = util::LogLevel::DEBUG;
-        } else if (logLevelStr == "info") {
-            logLevel_ = util::LogLevel::INFO;
-        } else if (logLevelStr == "warning") {
-            logLevel_ = util::LogLevel::WARNING;
-        } else if (logLevelStr == "error") {
-            logLevel_ = util::LogLevel::ERROR;
-        } else if (logLevelStr == "fatal") {
-            logLevel_ = util::LogLevel::FATAL;
-        } else {
-            std::cerr << "Invalid log level: '" << logLevelStr
-                      << R"('. Possible values: ["debug", "info", "warning", "error", "fatal"])";
-            return false;
-        }
+    DetermineLogLevel(logLevel);
+    if (logLevel_ == util::LogLevel::INVALID) {
+        return false;
     }
 
     std::string extension = inputExtension.GetValue();
     std::string sourceFileExtension = sourceFile_.substr(sourceFile_.find_last_of('.') + 1);
 
-    if (!extension.empty()) {
-        if (extension == "js") {
-            extension_ = es2panda::ScriptExtension::JS;
-        } else if (extension == "ts") {
-            extension_ = es2panda::ScriptExtension::TS;
-        } else if (extension == "as") {
-            extension_ = es2panda::ScriptExtension::AS;
-        } else if (extension == "ets") {
-            extension_ = es2panda::ScriptExtension::ETS;
-
-            inputStream.open(arktsConfig.GetValue());
-            if (inputStream.fail()) {
-                errorMsg_ = "Failed to open arktsconfig: ";
-                errorMsg_.append(arktsConfig.GetValue());
-                return false;
-            }
-            inputStream.close();
-        } else {
-            errorMsg_ = "Invalid extension (available options: js, ts, as, ets)";
-            return false;
-        }
-
-        if (!sourceFile_.empty() && extension != sourceFileExtension) {
-            std::cerr << "Warning: Not matching extensions! Sourcefile: " << sourceFileExtension
-                      << ", Manual(used): " << extension << std::endl;
-        }
-    } else {
-        if (compilationMode == CompilationMode::PROJECT) {
-            extension_ = es2panda::ScriptExtension::ETS;
-        } else if (sourceFileExtension == "js") {
-            extension_ = es2panda::ScriptExtension::JS;
-        } else if (sourceFileExtension == "ts") {
-            extension_ = es2panda::ScriptExtension::TS;
-        } else if (sourceFileExtension == "as") {
-            extension_ = es2panda::ScriptExtension::AS;
-        } else if (sourceFileExtension == "ets") {
-            extension_ = es2panda::ScriptExtension::ETS;
-        } else {
-            errorMsg_ =
-                "Unknown extension of sourcefile, set the extension manually or change the file format (available "
-                "options: js, ts, as, ets)";
-            return false;
-        }
-    }
-
-#ifndef PANDA_WITH_ECMASCRIPT
-    if (extension_ == es2panda::ScriptExtension::JS) {
-        errorMsg_ = "js extension is not supported within current build";
+    // Determine Extension
+    DetermineExtension(extension, sourceFileExtension, inputStream, arktsConfig, compilationMode);
+    if (extension_ == es2panda::ScriptExtension::INVALID) {
         return false;
     }
-#endif
 
     if (extension_ != es2panda::ScriptExtension::JS && opModule.GetValue()) {
         errorMsg_ = "Error: --module is not supported for this extension.";
         return false;
     }
 
-    if (extension_ != es2panda::ScriptExtension::ETS) {
-        if (compilationMode == CompilationMode::PROJECT) {
-            errorMsg_ = "Error: only --extension=ets is supported for project compilation mode.";
-            return false;
-        }
-        if (!opTsDeclOut.GetValue().empty()) {
-            errorMsg_ = "Error: only --extension=ets is supported for --gen-ts-decl option";
-            return false;
-        }
-    }
-
     optLevel_ = opOptLevel.GetValue();
     threadCount_ = opThreadCount.GetValue();
     listFiles_ = opListFiles.GetValue();
 
-    if (opParseOnly.GetValue()) {
-        options_ |= OptionFlags::PARSE_ONLY;
-    }
-
-    if (opModule.GetValue()) {
-        options_ |= OptionFlags::PARSE_MODULE;
-    }
-
-    if (opSizeStat.GetValue()) {
-        options_ |= OptionFlags::SIZE_STAT;
-    }
+    // Add Option Flags
+    AddOptionFlags(opParseOnly, opModule, opSizeStat);
 
     compilerOptions_.arktsConfig = std::make_shared<ark::es2panda::ArkTsConfig>(arktsConfig.GetValue());
-    if (extension_ == es2panda::ScriptExtension::ETS) {
-        if (!compilerOptions_.arktsConfig->Parse()) {
-            errorMsg_ = "Invalid ArkTsConfig: ";
-            errorMsg_.append(arktsConfig.GetValue());
-            return false;
-        }
+
+    // Some additional checks for ETS extension
+    if (!CheckEtsSpecificOptions(opTsDeclOut, compilationMode, arktsConfig)) {
+        return false;
     }
 
     if ((dumpEtsSrcAfterPhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&

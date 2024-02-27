@@ -72,7 +72,6 @@ compiler/ets/override13.ets
 
 # 15095
 compiler/ets/override17.ets
-parser/ets/static_function_hide_2.ets
 
 # Throwing function types
 compiler/ets/throwingFunctionType2.ets

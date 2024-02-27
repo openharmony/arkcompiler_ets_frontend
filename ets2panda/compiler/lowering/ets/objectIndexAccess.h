@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
 #ifndef ES2PANDA_COMPILER_LOWERING_OBJECT_INDEX_ACCESS_H
 #define ES2PANDA_COMPILER_LOWERING_OBJECT_INDEX_ACCESS_H

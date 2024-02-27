@@ -26,6 +26,8 @@ defines:
     ref: GET_INDEX_METHOD
   - name: $_set
     ref: SET_INDEX_METHOD
+  - name: $_iterator
+    ref: ITERATOR_METHOD
   - name: 'ETSGLOBAL.main:'
     ref: ETS_MAIN_WITH_MANGLE_BEGIN
   - name: 'main'
@@ -423,6 +425,12 @@ signatures:
     params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_BIGINT_CTOR
+
+  - callee: BUILTIN_BIGINT
+    method_name: $CTOR
+    params: [BUILTIN_BIGINT]
+    return_type: PRIMITIVE_VOID
+    ref: BUILTIN_BIGINT_CTOR_BIGINT
 
   - callee: BUILTIN_BIGINT
     method_name: $CTOR

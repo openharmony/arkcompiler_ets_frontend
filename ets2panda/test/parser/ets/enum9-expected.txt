@@ -520,4 +520,4 @@
     }
   }
 }
-TypeError: Enum constant do not have property 'Red' [enum9.ets:19:30]
+TypeError: Cannot refer to enum members through variable. [enum9.ets:19:30]

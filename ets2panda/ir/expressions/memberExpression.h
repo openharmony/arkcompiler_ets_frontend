@@ -32,8 +32,7 @@ class ETSAnalyzer;
 namespace ark::es2panda::ir {
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
-inline constexpr char const INDEX_ACCESS_ERROR_1[] = "The special index access method '";
-inline constexpr char const INDEX_ACCESS_ERROR_2[] = "' cannot be asynchronous.";
+inline constexpr char const PREDEFINED_METHOD[] = "The special predefined method '";
 // NOLINTEND(modernize-avoid-c-arrays)
 
 enum class MemberExpressionKind : uint32_t {

@@ -1082,4 +1082,4 @@
     }
   }
 }
-TypeError: No matching call signature [generics_implicit_lambda2.ets:19:5]
+TypeError: Type '(a: int, b: String, c: String) => String' is not compatible with type '(p1: Int, p2: String, p3: Int) => String' at index 1 [generics_implicit_lambda2.ets:19:9]

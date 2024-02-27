@@ -85,60 +85,28 @@ enum class CheckAction { CONTINUE, SKIP_SUBTREE };
 using CheckResult = std::tuple<CheckDecision, CheckAction>;
 class CheckContext;
 using InvariantCheck = std::function<CheckResult(CheckContext &ctx, const ir::AstNode *)>;
-using Invariants = std::unordered_map<std::string, InvariantCheck>;
+using Invariants = std::map<std::string, InvariantCheck>;
 
-using InvariantNameSet = std::unordered_set<std::string>;
+using InvariantNameSet = std::set<std::string>;
 
 class VerificationContext final {
 public:
     void IntroduceNewInvariants(util::StringView phaseName)
     {
-        auto invariantSet = [phaseName]() -> std::optional<InvariantNameSet> {
-            if (phaseName == "ScopesInitPhase") {
-                return {{
-                    "NodeHasParentForAll",
-                    "EveryChildHasValidParentForAll",
-                    "VariableHasScopeForAll",
-                }};
-            }
-            if (phaseName == "CheckerPhase") {
-                return {{
-                    "NodeHasTypeForAll",
-                    "IdentifierHasVariableForAll",
-                    "ArithmeticOperationValidForAll",
-                    "SequenceExpressionHasLastTypeForAll",
-                    "ForLoopCorrectlyInitializedForAll",
-                    "VariableHasEnclosingScopeForAll",
-                    "ModifierAccessValidForAll",
-                    "ImportExportAccessValid",
-                }};
-            }
-            const std::set<std::string> withoutAdditionalChecks = {"OptionalLowering",
-                                                                   "PromiseVoidInferencePhase",
-                                                                   "StructLowering",
-                                                                   "DefaultParameterLowering",
-                                                                   "GenerateTsDeclarationsPhase",
-                                                                   "InterfacePropertyDeclarationsPhase",
-                                                                   "LambdaConstructionPhase",
-                                                                   "ObjectIndexLowering",
-                                                                   "OpAssignmentLowering",
-                                                                   "PromiseVoidInferencePhase",
-                                                                   "TupleLowering",
-                                                                   "UnionLowering",
-                                                                   "ExpandBracketsPhase"};
-            if (withoutAdditionalChecks.count(phaseName.Mutf8()) > 0) {
-                return {{}};
-            };
-            if (phaseName.Utf8().find("plugins-after") != std::string_view::npos) {
-                return {{}};
-            }
-            return std::nullopt;
-        }();
-
-        ASSERT_PRINT(invariantSet.has_value(),
-                     std::string {"Invariant set does not contain value for "} + phaseName.Mutf8());
-        for (const auto &check : *invariantSet) {
-            accumulatedChecks_.insert(check);
+        if (phaseName == "ScopesInitPhase") {
+            accumulatedChecks_.insert("NodeHasParentForAll");
+            accumulatedChecks_.insert("EveryChildHasValidParentForAll");
+            accumulatedChecks_.insert("VariableHasScopeForAll");
+        }
+        if (phaseName == "CheckerPhase") {
+            accumulatedChecks_.insert("NodeHasTypeForAll");
+            accumulatedChecks_.insert("IdentifierHasVariableForAll");
+            accumulatedChecks_.insert("ArithmeticOperationValidForAll");
+            accumulatedChecks_.insert("SequenceExpressionHasLastTypeForAll");
+            accumulatedChecks_.insert("ForLoopCorrectlyInitializedForAll");
+            accumulatedChecks_.insert("VariableHasEnclosingScopeForAll");
+            accumulatedChecks_.insert("ModifierAccessValidForAll");
+            accumulatedChecks_.insert("ImportExportAccessValid");
         }
     }
 

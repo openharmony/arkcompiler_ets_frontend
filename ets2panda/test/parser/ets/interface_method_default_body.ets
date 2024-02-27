@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +13,18 @@
  * limitations under the License.
  */
 
-class AClass {
-    static bar(): void {}
+interface I1 {
+  foo(): void;
 }
 
-class BClass extends AClass {
-    bar(): void {}
+interface I2 extends I1 {
+  foo(): void {}
+  bar(): void
+}
+
+class C implements I2 {
+  bar(): void {}
+}
+
+function main(): void {
 }

@@ -75,9 +75,7 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     if (typeArgument->IsWildcardType()) {
         return true;
     }
-    if (!typeArgument->IsETSTypeParameter() && !IsReferenceType(typeArgument)) {
-        return false;
-    }
+    ASSERT(IsReferenceType(typeArgument));
     auto *constraint = typeParam->GetConstraintType()->Substitute(Relation(), substitution);
     return Relation()->IsSupertypeOf(constraint, typeArgument);
 }
@@ -86,6 +84,9 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
                                             Substitution *substitution)
 {
+    if (argumentType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        argumentType = PrimitiveTypeAsETSBuiltinType(argumentType);
+    }
     if (paramType->IsETSTypeParameter()) {
         auto *const tparam = paramType->AsETSTypeParameter();
         auto *const originalTparam = tparam->GetOriginal();
@@ -182,12 +183,19 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
         auto &argumentSignatures = argumentType->AsETSFunctionType()->CallSignatures();
         ASSERT(argumentSignatures.size() == 1);
         ASSERT(parameterSignatures.size() == 1);
-        bool res = true;
-        for (size_t idx = 0; idx < argumentSignatures[0]->GetSignatureInfo()->params.size(); idx++) {
-            res &= enhance(parameterSignatures[0]->GetSignatureInfo()->params[idx]->TsType(),
-                           argumentSignatures[0]->GetSignatureInfo()->params[idx]->TsType());
+        auto *argumentSignature = argumentSignatures[0];
+        auto *parameterSignature = parameterSignatures[0];
+        // NOTE(gogabr): handle rest parameter for argumentSignature
+        if (parameterSignature->GetSignatureInfo()->params.size() !=
+            argumentSignature->GetSignatureInfo()->params.size()) {
+            return false;
         }
-        res &= enhance(parameterSignatures[0]->ReturnType(), argumentSignatures[0]->ReturnType());
+        bool res = true;
+        for (size_t idx = 0; idx < argumentSignature->GetSignatureInfo()->params.size(); idx++) {
+            res &= enhance(parameterSignature->GetSignatureInfo()->params[idx]->TsType(),
+                           argumentSignature->GetSignatureInfo()->params[idx]->TsType());
+        }
+        res &= enhance(parameterSignature->ReturnType(), argumentSignature->ReturnType());
         return res;
     }
 
@@ -1025,6 +1033,10 @@ bool ETSChecker::IsMethodOverridesOther(Signature *target, Signature *source)
         return true;
     }
 
+    if (source->HasSignatureFlag(SignatureFlags::STATIC) != target->HasSignatureFlag(SignatureFlags::STATIC)) {
+        return false;
+    }
+
     if (IsOverridableIn(target)) {
         SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
         Relation()->IsIdenticalTo(target, source);
@@ -1041,19 +1053,6 @@ bool ETSChecker::IsMethodOverridesOther(Signature *target, Signature *source)
     }
 
     return false;
-}
-
-void ETSChecker::CheckStaticHide(Signature *target, Signature *source)
-{
-    if (!target->HasSignatureFlag(SignatureFlags::STATIC) && source->HasSignatureFlag(SignatureFlags::STATIC)) {
-        ThrowTypeError("A static method hides an instance method.", source->Function()->Body()->Start());
-    }
-
-    if ((target->HasSignatureFlag(SignatureFlags::STATIC) ||
-         (source->HasSignatureFlag(SignatureFlags::STATIC) || !source->Function()->IsOverride())) &&
-        !IsReturnTypeSubstitutable(target, source)) {
-        ThrowTypeError("Hiding method is not return-type-substitutable for other method.", source->Function()->Start());
-    }
 }
 
 void ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
@@ -1074,10 +1073,6 @@ void ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
 std::tuple<bool, OverrideErrorCode> ETSChecker::CheckOverride(Signature *signature, Signature *other)
 {
     if (other->HasSignatureFlag(SignatureFlags::STATIC)) {
-        if (signature->Function()->IsOverride()) {
-            return {false, OverrideErrorCode::OVERRIDDEN_STATIC};
-        }
-
         ASSERT(signature->HasSignatureFlag(SignatureFlags::STATIC));
         return {true, OverrideErrorCode::NO_ERROR};
     }
@@ -1122,10 +1117,6 @@ void ETSChecker::ThrowOverrideError(Signature *signature, Signature *overriddenS
 {
     const char *reason {};
     switch (errorCode) {
-        case OverrideErrorCode::OVERRIDDEN_STATIC: {
-            reason = "overridden method is static.";
-            break;
-        }
         case OverrideErrorCode::OVERRIDDEN_FINAL: {
             reason = "overridden method is final.";
             break;
@@ -1161,13 +1152,6 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
     for (auto *it : target->TsType()->AsETSFunctionType()->CallSignatures()) {
         auto *itSubst = AdjustForTypeParameters(signature, it);
 
-        if (signature->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
-            Relation()->IsIdenticalTo(itSubst->Owner(), GlobalETSObjectType()) &&
-            !itSubst->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-            ThrowTypeError("Cannot override non-private method of the class Object from an interface.",
-                           signature->Function()->Start());
-        }
-
         if (itSubst == nullptr) {
             continue;
         }
@@ -1189,6 +1173,13 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
 
         if (!success) {
             ThrowOverrideError(signature, it, errorCode);
+        }
+
+        if (signature->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
+            Relation()->IsIdenticalTo(itSubst->Owner(), GlobalETSObjectType()) &&
+            !itSubst->HasSignatureFlag(SignatureFlags::PRIVATE)) {
+            ThrowTypeError("Cannot override non-private method of the class Object from an interface.",
+                           signature->Function()->Start());
         }
 
         isOverridingAnySignature = true;
@@ -1448,7 +1439,8 @@ void ETSChecker::CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpressio
     classScope->BindNode(lambdaObject);
 
     // Build the lambda object in the binder
-    VarBinder()->AsETSBinder()->BuildLambdaObject(lambda, lambdaObject, proxyMethod->Function()->Signature());
+    VarBinder()->AsETSBinder()->BuildLambdaObject(lambda, lambdaObject, proxyMethod->Function()->Signature(),
+                                                  lambda->Function()->IsExternal());
 
     // Resolve the proxy method
     ResolveProxyMethod(currentClassDef, proxyMethod, lambda);
@@ -1789,7 +1781,8 @@ void ETSChecker::ResolveProxyMethod(ir::ClassDefinition *const classDefinition, 
     auto *currentClassType = Context().ContainingClass();
 
     // Build the proxy method in the binder
-    varbinder->BuildProxyMethod(func, currentClassType->GetDeclNode()->AsClassDefinition()->InternalName(), isStatic);
+    varbinder->BuildProxyMethod(func, currentClassType->GetDeclNode()->AsClassDefinition()->InternalName(), isStatic,
+                                lambda->Function()->IsExternal());
 
     // If the proxy method is not static, set the implicit 'this' parameters type to the current class
     if (!isStatic) {
@@ -2287,7 +2280,8 @@ void ETSChecker::CreateLambdaObjectForFunctionReference(ir::AstNode *refNode, Si
     }
 
     // Build the lambda object in the binder
-    VarBinder()->AsETSBinder()->BuildLambdaObject(refNode, lambdaObject, trueSignature);
+    VarBinder()->AsETSBinder()->BuildLambdaObject(refNode, lambdaObject, trueSignature,
+                                                  invokeFunc->Function()->IsExternal());
 
     // Resolve the lambda object
     ResolveLambdaObject(lambdaObject, trueSignature, functionalInterface, refNode);
@@ -2844,7 +2838,9 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
                                                    bool createDecl)
 {
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
-    VarBinder()->AsETSBinder()->GetRecordTable()->Signatures().push_back(asyncFunc->Scope());
+    if (!asyncFunc->IsExternal()) {
+        VarBinder()->AsETSBinder()->GetRecordTable()->Signatures().push_back(asyncFunc->Scope());
+    }
 
     ir::MethodDefinition *implMethod = CreateAsyncImplMethod(asyncMethod, classDef);
     varbinder::FunctionScope *implFuncScope = implMethod->Function()->Scope();
@@ -2873,7 +2869,8 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
             CreateLambdaFuncDecl(implMethod, classDef->Scope()->AsClassScope()->InstanceMethodScope());
         }
     }
-    VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(), isStatic);
+    VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(), isStatic,
+                                                 asyncFunc->IsExternal());
     implMethod->SetParent(asyncMethod->Parent());
 
     return implMethod;

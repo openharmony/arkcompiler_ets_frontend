@@ -1,0 +1,1 @@
+SyntaxError: Default parameters can not be used in functional type [lambda_optional_param_3.ets:16:41]

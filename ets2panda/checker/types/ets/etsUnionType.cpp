@@ -13,14 +13,12 @@
  * limitations under the License.
  */
 
-#include <algorithm>
 #include <numeric>
-
 #include "etsUnionType.h"
+
 #include "checker/ets/conversion.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/ETSchecker.h"
-#include "ir/astNode.h"
 
 namespace ark::es2panda::checker {
 void ETSUnionType::ToString(std::stringstream &ss, bool precise) const

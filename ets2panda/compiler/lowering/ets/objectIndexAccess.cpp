@@ -24,7 +24,6 @@
 #include "objectIndexAccess.h"
 
 #include "checker/ETSchecker.h"
-#include "compiler/core/ASTVerifier.h"
 #include "parser/ETSparser.h"
 
 namespace ark::es2panda::compiler {

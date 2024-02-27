@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,6 +61,7 @@ enum class LogLevel : std::uint8_t {
     WARNING,
     ERROR,
     FATAL,
+    INVALID,
 };
 
 class Helpers {
@@ -82,7 +83,11 @@ public:
     static util::StringView ToStringView(ArenaAllocator *allocator, uint32_t number);
     static bool IsRelativePath(const std::string &path);
     static bool IsRealPath(const std::string &path);
-    static std::string GetAbsPath(const std::string &path);
+    static bool IsCompatibleExtension(const std::string &extension);
+    static bool EndsWith(const std::string &str, const std::string &suffix);
+    static std::string GetSourcePath(const std::string &path);
+    static std::string TruncateCompatibleExtension(const std::string &path);
+    static util::StringView TruncateCompatibleExtension(const util::StringView &path);
 
     static const ir::ScriptFunction *GetContainingConstructor(const ir::AstNode *node);
     static const ir::ScriptFunction *GetContainingConstructor(const ir::ClassProperty *node);

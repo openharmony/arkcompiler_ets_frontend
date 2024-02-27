@@ -616,9 +616,9 @@ void ETSGen::LoadThis(const ir::AstNode *node)
     LoadAccumulator(node, GetThisReg());
 }
 
-void ETSGen::CreateBigIntObject(const ir::AstNode *node, VReg arg0)
+void ETSGen::CreateBigIntObject(const ir::AstNode *node, VReg arg0, std::string_view signature)
 {
-    Ra().Emit<InitobjShort>(node, Signatures::BUILTIN_BIGINT_CTOR, arg0, dummyReg_);
+    Ra().Emit<InitobjShort>(node, signature, arg0, dummyReg_);
 }
 
 void ETSGen::CreateLambdaObjectFromIdentReference(const ir::AstNode *node, ir::ClassDefinition *lambdaObj)

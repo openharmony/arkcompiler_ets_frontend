@@ -47,6 +47,7 @@ Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const pa
         }
 
         clone->SetRange(Range());
+
         return clone;
     }
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);

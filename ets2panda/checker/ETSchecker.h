@@ -153,6 +153,9 @@ public:
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
     void ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos);
+    void CollectImplementedMethodsFromInterfaces(ETSObjectType *classType,
+                                                 std::vector<Signature *> *implementedSignatures,
+                                                 const ArenaVector<ETSFunctionType *> &abstractsToBeImplemented);
     void AddImplementedSignature(std::vector<Signature *> *implementedSignatures, varbinder::LocalVariable *function,
                                  ETSFunctionType *it);
     void CheckInnerClassMembers(const ETSObjectType *classType);
@@ -351,7 +354,6 @@ public:
     bool IsOverridableIn(Signature *signature);
     [[nodiscard]] bool AreOverrideEquivalent(Signature *s1, Signature *s2);
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
-    void CheckStaticHide(Signature *target, Signature *source);
     void CheckThrowMarkers(Signature *source, Signature *target);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
                                         const lexer::SourcePosition &pos, char const *errorMessage = nullptr);

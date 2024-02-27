@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,10 @@
  */
 
 function main() {
-    let arr: number[] = [0.33, 0.66, 0.99];
-    let x = arr[5];
+    let x = new Number()
+    let c1: number = 4.2
+    let c2: int = 4
+    console.log(Number.toString(c1))
+    console.log(x.toString(c2))
+    console.log(x.toString(c1))
 }

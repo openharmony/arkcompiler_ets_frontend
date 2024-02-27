@@ -15,6 +15,7 @@
 
 #include "ETSAnalyzer.h"
 
+#include "checker/types/type.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
@@ -231,29 +232,63 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
     }
 }
 
-void CheckGetterSetterTypeConstrains(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
+void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc)
 {
+    auto const &position = scriptFunc->Start();
+
+    auto const hasIteratorInterface = [](ETSObjectType const *const objectType) -> bool {
+        for (auto const *const interface : objectType->Interfaces()) {
+            if (interface->Name().Is(ir::ITERATOR_INTERFACE_NAME)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     if (scriptFunc->IsSetter() && (scriptFunc->Signature()->ReturnType() != checker->GlobalBuiltinVoidType())) {
-        checker->ThrowTypeError("Setter must have void return type", scriptFunc->Start());
+        checker->ThrowTypeError("Setter must have void return type", position);
     }
 
     if (scriptFunc->IsGetter() && (scriptFunc->Signature()->ReturnType() == checker->GlobalBuiltinVoidType())) {
-        checker->ThrowTypeError("Getter must return a value", scriptFunc->Start());
+        checker->ThrowTypeError("Getter must return a value", position);
     }
 
     auto const name = scriptFunc->Id()->Name();
+    auto const methodName = std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()};
+
     if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
         if (scriptFunc->Signature()->ReturnType() == checker->GlobalBuiltinVoidType()) {
-            checker->ThrowTypeError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
-                                        std::string {"' shouldn't have void return type."},
-                                    scriptFunc->Start());
+            checker->ThrowTypeError(methodName + "' shouldn't have void return type.", position);
         }
     } else if (name.Is(compiler::Signatures::SET_INDEX_METHOD)) {
         if (scriptFunc->Signature()->ReturnType() != checker->GlobalBuiltinVoidType()) {
-            checker->ThrowTypeError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
-                                        std::string {"' should have void return type."},
-                                    scriptFunc->Start());
+            checker->ThrowTypeError(methodName + "' should have void return type.", position);
         }
+    } else if (name.Is(compiler::Signatures::ITERATOR_METHOD)) {
+        auto const *returnType = scriptFunc->Signature()->ReturnType();
+
+        if (returnType == nullptr) {
+            checker->ThrowTypeError(methodName + "' doesn't have return type.", position);
+        }
+
+        if (returnType->IsETSTypeParameter()) {
+            returnType = checker->GetApparentType(returnType->AsETSTypeParameter()->GetConstraintType());
+        }
+
+        if (returnType->IsETSUnionType() &&
+            returnType->AsETSUnionType()->AllOfConstituentTypes(
+                [hasIteratorInterface](checker::Type const *const constituentType) -> bool {
+                    return constituentType->IsETSObjectType() &&
+                           hasIteratorInterface(constituentType->AsETSObjectType());
+                })) {
+            return;
+        }
+
+        if (returnType->IsETSObjectType() && hasIteratorInterface(returnType->AsETSObjectType())) {
+            return;
+        }
+
+        checker->ThrowTypeError(methodName + "' has invalid return type.", position);
     }
 }
 
@@ -262,6 +297,7 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
     ETSChecker *checker = GetETSChecker();
 
     auto *scriptFunc = node->Function();
+
     if (scriptFunc->IsProxy()) {
         return nullptr;
     }
@@ -296,7 +332,7 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
     }
 
     DoBodyTypeChecking(checker, node, scriptFunc);
-    CheckGetterSetterTypeConstrains(checker, scriptFunc);
+    CheckPredefinedMethodReturnType(checker, scriptFunc);
 
     checker->CheckOverride(node->TsType()->AsETSFunctionType()->FindSignature(node->Function()));
 
@@ -1070,6 +1106,16 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     }
     auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
                                         isUnionTypeWithFunctionalInterface);
+    // Remove static signatures if the callee is a member expression and the object is initialized
+    if (expr->Callee()->IsMemberExpression() && expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
+        expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
+            varbinder::VariableFlags::INITIALIZED)) {
+        signatures.erase(
+            std::remove_if(signatures.begin(), signatures.end(),
+                           [](checker::Signature *signature) { return signature->Function()->IsStatic(); }),
+            signatures.end());
+    }
+
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
     if (signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"No matching call signature"}, expr->Start());
@@ -1338,6 +1384,15 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     if (objType->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT | checker::ETSObjectFlags::INTERFACE)) {
         checker->ThrowTypeError({"target type for class composite ", objType->Name(), " is not instantiable"},
                                 expr->Start());
+    }
+
+    if (expr->PreferredType()->ToAssemblerName().str() == "escompat.Map") {
+        // 7.6.3 Object Literal of Record Type
+        // Record is an alias to Map
+        // Here we just set the type to pass the checker
+        // See Record Lowering for details
+        expr->SetTsType(objType);
+        return objType;
     }
 
     bool haveEmptyConstructor = false;
@@ -1992,8 +2047,10 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ForInStatement *st) const
 }
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const MISSING_SOURCE_EXPR_TYPE[] =
+    "Cannot determine source expression type in the 'for-of' statement.";
 static constexpr char const INVALID_SOURCE_EXPR_TYPE[] =
-    "'For-of' statement source expression should be either a string or an array.";
+    "'For-of' statement source expression is not of iterable type.";
 static constexpr char const INVALID_CONST_ASSIGNMENT[] = "Cannot assign a value to a constant variable ";
 static constexpr char const ITERATOR_TYPE_ABSENT[] = "Cannot obtain iterator type in 'for-of' statement.";
 // NOLINTEND(modernize-avoid-c-arrays)
@@ -2035,22 +2092,30 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     return iterType;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *st) const
+checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
 {
     ETSChecker *checker = GetETSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     checker::Type *const exprType = st->Right()->Check(checker);
-    checker::Type *elemType;
+    if (exprType == nullptr) {
+        checker->ThrowTypeError(MISSING_SOURCE_EXPR_TYPE, st->Right()->Start());
+    }
 
-    if (exprType == nullptr || (!exprType->IsETSArrayType() && !exprType->IsETSStringType())) {
-        checker->ThrowTypeError(INVALID_SOURCE_EXPR_TYPE, st->Right()->Start());
-    } else if (exprType->IsETSStringType()) {
+    checker::Type *elemType = nullptr;
+
+    if (exprType->IsETSStringType()) {
         elemType = checker->GetGlobalTypesHolder()->GlobalCharType();
-    } else {
+    } else if (exprType->IsETSArrayType()) {
         elemType = exprType->AsETSArrayType()->ElementType()->Instantiate(checker->Allocator(), checker->Relation(),
                                                                           checker->GetGlobalTypesHolder());
         elemType->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+    } else if (exprType->IsETSObjectType() || exprType->IsETSUnionType() || exprType->IsETSTypeParameter()) {
+        elemType = st->CheckIteratorMethod(checker);
+    }
+
+    if (elemType == nullptr) {
+        checker->ThrowTypeError(INVALID_SOURCE_EXPR_TYPE, st->Right()->Start());
     }
 
     st->Left()->Check(checker);
@@ -2071,6 +2136,13 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *st) const
 
     relation->SetNode(nullptr);
     relation->SetFlags(checker::TypeRelationFlag::NONE);
+
+    if (iterType->Variable() == nullptr && !iterType->IsETSObjectType() && elemType->IsETSObjectType() &&
+        st->Left()->IsVariableDeclaration()) {
+        for (auto &declarator : st->Left()->AsVariableDeclaration()->Declarators()) {
+            checker->AddBoxingUnboxingFlagsToNode(declarator->Id(), iterType);
+        }
+    }
 
     st->Body()->Check(checker);
 
@@ -2782,22 +2854,29 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSTupleType *node) const
 checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    if (st->TypeParams() != nullptr) {
-        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
-        for (auto *const param : st->TypeParams()->Params()) {
-            const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
-                if (!node->IsIdentifier()) {
-                    return false;
-                }
+    if (st->TypeParams() == nullptr) {
+        const checker::SavedTypeRelationFlagsContext savedFlagsCtx(
+            checker->Relation(), checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
-                return param->Name()->AsIdentifier()->Variable() == node->AsIdentifier()->Variable();
-            });
+        st->TypeAnnotation()->Check(checker);
 
-            if (res == nullptr) {
-                checker->ThrowTypeError(
-                    {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
-                    param->Start());
+        return nullptr;
+    }
+
+    st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+    for (auto *const param : st->TypeParams()->Params()) {
+        const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
+            if (!node->IsIdentifier()) {
+                return false;
             }
+
+            return param->Name()->AsIdentifier()->Variable() == node->AsIdentifier()->Variable();
+        });
+
+        if (res == nullptr) {
+            checker->ThrowTypeError(
+                {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
+                param->Start());
         }
     }
 

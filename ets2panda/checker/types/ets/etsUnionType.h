@@ -62,6 +62,12 @@ public:
         return assemblerLub_;
     }
 
+    template <class UnaryPredicate>
+    bool AllOfConstituentTypes(UnaryPredicate p) const
+    {
+        return std::all_of(constituentTypes_.cbegin(), constituentTypes_.cend(), p);
+    }
+
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);

@@ -48,6 +48,11 @@ void ETSEnumInterface::AssignmentTarget(TypeRelation *const relation, Type *cons
 
 void ETSEnumInterface::Cast(TypeRelation *relation, Type *target)
 {
+    if (target->HasTypeFlag(TypeFlag::ENUM | TypeFlag::ETS_ENUM | TypeFlag::ETS_STRING_ENUM)) {
+        conversion::Identity(relation, this, target);
+        return;
+    }
+
     if (target->IsIntType()) {
         relation->Result(true);
         return;
@@ -123,7 +128,14 @@ ETSEnumInterface *ETSEnumInterface::LookupConstant(ETSChecker *const checker, co
                                                    const ir::Identifier *const prop) const
 {
     if (!IsEnumTypeExpression(expression)) {
-        checker->ThrowTypeError({"Enum constant do not have property '", prop->Name(), "'"}, prop->Start());
+        if (expression->IsIdentifier() &&
+            expression->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
+            checker->ThrowTypeError({"Cannot refer to enum members through type alias."}, prop->Start());
+        } else if (IsLiteralType()) {
+            checker->ThrowTypeError({"Cannot refer to enum members through variable."}, prop->Start());
+        } else {
+            checker->ThrowTypeError({"Enum constant does not have property '", prop->Name(), "'."}, prop->Start());
+        }
     }
 
     auto *const member = FindMember(prop->Name());
@@ -165,38 +177,27 @@ bool ETSEnumInterface::IsSameEnumLiteralType(const ETSEnumInterface *const other
     return member_ == other->member_;
 }
 
+[[maybe_unused]] static const ETSEnumInterface *SpecifyEnumInterface(const checker::Type *enumType)
+{
+    if (enumType->IsETSEnumType()) {
+        return enumType->AsETSEnumType();
+    }
+    if (enumType->IsETSStringEnumType()) {
+        return enumType->AsETSStringEnumType();
+    }
+    return nullptr;
+}
+
 bool ETSEnumInterface::IsEnumInstanceExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
-        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enumType->IsETSEnumType()) {
-            return enumType->AsETSEnumType();
-        }
-        if (enumType->IsETSStringEnumType()) {
-            return enumType->AsETSStringEnumType();
-        }
-        return nullptr;
-    }();
-
-    ASSERT(IsSameEnumType(enumInterface));
+    ASSERT(IsSameEnumType(SpecifyEnumInterface(expression->TsType())));
 
     return IsEnumLiteralExpression(expression) || !IsEnumTypeExpression(expression);
 }
 
 bool ETSEnumInterface::IsEnumLiteralExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
-        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enumType->IsETSEnumType()) {
-            return enumType->AsETSEnumType();
-        }
-        if (enumType->IsETSStringEnumType()) {
-            return enumType->AsETSStringEnumType();
-        }
-        return nullptr;
-    }();
-
-    ASSERT(IsSameEnumType(enumInterface));
+    ASSERT(IsSameEnumType(SpecifyEnumInterface(expression->TsType())));
 
     if (expression->IsMemberExpression()) {
         const auto *const memberExpr = expression->AsMemberExpression();
@@ -209,18 +210,12 @@ bool ETSEnumInterface::IsEnumLiteralExpression(const ir::Expression *const expre
 
 bool ETSEnumInterface::IsEnumTypeExpression(const ir::Expression *const expression) const noexcept
 {
-    [[maybe_unused]] ETSEnumInterface const *const enumInterface =
-        [enumType = expression->TsType()]() -> ETSEnumInterface const * {
-        if (enumType->IsETSEnumType()) {
-            return enumType->AsETSEnumType();
-        }
-        if (enumType->IsETSStringEnumType()) {
-            return enumType->AsETSStringEnumType();
-        }
-        return nullptr;
-    }();
-
-    ASSERT(IsSameEnumType(enumInterface));
+    auto specifiedEnumInterface = SpecifyEnumInterface(expression->TsType());
+    if (specifiedEnumInterface != nullptr) {
+        ASSERT(IsSameEnumType(specifiedEnumInterface));
+    } else {
+        return false;
+    }
 
     if (expression->IsCallExpression()) {
         return false;

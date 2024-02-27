@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,13 @@
 #include "libpandabase/os/file.h"
 #include "es2panda.h"
 #include "util/helpers.h"
+#include "utils/pandargs.h"
+#include "arktsconfig.h"
 
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <variant>
 
 namespace ark {
 class PandArgParser;
@@ -113,6 +116,121 @@ public:
                 UNREACHABLE();
             }
         }
+    }
+
+    void DetermineLogLevel(const ark::PandArg<std::string> &logLevel)
+    {
+        if (const auto logLevelStr = logLevel.GetValue(); !logLevelStr.empty()) {
+            if (logLevelStr == "debug") {
+                logLevel_ = util::LogLevel::DEBUG;
+            } else if (logLevelStr == "info") {
+                logLevel_ = util::LogLevel::INFO;
+            } else if (logLevelStr == "warning") {
+                logLevel_ = util::LogLevel::WARNING;
+            } else if (logLevelStr == "error") {
+                logLevel_ = util::LogLevel::ERROR;
+            } else if (logLevelStr == "fatal") {
+                logLevel_ = util::LogLevel::FATAL;
+            } else {
+                logLevel_ = util::LogLevel::INVALID;
+                std::cerr << "Invalid log level: '" << logLevelStr
+                          << R"('. Possible values: ["debug", "info", "warning", "error", "fatal"])";
+            }
+        }
+    }
+
+    void DetermineExtension(const std::string &extension, const std::string &sourceFileExtension,
+                            std::ifstream &inputStream, const ark::PandArg<std::string> &arktsConfig,
+                            const es2panda::CompilationMode &compMode)
+    {
+        bool extensionIsEmpty = extension.empty();
+        if (!sourceFile_.empty() && !extensionIsEmpty && extension != sourceFileExtension) {
+            std::cerr << "Warning: Not matching extensions! Sourcefile: " << sourceFileExtension
+                      << ", Manual(used): " << extension << std::endl;
+        }
+        auto tempExtension = !extensionIsEmpty ? extension : sourceFileExtension;
+        if (tempExtension == "js") {
+            extension_ = es2panda::ScriptExtension::JS;
+#ifndef PANDA_WITH_ECMASCRIPT
+            errorMsg_ = "js extension is not supported within current build";
+            extension_ = es2panda::ScriptExtension::INVALID;
+            return;
+#endif
+        } else if (tempExtension == "ts") {
+            extension_ = es2panda::ScriptExtension::TS;
+        } else if (tempExtension == "as") {
+            extension_ = es2panda::ScriptExtension::AS;
+        } else if (tempExtension == "ets") {
+            extension_ = es2panda::ScriptExtension::ETS;
+
+            inputStream.open(arktsConfig.GetValue());
+            if (inputStream.fail()) {
+                errorMsg_ = "Failed to open arktsconfig: ";
+                errorMsg_.append(arktsConfig.GetValue());
+                extension_ = es2panda::ScriptExtension::INVALID;
+                return;
+            }
+            inputStream.close();
+        } else if (extensionIsEmpty && (compMode == CompilationMode::PROJECT)) {
+            extension_ = es2panda::ScriptExtension::ETS;
+        } else {
+            if (!extensionIsEmpty) {
+                errorMsg_ = "Invalid extension (available options: js, ts, as, ets)";
+            } else {
+                errorMsg_ =
+                    "Unknown extension of sourcefile, set the extension manually or change the file format (available "
+                    "options: js, ts, as, ets)";
+            }
+            extension_ = es2panda::ScriptExtension::INVALID;
+            return;
+        }
+    }
+
+    CompilationMode DetermineCompilationMode(const ark::PandArg<bool> &genStdLib,
+                                             const ark::PandArg<std::string> &inputFile) const
+    {
+        return genStdLib.GetValue()           ? CompilationMode::GEN_STD_LIB
+               : inputFile.GetValue().empty() ? CompilationMode::PROJECT
+                                              : CompilationMode::SINGLE_FILE;
+    }
+
+    void AddOptionFlags(const ark::PandArg<bool> &opParseOnly, const ark::PandArg<bool> &opModule,
+                        const ark::PandArg<bool> &opSizeStat)
+    {
+        if (opParseOnly.GetValue()) {
+            options_ |= OptionFlags::PARSE_ONLY;
+        }
+
+        if (opModule.GetValue()) {
+            options_ |= OptionFlags::PARSE_MODULE;
+        }
+
+        if (opSizeStat.GetValue()) {
+            options_ |= OptionFlags::SIZE_STAT;
+        }
+    }
+
+    bool CheckEtsSpecificOptions(const ark::PandArg<std::string> &opTsDeclOut,
+                                 const es2panda::CompilationMode &compMode,
+                                 const ark::PandArg<std::string> &arktsConfig)
+    {
+        if (extension_ != es2panda::ScriptExtension::ETS) {
+            if (compMode == CompilationMode::PROJECT) {
+                errorMsg_ = "Error: only --extension=ets is supported for project compilation mode.";
+                return false;
+            }
+            if (!opTsDeclOut.GetValue().empty()) {
+                errorMsg_ = "Error: only --extension=ets is supported for --gen-ts-decl option";
+                return false;
+            }
+        } else {
+            if (!compilerOptions_.arktsConfig->Parse()) {
+                errorMsg_ = "Invalid ArkTsConfig: ";
+                errorMsg_.append(arktsConfig.GetValue());
+                return false;
+            }
+        }
+        return true;
     }
 
     const std::string &SourceFile() const
