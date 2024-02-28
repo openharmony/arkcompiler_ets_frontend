@@ -195,6 +195,15 @@ public:
         useDefineSemantic_ = useDefineSemantic;
     }
 
+    void SetShared(bool isShared)
+    {
+        isShared_ = isShared;
+    }
+
+    bool IsShared() const
+    {
+        return isShared_;
+    }
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -217,6 +226,7 @@ private:
     bool isDebug_ {false};
     int targetApiVersion_ {0};
     bool useDefineSemantic_ {true};
+    bool isShared_ {false};
 };
 
 }  // namespace panda::es2panda::parser

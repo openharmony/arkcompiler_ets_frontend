@@ -132,6 +132,7 @@ private:
     void GenCommonjsRecord() const;
     void GenESTypeAnnotationRecord() const;
     void AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context);
+    void AddSharedModuleRecord(const CompilerContext *context);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;
