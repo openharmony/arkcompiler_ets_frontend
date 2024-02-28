@@ -379,11 +379,15 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         if (elementType->IsETSObjectType()) {
             auto *calleeObj = elementType->AsETSObjectType();
-            if (!calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
+            const auto flags = checker::ETSObjectFlags::ABSTRACT | checker::ETSObjectFlags::INTERFACE;
+            if (!calleeObj->HasObjectFlag(flags)) {
                 // A workaround check for new Interface[...] in test cases
                 expr->SetSignature(
                     checker->CollectParameterlessConstructor(calleeObj->ConstructSignatures(), expr->Start()));
                 checker->ValidateSignatureAccessibility(calleeObj, nullptr, expr->Signature(), expr->Start());
+            } else {
+                checker->ThrowTypeError("Cannot use array creation expression with abstract classes and interfaces.",
+                                        expr->Start());
             }
         }
     }
