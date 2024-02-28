@@ -330,6 +330,17 @@ Specifies to keep names in the given `.d.ts` file. Here filepath can be also a d
 `d.ts` files under the given directory will be kept.
 If your are building HAR with this option, then the kept names will be merged into the resulting `obfuscation.txt`.
 
+#### `-keep` path
+Names(such as variable names, class names, property names, etc.) in the specified path are not obfuscated. This path can be a file or a folder. If it is a folder, the files in the folder and the files in subfolders will not be obfuscated.  
+The path only supports relative paths, `./` and `../` are relative to the directory where the obfuscation configuration file is located.
+```
+-keep
+./src/main/ets/fileName.ts  // The names in fileName.ts are not obfusated.
+../folder                   // The names of files and subfolders in the folder directory are not obfusated.
+../oh_modules/json5         // The names of all files in the referenced library json5 are not obfusated.
+```
+Note: This option does not affect the function of file name obfuscation `-enable-filename-obfuscation`
+
 ### Comments
 
 You can write comments in obfuscation rule file by using `#`. The line begins with `#` is treated as comment.

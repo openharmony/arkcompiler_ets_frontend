@@ -194,7 +194,7 @@ namespace secharmony {
   }
 
   export function getMangleCompletePath(originalCompletePath: string): string {
-    originalCompletePath = toUnixPath(originalCompletePath);
+    originalCompletePath = FileUtils.toUnixPath(originalCompletePath);
     const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(originalCompletePath);
     const mangleFilePath = manglFileName(filePathWithoutSuffix);
     return mangleFilePath + extension;
@@ -311,13 +311,4 @@ function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration
     return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, structMembersWithVirtualConstructor);
   }
   return node;
-}
-
-function toUnixPath(data: string): string {
-  if (/^win/.test(require('os').platform())) {
-    const fileTmps: string[] = data.split(path.sep);
-    const newData: string = path.posix.join(...fileTmps);
-    return newData;
-  }
-  return data;
 }

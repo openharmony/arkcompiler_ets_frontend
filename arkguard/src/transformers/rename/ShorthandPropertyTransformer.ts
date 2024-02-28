@@ -37,7 +37,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
-import { performancePrinter } from '../../ArkObfuscator';
+import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList, TimeSumPrinter } from '../../utils/PrinterUtils';
 
 namespace secharmony {
@@ -53,6 +53,10 @@ namespace secharmony {
       return shorthandPropertyTransformer;
 
       function shorthandPropertyTransformer(node: Node): Node {
+        if (isSourceFile(node) && ArkObfuscator.isKeptCurrentFile) {
+          return node;
+        }
+
         performancePrinter?.singleFilePrinter?.startEvent(EventList.SHORT_HAND_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret = transformShortHandProperty(node);
         let parentNodes = setParentRecursive(ret, true);

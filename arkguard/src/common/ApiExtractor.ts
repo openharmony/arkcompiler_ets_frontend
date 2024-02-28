@@ -491,18 +491,7 @@ export namespace ApiExtractor {
 
         forEachChild(sourceFile, visitProjectExport);
         forEachChild(sourceFile, visitProjectNode);
-
-        if (!isRemoteHar(fileName) && scanProjectConfig.mExportObfuscation) {
-          mCurrentExportedPropertySet.clear();
-          mCurrentExportNameSet.clear();
-          return;
-        }
-
-        if (scanProjectConfig.mExportObfuscation) {
-          mCurrentExportNameSet.forEach((element) => {
-            mLibExportNameSet.add(element);
-          });
-        }
+        mCurrentExportedPropertySet = handleWhiteListWhenExportObfs(fileName, mCurrentExportedPropertySet);
         break;
       case ApiType.CONSTRUCTOR_PROPERTY:
         forEachChild(sourceFile, visitNodeForConstructorProperty);
@@ -515,6 +504,27 @@ export namespace ApiExtractor {
     mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
     mCurrentExportedPropertySet.clear();
   };
+
+  function handleWhiteListWhenExportObfs(fileName: string, mCurrentExportedPropertySet: Set<string>): Set<string> {
+    // If mExportObfuscation is not enabled, collect the export names and their properties into the whitelist.
+    if (!scanProjectConfig.mExportObfuscation) {
+      return mCurrentExportedPropertySet;
+    }
+    // If the current file is a keep file or its dependent file, collect the export names and their properties into the whitelist.
+    if (scanProjectConfig.mkeepFilesAndDependencies?.has(fileName)) {
+      return mCurrentExportedPropertySet;
+    }
+    // If it is a project source code file, the names and their properties of the export will not be collected.
+    if (!isRemoteHar(fileName)) {
+      mCurrentExportedPropertySet.clear();
+      return mCurrentExportedPropertySet;
+    }
+    // If it is a third-party library file, collect the export names.
+    mCurrentExportNameSet.forEach((element) => {
+      mLibExportNameSet.add(element);
+    });
+    return mCurrentExportedPropertySet;
+  }
 
   const projectExtensions: string[] = ['.ets', '.ts', '.js'];
   const projectDependencyExtensions: string[] = ['.d.ets', '.d.ts', '.ets', '.ts', '.js'];
@@ -623,7 +633,7 @@ export namespace ApiExtractor {
       traverseApiFiles(projectPath, scanningApiType);
     }
 
-    let reservedProperties: string[] = customProfiles.mExportObfuscation ? [] : [...mPropertySet];
+    let reservedProperties: string[] = [...mPropertySet];
     mPropertySet.clear();
     return reservedProperties;
   }
@@ -687,7 +697,7 @@ export namespace ApiExtractor {
     projectPaths.forEach(path => {
       parseFile(path, scanningApiType);
     })
-    let reservedProperties: string[] = customProfiles.mExportObfuscation ? [] : [...mPropertySet];
+    let reservedProperties: string[] = [...mPropertySet];
     mPropertySet.clear();
     return reservedProperties;
   }
