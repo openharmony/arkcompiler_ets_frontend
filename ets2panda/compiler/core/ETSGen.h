@@ -937,7 +937,7 @@ private:
     arguments[idx]->Compile(this);                                                                            \
     VReg arg##idx = AllocReg();                                                                               \
     ApplyConversion(arguments[idx], nullptr);                                                                 \
-    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
     void CallThisImpl(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
@@ -1046,7 +1046,7 @@ private:
     auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
     VReg arg##idx = AllocReg();                                                                                \
     arguments[idx]->Compile(this);                                                                             \
-    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
     void CallDynamicImpl(const ir::AstNode *node, VReg &obj, VReg &param2, checker::Signature *signature,

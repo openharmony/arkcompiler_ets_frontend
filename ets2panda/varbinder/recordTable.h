@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_recordTable_RECORD_TABLE_H
-#define ES2PANDA_recordTable_RECORD_TABLE_H
+#ifndef ES2PANDA_VARBINDER_RECORDTABLE_H
+#define ES2PANDA_VARBINDER_RECORDTABLE_H
 
 #include "macros.h"
 #include "utils/arena_containers.h"

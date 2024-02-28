@@ -2682,7 +2682,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     auto exprType = expr->expr_->Check(checker);
-
     if (!checker->MayHaveNulllikeValue(exprType)) {
         checker->ThrowTypeError("Bad operand type, the operand of the non-null expression must be a nullable type",
                                 expr->Expr()->Start());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,7 +32,6 @@ void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
     isRelative_ = false;
     allocator_ = allocator;
     path_ = util::UString(path, allocator).View();
-
     if (*(path_.Bytes()) == '.') {
         isRelative_ = true;
     }

@@ -122,7 +122,6 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
 
         auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(checker->Allocator(), name, getter);
         auto var = methodScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
-
         if (var == nullptr) {
             auto prevDecl = methodScope->FindDecl(name);
             ASSERT(prevDecl->IsFunctionDecl());

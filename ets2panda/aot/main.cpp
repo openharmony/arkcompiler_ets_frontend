@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,7 +54,6 @@ public:
 static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, util::Options *options)
 {
     auto program = std::unique_ptr<pandasm::Program> {compiler.Compile(input, options->CompilerOptions())};
-
     if (program == nullptr) {
         const auto &err = compiler.GetError();
 
@@ -126,7 +125,6 @@ static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<st
 static int Run(int argc, const char **argv)
 {
     auto options = std::make_unique<util::Options>();
-
     if (!options->Parse(argc, argv)) {
         std::cerr << options->ErrorMsg() << std::endl;
         return 1;

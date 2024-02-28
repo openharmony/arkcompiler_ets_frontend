@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -289,7 +289,6 @@ ir::TSEnumMember *ETSEnumInterface::FindMember(const util::StringView &name) con
     auto memberIt = std::find_if(members.begin(), members.end(), [name](const ir::AstNode *const node) {
         return node->AsTSEnumMember()->Key()->AsIdentifier()->Name() == name;
     });
-
     if (memberIt != members.end()) {
         return (*memberIt)->AsTSEnumMember();
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1349,7 +1349,6 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
         case ir::AstNodeType::IDENTIFIER: {
             const util::StringView &identifier = expr->AsIdentifier()->Name();
             bool isOptional = expr->AsIdentifier()->IsOptional();
-
             if ((*seenOptional) && !isOptional) {
                 ThrowSyntaxError("A required parameter cannot follow an optional parameter.", expr->Start());
             }

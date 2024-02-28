@@ -860,7 +860,6 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
                stmt->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsThisExpression();
     });
-
     // There is an alternate constructor invocation, no need for super constructor invocation
     if (thisCall != stmts.end()) {
         return;
@@ -870,13 +869,11 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
                stmt->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression();
     });
-
     // There is no super expression
     if (superExpr == stmts.end()) {
         const auto superTypeCtorSigs = classType->SuperType()->ConstructSignatures();
         const auto superTypeCtorSig = std::find_if(superTypeCtorSigs.begin(), superTypeCtorSigs.end(),
                                                    [](const Signature *sig) { return sig->Params().empty(); });
-
         // Super type has no parameterless ctor
         if (superTypeCtorSig == superTypeCtorSigs.end()) {
             ThrowTypeError("Must call super constructor", ctorSig->Function()->Start());
@@ -940,7 +937,6 @@ void ETSChecker::CheckConstFieldInitialized(const Signature *signature, varbinde
     bool initialized = false;
     const auto &stmts = signature->Function()->Body()->AsBlockStatement()->Statements();
     const auto it = stmts.begin();
-
     if (it != stmts.end()) {
         if (const auto *first = *it;
             first->IsExpressionStatement() && first->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
@@ -1528,7 +1524,6 @@ Type *ETSChecker::FindLeastUpperBound(Type *source, Type *target)
 
     // GetCommonClass(GenA<A>, GenB<B>) => LUB(GenA, GenB)<T>
     auto commonClass = GetCommonClass(source, target);
-
     if (!commonClass->IsETSObjectType() || !commonClass->HasTypeFlag(TypeFlag::GENERIC)) {
         return commonClass->HasTypeFlag(TypeFlag::CONSTANT) ? commonClass->Variable()->TsType() : commonClass;
     }
