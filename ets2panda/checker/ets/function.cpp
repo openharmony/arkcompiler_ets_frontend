@@ -113,6 +113,10 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     if (paramType->IsETSObjectType()) {
         return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution);
     }
+    if (paramType->IsETSArrayType()) {
+        return EnhanceSubstitutionForArray(typeParams, paramType->AsETSArrayType(), argumentType, substitution);
+    }
+
     return true;
 }
 
@@ -202,6 +206,15 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
     }
 
     return true;
+}
+
+bool ETSChecker::EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *const paramType,
+                                             Type *const argumentType, Substitution *const substitution)
+{
+    auto *const elementType =
+        argumentType->IsETSArrayType() ? argumentType->AsETSArrayType()->ElementType() : argumentType;
+
+    return EnhanceSubstitutionForType(typeParams, paramType->ElementType(), elementType, substitution);
 }
 
 Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,

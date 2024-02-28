@@ -2055,6 +2055,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
 
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
     // Object expression requires that its type be set by the context before checking. in this case, the target type
     // provides that context.
