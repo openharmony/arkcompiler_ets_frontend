@@ -41,7 +41,7 @@ bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::str
     }
     do {
         if (fileInfo.attrib & _A_SUBDIR) {
-            if((!strncmp(fileInfo.name, ".", 1)) || (!strncmp(fileInfo.name, "..", 2))) {
+            if ((!strncmp(fileInfo.name, ".", 1)) || (!strncmp(fileInfo.name, "..", 2))) {
                 continue;
             }
             if (!GetProtoFiles(path.assign(protoBinPath).append("\\").append(fileInfo.name), protoBinSuffix,
@@ -65,7 +65,7 @@ bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::str
     dirent *dir = nullptr;
     std::string pathPrefix = protoBinPath + "/";
     while ((dir = readdir(protoBin)) != nullptr) {
-        if((!strncmp(dir->d_name, ".", 1)) || (!strncmp(dir->d_name, "..", 2))) {
+        if ((!strncmp(dir->d_name, ".", 1)) || (!strncmp(dir->d_name, "..", 2))) {
             continue;
         }
         if (dir->d_type == DT_DIR) {

@@ -71,7 +71,6 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
 
                             return false;
                         });
-
         if (!foundProp) {
             relation->Result(false);
             return;
@@ -80,7 +79,6 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
 
     const ArenaVector<Signature *> &targetCallSignatures = CallSignatures();
     const ArenaVector<Signature *> &sourceCallSignatures = otherInterface->CallSignatures();
-
     if (targetCallSignatures.size() != sourceCallSignatures.size()) {
         relation->Result(false);
         return;

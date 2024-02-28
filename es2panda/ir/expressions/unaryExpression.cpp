@@ -80,14 +80,14 @@ void UnaryExpression::Compile(compiler::PandaGen *pg) const
                 const ir::Identifier *ident = argument_->AsIdentifier();
 
                 binder::ScopeFindResult res = pg->Scope()->Find(ident->Name());
-                if (!res.variable && !pg->isDebuggerEvaluateExpressionMode()) {
+                if (!res.variable && !pg->IsDebuggerEvaluateExpressionMode()) {
                     compiler::RegScope rs(pg);
                     compiler::VReg global = pg->AllocReg();
 
                     pg->LoadConst(this, compiler::Constant::JS_GLOBAL);
                     pg->StoreAccumulator(this, global);
                     pg->LoadObjByName(this, global, ident->Name());
-                } else if (!res.variable && pg->isDebuggerEvaluateExpressionMode()) {
+                } else if (!res.variable && pg->IsDebuggerEvaluateExpressionMode()) {
                     // false: typeof an undeclared variable will return undefined
                     pg->LoadObjByNameViaDebugger(this, ident->Name(), false);
                 } else {

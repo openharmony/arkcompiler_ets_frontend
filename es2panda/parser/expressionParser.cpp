@@ -1234,7 +1234,7 @@ static size_t GetOperatorPrecedence(lexer::TokenType operatorType)
             return precedence;
         }
         default: {
-           UNREACHABLE();
+            UNREACHABLE();
         }
     }
 }

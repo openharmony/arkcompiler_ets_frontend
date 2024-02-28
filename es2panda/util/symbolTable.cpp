@@ -77,7 +77,6 @@ bool SymbolTable::ReadSymbolTable(const std::string &symbolTable)
 
     while (std::getline(ifs, line)) {
         auto itemList = GetStringItems(line, FIRST_LEVEL_SEPERATOR);
-
         if (itemList.size() == FUNCTION_ITEM_NUMBER) {
             // read function info
             struct OriginFunctionInfo info(&allocator_);

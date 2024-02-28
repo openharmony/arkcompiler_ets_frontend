@@ -80,7 +80,6 @@ void RegAllocator::Run(IRNode *ins)
 {
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     auto regCnt = ins->Registers(&regs);
-
     if (regCnt == 0) {
         return PushBack(ins);
     }
@@ -128,7 +127,6 @@ void RegAllocator::AdjustInsRegWhenHasSpill()
         std::vector<OperandKind> regsKind;
         std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
         auto regCnt = ins->Registers(&regs);
-
         if (regCnt == 0) {
             newInsns.push_back(ins);
             continue;
