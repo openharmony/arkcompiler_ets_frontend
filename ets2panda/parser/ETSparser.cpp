@@ -3672,10 +3672,11 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
             }
 
             ordinal = ParseNumberLiteral()->AsNumberLiteral();
+            if (minusSign) {
+                ordinal->Number().Negate();
+            }
             if (!ordinal->Number().CanGetValue<checker::ETSEnumType::ValueType>()) {
                 ThrowSyntaxError(INVALID_ENUM_VALUE);
-            } else if (minusSign) {
-                ordinal->Number().Negate();
             }
 
             currentValue = ordinal->Number().GetValue<checker::ETSEnumType::ValueType>();
