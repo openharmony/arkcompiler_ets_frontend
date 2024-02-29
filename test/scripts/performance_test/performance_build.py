@@ -175,7 +175,8 @@ class PerformanceBuild():
     def start_build(self, is_debug):
         if self.config.developing_test_data_path:
             # test data
-            self.collect_build_data(is_debug, os.path.join(os.path.dirname(__file__), self.config.developing_test_data_path))
+            self.collect_build_data(is_debug, os.path.join(os.path.dirname(__file__),
+                                                           self.config.developing_test_data_path))
             return True
         reports_before = []
         report_dir = '.hvigor/report'

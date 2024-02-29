@@ -98,8 +98,6 @@ def get_download_url(task_name, image_date):
                 break
         except BaseException as err:
             print(err)
-    if download_url_suffix == '':
-        return None
     download_url = 'http://download.ci.openharmony.cn/' + download_url_suffix
     return download_url
 
@@ -293,6 +291,9 @@ def get_the_image(task_name, download_url, image_date, output_path_list):
     download_save_path = configs.get('download_save_path')
     if download_url == '':
         download_url = get_download_url(task_name, image_date)
+        if download_url == 'http://download.ci.openharmony.cn/':
+            print('get download url failed')
+            return False
     file_name = parse_file_name(download_url)
     if output_path_list is None:
         output_path_list = get_task_config(file_name)[2]
