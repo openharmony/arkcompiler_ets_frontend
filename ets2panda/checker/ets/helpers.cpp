@@ -612,23 +612,8 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbi
         WrongContextErrorClassifyByType(ident, resolved);
     }
 
-    if (assignmentExpr->Right() == ident) {
-        const auto *const targetType = assignmentExpr->Left()->TsType();
-        ASSERT(targetType != nullptr);
-
-        if (targetType->IsETSObjectType() && targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            if (!type->IsETSFunctionType() &&
-                !(type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                ThrowTypeError({"Assigning a non-functional variable \"", ident->Name(), "\" to a functional type"},
-                               ident->Start());
-            }
-
-            return;
-        }
-
-        if (!resolved->Declaration()->PossibleTDZ()) {
-            WrongContextErrorClassifyByType(ident, resolved);
-        }
+    if (assignmentExpr->Right() == ident && (!resolved->Declaration()->PossibleTDZ() && !type->IsETSFunctionType())) {
+        WrongContextErrorClassifyByType(ident, resolved);
     }
 }
 

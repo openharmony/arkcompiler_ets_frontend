@@ -446,4 +446,4 @@
     }
   }
 }
-TypeError: Assigning a non-functional variable "b" to a functional type [assignment_non-functional_variable_to_functional_type_1.ets:20:9]
+TypeError: Type 'int' cannot be assigned to type '() => Int' [assignment_non-functional_variable_to_functional_type_1.ets:20:9]

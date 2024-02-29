@@ -455,4 +455,4 @@
     }
   }
 }
-TypeError: Function name "a" used in the wrong context [wrong_context_function_2.ets:23:9]
+TypeError: Type '() => void' cannot be assigned to type 'int' [wrong_context_function_2.ets:23:9]
