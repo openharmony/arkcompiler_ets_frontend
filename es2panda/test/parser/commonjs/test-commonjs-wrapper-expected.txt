@@ -142,11 +142,11 @@
                           "name": "a",
                           "loc": {
                             "start": {
-                              "line": 1,
+                              "line": 16,
                               "column": 5
                             },
                             "end": {
-                              "line": 1,
+                              "line": 16,
                               "column": 6
                             }
                           }
@@ -156,22 +156,22 @@
                           "value": 123,
                           "loc": {
                             "start": {
-                              "line": 1,
+                              "line": 16,
                               "column": 9
                             },
                             "end": {
-                              "line": 1,
+                              "line": 16,
                               "column": 12
                             }
                           }
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
+                            "line": 16,
                             "column": 5
                           },
                           "end": {
-                            "line": 1,
+                            "line": 16,
                             "column": 12
                           }
                         }
@@ -180,11 +180,11 @@
                     "kind": "let",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 16,
                         "column": 1
                       },
                       "end": {
-                        "line": 1,
+                        "line": 16,
                         "column": 13
                       }
                     }
@@ -203,11 +203,11 @@
                             "name": "module",
                             "loc": {
                               "start": {
-                                "line": 2,
+                                "line": 17,
                                 "column": 1
                               },
                               "end": {
-                                "line": 2,
+                                "line": 17,
                                 "column": 7
                               }
                             }
@@ -217,11 +217,11 @@
                             "name": "exports",
                             "loc": {
                               "start": {
-                                "line": 2,
+                                "line": 17,
                                 "column": 8
                               },
                               "end": {
-                                "line": 2,
+                                "line": 17,
                                 "column": 15
                               }
                             }
@@ -230,11 +230,11 @@
                           "optional": false,
                           "loc": {
                             "start": {
-                              "line": 2,
+                              "line": 17,
                               "column": 1
                             },
                             "end": {
-                              "line": 2,
+                              "line": 17,
                               "column": 15
                             }
                           }
@@ -244,11 +244,11 @@
                           "name": "a",
                           "loc": {
                             "start": {
-                              "line": 2,
+                              "line": 17,
                               "column": 16
                             },
                             "end": {
-                              "line": 2,
+                              "line": 17,
                               "column": 17
                             }
                           }
@@ -257,11 +257,11 @@
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 2,
+                            "line": 17,
                             "column": 1
                           },
                           "end": {
-                            "line": 2,
+                            "line": 17,
                             "column": 17
                           }
                         }
@@ -271,33 +271,33 @@
                         "name": "a",
                         "loc": {
                           "start": {
-                            "line": 2,
+                            "line": 17,
                             "column": 20
                           },
                           "end": {
-                            "line": 2,
+                            "line": 17,
                             "column": 21
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 2,
+                          "line": 17,
                           "column": 1
                         },
                         "end": {
-                          "line": 2,
+                          "line": 17,
                           "column": 21
                         }
                       }
                     },
                     "loc": {
                       "start": {
-                        "line": 2,
+                        "line": 17,
                         "column": 1
                       },
                       "end": {
-                        "line": 2,
+                        "line": 17,
                         "column": 22
                       }
                     }
@@ -309,7 +309,7 @@
                     "column": 1
                   },
                   "end": {
-                    "line": 2,
+                    "line": 17,
                     "column": 22
                   }
                 }

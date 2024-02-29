@@ -40,7 +40,7 @@ void ChainExpression::Compile(compiler::PandaGen *pg) const
     if (expression_->IsMemberExpression()) {
         expression_->AsMemberExpression()->Compile(pg);
     } else {
-        assert(expression_->IsCallExpression());
+        ASSERT(expression_->IsCallExpression());
         expression_->AsCallExpression()->Compile(pg);
     }
 }

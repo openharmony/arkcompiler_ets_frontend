@@ -8,22 +8,22 @@
         "value": "use strict",
         "loc": {
           "start": {
-            "line": 1,
+            "line": 16,
             "column": 1
           },
           "end": {
-            "line": 1,
+            "line": 16,
             "column": 13
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 16,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 16,
           "column": 13
         }
       }
@@ -38,11 +38,11 @@
             "name": "foo",
             "loc": {
               "start": {
-                "line": 3,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 3,
+                "line": 18,
                 "column": 8
               }
             }
@@ -56,11 +56,11 @@
                 "name": "is",
                 "loc": {
                   "start": {
-                    "line": 3,
+                    "line": 18,
                     "column": 20
                   },
                   "end": {
-                    "line": 3,
+                    "line": 18,
                     "column": 22
                   }
                 }
@@ -74,44 +74,44 @@
                 "statements": [],
                 "loc": {
                   "start": {
-                    "line": 3,
+                    "line": 18,
                     "column": 25
                   },
                   "end": {
-                    "line": 4,
+                    "line": 19,
                     "column": 2
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 18,
                   "column": 11
                 },
                 "end": {
-                  "line": 4,
+                  "line": 19,
                   "column": 2
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 3,
+                "line": 18,
                 "column": 11
               },
               "end": {
-                "line": 4,
+                "line": 19,
                 "column": 2
               }
             }
           },
           "loc": {
             "start": {
-              "line": 3,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 4,
+              "line": 19,
               "column": 2
             }
           }
@@ -120,11 +120,11 @@
       "kind": "let",
       "loc": {
         "start": {
-          "line": 3,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 19,
           "column": 2
         }
       }
@@ -136,7 +136,7 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 19,
       "column": 2
     }
   }

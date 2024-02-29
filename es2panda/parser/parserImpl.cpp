@@ -532,7 +532,7 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
             if (*options & (TypeAnnotationParsingOptions::IN_MODIFIER |
-	        TypeAnnotationParsingOptions::IN_INTERSECTION)) {
+                TypeAnnotationParsingOptions::IN_INTERSECTION)) {
                 break;
             }
 
@@ -1509,7 +1509,8 @@ util::StringView GetTSPropertyName(ir::Expression *key)
     }
 }
 
-void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *member, ArenaVector<ir::Expression *> const &members)
+void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *member,
+    ArenaVector<ir::Expression *> const &members)
 {
     ir::Expression *key = nullptr;
 
@@ -2138,9 +2139,7 @@ void ParserImpl::ParseClassKeyModifiers(ClassElmentDescriptor *desc)
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         return;
     }
-
     char32_t nextCp = lexer_->Lookahead();
-
     if ((Extension() == ScriptExtension::JS && nextCp != LEX_CHAR_LEFT_PAREN) ||
         (Extension() == ScriptExtension::TS &&
         nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON && nextCp != LEX_CHAR_LEFT_PAREN &&
@@ -3769,7 +3768,8 @@ bool ParserImpl::CurrentTokenIsModifier(char32_t nextCp) const
 void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
 {
     ThrowSyntaxError(
-        {"'", (status & ir::ModifierFlags::STATIC) ? "static" : ((status & ir::ModifierFlags::ASYNC) ? "async" : "declare") ,
+        {"'", (status & ir::ModifierFlags::STATIC) ? "static" :
+                                                     ((status & ir::ModifierFlags::ASYNC) ? "async" : "declare"),
          "' modifier cannot appear on a parameter."},
         lexer_->GetToken().Start());
 }

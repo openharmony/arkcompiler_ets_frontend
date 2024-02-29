@@ -88,7 +88,7 @@ public:
     explicit LabelContext(PandaGen *pg, const ir::LabelledStatement *labelledStmt);
     NO_COPY_SEMANTIC(LabelContext);
     NO_MOVE_SEMANTIC(LabelContext);
-    ~LabelContext();
+    ~LabelContext() override;
 
     DynamicContextType Type() const override
     {
@@ -105,7 +105,7 @@ public:
     explicit LexEnvContext(LoopEnvScope *envScope, PandaGen *pg, LabelTarget target);
     NO_COPY_SEMANTIC(LexEnvContext);
     NO_MOVE_SEMANTIC(LexEnvContext);
-    ~LexEnvContext();
+    ~LexEnvContext() override;
 
     DynamicContextType Type() const override
     {
@@ -126,7 +126,7 @@ public:
     explicit IteratorContext(PandaGen *pg, const Iterator &iterator, LabelTarget target);
     NO_COPY_SEMANTIC(IteratorContext);
     NO_MOVE_SEMANTIC(IteratorContext);
-    ~IteratorContext();
+    ~IteratorContext() override;
 
     DynamicContextType Type() const override
     {
@@ -196,7 +196,7 @@ public:
 
     NO_COPY_SEMANTIC(TryContext);
     NO_MOVE_SEMANTIC(TryContext);
-    ~TryContext() = default;
+    ~TryContext() override = default;
 
     DynamicContextType Type() const override
     {
