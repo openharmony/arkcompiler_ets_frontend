@@ -2837,10 +2837,10 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
     auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
     auto *const returnTypeAnn = isSetter ? nullptr : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
-    auto *func =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        checker->AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn), body,
-                                               ir::ScriptFunction::ScriptFunctionData {funcFlags, flags, true});
+    auto *func = checker->AllocNode<ir::ScriptFunction>(
+        checker->Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
+                                                funcFlags, flags, true});
 
     func->SetRange(field->Range());
     func->SetScope(functionScope);

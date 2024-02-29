@@ -108,10 +108,11 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
         params.push_back(param);
         info->params.push_back(param->Ident()->Variable()->AsLocalVariable());
     }
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+
+    auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
     auto *func = AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), nullptr), nullptr,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(funcSignature),
+                                                             ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE});
     func->SetScope(scope);
 
     scope->BindNode(func);
@@ -209,23 +210,28 @@ std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateScriptFuncti
         body->SetScope(scope);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto signature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
+        // clang-format off
         func = AllocNode<ir::ScriptFunction>(
-            ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-            ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::STATIC_BLOCK |
-                                                        ir::ScriptFunctionFlags::EXPRESSION,
-                                                    ir::ModifierFlags::STATIC});
+            Allocator(), ir::ScriptFunction::ScriptFunctionData {
+                            body,
+                            std::move(signature),
+                            ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::EXPRESSION,
+                            ir::ModifierFlags::STATIC,
+                         });
+        // clang-format on
     } else {
         builder(scope, &statements, &params);
         auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
         body->SetScope(scope);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         id = AllocNode<ir::Identifier>(compiler::Signatures::CTOR, Allocator());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
         func = AllocNode<ir::ScriptFunction>(
-            ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-            ir::ScriptFunction::ScriptFunctionData {
-                ir::ScriptFunctionFlags::CONSTRUCTOR | ir::ScriptFunctionFlags::EXPRESSION, ir::ModifierFlags::PUBLIC});
+            Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature),
+                                                                 ir::ScriptFunctionFlags::CONSTRUCTOR |
+                                                                     ir::ScriptFunctionFlags::EXPRESSION,
+                                                                 ir::ModifierFlags::PUBLIC});
     }
 
     func->SetScope(scope);
@@ -519,10 +525,11 @@ ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *class
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(scope);
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+
+    auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
     auto *func = AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, modifierFlags});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature),
+                                                             ir::ScriptFunctionFlags::METHOD, modifierFlags});
 
     func->SetScope(scope);
     scope->BindNode(func);

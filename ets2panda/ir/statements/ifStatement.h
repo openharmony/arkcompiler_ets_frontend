@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,16 +57,6 @@ public:
         return alternate_;
     }
     void TransformChildren(const NodeTransformer &cb) override;
-
-    void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override
-    {
-        if (consequent_ != nullptr) {
-            consequent_->SetReturnType(checker, type);
-        }
-        if (alternate_ != nullptr) {
-            alternate_->SetReturnType(checker, type);
-        }
-    }
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

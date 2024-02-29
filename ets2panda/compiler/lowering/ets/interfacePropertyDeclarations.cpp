@@ -100,12 +100,12 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), isSetter ? nullptr : field->TypeAnnotation());
 
-    auto *func = isSetter ? checker->AllocNode<ir::ScriptFunction>(
-                                std::move(signature), nullptr,
-                                ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::SETTER, flags, true})
-                          : checker->AllocNode<ir::ScriptFunction>(
-                                std::move(signature), nullptr,
-                                ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::GETTER, flags, true});
+    auto *func = checker->AllocNode<ir::ScriptFunction>(
+        checker->Allocator(), ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(signature),
+                                                                      isSetter ? ir::ScriptFunctionFlags::SETTER
+                                                                               : ir::ScriptFunctionFlags::GETTER,
+                                                                      flags, true});
+
     func->SetRange(field->Range());
 
     func->SetScope(functionScope);

@@ -162,9 +162,12 @@ template <typename ElementMaker>
         flags |= ir::ModifierFlags::DECLARE;
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    // clang-format off
     auto *const function = checker->AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation), bodyBlock,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, flags, isDeclare});
+        checker->Allocator(), ir::ScriptFunction::ScriptFunctionData {
+            bodyBlock, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnnotation),
+            ir::ScriptFunctionFlags::METHOD, flags, isDeclare});
+    // clang-format on
     function->SetScope(functionScope);
 
     varbinder->AsETSBinder()->BuildInternalName(function);

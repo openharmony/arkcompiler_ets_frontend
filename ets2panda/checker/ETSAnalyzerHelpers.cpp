@@ -111,11 +111,10 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
 
         scriptFunc->Body()->Check(checker);
 
-        // In case of inferred function's return type set it forcedly to all return statements;
-        if (scriptFunc->Signature()->HasSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE) &&
-            scriptFunc->ReturnTypeAnnotation() == nullptr && scriptFunc->Body() != nullptr &&
-            scriptFunc->Body()->IsStatement()) {
-            scriptFunc->Body()->AsStatement()->SetReturnType(checker, scriptFunc->Signature()->ReturnType());
+        if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
+            for (auto &returnStatement : scriptFunc->ReturnStatements()) {
+                returnStatement->SetReturnType(checker, scriptFunc->Signature()->ReturnType());
+            }
         }
 
         checker->Context().SetContainingSignature(nullptr);

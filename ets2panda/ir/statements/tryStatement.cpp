@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -110,18 +110,4 @@ checker::Type *TryStatement::Check([[maybe_unused]] checker::ETSChecker *checker
     return checker->GetAnalyzer()->Check(this);
 }
 
-void TryStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)
-{
-    if (block_ != nullptr) {
-        block_->SetReturnType(checker, type);
-    }
-    if (finalizer_ != nullptr) {
-        finalizer_->SetReturnType(checker, type);
-    }
-    for (auto *catchClause : catchClauses_) {
-        if (catchClause != nullptr) {
-            catchClause->SetReturnType(checker, type);
-        }
-    }
-}
 }  // namespace ark::es2panda::ir

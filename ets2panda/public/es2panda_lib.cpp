@@ -2012,7 +2012,8 @@ extern "C" es2panda_AstNode *CreateScriptFunction(es2panda_Context *context, es2
 
     ir::FunctionSignature sig(irTypeParams, std::move(irParams), irReturnTypeAnnotation);
     auto func = allocator->New<ir::ScriptFunction>(
-        std::move(sig), nullptr, ir::ScriptFunction::ScriptFunctionData {irFunctionFlags, irModifierFlags, isDeclare});
+        allocator,
+        ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(sig), irFunctionFlags, irModifierFlags, isDeclare});
     return reinterpret_cast<es2panda_AstNode *>(func);
 }
 

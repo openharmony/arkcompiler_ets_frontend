@@ -1970,8 +1970,10 @@ ir::ScriptFunction *ETSChecker::CreateProxyFunc(ir::ArrowFunctionExpression *lam
     }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *func = Allocator()->New<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), lambda->Function()->ReturnTypeAnnotation()), body,
-        ir::ScriptFunction::ScriptFunctionData {funcFlags, GetFlagsForProxyLambda(isStatic)});
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {
+            body, ir::FunctionSignature(nullptr, std::move(params), lambda->Function()->ReturnTypeAnnotation()),
+            funcFlags, GetFlagsForProxyLambda(isStatic)});
 
     func->SetScope(scope);
     if (!func->IsAsyncFunc()) {
@@ -2263,10 +2265,10 @@ ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(ArenaVector<ir::AstNo
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(scope);
-    auto *func =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                      ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::CONSTRUCTOR});
+    auto *func = AllocNode<ir::ScriptFunction>(
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::CONSTRUCTOR});
     func->SetScope(scope);
 
     // Set the scopes
@@ -2459,10 +2461,10 @@ ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(const lexer::SourceRa
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(scope);
-    auto *func =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                      ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::CONSTRUCTOR});
+    auto *func = AllocNode<ir::ScriptFunction>(
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::CONSTRUCTOR});
     func->SetScope(scope);
     // Bind the scopes
     scope->BindNode(func);
@@ -2531,8 +2533,9 @@ ir::MethodDefinition *ETSChecker::CreateLambdaInvokeProto(util::StringView invok
     body->SetScope(scope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *func = AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
     func->SetScope(scope);
 
     scope->BindNode(func);
@@ -3082,9 +3085,11 @@ ir::MethodDefinition *ETSChecker::CreateMethod(const util::StringView &name, ir:
     auto *nameId = AllocNode<ir::Identifier>(name, Allocator());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), paramScope);
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const func = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), returnType),
-                                                     body, ir::ScriptFunction::ScriptFunctionData {flags, modifiers});
+    // clang-format off
+    auto *const func = AllocNode<ir::ScriptFunction>(
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+            body, ir::FunctionSignature(nullptr, std::move(params), returnType), flags, modifiers});
+    // clang-format on
     func->SetScope(scope);
     func->SetIdent(nameId);
     if (body != nullptr && body->IsBlockStatement()) {
@@ -3195,10 +3200,10 @@ void ETSChecker::TransformTraillingLambda(ir::CallExpression *callExpr)
     }
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    auto *funcNode =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), trailingBlock,
-                                      ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::ARROW});
+    auto *funcNode = AllocNode<ir::ScriptFunction>(
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {trailingBlock,
+                                                             ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                             ir::ScriptFunctionFlags::ARROW});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);
@@ -3226,10 +3231,10 @@ ArenaVector<ir::Expression *> ETSChecker::ExtendArgumentsWithFakeLamda(ir::CallE
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(funcScope);
 
-    auto *funcNode =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                      ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::ARROW});
+    auto *funcNode = AllocNode<ir::ScriptFunction>(
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::ARROW});
     funcNode->SetScope(funcScope);
     funcScope->BindNode(funcNode);
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(Allocator(), funcNode);

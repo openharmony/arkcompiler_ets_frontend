@@ -104,4 +104,7 @@ compiler/ets/n_assignGenericWithNullableTypeParamToNonNullable.ets
 
 # Related to void revert
 compiler/ets/lambda_infer_type/lambda_cast_infer_type_void.ets
+
+# panda#15575
 compiler/ets/promiseVoid.ets
+

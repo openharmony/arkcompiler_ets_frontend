@@ -210,8 +210,11 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
 
     ir::AstNode *body = CreateFunctionBody(method, ctx, std::move(funcCallArgs));
 
-    auto *funcNode = checker->AllocNode<ir::ScriptFunction>(std::move(signature), body, method->Function()->Flags(),
-                                                            false, method->Function()->Language());
+    auto *funcNode = checker->AllocNode<ir::ScriptFunction>(
+        checker->Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {
+            body, std::move(signature), method->Function()->Flags(), {}, false, method->Function()->Language()});
+
     body->SetParent(funcNode);
     funcNode->AddModifier(method->Function()->Modifiers());
     funcNode->SetRange({startLoc, endLoc});
