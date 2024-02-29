@@ -83,7 +83,7 @@ public:
         return isDebug_;
     }
 
-    bool isDebuggerEvaluateExpressionMode() const
+    bool IsDebuggerEvaluateExpressionMode() const
     {
         return isDebuggerEvaluateExpressionMode_;
     }
@@ -139,7 +139,6 @@ public:
     bool IsRecordSource() const
     {
         return isRecordSource_;
-; 
     }
 
 private:

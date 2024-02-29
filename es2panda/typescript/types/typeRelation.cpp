@@ -141,7 +141,6 @@ bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 bool TypeRelation::IsComparableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->ComparableResults(), RelationType::COMPARABLE);
-
     if (result_ == RelationResult::CACHE_MISS) {
         if (IsAssignableTo(source, target)) {
             return true;

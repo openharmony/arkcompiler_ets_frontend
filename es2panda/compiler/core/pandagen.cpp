@@ -118,9 +118,9 @@ bool PandaGen::IsDebug() const
     return context_->IsDebug();
 }
 
-bool PandaGen::isDebuggerEvaluateExpressionMode() const
+bool PandaGen::IsDebuggerEvaluateExpressionMode() const
 {
-    return context_->isDebuggerEvaluateExpressionMode();
+    return context_->IsDebuggerEvaluateExpressionMode();
 }
 
 std::string PandaGen::SourceFile() const
@@ -537,7 +537,7 @@ void PandaGen::LoadObjByNameViaDebugger(const ir::AstNode *node, const util::Str
 
 void PandaGen::TryLoadGlobalByName(const ir::AstNode *node, const util::StringView &name)
 {
-    if (isDebuggerEvaluateExpressionMode()) {
+    if (IsDebuggerEvaluateExpressionMode()) {
         LoadObjByNameViaDebugger(node, name, true);
     } else {
         int64_t typeIndex = extractor::TypeExtractor::GetBuiltinTypeIndex(name);
@@ -570,7 +570,7 @@ void PandaGen::StoreObjByNameViaDebugger(const ir::AstNode *node, const util::St
 
 void PandaGen::TryStoreGlobalByName(const ir::AstNode *node, const util::StringView &name)
 {
-    if (isDebuggerEvaluateExpressionMode()) {
+    if (IsDebuggerEvaluateExpressionMode()) {
         StoreObjByNameViaDebugger(node, name);
     } else {
         ra_.Emit<Trystglobalbyname>(node, 0, name);
@@ -1278,14 +1278,14 @@ void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
         case 3: { // 2 args
             VReg arg0 = thisReg + 1;
             VReg arg1 = arg0 + 1;
-            ra_.Emit<Callthis2>(node, 0, thisReg , arg0, arg1);
+            ra_.Emit<Callthis2>(node, 0, thisReg, arg0, arg1);
             break;
         }
         case 4: { // 3 args
             VReg arg0 = thisReg + 1;
             VReg arg1 = arg0 + 1;
             VReg arg2 = arg1 + 1;
-            ra_.Emit<Callthis3>(node, 0, thisReg , arg0, arg1, arg2);
+            ra_.Emit<Callthis3>(node, 0, thisReg, arg0, arg1, arg2);
             break;
         }
         default: {
@@ -1781,7 +1781,8 @@ void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder:
     auto index = variable->Index();
     if (Context()->IsTypeExtractorEnabled()) {
         const ir::Identifier *identifier = nullptr;
-        const ir::AstNode *declareNode = Context()->TypeExtractor()->GetDeclNodeFromIdentifier(node->AsIdentifier(), &identifier);
+        const ir::AstNode *declareNode =
+            Context()->TypeExtractor()->GetDeclNodeFromIdentifier(node->AsIdentifier(), &identifier);
         int64_t typeIndex = Context()->TypeRecorder()->GetNodeTypeIndex(declareNode);
         if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
             index <= util::Helpers::MAX_INT8 ? ra_.EmitWithType<Ldexternalmodulevar>(node, typeIndex, index) :
@@ -2130,7 +2131,6 @@ Operand PandaGen::ToPropertyKey(const ir::Expression *prop, bool isComputed)
 VReg PandaGen::LoadPropertyKey(const ir::Expression *prop, bool isComputed)
 {
     Operand op = ToNamedPropertyKey(prop, isComputed);
-
     if (std::holds_alternative<util::StringView>(op)) {
         LoadAccumulatorString(prop, std::get<util::StringView>(op));
     } else if (std::holds_alternative<int64_t>(op)) {

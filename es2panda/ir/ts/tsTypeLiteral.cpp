@@ -54,7 +54,6 @@ checker::Type *TSTypeLiteral::Check(checker::Checker *checker) const
 checker::Type *TSTypeLiteral::GetType(checker::Checker *checker) const
 {
     auto found = checker->NodeCache().find(this);
-
     if (found != checker->NodeCache().end()) {
         return found->second;
     }

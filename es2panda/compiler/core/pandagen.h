@@ -262,7 +262,7 @@ public:
     void SetFunctionKind();
 
     bool IsDebug() const;
-    bool isDebuggerEvaluateExpressionMode() const;
+    bool IsDebuggerEvaluateExpressionMode() const;
     std::string SourceFile() const;
     uint32_t ParamCount() const;
     uint32_t FormalParametersCount() const;

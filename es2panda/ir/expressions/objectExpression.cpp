@@ -723,7 +723,6 @@ checker::Type *ObjectExpression::Check(checker::Checker *checker) const
 
         for (auto *spreadProp : spreadType->AsObjectType()->Properties()) {
             auto found = allPropertiesMap.find(spreadProp->Name());
-
             if (found != allPropertiesMap.end()) {
                 checker->ThrowTypeError(
                     {found->first, " is specified more than once, so this usage will be overwritten."}, found->second);

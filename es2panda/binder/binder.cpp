@@ -1066,7 +1066,6 @@ ClassTdz::ClassTdz(const ir::AstNode *parent, const ir::AstNode *childNode, Scop
      */
     bool isClassTdz = (parent->IsClassProperty() && childNode == parent->AsClassProperty()->Key()) ||
         (parent->IsMethodDefinition() && childNode == parent->AsMethodDefinition()->Key());
-
     if (!isClassTdz) {
         return;
     }
