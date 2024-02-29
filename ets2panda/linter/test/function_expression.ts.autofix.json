@@ -194,17 +194,16 @@
             "line": 56,
             "column": 17,
             "problem": "FunctionExpression",
-            "autofixable": false,
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1248,
+                    "end": 1291,
+                    "replacementText": "<T, E>(t: T, e: E) => {\n    return t;\n}"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
-        },
-        {
-            "line": 56,
-            "column": 17,
-            "problem": "LambdaWithTypeParameters",
-            "autofixable": false,
-            "suggest": "",
-            "rule": "Use generic functions instead of generic arrow functions (arkts-no-generic-lambdas)"
         },
         {
             "line": 60,

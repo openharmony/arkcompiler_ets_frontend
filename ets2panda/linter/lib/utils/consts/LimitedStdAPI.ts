@@ -52,7 +52,6 @@ const LIMITED_STD_OBJECT_API = [
   'defineProperties',
   'defineProperty',
   'freeze',
-  'fromEntries',
   'getOwnPropertyDescriptor',
   'getOwnPropertyDescriptors',
   'getOwnPropertySymbols',

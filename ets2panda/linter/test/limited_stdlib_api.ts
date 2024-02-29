@@ -59,7 +59,7 @@ Object.defineProperties<C>(c, {});
 Object.defineProperty<C>(c, 'p', c);
 Object.entries<C>([]);
 Object.freeze(() => {});
-Object.fromEntries<number>([]);
+Object.fromEntries<number>([]); // OK
 Object.getOwnPropertyDescriptor(c, 'p');
 Object.getOwnPropertyDescriptors<C>(c);
 Object.getOwnPropertySymbols(c);
@@ -121,3 +121,14 @@ ArrayBuffer.isView({});
 let a: number[] = [];
 let b = new ArrayBuffer(1);
 Array.isArray(a);
+
+// 'Object.assign' is allowed only with signature like: 'assign(target: Record<string, V>, ...source: Object[]): Record<String, V>'
+class C2 { a: number }
+class C3 { [k: string]: Object };
+const rec: Record<string, number> = {'1': 1, '2': 2};
+const rec2: Record<string, number> = Object.assign(rec, new C2());      // OK
+const rec3: C2 = Object.assign(rec, new C2());                          // NOT OK, return type is 'C2'
+const rec4: Object = Object.assign(rec, new C2());                      // NOT OK, return type is 'Object'
+const rec5 = Object.assign(rec, new C2());                              // NOT OK, return type is intersection type 'Record<K,V> & C2'
+const rec6: Record<string, Object> = Object.assign(new C2(), new C3()); // NOT OK, target type is 'C2'
+Object.assign(rec, new C2());                                           // NOT OK, no return (context) type

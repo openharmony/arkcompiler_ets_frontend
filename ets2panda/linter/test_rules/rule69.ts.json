@@ -15,20 +15,6 @@
     ],
     "nodes": [
         {
-            "line": 16,
-            "column": 5,
-            "problem": "DestructuringDeclaration",
-            "suggest": "",
-            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
-        },
-        {
-            "line": 17,
-            "column": 1,
-            "problem": "DestructuringAssignment",
-            "suggest": "",
-            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
-        },
-        {
             "line": 19,
             "column": 5,
             "problem": "AnyType",

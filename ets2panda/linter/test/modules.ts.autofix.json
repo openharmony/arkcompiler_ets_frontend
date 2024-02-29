@@ -103,21 +103,6 @@
             "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
         },
         {
-            "line": 80,
-            "column": 10,
-            "problem": "DefaultImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 1637,
-                    "end": 1655,
-                    "replacementText": "def"
-                }
-            ],
-            "suggest": "",
-            "rule": "\"import default as ...\" is not supported (arkts-no-import-default-as)"
-        },
-        {
             "line": 89,
             "column": 22,
             "problem": "DeclWithDuplicateName",

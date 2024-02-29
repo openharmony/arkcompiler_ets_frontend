@@ -11,14 +11,4 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
-let generic_arrow_func = <T extends String> (x: T) => { return x }
-
-generic_arrow_func("string")
-
-function generic_func<T extends String>(x: T): T {
-    return x
-}
-
-generic_func<String>("string")
+ */ 

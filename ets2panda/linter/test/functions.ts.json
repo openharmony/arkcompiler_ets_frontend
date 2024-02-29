@@ -71,13 +71,6 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 60,
-            "column": 19,
-            "problem": "LambdaWithTypeParameters",
-            "suggest": "",
-            "rule": "Use generic functions instead of generic arrow functions (arkts-no-generic-lambdas)"
-        },
-        {
             "line": 64,
             "column": 3,
             "problem": "FunctionContainsThis",
