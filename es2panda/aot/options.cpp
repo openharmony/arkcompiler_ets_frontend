@@ -215,6 +215,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opTypeDtsBuiltin("type-dts-builtin", false, "Enable builtin type extractor for .d.ts file");
 
     // compiler
+    panda::PandArg<bool> opEnableAbcInput("enable-abc-input", false, "Reserved");
+    panda::PandArg<bool> opDumpAsmProgram("dump-asm-program", false, "Reserved");
     panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
     panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
@@ -268,6 +270,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opTypeExtractor);
     argparser_->Add(&opTypeDtsBuiltin);
+    argparser_->Add(&opEnableAbcInput);
+    argparser_->Add(&opDumpAsmProgram);
     argparser_->Add(&opDumpAssembly);
     argparser_->Add(&opDebugInfo);
     argparser_->Add(&opDumpDebugInfo);
@@ -457,6 +461,8 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     compilerOptions_.recordSource = opRecordSource.GetValue();
+    compilerOptions_.enableAbcInput = opEnableAbcInput.GetValue();
+    compilerOptions_.dumpAsmProgram = opDumpAsmProgram.GetValue();
     compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
     compilerOptions_.dumpAst = opDumpAst.GetValue();
     compilerOptions_.dumpTransformedAst = opDumpTransformedAst.GetValue();
