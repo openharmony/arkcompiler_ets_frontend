@@ -594,6 +594,31 @@ private:
     {
         return program_.Binder();
     }
+    static constexpr unsigned maxRecursionDepth = 1024;
+
+    inline void RecursiveDepthCheck()
+    {
+        if (recursiveDepth_ < maxRecursionDepth) {
+            return;
+        }
+        RecursiveDepthException();
+    }
+
+    void RecursiveDepthException();
+    // RAII to recursive depth tracking.
+    class TrackRecursive {
+    public:
+        explicit TrackRecursive(ParserImpl *parser) : parser_(parser)
+        {
+            ++parser_->recursiveDepth_;
+        }
+        ~TrackRecursive()
+        {
+            --parser_->recursiveDepth_;
+        }
+    private:
+        ParserImpl *const parser_;
+    };
 
     friend class Lexer;
     friend class SavedParserContext;
@@ -603,7 +628,15 @@ private:
     ParserContext context_;
     lexer::Lexer *lexer_ {nullptr};
     size_t namespaceExportCount_ {0};
+    size_t recursiveDepth_{0};
 };
+
+// Declare a RAII recursive tracker. Check whether the recursion limit has
+// been exceeded, if so, throw a generic error.
+// The macro only works from inside parserImpl methods.
+#define CHECK_PARSER_RECURSIVE_DEPTH                  \
+    TrackRecursive trackRecursive{this};       \
+    RecursiveDepthCheck()
 
 template <ParserStatus status>
 class SavedStatusContext {
