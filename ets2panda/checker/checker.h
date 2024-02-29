@@ -203,8 +203,10 @@ public:
         return &errorLogger_;
     }
 
-protected:
+    // TODO: required only for evaluate, might be used better with inheritance
     void Initialize(varbinder::VarBinder *varbinder);
+
+protected:
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
 

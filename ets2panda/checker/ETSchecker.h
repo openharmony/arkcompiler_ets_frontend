@@ -38,6 +38,10 @@ class RecordTable;
 class FunctionParamScope;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::evaluate {
+class ScopedDebugInfoPlugin;
+}  // namespace ark::es2panda::evaluate
+
 namespace ark::es2panda::checker {
 
 struct Accessor {
@@ -60,26 +64,9 @@ using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Subs
 
 class ETSChecker final : public Checker {
 public:
-    explicit ETSChecker()
-        // NOLINTNEXTLINE(readability-redundant-member-init)
-        : Checker(),
-          arrayTypes_(Allocator()->Adapter()),
-          pendingConstraintCheckRecords_(Allocator()->Adapter()),
-          globalArraySignatures_(Allocator()->Adapter()),
-          primitiveWrappers_(Allocator()),
-          cachedComputedAbstracts_(Allocator()->Adapter()),
-          dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
-                              DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
-          dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
-                           DynamicClassIntrinsicsMap(Allocator()->Adapter())},
-          dynamicLambdaSignatureCache_(Allocator()->Adapter()),
-          functionalInterfaceCache_(Allocator()->Adapter()),
-          apparentTypes_(Allocator()->Adapter()),
-          dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}}
-    {
-    }
+    explicit ETSChecker();
 
-    ~ETSChecker() override = default;
+    ~ETSChecker() override;
 
     NO_COPY_SEMANTIC(ETSChecker);
     NO_MOVE_SEMANTIC(ETSChecker);
@@ -721,6 +708,13 @@ public:
     [[nodiscard]] ir::ScriptFunction *FindFunction(ir::TSEnumDeclaration const *const enumDecl,
                                                    const std::string_view &name);
 
+    evaluate::ScopedDebugInfoPlugin *GetDebugInfoPlugin();
+    const evaluate::ScopedDebugInfoPlugin *GetDebugInfoPlugin() const;
+
+    void SetDebugInfoPlugin(std::unique_ptr<evaluate::ScopedDebugInfoPlugin> &&debugInfo);
+
+    void CheckProgram(parser::Program *program, bool runAnalysis = false);
+
     using ClassBuilder = std::function<void(ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder =
         std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *)>;
@@ -812,7 +806,8 @@ private:
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
     ETSObjectType *UpdateBoxedGlobalType(ETSObjectType *objType, util::StringView name);
     ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
-    void CheckProgram(parser::Program *program, bool runAnalysis = false);
+    // TODO: we need a good reason to make this function public. Consider inheritance
+    // void CheckProgram(parser::Program *program, bool runAnalysis = false);
     void CheckWarnings(parser::Program *program, const CompilerOptions &options);
 
     template <typename UType>
@@ -855,6 +850,7 @@ private:
     TypeMapping apparentTypes_;
     std::array<DynamicCallNamesMap, 2U> dynamicCallNames_;
     std::recursive_mutex mtx_;
+    std::unique_ptr<evaluate::ScopedDebugInfoPlugin> debugInfoPlugin_ {nullptr};
 };
 
 }  // namespace ark::es2panda::checker

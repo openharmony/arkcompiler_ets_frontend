@@ -28,6 +28,7 @@
 #include "compiler/core/JSemitter.h"
 #include "compiler/core/ETSemitter.h"
 #include "compiler/lowering/phase.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
 #include "parser/parserImpl.h"
 #include "parser/JSparser.h"
 #include "parser/ASparser.h"
@@ -271,6 +272,16 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
 
     auto *varbinder = program.VarBinder();
     varbinder->SetProgram(&program);
+
+    if constexpr (std::is_same_v<Checker, checker::ETSChecker>) {
+        // Sometimes evaluation mode might work without project context.
+        // In this case, users might omit context files.
+        const auto &compilerOptions = unit.options.CompilerOptions();
+        if (compilerOptions.evalMode && !compilerOptions.evalContextPandaFiles.empty()) {
+            auto plugin = std::make_unique<evaluate::ScopedDebugInfoPlugin>(&program, &checker, compilerOptions);
+            checker.SetDebugInfoPlugin(std::move(plugin));
+        }
+    }
 
     public_lib::Context context;
 

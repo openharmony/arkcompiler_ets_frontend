@@ -240,6 +240,7 @@ void ImportExportDecls::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *
                 "The given name '" + local->Name().Mutf8() + "' is already used in another export", local->Start());
         }
     }
+    varbinder_->Program()->GetModuleDebugInfo().AddExports(exportDecl);
 }
 
 void ImportExportDecls::VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl)

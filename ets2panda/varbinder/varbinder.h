@@ -115,6 +115,13 @@ public:
         return scope_;
     }
 
+    void ResetAllScopes(GlobalScope *topScope, VariableScope *varScope, Scope *scope)
+    {
+        topScope_ = topScope;
+        varScope_ = varScope;
+        scope_ = scope;
+    }
+
     void ResetTopScope(GlobalScope *topScope)
     {
         ASSERT(topScope_ == scope_);

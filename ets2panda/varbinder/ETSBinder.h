@@ -78,6 +78,11 @@ public:
         return recordTable_;
     }
 
+    void SetRecordTable(RecordTable *table)
+    {
+        recordTable_ = table;
+    }
+
     RecordTable *GetGlobalRecordTable()
     {
         return &globalRecordTable_;
@@ -173,10 +178,7 @@ public:
         return dynamicImports_;
     }
 
-    void AddReExportImport(ir::ETSReExportDeclaration *reExport)
-    {
-        reExportImports_.push_back(reExport);
-    }
+    void AddReExportImport(ir::ETSReExportDeclaration *reExport);
 
     const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const
     {

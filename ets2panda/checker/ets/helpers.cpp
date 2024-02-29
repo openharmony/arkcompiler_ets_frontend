@@ -23,6 +23,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/globalTypesHolder.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "generated/signatures.h"
@@ -237,7 +238,7 @@ void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, ir::Identi
     }
 }
 
-checker::Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
+Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
 {
     if (ident->Variable() != nullptr) {
         auto *const resolved = ident->Variable();
@@ -253,6 +254,10 @@ checker::Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
         // If the reference is not found already in the current class, then it is not bound to the class, so we have to
         // find the reference in the global class first, then in the global scope
         resolved = FindVariableInGlobal(ident, options);
+
+        if (UNLIKELY(resolved == nullptr && debugInfoPlugin_ != nullptr)) {
+            resolved = debugInfoPlugin_->FindIdentifier(ident);
+        }
     }
 
     if (resolved == nullptr) {

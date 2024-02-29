@@ -29,6 +29,7 @@
 #include "checker/types/globalTypesHolder.h"
 #include "ir/base/scriptFunction.h"
 #include "util/helpers.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
 
 namespace ark::es2panda::checker {
 
@@ -133,6 +134,27 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_RETHROWING_FUNCTIONN_CLASS,
 };
 
+ETSChecker::ETSChecker()
+    // NOLINTNEXTLINE(readability-redundant-member-init)
+    : Checker(),
+      arrayTypes_(Allocator()->Adapter()),
+      pendingConstraintCheckRecords_(Allocator()->Adapter()),
+      globalArraySignatures_(Allocator()->Adapter()),
+      primitiveWrappers_(Allocator()),
+      cachedComputedAbstracts_(Allocator()->Adapter()),
+      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
+                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
+      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
+                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
+      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
+      functionalInterfaceCache_(Allocator()->Adapter()),
+      apparentTypes_(Allocator()->Adapter()),
+      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}}
+{
+}
+
+ETSChecker::~ETSChecker() = default;
+
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
     if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
@@ -229,7 +251,17 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
         }
     }
 
+    bool isEvalMode = (debugInfoPlugin_ != nullptr);
+    if (UNLIKELY(isEvalMode)) {
+        debugInfoPlugin_->PreCheck();
+    }
+
     CheckProgram(Program(), true);
+
+    if (UNLIKELY(isEvalMode)) {
+        debugInfoPlugin_->PostCheck();
+    }
+
     BuildDynamicImportClass();
 
 #ifndef NDEBUG
@@ -247,6 +279,21 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
     }
 
     return !ErrorLogger()->IsAnyError();
+}
+
+evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin()
+{
+    return debugInfoPlugin_.get();
+}
+
+const evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin() const
+{
+    return debugInfoPlugin_.get();
+}
+
+void ETSChecker::SetDebugInfoPlugin(std::unique_ptr<evaluate::ScopedDebugInfoPlugin> &&debugInfo)
+{
+    debugInfoPlugin_ = std::move(debugInfo);
 }
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)

@@ -18,6 +18,10 @@
 
 #include "emitter.h"
 
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
+
 namespace ark::es2panda::varbinder {
 class RecordTable;
 }  // namespace ark::es2panda::varbinder
@@ -73,10 +77,10 @@ public:
 private:
     using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 
-    void GenExternalRecord(varbinder::RecordTable *recordTable);
+    void GenExternalRecord(const parser::Program *program, varbinder::RecordTable *recordTable);
     void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);
     std::vector<pandasm::AnnotationData> GenAnnotations(const ir::ClassDefinition *classDef);
-    void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
+    void GenClassRecord(const parser::Program *program, const ir::ClassDefinition *classDef, bool external);
     void GenEnumRecord(const ir::TSEnumDeclaration *enumDecl, bool external);
     void GenAnnotationRecord(std::string_view recordNameView, bool isRuntime = false, bool isType = false);
     void GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceDecl, bool external);

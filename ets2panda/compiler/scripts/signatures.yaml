@@ -58,6 +58,12 @@ defines:
   - name: ets.annotation.type
     ref: ANNOTATION_ATTRIBUTE_TYPE
     comment: ETS annotation type
+  - name: ets.debug.import
+    ref: DEBUG_IMPORT_ATTRIBUTE
+    comment: ETS annotation type
+  - name: ets.debug.export
+    ref: DEBUG_EXPORT_ATTRIBUTE
+    comment: ETS annotation type
   - name: value
     ref: ANNOTATION_KEY_VALUE
     comment: ETS annotation key
@@ -237,9 +243,6 @@ builtins:
   - name: StringBuilder
     package: PKG_STD_CORE
     ref: BUILTIN_STRING_BUILDER
-  - name: Runtime
-    package: PKG_STD_CORE
-    ref: BUILTIN_RUNTIME
   - name: Type
     package: PKG_STD_CORE
     ref: BUILTIN_TYPE

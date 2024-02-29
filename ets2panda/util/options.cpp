@@ -189,6 +189,14 @@ struct AllArgs {
         "ets-implicit-boxing-unboxing", false,
         "Check if a program contains implicit boxing or unboxing - ETS Subset Warning"};
 
+    // ArkTS debugger evaluation mode options
+    ark::PandArg<bool> opEvalMode {"eval-mode", false, "Compile in evaluation mode"};
+    ark::PandArg<uint64_t> opEvalContextLine {"eval-context-line", 0, "Evaluation mode context source code line"};
+    ark::PandArg<std::string> opEvalContextSource {"eval-context-source", "",
+                                                   "Path to evaluation mode context source file"};
+    ark::PandArg<std::string> opEvalContextPandaFiles {
+        "eval-context-panda-files", "", "Paths to evaluation mode context (.abc) files, must be accessible"};
+
     ark::PandArg<int> opThreadCount {"thread", DEFAULT_THREAD_COUNT, "Number of worker threads"};
     ark::PandArg<bool> opSizeStat {"dump-size-stat", false, "Dump size statistics"};
     ark::PandArg<std::string> outputFile {"output", "", "Compiler binary output (.abc)"};
@@ -294,6 +302,11 @@ struct AllArgs {
         argparser.Add(&opDebugInfo);
         argparser.Add(&opDumpDebugInfo);
 
+        argparser.Add(&opEvalMode);
+        argparser.Add(&opEvalContextLine);
+        argparser.Add(&opEvalContextSource);
+        argparser.Add(&opEvalContextPandaFiles);
+
         argparser.Add(&opOptLevel);
         argparser.Add(&opEtsModule);
         argparser.Add(&opThreadCount);
@@ -359,6 +372,12 @@ struct AllArgs {
         compilerOptions.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
         compilerOptions.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
         compilerOptions.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
+
+        // ArkTS debugger evaluation mode options
+        compilerOptions.evalMode = opEvalMode.GetValue();
+        compilerOptions.evalContextLine = opEvalContextLine.GetValue();
+        compilerOptions.evalContextSource = opEvalContextSource.GetValue();
+        compilerOptions.evalContextPandaFiles = SplitToStringVector(opEvalContextPandaFiles.GetValue());
 
         // ETS-Warnings
         compilerOptions.etsSubsetWarnings = opEtsSubsetWarnings.GetValue();

@@ -24,7 +24,7 @@ namespace ark::es2panda::checker {
 
 class ETSAnalyzer final : public SemanticAnalyzer {
 public:
-    explicit ETSAnalyzer(Checker *checker) : SemanticAnalyzer(checker) {};
+    explicit ETSAnalyzer(Checker *checker) : SemanticAnalyzer(checker) {}
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_ETSANALYZER_CHECK_METHOD(_, nodeType) checker::Type *Check(ir::nodeType *node) const override;

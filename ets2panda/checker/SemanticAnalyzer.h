@@ -171,10 +171,7 @@ class Checker;
 
 class SemanticAnalyzer {
 public:
-    explicit SemanticAnalyzer(Checker *checker)
-    {
-        checker_ = checker;
-    }
+    explicit SemanticAnalyzer(Checker *checker) : checker_(checker) {}
     virtual ~SemanticAnalyzer() = default;
     NO_COPY_SEMANTIC(SemanticAnalyzer);
     NO_MOVE_SEMANTIC(SemanticAnalyzer);

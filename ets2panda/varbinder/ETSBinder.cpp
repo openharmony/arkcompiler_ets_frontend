@@ -58,8 +58,11 @@
 #include "mem/arena_allocator.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
+#include "checker/ETSchecker.h"
 #include "checker/types/type.h"
 #include "checker/types/ets/types.h"
+#include "evaluate/scopedDebugInfoPlugin.h"
+#include "public/public.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -135,6 +138,17 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
                 iter = iter->Parent();
             }
         }
+    }
+
+    auto *checker = GetContext()->checker->AsETSChecker();
+    auto *debugInfoPlugin = checker->GetDebugInfoPlugin();
+    if (UNLIKELY(debugInfoPlugin)) {
+        auto *var = debugInfoPlugin->FindClass(ident);
+        if (var) {
+            ident->SetVariable(var);
+            return;
+        }
+        // TODO: search an imported module's name
     }
 
     ThrowUnresolvableType(ident->Start(), name);
@@ -810,6 +824,8 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
 
     const util::StringView sourceName = import->ResolvedSource()->Str();
 
+    Program()->GetModuleDebugInfo().AddImport(sourceName, specifier);
+
     auto record = GetExternalProgram(sourceName, importPath);
     const auto *const importProgram = record.front();
     const auto *const importGlobalScope = importProgram->GlobalScope();
@@ -971,6 +987,12 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     util::UString internalName(ss.str(), Allocator());
     funcScope->BindInternalName(internalName.View());
+}
+
+void ETSBinder::AddReExportImport(ir::ETSReExportDeclaration *reExport)
+{
+    reExportImports_.push_back(reExport);
+    Program()->GetModuleDebugInfo().AddExports(reExport);
 }
 
 void ETSBinder::InitImplicitThisParam()

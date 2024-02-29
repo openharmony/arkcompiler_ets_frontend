@@ -431,6 +431,8 @@ libes2panda_sources = [
   "parser/expressionParser.cpp",
   "parser/expressionTSParser.cpp",
   "parser/parserImpl.cpp",
+  "parser/program/entityNameVisitor.cpp",
+  "parser/program/moduleDebugInfo.cpp",
   "parser/program/program.cpp",
   "parser/statementParser.cpp",
   "parser/statementTSParser.cpp",
@@ -453,6 +455,12 @@ libes2panda_sources = [
   "varbinder/scope.cpp",
   "varbinder/varbinder.cpp",
   "varbinder/variable.cpp",
+  "evaluate/classDeclarationCreator.cpp",
+  "evaluate/debugInfoStorage.cpp",
+  "evaluate/helpers.cpp",
+  "evaluate/nonRecursiveIrChecker.cpp",
+  "evaluate/proxyProgramsMap.cpp",
+  "evaluate/scopedDebugInfoPlugin.cpp"
 ]
 
 LIB_NAME = "es2panda_lib"
