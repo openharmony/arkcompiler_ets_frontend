@@ -27,17 +27,17 @@ def generate_html_table(data):
     for project, items in data.items():
         for item_idx, item in enumerate(items):
             if item_idx == 0:
-                table_rows += f"<tr><td rowspan='{len(items)}'>{project}</td>"
+                table_rows = ''.join([table_rows, f"<tr><td rowspan='{len(items)}'>{project}</td>"])
             else:
-                table_rows += "<tr>"
+                table_rows = ''.join([table_rows, "<tr>"])
 
             if item['committer'] is None:
-                table_rows += f"<td colspan=4 style='color: #FF9671;'>{item['title']}</td>"
+                table_rows = ''.join([table_rows, f"<td colspan=4 style='color: #FF9671;'>{item['title']}</td>"])
             else:
-                table_rows += f"<td>{item['title']}</td>"
-                table_rows += f"<td>{item['committer']}</td>"
-                table_rows += f"<td>{item['commit_time_str']}</td>"
-                table_rows += f"<td><a href='https://gitee.com/{item['pr_link']}'>点击查看</a></td></tr>\n"
+                table_rows = ''.join([table_rows, f"<td>{item['title']}</td>"])
+                table_rows = ''.join([table_rows, f"<td>{item['committer']}</td>"])
+                table_rows = ''.join([table_rows, f"<td>{item['commit_time_str']}</td>"])
+                table_rows = ''.join([table_rows, f"<td><a href='https://gitee.com/{item['pr_link']}'>点击查看</a></td></tr>\n"])
 
     return table_rows
 

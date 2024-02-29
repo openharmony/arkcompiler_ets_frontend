@@ -20,6 +20,7 @@ Description: utils for test suite
 import argparse
 import json
 import os
+import stat
 import time as times
 from datetime import datetime, timedelta, time
 
@@ -70,7 +71,9 @@ def write_data(repo_name, data_file, title, committer, commit_time_str, pr_link)
         'commit_time_str': commit_time_str,
         'pr_link': pr_link
     }
-    with open(data_file, 'a', encoding='utf-8') as file:
+    flags = os.O_WRONLY | os.O_CREAT
+    mode = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open(data_file, flags, mode), 'a', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False)
         file.write('\n')
 
@@ -174,4 +177,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-

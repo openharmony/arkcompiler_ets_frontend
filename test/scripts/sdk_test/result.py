@@ -306,18 +306,15 @@ def get_result_table_content(result_df_rotate):
     content += f'<tr><th rowspan={len(incremetal_compile_tests) * 2}>Incremental Compilation</th>'
     start_index = 2
     for index, item in enumerate(incremetal_compile_tests):
-        content += f'<th rowspan="2">{item}</th><th>[Debug]</th>' + \
-                  ''.join(
-                      [f'<th>{column}</th>' for column in merged_data[start_index]]) + '</tr>'
-        content += '<tr><th>[Release]</th>' + \
-                   ''.join(
-                       [f'<th>{column}</th>' for column in merged_data[start_index+1]]) + '</tr>'
+        incre_debug_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
+        content = ''.join([content, f'<th rowspan="2">{item}</th><th>[Debug]</th>', incre_debug_result, '</tr>'])
+        incre_release_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index+1]])
+        content = ''.join([content, '<tr><th>[Release]</th>', incre_release_result, '</tr>'])
         start_index = start_index + 2
     content += f'<tr><th colspan=2 rowspan={len(other_tests) * 2}>Other Tests</th>'
     for index, item in enumerate(other_tests):
-        content += f'<th>{item}</th>' + \
-                   ''.join(
-                       [f'<th>{column}</th>' for column in merged_data[start_index]]) + '</tr>'
+        other_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
+        content = ''.join([content, f'<th>{item}</th>', other_result, '</tr>'])
         start_index = start_index + 1
 
     return content
