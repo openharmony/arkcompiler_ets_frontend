@@ -415,6 +415,13 @@ public:
                                            bool ifaceOverride);
     void ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject, ir::ArrowFunctionExpression *lambda,
                                            ir::MethodDefinition *proxyMethod, bool isStatic, bool ifaceOverride);
+    ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ir::ClassDefinition *lambdaObject,
+                                                                         ir::ArrowFunctionExpression *lambda,
+                                                                         ir::ScriptFunction *invokeFunc, bool isStatic,
+                                                                         bool ifaceOverride);
+    ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(Signature *signatureRef,
+                                                                         ir::ScriptFunction *invokeFunc,
+                                                                         bool ifaceOverride);
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);
     void CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var);

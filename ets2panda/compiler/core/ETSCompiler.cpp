@@ -745,8 +745,15 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
     auto *signature = expr->Signature();
 
     for (size_t i = 0; i < argumentCount; i++) {
-        auto *paramType = checker->MaybeBoxedType(
-            i < signature->Params().size() ? signature->Params()[i] : signature->RestVar(), checker->Allocator());
+        checker::Type *paramType;
+        if (i < signature->Params().size()) {
+            paramType = checker->MaybeBoxedType(signature->Params()[i], checker->Allocator());
+        } else {
+            ASSERT(signature->RestVar() != nullptr);
+            auto *restType = signature->RestVar()->TsType();
+            ASSERT(restType->IsETSArrayType());
+            paramType = restType->AsETSArrayType()->ElementType();
+        }
 
         auto *arg = arguments[i];
         auto *cast = checker->Allocator()->New<ir::TSAsExpression>(arg, nullptr, false);

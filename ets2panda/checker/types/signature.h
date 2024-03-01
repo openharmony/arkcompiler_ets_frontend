@@ -46,6 +46,7 @@ public:
 
         if (other->restVar != nullptr) {
             restVar = other->restVar->Copy(allocator, other->restVar->Declaration());
+            restVar->SetTsType(other->restVar->TsType());
         }
     }
 

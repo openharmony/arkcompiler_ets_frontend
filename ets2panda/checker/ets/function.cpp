@@ -48,7 +48,6 @@
 #include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/expressions/sequenceExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/doWhileStatement.h"
@@ -59,8 +58,6 @@
 #include "ir/statements/returnStatement.h"
 #include "ir/statements/switchStatement.h"
 #include "ir/statements/whileStatement.h"
-#include "ir/ts/tsArrayType.h"
-#include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
@@ -1530,6 +1527,37 @@ void ETSChecker::ResolveLambdaObject(ir::ClassDefinition *lambdaObject, ETSObjec
     ResolveLambdaObjectInvoke(lambdaObject, lambda, proxyMethod, !saveThis, false);
 }
 
+static void CreateParametersForInvokeSignature(ETSChecker *checker, ir::ArrowFunctionExpression *lambda,
+                                               ir::ScriptFunction *invokeFunc, SignatureInfo *invokeSignatureInfo,
+                                               bool ifaceOverride)
+{
+    auto *allocator = checker->Allocator();
+    for (auto *it : lambda->Function()->Params()) {
+        auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
+            checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
+        auto *const param = it->Clone(allocator, it->Parent())->AsETSParameterExpression();
+        auto [_, var] = checker->VarBinder()->AddParamDecl(param);
+        (void)_;
+        if (!ifaceOverride) {
+            var->SetTsType(param->Variable()->TsType());
+        } else if (param->IsRestParameter()) {
+            var->SetTsType(checker->CreateETSArrayType(checker->GlobalETSNullishObjectType()));
+        } else {
+            var->SetTsType(checker->GlobalETSNullishObjectType());
+        }
+        param->Ident()->SetVariable(var);
+        param->Ident()->SetTsType(var->TsType());
+        param->SetTsType(var->TsType());
+        invokeFunc->Params().push_back(param);
+        if (param->IsRestParameter()) {
+            invokeSignatureInfo->restVar = var->AsLocalVariable();
+        } else {
+            invokeSignatureInfo->minArgCount++;
+            invokeSignatureInfo->params.push_back(var->AsLocalVariable());
+        }
+    }
+}
+
 static Signature *CreateInvokeSignature(ETSChecker *checker, ir::ArrowFunctionExpression *lambda,
                                         ir::ScriptFunction *invokeFunc, ETSObjectType *lambdaObjectType,
                                         bool ifaceOverride)
@@ -1544,18 +1572,7 @@ static Signature *CreateInvokeSignature(ETSChecker *checker, ir::ArrowFunctionEx
     auto maxParamsNum = checker->GlobalBuiltinFunctionTypeVariadicThreshold();
     auto paramsNum = lambda->Function()->Params().size();
     if (paramsNum < maxParamsNum || !ifaceOverride) {
-        for (auto *it : lambda->Function()->Params()) {
-            auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
-                checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
-            auto *const param = it->Clone(allocator, it->Parent())->AsETSParameterExpression();
-            auto [_, var] = checker->VarBinder()->AddParamDecl(param);
-            (void)_;
-            var->SetTsType(ifaceOverride ? checker->GlobalETSNullishObjectType() : param->Variable()->TsType());
-            param->Ident()->SetVariable(var);
-            invokeFunc->Params().push_back(param);
-            invokeSignatureInfo->minArgCount++;
-            invokeSignatureInfo->params.push_back(var->AsLocalVariable());
-        }
+        CreateParametersForInvokeSignature(checker, lambda, invokeFunc, invokeSignatureInfo, ifaceOverride);
     } else {
         auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
             checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
@@ -1647,18 +1664,42 @@ static ir::TSAsExpression *BuildNarrowingToType(ETSChecker *checker, ir::Express
     return paramAsExpr;
 }
 
-static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSChecker *checker,
-                                                                            ir::ClassDefinition *lambdaObject,
-                                                                            ir::ArrowFunctionExpression *lambda,
-                                                                            ir::ScriptFunction *invokeFunc,
-                                                                            bool isStatic, bool ifaceOverride)
+static void AddLambdaFunctionParameters(ETSChecker *checker, ir::ScriptFunction *invokeFunc,
+                                        ir::ArrowFunctionExpression *lambda, ArenaVector<ir::Expression *> &callParams)
 {
     auto *allocator = checker->Allocator();
+    auto nargs = invokeFunc->Params().size();
+    for (size_t i = 0; i < nargs; i++) {
+        auto const *const param = invokeFunc->Params()[i]->AsETSParameterExpression();
+        auto *const paramIdent = allocator->New<ir::Identifier>(param->Ident()->Name(), allocator);
+        paramIdent->SetVariable(param->Variable());
+        paramIdent->SetTsType(param->Variable()->TsType());
+        if (param->IsRestParameter()) {
+            auto *spread =
+                checker->AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, paramIdent);
+            spread->SetTsType(param->Variable()->TsType());
+            callParams.push_back(spread);
+        } else {
+            auto *lambdaParam = lambda->Function()->Params()[i]->AsETSParameterExpression();
+            auto *const paramCast =
+                BuildNarrowingToType(checker, paramIdent, lambdaParam->TypeAnnotation()->GetType(checker));
+            paramCast->Check(checker);
+            callParams.push_back(paramCast);
+        }
+    }
+}
+
+ArenaVector<ir::Expression *> ETSChecker::ResolveCallParametersForLambdaFuncBody(ir::ClassDefinition *lambdaObject,
+                                                                                 ir::ArrowFunctionExpression *lambda,
+                                                                                 ir::ScriptFunction *invokeFunc,
+                                                                                 bool isStatic, bool ifaceOverride)
+{
+    auto *allocator = Allocator();
     ArenaVector<ir::Expression *> callParams(allocator->Adapter());
 
-    AddFieldRefsToCallParameters(checker, lambdaObject, isStatic, callParams);
+    AddFieldRefsToCallParameters(this, lambdaObject, isStatic, callParams);
 
-    auto maxParamsNum = checker->GlobalBuiltinFunctionTypeVariadicThreshold();
+    auto maxParamsNum = GlobalBuiltinFunctionTypeVariadicThreshold();
     auto paramsNum = lambda->Function()->Params().size();
     if (!ifaceOverride) {
         for (auto const *const it : invokeFunc->Params()) {
@@ -1666,23 +1707,17 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
             auto *const paramIdent = allocator->New<ir::Identifier>(param->Ident()->Name(), allocator);
             paramIdent->SetVariable(param->Variable());
             paramIdent->SetTsType(param->Variable()->TsType());
-            callParams.push_back(paramIdent);
+            if (param->IsRestParameter()) {
+                auto *spread = AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, paramIdent);
+                spread->SetTsType(param->Variable()->TsType());
+                callParams.push_back(spread);
+            } else {
+                callParams.push_back(paramIdent);
+            }
         }
     } else if (paramsNum < maxParamsNum) {
         // Then we add the lambda functions parameters to the call
-        auto nargs = invokeFunc->Params().size();
-        for (size_t i = 0; i < nargs; i++) {
-            auto const *const param = invokeFunc->Params()[i]->AsETSParameterExpression();
-            auto *const paramIdent = allocator->New<ir::Identifier>(param->Ident()->Name(), allocator);
-            paramIdent->SetVariable(param->Variable());
-            paramIdent->SetTsType(param->Variable()->TsType());
-
-            auto *lambdaParam = lambda->Function()->Params()[i]->AsETSParameterExpression();
-            auto *const paramCast =
-                BuildNarrowingToType(checker, paramIdent, lambdaParam->TypeAnnotation()->GetType(checker));
-            paramCast->Check(checker);
-            callParams.push_back(paramCast);
-        }
+        AddLambdaFunctionParameters(this, invokeFunc, lambda, callParams);
     } else {
         ASSERT(invokeFunc->Params().size() == 1);
         auto const *const param = invokeFunc->Params()[0]->AsETSParameterExpression();
@@ -1696,8 +1731,8 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
                                                              true, false);
 
             auto *lambdaParam = lambda->Function()->Params()[i]->AsETSParameterExpression();
-            auto *const paramCast = BuildNarrowingToType(checker, arg, lambdaParam->TypeAnnotation()->GetType(checker));
-            paramCast->Check(checker);
+            auto *const paramCast = BuildNarrowingToType(this, arg, lambdaParam->TypeAnnotation()->GetType(this));
+            paramCast->Check(this);
             callParams.push_back(paramCast);
         }
     }
@@ -1745,7 +1780,7 @@ void ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaOb
     auto *invokeFunc = lambdaBody[lambdaBody.size() - (ifaceOverride ? 2 : 1)]->AsMethodDefinition()->Function();
     ArenaVector<ir::Expression *> callParams =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        ResolveCallParametersForLambdaFuncBody(this, lambdaObject, lambda, invokeFunc, isStatic, ifaceOverride);
+        ResolveCallParametersForLambdaFuncBody(lambdaObject, lambda, invokeFunc, isStatic, ifaceOverride);
 
     // Create the synthetic call expression to the proxy method
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -1847,8 +1882,13 @@ void ETSChecker::ResolveProxyMethod(ir::ClassDefinition *const classDefinition, 
     signatureInfo->restVar = nullptr;
 
     for (auto const *const it : proxyMethod->Function()->Params()) {
-        signatureInfo->params.push_back(it->AsETSParameterExpression()->Variable()->AsLocalVariable());
-        ++signatureInfo->minArgCount;
+        auto *param = it->AsETSParameterExpression();
+        if (param->IsRestParameter()) {
+            signatureInfo->restVar = param->Variable()->AsLocalVariable();
+        } else {
+            signatureInfo->params.push_back(param->Variable()->AsLocalVariable());
+            ++signatureInfo->minArgCount;
+        }
     }
 
     signature->SetReturnType(lambda->Function()->Signature()->ReturnType());
@@ -2635,6 +2675,48 @@ void ETSChecker::ResolveLambdaObjectCtor(ir::ClassDefinition *lambdaObject, bool
     fieldinit->Right()->SetTsType(ctorSignature->Params()[0]->TsType());
 }
 
+static void CreateParametersForInvokeSignature(ETSChecker *checker, Signature *signatureRef,
+                                               ir::ScriptFunction *invokeFunc, bool ifaceOverride)
+{
+    auto *allocator = checker->Allocator();
+
+    // Create the signature for the invoke function type
+    auto *invokeSignatureInfo = checker->CreateSignatureInfo();
+    for (auto *it : signatureRef->Params()) {
+        auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
+            checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
+
+        auto *paramIdent = checker->AllocNode<ir::Identifier>(it->Name(), allocator);
+        auto *param = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+        auto [_, var] = checker->VarBinder()->AddParamDecl(param);
+        (void)_;
+        var->SetTsType(ifaceOverride ? checker->GlobalETSNullishObjectType() : it->TsType());
+        paramIdent->SetVariable(var);
+        invokeFunc->Params().push_back(param);
+        invokeSignatureInfo->minArgCount++;
+        invokeSignatureInfo->params.push_back(var->AsLocalVariable());
+    }
+    if (signatureRef->RestVar() != nullptr) {
+        auto *oldRestVar = signatureRef->RestVar();
+        auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
+            checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
+        auto *restParamIdent = checker->AllocNode<ir::Identifier>(oldRestVar->Name(), allocator);
+        auto *restParamSpread =
+            checker->AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, allocator, restParamIdent);
+        auto *restParam = checker->AllocNode<ir::ETSParameterExpression>(restParamSpread, nullptr);
+        auto [_, restVar] = checker->VarBinder()->AddParamDecl(restParam);
+        (void)_;
+        if (ifaceOverride) {
+            restVar->SetTsType(allocator->New<ETSArrayType>(checker->GlobalETSNullishObjectType()));
+        } else {
+            restVar->SetTsType(oldRestVar->TsType());
+        }
+        restParamIdent->SetVariable(restVar);
+        invokeFunc->Params().push_back(restParam);
+        invokeSignatureInfo->restVar = restVar->AsLocalVariable();
+    }
+}
+
 static Signature *CreateInvokeSignature(ETSChecker *checker, Signature *signatureRef, ir::ScriptFunction *invokeFunc,
                                         ETSObjectType *lambdaObjectType, bool ifaceOverride)
 {
@@ -2648,20 +2730,7 @@ static Signature *CreateInvokeSignature(ETSChecker *checker, Signature *signatur
     auto maxParamsNum = checker->GlobalBuiltinFunctionTypeVariadicThreshold();
     auto paramsNum = signatureRef->Params().size();
     if (paramsNum < maxParamsNum || !ifaceOverride) {
-        for (auto *it : signatureRef->Params()) {
-            auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
-                checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
-
-            auto *paramIdent = checker->AllocNode<ir::Identifier>(it->Name(), allocator);
-            auto *param = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
-            auto [_, var] = checker->VarBinder()->AddParamDecl(param);
-            (void)_;
-            var->SetTsType(ifaceOverride ? checker->GlobalETSObjectType() : it->TsType());
-            paramIdent->SetVariable(var);
-            invokeFunc->Params().push_back(param);
-            invokeSignatureInfo->minArgCount++;
-            invokeSignatureInfo->params.push_back(var->AsLocalVariable());
-        }
+        CreateParametersForInvokeSignature(checker, signatureRef, invokeFunc, ifaceOverride);
     } else {
         auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
             checker->VarBinder(), invokeFunc->Scope()->ParamScope(), false);
@@ -2729,15 +2798,35 @@ static ir::Expression *BuildParamExpression(ETSChecker *checker, ir::Identifier 
     return paramCast;
 }
 
-static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSChecker *checker,
-                                                                            Signature *signatureRef,
-                                                                            ir::ScriptFunction *invokeFunc,
-                                                                            bool ifaceOverride)
+static void AddLambdaFunctionParameters(ETSChecker *checker, Signature *signatureRef, ir::ScriptFunction *invokeFunc,
+                                        ArenaVector<ir::Expression *> &callParams)
 {
     auto *allocator = checker->Allocator();
+    auto nargs = invokeFunc->Params().size();
+    for (size_t i = 0; i < nargs; i++) {
+        auto const *const param = invokeFunc->Params()[i]->AsETSParameterExpression();
+        auto *const paramIdent = allocator->New<ir::Identifier>(param->Ident()->Name(), allocator);
+        paramIdent->SetVariable(param->Variable());
+        paramIdent->SetTsType(param->Variable()->TsType());
+        if (param->IsRestParameter()) {
+            auto *spreadArg = BuildParamExpression(checker, paramIdent, signatureRef->RestVar()->TsType());
+            auto *spread = checker->AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, allocator, spreadArg);
+            spread->SetTsType(signatureRef->RestVar()->TsType());
+            callParams.push_back(spread);
+        } else {
+            callParams.push_back(BuildParamExpression(checker, paramIdent, signatureRef->Params()[i]->TsType()));
+        }
+    }
+}
+
+ArenaVector<ir::Expression *> ETSChecker::ResolveCallParametersForLambdaFuncBody(Signature *signatureRef,
+                                                                                 ir::ScriptFunction *invokeFunc,
+                                                                                 bool ifaceOverride)
+{
+    auto *allocator = Allocator();
     ArenaVector<ir::Expression *> callParams(allocator->Adapter());
 
-    auto maxParamsNum = checker->GlobalBuiltinFunctionTypeVariadicThreshold();
+    auto maxParamsNum = GlobalBuiltinFunctionTypeVariadicThreshold();
     auto paramsNum = signatureRef->Params().size();
     if (!ifaceOverride) {
         for (size_t idx = 0; idx != paramsNum; idx++) {
@@ -2748,14 +2837,7 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
         }
     } else if (paramsNum < maxParamsNum) {
         // Then we add the lambda functions parameters to the call
-        auto nargs = invokeFunc->Params().size();
-        for (size_t i = 0; i < nargs; i++) {
-            auto const *const param = invokeFunc->Params()[i]->AsETSParameterExpression();
-            auto *const paramIdent = allocator->New<ir::Identifier>(param->Ident()->Name(), allocator);
-            paramIdent->SetVariable(param->Variable());
-            paramIdent->SetTsType(param->Variable()->TsType());
-            callParams.push_back(BuildParamExpression(checker, paramIdent, signatureRef->Params()[i]->TsType()));
-        }
+        AddLambdaFunctionParameters(this, signatureRef, invokeFunc, callParams);
     } else {
         ASSERT(invokeFunc->Params().size() == 1);
         auto const *const param = invokeFunc->Params()[0]->AsETSParameterExpression();
@@ -2770,7 +2852,7 @@ static ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ETSC
 
             auto *type = signatureRef->Params()[i]->TsType();
             if (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-                arg->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(type));
+                arg->AddBoxingUnboxingFlags(GetUnboxingFlag(type));
                 callParams.push_back(arg);
             } else {
                 auto *const paramCast = allocator->New<ir::TSAsExpression>(arg, nullptr, false);
@@ -2823,7 +2905,7 @@ void ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaOb
     // Create the parameters for the referenced function call
     auto *invokeFunc = lambdaBody[lambdaBody.size() - (ifaceOverride ? 2 : 1)]->AsMethodDefinition()->Function();
     ArenaVector<ir::Expression *> callParams =
-        ResolveCallParametersForLambdaFuncBody(this, signatureRef, invokeFunc, ifaceOverride);
+        ResolveCallParametersForLambdaFuncBody(signatureRef, invokeFunc, ifaceOverride);
 
     // Create the synthetic call expression to the referenced function
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
