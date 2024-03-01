@@ -658,9 +658,8 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 
 // NOLINTNEXTLINE(google-default-arguments)
 void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
-                                          ArenaVector<ir::AstNode *> *declarations, lexer::SourcePosition *letLoc)
+                                          ArenaVector<ir::AstNode *> *declarations)
 {
-    lexer::SourcePosition startLoc = letLoc != nullptr ? *letLoc : fieldName->Start();
     lexer::SourcePosition endLoc = fieldName->End();
     ir::TypeNode *typeAnnotation = nullptr;
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
