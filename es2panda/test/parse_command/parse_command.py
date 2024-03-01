@@ -21,6 +21,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import threading
@@ -70,10 +71,12 @@ def get_args():
     return parser.parse_args()
 
 
-def assemble_command(command_list:list=[], executable_program_path:str=None, file_path:str=None, parameters:list=[]):
-    if len(command_list) == 0:
+def assemble_command(command_list: list = None, executable_program_path: str = None,
+                     file_path: str = None, parameters: list = None):
+    if command_list is None:
         command_list = [executable_program_path, file_path]
-        command_list.extend(parameters)
+        if parameters:
+            command_list.extend(parameters)
     else:
         if executable_program_path:
             command_list[0] = executable_program_path
@@ -101,11 +104,11 @@ class CaseManager:
         self.crash_dict = {file_path : [SUCCESS_STATUS, SUCCESS_STATUS] for file_path in self.case_list}
 
     def get_test_case(self):
-        def add_directory_to_case_list(dir, case_list, extension='js', recursive=True):
-            if not os.path.isdir(dir):
-                print(f'[ERROR]: add_directory_to_case_list failed! {dir} does not exist!')
+        def add_directory_to_case_list(case_dir, case_list, extension='js', recursive=True):
+            if not os.path.isdir(case_dir):
+                print(f'[ERROR]: add_directory_to_case_list failed! {case_dir} does not exist!')
                 return False
-            glob_expression = os.path.join(dir, f'**/*.{extension}')
+            glob_expression = os.path.join(case_dir, f'**/*.{extension}')
             files_list = glob.glob(glob_expression, recursive=recursive)
             for file in files_list:
                 abs_file_path = os.path.abspath(file)
@@ -113,13 +116,13 @@ class CaseManager:
                     case_list.append(abs_file_path)
             return True
 
-        if self.args.case != None:
+        if self.args.case is not None:
             for case in self.args.case:
                 abs_file_path = os.path.abspath(case)
                 if abs_file_path not in self.case_list:
                     self.case_list.append(abs_file_path)
 
-        if self.args.case_dir != None:
+        if self.args.case_dir is not None:
             for case in self.args.case_dir:
                 add_directory_to_case_list(case, self.case_list)
 
@@ -160,8 +163,8 @@ class CaseManager:
             result = False
         return result
 
-    def pull_cases_from_repo(self, case_url, dir):
-        dir_path = os.path.join(self.test_root, dir)
+    def pull_cases_from_repo(self, case_url, case_dir):
+        dir_path = os.path.join(self.test_root, case_dir)
         pull = False
         if os.path.exists(dir_path):
             pull = True
@@ -255,7 +258,9 @@ class CaseManager:
 
         html_content += "</table></body></html>"
 
-        with open(self.report_path + '.html', 'w') as f:
+        flags = os.O_RDWR | os.O_CREAT
+        mode = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(self.report_path + '.html', flags, mode), 'w') as f:
             f.write(html_content)
 
 
@@ -353,8 +358,8 @@ def main():
     args = get_args()
 
     d8_command = assemble_command(executable_program_path=args.d8_path, parameters=['--print-bytecode'])
-    es2abc_command = assemble_command(executable_program_path=args.es2abc_path, parameters=
-                                      ['--module', '--dump-size-stat', '--output=/dev/null'])
+    es2abc_command = assemble_command(executable_program_path=args.es2abc_path,
+                                      parameters=['--module', '--dump-size-stat', '--output=/dev/null'])
 
     case_manager = CaseManager(args)
     d8_runner = D8Runner(d8_command, case_manager)
