@@ -76,6 +76,8 @@ import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {globalMangledTable, historyMangledTable, reservedProperties} from './RenamePropertiesTransformer';
 import {memberMethodCache} from '../../utils/ScopeAnalyzer';
+import {performancePrinter} from '../../ArkObfuscator';
+import { EventList } from '../../utils/PrinterUtils';
 
 namespace secharmony {
   /**
@@ -143,9 +145,17 @@ namespace secharmony {
           nameCache.set(IDENTIFIER_CACHE, new Map<string, string>());
         }
 
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);
         const shadowSourceAst: SourceFile = TypeUtils.createNewSourceFile(node);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);
+
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
         checker = TypeUtils.createChecker(shadowSourceAst);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
+
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
         manager.analyze(shadowSourceAst, checker, exportObfuscation);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
 
         // the reservedNames of manager contain the struct name.
         if (!exportObfuscation) {
@@ -155,17 +165,25 @@ namespace secharmony {
         }
 
         let root: Scope = manager.getRootScope();
+
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
         renameInScope(root);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
+
         root = undefined;
         // collect all identifiers of shadow sourceFile
         const identifiersAndStructs = collectIdentifiersAndStructs(shadowSourceAst, context);
         shadowIdentifiers = identifiersAndStructs.shadowIdentifiers;
         shadowStructs = identifiersAndStructs.shadowStructs;
 
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         let ret: Node = visit(node);
+
         ret = tryRemoveVirtualConstructor(ret);
         nameCache.set(MEM_METHOD_CACHE, memberMethodCache);
-        return setParentRecursive(ret, true);
+        let parentNodes = setParentRecursive(ret, true);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
+        return parentNodes;
       }
 
       /**

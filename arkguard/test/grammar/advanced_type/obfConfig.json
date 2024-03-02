@@ -14,5 +14,5 @@
         "mTopLevel": true
     },
     "mEnableSourceMap": false,
-    "mEnableNameCache": true
+    "mEnableNameCache": false
 }

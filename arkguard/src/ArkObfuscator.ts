@@ -56,6 +56,7 @@ import {ListUtil} from './utils/ListUtil';
 import {needReadApiInfo, readProjectProperties, readProjectPropertiesByCollectedPaths} from './common/ApiReader';
 import {ApiExtractor} from './common/ApiExtractor';
 import es6Info from './configs/preset/es6_reserved_properties.json';
+import {EventList, TimeSumPrinter, TimeTracker} from './utils/PrinterUtils';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
@@ -63,6 +64,15 @@ export const renameFileNameModule = require('./transformers/rename/RenameFileNam
 
 export {getMapFromJson, readProjectPropertiesByCollectedPaths, deleteLineInfoForNameString};
 export let orignalFilePathForSearching: string | undefined;
+export interface PerformancePrinter {
+  filesPrinter?: TimeTracker;
+  singleFilePrinter?: TimeTracker;
+  timeSumPrinter?: TimeSumPrinter;
+  iniPrinter: TimeTracker;
+}
+export let performancePrinter: PerformancePrinter = {
+  iniPrinter: new TimeTracker()
+};
 
 type ObfuscationResultType = {
   content: string,
@@ -140,6 +150,7 @@ export class ArkObfuscator {
       this.mCompilerOptions.sourceMap = true;
     }
 
+    this.initPerformancePrinter();
     // load transformers
     this.mTransformers = TransformerManager.getInstance(this.mCustomProfiles).getTransformers();
 
@@ -164,6 +175,7 @@ export class ArkObfuscator {
       fs.mkdirSync(this.mCustomProfiles.mOutputDir);
     }
 
+    performancePrinter?.filesPrinter?.startEvent(EventList.ALL_FILES_OBFUSCATION);
     readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
     this.readPropertyCache(this.mCustomProfiles.mOutputDir);
 
@@ -184,6 +196,9 @@ export class ArkObfuscator {
     }
 
     this.producePropertyCache(this.mCustomProfiles.mOutputDir);
+    performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
+    performancePrinter?.timeSumPrinter?.print('Sum up time of processes')
+    performancePrinter?.timeSumPrinter?.summarizeEventDuration();
   }
 
   /**
@@ -252,6 +267,30 @@ export class ArkObfuscator {
       this.mCustomProfiles.mEnableNameCache) {
       const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
       writeCache(renamePropertyModule.globalMangledTable, propertyCachePath);
+    }
+  }
+
+  private initPerformancePrinter(): void {
+    if (this.mCustomProfiles.mPerformancePrinter) {
+      const printConfig = this.mCustomProfiles.mPerformancePrinter;
+      const printPath = printConfig.mOutputPath;
+      
+      if (printConfig.mFilesPrinter) {
+        performancePrinter.filesPrinter = performancePrinter.iniPrinter;
+        performancePrinter.filesPrinter.setOutputPath(printPath);
+      } else {
+        performancePrinter.iniPrinter = undefined;
+      }
+
+      if (printConfig.mSingleFilePrinter) {
+        performancePrinter.singleFilePrinter = new TimeTracker(printPath);
+      }
+
+      if (printConfig.mSumPrinter) {
+        performancePrinter.timeSumPrinter = new TimeSumPrinter(printPath);
+      }
+    } else {
+      performancePrinter = undefined;
     }
   }
 
@@ -359,7 +398,9 @@ export class ArkObfuscator {
     }
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);
+    performancePrinter?.filesPrinter?.startEvent(sourceFilePath);
     const mixedInfo: ObfuscationResultType = await this.obfuscate(content, sourceFilePath);
+    performancePrinter?.filesPrinter?.endEvent(sourceFilePath, undefined, true);
 
     if (outputDir && mixedInfo) {
       // the writing file is for the ut.
@@ -403,11 +444,13 @@ export class ArkObfuscator {
       return result;
     }
 
+    performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter, sourceFilePath);
     if (typeof content === 'string') {
       ast = createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true);
     } else {
       ast = content;
     }
+    performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
 
     if (ast.statements.length === 0) {
       return result;
@@ -430,7 +473,9 @@ export class ArkObfuscator {
         this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments : [];
     }
 
+    performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
     let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
+    performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
     ast = transformedResult.transformed[0] as SourceFile;
 
     // convert ast to output source file and generate sourcemap if needed.
@@ -439,7 +484,9 @@ export class ArkObfuscator {
       sourceMapGenerator = getSourceMapGenerator(sourceFilePath);
     }
 
+    performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     this.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, this.mTextWriter, sourceMapGenerator);
+    performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
 
     result.filePath = ast.fileName;
     result.content = this.mTextWriter.getText();

@@ -54,6 +54,8 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
+import { performancePrinter } from '../../ArkObfuscator';
+import { EventList } from '../../utils/PrinterUtils';
 
 namespace secharmony {
   /**
@@ -101,9 +103,12 @@ namespace secharmony {
       function renamePropertiesTransformer(node: Node): Node {
         collectReservedNames(node);
 
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = renameProperties(node);
         swapMangledTable();
-        return setParentRecursive(ret, true);
+        let parentNodes = setParentRecursive(ret, true);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);
+        return parentNodes;
       }
 
       function swapMangledTable(): void {

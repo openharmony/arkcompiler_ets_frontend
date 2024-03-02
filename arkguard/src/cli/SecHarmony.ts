@@ -19,6 +19,8 @@ import {program} from 'commander';
 import * as path from 'path';
 
 import {ArkObfuscator} from '../ArkObfuscator';
+import {performancePrinter} from '../ArkObfuscator';
+import { EventList } from '../utils/PrinterUtils';
 
 /**
  * Main Entry of Obfuscation in
@@ -42,7 +44,9 @@ const minParametersNum: number = 3;
   });
 
   let obfuscator: ArkObfuscator = new ArkObfuscator(fileList, configPath);
+  performancePrinter?.iniPrinter?.startEvent(EventList.OBFUSCATION_INITIALIZATION);
   const initSuccess: boolean = obfuscator.init();
+  performancePrinter?.iniPrinter?.endEvent(EventList.OBFUSCATION_INITIALIZATION);
   if (!initSuccess) {
     console.error('init from config file error.');
     return;

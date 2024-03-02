@@ -44,3 +44,18 @@ export interface IFileNameObfuscationOption {
 
   mReservedFileNames: string[];
 }
+
+export interface IPrinterOption {
+  
+  //Print obfuscation time&memory usage of all files and obfuscation processes
+  readonly mFilesPrinter?: boolean;
+
+  //Print time&memory usage of a single file obfuscation in transform processes
+  readonly mSingleFilePrinter?: boolean;
+
+  //Print sum up time of transform processes during obfuscation
+  readonly mSumPrinter?: boolean;
+
+  //Output path of printer
+  readonly mOutputPath?: string;
+}

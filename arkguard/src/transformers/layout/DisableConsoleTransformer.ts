@@ -42,6 +42,8 @@ import type {IOptions} from '../../configs/IOptions';
 import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import { NodeUtils } from '../../utils/NodeUtils';
+import { performancePrinter } from '../../ArkObfuscator';
+import { EventList } from '../../utils/PrinterUtils';
 
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
@@ -65,8 +67,11 @@ namespace secharmony {
           return node;
         }
 
+        performancePrinter?.singleFilePrinter?.startEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
         let resultAst: Node = visitAst(node);
-        return setParentRecursive(resultAst, true);
+        let parentNodes = setParentRecursive(resultAst, true);
+        performancePrinter?.singleFilePrinter?.endEvent(EventList.REMOVE_CONSOLE, performancePrinter.timeSumPrinter);
+        return parentNodes;
       }
 
       /**
