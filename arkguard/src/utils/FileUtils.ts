@@ -153,7 +153,7 @@ export class FileUtils {
         return { path: filePathWithoutSuffix, ext: ext };
       }
     }
-    return { path: filePath, ext: undefined };
+    return { path: filePath, ext: '' };
   }
 
   public static isReadableFile(filePath: string): boolean {

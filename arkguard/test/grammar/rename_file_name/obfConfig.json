@@ -11,8 +11,9 @@
         "mDictionaryList": [],
         "mReservedNames": [],
         "mRenameProperties": true,
-        "mReservedProperties": [],
-        "mKeepStringProperty": true
+        "mReservedProperties": ["basename"],
+        "mKeepStringProperty": true,
+        "mReservedToplevelNames": ["assert"]
     },
     "mEnableSourceMap": false,
     "mEnableNameCache": false,
