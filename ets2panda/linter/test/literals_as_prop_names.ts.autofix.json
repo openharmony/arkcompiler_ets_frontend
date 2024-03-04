@@ -19,6 +19,23 @@
             "column": 3,
             "problem": "LiteralAsPropertyName",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "__2",
+                    "start": 687,
+                    "end": 688
+                },
+                {
+                    "replacementText": "__2",
+                    "start": 779,
+                    "end": 780
+                },
+                {
+                    "replacementText": "litAsPropName.__2",
+                    "start": 852,
+                    "end": 868
+                }
+            ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
@@ -27,6 +44,23 @@
             "column": 3,
             "problem": "LiteralAsPropertyName",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "__2",
+                    "start": 687,
+                    "end": 688
+                },
+                {
+                    "replacementText": "__2",
+                    "start": 779,
+                    "end": 780
+                },
+                {
+                    "replacementText": "litAsPropName.__2",
+                    "start": 852,
+                    "end": 868
+                }
+            ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
@@ -35,6 +69,13 @@
             "column": 13,
             "problem": "PropertyAccessByIndex",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "litAsPropName.one",
+                    "start": 817,
+                    "end": 837
+                }
+            ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -43,6 +84,23 @@
             "column": 13,
             "problem": "PropertyAccessByIndex",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "__2",
+                    "start": 687,
+                    "end": 688
+                },
+                {
+                    "replacementText": "__2",
+                    "start": 779,
+                    "end": 780
+                },
+                {
+                    "replacementText": "litAsPropName.__2",
+                    "start": 852,
+                    "end": 868
+                }
+            ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -51,6 +109,13 @@
             "column": 13,
             "problem": "PropertyAccessByIndex",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "litAsPropName.Two",
+                    "start": 883,
+                    "end": 903
+                }
+            ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -66,7 +131,7 @@
             "line": 49,
             "column": 22,
             "problem": "LiteralAsPropertyName",
-            "autofixable": true,
+            "autofixable": false,
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
@@ -75,6 +140,13 @@
             "column": 13,
             "problem": "PropertyAccessByIndex",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "x.name",
+                    "start": 1309,
+                    "end": 1318
+                }
+            ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -83,6 +155,13 @@
             "column": 13,
             "problem": "PropertyAccessByIndex",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "x.__2",
+                    "start": 1333,
+                    "end": 1337
+                }
+            ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
