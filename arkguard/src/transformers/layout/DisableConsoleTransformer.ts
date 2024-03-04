@@ -17,9 +17,12 @@ import {
   factory,
   isBlock,
   isCallExpression,
+  isCaseClause,
+  isDefaultClause,
   isElementAccessExpression,
   isExpressionStatement,
   isIdentifier,
+  isModuleBlock,
   isPropertyAccessExpression,
   isSourceFile,
   setParentRecursive,
@@ -28,7 +31,10 @@ import {
 
 import type {
   Block,
+  CaseClause,
+  DefaultClause,
   LeftHandSideExpression,
+  ModuleBlock,
   Node,
   NodeArray,
   SourceFile,
@@ -76,21 +82,34 @@ namespace secharmony {
        * @param node
        */
       function visitAst(node: Node): Node {
-        if (isSourceFile(node)) {
-          const visitedAst: SourceFile = visitEachChild(node, visitAst, context);
-          const deletedStatements: Statement[] = deleteConsoleStatement(visitedAst.statements);
+        const visitedAst = visitEachChild(node, visitAst, context);
 
+        if (!(isSourceFile(node) || isBlock(node) || isModuleBlock(node) || isCaseClause(node) || isDefaultClause(node))) {
+          return visitedAst;
+        }
+
+        //@ts-ignore
+        const deletedStatements: Statement[] = deleteConsoleStatement(visitedAst.statements);
+
+        if (isSourceFile(node)) {
           return factory.updateSourceFile(node, deletedStatements);
         }
 
-        if (!isBlock(node)) {
-          return visitEachChild(node, visitAst, context);
+        if (isBlock(node)) {
+          return factory.createBlock(deletedStatements, true);
         }
 
-        const visitedBlock: Block = visitEachChild(node, visitAst, context);
-        const newStatements: Statement[] = deleteConsoleStatement(visitedBlock.statements);
+        if (isModuleBlock(node)) {
+          return factory.createModuleBlock(deletedStatements)
+        }
 
-        return factory.createBlock(newStatements, true);
+        if (isCaseClause(node)) {
+          return factory.createCaseClause(node.expression, deletedStatements);
+        }
+
+        if (isDefaultClause(node)) {
+          return factory.createDefaultClause(deletedStatements);
+        }
       }
 
       function deleteConsoleStatement(statements: NodeArray<Statement>): Statement[] {

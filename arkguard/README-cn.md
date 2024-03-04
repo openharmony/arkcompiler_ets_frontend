@@ -150,7 +150,11 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 
 `-remove-log`
 
-删除所有`console.*`语句。
+删除以下场景中对 console.* 语句的调用，要求console.*语句返回值未被调用。
+1. 文件顶层的调用
+2. 代码块Block中的调用
+3. 模块Module中的调用
+4. switch语句中的调用
 
 `-print-namecache` filepath
 
