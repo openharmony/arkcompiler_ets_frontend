@@ -303,7 +303,7 @@ public:
     void LoadObjByName(const ir::AstNode *node, VReg obj, const util::StringView &prop);
 
     void StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
-    void DefineClassField(const ir::AstNode *node, VReg obj, const Operand &prop);
+    void DefineOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
     void DefineClassPrivateField(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj);
     void StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop, bool nameSetting = false);
     void DeleteObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);

@@ -394,7 +394,11 @@ void ObjectExpression::CompilePropertyWithInit(compiler::PandaGen *pg, const ir:
     }
 
     value->Compile(pg);
-    pg->StoreOwnProperty(this, objReg, key, nameSetting);
+    if (!nameSetting && pg->Binder()->Program()->TargetApiVersion() > 10) {
+        pg->DefineOwnProperty(this, objReg, key);
+    } else {
+        pg->StoreOwnProperty(this, objReg, key, nameSetting);
+    }
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
 }
 
