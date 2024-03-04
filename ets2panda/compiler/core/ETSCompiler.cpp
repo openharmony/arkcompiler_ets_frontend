@@ -971,7 +971,7 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     } else if (expr->Callee()->IsSuperExpression() || expr->Callee()->IsThisExpression()) {
         ASSERT(!isReference && expr->IsETSConstructorCall());
         expr->Callee()->Compile(etsg);  // ctor is not a value!
-        etsg->SetVRegType(calleeReg, etsg->GetAccumulatorType());
+        etsg->StoreAccumulator(expr, calleeReg);
         EmitCall(expr, calleeReg, isStatic, signature, isReference);
     } else {
         ASSERT(isReference);
