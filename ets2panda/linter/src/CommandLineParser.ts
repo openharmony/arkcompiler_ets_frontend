@@ -62,15 +62,8 @@ function addProjectFolder(projectFolder: string, previous: string[]): string[] {
 }
 
 function formCommandLineOptions(program: Command): CommandLineOptions {
-  const opts: CommandLineOptions = { inputFiles: [], warningsAsErrors: false };
-  // Default mode of the linter.
-  opts.strictMode = true;
-  opts.inputFiles = inputFiles;
-
+  const opts: CommandLineOptions = { inputFiles: inputFiles, warningsAsErrors: false };
   const options = program.opts();
-  if (options.relax) {
-    opts.strictMode = false;
-  }
   if (options.TSC_Errors) {
     opts.logTscErrors = true;
   }
@@ -101,7 +94,6 @@ export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions 
     version('0.0.1');
   program.
     option('-E, --TSC_Errors', 'show error messages from Tsc').
-    option('--relax', 'relax mode On').
     option('--test-mode', 'run linter as if running TS test files').
     option('--deveco-plugin-mode', 'run as IDE plugin').
     option('-p, --project <project_file>', 'path to TS project config file').

@@ -133,7 +133,6 @@ export class LinterConfig {
     [ts.SyntaxKind.IntersectionType, FaultID.IntersectionType],
     [ts.SyntaxKind.TypeLiteral, FaultID.ObjectTypeLiteral],
     [ts.SyntaxKind.ConstructorType, FaultID.ConstructorFuncs],
-    [ts.SyntaxKind.PrivateIdentifier, FaultID.PrivateIdentifier],
     [ts.SyntaxKind.ConditionalType, FaultID.ConditionalType],
     [ts.SyntaxKind.MappedType, FaultID.MappedType],
     [ts.SyntaxKind.JsxElement, FaultID.JsxElement],

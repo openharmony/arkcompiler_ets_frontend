@@ -41,14 +41,12 @@ interface TestNodeInfo {
 }
 
 enum Mode {
-  STRICT,
-  RELAX,
+  DEFAULT,
   AUTOFIX
 }
 
 const RESULT_EXT: string[] = [];
-RESULT_EXT[Mode.STRICT] = '.strict.json';
-RESULT_EXT[Mode.RELAX] = '.relax.json';
+RESULT_EXT[Mode.DEFAULT] = '.json';
 RESULT_EXT[Mode.AUTOFIX] = '.autofix.json';
 const AUTOFIX_CONFIG_EXT = '.autofix.cfg.json';
 const AUTOFIX_SKIP_EXT = '.autofix.skip';
@@ -79,21 +77,15 @@ function runTests(testDirs: string[]): number {
       );
     });
     Logger.info(`\nProcessing "${testDir}" directory:\n`);
-    // Run each test in Strict, Autofix, and Relax mode:
+    // Run each test in Default and Autofix mode:
     for (const testFile of testFiles) {
-      if (runTest(testDir, testFile, Mode.STRICT)) {
+      if (runTest(testDir, testFile, Mode.DEFAULT)) {
         failed++;
         hasComparisonFailures = true;
       } else {
         passed++;
       }
       if (runTest(testDir, testFile, Mode.AUTOFIX)) {
-        failed++;
-        hasComparisonFailures = true;
-      } else {
-        passed++;
-      }
-      if (runTest(testDir, testFile, Mode.RELAX)) {
         failed++;
         hasComparisonFailures = true;
       } else {
@@ -119,9 +111,7 @@ function parseArgs(testDir: string, testFile: string, mode: Mode): CommandLineOp
     }
   }
 
-  if (mode === Mode.RELAX) {
-    args.push('--relax');
-  } else if (mode === Mode.AUTOFIX) {
+  if (mode === Mode.AUTOFIX) {
     args.push('--autofix');
     const autofixCfg = path.join(testDir, testFile + AUTOFIX_CONFIG_EXT);
     if (fs.existsSync(autofixCfg)) {

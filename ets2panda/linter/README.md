@@ -44,15 +44,11 @@ Possible command options:
 
 `--deveco-plugin-mode` - this options defines special mode to launch from IDE and should NOT be used when running from command line.
 
-`--relax` - defines 'relax' mode in which only problematic TypeScript language elements that cannot be transpiled by TypeScript migrator are counted.
-
 `--project-folder <path>` - defines path to folder with TypeScript sources and subfolders which linter walks recurscevely. This option may be repeated in command line with different paths.
 
 `-p, --project <path>` - defines path to TS project configuration file (commonly known as tsconfig.json). If no input file is defined directly as command-line argument, then all source files from tsconfig.json will be processed by linter. Otherwise, linter will only process input files from command-line, that are included into project (i.e. files that belong to intersection of input files from command-line and tsconfig.json file).
 
 `-E, --TSC_Errors` - enables logging messages about compilation errors and unresolved symbols.
-
-`--warnings-as-errors` - linter detects two kinds of problems: warnings and errors. This parameter make treatment of warnings as errors.
 
 All other command line arguments are considered as paths to TypeScript files.
 

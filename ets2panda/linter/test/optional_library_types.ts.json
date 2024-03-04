@@ -1,0 +1,233 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 29,
+            "column": 26,
+            "problem": "AnyType"
+        },
+        {
+            "line": 37,
+            "column": 19,
+            "problem": "AnyType"
+        },
+        {
+            "line": 40,
+            "column": 20,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 40,
+            "column": 21,
+            "problem": "AnyType"
+        },
+        {
+            "line": 43,
+            "column": 21,
+            "problem": "AnyType"
+        },
+        {
+            "line": 46,
+            "column": 19,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 46,
+            "column": 20,
+            "problem": "AnyType"
+        },
+        {
+            "line": 51,
+            "column": 7,
+            "problem": "AnyType"
+        },
+        {
+            "line": 57,
+            "column": 8,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 57,
+            "column": 9,
+            "problem": "AnyType"
+        },
+        {
+            "line": 63,
+            "column": 9,
+            "problem": "AnyType"
+        },
+        {
+            "line": 69,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 69,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 102,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 102,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 103,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 103,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 104,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 104,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 116,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 116,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 117,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 117,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 118,
+            "column": 7,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 118,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 130,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 131,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 132,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 144,
+            "column": 10,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 144,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 145,
+            "column": 10,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 145,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 146,
+            "column": 10,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 146,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 158,
+            "column": 10,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 158,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 159,
+            "column": 10,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 159,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 160,
+            "column": 10,
+            "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 160,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 172,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 173,
+            "column": 11,
+            "problem": "AnyType"
+        },
+        {
+            "line": 174,
+            "column": 11,
+            "problem": "AnyType"
+        }
+    ]
+}

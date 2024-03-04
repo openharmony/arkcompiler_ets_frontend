@@ -1,0 +1,697 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2024 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 16,
+            "column": 8,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 17,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 18,
+            "column": 8,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 19,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 22,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 22,
+            "column": 20,
+            "problem": "ImplementsClass",
+            "suggest": "",
+            "rule": "Classes cannot be specified in \"implements\" clause (arkts-implements-only-iface)"
+        },
+        {
+            "line": 29,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 30,
+            "column": 3,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 30,
+            "column": 20,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 33,
+            "column": 16,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 34,
+            "column": 3,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 39,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 40,
+            "column": 3,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 40,
+            "column": 20,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 43,
+            "column": 3,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 48,
+            "column": 1,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+        },
+        {
+            "line": 48,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 49,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 52,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 54,
+            "column": 1,
+            "problem": "ImportAfterStatement",
+            "suggest": "",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+        },
+        {
+            "line": 54,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 54,
+            "column": 18,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 55,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 58,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 58,
+            "column": 30,
+            "problem": "ImplementsClass",
+            "suggest": "",
+            "rule": "Classes cannot be specified in \"implements\" clause (arkts-implements-only-iface)"
+        },
+        {
+            "line": 60,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 63,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 75,
+            "column": 9,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 76,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 80,
+            "column": 9,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 81,
+            "column": 8,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 83,
+            "column": 9,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 84,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 88,
+            "column": 12,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 88,
+            "column": 3,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
+        },
+        {
+            "line": 91,
+            "column": 8,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 93,
+            "column": 12,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 93,
+            "column": 3,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
+        },
+        {
+            "line": 96,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 102,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 103,
+            "column": 15,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 110,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 113,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 116,
+            "column": 9,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        },
+        {
+            "line": 116,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 116,
+            "column": 19,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 118,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 121,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 124,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 127,
+            "column": 9,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        },
+        {
+            "line": 128,
+            "column": 5,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 130,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 131,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 134,
+            "column": 7,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 134,
+            "column": 19,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 140,
+            "column": 13,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 141,
+            "column": 12,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 143,
+            "column": 16,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 143,
+            "column": 7,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
+        },
+        {
+            "line": 148,
+            "column": 17,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 152,
+            "column": 16,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 152,
+            "column": 7,
+            "problem": "LocalFunction",
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
+        },
+        {
+            "line": 157,
+            "column": 12,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 163,
+            "column": 3,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 164,
+            "column": 3,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 166,
+            "column": 3,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 169,
+            "column": 3,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 173,
+            "column": 3,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 174,
+            "column": 3,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 164,
+            "column": 3,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+        },
+        {
+            "line": 169,
+            "column": 3,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+        },
+        {
+            "line": 174,
+            "column": 3,
+            "problem": "PrivateIdentifier",
+            "suggest": "",
+            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+        },
+        {
+            "line": 196,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 197,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 199,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 200,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 206,
+            "column": 1,
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
+        },
+        {
+            "line": 207,
+            "column": 1,
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
+        },
+        {
+            "line": 209,
+            "column": 1,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 210,
+            "column": 1,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 213,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 214,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 216,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 217,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 219,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 220,
+            "column": 6,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 223,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 224,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 226,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 227,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 229,
+            "column": 10,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 230,
+            "column": 6,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 233,
+            "column": 11,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 234,
+            "column": 7,
+            "problem": "DeclWithDuplicateName",
+            "suggest": "",
+            "rule": "Use unique names for types and namespaces. (arkts-unique-names)"
+        },
+        {
+            "line": 163,
+            "column": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'x' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'x' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 164,
+            "column": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property '#x' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property '#x' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 173,
+            "column": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'z' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'z' has no initializer and is not definitely assigned in the constructor."
+        }
+    ]
+}

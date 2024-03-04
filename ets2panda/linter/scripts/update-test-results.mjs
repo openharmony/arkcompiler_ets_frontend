@@ -21,14 +21,12 @@ const TSX_EXT = ".tsx";
 const D_TS_EXT = '.d.ts';
 
 class Mode {
-    static STRICT = 1;
-    static RELAX = 2;
-    static AUTOFIX = 3
+    static DEFAULT = 1;
+    static AUTOFIX = 2
 }
 
 const RESULT_EXT = [];
-RESULT_EXT[Mode.STRICT] = '.strict.json';
-RESULT_EXT[Mode.RELAX] = '.relax.json';
+RESULT_EXT[Mode.DEFAULT] = '.json';
 RESULT_EXT[Mode.AUTOFIX] = '.autofix.json';
 const AUTOFIX_SKIP_EXT = '.autofix.skip';
 const DIFF_EXT = '.diff';
@@ -114,10 +112,9 @@ for (let testDir of testDirs) {
 
     if (!testFiles) continue;
 
-    // Update result for each test for Strict and Relax modes:
+    // Update result for each test for Default and Autofix modes:
     for (let testFile of testFiles) {
-        updateTest(testDir, testFile, Mode.RELAX);
-        updateTest(testDir, testFile, Mode.STRICT);
+        updateTest(testDir, testFile, Mode.DEFAULT);
         updateTest(testDir, testFile, Mode.AUTOFIX);
     }
 }
