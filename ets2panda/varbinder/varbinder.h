@@ -195,6 +195,8 @@ public:
     static constexpr uint32_t LEXICAL_CONTEXT_PARAM_REG = MANDATORY_PARAMS_NUMBER;
     static constexpr std::string_view STAR_IMPORT = "*";
 
+    void ResolveReference(ir::AstNode *childNode);
+
 protected:
     template <size_t N>
     using MandatoryParams = std::array<std::string_view, N>;
@@ -227,7 +229,6 @@ protected:
                           ir::Statement *body);
     void BuildCatchClause(ir::CatchClause *catchClauseStmt);
     void BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl);
-    void ResolveReference(ir::AstNode *childNode);
     void ResolveReferences(const ir::AstNode *parent);
     void VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func);
     void VisitScriptFunction(ir::ScriptFunction *func);

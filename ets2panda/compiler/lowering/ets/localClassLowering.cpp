@@ -142,6 +142,21 @@ void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
     classDef->AddProperties(std::move(properties));
 }
 
+ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(checker::ETSChecker *const checker,
+                                                                     varbinder::FunctionParamScope *scope,
+                                                                     util::StringView name, checker::Type *type)
+{
+    auto newParam = checker->AddParam(name, nullptr);
+    newParam->SetTsType(type);
+    newParam->Ident()->SetTsType(type);
+    auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(checker->VarBinder(), scope, false);
+
+    auto *paramVar = std::get<1>(checker->VarBinder()->AddParamDecl(newParam));
+    paramVar->SetTsType(newParam->TsType());
+    newParam->Ident()->SetVariable(paramVar);
+    return newParam;
+}
+
 void LocalClassConstructionPhase::ModifyConstructorParameters(
     public_lib::Context *ctx, ir::ClassDefinition *classDef,
     ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap,
@@ -161,7 +176,7 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
         ASSERT(signature == constructor->Signature());
         for (auto var : classDef->CapturedVariables()) {
             auto *newParam =
-                checker->AddParam(constructor->Scope()->ParamScope(), var->Name(), checker->MaybeBoxedType(var));
+                CreateParam(checker, constructor->Scope()->ParamScope(), var->Name(), checker->MaybeBoxedType(var));
             newParam->SetParent(constructor);
             // NOTE(psiket) : Moving the parameter after the 'this'. Should modify the AddParam
             // to be able to insert after the this.

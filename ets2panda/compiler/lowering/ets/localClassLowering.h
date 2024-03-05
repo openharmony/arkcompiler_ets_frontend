@@ -43,6 +43,9 @@ protected:
 
     void RemapReferencesFromCapturedVariablesToClassProperties(
         ir::ClassDefinition *classDef, ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap);
+
+    ir::ETSParameterExpression *CreateParam(checker::ETSChecker *const checker, varbinder::FunctionParamScope *scope,
+                                            util::StringView name, checker::Type *type);
 };
 
 }  // namespace ark::es2panda::compiler

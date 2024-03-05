@@ -137,10 +137,6 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         return nullptr;
     }
 
-    if (node->Id()->Variable() == nullptr) {
-        node->Id()->SetVariable(scriptFunc->Id()->Variable());
-    }
-
     // NOTE: aszilagyi. make it correctly check for open function not have body
     if (!scriptFunc->HasBody() && !(node->IsAbstract() || node->IsNative() || node->IsDeclare() ||
                                     checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
@@ -1705,18 +1701,16 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
     ETSChecker *checker = GetETSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    auto it = st->Statements().begin();
-    while (it != st->Statements().end()) {
-        (*it)->Check(checker);
+    for (size_t i = 0; i < st->Statements().size(); i++) {
+        auto el = st->Statements()[i];
+        el->Check(checker);
 
         //  NOTE! Processing of trailing blocks was moved here so that smart casts could be applied correctly
-        if (auto const tb = st->trailingBlocks_.find(*it); tb != st->trailingBlocks_.end()) {
+        if (auto const tb = st->trailingBlocks_.find(el); tb != st->trailingBlocks_.end()) {
             auto *const trailingBlock = tb->second;
             trailingBlock->Check(checker);
-            it = st->Statements().emplace(std::next(it), trailingBlock);
+            st->Statements().emplace(std::next(st->Statements().begin() + i), trailingBlock);
         }
-
-        ++it;
     }
 
     //  Remove possible smart casts for variables declared in inner scope:

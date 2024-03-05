@@ -39,17 +39,8 @@ compiler/ets/override3.ets
 compiler/ets/override4.ets
 compiler/ets/override5.ets
 
-# panda#14517
-compiler/ets/dynamic_call.ets
-compiler/ets/dynamic-equality.ets
-compiler/ets/dynamic-equality-error.ets
+# 13086
 compiler/ets/dynamic_instanceof.ets
-compiler/ets/dynamicJsImport.ets
-compiler/ets/dynamicLambda.ets
-compiler/ets/dynamicLambda_error.ets
-compiler/ets/dynamicLambdaJSValue.ets
-compiler/ets/dynamicObjectLiteral.ets
-parser/ets/dynamic_import_tests/dynamic_decl_import.ets
 
 # Requires smart casts
 parser/ets/null-coalesc-negative.ets

@@ -3104,6 +3104,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
         } else {
             CreateLambdaFuncDecl(implMethod, classDef->Scope()->AsClassScope()->InstanceMethodScope());
         }
+        implMethod->Id()->SetVariable(implMethod->Function()->Id()->Variable());
     }
     VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(), isStatic,
                                                  asyncFunc->IsExternal());
