@@ -196,7 +196,8 @@ namespace secharmony {
     return mangleFilePath + extension;
   }
 
-  function getMangleIncompletePath(orignalPath: string): string | undefined {
+  function getMangleIncompletePath(orignalPath: string): string {
+    // Try to concat the extension for orignalPath.
     const pathAndExtension : PathAndExtension | undefined = tryValidateFileExisting(orignalPath);
     if (!pathAndExtension) {
       return orignalPath;
@@ -205,11 +206,15 @@ namespace secharmony {
     if (pathAndExtension.ext) {
       const mangleFilePath = manglFileName(pathAndExtension.path);
       return mangleFilePath;
-    } else {
-      const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(pathAndExtension.path);
-      const mangleFilePath = manglFileName(filePathWithoutSuffix);
-      return mangleFilePath + extension;
     }
+    /**
+     * import * from './filename1.js'. We just need to obfuscate 'filename1' and then concat the extension 'js'.
+     * import * from './direcotry'. For the grammar of importing directory, TSC will look for index.ets/index.ts when parsing.
+     * We obfuscate directory name and do not need to concat extension.
+     */
+    const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(pathAndExtension.path);
+    const mangleFilePath = manglFileName(filePathWithoutSuffix);
+    return mangleFilePath + extension;
   }
 
   function manglFileName(orignalPath: string): string {
