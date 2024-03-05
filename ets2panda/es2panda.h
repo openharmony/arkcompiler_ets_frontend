@@ -105,7 +105,6 @@ struct CompilerOptions {
     bool verifierAllChecks {};
     bool verifierFullProgram {};
     std::string stdLib {};
-    std::string tsDeclOut {};
     std::vector<std::string> plugins {};
     std::unordered_set<std::string> skipPhases {};
     std::unordered_set<std::string> verifierWarnings {};

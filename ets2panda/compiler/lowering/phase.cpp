@@ -21,7 +21,6 @@
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/recordLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
-#include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
@@ -55,7 +54,6 @@ std::vector<Phase *> GetTrivialPhaseList()
 
 static BigIntLowering g_bigintLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
-static GenerateTsDeclarationsPhase g_generateTsDeclarationsPhase;
 static LambdaConstructionPhase g_lambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
 static ObjectIndexLowering g_objectIndexLowering;
@@ -97,7 +95,6 @@ std::vector<Phase *> GetETSPhaseList()
         &g_interfacePropDeclPhase,
         &g_checkerPhase,
         &g_pluginsAfterCheck,
-        &g_generateTsDeclarationsPhase,
         &g_opAssignmentLowering,
         &g_recordLowering,
         &g_objectIndexLowering,

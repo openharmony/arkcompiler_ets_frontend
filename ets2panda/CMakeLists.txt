@@ -156,7 +156,6 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
-  compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
   compiler/lowering/ets/objectIterator.cpp
   compiler/lowering/ets/interfacePropertyDeclarations.cpp
@@ -451,7 +450,6 @@ set(ES2PANDA_LIB_SRC
   checker/types/ts/voidType.cpp
   util/arktsconfig.cpp
   util/bitset.cpp
-  util/declgenEts2Ts.cpp
   util/errorHandler.cpp
   util/helpers.cpp
   util/path.cpp
@@ -532,6 +530,7 @@ panda_add_sanitizers(TARGET es2panda-public SANITIZERS
   ${PANDA_SANITIZERS_LIST})
 
 add_subdirectory(aot)
+add_subdirectory(declgen_ets2ts)
 
 if(PANDA_WITH_TESTS)
   add_subdirectory(test)

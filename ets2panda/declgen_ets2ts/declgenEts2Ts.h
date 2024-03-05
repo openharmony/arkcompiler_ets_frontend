@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
+#ifndef ES2PANDA_DECLGEN_ETS2TS_H
+#define ES2PANDA_DECLGEN_ETS2TS_H
+
 #include "parser/program/program.h"
 #include "checker/ETSchecker.h"
 #include "libpandabase/os/file.h"
 
-#ifndef ES2PANDA_UTIL_DECLGEN_ETS2TS_H
-#define ES2PANDA_UTIL_DECLGEN_ETS2TS_H
-
-namespace ark::es2panda::util {
+namespace ark::es2panda::declgen_ets2ts {
 
 // Consume program after checker stage and generate out_path typescript file with declarations
 bool GenerateTsDeclarations(checker::ETSChecker *checker, const ark::es2panda::parser::Program *program,
@@ -48,6 +48,8 @@ private:
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
+    void GenFunctionBody(const ir::MethodDefinition *methodDef, const checker::Signature *sig, const bool isConstructor,
+                         const bool isSetter);
     void GenObjectType(const checker::ETSObjectType *objectType);
     void GenEnumType(const checker::ETSEnumType *enumType);
     void GenUnionType(const checker::ETSUnionType *unionType);
@@ -64,9 +66,10 @@ private:
     template <class T>
     void GenModifier(const T *node);
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
+    void GenExports(const std::string &name);
 
     template <class T, class CB>
-    void GenCommaSeparated(const T &container, const CB &cb);
+    void GenSeparated(const T &container, const CB &cb, const char *separator = ", ");
 
     void Out() {}
     template <class F, class... T>
@@ -96,6 +99,6 @@ private:
     checker::ETSChecker *checker_ {};
     const ark::es2panda::parser::Program *program_ {};
 };
-}  // namespace ark::es2panda::util
+}  // namespace ark::es2panda::declgen_ets2ts
 
-#endif  // ES2PANDA_UTIL_DECLGEN_ETS2TS_H
+#endif  // ES2PANDA_DECLGEN_ETS2TS_H
