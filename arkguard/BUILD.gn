@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+typescript_dir = get_label_info("//third_party/typescript:build_typescript",
+                                "target_out_dir")
+
 action("build_arkguard") {
   sources = [
     "package.json",
@@ -57,7 +60,7 @@ action("build_arkguard") {
   script = "compile_arkguard.py"
   args = [
     rebase_path(get_path_info("./", "abspath")),
-    rebase_path("//third_party/typescript/ohos-typescript-4.9.5-r4.tgz"),
+    rebase_path("${typescript_dir}/ohos-typescript-4.9.5-r4.tgz"),
     rebase_path("${target_out_dir}"),
   ]
 
