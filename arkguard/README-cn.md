@@ -200,10 +200,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 **注意**：编译生成的源码文件中的注释默认会被全部删除，不支持配置保留。
 ### 保留选项
 
-保留选项只有在使用`enable-property-obfuscation`或`enable-toplevel-obfuscation`以及`-remove-comments`选项时发挥作用。
-
-#### `-keep-property-name` [,identifiers,...]
-
+#### `-keep-property-name` [,identifiers,...] 
 指定你想保留的属性名。比如下面的例子:
 ```
 -keep-property-name
@@ -211,13 +208,25 @@ age
 firstName
 lastName
 ```
+**注意**：该选项在开启`-enable-property-obfuscation`时生效
 
-`-keep-comments`
-保留JsDoc注释的方法与上述属性名的保留方法类似。比如保留某个声明文件中类名为Human的类上方的JsDoc注释：
+`-keep-comments` 
+保留声明文件中元素上方的JsDoc注释。比如想保留声明文件中Human类上方的JsDoc注释，可进行以下配置：
 ```
 -keep-comments
 Human
 ```
+**注意**：
+1. 该选项在开启`-remove-comments`时生效
+2. 当声明文件中某个元素名称被混淆时，该元素上方的JsDoc注释无法通过`-keep-comments`保留。比如当在`-keep-comments`中配置了
+exportClass时，如果下面的类名被混淆，其JsDoc注释无法被保留：
+```
+/**
+** @class exportClass
+*/
+export class exportClass {}
+```
+
 **哪些属性名应该被保留?**
 
 为了保障混淆的正确性，我们建议你保留所有不通过点语法访问的属性。
