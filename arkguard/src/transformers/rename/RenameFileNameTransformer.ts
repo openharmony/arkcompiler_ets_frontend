@@ -51,10 +51,10 @@ import { TransformerOrder } from '../TransformPlugin';
 import type { IFileNameObfuscationOption } from '../../configs/INameObfuscationOption';
 import { NameGeneratorType, getNameGenerator } from '../../generator/NameFactory';
 import type { INameGenerator, NameGeneratorOptions } from '../../generator/INameGenerator';
-import { FileUtils } from '../../utils/FileUtils';
+import { FileUtils, BUNDLE } from '../../utils/FileUtils';
 import { NodeUtils } from '../../utils/NodeUtils';
 import { orignalFilePathForSearching, performancePrinter } from '../../ArkObfuscator';
-import type { PathAndExtension } from '../../common/type';
+import type { PathAndExtension, ProjectInfo } from '../../common/type';
 import { EventList } from '../../utils/PrinterUtils';
 namespace secharmony {
 
@@ -72,7 +72,7 @@ namespace secharmony {
    *
    * @param option obfuscation options
    */
-  const createRenameFileNameFactory = function (options: IOptions): TransformerFactory<Node> {
+  const createRenameFileNameFactory = function (options: IOptions, projectInfo?: ProjectInfo): TransformerFactory<Node> {
     profile = options?.mRenameFileName;
     if (!profile || !profile.mEnable) {
       return null;
@@ -113,7 +113,7 @@ namespace secharmony {
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = updateNodeInfo(node);
-        if (isSourceFile(ret)) {
+        if (!inInOhModules(projectInfo, orignalFilePathForSearching) && isSourceFile(ret)) {
           const orignalAbsPath = ret.fileName;
           const mangledAbsPath: string = getMangleCompletePath(orignalAbsPath);
           ret.fileName = mangledAbsPath;
@@ -139,6 +139,14 @@ namespace secharmony {
       }
     }
   };
+
+  export function inInOhModules(proInfo: ProjectInfo, originalPath: string): boolean {
+    let ohPackagePath: string = '';
+    if (proInfo && proInfo.projectRootPath && proInfo.packageDir) {
+      ohPackagePath = FileUtils.toUnixPath(path.resolve(proInfo.projectRootPath, proInfo.packageDir));
+    }
+    return ohPackagePath && FileUtils.toUnixPath(originalPath).indexOf(ohPackagePath) !== -1;
+  }
 
   function updateImportOrExportDeclaration(node: ImportDeclaration | ExportDeclaration): ImportDeclaration | ExportDeclaration {
     if (!node.moduleSpecifier) {
@@ -196,11 +204,17 @@ namespace secharmony {
   export function getMangleCompletePath(originalCompletePath: string): string {
     originalCompletePath = FileUtils.toUnixPath(originalCompletePath);
     const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(originalCompletePath);
-    const mangleFilePath = manglFileName(filePathWithoutSuffix);
+    const mangleFilePath = mangleFileName(filePathWithoutSuffix);
     return mangleFilePath + extension;
   }
 
   function getMangleIncompletePath(orignalPath: string): string {
+    // The ohmUrl format does not have file extension
+    if (isBundleOhmUrl(orignalPath)) {
+      const mangledOhmUrl = mangleOhmUrl(orignalPath);
+      return mangledOhmUrl;
+    }
+
     // Try to concat the extension for orignalPath.
     const pathAndExtension : PathAndExtension | undefined = tryValidateFileExisting(orignalPath);
     if (!pathAndExtension) {
@@ -208,7 +222,7 @@ namespace secharmony {
     }
 
     if (pathAndExtension.ext) {
-      const mangleFilePath = manglFileName(pathAndExtension.path);
+      const mangleFilePath = mangleFileName(pathAndExtension.path);
       return mangleFilePath;
     }
     /**
@@ -217,11 +231,28 @@ namespace secharmony {
      * We obfuscate directory name and do not need to concat extension.
      */
     const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(pathAndExtension.path);
-    const mangleFilePath = manglFileName(filePathWithoutSuffix);
+    const mangleFilePath = mangleFileName(filePathWithoutSuffix);
     return mangleFilePath + extension;
   }
 
-  function manglFileName(orignalPath: string): string {
+  export function mangleOhmUrl(ohmUrl: string): string {
+    const originalOhmUrlSegments: string[] = FileUtils.splitFilePath(ohmUrl);
+    /**
+     * OhmUrl Format:
+     * fixed parts in hap/hsp: @bundle:${bundleName}/${moduleName}/
+     * fixed parts in har: @bundle:${bundleName}/${moduleName}@${harName}/
+     * hsp example: @bundle:com.example.myapplication/entry/index
+     * har example: @bundle:com.example.myapplication/entry@library_test/index
+     * we do not mangle fixed parts.
+     */
+    const prefixSegments: string[] = originalOhmUrlSegments.slice(0, 2); // 2: length of fixed parts in array
+    const urlSegments: string[] = originalOhmUrlSegments.slice(2); // 2: index of mangled parts in array
+    const mangledOhmUrlSegments: string[] = urlSegments.map(originalSegment => mangleFileNamePart(originalSegment));
+    let mangledOhmUrl: string = prefixSegments.join('/') + '/' + mangledOhmUrlSegments.join('/');
+    return mangledOhmUrl;
+  }
+
+  function mangleFileName(orignalPath: string): string {
     const originalFileNameSegments: string[] = FileUtils.splitFilePath(orignalPath);
     const mangledSegments: string[] = originalFileNameSegments.map(originalSegment => mangleFileNamePart(originalSegment));
     let mangledFileName: string = mangledSegments.join('/');
@@ -268,7 +299,11 @@ namespace secharmony {
 export = secharmony;
 
 function canBeObfuscatedFilePath(filePath: string): boolean {
-  return path.isAbsolute(filePath) || FileUtils.isRelativePath(filePath);
+  return path.isAbsolute(filePath) || FileUtils.isRelativePath(filePath) || isBundleOhmUrl(filePath);
+}
+
+function isBundleOhmUrl(filePath: string): boolean{
+  return filePath.startsWith(BUNDLE);
 }
 
 // typescript doesn't add the json extension.

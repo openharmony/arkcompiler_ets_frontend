@@ -21,6 +21,8 @@ import type { PathAndExtension } from '../common/type';
 import fs from 'fs';
 import path from 'path';
 
+export const BUNDLE = '@bundle:';
+
 export class FileUtils {
   /**
    * Read file and return content
