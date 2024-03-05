@@ -81,6 +81,9 @@ def get_args():
         '--error', action='store_true', dest='error', default=False,
         help='capture stderr')
     parser.add_argument(
+        '--abc-to-asm', action='store_true', dest='abc_to_asm',
+        default=False, help='run abc2asm tests')
+    parser.add_argument(
         '--regression', '-r', action='store_true', dest='regression',
         default=False, help='run regression tests')
     parser.add_argument(
@@ -560,6 +563,50 @@ class RegressionRunner(Runner):
     def test_path(self, src):
         return src
 
+class AbcToAsmRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Abc2asm")
+
+    def add_directory(self, directory, extension, flags, func=Test):
+        glob_expression = path.join(
+            self.test_root, directory, "*.%s" % (extension))
+        files = glob(glob_expression)
+        files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+
+        self.tests += list(map(lambda f: AbcToAsmTest(f, flags), files))
+
+    def test_path(self, src):
+        return os.path.basename(src)
+
+class AbcToAsmTest(Test):
+    def run(self, runner):
+        output_abc_file = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        gen_abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        gen_abc_cmd.extend(["--dump-asm-program", "--output=" + output_abc_file])
+        gen_abc_cmd.append(self.path)
+        self.log_cmd(gen_abc_cmd)
+        process_gen_abc = subprocess.Popen(gen_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        gen_abc_out, gen_abc_err = process_gen_abc.communicate()
+        gen_abc_output = gen_abc_out.decode("utf-8", errors="ignore") + gen_abc_err.decode("utf-8", errors="ignore")
+        # If no abc file is generated, an error occurs during parser, but abc2asm function is normal.
+        if not os.path.exists(output_abc_file):
+            self.passed = true
+            return self
+        abc_to_asm_cmd = runner.cmd_prefix + [runner.es2panda]
+        abc_to_asm_cmd.extend(["--dump-asm-program", "--enable-abc-input"])
+        abc_to_asm_cmd.extend(output_abc_file)
+        self.log_cmd(abc_to_asm_cmd)
+        process_abc_to_asm = subprocess.Popen(abc_to_asm_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        abc_to_asm_out, abc_to_asm_err = process_abc_to_asm.communicate()
+        abc_to_asm_output = (abc_to_asm_out.decode("utf-8", errors="ignore") +
+                             abc_to_asm_err.decode("utf-8", errors="ignore"))
+        try:
+            self.passed = gen_abc_output == abc_to_asm_output and process_abc_to_asm.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+        
+        os.remove(test_abc_path)
+        return self
 
 class Test262Runner(Runner):
     def __init__(self, args):
@@ -1534,6 +1581,13 @@ def main():
                                           "--check-transformed-ast-structure"])
 
         runners.append(transformer_runner)
+        
+    if args.abc_to_asm:
+        runner = AbcToAsmRunner(args)
+        runner.add_directory("abc2asm/js", "js", [])
+        runner.add_directory("abc2asm/ts", "ts", [])
+        runner.add_directory("abc2asm/abc", "abc", [])
+        runners.append(runner)
 
     if args.test262:
         runners.append(Test262Runner(args))

@@ -71,6 +71,8 @@ struct PatchFixOptions {
 };
 
 struct CompilerOptions {
+    bool enableAbcInput {false};
+    bool dumpAsmProgram {false};
     bool isDebug {false};
     bool dumpAst {false};
     bool dumpTransformedAst {false};
