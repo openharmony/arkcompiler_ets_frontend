@@ -1355,8 +1355,10 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
 std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType, Type *actualType, bool const strict)
 {
+    static checker::Type *globalNullType = CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()});
+
     if (!strict) {
-        return {GlobalETSNullishObjectType(), GetNonNullishType(actualType)};
+        return {globalNullType, GetNonNullishType(actualType)};
     }
 
     if (testedType->IsETSNullType()) {
@@ -1367,7 +1369,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType
         return {GlobalETSUndefinedType(), RemoveUndefinedType(actualType)};
     }
 
-    return {GlobalETSNullishObjectType(), GetNonNullishType(actualType)};
+    return {globalNullType, GetNonNullishType(actualType)};
 }
 
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
@@ -1438,78 +1440,104 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSObjectType *te
     return {testedType, actualType};
 }
 
-//  Extracted just to reduce the size of 'CheckTestSmartCastConditions' function.
-std::optional<SmartCastCondition> GetSmartCastCondition(ir::Expression const *testExpression)
+static constexpr std::size_t const VARIABLE_POSITION = 0UL;
+static constexpr std::size_t const CONSEQUENT_TYPE_POSITION = 1UL;
+static constexpr std::size_t const ALTERNATE_TYPE_POSITION = 2UL;
+
+void CheckerContext::CheckTestSmartCastCondition(lexer::TokenType operatorType)
 {
-    ASSERT(testExpression != nullptr);
-
-    if (testExpression->IsIdentifier()) {
-        return testExpression->AsIdentifier()->GetSmartCastCondition();
+    if (operatorType != lexer::TokenType::EOS && operatorType != lexer::TokenType::PUNCTUATOR_LOGICAL_AND &&
+        operatorType != lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
+        return;
     }
 
-    if (testExpression->IsBinaryExpression()) {
-        return testExpression->AsBinaryExpression()->GetSmartCastCondition();
+    auto types = ResolveSmartCastTypes();
+
+    if (operatorType_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+        if (types.has_value()) {
+            auto const &variable = std::get<VARIABLE_POSITION>(*types);
+            //  NOTE: now we support only cases like 'if (x != null && y == null)' but don't support different type
+            //  checks for a single variable (like 'if (x != null && x instanceof string)'), because it seems that
+            //  it doesn't make much sense.
+            //  Can be implemented later on if the need arises.
+            if (auto [_, inserted] =
+                    testSmartCasts_.emplace(variable, std::make_pair(std::get<CONSEQUENT_TYPE_POSITION>(*types),
+                                                                     std::get<ALTERNATE_TYPE_POSITION>(*types)));
+                !inserted) {
+                testSmartCasts_[variable] = {nullptr, nullptr};
+            }
+        }
+        //  Clear alternate types, because now they become indefinite
+        for (auto &smartCast : testSmartCasts_) {
+            smartCast.second.second = nullptr;
+        }
+    } else if (operatorType_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
+        if (bool const cleanConsequent = types.has_value() ? CheckTestOrSmartCastCondition(*types) : true;
+            cleanConsequent) {
+            //  Clear consequent types, because now they become indefinite
+            for (auto &smartCast : testSmartCasts_) {
+                smartCast.second.first = nullptr;
+            }
+        }
+    } else if (types.has_value()) {
+        testSmartCasts_.emplace(
+            std::get<VARIABLE_POSITION>(*types),
+            std::make_pair(std::get<CONSEQUENT_TYPE_POSITION>(*types), std::get<ALTERNATE_TYPE_POSITION>(*types)));
     }
 
-    if (testExpression->IsUnaryExpression()) {
-        return testExpression->AsUnaryExpression()->GetSmartCastCondition();
-    }
-
-    return std::nullopt;
+    testCondition_ = {};
+    operatorType_ = operatorType;
 }
 
-SmartCastTypes ETSChecker::CheckTestSmartCastConditions(ir::Expression const *testExpression)
+std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
 {
-    //  NOTE: here the more complex business logic should be implemented in the future
-    //  to process the possible complex logical test expressions (like 'x instanceof A && y != null;').
-    //  Aliased 'SmartCastCTypes' result type is used for this case as well.
-    std::optional<SmartCastCondition> testCondition = GetSmartCastCondition(testExpression);
-    if (!testCondition.has_value()) {
+    if (testCondition_.variable == nullptr) {
         return std::nullopt;
     }
 
-    ASSERT(testCondition->variable != nullptr && testCondition->testedType != nullptr);
-
     // Exclude processing of global variables and those captured in lambdas and modified there
-    auto const *const variableScope = testCondition->variable->GetScope();
+    auto const *const variableScope = testCondition_.variable->GetScope();
     auto const topLevelVariable =
         variableScope != nullptr ? variableScope->IsGlobalScope() ||
                                        (variableScope->Parent() != nullptr && variableScope->Parent()->IsGlobalScope())
                                  : false;
-    if (topLevelVariable && testCondition->variable->HasFlag(varbinder::VariableFlags::BOXED)) {
+    if (topLevelVariable && testCondition_.variable->HasFlag(varbinder::VariableFlags::BOXED)) {
         return std::nullopt;
     }
 
-    // NOTE: functional type are not supported now
-    if (testCondition->testedType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE_RETURN | TypeFlag::FUNCTION)) {
+    ASSERT(testCondition_.testedType != nullptr);
+    // NOTE: functional types are not supported now
+    if (!testCondition_.testedType->IsETSReferenceType() ||
+        testCondition_.testedType->HasTypeFlag(TypeFlag::FUNCTION)) {
         return std::nullopt;
     }
 
-    auto *smartType = Context().GetSmartCast(testCondition->variable);
+    auto *smartType = GetSmartCast(testCondition_.variable);
     if (smartType == nullptr) {
-        smartType = testCondition->variable->TsType();
+        smartType = testCondition_.variable->TsType();
     }
 
+    auto *const checker = parent_->AsETSChecker();
     Type *consequentType = nullptr;
     Type *alternateType = nullptr;
 
-    if (testCondition->testedType->DefinitelyETSNullish()) {
+    if (testCondition_.testedType->DefinitelyETSNullish()) {
         // In case of testing for 'null' and/or 'undefined' remove corresponding null-like types.
         std::tie(consequentType, alternateType) =
-            CheckTestNullishCondition(testCondition->testedType, smartType, testCondition->strict);
+            checker->CheckTestNullishCondition(testCondition_.testedType, smartType, testCondition_.strict);
     } else {
-        if (testCondition->testedType->IsETSTypeParameter()) {
-            testCondition->testedType = GetApparentType(testCondition->testedType);
+        if (testCondition_.testedType->IsETSTypeParameter()) {
+            testCondition_.testedType = checker->GetApparentType(testCondition_.testedType);
         }
 
-        if (testCondition->testedType->IsETSObjectType()) {
-            auto *const testedType = testCondition->testedType->AsETSObjectType();
+        if (testCondition_.testedType->IsETSObjectType()) {
+            auto *const testedType = testCondition_.testedType->AsETSObjectType();
             std::tie(consequentType, alternateType) =
-                CheckTestObjectCondition(testedType, smartType, testCondition->strict);
-        } else if (testCondition->testedType->IsETSArrayType()) {
-            auto *const testedType = testCondition->testedType->AsETSArrayType();
-            std::tie(consequentType, alternateType) = CheckTestObjectCondition(testedType, smartType);
-        } else if (testCondition->testedType->IsETSUnionType()) {
+                checker->CheckTestObjectCondition(testedType, smartType, testCondition_.strict);
+        } else if (testCondition_.testedType->IsETSArrayType()) {
+            auto *const testedType = testCondition_.testedType->AsETSArrayType();
+            std::tie(consequentType, alternateType) = checker->CheckTestObjectCondition(testedType, smartType);
+        } else if (testCondition_.testedType->IsETSUnionType()) {
             //  NOTE: now we don't support 'instanceof' operation for union types?
             UNREACHABLE();
         } else {
@@ -1518,21 +1546,58 @@ SmartCastTypes ETSChecker::CheckTestSmartCastConditions(ir::Expression const *te
         }
     }
 
-    return !testCondition->negate
-               ? std::make_optional<SmartCastConditionTypes>({testCondition->variable, consequentType, alternateType})
-               : std::make_optional<SmartCastConditionTypes>({testCondition->variable, alternateType, consequentType});
+    return !testCondition_.negate
+               ? std::make_optional(std::make_tuple(testCondition_.variable, consequentType, alternateType))
+               : std::make_optional(std::make_tuple(testCondition_.variable, alternateType, consequentType));
 }
 
 void ETSChecker::ApplySmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
 {
-    ASSERT(variable != nullptr && smartType != nullptr);
-    auto *variableType = variable->TsType();
+    ASSERT(variable != nullptr);
+    if (smartType != nullptr) {
+        auto *variableType = variable->TsType();
 
-    if (Relation()->IsIdenticalTo(variableType, smartType)) {
-        Context().RemoveSmartCast(variable);
-    } else {
-        Context().SetSmartCast(variable, smartType);
+        if (Relation()->IsIdenticalTo(variableType, smartType)) {
+            Context().RemoveSmartCast(variable);
+        } else {
+            Context().SetSmartCast(variable, smartType);
+        }
     }
+}
+
+bool CheckerContext::CheckTestOrSmartCastCondition(SmartCastTuple const &types)
+{
+    auto *const &variable = std::get<VARIABLE_POSITION>(types);
+    auto *const &consequentTypeNew = std::get<CONSEQUENT_TYPE_POSITION>(types);
+    auto *const &alternateTypeNew = std::get<ALTERNATE_TYPE_POSITION>(types);
+
+    if (auto const it = testSmartCasts_.find(variable); it != testSmartCasts_.end()) {
+        auto *const consequentTypeOld = it->second.first;
+        if (consequentTypeOld == nullptr) {
+            return true;
+        }
+
+        if (consequentTypeNew != nullptr && !parent_->Relation()->IsIdenticalTo(consequentTypeOld, consequentTypeNew)) {
+            it->second.first = parent_->AsETSChecker()->CreateETSUnionType({consequentTypeOld, consequentTypeNew});
+        }
+
+        if (auto *const alternateTypeOld = it->second.second; alternateTypeOld != nullptr) {
+            if (alternateTypeNew != nullptr &&
+                !parent_->Relation()->IsIdenticalTo(alternateTypeOld, alternateTypeNew)) {
+                it->second.second = parent_->AsETSChecker()->CreateETSUnionType({alternateTypeOld, alternateTypeNew});
+            }
+        } else {
+            it->second.second = alternateTypeNew;
+        }
+
+        return false;
+    }
+
+    //  NOTE: now we support only cases like 'if (x != null || y != null)' or 'if (x instanceof A || x instanceof B)'
+    //  although it seems that the resulting variable type in the second case isn't used in subsequent code directly.
+    //  More complex conditions can be implemented later on if the need arises.
+    testSmartCasts_.emplace(variable, std::make_pair(consequentTypeNew, alternateTypeNew));
+    return true;
 }
 
 //==============================================================================//

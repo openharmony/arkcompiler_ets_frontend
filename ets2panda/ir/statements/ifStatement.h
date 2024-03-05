@@ -39,16 +39,22 @@ public:
     {
     }
 
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class checker::TSAnalyzer;
-
     [[nodiscard]] const Expression *Test() const noexcept
     {
         return test_;
     }
 
+    [[nodiscard]] Expression *Test() noexcept
+    {
+        return test_;
+    }
+
     [[nodiscard]] const Statement *Consequent() const noexcept
+    {
+        return consequent_;
+    }
+
+    [[nodiscard]] Statement *Consequent() noexcept
     {
         return consequent_;
     }

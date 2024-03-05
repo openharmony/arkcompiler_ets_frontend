@@ -128,27 +128,4 @@ checker::Type *Identifier::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
-
-void Identifier::CheckSmartCastCondition(checker::ETSChecker *checker)
-{
-    //  Smart cast for extended conditional check can be applied only to the variables of reference types.
-    if (auto const *const variableType = variable_->TsType(); !variableType->IsETSReferenceType()) {
-        return;
-    }
-
-    // Check that identifier is a part of logical OR/AND or negation operator (other cases are not interested)
-    if (parent_->IsBinaryExpression()) {
-        auto const operation = parent_->AsBinaryExpression()->OperatorType();
-        if (operation != lexer::TokenType::PUNCTUATOR_LOGICAL_OR &&
-            operation != lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-            return;
-        }
-    } else if (!parent_->IsUnaryExpression() && !parent_->IsIfStatement()) {
-        return;
-    }
-
-    if (TsType()->PossiblyETSNullish()) {
-        smartCastCondition_ = {Variable(), checker->GlobalETSNullType(), true, false};
-    }
-}
 }  // namespace ark::es2panda::ir

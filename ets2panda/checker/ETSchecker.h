@@ -575,7 +575,6 @@ public:
 
     // Smart cast support
     [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
-    [[nodiscard]] SmartCastTypes CheckTestSmartCastConditions(ir::Expression const *testExpression);
     [[nodiscard]] std::pair<Type *, Type *> CheckTestNullishCondition(Type *testedType, Type *actualType, bool strict);
     [[nodiscard]] std::pair<Type *, Type *> CheckTestObjectCondition(ETSObjectType *testedType, Type *actualType,
                                                                      bool strict);

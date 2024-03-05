@@ -151,12 +151,6 @@ public:
 
     [[nodiscard]] BinaryExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
-    void CheckSmartCastCondition(checker::ETSChecker *checker);
-    std::optional<checker::SmartCastCondition> const &GetSmartCastCondition() const noexcept
-    {
-        return smartCastCondition_;
-    }
-
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -177,9 +171,6 @@ private:
     Expression *result_ = nullptr;
     lexer::TokenType operator_;
     checker::Type *operationType_ {};
-    std::optional<checker::SmartCastCondition> smartCastCondition_ = std::nullopt;
-
-    void CheckSmartCastEqualityCondition(checker::ETSChecker *checker);
 };
 }  // namespace ark::es2panda::ir
 

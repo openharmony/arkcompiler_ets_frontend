@@ -177,12 +177,6 @@ public:
 
     [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
-    void CheckSmartCastCondition(checker::ETSChecker *checker);
-    [[nodiscard]] std::optional<checker::SmartCastCondition> const &GetSmartCastCondition() const noexcept
-    {
-        return smartCastCondition_;
-    }
-
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
@@ -208,7 +202,6 @@ private:
     util::StringView name_;
     IdentifierFlags flags_ {IdentifierFlags::NONE};
     ArenaVector<Decorator *> decorators_;
-    std::optional<checker::SmartCastCondition> smartCastCondition_ = std::nullopt;
 };
 }  // namespace ark::es2panda::ir
 

@@ -49,6 +49,7 @@ enum class CheckerStatus : uint32_t {
     MEET_RETURN = 1U << 20U,
     MEET_BREAK = 1U << 21U,
     MEET_CONTINUE = 1U << 22U,
+    MEET_THROW = 1U << 23U,
 };
 
 DEFINE_BITOPS(CheckerStatus)
@@ -56,6 +57,9 @@ DEFINE_BITOPS(CheckerStatus)
 using CapturedVarsMap = ArenaUnorderedMap<varbinder::Variable *, lexer::SourcePosition>;
 using SmartCastMap = ArenaMap<varbinder::Variable const *, checker::Type *>;
 using SmartCastArray = std::vector<std::pair<varbinder::Variable const *, checker::Type *>>;
+using SmartCastTestMap = ArenaMap<varbinder::Variable const *, std::pair<checker::Type *, checker::Type *>>;
+using SmartCastTuple = std::tuple<varbinder::Variable const *, checker::Type *, checker::Type *>;
+using SmartCastTestArray = std::vector<SmartCastTuple>;
 
 struct SmartCastCondition final {
     SmartCastCondition() = default;
@@ -72,21 +76,7 @@ struct SmartCastCondition final {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
-struct SmartCastConditionTypes final {
-    SmartCastConditionTypes() = default;
-    ~SmartCastConditionTypes() = default;
-
-    DEFAULT_COPY_SEMANTIC(SmartCastConditionTypes);
-    DEFAULT_MOVE_SEMANTIC(SmartCastConditionTypes);
-
-    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    varbinder::Variable const *variable = nullptr;
-    checker::Type *consequentType = nullptr;
-    checker::Type *alternateType = nullptr;
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
-};
-
-using SmartCastTypes = std::optional<SmartCastConditionTypes>;
+using SmartCastTypes = std::optional<SmartCastTestArray>;
 
 class CheckerContext final {
 public:
@@ -166,20 +156,15 @@ public:
         smartCasts_.insert_or_assign(variable, smartType);
     }
 
-    [[nodiscard]] checker::Type *GetSmartCast(varbinder::Variable const *const variable) const noexcept
-    {
-        auto const it = smartCasts_.find(variable);
-        return it == smartCasts_.end() ? nullptr : it->second;
-    }
-
+    [[nodiscard]] checker::Type *GetSmartCast(varbinder::Variable const *const variable) const noexcept;
     [[nodiscard]] SmartCastArray CloneSmartCasts(bool clearData = false) noexcept;
     void RestoreSmartCasts(SmartCastArray const &prevSmartCasts) noexcept;
     void CombineSmartCasts(SmartCastArray &alternateSmartCasts) noexcept;
-    void AddSmartCasts(SmartCastArray const &initSmartCasts) noexcept;
 
     [[nodiscard]] SmartCastArray EnterTestExpression() noexcept
     {
         status_ |= CheckerStatus::IN_TEST_EXPRESSION;
+        ClearTestSmartCasts();
         return CloneSmartCasts(false);
     }
 
@@ -188,9 +173,11 @@ public:
         return (status_ & CheckerStatus::IN_TEST_EXPRESSION) != 0;
     }
 
-    void ExitTestExpression() noexcept
+    SmartCastTypes ExitTestExpression()
     {
         status_ &= ~CheckerStatus::IN_TEST_EXPRESSION;
+        CheckTestSmartCastCondition(lexer::TokenType::EOS);
+        return CloneTestSmartCasts(true);
     }
 
     [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop() noexcept;
@@ -200,17 +187,27 @@ public:
         return (status_ & CheckerStatus::IN_LOOP) != 0;
     }
 
-    void ExitLoop(SmartCastArray const &prevSmartCasts, bool clearFlag) noexcept;
+    void ExitLoop(SmartCastArray &prevSmartCasts, bool clearFlag) noexcept;
 
     void EnterPath() noexcept
     {
-        status_ &= ~(CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK | CheckerStatus::MEET_CONTINUE);
+        status_ &= ~(CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK | CheckerStatus::MEET_CONTINUE |
+                     CheckerStatus::MEET_THROW);
     }
 
-    [[nodiscard]] bool TerminatedPath() const noexcept
+    [[nodiscard]] bool ExitPath() noexcept
     {
-        return (status_ & (CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK | CheckerStatus::MEET_CONTINUE)) != 0;
+        auto const rc = (status_ & (CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK |
+                                    CheckerStatus::MEET_CONTINUE | CheckerStatus::MEET_THROW)) != 0;
+        status_ &= ~(CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK | CheckerStatus::MEET_CONTINUE |
+                     CheckerStatus::MEET_THROW);
+        return rc;
     }
+
+    void CheckTestSmartCastCondition(lexer::TokenType operatorType);
+    void CheckIdentifierSmartCastCondition(ir::Identifier const *identifier) noexcept;
+    void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
+    void CheckBinarySmartCastCondition(ir::BinaryExpression *binaryExpression) noexcept;
 
 private:
     Checker *parent_;
@@ -220,8 +217,18 @@ private:
     const ETSObjectType *containingClass_ {nullptr};
     Signature *containingSignature_ {nullptr};
 
+    lexer::TokenType operatorType_ = lexer::TokenType::EOS;
+    SmartCastCondition testCondition_ {};
+    SmartCastTestMap testSmartCasts_;
+
     void RemoveSmartCasts(SmartCastArray const &otherSmartCasts) noexcept;
     [[nodiscard]] checker::Type *CombineTypes(checker::Type *typeOne, checker::Type *typeTwo) const noexcept;
+    [[nodiscard]] static bool IsInValidChain(ir::AstNode const *parent) noexcept;
+    void CheckSmartCastEqualityCondition(ir::BinaryExpression *binaryExpression) noexcept;
+    [[nodiscard]] SmartCastTypes CloneTestSmartCasts(bool clearData = true) noexcept;
+    void ClearTestSmartCasts() noexcept;
+    [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
+    [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
 };
 }  // namespace ark::es2panda::checker
 
