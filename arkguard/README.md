@@ -194,8 +194,7 @@ Remove all comments including single line, multi line and JsDoc comments, in a p
 **Note**: `-keep-comments` doesn't work for comments in generated source files, which will be deleted.
 ### Keep options
 
-Keep options are useful only when you use `enable-property-obfuscation`, `enable-toplevel-obfuscation` and `-keep-comments`.
-`-keep-property-name` [,identifiers,...]
+#### `-keep-property-name` [,identifiers,...]
 
 Specifies property names that you want to keep. For example,
 ```
@@ -204,13 +203,27 @@ age
 firstName
 lastName
 ```
+**Note**: This option is avaliable when `-enable-property-obfuscation` is enabled.
 
 `-keep-comments`
-You can have the following configs to keep certain JsDoc comments above a class, for example, class human:
+To retain JsDoc comments above elements in declaration files, such as preserving the JsDoc comment above the Human class, 
+you can make the following configuration:
 ```
 -keep-comments
 Human
 ```
+**Note**:
+1. This option is avaliable when `-remove-comments` is enabled.
+2. If the name of an element is obfuscated, the JsDoc comments 
+above that element cannot be kept using `-keep-comments`. For example, when you have exportClass in `-keep-comments`,
+you should make sure that the following class will not be obfuscated, or the JsDoc comments above the class will still be removed:
+```
+/**
+** @class exportClass
+*/
+export class exportClass {}
+```
+
 **What property names should be kept?**
 
 For safety, we would suggest keeping all property names that are not accessed through dot syntax.
