@@ -411,11 +411,6 @@ public:
         flags_ &= ~flags;
     }
 
-    void SetModifiers(ModifierFlags const flags) noexcept
-    {
-        flags_ = flags;
-    }
-
     [[nodiscard]] ModifierFlags Modifiers() noexcept
     {
         return flags_;

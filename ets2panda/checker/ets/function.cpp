@@ -924,15 +924,19 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
             auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
             CreateBuiltinArraySignature(arrayType, arrayType->Rank());
         } else {
-            auto const *const paramIdent = param->Ident();
+            auto *const paramIdent = param->Ident();
 
             varbinder::Variable *const paramVar = paramIdent->Variable();
             ASSERT(paramVar);
 
             auto *const paramTypeAnnotation = param->TypeAnnotation();
-            ASSERT(paramTypeAnnotation);
+            if (paramIdent->TsType() == nullptr) {
+                ASSERT(paramTypeAnnotation);
 
-            paramVar->SetTsType(paramTypeAnnotation->GetType(this));
+                paramVar->SetTsType(paramTypeAnnotation->GetType(this));
+            } else {
+                paramVar->SetTsType(paramIdent->TsType());
+            }
             signatureInfo->params.push_back(paramVar->AsLocalVariable());
             ++signatureInfo->minArgCount;
         }

@@ -699,11 +699,13 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
     for (auto it = abstractsToBeImplemented.begin(); it != abstractsToBeImplemented.end();) {
         bool functionOverridden = false;
-        bool isGetterSetter = false;
+        bool isGetter = false;
+        bool isSetter = false;
         for (auto abstractSignature = (*it)->CallSignatures().begin();
              abstractSignature != (*it)->CallSignatures().end();) {
             bool foundSignature = false;
-            isGetterSetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+            isGetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::GETTER);
+            isSetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::SETTER);
             for (auto *const implemented : implementedSignatures) {
                 Signature *substImplemented = AdjustForTypeParameters(*abstractSignature, implemented);
 
@@ -740,18 +742,16 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
             continue;
         }
 
-        if (!isGetterSetter) {
+        if (!isGetter && !isSetter) {
             it++;
             continue;
         }
 
         for (auto *field : classType->Fields()) {
             if (field->Name() == (*it)->Name()) {
-                if (!field->HasFlag(varbinder::VariableFlags::PUBLIC)) {
-                    ThrowTypeError("Interface property implementation cannot be generated as non-public",
-                                   field->Declaration()->Node()->Start());
-                }
-                field->Declaration()->Node()->AddModifier(ir::ModifierFlags::SETTER);
+                field->Declaration()->Node()->AddModifier(isGetter && isSetter ? ir::ModifierFlags::GETTER_SETTER
+                                                          : isGetter           ? ir::ModifierFlags::GETTER
+                                                                               : ir::ModifierFlags::SETTER);
                 it = abstractsToBeImplemented.erase(it);
                 functionOverridden = true;
                 break;
@@ -1529,7 +1529,7 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
 void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
                                  varbinder::LocalVariable *found, ETSObjectType *interfaceFound)
 {
-    if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
+    if (!IsSameDeclarationType(it, found)) {
         if (IsVariableStatic(it) != IsVariableStatic(found)) {
             return;
         }
@@ -1568,15 +1568,20 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
         ASSERT(field->Declaration()->Node()->IsClassProperty());
         auto *const originalProp = field->Declaration()->Node()->AsClassProperty();
 
-        if ((originalProp->Modifiers() & ir::ModifierFlags::SETTER) == 0U) {
+        if ((originalProp->Modifiers() & ir::ModifierFlags::GETTER_SETTER) == 0U) {
             continue;
+        }
+
+        if (!field->HasFlag(varbinder::VariableFlags::PUBLIC)) {
+            ThrowTypeError("Interface property implementation cannot be generated as non-public",
+                           field->Declaration()->Node()->Start());
         }
         classType->RemoveProperty<checker::PropertyType::INSTANCE_FIELD>(field);
         GenerateGetterSetterPropertyAndMethod(originalProp, classType);
     }
 
     for (auto it = classDef->Body().begin(); it != classDef->Body().end(); ++it) {
-        if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::SETTER) != 0U) {
+        if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U) {
             classDef->Body().erase(it);
         }
     }
@@ -1598,9 +1603,8 @@ void ETSChecker::CheckGetterSetterProperties(ETSObjectType *classType)
                 ThrowTypeError("Duplicate accessor definition", sig->Function()->Start());
             }
         }
-
-        if (((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
-             ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
+        if (sigSetter != nullptr && ((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
+                                     ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
             ThrowTypeError("Getter and setter methods must have the same accessor modifiers",
                            sigGetter->Function()->Start());
         }

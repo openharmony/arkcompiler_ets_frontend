@@ -568,9 +568,9 @@ public:
                                                    const std::string &className);
     void GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                   ir::ClassProperty *field, varbinder::FunctionParamScope *paramScope, bool isSetter);
-    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *const property,
-                                                             ir::ClassProperty *field, varbinder::ClassScope *scope,
-                                                             bool isSetter, ETSChecker *checker);
+    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *property, ir::ClassProperty *field,
+                                                             varbinder::ClassScope *scope, bool isSetter,
+                                                             ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
 
     // Smart cast support

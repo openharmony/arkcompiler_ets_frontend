@@ -134,8 +134,8 @@ checker::Type *ClassProperty::Check(checker::ETSChecker *checker)
 ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     auto *const key = key_->Clone(allocator, nullptr)->AsExpression();
-    auto *const value = value_->Clone(allocator, nullptr)->AsExpression();
-    auto *const typeAnnotation = typeAnnotation_->Clone(allocator, nullptr);
+    auto *const value = value_ != nullptr ? value_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const typeAnnotation = typeAnnotation_ != nullptr ? typeAnnotation_->Clone(allocator, nullptr) : nullptr;
 
     if (auto *const clone = allocator->New<ClassProperty>(key, value, typeAnnotation, flags_, allocator, isComputed_);
         clone != nullptr) {
@@ -144,8 +144,12 @@ ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *co
         }
 
         key->SetParent(clone);
-        value->SetParent(clone);
-        typeAnnotation->SetParent(clone);
+        if (value != nullptr) {
+            value->SetParent(clone);
+        }
+        if (typeAnnotation != nullptr) {
+            typeAnnotation->SetParent(clone);
+        }
 
         for (auto *const decorator : decorators_) {
             clone->AddDecorator(decorator->Clone(allocator, clone));

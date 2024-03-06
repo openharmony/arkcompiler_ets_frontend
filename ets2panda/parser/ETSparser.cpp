@@ -1070,7 +1070,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
     auto methodKind = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ? ir::MethodDefinitionKind::GET
                                                                                       : ir::MethodDefinitionKind::SET;
     Lexer()->NextToken();  // eat get/set
+    ExpectToken(lexer::TokenType::LITERAL_IDENT, false);
     ir::MethodDefinition *method = ParseInterfaceMethod(modifiers, methodKind);
+    method->AddModifier(ir::ModifierFlags::PUBLIC);
     method->SetRange({Lexer()->GetToken().Start(), method->Id()->End()});
     if (methodKind == ir::MethodDefinitionKind::GET) {
         method->Id()->SetAccessor();
