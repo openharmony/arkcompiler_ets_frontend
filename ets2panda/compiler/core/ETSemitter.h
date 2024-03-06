@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,6 +71,8 @@ public:
     void GenAnnotation() override;
 
 private:
+    using DynamicCallNamesMap = ArenaMap<ArenaVector<util::StringView>, uint32_t>;
+
     void GenExternalRecord(varbinder::RecordTable *recordTable);
     void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);
     void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
@@ -88,6 +90,7 @@ private:
     pandasm::AnnotationData GenAnnotationEnclosingMethod(const ir::MethodDefinition *methodDef);
     pandasm::AnnotationData GenAnnotationInnerClass(const ir::ClassDefinition *classDef, const ir::AstNode *parent);
     pandasm::AnnotationData GenAnnotationAsync(ir::ScriptFunction *scriptFunc);
+    pandasm::AnnotationData GenAnnotationDynamicCall(DynamicCallNamesMap &callNames);
     ir::MethodDefinition *FindAsyncImpl(ir::ScriptFunction *asyncFunc);
 };
 }  // namespace ark::es2panda::compiler

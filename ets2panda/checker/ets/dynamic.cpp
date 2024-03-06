@@ -102,7 +102,10 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
 
     ir::ETSParameterExpression *param2;
     if (!IsByValueCall(VarBinder()->AsETSBinder(), callee)) {
-        param2 = AddParam(paramScope, "qname", GlobalETSStringLiteralType());
+        param2 = AddParam(paramScope, "qname_start", GlobalIntType());
+        params.push_back(param2);
+        info->params.push_back(param2->Ident()->Variable()->AsLocalVariable());
+        param2 = AddParam(paramScope, "qname_len", GlobalIntType());
     } else {
         param2 = AddParam(paramScope, "this", dynamicType);
     }
@@ -160,6 +163,45 @@ static void ToString([[maybe_unused]] ETSChecker *checker, const ArenaVector<var
     }
 }
 
+void ETSChecker::CreateDynamicCallQualifiedName(ir::Expression *callee, bool isConstruct)
+{
+    ir::Expression *obj = callee;
+    ArenaVector<util::StringView> parts(Allocator()->Adapter());
+
+    if (isConstruct) {
+        auto *name = obj->AsETSTypeReference()->Part()->Name();
+        while (name->IsTSQualifiedName()) {
+            auto *qname = name->AsTSQualifiedName();
+            name = qname->Left();
+            parts.push_back(qname->Right()->AsIdentifier()->Name());
+        }
+        obj = name;
+    } else {
+        while (obj->IsMemberExpression() && obj->AsMemberExpression()->ObjType()->IsETSDynamicType()) {
+            auto *memExpr = obj->AsMemberExpression();
+            obj = memExpr->Object();
+            parts.push_back(memExpr->Property()->AsIdentifier()->Name());
+        }
+    }
+    if (obj->IsIdentifier()) {
+        auto *var = obj->AsIdentifier()->Variable();
+        auto *data = VarBinder()->AsETSBinder()->DynamicImportDataForVar(var);
+        if (data != nullptr) {
+            ASSERT(data->import->Language().IsDynamic());
+            auto *specifier = data->specifier;
+            if (specifier->IsImportSpecifier()) {
+                parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
+            }
+        }
+    }
+
+    if (parts.empty()) {
+        return;
+    }
+    std::reverse(parts.begin(), parts.end());
+    DynamicCallNames(isConstruct)->try_emplace(parts, 0);
+}
+
 template <typename T>
 Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                     Language lang, bool isConstruct)
@@ -177,6 +219,8 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, cons
     ss << "dyncall";
     if (IsByValueCall(VarBinder()->AsETSBinder(), callee)) {
         ss << "-byvalue";
+    } else {
+        CreateDynamicCallQualifiedName(callee, isConstruct);
     }
 
     ToString(this, arguments, ss);
@@ -193,10 +237,10 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, cons
 }
 
 template Signature *ETSChecker::ResolveDynamicCallExpression<ir::Expression>(
-    ir::Expression *callee, const ArenaVector<ir::Expression *> &arguments, Language lang, bool is_construct);
+    ir::Expression *callee, const ArenaVector<ir::Expression *> &arguments, Language lang, bool isConstruct);
 
 template Signature *ETSChecker::ResolveDynamicCallExpression<varbinder::LocalVariable>(
-    ir::Expression *callee, const ArenaVector<varbinder::LocalVariable *> &arguments, Language lang, bool is_construct);
+    ir::Expression *callee, const ArenaVector<varbinder::LocalVariable *> &arguments, Language lang, bool isConstruct);
 
 template <bool IS_STATIC>
 std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateScriptFunction(
@@ -361,6 +405,29 @@ void ETSChecker::BuildClass(util::StringView name, const ClassBuilder &builder)
     classDef->AddProperties(std::move(classBody));
 }
 
+ir::ClassProperty *ETSChecker::CreateStaticReadonlyField(varbinder::ClassScope *scope, const char *name)
+{
+    auto *fieldIdent = AllocNode<ir::Identifier>(name, Allocator());
+    // NOTE: remove const when readonly is properly supported
+    auto flags =
+        ir::ModifierFlags::STATIC | ir::ModifierFlags::PRIVATE | ir::ModifierFlags::READONLY | ir::ModifierFlags::CONST;
+    auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, flags, Allocator(), false);
+    field->SetTsType(GlobalIntType());
+
+    auto *decl = Allocator()->New<varbinder::LetDecl>(fieldIdent->Name());
+    decl->BindNode(field);
+
+    auto *var = scope->AddDecl(Allocator(), decl, VarBinder()->Extension());
+    var->AddFlag(varbinder::VariableFlags::PROPERTY);
+    fieldIdent->SetVariable(var);
+    var->SetTsType(GlobalIntType());
+
+    auto *classType = scope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType();
+    classType->AddProperty<PropertyType::STATIC_FIELD>(var->AsLocalVariable());
+
+    return field;
+}
+
 void ETSChecker::BuildDynamicCallClass(bool isConstruct)
 {
     auto &dynamicIntrinsics = *DynamicCallIntrinsics(isConstruct);
@@ -393,6 +460,8 @@ void ETSChecker::BuildDynamicCallClass(bool isConstruct)
 
                 classBody->push_back(method);
             }
+
+            classBody->push_back(CreateStaticReadonlyField(scope, "qname_start_from"));
 
             classBody->push_back(CreateDynamicCallClassInitializer(scope, lang, isConstruct));
         });
@@ -638,9 +707,11 @@ void ETSChecker::BuildDynamicImportClass()
                         imports.push_back(import);
 
                         auto *fieldIdent = AllocNode<ir::Identifier>(import->AssemblerName(), Allocator());
-                        auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr,
-                                                                   ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC,
-                                                                   Allocator(), false);
+                        // NOTE: remove const when readonly is properly supported
+                        auto flags = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC |
+                                ir::ModifierFlags::READONLY  | ir::ModifierFlags::CONST;
+                        auto *field = AllocNode<ir::ClassProperty>(fieldIdent, nullptr, nullptr, flags, Allocator(),
+                            false);
                         field->SetTsType(GlobalBuiltinDynamicType(import->Language()));
 
                         auto *decl = Allocator()->New<varbinder::LetDecl>(fieldIdent->Name());

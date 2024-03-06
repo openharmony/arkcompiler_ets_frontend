@@ -35,6 +35,7 @@ public:
 
 private:
     bool IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const;
+    void GetDynamicNameParts(const ir::CallExpression *expr, ArenaVector<util::StringView> &parts) const;
     void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const;
     void CompileCastUnboxable(const ir::TSAsExpression *expr) const;
     void CompileCast(const ir::TSAsExpression *expr) const;
