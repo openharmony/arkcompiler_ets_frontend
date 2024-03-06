@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -262,7 +262,7 @@ const checker::ETSObjectType *Helpers::GetContainingObjectType(const ir::AstNode
         }
 
         if (iter->IsImportDeclaration()) {
-            // return iter->AsImportDeclaration();
+            // here must be `return iter->AsImportDeclaration();`
         }
 
         iter = iter->Parent();
@@ -501,7 +501,6 @@ void Helpers::CheckImportedName(ArenaVector<ir::AstNode *> *specifiers, const ir
 
         auto savedIdentName = it->AsImportSpecifier()->Imported()->Name();
         auto savedAliasName = it->AsImportSpecifier()->Local()->Name();
-
         if (savedIdentName == savedAliasName && savedAliasName == newIdentName) {
             message << "Warning: '" << newIdentName << "' has already imported ";
             break;

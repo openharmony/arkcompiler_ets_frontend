@@ -217,7 +217,6 @@ ParserStatus ASParser::ValidateArrowParameter(ir::Expression *expr, bool *seenOp
         case ir::AstNodeType::IDENTIFIER: {
             const util::StringView &identifier = expr->AsIdentifier()->Name();
             bool isOptional = expr->AsIdentifier()->IsOptional();
-
             if ((*seenOptional) != isOptional) {
                 ThrowSyntaxError("A required parameter cannot follow an optional parameter.", expr->Start());
             }
@@ -1059,7 +1058,6 @@ ir::AstNode *ASParser::ParseTypeLiteralOrInterfaceMember()
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     bool isReadonly = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY &&
                       nextCp != lexer::LEX_CHAR_LEFT_PAREN && nextCp != lexer::LEX_CHAR_COLON;
-
     if (isReadonly) {
         Lexer()->NextToken();  // eat 'readonly"
     }

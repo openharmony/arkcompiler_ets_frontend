@@ -311,7 +311,6 @@ void ETSParser::CollectDefaultSources()
 
             std::string fileName = entry->d_name;
             std::string::size_type pos = fileName.find_last_of('.');
-
             if (pos == std::string::npos || !IsCompitableExtension(fileName.substr(pos))) {
                 continue;
             }
@@ -419,7 +418,6 @@ std::string ETSParser::ResolveImportPath(const std::string &path)
     std::string::size_type pos = path.find('/');
     bool containsDelim = (pos != std::string::npos);
     std::string rootPart = containsDelim ? path.substr(0, pos) : path;
-
     if (rootPart == "std" && !GetOptions().stdLib.empty()) {  // Get std path from CLI if provided
         baseUrl = GetOptions().stdLib + "/std";
     } else if (rootPart == "escompat" && !GetOptions().stdLib.empty()) {  // Get escompat path from CLI if provided
@@ -510,7 +508,6 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
     const std::string resolvedPath = ResolveImportPath(path);
     resolvedParsedSources_.emplace(path, resolvedPath);
     const auto data = GetImportData(resolvedPath);
-
     if (!data.hasDecl) {
         return {userPaths, false};
     }
@@ -557,7 +554,6 @@ void ETSParser::ParseSources(const std::vector<std::string> &paths, bool isExter
         resolvedParsedSources_.emplace(paths[idx], resolvedPath);
 
         const auto data = GetImportData(resolvedPath);
-
         if (!data.hasDecl) {
             continue;
         }
@@ -951,7 +947,7 @@ ir::Statement *ETSParser::ParseTopLevelStatement(StatementParsingFlags flags)
         // Note: let's leave the default processing case separately, because it can be changed in the future.
         default: {
             ThrowUnexpectedToken(tokenType);
-            // return ParseExpressionStatement(flags);
+            // like this `return ParseExpressionStatement(flags);`
         }
     }
 }
@@ -1671,7 +1667,6 @@ ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir:
 
     bool seenStatic = false;
     char32_t nextCp = Lexer()->Lookahead();
-
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC && nextCp != lexer::LEX_CHAR_EQUALS &&
         nextCp != lexer::LEX_CHAR_COLON && nextCp != lexer::LEX_CHAR_LEFT_PAREN &&
         nextCp != lexer::LEX_CHAR_LESS_THAN) {
@@ -2472,7 +2467,6 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 {
     auto startLoc = Lexer()->GetToken().Start();
     ir::ModifierFlags methodFlags = ParseInterfaceMethodModifiers();
-
     if (methodFlags != ir::ModifierFlags::NONE) {
         if ((methodFlags & ir::ModifierFlags::PRIVATE) == 0) {
             methodFlags |= ir::ModifierFlags::PUBLIC;
@@ -2499,7 +2493,6 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
         char32_t nextCp = Lexer()->Lookahead();
-
         if (nextCp == lexer::LEX_CHAR_LEFT_PAREN || nextCp == lexer::LEX_CHAR_LESS_THAN) {
             auto *method = ParseInterfaceMethod(ir::ModifierFlags::PUBLIC, ir::MethodDefinitionKind::METHOD);
             method->SetStart(startLoc);
@@ -4149,7 +4142,6 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
             }
             case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
                 const bool shouldBreak = ParsePotentialNonNullExpression(&returnExpression, startLoc);
-
                 if (shouldBreak) {
                     break;
                 }
@@ -4625,7 +4617,6 @@ bool ETSParser::CheckClassElement(ir::AstNode *property, [[maybe_unused]] ir::Me
 void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const
 {
     auto const name = function->Id()->Name();
-
     if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
         if (function->IsAsyncFunc()) {
             ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
@@ -4976,7 +4967,6 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode, std
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
     auto const statementNumber = statements.size();
-
     if (statementNumber == 0U) {
         return nullptr;
     }
