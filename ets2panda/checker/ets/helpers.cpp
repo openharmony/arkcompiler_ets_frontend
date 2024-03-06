@@ -2108,6 +2108,13 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
         }
     };
 
+    auto const checkStringEnumType = [this](ir::Expression const *const caseTest,
+                                            ETSStringEnumType const *const type) -> void {
+        if (caseTest->TsType()->AsETSStringEnumType()->IsSameEnumLiteralType(type)) {
+            ThrowTypeError("Case duplicate", caseTest->Start());
+        }
+    };
+
     for (size_t caseNum = 0; caseNum < cases->size(); caseNum++) {
         for (size_t compareCase = caseNum + 1; compareCase < cases->size(); compareCase++) {
             auto *caseTest = cases->at(caseNum)->Test();
@@ -2119,6 +2126,11 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
 
             if (caseTest->TsType()->IsETSEnumType()) {
                 checkEnumType(caseTest, compareCaseTest->TsType()->AsETSEnumType());
+                continue;
+            }
+
+            if (caseTest->TsType()->IsETSStringEnumType()) {
+                checkStringEnumType(caseTest, compareCaseTest->TsType()->AsETSStringEnumType());
                 continue;
             }
 
