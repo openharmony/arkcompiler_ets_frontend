@@ -686,7 +686,7 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
 {
     const auto &extRecords = globalRecordTable_.Program()->ExternalSources();
 
-    auto [name, _] = GetModuleNameFromSource(sourceName);
+    auto [name, _] = GetModuleInfo(sourceName);
     auto res = extRecords.find(name);
     if (res == extRecords.end()) {
         ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());

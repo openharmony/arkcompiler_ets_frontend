@@ -160,24 +160,6 @@ util::StringView Helpers::ToStringView(ArenaAllocator *allocator, int32_t number
     return str.View();
 }
 
-bool Helpers::IsRelativePath(const std::string &path)
-{
-    auto pathDelimiter = ark::os::file::File::GetPathDelim();
-
-    std::string currentDirReference = ".";
-    std::string parentDirReference = "..";
-
-    currentDirReference.append(pathDelimiter);
-    parentDirReference.append(pathDelimiter);
-
-    return ((path.find(currentDirReference) == 0) || (path.find(parentDirReference) == 0));
-}
-
-bool Helpers::IsCompatibleExtension(const std::string &extension)
-{
-    return extension == ".ets" || extension == ".ts";
-}
-
 bool Helpers::EndsWith(const std::string &str, const std::string &suffix)
 {
     if (str.length() < suffix.length()) {
@@ -185,61 +167,6 @@ bool Helpers::EndsWith(const std::string &str, const std::string &suffix)
     }
     size_t expectPos = str.length() - suffix.length();
     return str.find(suffix, expectPos) == expectPos;
-}
-
-std::string Helpers::GetSourcePath(const std::string &path)
-{
-    std::string fullFilePath = path;
-    std::string importExtension;
-    if (!ark::os::file::File::IsRegularFile(path) && (ark::os::GetAbsolutePath(path).empty())) {
-        importExtension = ".ets";
-        fullFilePath = path + importExtension;
-        if (!ark::os::file::File::IsRegularFile(fullFilePath)) {
-            importExtension = ".ts";
-            fullFilePath = path + importExtension;
-            if (!ark::os::file::File::IsRegularFile(fullFilePath)) {
-                return path;
-            }
-        }
-    }
-    std::string absFilePath = ark::os::GetAbsolutePath(fullFilePath);
-    absFilePath.erase(absFilePath.find(importExtension), importExtension.size());
-    return absFilePath;
-}
-
-std::string Helpers::TruncateCompatibleExtension(const std::string &path)
-{
-    const size_t extensionIndex = path.find_last_of('.');
-    if (extensionIndex != std::string::npos && IsCompatibleExtension(path.substr(extensionIndex, path.length()))) {
-        return path.substr(0, extensionIndex);
-    }
-
-    return path;
-}
-
-util::StringView Helpers::TruncateCompatibleExtension(const util::StringView &path)
-{
-    const size_t extensionIndex = path.Mutf8().find_last_of('.');
-    if (extensionIndex != std::string::npos &&
-        IsCompatibleExtension(path.Mutf8().substr(extensionIndex, path.Mutf8().length()))) {
-        return path.Substr(0, extensionIndex);
-    }
-
-    return path;
-}
-
-bool Helpers::IsRealPath(const std::string &path)
-{
-    if (!ark::os::file::File::IsRegularFile(path) && (ark::os::GetAbsolutePath(path).empty())) {
-        auto importExtension = ".ets";
-        if (!ark::os::file::File::IsRegularFile(path + importExtension)) {
-            importExtension = ".ts";
-            if (!ark::os::file::File::IsRegularFile(path + importExtension)) {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 const ir::ScriptFunction *Helpers::GetContainingConstructor(const ir::AstNode *node)
@@ -720,6 +647,21 @@ std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::strin
     idx = fullClassName.find_last_of('.');
     auto className = fullClassName.substr(idx + 1);
     return {className, methodName};
+}
+
+std::vector<std::string> &Helpers::StdLib()
+{
+    static std::vector<std::string> stdlib {"std/core",       "std/math",  "std/containers",        "std/time",
+                                            "std/interop/js", "std/debug", "std/debug/concurrency", "escompat"};
+    return stdlib;
+}
+
+bool Helpers::IsStdLib(const parser::Program *program)
+{
+    const auto &stdlib = StdLib();
+    auto fileFolder = program->GetPackageName().Mutf8();
+    std::replace(fileFolder.begin(), fileFolder.end(), '.', '/');
+    return std::count(stdlib.begin(), stdlib.end(), fileFolder) != 0;
 }
 
 }  // namespace ark::es2panda::util

@@ -453,8 +453,8 @@ set(ES2PANDA_LIB_SRC
   util/bitset.cpp
   util/errorHandler.cpp
   util/helpers.cpp
+  util/importPathManager.cpp
   util/path.cpp
-  util/pathHandler.cpp
   util/ustring.cpp
   test/utils/panda_executable_path_getter.cpp
 )

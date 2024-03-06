@@ -37,7 +37,7 @@ class ImportExportDecls : ir::visitor::EmptyAstVisitor {
         return importStdlibFile;
     }
 
-    const std::string defaultImportSource_ = CreateDefaultImportSource(util::PathHandler::StdLib());
+    const std::string defaultImportSource_ = CreateDefaultImportSource(util::Helpers::StdLib());
 
 public:
     ImportExportDecls() = default;

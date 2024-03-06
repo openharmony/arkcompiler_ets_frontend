@@ -1491,7 +1491,7 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
     auto extRecords = etsBinder->GetGlobalRecordTable()->Program()->ExternalSources();
-    auto [name, isPackageModule] = etsBinder->GetModuleNameFromSource(importPath);
+    auto [name, isPackageModule] = etsBinder->GetModuleInfo(importPath);
     auto res = extRecords.find(name);
     ASSERT(res != extRecords.end());
 

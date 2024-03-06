@@ -1571,7 +1571,7 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
         return type;
     }
 
-    auto [moduleName, isPackageModule] = checker->VarBinder()->AsETSBinder()->GetModuleNameFromSource(importPath);
+    auto [moduleName, isPackageModule] = checker->VarBinder()->AsETSBinder()->GetModuleInfo(importPath);
 
     std::vector<util::StringView> syntheticNames = checker->GetNameForSynteticObjectType(moduleName);
 
