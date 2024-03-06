@@ -1989,11 +1989,11 @@ void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const
             break;
         }
         case checker::ETSObjectFlags::BUILTIN_BYTE: {
-            etsg->CastToChar(expr);
+            etsg->CastToByte(expr);
             break;
         }
         case checker::ETSObjectFlags::BUILTIN_CHAR: {
-            etsg->CastToByte(expr);
+            etsg->CastToChar(expr);
             break;
         }
         case checker::ETSObjectFlags::BUILTIN_SHORT: {
