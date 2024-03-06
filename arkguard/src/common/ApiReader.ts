@@ -22,7 +22,7 @@ import type {IOptions} from '../configs/IOptions';
 import { stringPropsSet, structPropsSet } from '../utils/OhsUtil';
 import { sys } from 'typescript';
 
-export const scanProjectConfig: {mKeepStringProperty?: boolean, mExportObfuscation?: boolean} = {};
+export const scanProjectConfig: {mKeepStringProperty?: boolean, mExportObfuscation?: boolean, isHarCompiled?: boolean} = {};
 
 /**
  * if rename property is not open, api read and extract can be skipped
@@ -127,7 +127,7 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
  * @param filesForCompilation set collection of files
  * @param customProfiles
  */
-export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions):
+export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions, isHarCompiled: boolean):
   {projectAndLibsReservedProperties: string[]; libExportNames: string[]} {
   const ApiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
@@ -144,6 +144,7 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   const nameObfuscationConfig = customProfiles.mNameObfuscation;
   scanProjectConfig.mKeepStringProperty = nameObfuscationConfig?.mKeepStringProperty;
   scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
+  scanProjectConfig.isHarCompiled = isHarCompiled;
 
   const sourcePaths: string[] = [];
   const remoteHarParhs: string[] = [];

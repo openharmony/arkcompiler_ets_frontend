@@ -444,8 +444,9 @@ export namespace ApiExtractor {
 
     if (nodeName && mCurrentExportNameSet.has(nodeName)) {
       addElement(currentPropsSet);
+    } else if (isEnumDeclaration(astNode) && scanProjectConfig.isHarCompiled) {
+      addElement(currentPropsSet);
     }
-
     forEachChild(astNode, visitProjectNode);
   };
 
