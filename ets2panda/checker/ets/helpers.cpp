@@ -1050,6 +1050,41 @@ void ETSChecker::SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpre
     }
 }
 
+static void CheckExpandedType(Type *expandedAliasType, std::set<util::StringView> &parametersNeedToBeBoxed,
+                              bool needToBeBoxed)
+{
+    if (expandedAliasType->IsETSTypeParameter()) {
+        auto paramName = expandedAliasType->AsETSTypeParameter()->GetDeclNode()->Name()->Name();
+        if (needToBeBoxed) {
+            parametersNeedToBeBoxed.insert(paramName);
+        }
+    } else if (expandedAliasType->IsETSObjectType()) {
+        auto objectType = expandedAliasType->AsETSObjectType();
+        needToBeBoxed =
+            objectType->GetDeclNode()->IsClassDefinition() || objectType->GetDeclNode()->IsTSInterfaceDeclaration();
+        for (const auto typeArgument : objectType->TypeArguments()) {
+            CheckExpandedType(typeArgument, parametersNeedToBeBoxed, needToBeBoxed);
+        }
+    } else if (expandedAliasType->IsETSTupleType()) {
+        auto tupleType = expandedAliasType->AsETSTupleType();
+        needToBeBoxed = false;
+        for (auto type : tupleType->GetTupleTypesList()) {
+            CheckExpandedType(type, parametersNeedToBeBoxed, needToBeBoxed);
+        }
+    } else if (expandedAliasType->IsETSArrayType()) {
+        auto arrayType = expandedAliasType->AsETSArrayType();
+        needToBeBoxed = false;
+        auto elementType = arrayType->ElementType();
+        CheckExpandedType(elementType, parametersNeedToBeBoxed, needToBeBoxed);
+    } else if (expandedAliasType->IsETSUnionType()) {
+        auto unionType = expandedAliasType->AsETSUnionType();
+        needToBeBoxed = false;
+        for (auto type : unionType->ConstituentTypes()) {
+            CheckExpandedType(type, parametersNeedToBeBoxed, needToBeBoxed);
+        }
+    }
+}
+
 Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const typeParams)
 {
     ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
@@ -1078,17 +1113,29 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     Type *const aliasType = GetReferencedTypeBase(name);
-    auto *const aliasSub = NewSubstitution();
-
+    auto *aliasSub = NewSubstitution();
     if (typeAliasNode->TypeParams()->Params().size() != typeParams->Params().size()) {
         ThrowTypeError("Wrong number of type parameters for generic type alias", typeParams->Start());
     }
 
+    std::set<util::StringView> parametersNeedToBeBoxed;
+    auto expandedAliasType = aliasType->Substitute(Relation(), aliasSub);
+    CheckExpandedType(expandedAliasType, parametersNeedToBeBoxed, false);
+
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
-        auto *typeAliasType = typeAliasNode->TypeParams()->Params().at(idx)->Name()->Variable()->TsType();
-        if (typeAliasType->IsETSTypeParameter()) {
-            aliasSub->insert({typeAliasType->AsETSTypeParameter(), typeParams->Params().at(idx)->TsType()});
+        auto *typeAliasTypeName = typeAliasNode->TypeParams()->Params().at(idx)->Name();
+        auto *typeAliasType = typeAliasTypeName->Variable()->TsType();
+        if (!typeAliasType->IsETSTypeParameter()) {
+            continue;
         }
+        auto paramType = typeParams->Params().at(idx)->TsType();
+        if (parametersNeedToBeBoxed.find(typeAliasTypeName->Name()) != parametersNeedToBeBoxed.end()) {
+            auto boxedType = PrimitiveTypeAsETSBuiltinType(typeParams->Params().at(idx)->GetType(this));
+            if (boxedType != nullptr) {
+                paramType = boxedType;
+            }
+        }
+        aliasSub->insert({typeAliasType->AsETSTypeParameter(), paramType});
     }
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
