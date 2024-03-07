@@ -1612,7 +1612,6 @@ export class TypeScriptLinter {
 
     this.handleImportCall(tsCallExpr);
     this.handleRequireCall(tsCallExpr);
-    // NOTE: Keep handleFunctionApplyBindPropCall above handleGenericCallWithNoTypeArgs here!!!
     if (calleeSym !== undefined) {
       if (TsUtils.symbolHasEsObjectType(calleeSym)) {
         this.incrementCounters(tsCallExpr, FaultID.EsObjectType);
@@ -1622,10 +1621,8 @@ export class TypeScriptLinter {
         this.incrementCounters(tsCallExpr, FaultID.SymbolType);
       }
     }
-    if (callSignature !== undefined) {
-      if (!this.tsUtils.isLibrarySymbol(calleeSym)) {
-        this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
-      }
+    if (callSignature !== undefined && !this.tsUtils.isLibrarySymbol(calleeSym)) {
+      this.handleGenericCallWithNoTypeArgs(tsCallExpr, callSignature);
       this.handleStructIdentAndUndefinedInArgs(tsCallExpr, callSignature);
     }
     this.handleLibraryTypeCall(tsCallExpr);
