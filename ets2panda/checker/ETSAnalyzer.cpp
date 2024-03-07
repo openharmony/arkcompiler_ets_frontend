@@ -2284,6 +2284,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         checker->CreateBuiltinArraySignature(targetArrayType, targetArrayType->Rank());
     }
 
+    if (targetType == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType()) {
+        checker->ThrowTypeError("Cast to 'never' is prohibited", expr->Start());
+    }
+
     checker->ComputeApparentType(targetType);
     expr->SetTsType(targetType);
     return expr->TsType();
