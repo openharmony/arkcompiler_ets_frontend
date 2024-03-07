@@ -21,6 +21,7 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [29, 'Replace with dot notation'],
   [46, 'Convert to arrow function'],
   [53, 'Replace to \'as\' expression'],
+  [71, 'Split expression around \',\' operator'],
   [79, 'Remove type annotation'],
   [90, 'Annotate return type'],
   [120, 'Replace with explicit import']

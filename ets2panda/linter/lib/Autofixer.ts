@@ -147,6 +147,38 @@ export function fixTypeAssertion(typeAssertion: ts.TypeAssertion): Autofix {
   return { start: typeAssertion.getStart(), end: typeAssertion.getEnd(), replacementText: text };
 }
 
+export function fixCommaOperator(tsNode: ts.Node): Autofix[] {
+  const tsExprNode = tsNode as ts.BinaryExpression;
+  const text = recursiveCommaOperator(tsExprNode);
+  return [{ start: tsExprNode.parent.getStart(), end: tsExprNode.parent.getEnd(), replacementText: text }];
+}
+
+function recursiveCommaOperator(tsExprNode: ts.BinaryExpression): string {
+  let text = '';
+  if (tsExprNode.operatorToken.kind !== ts.SyntaxKind.CommaToken) {
+    const midExpr = ts.factory.createExpressionStatement(tsExprNode);
+    const midText = printer.printNode(ts.EmitHint.Unspecified, midExpr, tsExprNode.getSourceFile());
+    return midText;
+  }
+
+  if (tsExprNode.left.kind === ts.SyntaxKind.BinaryExpression) {
+    text += recursiveCommaOperator(tsExprNode.left as ts.BinaryExpression);
+
+    const rightExpr = ts.factory.createExpressionStatement(tsExprNode.right);
+    const rightText = printer.printNode(ts.EmitHint.Unspecified, rightExpr, tsExprNode.getSourceFile());
+    text += '\n' + rightText;
+  } else {
+    const leftExpr = ts.factory.createExpressionStatement(tsExprNode.left);
+    const rightExpr = ts.factory.createExpressionStatement(tsExprNode.right);
+
+    const leftText = printer.printNode(ts.EmitHint.Unspecified, leftExpr, tsExprNode.getSourceFile());
+    const rightText = printer.printNode(ts.EmitHint.Unspecified, rightExpr, tsExprNode.getSourceFile());
+    text = leftText + '\n' + rightText;
+  }
+
+  return text;
+}
+
 const printer: ts.Printer = ts.createPrinter({
   omitTrailingSemicolon: false,
   removeComments: false,
