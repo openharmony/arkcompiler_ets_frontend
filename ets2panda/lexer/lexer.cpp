@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -456,7 +456,7 @@ LexerTemplateString Lexer::ScanTemplateString()
                 char32_t nextCp = Iterator().Peek();
                 checkOctalDigit(nextCp);
 
-                if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH) {
+                if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH || nextCp == LEX_CHAR_DOLLAR_SIGN) {
                     templateStr.str.Append(cp);
                     templateStr.str.Append(nextCp);
                     Iterator().Forward(1);

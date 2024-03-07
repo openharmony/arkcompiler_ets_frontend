@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,9 @@
  * limitations under the License.
  */
 
-function main(): void {
-  let n = 2;
-  let y = "d"
-
-  let x = "abc " + y + " = " + n*2 + c'!';
-  let z = `abc ${y} = ${ n*2 }!`;
-
-  let v1 = `--- ${y + z} ---`;
-  let v2 = `--- ${y + `abc ${y} = ${ n*2 }!`} ---`;
-
-  //Console.print(x + "\n");
-  //Console.print(z + "\n");
-  //Console.print("'" + v1 + "'\n");
-  //Console.print("'" + v2 + "'\n");
-
-  assert(x == z)
-  assert(v1 == v2)
+function main() {
+	const v = `nested ${`backtick = \``}`
+	console.log(v)
+	const expected = 'nested backtick = `'
+	assert v == expected
 }

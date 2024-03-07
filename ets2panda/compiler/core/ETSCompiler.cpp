@@ -118,7 +118,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
 void ETSCompiler::Compile(const ir::TemplateElement *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    etsg->LoadAccumulatorString(expr, expr->Raw());
+    etsg->LoadAccumulatorString(expr, expr->Cooked());
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSIndexSignature *node) const
