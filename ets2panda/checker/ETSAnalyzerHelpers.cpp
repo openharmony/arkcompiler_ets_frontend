@@ -188,18 +188,27 @@ checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expre
 
     ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
     checker->CopyParams(arrowFunc->Params(), params);
+    checker::Type *funcReturnType = nullptr;
 
     auto *typeAnnotation = arrowFunc->ReturnTypeAnnotation();
     if (typeAnnotation != nullptr) {
         typeAnnotation = typeAnnotation->Clone(checker->Allocator(), nullptr);
         typeAnnotation->SetTsType(arrowFunc->ReturnTypeAnnotation()->TsType());
+    } else {
+        if ((arrowFunc->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0) {
+            InferReturnType(checker, arrowFunc, funcReturnType, callee);
+        } else if (arrowFunc->Signature()->ReturnType() != nullptr) {
+            auto newTypeAnnotation = callee->AsArrowFunctionExpression()->CreateTypeAnnotation(checker);
+            typeAnnotation = arrowFunc->ReturnTypeAnnotation();
+            funcReturnType = newTypeAnnotation->GetType(checker);
+        }
     }
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), typeAnnotation);
     auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
 
     funcType->SetScope(arrowFunc->Scope()->AsFunctionScope()->ParamScope());
-    auto *const funcIface = funcType->Check(checker);
+    auto *const funcIface = typeAnnotation != nullptr ? funcType->Check(checker) : funcReturnType;
     checker->Relation()->SetNode(callee);
     checker->Relation()->IsAssignableTo(calleeType, funcIface);
     return funcIface;
