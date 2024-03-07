@@ -1461,6 +1461,9 @@ def main():
         runner.add_directory("parser/binder", "js", ["--dump-assembly"])
         runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
         runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
+        runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
+        runner.add_directory("parser/unicode", "js", ["--parse-only"])
+        runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
 
         runners.append(runner)
 
