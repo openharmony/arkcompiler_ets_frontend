@@ -1036,6 +1036,7 @@ def main():
         runner.add_directory("compiler/js", "js", [])
         runner.add_directory("compiler/ts", "ts", ["--extension=ts"])
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
+        runner.add_directory("compiler/interpreter/lexicalEnv", "js", [])
 
         runners.append(runner)
 
