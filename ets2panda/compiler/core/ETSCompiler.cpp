@@ -2271,7 +2271,7 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 
     etsg->SetLabel(expr, endLabel);
     etsg->LoadAccumulator(expr, arg);
-    etsg->AssumeNonNullish(expr, expr->TsType());
+    etsg->AssumeNonNullish(expr, expr->OriginalType());
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSNullKeyword *node) const

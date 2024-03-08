@@ -44,6 +44,16 @@ public:
         expr_ = expr;
     }
 
+    checker::Type *OriginalType() const noexcept
+    {
+        return originalType_;
+    }
+
+    void SetOriginalType(checker::Type *type) noexcept
+    {
+        originalType_ = type;
+    }
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -62,6 +72,7 @@ public:
 
 private:
     Expression *expr_;
+    checker::Type *originalType_ = nullptr;
 };
 }  // namespace ark::es2panda::ir
 
