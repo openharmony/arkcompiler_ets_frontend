@@ -464,11 +464,18 @@ void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *pr
     SetAccumulatorType(propType);
 }
 
-void ETSGen::StoreUnionProperty([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] VReg objReg,
+void ETSGen::StoreUnionProperty([[maybe_unused]] const ir::AstNode *node,
+                                [[maybe_unused]] const checker::Type *propType, [[maybe_unused]] VReg objReg,
                                 [[maybe_unused]] const util::StringView &propName)
 {
 #ifdef PANDA_WITH_ETS
-    Ra().Emit<EtsStobjName>(node, objReg, propName);
+    if (propType->HasTypeFlag(TYPE_FLAG_BYTECODE_REF)) {
+        Ra().Emit<EtsStobjNameObj>(node, objReg, propName);
+    } else if (propType->HasTypeFlag(checker::TypeFlag::ETS_WIDE_NUMERIC)) {
+        Ra().Emit<EtsStobjNameWide>(node, objReg, propName);
+    } else {
+        Ra().Emit<EtsStobjName>(node, objReg, propName);
+    }
 #else
     UNREACHABLE();
 #endif  // PANDA_WITH_ETS
@@ -479,7 +486,13 @@ void ETSGen::LoadUnionProperty([[maybe_unused]] const ir::AstNode *const node,
                                [[maybe_unused]] const util::StringView &propName)
 {
 #ifdef PANDA_WITH_ETS
-    Ra().Emit<EtsLdobjName>(node, objReg, propName);
+    if (propType->HasTypeFlag(TYPE_FLAG_BYTECODE_REF)) {
+        Ra().Emit<EtsLdobjNameObj>(node, objReg, propName);
+    } else if (propType->HasTypeFlag(checker::TypeFlag::ETS_WIDE_NUMERIC)) {
+        Ra().Emit<EtsLdobjNameWide>(node, objReg, propName);
+    } else {
+        Ra().Emit<EtsLdobjName>(node, objReg, propName);
+    }
     SetAccumulatorType(propType);
 #else
     UNREACHABLE();
