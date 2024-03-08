@@ -46,7 +46,8 @@ void LocalVariable::SetLexical(Scope *scope, util::PatchFix *patchFixHelper)
         return;
     }
 
-    VariableScope *varScope = scope->EnclosingVariableScope();
+    VariableScope *varScope = scope->IsFunctionParamScope() ?
+        scope->AsFunctionParamScope()->GetFunctionScope() : scope->EnclosingVariableScope();
     uint32_t slot = 0;
     auto name = Declaration()->Name();
 

@@ -1551,6 +1551,7 @@ def main():
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
         runner.add_directory("compiler/recordsource/with-on", "js", ["--record-source"])
         runner.add_directory("compiler/recordsource/with-off", "js", [])
+        runner.add_directory("compiler/interpreter/lexicalEnv", "js", [])
 
         runners.append(runner)
 

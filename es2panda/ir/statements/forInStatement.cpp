@@ -56,6 +56,8 @@ void ForInStatement::Compile(compiler::PandaGen *pg) const
         const auto &labelSet = enumeratorInitTryCtx.LabelSet();
         pg->SetLabel(right_, labelSet.TryBegin());
         right_->Compile(pg);
+        pg->GetPropIterator(this);
+        pg->StoreAccumulator(this, iter);
         pg->SetLabel(right_, labelSet.TryEnd());
         pg->Branch(right_, labelSet.CatchEnd());
 
@@ -69,10 +71,6 @@ void ForInStatement::Compile(compiler::PandaGen *pg) const
         pg->EmitThrow(right_);
         pg->SetLabel(right_, labelSet.CatchEnd());
     }
-
-    // if no exception occurred, the target object should be in acc
-    pg->GetPropIterator(this);
-    pg->StoreAccumulator(this, iter);
 
     if (scope_->NeedLexEnv()) {
         pg->PopLexEnv(this);
