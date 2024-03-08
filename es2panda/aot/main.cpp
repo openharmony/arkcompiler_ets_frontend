@@ -25,6 +25,7 @@
 #include <util/moduleHelpers.h>
 #include <util/programCache.h>
 #include <util/workerQueue.h>
+#include <abc2program/program_dump.h>
 
 #include <iostream>
 
@@ -106,8 +107,13 @@ static void DumpProgramInfos(const std::map<std::string, panda::es2panda::util::
     const std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
     const es2panda::CompilerOptions &compilerOptions = options->CompilerOptions();
-    if (compilerOptions.dumpAsm || compilerOptions.dumpLiteralBuffer) {
+    if (compilerOptions.dumpAsm || compilerOptions.dumpLiteralBuffer || compilerOptions.dumpAsmProgram) {
         for (const auto &progInfo : programsInfo) {
+            if (compilerOptions.dumpAsmProgram) {
+                panda::abc2program::PandasmProgramDumper dumper;
+                dumper.Dump(std::cout, progInfo.second->program);
+            }
+            
             if (compilerOptions.dumpAsm) {
                 es2panda::Compiler::DumpAsm(&(progInfo.second->program));
             }

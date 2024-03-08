@@ -590,11 +590,11 @@ class AbcToAsmTest(Test):
         gen_abc_output = gen_abc_out.decode("utf-8", errors="ignore") + gen_abc_err.decode("utf-8", errors="ignore")
         # If no abc file is generated, an error occurs during parser, but abc2asm function is normal.
         if not os.path.exists(output_abc_file):
-            self.passed = true
+            self.passed = True
             return self
         abc_to_asm_cmd = runner.cmd_prefix + [runner.es2panda]
         abc_to_asm_cmd.extend(["--dump-asm-program", "--enable-abc-input"])
-        abc_to_asm_cmd.extend(output_abc_file)
+        abc_to_asm_cmd.append(output_abc_file)
         self.log_cmd(abc_to_asm_cmd)
         process_abc_to_asm = subprocess.Popen(abc_to_asm_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         abc_to_asm_out, abc_to_asm_err = process_abc_to_asm.communicate()
@@ -604,8 +604,17 @@ class AbcToAsmTest(Test):
             self.passed = gen_abc_output == abc_to_asm_output and process_abc_to_asm.returncode in [0, 1]
         except Exception:
             self.passed = False
-        
-        os.remove(test_abc_path)
+
+        if not self.passed:
+            print("**********Error testcase**********")
+            print(self.path)
+            print("**********Gen abc cmd**********")
+            print(gen_abc_cmd)
+            print(gen_abc_output)
+            print("**********Abc to asm cmd***********")
+            print(abc_to_asm_cmd)
+            print(abc_to_asm_output)
+        os.remove(output_abc_file)
         return self
 
 class Test262Runner(Runner):
@@ -1586,7 +1595,29 @@ def main():
         runner = AbcToAsmRunner(args)
         runner.add_directory("abc2asm/js", "js", [])
         runner.add_directory("abc2asm/ts", "ts", [])
-        runner.add_directory("abc2asm/abc", "abc", [])
+        runner.add_directory("compiler/js", "js", [])
+        runner.add_directory("compiler/ts/cases/compiler", "ts", [])
+        runner.add_directory("compiler/ts/projects", "ts", ["--module"])
+        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
+        runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
+        runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
+        runner.add_directory("compiler/recordsource/with-on", "js", ["--record-source"])
+        runner.add_directory("compiler/recordsource/with-off", "js", [])
+        runner.add_directory("parser/concurrent", "js", ["--module"])
+        runner.add_directory("parser/js", "js", [])
+        runner.add_directory("parser/script", "ts", [])
+        runner.add_directory("parser/ts", "ts", ["--module"])
+        runner.add_directory("parser/ts/type_checker", "ts", ["--enable-type-check", "--module"])
+        runner.add_directory("parser/commonjs", "js", ["--commonjs"])
+        runner.add_directory("parser/binder", "js", [])
+        runner.add_directory("parser/js/emptySource", "js", [])
+        runner.add_directory("parser/js/language/arguments-object", "js", [])
+        runner.add_directory("parser/js/language/statements/for-statement", "js", [])
+        runner.add_directory("parser/js/language/expressions/optional-chain", "js", [])
+        runner.add_directory("parser/sendable_class", "ts", ["--module"])
+        runner.add_directory("parser/unicode", "js", [])
+        runner.add_directory("parser/ts/stack_overflow", "ts", [])
+
         runners.append(runner)
 
     if args.test262:

@@ -35,7 +35,8 @@ constexpr size_t DEFAULT_THREAD_COUNT = 2;
 Compiler::Compiler(ScriptExtension ext) : Compiler(ext, DEFAULT_THREAD_COUNT) {}
 
 Compiler::Compiler(ScriptExtension ext, size_t threadCount)
-    : parser_(new parser::ParserImpl(ext)), compiler_(new compiler::CompilerImpl(threadCount))
+    : parser_(new parser::ParserImpl(ext)), compiler_(new compiler::CompilerImpl(threadCount)),
+    abcToAsmCompiler_(new panda::abc2program::Abc2ProgramCompiler)
 {
     if (parser_->Extension() == ScriptExtension::TS) {
         transformer_ = std::make_unique<parser::Transformer>(parser_->Allocator());
@@ -46,6 +47,7 @@ Compiler::~Compiler()
 {
     delete parser_;
     delete compiler_;
+    delete abcToAsmCompiler_;
 }
 
 panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname, util::PatchFix *patchFixHelper)
@@ -54,6 +56,20 @@ panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string r
                                                        src, "", util::StringView(rname), patchFixHelper);
     context.GetEmitter()->GenRecordNameInfo();
     return context.GetEmitter()->Finalize(false, nullptr);
+}
+
+panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, const CompilerOptions &options)
+{
+    if (!options.enableAbcInput) {
+        throw Error(ErrorType::GENERIC, "\"--enable-abc-input\" is not enabled, abc file " + fname +
+            "could not be used as the input.");
+    }
+    if (!abcToAsmCompiler_->OpenAbcFile(fname)) {
+        return nullptr;
+    }
+    panda::pandasm::Program *prog = new panda::pandasm::Program();
+    (void)abcToAsmCompiler_->FillProgramData(*prog);
+    return prog;
 }
 
 panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,
@@ -74,6 +90,9 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     }
 
     try {
+        if (fname.substr(fname.find_last_of(".") + 1) == "abc") {
+            return AbcToAsmProgram(fname, options);
+        }
         auto ast = parser_->Parse(fname, src, rname, options, kind);
         ast.Binder()->SetProgram(&ast);
 
