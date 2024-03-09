@@ -464,13 +464,18 @@ export class ArkObfuscator {
       orignalFilePathForSearching = originalFilePath ? originalFilePath : ast.fileName;
     }
 
-    if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable) {
-      //@ts-ignore
-      ast.reservedComments = undefined;
+    if (ast.isDeclarationFile) {
+      if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable) {
+        //@ts-ignore
+        ast.reservedComments = undefined;
+      } else {
+        //@ts-ignore
+        ast.reservedComments ??= this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments ? 
+          this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments : [];
+      }
     } else {
       //@ts-ignore
-      ast.reservedComments ??= this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments ? 
-        this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments : [];
+      ast.reservedComments = [];
     }
 
     performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
