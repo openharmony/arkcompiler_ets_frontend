@@ -53,7 +53,6 @@ enum class GlobalTypeId {
     ETS_BOOLEAN,
     ETS_STRING,
     ETS_VOID,
-    ETS_VOID_BUILTIN,
     ETS_OBJECT_BUILTIN,
     ETS_NULL,
     ETS_UNDEFINED,
@@ -147,7 +146,6 @@ public:
     Type *GlobalStringType();
     Type *GlobalBooleanType();
     Type *GlobalVoidType();
-    Type *GlobalBuiltinVoidType();
     Type *GlobalNullType();
     Type *GlobalUndefinedType();
     Type *GlobalUnknownType();

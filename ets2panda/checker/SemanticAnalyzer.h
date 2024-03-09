@@ -55,6 +55,7 @@
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/awaitExpression.h"
 #include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/blockExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/chainExpression.h"
 #include "ir/expressions/classExpression.h"

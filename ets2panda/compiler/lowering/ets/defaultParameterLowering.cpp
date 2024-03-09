@@ -243,6 +243,11 @@ void DefaultParameterLowering::CreateOverloadFunction(ir::AstNode *ast, ArenaVec
 
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());
+
+    if (ast->Parent()->IsTSInterfaceBody()) {
+        overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
+    }
+
     method->AddOverload(overloadMethod);
     overloadMethod->SetParent(method);
 }

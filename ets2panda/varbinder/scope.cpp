@@ -73,6 +73,38 @@ const VariableScope *Scope::EnclosingVariableScope() const
     return nullptr;
 }
 
+// NOTE(psiket): Duplication
+ClassScope *Scope::EnclosingClassScope()
+{
+    Scope *iter = this;
+
+    while (iter != nullptr) {
+        if (iter->IsClassScope()) {
+            return iter->AsClassScope();
+        }
+
+        iter = iter->Parent();
+    }
+
+    return nullptr;
+}
+
+const ClassScope *Scope::EnclosingClassScope() const
+{
+    const auto *iter = this;
+
+    while (iter != nullptr) {
+        if (iter->IsVariableScope()) {
+            return iter->AsClassScope();
+        }
+
+        iter = iter->Parent();
+    }
+
+    return nullptr;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
 Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if ((options & ResolveBindingOptions::INTERFACES) != 0) {
@@ -147,14 +179,16 @@ ConstScopeFindResult Scope::FindInGlobal(const util::StringView &name, const Res
 ConstScopeFindResult Scope::FindInFunctionScope(const util::StringView &name, const ResolveBindingOptions options) const
 {
     const auto *scopeIter = this;
-    while (scopeIter != nullptr && !scopeIter->IsClassScope() && !scopeIter->IsGlobalScope()) {
-        if (auto *const resolved = scopeIter->FindLocal(name, options); resolved != nullptr) {
-            return {name, scopeIter, 0, 0, resolved};
+    while (scopeIter != nullptr && !scopeIter->IsGlobalScope()) {
+        if (!scopeIter->IsClassScope()) {
+            if (auto *const resolved = scopeIter->FindLocal(name, options); resolved != nullptr) {
+                return ConstScopeFindResult(name, scopeIter, 0, 0, resolved);
+            }
         }
         scopeIter = scopeIter->Parent();
     }
 
-    return {name, scopeIter, 0, 0, nullptr};
+    return ConstScopeFindResult(name, scopeIter, 0, 0, nullptr);
 }
 
 ScopeFindResult Scope::Find(const util::StringView &name, const ResolveBindingOptions options)
@@ -234,6 +268,10 @@ Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, 
         }
         case DeclType::INTERFACE: {
             return bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)})
+                .first->second;
+        }
+        case DeclType::CLASS: {
+            return bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS)})
                 .first->second;
         }
         case DeclType::TYPE_PARAMETER: {
@@ -404,8 +442,40 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
         }
+        // NOTE(psiket):Duplication
         case DeclType::INTERFACE: {
-            return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);
+            ir::Identifier *ident {};
+            ident = newDecl->Node()->AsTSInterfaceDeclaration()->Id();
+
+            auto *var = InsertBinding(newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE))
+                            .first->second;
+
+            if (var == nullptr) {
+                return nullptr;
+            }
+
+            var->SetScope(this);
+            if (ident != nullptr) {
+                ident->SetVariable(var);
+            }
+            return var;
+        }
+        case DeclType::CLASS: {
+            ir::Identifier *ident {};
+            ident = newDecl->Node()->AsClassDefinition()->Ident();
+
+            auto *var = InsertBinding(newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS))
+                            .first->second;
+
+            if (var == nullptr) {
+                return nullptr;
+            }
+
+            var->SetScope(this);
+            if (ident != nullptr) {
+                ident->SetVariable(var);
+            }
+            return var;
         }
         default: {
             return AddLexical<LocalVariable>(allocator, currentVariable, newDecl);

@@ -60,8 +60,6 @@ enum class ParserStatus : uint64_t {
     IN_CLASS_BODY = 1U << 25U,
     NEED_RETURN_TYPE = 1U << 26U,
 
-    IN_EXTERNAL = 1U << 27U,
-    IN_IMPORT = 1U << 28U,
     IN_DEFAULT_IMPORTS = 1U << 29U,
     IN_EXTENSION_FUNCTION = 1U << 30U,
     FUNCTION_HAS_RETURN_STATEMENT = 1U << 31U,

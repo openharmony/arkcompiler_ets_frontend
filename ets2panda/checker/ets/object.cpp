@@ -814,12 +814,22 @@ void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implementedSi
     }
 }
 
+void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus)
+{
+    if (classDef->IsLocal()) {
+        checkerStatus |= CheckerStatus::IN_LOCAL_CLASS;
+        if (!classDef->Parent()->Parent()->IsBlockStatement()) {
+            ThrowTypeError("Local classes must be defined between balanced braces", classDef->Start());
+        }
+        localClasses_.push_back(classDef);
+    }
+}
+
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     auto *classType = classDef->TsType()->AsETSObjectType();
-    auto *enclosingClass = Context().ContainingClass();
     auto newStatus = checker::CheckerStatus::IN_CLASS;
-    classType->SetEnclosingType(enclosingClass);
+    classType->SetEnclosingType(Context().ContainingClass());
 
     if (classDef->IsInner()) {
         newStatus |= CheckerStatus::INNER_CLASS;
@@ -828,6 +838,8 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 
     if (classDef->IsGlobal()) {
         classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL);
+    } else {
+        CheckLocalClass(classDef, newStatus);
     }
 
     checker::ScopeContext scopeCtx(this, classDef->Scope());
@@ -1503,30 +1515,40 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
             continue;
         }
 
-        if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
-            const char *targetType {};
+        CheckProperties(classType, classDef, it, found, interfaceFound);
+    }
+}
 
-            if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
-                targetType = "field";
-            } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
-                targetType = "method";
-            } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
-                targetType = "class";
-            } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
-                targetType = "interface";
-            } else {
-                targetType = "enum";
-            }
-
-            if (interfaceFound != nullptr) {
-                ThrowTypeError({"Cannot inherit from interface ", interfaceFound->Name(), " because ", targetType, " ",
-                                it->Name(), " is inherited with a different declaration type"},
-                               interfaceFound->GetDeclNode()->Start());
-            }
-            ThrowTypeError({"Cannot inherit from class ", classType->SuperType()->Name(), ", because ", targetType, " ",
-                            it->Name(), " is inherited with a different declaration type"},
-                           classDef->Super()->Start());
+void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
+                                 varbinder::LocalVariable *found, ETSObjectType *interfaceFound)
+{
+    if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
+        if (IsVariableStatic(it) != IsVariableStatic(found)) {
+            return;
         }
+
+        const char *targetType {};
+
+        if (it->HasFlag(varbinder::VariableFlags::PROPERTY)) {
+            targetType = "field";
+        } else if (it->HasFlag(varbinder::VariableFlags::METHOD)) {
+            targetType = "method";
+        } else if (it->HasFlag(varbinder::VariableFlags::CLASS)) {
+            targetType = "class";
+        } else if (it->HasFlag(varbinder::VariableFlags::INTERFACE)) {
+            targetType = "interface";
+        } else {
+            targetType = "enum";
+        }
+
+        if (interfaceFound != nullptr) {
+            ThrowTypeError({"Cannot inherit from interface ", interfaceFound->Name(), " because ", targetType, " ",
+                            it->Name(), " is inherited with a different declaration type"},
+                           interfaceFound->GetDeclNode()->Start());
+        }
+        ThrowTypeError({"Cannot inherit from class ", classType->SuperType()->Name(), ", because ", targetType, " ",
+                        it->Name(), " is inherited with a different declaration type"},
+                       classDef->Super()->Start());
     }
 }
 

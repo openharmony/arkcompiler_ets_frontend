@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
+#include "util/errorHandler.h"
 #include "scopesInitPhase.h"
 
 namespace ark::es2panda::compiler {
 bool ScopesInitPhase::Perform(PhaseContext *ctx, parser::Program *program)
 {
     Prepare(ctx, program);
+    program->VarBinder()->InitTopScope();
     HandleBlockStmt(program->Ast(), GetScope());
     Finalize();
     return true;
@@ -320,10 +322,7 @@ void ScopesInitPhase::IterateNoTParams(ir::ClassDefinition *classDef)
 
 void ScopesInitPhase::ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const
 {
-    lexer::LineIndex index(program_->SourceCode());
-    lexer::SourceLocation loc = index.GetLocation(pos);
-
-    throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), errorMessage, loc.line, loc.col};
+    util::ErrorHandler::ThrowSyntaxError(Program(), errorMessage, pos);
 }
 
 void ScopesInitPhase::CreateFuncDecl(ir::ScriptFunction *func)
@@ -697,6 +696,13 @@ void InitScopesPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *in
     decl->BindNode(init);
 }
 
+void InitScopesPhaseETS::VisitBlockExpression(ir::BlockExpression *blockExpr)
+{
+    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    BindScopeNode(GetScope(), blockExpr);
+    Iterate(blockExpr);
+}
+
 void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock)
 {
     const auto func = staticBlock->Function();
@@ -752,8 +758,11 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
 
     const auto methodName = method->Id();
     auto *const clsScope = VarBinder()->GetScope()->AsClassScope();
-    if (clsScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::VARIABLES |
-                                                    varbinder::ResolveBindingOptions::DECLARATION) != nullptr) {
+    auto options =
+        method->IsStatic()
+            ? varbinder::ResolveBindingOptions::STATIC_VARIABLES | varbinder::ResolveBindingOptions::STATIC_DECLARATION
+            : varbinder::ResolveBindingOptions::VARIABLES | varbinder::ResolveBindingOptions::DECLARATION;
+    if (clsScope->FindLocal(methodName->Name(), options) != nullptr) {
         VarBinder()->ThrowRedeclaration(methodName->Start(), methodName->Name());
     }
 
@@ -765,6 +774,13 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
     }
     auto *found = targetScope->FindLocal(methodName->Name(), varbinder::ResolveBindingOptions::BINDINGS);
 
+    MaybeAddOverload(method, methodName, found, clsScope, targetScope);
+}
+
+void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Identifier *methodName,
+                                          varbinder::Variable *found, varbinder::ClassScope *clsScope,
+                                          varbinder::LocalScope *targetScope)
+{
     if (found == nullptr) {
         auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), targetScope);
         [[maybe_unused]] auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(
@@ -791,6 +807,14 @@ void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)
         }
         method->ClearOverloads();
     }
+}
+
+void InitScopesPhaseETS::VisitETSReExportDeclaration(ir::ETSReExportDeclaration *reExport)
+{
+    if (reExport->GetETSImportDeclarations()->Language().IsDynamic()) {
+        VarBinder()->AsETSBinder()->AddDynamicImport(reExport->GetETSImportDeclarations());
+    }
+    VarBinder()->AsETSBinder()->AddReExportImport(reExport);
 }
 
 void InitScopesPhaseETS::VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr)
@@ -825,7 +849,9 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 {
     auto *curScope = VarBinder()->GetScope();
     const auto methodName = method->Id();
-    auto res = curScope->Find(methodName->Name(), varbinder::ResolveBindingOptions::ALL);
+    auto res =
+        curScope->Find(methodName->Name(), method->IsStatic() ? varbinder::ResolveBindingOptions::ALL_STATIC
+                                                              : varbinder::ResolveBindingOptions::ALL_NON_STATIC);
     if (res.variable != nullptr && !res.variable->Declaration()->IsFunctionDecl() && res.scope == curScope) {
         VarBinder()->ThrowRedeclaration(methodName->Start(), res.name);
     }

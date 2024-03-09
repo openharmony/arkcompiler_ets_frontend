@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -94,9 +94,8 @@ function main() {
 
     impl_->AstNodeForEach(impl_->ProgramAst(impl_->ContextProgram(ctx)), func, &arg);
 
-    std::vector<std::string> expected {"C",        "n",        "string", "constructor", "constructor", "ETSGLOBAL",
-                                       "_$init$_", "_$init$_", "main",   "main",        "c",           "C",
-                                       "console",  "log",      "c",      "n",           "<cctor>"};
+    std::vector<std::string> expected {"C", "n", "string",  "constructor", "constructor", "main",
+                                       "c", "C", "console", "log",         "c",           "n"};
     ASSERT_EQ(arg.ids, expected);
 
     impl_->DestroyContext(ctx);

@@ -503,6 +503,9 @@ private:
         if (ast->IsETSImportDeclaration()) {
             return true;
         }
+        if (ast->IsETSReExportDeclaration()) {
+            return true;
+        }
         if (ast->IsImportExpression()) {
             return true;
         }
@@ -530,6 +533,9 @@ private:
             return true;
         }
         if (ast->IsExportNamedDeclaration()) {
+            return true;
+        }
+        if (ast->IsETSReExportDeclaration()) {
             return true;
         }
         return false;

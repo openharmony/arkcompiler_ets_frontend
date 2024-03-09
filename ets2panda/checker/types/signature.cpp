@@ -198,13 +198,30 @@ std::size_t GetToCheckParamCount(Signature *signature, bool isEts)
 }
 }  // namespace
 
-bool Signature::IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2)
+bool Signature::CheckParameter(TypeRelation *relation, Type *type1, Type *type2)
 {
     relation->IsIdenticalTo(type1, type2);
+    if (relation->IsOverridingCheck() && !relation->IsTrue()) {
+        relation->IsSupertypeOf(type1, type2);
+    }
     return relation->IsTrue();
 }
 
-void Signature::Identical(TypeRelation *relation, Signature *other)
+bool Signature::CheckReturnType(TypeRelation *relation, Type *type1, Type *type2)
+{
+    if (relation->NoReturnTypeCheck()) {
+        return relation->Result(true);
+    }
+    if (relation->IsOverridingCheck()) {
+        relation->IsSupertypeOf(type2, type1);
+    } else {
+        relation->IsIdenticalTo(type1, type2);
+    }
+
+    return relation->IsTrue();
+}
+
+void Signature::Compatible(TypeRelation *relation, Signature *other)
 {
     bool isEts = relation->GetChecker()->IsETSChecker();
     auto const thisToCheckParametersNumber = GetToCheckParamCount(this, isEts);
@@ -219,69 +236,63 @@ void Signature::Identical(TypeRelation *relation, Signature *other)
         }
     }
 
-    if (relation->NoReturnTypeCheck()) {
-        relation->Result(true);
-    } else {
-        relation->IsIdenticalTo(this->ReturnType(), other->ReturnType());
+    if (!CheckReturnType(relation, this->ReturnType(), other->ReturnType())) {
+        return;
     }
 
-    if (relation->IsTrue()) {
-        /* In ETS, the functions "foo(a: int)" and "foo(a: int, b: int = 1)" should be considered as having an
-           equivalent signature. Hence, we only need to check if the mandatory parameters of the signature with
-           more mandatory parameters can match the parameters of the other signature (including the optional
-           parameter or rest parameters) here.
+    /* In ETS, the functions "foo(a: int)" and "foo(a: int, b: int = 1)" should be considered as having an
+        equivalent signature. Hence, we only need to check if the mandatory parameters of the signature with
+        more mandatory parameters can match the parameters of the other signature (including the optional
+        parameter or rest parameters) here.
 
-           XXX_to_check_parameters_number is calculated beforehand by counting mandatory parameters.
-           Signature::params() stores all parameters (mandatory and optional), excluding the rest parameter.
-           Signature::restVar() stores the rest parameters of the function.
+        XXXToCheckParametersNumber is calculated beforehand by counting mandatory parameters.
+        Signature::params() stores all parameters (mandatory and optional), excluding the rest parameter.
+        Signature::restVar() stores the rest parameters of the function.
 
-           For example:
-           foo(a: int): params().size: 1, to_check_param_number: 1, restVar: nullptr
-           foo(a: int, b: int = 0): params().size: 2, to_check_param_number: 1, restVar: nullptr
-           foo(a: int, ...b: int[]): params().size: 1, to_check_param_number: 1, restVar: ...b: int[]
+        For example:
+        foo(a: int): params().size: 1, ToCheckParametersNumber: 1, restVar: nullptr
+        foo(a: int, b: int = 0): params().size: 2, ToCheckParametersNumber: 1, restVar: nullptr
+        foo(a: int, ...b: int[]): params().size: 1, ToCheckParametersNumber: 1, restVar: ...b: int[]
 
-           Note that optional parameters always come after mandatory parameters, and signatures containing both
-           optional and rest parameters are not allowed.
+        Note that optional parameters always come after mandatory parameters, and signatures containing both
+        optional and rest parameters are not allowed.
 
-           "to_check_parameters_number" is the number of parameters that need to be checked to ensure identical.
-           "parameters_number" is the number of parameters that can be checked in Signature::params().
-        */
-        auto const toCheckParametersNumber = std::max(thisToCheckParametersNumber, otherToCheckParametersNumber);
-        auto const parametersNumber =
-            std::min({this->Params().size(), other->Params().size(), toCheckParametersNumber});
+        "ToCheckParametersNumber" is the number of parameters that need to be checked to ensure identical.
+        "parametersNumber" is the number of parameters that can be checked in Signature::params().
+    */
+    auto const toCheckParametersNumber = std::max(thisToCheckParametersNumber, otherToCheckParametersNumber);
+    auto const parametersNumber = std::min({this->Params().size(), other->Params().size(), toCheckParametersNumber});
 
-        std::size_t i = 0U;
-        for (; i < parametersNumber; ++i) {
-            if (!IdenticalParameter(relation, this->Params()[i]->TsType(), other->Params()[i]->TsType())) {
-                return;
-            }
-        }
-
-        /* "i" could be one of the following three cases:
-            1. == to_check_parameters_number, we have finished the checking and can directly return.
-            2. == other->Params().size(), must be < this_to_check_parameters_number in this case since
-            xxx->Params().size() always >= xxx_to_check_parameters_number. We need to check the remaining
-            mandatory parameters of "this" against ths RestVar of "other".
-            3. == this->Params().size(), must be < other_to_check_parameters_number as described in 2, and
-            we need to check the remaining mandatory parameters of "other" against the RestVar of "this".
-        */
-        if (i == toCheckParametersNumber) {
+    std::size_t i = 0U;
+    for (; i < parametersNumber; ++i) {
+        if (!CheckParameter(relation, this->Params()[i]->TsType(), other->Params()[i]->TsType())) {
             return;
         }
-        bool isOtherMandatoryParamsMatched = i < thisToCheckParametersNumber;
-        ArenaVector<varbinder::LocalVariable *> const &parameters =
-            isOtherMandatoryParamsMatched ? this->Params() : other->Params();
-        varbinder::LocalVariable const *restParameter =
-            isOtherMandatoryParamsMatched ? other->RestVar() : this->RestVar();
-        if (restParameter == nullptr) {
-            relation->Result(false);
+    }
+
+    /* "i" could be one of the following three cases:
+        1. == toCheckParametersNumber, we have finished the checking and can directly return.
+        2. == other->Params().size(), must be < thisToCheckParametersNumber in this case since
+        xxx->Params().size() always >= xxxtoCheckParametersNumber. We need to check the remaining
+        mandatory parameters of "this" against ths RestVar of "other".
+        3. == this->Params().size(), must be < otherToCheckParametersNumber as described in 2, and
+        we need to check the remaining mandatory parameters of "other" against the RestVar of "this".
+    */
+    if (i == toCheckParametersNumber) {
+        return;
+    }
+    bool isOtherMandatoryParamsMatched = i < thisToCheckParametersNumber;
+    ArenaVector<varbinder::LocalVariable *> const &parameters =
+        isOtherMandatoryParamsMatched ? this->Params() : other->Params();
+    varbinder::LocalVariable const *restParameter = isOtherMandatoryParamsMatched ? other->RestVar() : this->RestVar();
+    if (restParameter == nullptr) {
+        relation->Result(false);
+        return;
+    }
+    auto *const restParameterType = restParameter->TsType()->AsETSArrayType()->ElementType();
+    for (; i < toCheckParametersNumber; ++i) {
+        if (!CheckParameter(relation, parameters[i]->TsType(), restParameterType)) {
             return;
-        }
-        auto *const restParameterType = restParameter->TsType()->AsETSArrayType()->ElementType();
-        for (; i < toCheckParametersNumber; ++i) {
-            if (!IdenticalParameter(relation, parameters[i]->TsType(), restParameterType)) {
-                return;
-            }
         }
     }
 }
@@ -308,7 +319,7 @@ bool Signature::CheckFunctionalInterfaces(TypeRelation *relation, Type *source, 
                                 ->AsETSFunctionType()
                                 ->CallSignatures()[0];
 
-    relation->IsIdenticalTo(sourceInvokeFunc, targetInvokeFunc);
+    relation->IsCompatibleTo(sourceInvokeFunc, targetInvokeFunc);
     return true;
 }
 

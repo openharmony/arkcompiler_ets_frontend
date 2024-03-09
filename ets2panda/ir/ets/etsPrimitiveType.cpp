@@ -126,6 +126,10 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
             SetTsType(checker->GlobalCharType());
             return TsType();
         }
+        case PrimitiveType::VOID: {
+            SetTsType(checker->GlobalVoidType());
+            return TsType();
+        }
         default: {
             UNREACHABLE();
         }

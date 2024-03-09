@@ -143,35 +143,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 37
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 41
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 16,
-                        "column": 37
-                      },
-                      "end": {
-                        "line": 16,
-                        "column": 48
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 16,
@@ -179,7 +151,7 @@
                     },
                     "end": {
                       "line": 16,
-                      "column": 48
+                      "column": 41
                     }
                   }
                 },
@@ -230,35 +202,7 @@
               "type": "ETSFunctionType",
               "params": [],
               "returnType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "void",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 16,
-                        "column": 19
-                      },
-                      "end": {
-                        "line": 16,
-                        "column": 23
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 16,
-                      "column": 19
-                    },
-                    "end": {
-                      "line": 16,
-                      "column": 30
-                    }
-                  }
-                },
+                "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
                     "line": 16,
@@ -266,7 +210,7 @@
                   },
                   "end": {
                     "line": 16,
-                    "column": 30
+                    "column": 23
                   }
                 }
               }
@@ -278,7 +222,7 @@
                 },
                 "end": {
                   "line": 16,
-                  "column": 30
+                  "column": 23
                 }
               }
             },
@@ -462,35 +406,7 @@
                   }
                 ],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 18,
-                          "column": 114
-                        },
-                        "end": {
-                          "line": 18,
-                          "column": 118
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 114
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 127
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 18,
@@ -498,7 +414,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 127
+                      "column": 118
                     }
                   }
                 },
@@ -689,35 +605,7 @@
                 }
               ],
               "returnType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "void",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 58
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 62
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 58
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 69
-                    }
-                  }
-                },
+                "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
                     "line": 18,
@@ -725,7 +613,7 @@
                   },
                   "end": {
                     "line": 18,
-                    "column": 69
+                    "column": 62
                   }
                 }
               }
@@ -737,7 +625,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 69
+                  "column": 62
                 }
               }
             },

@@ -598,7 +598,7 @@ ir::MethodDefinition *ETSChecker::CreateDynamicModuleClassInitMethod(varbinder::
                                    [this]([[maybe_unused]] varbinder::FunctionScope *scope,
                                           [[maybe_unused]] ArenaVector<ir::Statement *> *statements,
                                           [[maybe_unused]] ArenaVector<ir::Expression *> *params,
-                                          Type **returnType) { *returnType = GlobalBuiltinVoidType(); });
+                                          Type **returnType) { *returnType = GlobalVoidType(); });
 }
 
 ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInvokeMethod(varbinder::ClassScope *classScope,
@@ -742,9 +742,8 @@ ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(varbinder::
         classScope,
         [this, classScope](varbinder::FunctionScope *scope, ArenaVector<ir::Statement *> *statements,
                            ArenaVector<ir::Expression *> *params) {
-            util::UString thisParamName(std::string("this"), Allocator());
             ir::ETSParameterExpression *thisParam =
-                AddParam(scope->Parent()->AsFunctionParamScope(), thisParamName.View(),
+                AddParam(scope->Parent()->AsFunctionParamScope(), varbinder::VarBinder::MANDATORY_PARAM_THIS,
                          classScope->Node()->AsClassDeclaration()->Definition()->TsType()->AsETSObjectType());
             params->push_back(thisParam);
 
@@ -753,7 +752,7 @@ ir::MethodDefinition *ETSChecker::CreateLambdaObjectClassInitializer(varbinder::
                 AddParam(scope->Parent()->AsFunctionParamScope(), jsvalueParamName.View(), GlobalBuiltinJSValueType());
             params->push_back(jsvalueParam);
 
-            auto *moduleClassId = AllocNode<ir::Identifier>("this", Allocator());
+            auto *moduleClassId = AllocNode<ir::Identifier>(varbinder::VarBinder::MANDATORY_PARAM_THIS, Allocator());
             auto *fieldId = AllocNode<ir::Identifier>("jsvalue_lambda", Allocator());
             auto *property = AllocNode<ir::MemberExpression>(moduleClassId, fieldId,
                                                              ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);

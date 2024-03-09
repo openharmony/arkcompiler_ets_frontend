@@ -19,6 +19,7 @@
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "ir/astNode.h"
+#include "ir/expressions/identifier.h"
 #include "util/bitset.h"
 #include "util/language.h"
 
@@ -44,6 +45,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     CLASS_DECL = 1U << 8U,
     INNER = 1U << 9U,
     FROM_EXTERNAL = 1U << 10U,
+    LOCAL = 1U << 11U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED
 };
 
@@ -72,7 +74,11 @@ public:
           superClass_(superClass),
           body_(std::move(body)),
           modifiers_(modifiers),
-          lang_(lang)
+          lang_(lang),
+          capturedVars_(body_.get_allocator()),
+          localVariableIsNeeded_(body_.get_allocator()),
+          localIndex_(classCounter_++),
+          localPrefix_("$" + std::to_string(localIndex_))
     {
     }
 
@@ -83,7 +89,11 @@ public:
           implements_(allocator->Adapter()),
           body_(std::move(body)),
           modifiers_(modifiers),
-          lang_(lang)
+          lang_(lang),
+          capturedVars_(allocator->Adapter()),
+          localVariableIsNeeded_(allocator->Adapter()),
+          localIndex_(classCounter_++),
+          localPrefix_("$" + std::to_string(localIndex_))
     {
     }
 
@@ -94,7 +104,12 @@ public:
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),
           modifiers_(modifiers),
-          lang_(lang)
+          lang_(lang),
+          capturedVars_(allocator->Adapter()),
+          localVariableIsNeeded_(allocator->Adapter()),
+          localIndex_(classCounter_++),
+          localPrefix_("$" + std::to_string(localIndex_))
+
     {
     }
 
@@ -161,6 +176,11 @@ public:
     [[nodiscard]] bool IsGlobal() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::GLOBAL) != 0;
+    }
+
+    [[nodiscard]] bool IsLocal() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::LOCAL) != 0;
     }
 
     [[nodiscard]] bool IsExtern() const noexcept
@@ -266,6 +286,46 @@ public:
         return superTypeParams_;
     }
 
+    [[nodiscard]] static int LocalTypeCounter() noexcept
+    {
+        return classCounter_;
+    }
+
+    [[nodiscard]] int LocalIndex() const noexcept
+    {
+        return localIndex_;
+    }
+
+    [[nodiscard]] const std::string &LocalPrefix() const noexcept
+    {
+        return localPrefix_;
+    }
+
+    bool CaptureVariable(varbinder::Variable *var)
+    {
+        return capturedVars_.insert(var).second;
+    }
+
+    bool AddToLocalVariableIsNeeded(varbinder::Variable *var)
+    {
+        return localVariableIsNeeded_.insert(var).second;
+    }
+
+    bool IsLocalVariableNeeded(varbinder::Variable *var) const
+    {
+        return localVariableIsNeeded_.find(var) != localVariableIsNeeded_.end();
+    }
+
+    [[nodiscard]] const ArenaSet<varbinder::Variable *> &CapturedVariables() const noexcept
+    {
+        return capturedVars_;
+    }
+
+    bool EraseCapturedVariable(varbinder::Variable *var)
+    {
+        return capturedVars_.erase(var) != 0;
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
     bool HasComputedInstanceField() const;
@@ -301,6 +361,11 @@ private:
     ArenaVector<AstNode *> body_;
     ClassDefinitionModifiers modifiers_;
     es2panda::Language lang_;
+    ArenaSet<varbinder::Variable *> capturedVars_;
+    ArenaSet<varbinder::Variable *> localVariableIsNeeded_;
+    static int classCounter_;
+    const int localIndex_ {};
+    const std::string localPrefix_ {};
 };
 }  // namespace ark::es2panda::ir
 

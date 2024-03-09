@@ -285,7 +285,10 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
 {
     if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         GetFunctionalInterfaceInvokeType()->ToString(ss, precise);
-    } else if (precise) {
+        return;
+    }
+
+    if (precise) {
         ss << assemblerName_;  // NOTE(gogabr): need full qualified name
     } else {
         ss << name_;
@@ -347,8 +350,7 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
         if (typeArguments_[idx]->IsWildcardType() || otherTypeArguments[idx]->IsWildcardType()) {
             continue;
         }
-        typeArguments_[idx]->Identical(relation, otherTypeArguments[idx]);
-        if (!relation->IsTrue()) {
+        if (!relation->IsIdenticalTo(typeArguments_[idx], otherTypeArguments[idx])) {
             return;
         }
     }
@@ -417,8 +419,7 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
                              TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
         return false;
     }
-    Identical(relation, target);
-    if (relation->IsTrue()) {
+    if (relation->IsIdenticalTo(this, target)) {
         return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
@@ -542,11 +543,6 @@ bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, 
         return true;
     }
 
-    if (source->IsETSTypeParameter()) {
-        IsSupertypeOf(relation, source->AsETSTypeParameter()->GetConstraintType());
-        return true;
-    }
-
     if (!source->IsETSObjectType() ||
         !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE)) {
         return true;
@@ -558,7 +554,7 @@ bool ETSObjectType::DefaultObjectTypeChecks(const ETSChecker *const etsChecker, 
         return true;
     }
 
-    Identical(relation, source);
+    IdenticalUptoTypeArguments(relation, source);
     if (relation->IsTrue() && HasTypeFlag(TypeFlag::GENERIC)) {
         IsGenericSupertypeOf(relation, source);
     }
@@ -616,19 +612,19 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
         auto *typeParam = typeParams[idx];
 
         relation->Result(false);
+        if (typeArg->IsWildcardType() || sourceTypeArg->IsWildcardType()) {
+            continue;
+        }
+        if (typeParam->IsOut()) {
+            relation->IsSupertypeOf(typeArg, sourceTypeArg);
+        } else if (typeParam->IsIn()) {
+            relation->IsSupertypeOf(sourceTypeArg, typeArg);
+        } else {
+            relation->IsIdenticalTo(typeArg, sourceTypeArg);
+        }
 
-        if (!(typeArg->IsWildcardType() || sourceTypeArg->IsWildcardType())) {
-            if (typeParam->IsOut()) {
-                typeArg->IsSupertypeOf(relation, sourceTypeArg);
-            } else if (typeParam->IsIn()) {
-                sourceTypeArg->IsSupertypeOf(relation, typeArg);
-            } else {
-                typeArg->Identical(relation, sourceTypeArg);
-            }
-
-            if (!relation->IsTrue()) {
-                return;
-            }
+        if (!relation->IsTrue()) {
+            return;
         }
     }
 

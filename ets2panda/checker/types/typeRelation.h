@@ -62,6 +62,7 @@ enum class TypeRelationFlag : uint32_t {
     CHECK_PROXY = 1U << 21U,
     NO_CHECK_TRAILING_LAMBDA = 1U << 23U,
     NO_THROW_GENERIC_TYPEALIAS = 1U << 24U,
+    OVERRIDING_CONTEXT = 1U << 25U,
 
     ASSIGNMENT_CONTEXT = WIDENING | BOXING | UNBOXING,
     CASTING_CONTEXT = NARROWING | WIDENING | BOXING | UNBOXING | UNCHECKED_CAST,
@@ -212,6 +213,11 @@ public:
         return (flags_ & TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS) != 0;
     }
 
+    [[nodiscard]] bool IsOverridingCheck() const noexcept
+    {
+        return (flags_ & TypeRelationFlag::OVERRIDING_CONTEXT) != 0;
+    }
+
     const Checker *GetChecker() const
     {
         return checker_;
@@ -265,8 +271,8 @@ public:
     }
 
     bool IsIdenticalTo(Type *source, Type *target);
-    bool IsIdenticalTo(Signature *source, Signature *target);
     bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
+    bool IsCompatibleTo(Signature *source, Signature *target);
     bool IsAssignableTo(Type *source, Type *target);
     bool IsComparableTo(Type *source, Type *target);
     bool IsCastableTo(Type *const source, Type *const target);

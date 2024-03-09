@@ -39,7 +39,7 @@ private:
 
     ir::Expression *CreateNewMultiDimArrayInstanceExpression(
         checker::ETSChecker *checker, ir::ETSNewMultiDimArrayInstanceExpression *newInstanceExpression,
-        ir::BlockExpression *blockExpression, varbinder::Scope *scope) const;
+        ir::BlockExpression *blockExpression) const;
 };
 }  // namespace ark::es2panda::compiler
 

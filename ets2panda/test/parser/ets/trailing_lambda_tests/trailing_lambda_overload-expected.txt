@@ -211,35 +211,7 @@
                         "type": "ETSFunctionType",
                         "params": [],
                         "returnType": {
-                          "type": "ETSTypeReference",
-                          "part": {
-                            "type": "ETSTypeReferencePart",
-                            "name": {
-                              "type": "Identifier",
-                              "name": "void",
-                              "decorators": [],
-                              "loc": {
-                                "start": {
-                                  "line": 16,
-                                  "column": 36
-                                },
-                                "end": {
-                                  "line": 16,
-                                  "column": 40
-                                }
-                              }
-                            },
-                            "loc": {
-                              "start": {
-                                "line": 16,
-                                "column": 36
-                              },
-                              "end": {
-                                "line": 16,
-                                "column": 41
-                              }
-                            }
-                          },
+                          "type": "ETSPrimitiveType",
                           "loc": {
                             "start": {
                               "line": 16,
@@ -247,7 +219,7 @@
                             },
                             "end": {
                               "line": 16,
-                              "column": 41
+                              "column": 40
                             }
                           }
                         },
@@ -258,7 +230,7 @@
                           },
                           "end": {
                             "line": 16,
-                            "column": 41
+                            "column": 40
                           }
                         }
                       },
@@ -270,7 +242,7 @@
                         },
                         "end": {
                           "line": 16,
-                          "column": 41
+                          "column": 40
                         }
                       }
                     },
@@ -281,7 +253,7 @@
                       },
                       "end": {
                         "line": 16,
-                        "column": 41
+                        "column": 40
                       }
                     }
                   }

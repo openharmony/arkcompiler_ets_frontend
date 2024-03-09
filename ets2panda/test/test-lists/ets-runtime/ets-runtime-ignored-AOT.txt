@@ -1,0 +1,2 @@
+# Probably bug in the ark_aot  #15822
+lambda-class-field.ets

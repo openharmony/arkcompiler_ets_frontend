@@ -76,8 +76,7 @@ void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type 
     returnType_ = type;
     if (argument_ != nullptr) {
         checker::Type *argumentType = argument_->Check(checker);
-        if (type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-            !argumentType->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        if (type->IsETSReferenceType() && !argumentType->IsETSReferenceType()) {
             auto *const relation = checker->Relation();
             relation->SetNode(argument_);
             relation->SetFlags(checker::TypeRelationFlag::NONE);

@@ -121,11 +121,8 @@ StringView PathHandler::AddPath(const StringView &callerPath, const StringView &
     return resolvedPath;
 }
 
-void PathHandler::CollectDefaultSources()
+void PathHandler::CollectDefaultSources(const std::vector<std::string> &stdlib)
 {
-    std::vector<std::string> stdlib = {"std/core",       "std/math",  "std/containers",        "std/time",
-                                       "std/interop/js", "std/debug", "std/debug/concurrency", "escompat"};
-
     for (auto const &path : stdlib) {
         StringView callerPath = util::UString(allocator_).View();
         StringView stdlibPath = ResolveSourcePath(callerPath, util::UString(path, allocator_).View());
@@ -150,16 +147,16 @@ void PathHandler::CollectDefaultSources()
     }
 }
 
-std::vector<std::string> PathHandler::GetParseList() const
+ArenaVector<util::StringView> PathHandler::GetParseList() const
 {
-    std::vector<std::string> parseableSources;
-    for (const auto path : pathes_) {
-        if (!path.second.IsParsed() && !ark::os::file::File::IsDirectory(path.first.Mutf8())) {
+    ArenaVector<util::StringView> parseableSources(allocator_->Adapter());
+    for (const auto [path, info] : pathes_) {
+        if (!info.IsParsed() && !ark::os::file::File::IsDirectory(path.Mutf8())) {
             // NOTE(rsipka): it should be handled in a better way
-            if (path.second.IsObjectfile()) {
-                parseableSources.emplace(parseableSources.begin(), path.first.Mutf8());
+            if (info.IsObjectfile()) {
+                parseableSources.emplace(parseableSources.begin(), path);
             } else {
-                parseableSources.emplace_back(path.first.Mutf8());
+                parseableSources.emplace_back(path);
             }
         }
     }
@@ -259,12 +256,12 @@ StringView PathHandler::ResolveSourcePath(const StringView &callerPath, const St
     } else {
         ASSERT(arktsConfig_ != nullptr);
         auto resolvedPath = arktsConfig_->ResolvePath(path.Mutf8());
-        if (resolvedPath.empty()) {
+        if (!resolvedPath) {
             throw Error(ErrorType::GENERIC, "",
                         "Can't find prefix for '" + path.Mutf8() + "' in " + arktsConfig_->ConfigPath());
         }
 
-        return AppendExtension(util::UString(resolvedPath, allocator_).View());
+        return AppendExtension(util::UString(resolvedPath.value(), allocator_).View());
     }
 
     if (containsDelim) {
@@ -273,6 +270,13 @@ StringView PathHandler::ResolveSourcePath(const StringView &callerPath, const St
     }
 
     return util::UString(baseUrl, allocator_).View();
+}
+
+std::vector<std::string> &PathHandler::StdLib()
+{
+    static std::vector<std::string> stdlib {"std/core",       "std/math",  "std/containers",        "std/time",
+                                            "std/interop/js", "std/debug", "std/debug/concurrency", "escompat"};
+    return stdlib;
 }
 
 }  // namespace ark::es2panda::util

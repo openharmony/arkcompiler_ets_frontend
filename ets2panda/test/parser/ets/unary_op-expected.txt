@@ -118,11 +118,11 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 16,
-                          "column": 11
+                          "column": 10
                         }
                       }
                     },
@@ -190,11 +190,11 @@
                       "loc": {
                         "start": {
                           "line": 17,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 17,
-                          "column": 13
+                          "column": 12
                         }
                       }
                     },
@@ -262,11 +262,11 @@
                       "loc": {
                         "start": {
                           "line": 18,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 18,
-                          "column": 13
+                          "column": 12
                         }
                       }
                     },
@@ -333,11 +333,11 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 19,
-                          "column": 12
+                          "column": 11
                         }
                       }
                     },
@@ -405,11 +405,11 @@
                       "loc": {
                         "start": {
                           "line": 20,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 20,
-                          "column": 12
+                          "column": 11
                         }
                       }
                     },
@@ -477,11 +477,11 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 21,
-                          "column": 12
+                          "column": 11
                         }
                       }
                     },
@@ -533,11 +533,11 @@
                       "loc": {
                         "start": {
                           "line": 22,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 22,
-                          "column": 14
+                          "column": 13
                         }
                       }
                     },
@@ -605,11 +605,11 @@
                       "loc": {
                         "start": {
                           "line": 23,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 23,
-                          "column": 12
+                          "column": 11
                         }
                       }
                     },
@@ -677,11 +677,11 @@
                       "loc": {
                         "start": {
                           "line": 25,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 25,
-                          "column": 12
+                          "column": 11
                         }
                       }
                     }

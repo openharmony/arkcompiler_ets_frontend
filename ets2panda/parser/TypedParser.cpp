@@ -460,7 +460,7 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
     auto *body = AllocNode<ir::TSInterfaceBody>(std::move(members));
     body->SetRange({bodyStart, Lexer()->GetToken().End()});
 
-    const auto isExternal = (GetContext().Status() & ParserStatus::IN_EXTERNAL);
+    const auto isExternal = IsExternal();
     auto *interfaceDecl = AllocNode<ir::TSInterfaceDeclaration>(
         Allocator(), id, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguage());
     interfaceDecl->SetRange({interfaceStart, Lexer()->GetToken().End()});
@@ -1123,15 +1123,23 @@ ir::ModifierFlags TypedParser::ParseModifiers()
 
 ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
 {
-    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Identifier expected");
+    ir::Expression *expr = nullptr;
+
+    switch (Lexer()->GetToken().Type()) {
+        case lexer::TokenType::PUNCTUATOR_FORMAT:
+            expr = ParseIdentifierFormatPlaceholder();
+            break;
+        case lexer::TokenType::LITERAL_IDENT:
+            expr = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            expr->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+            break;
+        default:
+            ThrowSyntaxError("Identifier expected");
+            break;
     }
 
-    ir::Expression *expr = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     expr->AsIdentifier()->SetReference();
-    expr->SetRange(Lexer()->GetToken().Loc());
-
-    Lexer()->NextToken();
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         expr = ParseQualifiedReference(expr, flags);

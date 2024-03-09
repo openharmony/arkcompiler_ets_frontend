@@ -25,6 +25,7 @@
 #include "checker/types/ets/shortType.h"
 #include "generated/signatures.h"
 #include "ir/base/classDefinition.h"
+#include "ir/statements/classDeclaration.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ets/etsScript.h"
 #include "ir/expressions/identifier.h"
@@ -228,7 +229,6 @@ std::map<util::StringView, GlobalTypeId> &GetNameToTypeIdMap()
         {compiler::Signatures::BUILTIN_LONG_BOX_CLASS, GlobalTypeId::ETS_LONG_BOX_BUILTIN},
         {compiler::Signatures::BUILTIN_FLOAT_BOX_CLASS, GlobalTypeId::ETS_FLOAT_BOX_BUILTIN},
         {compiler::Signatures::BUILTIN_DOUBLE_BOX_CLASS, GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN},
-        {compiler::Signatures::BUILTIN_VOID_CLASS, GlobalTypeId::ETS_VOID_BUILTIN},
     };
 
     return nameToTypeId;
@@ -244,7 +244,6 @@ std::map<util::StringView, std::function<ETSObjectType *(const ETSChecker *)>> &
         {compiler::Signatures::BUILTIN_ERROR_CLASS, &ETSChecker::GlobalBuiltinErrorType},
         {compiler::Signatures::BUILTIN_TYPE_CLASS, &ETSChecker::GlobalBuiltinTypeType},
         {compiler::Signatures::BUILTIN_PROMISE_CLASS, &ETSChecker::GlobalBuiltinPromiseType},
-        {compiler::Signatures::BUILTIN_VOID_CLASS, &ETSChecker::GlobalBuiltinVoidType},
     };
 
     return nameToGlobalType;
@@ -499,6 +498,14 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
 
     auto *containingObjType = util::Helpers::GetContainingObjectType(declNode->Parent());
 
+    if (declNode->IsClassDefinition()) {
+        if (declNode->AsClassDefinition()->IsLocal()) {
+            util::UString localName(declNode->AsClassDefinition()->LocalPrefix(), Allocator());
+            localName.Append(name);
+            assemblerName = localName.View();
+        }
+    }
+
     if (containingObjType != nullptr) {
         prefix = containingObjType->AssemblerName();
     } else if (const auto *topStatement = declNode->GetTopStatement();
@@ -507,14 +514,13 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
         ASSERT(declNode->IsTSInterfaceDeclaration());
         assemblerName = declNode->AsTSInterfaceDeclaration()->InternalName();
     } else {
-        auto *program = static_cast<ir::ETSScript *>(declNode->GetTopStatement())->Program();
-        prefix = program->GetPackageName();
+        prefix = static_cast<ir::ETSScript *>(declNode->GetTopStatement())->Program()->GetPackageName();
     }
 
     if (!prefix.Empty()) {
         util::UString fullPath(prefix, Allocator());
         fullPath.Append('.');
-        fullPath.Append(name);
+        fullPath.Append(assemblerName);
         assemblerName = fullPath.View();
     }
 

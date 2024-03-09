@@ -1239,6 +1239,7 @@ void ParserImpl::CreateAmendedBinaryExpression(ir::Expression *const left, ir::E
 {
     auto *amended = GetAmendedChildExpression(right);
 
+    amended->SetParent(nullptr);  // Next line overwrite parent
     auto *binaryExpr = AllocNode<ir::BinaryExpression>(left, amended, operatorType);
 
     binaryExpr->SetRange({left->Start(), amended->End()});

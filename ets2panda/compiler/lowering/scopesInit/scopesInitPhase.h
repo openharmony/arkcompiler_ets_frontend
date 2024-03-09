@@ -131,6 +131,11 @@ protected:
         return program_;
     }
 
+    const parser::Program *Program() const
+    {
+        return program_;
+    }
+
     PhaseContext *Context()
     {
         return ctx_;
@@ -326,11 +331,15 @@ private:
     void BindVarDecl(ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
                      varbinder::Variable *var) override;
     void DeclareClassMethod(ir::MethodDefinition *method);
+    void MaybeAddOverload(ir::MethodDefinition *method, ir::Identifier *methodName, varbinder::Variable *found,
+                          varbinder::ClassScope *clsScope, varbinder::LocalScope *targetScope);
 
     void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
+    void VisitBlockExpression(ir::BlockExpression *blockExpr) override;
     void VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec) override;
     void VisitImportSpecifier([[maybe_unused]] ir::ImportSpecifier *importSpec) override {};
     void VisitImportDefaultSpecifier([[maybe_unused]] ir::ImportDefaultSpecifier *importSpec) override {};
+    void VisitETSReExportDeclaration(ir::ETSReExportDeclaration *reExport) override;
     void VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr) override;
     void VisitETSImportDeclaration(ir::ETSImportDeclaration *importDecl) override;
     void VisitTSEnumMember(ir::TSEnumMember *enumMember) override;

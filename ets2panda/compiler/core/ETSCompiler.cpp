@@ -61,14 +61,16 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDefinition *node) cons
 void ETSCompiler::Compile(const ir::ClassProperty *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (st->Value() == nullptr) {
+    if (st->Value() == nullptr && st->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         return;
     }
 
     auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
     compiler::RegScope rs(etsg);
 
-    if (!etsg->TryLoadConstantExpression(st->Value())) {
+    if (st->Value() == nullptr) {
+        etsg->LoadDefaultValue(st, st->TsType());
+    } else if (!etsg->TryLoadConstantExpression(st->Value())) {
         st->Value()->Compile(etsg);
         etsg->ApplyConversion(st->Value(), st->TsType());
     }
@@ -149,7 +151,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSScript *node) const
 void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    if (expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+    if (expr->expr_->TsType()->IsETSReferenceType()) {
         expr->expr_->Compile(etsg);
         etsg->GetType(expr, false);
     } else {
@@ -325,6 +327,7 @@ void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
     if (expr->TsType()->IsETSDynamicType()) {
+        compiler::RegScope rs(etsg);
         auto objReg = etsg->AllocReg();
         auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
         CreateDynamicObject(expr, etsg, objReg, name, expr->signature_, expr->GetArguments());
@@ -759,8 +762,10 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
 
 void ETSCompiler::Compile(const ir::BlockExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::LocalRegScope lrs(etsg, expr->Scope());
+
+    etsg->CompileStatements(expr->Statements());
 }
 
 bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const
@@ -986,6 +991,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ClassExpression *expr) cons
     UNREACHABLE();
 }
 
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSReExportDeclaration *stmt) const
+{
+    UNREACHABLE();
+}
+
 void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -1163,28 +1173,18 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
     compiler::RegScope rs {etsg};
-    checker::ETSObjectType const *objType = expr->TsType()->AsETSObjectType();
     compiler::VReg objReg = etsg->AllocReg();
-    if (expr->TsType()->IsETSDynamicType()) {
-        auto *signatureInfo = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
-        auto *createObjSig = etsg->Allocator()->New<checker::Signature>(
-            signatureInfo, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
-        compiler::VReg dummyReg = compiler::VReg::RegStart();
-        etsg->CallDynamic(expr, dummyReg, dummyReg, createObjSig,
-                          ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
-    } else {
-        checker::Signature *emptySig = nullptr;
-        for (checker::Signature *sig : objType->ConstructSignatures()) {
-            if (sig->Params().empty()) {
-                emptySig = sig;
-                break;
-            }
-        }
-        if (emptySig == nullptr) {  // Would have already thrown in the checker.
-            UNREACHABLE();
-        }
-        etsg->InitObject(expr, emptySig, ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
-    }
+
+    // NOTE: object expressions of dynamic type are not handled in objectLiteralLowering phase
+    ASSERT(expr->TsType()->IsETSDynamicType());
+
+    auto *signatureInfo = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
+    auto *createObjSig = etsg->Allocator()->New<checker::Signature>(
+        signatureInfo, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
+    compiler::VReg dummyReg = compiler::VReg::RegStart();
+    etsg->CallDynamic(expr, dummyReg, dummyReg, createObjSig,
+                      ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
+
     etsg->SetAccumulatorType(expr->TsType());
     etsg->StoreAccumulator(expr, objReg);
 
@@ -1574,10 +1574,7 @@ void ETSCompiler::Compile(const ir::BreakStatement *st) const
     CompileImpl(st, etsg);
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const
-{
-    UNREACHABLE();
-}
+void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const {}
 
 static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
 {
@@ -1782,28 +1779,34 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     if (st->Argument() == nullptr) {
-        if (st->ReturnType() == nullptr || st->ReturnType()->IsETSVoidType()) {
-            if (etsg->ExtendWithFinalizer(st->parent_, st)) {
-                return;
-            }
-
-            if (etsg->CheckControlFlowChange()) {
-                etsg->ControlFlowChangeBreak();
-            }
-            etsg->EmitReturnVoid(st);
+        if (etsg->ExtendWithFinalizer(st->parent_, st)) {
             return;
         }
 
-        etsg->LoadBuiltinVoid(st);
-    } else {
-        auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
-
-        if (!etsg->TryLoadConstantExpression(st->Argument())) {
-            st->Argument()->Compile(etsg);
+        if (etsg->CheckControlFlowChange()) {
+            etsg->ControlFlowChangeBreak();
         }
-        etsg->ApplyConversion(st->Argument(), nullptr);
-        etsg->ApplyConversion(st->Argument(), st->ReturnType());
+
+        etsg->EmitReturnVoid(st);
+
+        return;
     }
+
+    if (st->Argument()->IsCallExpression() &&
+        st->Argument()->AsCallExpression()->Signature()->ReturnType()->IsETSVoidType()) {
+        st->Argument()->Compile(etsg);
+        etsg->EmitReturnVoid(st);
+        return;
+    }
+
+    auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
+
+    if (!etsg->TryLoadConstantExpression(st->Argument())) {
+        st->Argument()->Compile(etsg);
+    }
+
+    etsg->ApplyConversion(st->Argument(), nullptr);
+    etsg->ApplyConversion(st->Argument(), st->ReturnType());
 
     if (etsg->ExtendWithFinalizer(st->parent_, st)) {
         return;
@@ -2190,10 +2193,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) cons
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const
-{
-    UNREACHABLE();
-}
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const {}
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
 {

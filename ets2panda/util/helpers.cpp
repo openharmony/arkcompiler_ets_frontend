@@ -522,20 +522,16 @@ std::vector<ir::Identifier *> Helpers::CollectBindingNames(ir::AstNode *node)
     return bindings;
 }
 
-void Helpers::CheckImportedName(ArenaVector<ir::AstNode *> *specifiers, const ir::ImportSpecifier *specifier,
-                                const std::string &fileName)
+void Helpers::CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specifiers,
+                                const ir::ImportSpecifier *specifier, const std::string &fileName)
 {
     auto newIdentName = specifier->Imported()->Name();
     auto newAliasName = specifier->Local()->Name();
     std::stringstream message {};
 
-    for (auto *it : *specifiers) {
-        if (!it->IsImportSpecifier()) {
-            continue;
-        }
-
-        auto savedIdentName = it->AsImportSpecifier()->Imported()->Name();
-        auto savedAliasName = it->AsImportSpecifier()->Local()->Name();
+    for (auto *it : specifiers) {
+        auto savedIdentName = it->Imported()->Name();
+        auto savedAliasName = it->Local()->Name();
 
         if (savedIdentName == savedAliasName && savedAliasName == newIdentName) {
             message << "Warning: '" << newIdentName << "' has already imported ";

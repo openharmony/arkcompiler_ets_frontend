@@ -200,7 +200,7 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     loweringResult->SetParent(assignment->Parent());
     InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 
-    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, scope);
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, NearestScope(loweringResult));
     loweringResult->Check(checker);
 
     AdjustBoxingUnboxingFlags(loweringResult, assignment);

@@ -1,0 +1,1 @@
+SyntaxError: Optional variable is not allowed in for of statements [optional_field_variable_forof.ets:18:14]

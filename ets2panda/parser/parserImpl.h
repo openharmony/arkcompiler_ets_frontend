@@ -30,6 +30,7 @@
 #include "parser/program/program.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
+#include "util/helpers.h"
 
 #include <memory>
 #include <sstream>
@@ -199,6 +200,8 @@ public:
         return reinterpret_cast<const ETSParser *>(this);
     }
 
+    [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
+
 protected:
     virtual void ParseProgram(ScriptKind kind);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
@@ -278,25 +281,14 @@ protected:
     [[noreturn]] void ThrowSyntaxError(std::initializer_list<std::string_view> list,
                                        const lexer::SourcePosition &pos) const;
 
-    [[noreturn]] void ThrowSyntaxError(std::string_view errorMessage, const lexer::SourcePosition &pos) const;
-
-    template <typename T, typename... Args>
-    T *AllocNodeNoSetParent(Args &&...args)
-    {
-        auto *ret = program_->Allocator()->New<T>(std::forward<Args>(args)...);
-        if (ret == nullptr) {
-            ThrowAllocationError("Unsuccessful allocation during parsing");
-        }
-
-        return ret;
-    }
-
     template <typename T, typename... Args>
     T *AllocNode(Args &&...args)
     {
-        auto *ret = AllocNodeNoSetParent<T>(std::forward<Args>(args)...);
-        ret->Iterate([ret](auto *child) { child->SetParent(ret); });
-
+        auto *ret = util::NodeAllocator::ForceSetParent<T>(
+            Allocator(), std::forward<Args>(args)...);  // Note: replace with AllocNode
+        if (ret == nullptr) {
+            ThrowAllocationError("Unsuccessful allocation during parsing");
+        }
         return ret;
     }
 
@@ -306,6 +298,12 @@ protected:
     }
 
     bool CheckModuleAsModifier();
+
+    // ETS extension
+    virtual bool IsExternal() const
+    {
+        return false;
+    }
 
     ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false);
     void ExpectToken(lexer::TokenType tokenType, bool consumeToken = true);
@@ -400,9 +398,9 @@ protected:
     ir::ExportNamedDeclaration *ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS);
     void ValidateDeclaratorId();
-    void CheckRestrictedBinding();
-    void CheckRestrictedBinding(lexer::TokenType keywordType);
-    void CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos);
+    void CheckRestrictedBinding() const;
+    void CheckRestrictedBinding(lexer::TokenType keywordType) const;
+    void CheckRestrictedBinding(const util::StringView &ident, const lexer::SourcePosition &pos) const;
 
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags);
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous = false,

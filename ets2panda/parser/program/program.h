@@ -206,8 +206,6 @@ public:
     varbinder::GlobalScope *GlobalScope();
     const varbinder::GlobalScope *GlobalScope() const;
 
-    util::StringView PackageClassName(util::StringView className);
-
     std::string Dump() const;
 
     void DumpSilent() const;

@@ -102,12 +102,18 @@ public:
 
     [[nodiscard]] varbinder::LocalVariable *PropVar() noexcept
     {
-        return propVar_;
+        if (Kind() == MemberExpressionKind::ELEMENT_ACCESS) {
+            return nullptr;
+        }
+        return Property()->Variable() != nullptr ? Property()->Variable()->AsLocalVariable() : nullptr;
     }
 
     [[nodiscard]] const varbinder::LocalVariable *PropVar() const noexcept
     {
-        return propVar_;
+        if (Kind() == MemberExpressionKind::ELEMENT_ACCESS) {
+            return nullptr;
+        }
+        return Property()->Variable() != nullptr ? Property()->Variable()->AsLocalVariable() : nullptr;
     }
 
     [[nodiscard]] bool IsComputed() const noexcept
@@ -142,7 +148,8 @@ public:
 
     void SetPropVar(varbinder::LocalVariable *propVar) noexcept
     {
-        propVar_ = propVar;
+        ASSERT(Property());
+        Property()->SetVariable(propVar);
     }
 
     void SetObjectType(checker::ETSObjectType *objType) noexcept
@@ -192,7 +199,6 @@ protected:
         kind_ = other.kind_;
         computed_ = other.computed_;
         ignoreBox_ = other.ignoreBox_;
-        propVar_ = other.propVar_;
         // Note! Probably, we need to do 'Instantiate(...)' but we haven't access to 'Relation()' here...
         uncheckedType_ = other.uncheckedType_;
         objType_ = other.objType_;
@@ -221,7 +227,6 @@ private:
     bool computed_;
     bool ignoreBox_ {false};
     checker::Type *uncheckedType_ {};
-    varbinder::LocalVariable *propVar_ {};
     checker::ETSObjectType *objType_ {};
 };
 }  // namespace ark::es2panda::ir

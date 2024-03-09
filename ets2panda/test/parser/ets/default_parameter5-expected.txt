@@ -162,43 +162,15 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 16,
-                          "column": 19
-                        },
-                        "end": {
-                          "line": 16,
-                          "column": 23
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 16,
-                        "column": 19
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 2
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 16,
                       "column": 19
                     },
                     "end": {
-                      "line": 17,
-                      "column": 2
+                      "line": 16,
+                      "column": 23
                     }
                   }
                 },

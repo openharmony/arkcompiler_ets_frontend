@@ -1,1 +1,1 @@
-SyntaxError: Identifier expected. [const_enum.ets:16:7]
+SyntaxError: Variable declaration expected. [const_enum.ets:16:7]

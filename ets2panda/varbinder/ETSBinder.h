@@ -130,6 +130,10 @@ public:
                                                    const parser::Program *importProgram,
                                                    const varbinder::GlobalScope *importGlobalScope,
                                                    const ir::ETSImportDeclaration *import);
+    ir::ETSImportDeclaration *FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
+                                                        std::vector<ir::ETSImportDeclaration *> &viewedReExport,
+                                                        const util::StringView &imported,
+                                                        const ir::StringLiteral *const importPath);
     bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &globalBindings,
                                           const ir::ETSImportDeclaration *import,
                                           const ArenaVector<parser::Program *> &recordRes,
@@ -222,16 +226,6 @@ public:
     bool IsDynamicModuleVariable(const Variable *var) const;
     bool IsDynamicNamespaceVariable(const Variable *var) const;
     const DynamicImportData *DynamicImportDataForVar(const Variable *var) const;
-
-    static constexpr std::string_view DEFAULT_IMPORT_SOURCE_FILE = "<default_import>.ets";
-    static constexpr std::string_view DEFAULT_IMPORT_SOURCE = R"(
-import * from "std/core";
-import * from "std/math";
-import * from "std/containers";
-import * from "std/time";
-import * from "std/interop/js";
-import * from "escompat";
-)";
 
     void ResolveReferenceForScope(ir::AstNode *node, Scope *scope);
     void ResolveReferencesForScope(ir::AstNode const *parent, Scope *scope);

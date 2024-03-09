@@ -15,6 +15,7 @@
 
 #include "ETSBinder.h"
 
+#include "ir/expressions/blockExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/typeofExpression.h"
@@ -95,6 +96,9 @@ void ETSBinder::LookupTypeArgumentReferences(ir::ETSTypeReference *typeRef)
 void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicNamespaces)
 {
     const auto &name = ident->Name();
+    if (name == compiler::Signatures::UNDEFINED || name == compiler::Signatures::NULL_LITERAL) {
+        return;
+    }
     auto *iter = GetScope();
 
     while (iter != nullptr) {
@@ -164,6 +168,11 @@ void ETSBinder::ResolveReferenceForScope(ir::AstNode *const node, Scope *const s
             break;
         }
         */
+        case ir::AstNodeType::BLOCK_EXPRESSION: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, node->AsBlockExpression()->Scope());
+            ResolveReferences(node);
+            break;
+        }
         default: {
             ResolveReferencesForScope(node, scope);
             break;
@@ -181,7 +190,7 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
         auto *outerFunction = GetScope()->EnclosingVariableScope()->Node();
 
         if ((!outerFunction->IsScriptFunction() || !outerFunction->AsScriptFunction()->IsArrow()) &&
-            !res.variable->IsGlobalVariable() && res.level > 1) {
+            !res.variable->IsGlobalVariable() && res.variable->HasFlag(VariableFlags::LOCAL) && res.level > 1) {
             ThrowInvalidCapture(ident->Start(), name);
         }
     }
@@ -554,6 +563,41 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
     return foundVar->second;
 }
 
+ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
+                                                               std::vector<ir::ETSImportDeclaration *> &viewedReExport,
+                                                               const util::StringView &imported,
+                                                               const ir::StringLiteral *const importPath)
+{
+    ir::ETSImportDeclaration *implDecl = nullptr;
+    for (auto item : ReExportImports()) {
+        if (auto source = import->ResolvedSource()->Str(), program = item->GetProgramPath();
+            !source.Is(program.Mutf8())) {
+            continue;
+        }
+
+        viewedReExport.push_back(item->GetETSImportDeclarations());
+
+        auto specifiers = item->GetETSImportDeclarations()->Specifiers();
+        if (specifiers[0]->IsImportSpecifier()) {
+            if (!std::any_of(specifiers.begin(), specifiers.end(), [&imported](auto it) {
+                    return it->AsImportSpecifier()->Local()->Name().Is(imported.Mutf8());
+                })) {
+                continue;
+            }
+        } else {
+            ArenaVector<parser::Program *> record =
+                GetExternalProgram(item->GetETSImportDeclarations()->ResolvedSource()->Str(), importPath);
+            if (FindImportSpecifiersVariable(imported, record.front()->GlobalScope()->Bindings(), record) == nullptr) {
+                continue;
+            }
+        }
+
+        // NOTE: ttamas - Duplication check created error
+        implDecl = item->GetETSImportDeclarations();
+    }
+    return implDecl;
+}
+
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                  const varbinder::Scope::VariableMap &globalBindings,
                                                  const ir::ETSImportDeclaration *const import,
@@ -600,22 +644,21 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     }();
 
     if (var == nullptr) {
-        for (auto item : ReExportImports()) {
-            if (auto source = import->ResolvedSource()->Str(), program = item->GetProgramPath();
-                !source.Is(program.Mutf8())) {
-                continue;
-            }
-
-            viewedReExport.push_back(item->GetETSImportDeclarations());
-            AddSpecifiersToTopBindings(specifier, item->GetETSImportDeclarations(),
-                                       item->GetETSImportDeclarations()->Source(), viewedReExport);
+        ir::ETSImportDeclaration *implDecl = FindImportDeclInReExports(import, viewedReExport, imported, importPath);
+        if (implDecl != nullptr) {
+            AddSpecifiersToTopBindings(specifier, implDecl, implDecl->Source(), viewedReExport);
             return true;
         }
+
         ThrowError(importPath->Start(), "Cannot find imported element " + imported.Mutf8());
     }
 
     if (var->Declaration()->Node()->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
+    }
+
+    if (!var->Declaration()->Node()->IsExported()) {
+        ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
     }
 
     insertForeignBinding(localName, var);
@@ -944,7 +987,7 @@ void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
         return;
     }
 
-    auto specifiers = decl->Specifiers();
+    const auto &specifiers = decl->Specifiers();
 
     for (auto specifier : specifiers) {
         AddSpecifiersToTopBindings(specifier, decl, decl->Source());

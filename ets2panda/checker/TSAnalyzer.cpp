@@ -1726,6 +1726,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSConditionalType *node) c
     UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSReExportDeclaration *node) const
+{
+    UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check(ir::TSConstructorType *node) const
 {
     TSChecker *checker = GetTSChecker();

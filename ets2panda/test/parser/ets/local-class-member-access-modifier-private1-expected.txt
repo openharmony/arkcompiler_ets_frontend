@@ -1,0 +1,1 @@
+SyntaxError: Local class declaration members can not have access modifies [local-class-member-access-modifier-private1.ets:20:9]

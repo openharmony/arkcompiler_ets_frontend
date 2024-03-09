@@ -56,3 +56,7 @@ lambdaExpressionWithRestParameter.ets
 
 # Non-trivial cast sequence
 castSequence.ets
+
+# ignored due to interface implementation modification
+local-class-standard-example1.ets 
+local-class-standard-example2.ets

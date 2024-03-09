@@ -33,6 +33,7 @@
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/blockExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
@@ -566,6 +567,12 @@ void VarBinder::ResolveReference(ir::AstNode *childNode)
         }
         case ir::AstNodeType::BLOCK_STATEMENT: {
             auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockStatement()->Scope());
+
+            ResolveReferences(childNode);
+            break;
+        }
+        case ir::AstNodeType::BLOCK_EXPRESSION: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockExpression()->Scope());
 
             ResolveReferences(childNode);
             break;

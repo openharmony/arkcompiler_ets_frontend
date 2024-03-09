@@ -63,6 +63,21 @@ public:
 
     [[nodiscard]] BlockExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    bool IsScopeBearer() const noexcept override
+    {
+        return true;
+    }
+
+    varbinder::Scope *Scope() const noexcept override
+    {
+        return scope_;
+    }
+
+    void SetScope(varbinder::Scope *scope)
+    {
+        scope_ = scope;
+    }
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -78,6 +93,7 @@ public:
     }
 
 private:
+    varbinder::Scope *scope_ = {};
     ArenaVector<ir::Statement *> statements_;
 };
 }  // namespace ark::es2panda::ir

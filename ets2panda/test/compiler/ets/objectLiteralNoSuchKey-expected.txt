@@ -302,11 +302,11 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 21,
-                          "column": 3
+                          "column": 2
                         }
                       }
                     }
@@ -429,8 +429,8 @@
                 "column": 5
               },
               "end": {
-                "line": 19,
-                "column": 11
+                "line": 21,
+                "column": 2
               }
             }
           }

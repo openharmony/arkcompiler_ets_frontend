@@ -49,6 +49,7 @@ public:
     Type *FindUnboxableType() const;
 
     bool HasObjectType(ETSObjectFlags flag) const;
+    bool HasUndefinedType() const;
 
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 

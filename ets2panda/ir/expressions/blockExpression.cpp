@@ -72,12 +72,14 @@ void BlockExpression::Dump(ir::AstDumper *dumper) const
 
 void BlockExpression::Dump(ir::SrcDumper *dumper) const
 {
+    dumper->Add("({");
     for (auto *statement : statements_) {
         statement->Dump(dumper);
         if (statement != statements_.back()) {
             dumper->Endl();
         }
     }
+    dumper->Add("})");
 }
 
 void BlockExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -87,9 +89,7 @@ void BlockExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 
 void BlockExpression::Compile(compiler::ETSGen *etsg) const
 {
-    for (auto const *const node : statements_) {
-        node->Compile(etsg);
-    }
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *BlockExpression::Check([[maybe_unused]] checker::TSChecker *checker)
@@ -99,13 +99,6 @@ checker::Type *BlockExpression::Check([[maybe_unused]] checker::TSChecker *check
 
 checker::Type *BlockExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        for (auto *const node : statements_) {
-            if (auto *const exprType = node->Check(checker); exprType != nullptr) {
-                SetTsType(exprType);
-            }
-        }
-    }
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace ark::es2panda::ir

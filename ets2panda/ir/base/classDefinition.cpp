@@ -214,4 +214,7 @@ checker::Type *ClassDefinition::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+int ClassDefinition::classCounter_ = 0;
+
 }  // namespace ark::es2panda::ir

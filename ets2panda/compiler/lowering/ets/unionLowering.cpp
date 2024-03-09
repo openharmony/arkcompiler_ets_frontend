@@ -452,8 +452,7 @@ bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Progra
         auto *objType =
             checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
         auto *parent = ast->Parent();
-        if (parent != nullptr &&  // #15040
-            !(parent->IsCallExpression() &&
+        if (!(parent->IsCallExpression() &&
               parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE))) {
             return false;
         }

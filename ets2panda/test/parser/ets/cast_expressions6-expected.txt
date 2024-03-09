@@ -1,1 +1,0 @@
-Failed to open file: /home/snail/wdir/arkruntime/static_core/tools/es2panda/test/parser/ets/cast_expressions6.ets

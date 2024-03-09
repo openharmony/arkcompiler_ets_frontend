@@ -250,13 +250,15 @@ public:
     void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod = false,
                   bool precise = false) const;
     std::string ToString() const;
-    void Identical(TypeRelation *relation, Signature *other);
+    void Compatible(TypeRelation *relation, Signature *other);
     bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
     Signature *BoxPrimitives(ETSChecker *checker);
 
 private:
-    bool IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2);
+    bool CheckParameter(TypeRelation *relation, Type *type1, Type *type2);
+    bool CheckReturnType(TypeRelation *relation, Type *type1, Type *type2);
+
     checker::SignatureInfo *signatureInfo_;
     Type *returnType_;
     ir::ScriptFunction *func_ {};

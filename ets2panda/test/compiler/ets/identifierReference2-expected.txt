@@ -119,11 +119,11 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 16,
-                          "column": 38
+                          "column": 37
                         }
                       }
                     }
@@ -299,35 +299,7 @@
                 }
               ],
               "returnType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "void",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 16,
-                        "column": 27
-                      },
-                      "end": {
-                        "line": 16,
-                        "column": 31
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 16,
-                      "column": 27
-                    },
-                    "end": {
-                      "line": 16,
-                      "column": 33
-                    }
-                  }
-                },
+                "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
                     "line": 16,
@@ -335,7 +307,7 @@
                   },
                   "end": {
                     "line": 16,
-                    "column": 33
+                    "column": 31
                   }
                 }
               },
@@ -346,7 +318,7 @@
                 },
                 "end": {
                   "line": 16,
-                  "column": 33
+                  "column": 31
                 }
               }
             },

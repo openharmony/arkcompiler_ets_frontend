@@ -476,6 +476,7 @@ keywords:
   - name: 'void'
     token: KEYW_VOID
     keyword: [as, js, ts]
+    keyword_like: [ets]
 
   - name: 'while'
     token: KEYW_WHILE

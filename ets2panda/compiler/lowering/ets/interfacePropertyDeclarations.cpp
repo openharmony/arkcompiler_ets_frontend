@@ -27,8 +27,46 @@
 #include "ir/statements/blockStatement.h"
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/base/classProperty.h"
+#include "ir/ets/etsUnionType.h"
+#include "ir/ets/etsNullishTypes.h"
 
 namespace ark::es2panda::compiler {
+
+namespace {
+
+void TransformOptionalFieldTypeAnnotation(checker::ETSChecker *const checker, ir::ClassProperty *const field)
+{
+    if (!field->IsOptionalDeclaration()) {
+        return;
+    }
+
+    if (field->IsETSUnionType()) {
+        bool alreadyHasUndefined = false;
+        auto unionTypes = field->AsETSUnionType()->Types();
+        for (const auto &type : unionTypes) {
+            if (type->IsETSUndefinedType()) {
+                alreadyHasUndefined = true;
+                break;
+            }
+        }
+        if (!alreadyHasUndefined) {
+            ArenaVector<ir::TypeNode *> types(field->AsETSUnionType()->Types(), checker->Allocator()->Adapter());
+            types.push_back(checker->AllocNode<ir::ETSUndefinedType>());
+            auto *const unionType = checker->AllocNode<ir::ETSUnionType>(std::move(types));
+            field->SetTypeAnnotation(unionType);
+        }
+    } else {
+        ArenaVector<ir::TypeNode *> types(checker->Allocator()->Adapter());
+        types.push_back(field->TypeAnnotation());
+        types.push_back(checker->AllocNode<ir::ETSUndefinedType>());
+        auto *const unionType = checker->AllocNode<ir::ETSUnionType>(std::move(types));
+        field->SetTypeAnnotation(unionType);
+    }
+    field->ClearModifier(ir::ModifierFlags::OPTIONAL);
+}
+
+}  // namespace
+
 static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, ir::ClassProperty *const field,
                                                     bool isSetter)
 {
@@ -42,6 +80,7 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
     auto flags = ir::ModifierFlags::PUBLIC;
     flags |= ir::ModifierFlags::ABSTRACT;
 
+    TransformOptionalFieldTypeAnnotation(checker, field);
     ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
 
     if (isSetter) {

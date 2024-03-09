@@ -22,35 +22,7 @@
         "type": "ETSFunctionType",
         "params": [],
         "returnType": {
-          "type": "ETSTypeReference",
-          "part": {
-            "type": "ETSTypeReferencePart",
-            "name": {
-              "type": "Identifier",
-              "name": "void",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 16,
-                  "column": 24
-                },
-                "end": {
-                  "line": 16,
-                  "column": 28
-                }
-              }
-            },
-            "loc": {
-              "start": {
-                "line": 16,
-                "column": 24
-              },
-              "end": {
-                "line": 16,
-                "column": 29
-              }
-            }
-          },
+          "type": "ETSPrimitiveType",
           "loc": {
             "start": {
               "line": 16,
@@ -58,7 +30,7 @@
             },
             "end": {
               "line": 16,
-              "column": 29
+              "column": 28
             }
           }
         },
@@ -69,7 +41,7 @@
           },
           "end": {
             "line": 16,
-            "column": 29
+            "column": 28
           }
         }
       },
@@ -245,35 +217,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 18,
-                          "column": 18
-                        },
-                        "end": {
-                          "line": 18,
-                          "column": 22
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 18
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 24
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 18,
@@ -281,7 +225,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 24
+                      "column": 22
                     }
                   }
                 },
@@ -642,35 +586,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 24,
-                          "column": 18
-                        },
-                        "end": {
-                          "line": 24,
-                          "column": 22
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 24,
-                        "column": 18
-                      },
-                      "end": {
-                        "line": 24,
-                        "column": 24
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 24,
@@ -678,7 +594,7 @@
                     },
                     "end": {
                       "line": 24,
-                      "column": 24
+                      "column": 22
                     }
                   }
                 },

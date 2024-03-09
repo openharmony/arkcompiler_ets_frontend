@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -321,7 +321,7 @@ static std::string TrimPath(const std::string &path)
     return trimmedPath;
 }
 
-std::string ArkTsConfig::ResolvePath(const std::string &path)
+std::optional<std::string> ArkTsConfig::ResolvePath(const std::string &path) const
 {
     for (const auto &[alias, paths] : paths_) {
         auto trimmedAlias = TrimPath(alias);
@@ -334,7 +334,7 @@ std::string ArkTsConfig::ResolvePath(const std::string &path)
             return resolved;
         }
     }
-    return "";
+    return std::nullopt;
 }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM

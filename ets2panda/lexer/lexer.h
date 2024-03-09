@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -113,6 +113,26 @@ public:
     Token &GetToken();
     const Token &GetToken() const;
     size_t Line() const;
+
+    bool TryEatTokenType(lexer::TokenType type)
+    {
+        auto token = GetToken();
+        if (token.Type() == type) {
+            NextToken();
+            return true;
+        }
+        return false;
+    }
+
+    std::optional<Token> TryEatTokenKeyword(lexer::TokenType type)
+    {
+        auto token = GetToken();
+        if (token.KeywordType() == type) {
+            NextToken();
+            return token;
+        }
+        return std::nullopt;
+    }
 
     LexerPosition Save() const;
     void Rewind(const LexerPosition &pos);

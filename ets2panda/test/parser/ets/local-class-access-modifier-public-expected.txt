@@ -1,0 +1,1 @@
+SyntaxError: A local class or interface declaration can not have access modifier [local-class-access-modifier-public.ets:18:5]

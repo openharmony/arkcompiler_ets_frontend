@@ -450,7 +450,7 @@
                 "loc": {
                   "start": {
                     "line": 16,
-                    "column": 15
+                    "column": 14
                   },
                   "end": {
                     "line": 19,
@@ -461,7 +461,7 @@
               "loc": {
                 "start": {
                   "line": 16,
-                  "column": 15
+                  "column": 14
                 },
                 "end": {
                   "line": 19,

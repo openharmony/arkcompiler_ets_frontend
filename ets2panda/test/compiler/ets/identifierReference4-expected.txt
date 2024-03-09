@@ -322,35 +322,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "void",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 23,
-                          "column": 10
-                        },
-                        "end": {
-                          "line": 23,
-                          "column": 14
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 23,
-                        "column": 10
-                      },
-                      "end": {
-                        "line": 23,
-                        "column": 16
-                      }
-                    }
-                  },
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 23,
@@ -358,7 +330,7 @@
                     },
                     "end": {
                       "line": 23,
-                      "column": 16
+                      "column": 14
                     }
                   }
                 },
@@ -701,11 +673,11 @@
                       "loc": {
                         "start": {
                           "line": 16,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 16,
-                          "column": 17
+                          "column": 16
                         }
                       }
                     }
@@ -801,7 +773,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 11
+                "column": 16
               }
             }
           }

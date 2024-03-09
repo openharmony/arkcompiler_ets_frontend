@@ -408,7 +408,7 @@
                       "loc": {
                         "start": {
                           "line": 21,
-                          "column": 1
+                          "column": 5
                         },
                         "end": {
                           "line": 21,

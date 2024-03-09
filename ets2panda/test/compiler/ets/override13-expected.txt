@@ -1618,4 +1618,4 @@
     }
   }
 }
-TypeError: fn2<Object>(t: Object): String in B cannot override fn2<T>(t: T): T in A because overriding return type is not compatible with the other return type. [override13.ets:25:15]
+TypeError: Cannot access property of non-object or non-enum type [override13.ets:25:52]

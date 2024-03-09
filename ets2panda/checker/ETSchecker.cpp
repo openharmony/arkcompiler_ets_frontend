@@ -91,7 +91,6 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
     const auto varMap = varbinder->TopScope()->Bindings();
 
     auto const objectName = InitBuiltin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
-    auto const voidName = InitBuiltin(this, compiler::Signatures::BUILTIN_VOID_CLASS);
 
     for (auto sig : BUILTINS_TO_INIT) {
         InitBuiltin(this, sig);
@@ -109,7 +108,7 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
     }
 
     for (const auto &[name, var] : varMap) {
-        if (name == objectName || name == voidName) {
+        if (name == objectName) {
             continue;
         }
 
@@ -135,6 +134,21 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
         type = BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
     }
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
+}
+
+const ArenaList<ir::ClassDefinition *> &ETSChecker::GetLocalClasses() const
+{
+    return localClasses_;
+}
+
+const ArenaList<ir::ETSNewClassInstanceExpression *> &ETSChecker::GetLocalClassInstantiations() const
+{
+    return localClassInstantiations_;
+}
+
+void ETSChecker::AddToLocalClassInstantiationList(ir::ETSNewClassInstanceExpression *newExpr)
+{
+    localClassInstantiations_.push_back(newExpr);
 }
 
 bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
@@ -168,7 +182,6 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
     }
 
     CheckProgram(Program(), true);
-
     BuildDynamicCallClass(true);
     BuildDynamicCallClass(false);
 
@@ -354,11 +367,6 @@ ETSObjectType *ETSChecker::GlobalBuiltinJSRuntimeType() const
 ETSObjectType *ETSChecker::GlobalBuiltinJSValueType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalJSValueBuiltinType);
-}
-
-ETSObjectType *ETSChecker::GlobalBuiltinVoidType() const
-{
-    return AsETSObjectType(&GlobalTypesHolder::GlobalBuiltinVoidType);
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs) const

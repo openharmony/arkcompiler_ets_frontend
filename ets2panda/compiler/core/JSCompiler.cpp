@@ -495,6 +495,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) 
     UNREACHABLE();
 }
 
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSReExportDeclaration *node) const
+{
+    UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
 {
     UNREACHABLE();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,11 +20,15 @@
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
+#include "checker/types/ets/etsObjectType.h"
 #include "generated/signatures.h"
 
 namespace ark::es2panda::varbinder {
 BoundContext::BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef)
-    : prev_(recordTable->boundCtx_), recordTable_(recordTable), savedRecord_(recordTable->record_)
+    : prev_(recordTable->boundCtx_),
+      recordTable_(recordTable),
+      currentRecord_(classDef),
+      savedRecord_(recordTable->record_)
 {
     if (classDef == nullptr || !recordTable_->classDefinitions_.insert(classDef).second) {
         return;
@@ -37,7 +41,10 @@ BoundContext::BoundContext(RecordTable *recordTable, ir::ClassDefinition *classD
 }
 
 BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl)
-    : prev_(recordTable->boundCtx_), recordTable_(recordTable), savedRecord_(recordTable->record_)
+    : prev_(recordTable->boundCtx_),
+      recordTable_(recordTable),
+      currentRecord_(interfaceDecl),
+      savedRecord_(recordTable->record_)
 {
     if (interfaceDecl == nullptr || !recordTable_->interfaceDeclarations_.insert(interfaceDecl).second) {
         return;
@@ -73,6 +80,13 @@ util::StringView BoundContext::FormRecordName() const
     util::UString recordName(recordTable_->program_->Allocator());
     recordName.Append(prev_->FormRecordName());
     recordName.Append(compiler::Signatures::METHOD_SEPARATOR);
+    if (std::holds_alternative<ir::ClassDefinition *>(currentRecord_)) {
+        const auto *classDef = std::get<ir::ClassDefinition *>(currentRecord_);
+        if (classDef->IsLocal()) {
+            recordName.Append(classDef->LocalPrefix());
+        }
+    }
+
     recordName.Append(recordIdent_->Name());
     return recordName.View();
 }

@@ -28,7 +28,6 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
 {
     name_ = other.name_;
     flags_ = other.flags_;
-    variable_ = other.variable_;
 
     for (auto *decorator : other.decorators_) {
         decorators_.emplace_back(decorator->Clone(allocator, this));

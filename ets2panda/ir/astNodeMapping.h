@@ -72,6 +72,7 @@
     _(PREFIX_ASSERTION_EXPRESSION, PrefixAssertionExpression)                             \
     _(PROPERTY, Property)                                                                 \
     _(REGEXP_LITERAL, RegExpLiteral)                                                      \
+    _(REEXPORT_STATEMENT, ETSReExportDeclaration)                                         \
     _(RETURN_STATEMENT, ReturnStatement)                                                  \
     _(SCRIPT_FUNCTION, ScriptFunction)                                                    \
     _(SEQUENCE_EXPRESSION, SequenceExpression)                                            \
