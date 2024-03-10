@@ -22,7 +22,12 @@ import type {IOptions} from '../configs/IOptions';
 import { stringPropsSet, structPropsSet } from '../utils/OhsUtil';
 import { sys } from 'typescript';
 
-export const scanProjectConfig: {mKeepStringProperty?: boolean, mExportObfuscation?: boolean, isHarCompiled?: boolean} = {};
+export const scanProjectConfig: {
+  mKeepStringProperty?: boolean,
+  mExportObfuscation?: boolean,
+  mkeepFilesAndDependencies?: Set<string>,
+  isHarCompiled?: boolean
+} = {};
 
 /**
  * if rename property is not open, api read and extract can be skipped
@@ -60,7 +65,7 @@ export function isEnabledPropertyObfuscation(customProfiles: IOptions): boolean 
 }
 
 /**
- * read project reserved properties
+ * read project reserved properties for UT
  * @param projectPaths can be dir or file
  * @param customProfiles
  */
@@ -78,8 +83,8 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
     ApiExtractor.mConstructorPropertySet = new Set();
   }
 
-  scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
-  scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
+  // This call is for UT.
+  initScanProjectConfig(customProfiles);
 
   for (const projectPath of projectPaths) {
     if (!fs.existsSync(projectPath)) {
@@ -122,6 +127,12 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
   };
 }
 
+function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean) {
+  scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
+  scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
+  scanProjectConfig.mkeepFilesAndDependencies = customProfiles.mKeepFileSourceCode?.mkeepFilesAndDependencies;
+  scanProjectConfig.isHarCompiled = isHarCompiled;
+}
 /**
  * read project reserved properties by collected paths
  * @param filesForCompilation set collection of files
@@ -141,10 +152,7 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
     ApiExtractor.mConstructorPropertySet = new Set();
   }
 
-  const nameObfuscationConfig = customProfiles.mNameObfuscation;
-  scanProjectConfig.mKeepStringProperty = nameObfuscationConfig?.mKeepStringProperty;
-  scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
-  scanProjectConfig.isHarCompiled = isHarCompiled;
+  initScanProjectConfig(customProfiles, isHarCompiled);
 
   const sourcePaths: string[] = [];
   const remoteHarParhs: string[] = [];
@@ -163,6 +171,7 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   const libExportNamesAndReservedProps = ApiExtractor.parseThirdPartyLibsByPaths(remoteHarParhs, scanningLibsType);
   let sdkProperties = libExportNamesAndReservedProps?.reservedProperties ?? [];
 
+  const nameObfuscationConfig = customProfiles.mNameObfuscation;
   if (isEnabledPropertyObfuscation(customProfiles)) {
     // read project code export names
     nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(projProperties,

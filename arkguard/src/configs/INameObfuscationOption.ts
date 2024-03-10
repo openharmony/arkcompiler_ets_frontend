@@ -59,3 +59,12 @@ export interface IPrinterOption {
   //Output path of printer
   readonly mOutputPath?: string;
 }
+
+/**
+ * It records which files cannot be obfuscated (except for file name obfuscation) and their dependent files.
+ * The names and properties exported in the dependent files are put into the whitelist.
+ */
+export interface IKeepSourcePathsAndDependency {
+  mKeepSourceOfPaths: Set<string>;
+  mkeepFilesAndDependencies: Set<string>;
+}

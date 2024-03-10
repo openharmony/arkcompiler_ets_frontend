@@ -54,7 +54,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
-import { performancePrinter } from '../../ArkObfuscator';
+import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 
 namespace secharmony {
@@ -101,6 +101,10 @@ namespace secharmony {
       return renamePropertiesTransformer;
 
       function renamePropertiesTransformer(node: Node): Node {
+        if (isSourceFile(node) && ArkObfuscator.isKeptCurrentFile) {
+          return node;
+        }
+
         collectReservedNames(node);
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.PROPERTY_OBFUSCATION, performancePrinter.timeSumPrinter);

@@ -1,0 +1,14 @@
+export class m {
+    g: string = "";
+    h: number = 1;
+    i() {
+        const p = 2;
+        return this.g + this.h;
+    }
+}
+export function l() {
+}
+export interface o {
+    j: string;
+    k: number;
+}

@@ -19,6 +19,7 @@ import type { IOptions } from '../configs/IOptions';
 import { fileExtensions } from '../common/type';
 import type { PathAndExtension } from '../common/type';
 import fs from 'fs';
+import path from 'path';
 
 export class FileUtils {
   /**
@@ -163,5 +164,19 @@ export class FileUtils {
       return false;
     }
     return true;
+  }
+
+  public static toUnixPath(data: string): string {
+    if (/^win/.test(require('os').platform())) {
+      const fileTmps: string[] = data.split(path.sep);
+      const newData: string = path.posix.join(...fileTmps);
+      return newData;
+    }
+    return data;
+  }
+
+  public static getAbsPathBaseConfigPath(configPath: string, relativePath: string): string {
+    const absPath: string = path.join(path.dirname(configPath), relativePath);
+    return this.toUnixPath(absPath);
   }
 }

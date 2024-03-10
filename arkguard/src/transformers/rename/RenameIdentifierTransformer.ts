@@ -76,7 +76,7 @@ import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {globalMangledTable, historyMangledTable, reservedProperties} from './RenamePropertiesTransformer';
 import {memberMethodCache} from '../../utils/ScopeAnalyzer';
-import {performancePrinter} from '../../ArkObfuscator';
+import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 
 namespace secharmony {
@@ -137,12 +137,13 @@ namespace secharmony {
        * @param node ast node of a file.
        */
       function renameTransformer(node: Node): Node {
-        if (!isSourceFile(node)) {
-          return node;
-        }
-
         if (nameCache.size === 0) {
           nameCache.set(IDENTIFIER_CACHE, new Map<string, string>());
+          nameCache.set(MEM_METHOD_CACHE, new Map<string, string>());
+        }
+
+        if (!isSourceFile(node) || ArkObfuscator.isKeptCurrentFile) {
+          return node;
         }
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);

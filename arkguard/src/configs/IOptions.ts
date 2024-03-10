@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-import type {IFileNameObfuscationOption, INameObfuscationOption, IPrinterOption} from './INameObfuscationOption';
+import type {
+  IFileNameObfuscationOption,
+  IPrinterOption,
+  INameObfuscationOption,
+  IKeepSourcePathsAndDependency,
+} from './INameObfuscationOption';
 
 export interface IOptions {
   // Whether to generate compact code
@@ -56,7 +61,10 @@ export interface IOptions {
 
   // Whether to obfuscate the names or properties of the exported content
   readonly mExportObfuscation?: boolean;
-  
+
   // Time&Memory printer option
   readonly mPerformancePrinter?: IPrinterOption;
+
+  // The code of the file is not obfuscated, except for file name obfuscation
+  mKeepFileSourceCode?: IKeepSourcePathsAndDependency
 }
