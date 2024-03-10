@@ -261,6 +261,7 @@ class CaseManager:
         flags = os.O_RDWR | os.O_CREAT
         mode = stat.S_IWUSR | stat.S_IRUSR
         with os.fdopen(os.open(self.report_path + '.html', flags, mode), 'w') as f:
+            f.truncate()
             f.write(html_content)
 
 
