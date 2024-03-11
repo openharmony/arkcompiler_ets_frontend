@@ -27,7 +27,7 @@ action("build_arkguard") {
     "src/common/type.ts",
     "src/configs/INameObfuscationOption.ts",
     "src/configs/IOptions.ts",
-    "src/configs/preset/es6_reserved_properties.json",
+    "src/configs/preset/es_reserved_properties.json",
     "src/generator/DictionaryNameGenerator.ts",
     "src/generator/DisorderNameGenerator.ts",
     "src/generator/HexNameGenerator.ts",

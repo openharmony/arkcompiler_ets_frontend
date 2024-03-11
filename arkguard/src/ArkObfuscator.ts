@@ -55,7 +55,7 @@ import {
 import {ListUtil} from './utils/ListUtil';
 import {needReadApiInfo, readProjectProperties, readProjectPropertiesByCollectedPaths} from './common/ApiReader';
 import {ApiExtractor} from './common/ApiExtractor';
-import es6Info from './configs/preset/es6_reserved_properties.json';
+import esInfo from './configs/preset/es_reserved_properties.json';
 import {EventList, TimeSumPrinter, TimeTracker} from './utils/PrinterUtils';
 export {FileUtils} from './utils/FileUtils';
 
@@ -193,7 +193,8 @@ export class ArkObfuscator {
       this.mCustomProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(
         this.mCustomProfiles.mNameObfuscation.mReservedProperties,
         this.mCustomProfiles.mNameObfuscation.mReservedNames,
-        es6Info);
+        [...esInfo.es2015, ...esInfo.es2016, ...esInfo.es2017, ...esInfo.es2018, ...esInfo.es2019, ...esInfo.es2020,
+          ...esInfo.es2021]);
     }
 
     return true;
