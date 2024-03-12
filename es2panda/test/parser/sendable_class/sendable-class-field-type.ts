@@ -18,6 +18,8 @@ class Person {
     private age: number;
     mother: Person;
     father: Person;
+    count: BigInt;
+    num: bigint;
     constructor() {
         "use sendable";
     }

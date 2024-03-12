@@ -123,6 +123,7 @@ public:
     static constexpr std::string_view SHOW_SOURCE = "show source";
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
     static constexpr std::string_view USE_SENDABLE = "use sendable";
+    static constexpr std::string_view BIGINT_NAME = "BigInt";
     static const uint64_t FNV_PRIME = 1099511628211U;
     static const uint64_t FNV_OFFSET = 14695981039346656037U;
 private:

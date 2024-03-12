@@ -37,6 +37,7 @@
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
+#include "ir/ts/tsTypeReference.h"
 #include "ir/ts/tsUnionType.h"
 #include "util/helpers.h"
 
@@ -520,7 +521,7 @@ void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
     }
 }
 
-static void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation)
+void ClassDefinition::AddFieldType(FieldType &fieldType, const Expression *typeAnnotation) const
 {
     switch (typeAnnotation->Type()) {
         case AstNodeType::TS_NUMBER_KEYWORD: {
@@ -536,13 +537,26 @@ static void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation)
             break;
         }
         case AstNodeType::TS_TYPE_REFERENCE: {
-            fieldType |= FieldType::TS_TYPE_REF;
+            AddFieldTypeForTypeReference(typeAnnotation->AsTSTypeReference(), fieldType);
+            break;
+        }
+        case AstNodeType::TS_BIGINT_KEYWORD: {
+            fieldType |= FieldType::BIGINT;
             break;
         }
         default: {
             UNREACHABLE();
         }
     }
+}
+
+void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType) const
+{
+    auto typeName = typeReference->TypeName();
+    ASSERT(typeName != nullptr);
+
+    fieldType |= typeName->IsIdentifier() && typeName->AsIdentifier()->Name().Is(util::Helpers::BIGINT_NAME) ?
+                 FieldType::BIGINT : FieldType::TS_TYPE_REF;
 }
 
 int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const
