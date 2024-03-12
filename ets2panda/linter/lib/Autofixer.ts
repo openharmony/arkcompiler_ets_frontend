@@ -100,12 +100,13 @@ export function fixPropertyAccessByIndex(node: ts.Node): Autofix[] | undefined {
 export function fixFunctionExpression(
   funcExpr: ts.FunctionExpression,
   params: ts.NodeArray<ts.ParameterDeclaration> = funcExpr.parameters,
+  typeParams: ts.NodeArray<ts.TypeParameterDeclaration> | undefined = funcExpr.typeParameters,
   retType: ts.TypeNode | undefined = funcExpr.type,
   modifiers: readonly ts.Modifier[] | undefined
 ): Autofix {
   let arrowFunc: ts.Expression = ts.factory.createArrowFunction(
     modifiers,
-    undefined,
+    typeParams,
     params,
     retType,
     ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
