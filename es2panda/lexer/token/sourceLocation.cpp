@@ -46,10 +46,11 @@ LineIndex::LineIndex(const util::StringView &source) noexcept
     entrys_.emplace_back(0);
 
     while (true) {
+        if (!iter.HasNext()) {
+            return;
+        }
+
         switch (iter.Next()) {
-            case util::StringView::Iterator::INVALID_CP: {
-                return;
-            }
             case LEX_CHAR_CR: {
                 if (iter.HasNext() && iter.Peek() == LEX_CHAR_LF) {
                     iter.Forward(1);
