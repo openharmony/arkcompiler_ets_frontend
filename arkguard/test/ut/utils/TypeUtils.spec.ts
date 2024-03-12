@@ -24,6 +24,7 @@ describe('test for TypeUtils', function () {
 
   before('init sourceFile', function () {
     const fileContent = `
+    //This is a comment
     class Demo{
       constructor(public  title: string, public  content: string, public  mark: number) {
           this.title = title
@@ -36,13 +37,29 @@ describe('test for TypeUtils', function () {
     sourceFile = createSourceFile('demo.ts', fileContent, ScriptTarget.ES2015, true);
   });
 
-  describe('test for method createNewSourceFile', function () {
+  describe('test for method createNewSourceFile(keep comments)', function () {
     it('functional test', function () {
-      const newSource = TypeUtils.createNewSourceFile(sourceFile);
+      const removeComments = false;
+      const newSource = TypeUtils.createNewSourceFile(sourceFile, removeComments);
+      const astText = newSource.text;
 
       assert.strictEqual(sourceFile.statements.length, newSource.statements.length);
       assert.notStrictEqual(sourceFile.fileName, newSource.fileName);
       assert.isTrue(newSource.fileName.endsWith('.ts'));
+      assert.isTrue(astText.startsWith('//This is a comment'));
+    });
+  });
+
+  describe('test for method createNewSourceFile(remove comments)', function () {
+    it('functional test', function () {
+      const removeComments = true;
+      const newSource = TypeUtils.createNewSourceFile(sourceFile, removeComments);
+      const astText = newSource.text;
+
+      assert.strictEqual(sourceFile.statements.length, newSource.statements.length);
+      assert.notStrictEqual(sourceFile.fileName, newSource.fileName);
+      assert.isTrue(newSource.fileName.endsWith('.ts'));
+      assert.isTrue(!astText.startsWith('//This is a comment'));
     });
   });
 

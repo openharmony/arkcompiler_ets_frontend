@@ -147,7 +147,7 @@ namespace secharmony {
         }
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);
-        const shadowSourceAst: SourceFile = TypeUtils.createNewSourceFile(node);
+        const shadowSourceAst: SourceFile = TypeUtils.createNewSourceFile(node, option.mRemoveComments);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);

@@ -1,0 +1,10 @@
+{
+  "IdentifierCache": {
+    "#funcTest1:16:19": "p",
+    "#funcTest2:21:24": "q",
+    "#funcTest3:26:29": "t",
+    "#funcTest4:31:34": "u",
+    "#funcTest5:36:39": "v"
+  },
+  "MemberMethodCache": {}
+}

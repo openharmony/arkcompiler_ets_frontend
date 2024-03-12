@@ -511,7 +511,7 @@ export class ArkObfuscator {
       }
     } else {
       //@ts-ignore
-      ast.reservedComments = [];
+      ast.reservedComments = this.mCustomProfiles.mRemoveComments? [] : undefined;
     }
 
     performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
