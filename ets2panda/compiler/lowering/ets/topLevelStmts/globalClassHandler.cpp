@@ -34,6 +34,17 @@ namespace ark::es2panda::compiler {
 
 using util::NodeAllocator;
 
+static bool MainFunctionExists(const ArenaVector<ir::Statement *> &statements)
+{
+    for (auto stmt : statements) {
+        if (stmt->IsFunctionDeclaration() &&
+            stmt->AsFunctionDeclaration()->Function()->Id()->Name().Is(compiler::Signatures::MAIN)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void GlobalClassHandler::InitGlobalClass(const ArenaVector<parser::Program *> &programs)
 {
     if (programs.empty()) {
@@ -55,53 +66,57 @@ void GlobalClassHandler::InitGlobalClass(const ArenaVector<parser::Program *> &p
     };
 
     ArenaVector<GlobalStmts> statements(allocator_->Adapter());
+    bool mainExists = false;
+    bool topLevelStatementsExist = false;
     for (auto program : programs) {
         program->Ast()->IterateRecursively(addCCtor);
+        if (program->IsEntryPoint() && !mainExists && MainFunctionExists(program->Ast()->Statements())) {
+            mainExists = true;
+        }
         auto stmts = MakeGlobalStatements(program->Ast(), globalClass, !program->GetPackageName().Empty());
+        if (!topLevelStatementsExist && !stmts.empty()) {
+            topLevelStatementsExist = true;
+        }
         statements.emplace_back(GlobalStmts {program, std::move(stmts)});
         program->SetGlobalClass(globalClass);
     }
-    InitCallToCCTOR(programs.front(), statements);
+    InitCallToCCTOR(programs.front(), statements, mainExists, topLevelStatementsExist);
 }
 
-ir::MethodDefinition *GlobalClassHandler::CreateAndFillInitMethod(const ArenaVector<GlobalStmts> &initStatements)
-{
-    auto initMethod = CreateInitMethod();
-
-    for (const auto &stmts : initStatements) {
-        for (auto stmt : stmts.statements) {
-            initMethod->Function()->Body()->AsBlockStatement()->Statements().emplace_back(stmt);
-            stmt->SetParent(initMethod->Function()->Body());
-        }
-    }
-    return initMethod;
-}
-
-ir::MethodDefinition *GlobalClassHandler::CreateInitMethod()
+static ir::MethodDefinition *CreateAndFillTopLevelMethod(
+    const ArenaVector<GlobalClassHandler::GlobalStmts> &initStatements, ArenaAllocator *allocator,
+    const std::string_view name)
 {
     const auto functionFlags = ir::ScriptFunctionFlags::NONE;
     const auto functionModifiers = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC;
-    auto *initIdent = NodeAllocator::Alloc<ir::Identifier>(allocator_, INIT_NAME, allocator_);
+    auto *ident = NodeAllocator::Alloc<ir::Identifier>(allocator, name, allocator);
 
-    ArenaVector<ir::Expression *> params(allocator_->Adapter());
+    ArenaVector<ir::Expression *> params(allocator->Adapter());
 
-    ArenaVector<ir::Statement *> statements(allocator_->Adapter());
-    auto *initBody = NodeAllocator::Alloc<ir::BlockStatement>(allocator_, allocator_, std::move(statements));
+    ArenaVector<ir::Statement *> statements(allocator->Adapter());
+    auto *body = NodeAllocator::Alloc<ir::BlockStatement>(allocator, allocator, std::move(statements));
 
     auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
 
-    auto *initFunc = NodeAllocator::Alloc<ir::ScriptFunction>(
-        allocator_, allocator_,
+    auto *func = NodeAllocator::Alloc<ir::ScriptFunction>(
+        allocator, allocator,
         ir::ScriptFunction::ScriptFunctionData {
-            initBody, std::move(funcSignature), functionFlags, {}, false, Language(Language::Id::ETS)});
+            body, std::move(funcSignature), functionFlags, {}, false, Language(Language::Id::ETS)});
 
-    initFunc->SetIdent(initIdent);
-    initFunc->AddModifier(functionModifiers);
+    func->SetIdent(ident);
+    func->AddModifier(functionModifiers);
 
-    auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, initFunc);
-    auto methodDef = NodeAllocator::Alloc<ir::MethodDefinition>(allocator_, ir::MethodDefinitionKind::METHOD,
-                                                                initIdent->Clone(allocator_, nullptr)->AsExpression(),
-                                                                funcExpr, functionModifiers, allocator_, false);
+    auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator, func);
+    auto methodDef = NodeAllocator::Alloc<ir::MethodDefinition>(allocator, ir::MethodDefinitionKind::METHOD,
+                                                                ident->Clone(allocator, nullptr)->AsExpression(),
+                                                                funcExpr, functionModifiers, allocator, false);
+
+    for (const auto &stmts : initStatements) {
+        for (auto stmt : stmts.statements) {
+            methodDef->Function()->Body()->AsBlockStatement()->Statements().emplace_back(stmt);
+            stmt->SetParent(methodDef->Function()->Body());
+        }
+    }
     return methodDef;
 }
 
@@ -211,7 +226,8 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass()
     return classDecl;
 }
 
-void GlobalClassHandler::InitCallToCCTOR(parser::Program *program, const ArenaVector<GlobalStmts> &initStatements)
+void GlobalClassHandler::InitCallToCCTOR(parser::Program *program, const ArenaVector<GlobalStmts> &initStatements,
+                                         bool mainExists, bool topLevelStatementsExist)
 {
     auto globalClass = program->GlobalClass();
     auto globalDecl = globalClass->Parent()->AsClassDeclaration();
@@ -220,13 +236,22 @@ void GlobalClassHandler::InitCallToCCTOR(parser::Program *program, const ArenaVe
     InitGlobalClass(globalClass, program->Kind());
     auto &globalBody = globalClass->Body();
     if (program->GetPackageName().Empty() && program->Kind() != parser::ScriptKind::STDLIB) {
-        ir::MethodDefinition *initMethod = CreateAndFillInitMethod(initStatements);
+        ir::MethodDefinition *initMethod = CreateAndFillTopLevelMethod(initStatements, allocator_, INIT_NAME);
+        ir::MethodDefinition *mainMethod = nullptr;
+        if (!mainExists && topLevelStatementsExist) {
+            const ArenaVector<GlobalStmts> emptyStatements(allocator_->Adapter());
+            mainMethod = CreateAndFillTopLevelMethod(emptyStatements, allocator_, compiler::Signatures::MAIN);
+        }
         if (initMethod != nullptr) {
             initMethod->SetParent(program->GlobalClass());
             globalBody.insert(globalBody.begin(), initMethod);
             if (!initMethod->Function()->Body()->AsBlockStatement()->Statements().empty()) {
                 AddInitCall(program->GlobalClass(), initMethod);
             }
+        }
+        if (mainMethod != nullptr) {
+            mainMethod->SetParent(program->GlobalClass());
+            globalBody.insert(globalBody.begin(), mainMethod);
         }
     }
 }
