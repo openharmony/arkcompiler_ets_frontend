@@ -281,14 +281,14 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                 this, substitutedSig->Function()->Params()[index], flags);
         }
 
-        auto *argumentType = GetApparentType(argument->Check(this));
-        auto *targetType = GetApparentType(substitutedSig->Params()[index]->TsType());
+        auto *argumentType = argument->Check(this);
+        auto *targetType = substitutedSig->Params()[index]->TsType();
 
-        auto const invocationCtx = checker::InvocationContext(
-            Relation(), argument, argumentType, targetType, argument->Start(),
-            {"Type '", TryGettingFunctionTypeFromInvokeFunction(argumentType), "' is not compatible with type '",
-             TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
-            flags);
+        auto const invocationCtx =
+            checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
+                                       {"Type '", argumentType, "' is not compatible with type '",
+                                        TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
+                                       flags);
 
         if (!invocationCtx.IsInvocable()) {
             if (!CheckOptionalLambdaFunction(argument, substitutedSig, index)) {

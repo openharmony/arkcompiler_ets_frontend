@@ -98,6 +98,7 @@ public:
     Type *GlobalWildcardType() const;
 
     ETSObjectType *GlobalETSObjectType() const;
+    ETSUnionType *GlobalETSNullishType() const;
     ETSUnionType *GlobalETSNullishObjectType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
     ETSObjectType *GlobalBuiltinETSBigIntType() const;
@@ -213,7 +214,6 @@ public:
     {
         return CreateETSUnionType(Span<Type *const>(constituentTypes));
     }
-    Type *CreateNullishType(Type *type, bool isNull, bool isUndefined);
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
     ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
@@ -495,10 +495,10 @@ public:
     {
         return type->IsETSReferenceType();
     }
-    const ir::AstNode *FindJumpTarget(ir::AstNodeType nodeType, const ir::AstNode *node, const ir::Identifier *target);
+    const ir::AstNode *FindJumpTarget(const ir::AstNode *node) const;
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
-    void CheckSwitchDiscriminant(ir::Expression *discriminant);
+    Type *CheckSwitchDiscriminant(ir::Expression *discriminant);
     Type *ETSBuiltinTypeAsPrimitiveType(Type *objectType);
     Type *ETSBuiltinTypeAsConditionalType(Type *objectType);
     Type *PrimitiveTypeAsETSBuiltinType(Type *objectType);
@@ -516,7 +516,7 @@ public:
     Type *MaybePromotedBuiltinType(Type *type) const;
     Type const *MaybePromotedBuiltinType(Type const *type) const;
     Type *MaybePrimitiveBuiltinType(Type *type) const;
-    void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> *cases);
+    void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases);
     std::string GetStringFromIdentifierValue(checker::Type *caseType) const;
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
     void CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expression *compareCase,

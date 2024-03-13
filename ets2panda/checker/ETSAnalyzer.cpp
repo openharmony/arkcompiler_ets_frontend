@@ -604,7 +604,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
                 currentElement->AsObjectExpression()->SetPreferredType(expr->preferredType_);
             }
 
-            checker::Type *elementType = checker->GetApparentType(currentElement->Check(checker));
+            checker::Type *elementType = currentElement->Check(checker);
 
             if (!elementType->IsETSArrayType() && isPreferredTuple) {
                 auto const *const tupleType = expr->GetPreferredType()->AsETSTupleType();
@@ -615,7 +615,6 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
                                              static_cast<uint32_t>(tupleType->GetTupleSize())},
                                             currentElement->Start());
                 }
-                compareType = checker->GetApparentType(compareType);
 
                 checker::AssignmentContext(
                     checker->Relation(), currentElement, elementType, compareType, currentElement->Start(),
@@ -624,7 +623,6 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
                 elementType = compareType;
             }
 
-            targetElementType = checker->GetApparentType(targetElementType);
             checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType,
                                        currentElement->Start(),
                                        {"Array element type '", elementType, "' is not assignable to explicit type '",
@@ -729,14 +727,12 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
         checker->ValidateUnaryOperatorOperand(expr->target_);
     }
 
-    auto *const appLeftType = checker->GetApparentType(leftType);
-    auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, appLeftType);
-    auto *const appRightType = checker->GetApparentType(rightType);
+    auto [rightType, relationNode] = CheckAssignmentExprOperatorType(expr, leftType);
 
-    const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(appLeftType);
-    const checker::Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(appRightType);
+    const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(leftType);
+    const checker::Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(rightType);
 
-    checker::AssignmentContext(checker->Relation(), relationNode, appRightType, appLeftType, expr->Right()->Start(),
+    checker::AssignmentContext(checker->Relation(), relationNode, rightType, leftType, expr->Right()->Start(),
                                {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
 
     checker::Type *smartType = leftType;
@@ -1120,7 +1116,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     //  Note: don't use possible smart cast to null-like types.
     //        Such situation should be correctly resolved in the subsequent lowering.
     if (baseType->DefinitelyETSNullish() && expr->Object()->IsIdentifier()) {
-        baseType = checker->GetApparentType(expr->Object()->AsIdentifier()->Variable()->TsType());
+        baseType = expr->Object()->AsIdentifier()->Variable()->TsType();
     }
     checker->CheckNonNullish(expr->Object());
 
@@ -1273,7 +1269,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
         }
         value->SetTsType(value->Check(checker));
 
-        auto *const valueType = checker->GetApparentType(value->TsType());
+        auto *const valueType = value->TsType();
         const checker::Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(valueType);
         const checker::Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(propType);
 
@@ -1722,8 +1718,13 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
         ++it;
     }
 
-    // Remove possible smart casts for variables declared in inner scope:
-    if (auto const *const scope = st->Scope(); !scope->IsGlobalScope()) {
+    //  Remove possible smart casts for variables declared in inner scope:
+    if (auto const *const scope = st->Scope();
+        scope->IsFunctionScope() && st->Parent()->Parent()->Parent()->IsMethodDefinition()) {
+        // When exiting method definition, just clear all smart casts
+        checker->Context().ClearSmartCasts();
+    } else if (!scope->IsGlobalScope()) {
+        // otherwise only check inner declarations
         for (auto const *const decl : scope->Decls()) {
             if (decl->IsLetOrConstDecl() && decl->Node()->IsIdentifier()) {
                 checker->Context().RemoveSmartCast(decl->Node()->AsIdentifier()->Variable());
@@ -1737,9 +1738,9 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
 checker::Type *ETSAnalyzer::Check(ir::BreakStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    st->target_ = checker->FindJumpTarget(st->Type(), st, st->Ident());
+    st->SetTarget(checker->FindJumpTarget(st));
 
-    checker->AddStatus(CheckerStatus::MEET_BREAK);
+    checker->Context().OnBreakStatement(st);
     return nullptr;
 }
 
@@ -1753,7 +1754,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDeclaration *st) const
 checker::Type *ETSAnalyzer::Check(ir::ContinueStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    st->target_ = checker->FindJumpTarget(st->Type(), st, st->Ident());
+    st->SetTarget(checker->FindJumpTarget(st));
 
     checker->AddStatus(CheckerStatus::MEET_CONTINUE);
     return nullptr;
@@ -1770,12 +1771,12 @@ checker::Type *ETSAnalyzer::Check(ir::DoWhileStatement *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop();
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
 
     checker->CheckTruthinessOfType(st->Test());
     st->Body()->Check(checker);
 
-    checker->Context().ExitLoop(smartCasts, clearFlag);
+    checker->Context().ExitLoop(smartCasts, clearFlag, st);
     return nullptr;
 }
 
@@ -1808,7 +1809,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop();
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
 
     checker::Type *const exprType = st->Right()->Check(checker);
     if (exprType == nullptr) {
@@ -1859,7 +1860,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *const st) const
 
     st->Body()->Check(checker);
 
-    checker->Context().ExitLoop(smartCasts, clearFlag);
+    checker->Context().ExitLoop(smartCasts, clearFlag, st);
     return nullptr;
 }
 
@@ -1869,7 +1870,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForUpdateStatement *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop();
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
 
     if (st->Init() != nullptr) {
         st->Init()->Check(checker);
@@ -1885,7 +1886,7 @@ checker::Type *ETSAnalyzer::Check(ir::ForUpdateStatement *st) const
 
     st->Body()->Check(checker);
 
-    checker->Context().ExitLoop(smartCasts, clearFlag);
+    checker->Context().ExitLoop(smartCasts, clearFlag, st);
     return nullptr;
 }
 
@@ -1911,17 +1912,18 @@ checker::Type *ETSAnalyzer::Check(ir::IfStatement *st) const
     checker->Context().EnterPath();
     st->Consequent()->Check(checker);
     bool const consequentTerminated = checker->Context().ExitPath();
+    SmartCastArray consequentSmartCasts = checker->Context().CloneSmartCasts();
+
+    // Restore smart casts to initial state.
+    checker->Context().RestoreSmartCasts(smartCasts);
+    //  Apply the alternate smart casts
+    if (testedTypes.has_value()) {
+        for (auto [variable, _, alternateType] : *testedTypes) {
+            checker->ApplySmartCast(variable, alternateType);
+        }
+    }
 
     if (st->Alternate() != nullptr) {
-        SmartCastArray consequentSmartCasts = checker->Context().CloneSmartCasts();
-        checker->Context().RestoreSmartCasts(smartCasts);
-
-        if (testedTypes.has_value()) {
-            for (auto [variable, _, alternateType] : *testedTypes) {
-                checker->ApplySmartCast(variable, alternateType);
-            }
-        }
-
         checker->Context().EnterPath();
         st->Alternate()->Check(checker);
         bool const alternateTerminated = checker->Context().ExitPath();
@@ -1939,19 +1941,9 @@ checker::Type *ETSAnalyzer::Check(ir::IfStatement *st) const
             checker->Context().CombineSmartCasts(consequentSmartCasts);
         }
     } else {
-        if (consequentTerminated) {
-            // Restore smart casts to initial state.
-            checker->Context().RestoreSmartCasts(smartCasts);
-            if (!testedTypes.has_value()) {
-                return nullptr;
-            }
-            //  Add the alternate smart casts
-            for (auto [variable, _, alternateType] : *testedTypes) {
-                checker->ApplySmartCast(variable, alternateType);
-            }
-        } else {
+        if (!consequentTerminated) {
             // Here we need to combine types from consequent if block and initial.
-            checker->Context().CombineSmartCasts(smartCasts);
+            checker->Context().CombineSmartCasts(consequentSmartCasts);
         }
     }
 
@@ -2004,9 +1996,8 @@ checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::S
                 st->argument_->AsArrayExpression()->SetPreferredType(funcReturnType);
             }
 
-            checker::Type *argumentType = checker->GetApparentType(st->argument_->Check(checker));
-            CheckReturnType(checker, checker->GetApparentType(funcReturnType), argumentType, st->argument_,
-                            containingFunc->IsAsyncFunc());
+            checker::Type *argumentType = st->argument_->Check(checker);
+            CheckReturnType(checker, funcReturnType, argumentType, st->argument_, containingFunc->IsAsyncFunc());
         }
     } else {
         //  Case when function's return type should be inferred from return statement(s):
@@ -2063,55 +2054,48 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SwitchCaseStatement *st) 
 checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker::ScopeContext scopeCtx(checker, st->scope_);
-    st->discriminant_->Check(checker);
+    checker::ScopeContext scopeCtx(checker, st->Scope());
     checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(checker->Relation(),
                                                                     checker::TypeRelationFlag::NONE);
-    // NOTE (user): check exhaustive Switch
-    checker->CheckSwitchDiscriminant(st->discriminant_);
-    auto *comparedExprType = st->discriminant_->TsType();
+
+    auto *comparedExprType = checker->CheckSwitchDiscriminant(st->Discriminant());
     auto unboxedDiscType = (st->Discriminant()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U
                                ? checker->ETSBuiltinTypeAsPrimitiveType(comparedExprType)
                                : comparedExprType;
 
-    bool validCaseType;
+    SmartCastArray smartCasts = checker->Context().CloneSmartCasts();
+    bool hasDefaultCase = false;
 
-    for (auto *it : st->Cases()) {
-        if (it->Test() != nullptr) {
-            auto *caseType = it->Test()->Check(checker);
-            validCaseType = true;
-            if (caseType->HasTypeFlag(checker::TypeFlag::CHAR)) {
-                validCaseType = comparedExprType->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
-            } else if (caseType->IsETSEnumType() && st->Discriminant()->TsType()->IsETSEnumType()) {
-                validCaseType =
-                    st->Discriminant()->TsType()->AsETSEnumType()->IsSameEnumType(caseType->AsETSEnumType());
-            } else if (caseType->IsETSStringEnumType() && st->Discriminant()->TsType()->IsETSStringEnumType()) {
-                validCaseType = st->Discriminant()->TsType()->AsETSStringEnumType()->IsSameEnumType(
-                    caseType->AsETSStringEnumType());
+    for (auto &it : st->Cases()) {
+        checker->Context().EnterPath();
+        it->CheckAndTestCase(checker, comparedExprType, unboxedDiscType, st->Discriminant(), hasDefaultCase);
+        bool const caseTerminated = checker->Context().ExitPath();
+
+        if (it != st->Cases().back()) {
+            if (!caseTerminated) {
+                checker->Context().CombineSmartCasts(smartCasts);
             } else {
-                checker::AssignmentContext(
-                    checker->Relation(), st->discriminant_, caseType, unboxedDiscType, it->Test()->Start(),
-                    {"Switch case type '", caseType, "' is not comparable to discriminant type '", comparedExprType,
-                     "'"},
-                    (comparedExprType->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
-                                                         : checker::TypeRelationFlag::NO_UNBOXING) |
-                        checker::TypeRelationFlag::NO_BOXING);
+                checker->Context().RestoreSmartCasts(smartCasts);
             }
-
-            if (!validCaseType) {
-                checker->ThrowTypeError({"Switch case type '", caseType, "' is not comparable to discriminant type '",
-                                         comparedExprType, "'"},
-                                        it->Test()->Start());
+        } else {
+            if (!caseTerminated) {
+                //  if the recent switch case isn't terminated in any way, copy actual smart casts to the array of
+                //  smart casts for the other case blocks so that it can be processed in unified way
+                checker->Context().AddBreakSmartCasts(st, checker->Context().CloneSmartCasts());
             }
-        }
-
-        for (auto *caseStmt : it->Consequent()) {
-            caseStmt->Check(checker);
+            checker->Context().ClearSmartCasts();
         }
     }
 
-    checker->CheckForSameSwitchCases(&st->cases_);
+    // If default case is absent initial smart casts should be also applied here
+    if (!hasDefaultCase) {
+        checker->Context().AddBreakSmartCasts(st, std::move(smartCasts));
+    }
 
+    // Combine smart casts from all [non-terminated] case blocks with 'break'
+    checker->Context().CombineBreakSmartCasts(st);
+
+    checker->CheckForSameSwitchCases(st->Cases());
     return nullptr;
 }
 
@@ -2227,12 +2211,12 @@ checker::Type *ETSAnalyzer::Check(ir::WhileStatement *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     //  NOTE: Smart casts are not processed correctly within the loops now, thus clear them at this point.
-    auto [smartCasts, clearFlag] = checker->Context().EnterLoop();
+    auto [smartCasts, clearFlag] = checker->Context().EnterLoop(*st);
 
     checker->CheckTruthinessOfType(st->Test());
     st->Body()->Check(checker);
 
-    checker->Context().ExitLoop(smartCasts, clearFlag);
+    checker->Context().ExitLoop(smartCasts, clearFlag, st);
     return nullptr;
 }
 

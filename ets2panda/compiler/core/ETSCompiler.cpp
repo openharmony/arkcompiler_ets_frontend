@@ -1575,7 +1575,7 @@ static void CompileImpl(const ir::BreakStatement *self, [[maybe_unused]] CodeGen
 void ETSCompiler::Compile(const ir::BreakStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+    if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
     }
     CompileImpl(st, etsg);
@@ -1592,7 +1592,7 @@ static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
 void ETSCompiler::Compile(const ir::ContinueStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+    if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
     }
     CompileImpl(st, etsg);
@@ -1786,7 +1786,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     if (st->Argument() == nullptr) {
-        if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+        if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
             return;
         }
 
@@ -1815,7 +1815,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     etsg->ApplyConversion(st->Argument(), nullptr);
     etsg->ApplyConversion(st->Argument(), st->ReturnType());
 
-    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+    if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
     }
 

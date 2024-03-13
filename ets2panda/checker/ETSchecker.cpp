@@ -320,6 +320,12 @@ ETSObjectType *ETSChecker::GlobalETSObjectType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSObjectType);
 }
 
+ETSUnionType *ETSChecker::GlobalETSNullishType() const
+{
+    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishType)();
+    return ret != nullptr ? ret->AsETSUnionType() : nullptr;
+}
+
 ETSUnionType *ETSChecker::GlobalETSNullishObjectType() const
 {
     auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishObjectType)();

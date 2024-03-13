@@ -508,15 +508,14 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
         auto arrowFunc = stArgument->AsArrowFunctionExpression();
         auto typeAnnotation = arrowFunc->CreateTypeAnnotation(checker);
 
-        auto *const argumentType = checker->GetApparentType(arrowFunc->TsType());
+        auto *argumentType = arrowFunc->TsType();
         funcReturnType = typeAnnotation->GetType(checker);
-        auto *const functionType = checker->GetApparentType(funcReturnType);
 
         const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
-        const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(functionType);
+        const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
 
         checker::AssignmentContext(
-            checker->Relation(), arrowFunc, argumentType, functionType, stArgument->Start(),
+            checker->Relation(), arrowFunc, argumentType, funcReturnType, stArgument->Start(),
             {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
             checker::TypeRelationFlag::DIRECT_RETURN);
     }

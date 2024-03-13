@@ -641,7 +641,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
             InferTypesForLambda(lambda, typeAnnotation->AsETSFunctionType());
         }
     }
-    checker::Type *initType = GetApparentType(init->Check(this));
+    checker::Type *initType = init->Check(this);
 
     if (initType == nullptr) {
         ThrowTypeError("Cannot get the expression type", init->Start());
@@ -663,7 +663,6 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (annotationType != nullptr) {
-        annotationType = GetApparentType(annotationType);
         const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(annotationType);
         const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
 
@@ -693,8 +692,6 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 
 checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::Type *targetType)
 {
-    targetType = GetApparentType(targetType);
-
     //  For left-hand variable of primitive type leave it as is.
     if (targetType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE_RETURN)) {
         return targetType;
@@ -709,8 +706,6 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
     if (targetType->IsETSObjectType() && targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE)) {
         return targetType;
     }
-
-    sourceType = GetApparentType(sourceType);
 
     //  For the Function source or target types leave the target type as is
     //  until we will be able to create the functional interface type from the source.
@@ -730,8 +725,8 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
         return targetType;
     }
 
-    //  For null or undefined source type return it as is.
-    if (sourceType->DefinitelyETSNullish()) {
+    //  For type parameter, null or undefined source type return it as is.
+    if (sourceType->IsETSTypeParameter() || sourceType->DefinitelyETSNullish()) {
         return sourceType;
     }
 
@@ -765,7 +760,7 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
 std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType, Type *actualType, bool const strict)
 {
     if (!strict) {
-        return {CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()}), GetNonNullishType(actualType)};
+        return {GlobalETSNullishType(), GetNonNullishType(actualType)};
     }
 
     if (testedType->IsETSNullType()) {
@@ -776,22 +771,20 @@ std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType
         return {GlobalETSUndefinedType(), RemoveUndefinedType(actualType)};
     }
 
-    return {CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()}), GetNonNullishType(actualType)};
+    return {GlobalETSNullishType(), GetNonNullishType(actualType)};
 }
 
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
 std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSArrayType *testedType, Type *actualType)
 {
-    auto *const apparentType = GetApparentType(actualType);
-
-    if (apparentType->IsETSUnionType()) {
-        return apparentType->AsETSUnionType()->GetComplimentaryType(this, testedType);
+    if (actualType->IsETSUnionType()) {
+        return actualType->AsETSUnionType()->GetComplimentaryType(this, testedType);
     }
 
     // Both testing and actual (smart) types are arrays. Set types according to their relation.
     // NOTE: probably the rules of type extraction should be modified later on!
-    if (apparentType->IsETSArrayType()) {
-        auto *const arrayType = apparentType->AsETSArrayType();
+    if (actualType->IsETSArrayType()) {
+        auto *const arrayType = actualType->AsETSArrayType();
 
         if (Relation()->IsIdenticalTo(arrayType, testedType) ||
             arrayType->AssemblerName() == testedType->AssemblerName()) {
@@ -805,7 +798,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSArrayType *tes
         if (Relation()->IsSupertypeOf(testedType, arrayType)) {
             return {testedType, actualType};
         }
-    } else if (apparentType->IsETSObjectType() && apparentType->AsETSObjectType()->IsGlobalETSObjectType()) {
+    } else if (actualType->IsETSObjectType() && actualType->AsETSObjectType()->IsGlobalETSObjectType()) {
         return {testedType, actualType};
     }
 
@@ -816,16 +809,14 @@ std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSArrayType *tes
 std::pair<Type *, Type *> ETSChecker::CheckTestObjectCondition(ETSObjectType *testedType, Type *actualType,
                                                                bool const strict)
 {
-    auto *const apparentType = GetApparentType(actualType);
-
-    if (apparentType->IsETSUnionType()) {
-        return apparentType->AsETSUnionType()->GetComplimentaryType(this, testedType);
+    if (actualType->IsETSUnionType()) {
+        return actualType->AsETSUnionType()->GetComplimentaryType(this, testedType);
     }
 
     // Both testing and actual (smart) types are objects. Set types according to their relation.
     // NOTE: probably the rules of type extraction should be modified later on!
-    if (apparentType->IsETSObjectType()) {
-        auto *const objectType = apparentType->AsETSObjectType();
+    if (actualType->IsETSObjectType()) {
+        auto *const objectType = actualType->AsETSObjectType();
 
         if (Relation()->IsIdenticalTo(objectType, testedType) ||
             objectType->AssemblerName() == testedType->AssemblerName()) {
@@ -933,10 +924,6 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
         std::tie(consequentType, alternateType) =
             checker->CheckTestNullishCondition(testCondition_.testedType, smartType, testCondition_.strict);
     } else {
-        if (testCondition_.testedType->IsETSTypeParameter()) {
-            testCondition_.testedType = checker->GetApparentType(testCondition_.testedType);
-        }
-
         if (testCondition_.testedType->IsETSObjectType()) {
             auto *const testedType = testCondition_.testedType->AsETSObjectType();
             std::tie(consequentType, alternateType) =
@@ -1381,17 +1368,20 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
     return {""};
 }
 
-const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNodeType nodeType, const ir::AstNode *node,
-                                              const ir::Identifier *target)
+const ir::AstNode *ETSChecker::FindJumpTarget(const ir::AstNode *node) const
 {
+    ASSERT(node->IsBreakStatement() || node->IsContinueStatement());
+
+    bool const isContinue = node->IsContinueStatement();
+    auto const *const target = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
+
     const auto *iter = node->Parent();
 
     while (iter != nullptr) {
         switch (iter->Type()) {
             case ir::AstNodeType::LABELLED_STATEMENT: {
                 if (const auto *labelled = iter->AsLabelledStatement(); labelled->Ident()->Name() == target->Name()) {
-                    return nodeType == ir::AstNodeType::CONTINUE_STATEMENT ? labelled->GetReferencedStatement()
-                                                                           : labelled;
+                    return isContinue ? labelled->GetReferencedStatement() : labelled;
                 }
                 break;
             }
@@ -1414,7 +1404,6 @@ const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNodeType nodeType, const ir
     }
 
     UNREACHABLE();
-    return nullptr;
 }
 
 varbinder::VariableFlags ETSChecker::GetAccessFlagFromNode(const ir::AstNode *node)
@@ -1430,18 +1419,20 @@ varbinder::VariableFlags ETSChecker::GetAccessFlagFromNode(const ir::AstNode *no
     return varbinder::VariableFlags::PUBLIC;
 }
 
-void ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
+Type *ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
 {
-    ASSERT(discriminant->TsType());
-
+    discriminant->Check(this);
     auto discriminantType = MaybeUnboxExpression(discriminant);
+    ASSERT(discriminantType != nullptr);
+
     if (discriminantType->HasTypeFlag(TypeFlag::VALID_SWITCH_TYPE)) {
-        return;
+        return discriminantType;
     }
 
     if (discriminantType->IsETSObjectType() &&
-        discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::ENUM)) {
-        return;
+        discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::STRING |
+                                                           ETSObjectFlags::ENUM)) {
+        return discriminantType;
     }
 
     ThrowTypeError({"Incompatible types. Found: ", discriminantType,
@@ -1510,7 +1501,7 @@ util::StringView ETSChecker::TypeToName(Type *type) const
     }
 }
 
-void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> *cases)
+void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases)
 {
     //  Just to avoid extra nesting level
     auto const checkEnumType = [this](ir::Expression const *const caseTest, ETSEnumType const *const type) -> void {
@@ -1526,10 +1517,10 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
         }
     };
 
-    for (size_t caseNum = 0; caseNum < cases->size(); caseNum++) {
-        for (size_t compareCase = caseNum + 1; compareCase < cases->size(); compareCase++) {
-            auto *caseTest = cases->at(caseNum)->Test();
-            auto *compareCaseTest = cases->at(compareCase)->Test();
+    for (size_t caseNum = 0; caseNum < cases.size(); caseNum++) {
+        for (size_t compareCase = caseNum + 1; compareCase < cases.size(); compareCase++) {
+            auto *caseTest = cases.at(caseNum)->Test();
+            auto *compareCaseTest = cases.at(compareCase)->Test();
 
             if (caseTest == nullptr || compareCaseTest == nullptr) {
                 continue;
@@ -1546,12 +1537,12 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
             }
 
             if (caseTest->IsIdentifier() || caseTest->IsMemberExpression()) {
-                CheckIdentifierSwitchCase(caseTest, compareCaseTest, cases->at(caseNum)->Start());
+                CheckIdentifierSwitchCase(caseTest, compareCaseTest, cases.at(caseNum)->Start());
                 continue;
             }
 
             if (compareCaseTest->IsIdentifier() || compareCaseTest->IsMemberExpression()) {
-                CheckIdentifierSwitchCase(compareCaseTest, caseTest, cases->at(compareCase)->Start());
+                CheckIdentifierSwitchCase(compareCaseTest, caseTest, cases.at(compareCase)->Start());
                 continue;
             }
 
@@ -1559,7 +1550,7 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
                 continue;
             }
 
-            ThrowTypeError("Case duplicate", cases->at(compareCase)->Start());
+            ThrowTypeError("Case duplicate", cases.at(compareCase)->Start());
         }
     }
 }

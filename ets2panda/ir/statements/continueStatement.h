@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,21 +30,27 @@ class ETSCompiler;
 namespace ark::es2panda::ir {
 class ContinueStatement : public Statement {
 public:
+    ~ContinueStatement() override = default;
+
+    NO_COPY_SEMANTIC(ContinueStatement);
+    NO_MOVE_SEMANTIC(ContinueStatement);
+
     explicit ContinueStatement() : Statement(AstNodeType::CONTINUE_STATEMENT) {}
     explicit ContinueStatement(Identifier *ident) : Statement(AstNodeType::CONTINUE_STATEMENT), ident_(ident) {}
 
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class compiler::ETSCompiler;
-
-    const Identifier *Ident() const
+    [[nodiscard]] const Identifier *Ident() const noexcept
     {
         return ident_;
     }
 
-    const ir::AstNode *Target() const
+    [[nodiscard]] const ir::AstNode *Target() const noexcept
     {
         return target_;
+    }
+
+    void SetTarget(ir::AstNode const *target) noexcept
+    {
+        target_ = target;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;

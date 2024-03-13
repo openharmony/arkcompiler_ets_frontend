@@ -374,6 +374,10 @@ void ETSUnionType::IsSubtypeOf(TypeRelation *relation, Type *target)
 //  thus the required assignable type always exists.
 checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, checker::Type *sourceType) const noexcept
 {
+    if (sourceType->IsETSTypeParameter()) {
+        return sourceType;
+    }
+
     if (sourceType->IsETSUnionType() || sourceType->IsETSArrayType() || sourceType->IsETSFunctionType()) {
         return sourceType;
     }
@@ -456,7 +460,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
 
     auto it = constituentTypes_.cbegin();
     while (it != constituentTypes_.cend()) {
-        auto *constituentType = (*it)->IsETSTypeParameter() ? checker->GetApparentType(*it) : *it;
+        auto *const constituentType = *it;
 
         if (checker->Relation()->IsIdenticalTo(constituentType, sourceType) ||
             //  NOTE: just a temporary solution because now Relation()->IsIdenticalTo(...) returns
@@ -507,8 +511,8 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSArrayTy
 {
     auto it = constituentTypes_.cbegin();
     while (it != constituentTypes_.cend()) {
-        if (auto *constituentType = checker->GetApparentType(*it);
-            constituentType != nullptr && constituentType->IsETSArrayType()) {
+        auto *const constituentType = *it;
+        if (constituentType != nullptr && constituentType->IsETSArrayType()) {
             if (checker->Relation()->IsIdenticalTo(constituentType, sourceType) ||
                 //  NOTE: just a temporary solution because now Relation()->IsIdenticalTo(...) returns
                 //  'false' for the types like 'ArrayLike<T>'
@@ -527,14 +531,11 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSArrayTy
         ++it;
     }
 
-    it = constituentTypes_.cbegin();
-    while (it != constituentTypes_.cend()) {
-        if (auto *constituentType = checker->GetApparentType(*it);
-            constituentType != nullptr && constituentType->IsETSObjectType() &&
+    for (auto const &constituentType : constituentTypes_) {
+        if (constituentType != nullptr && constituentType->IsETSObjectType() &&
             constituentType->AsETSObjectType()->IsGlobalETSObjectType()) {
             return true;
         }
-        ++it;
     }
 
     return false;

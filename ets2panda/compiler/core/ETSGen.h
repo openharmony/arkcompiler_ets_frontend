@@ -300,7 +300,7 @@ public:
 
     void EmitNullishException(const ir::AstNode *node);
     void ThrowException(const ir::Expression *expr);
-    bool ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalNode, Label *prevFinnaly = nullptr);
+    bool ExtendWithFinalizer(ir::AstNode const *node, const ir::AstNode *originalNode, Label *prevFinnaly = nullptr);
 
     void Negate(const ir::AstNode *node);
     void LogicalNot(const ir::AstNode *node);

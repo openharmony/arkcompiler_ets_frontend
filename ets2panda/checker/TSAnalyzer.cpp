@@ -1459,7 +1459,7 @@ checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
     TSChecker *checker = GetTSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    checker::Type *exprType = st->discriminant_->Check(checker);
+    checker::Type *exprType = st->Discriminant()->Check(checker);
     bool exprIsLiteral = checker::TSChecker::IsLiteralType(exprType);
 
     for (auto *it : st->Cases()) {

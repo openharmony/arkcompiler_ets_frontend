@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,8 @@ CheckerContext::CheckerContext(Checker *checker, CheckerStatus newStatus, ETSObj
       smartCasts_(parent_->Allocator()->Adapter()),
       containingClass_(containingClass),
       containingSignature_(containingSignature),
-      testSmartCasts_(parent_->Allocator()->Adapter())
+      testSmartCasts_(parent_->Allocator()->Adapter()),
+      breakSmartCasts_(parent_->Allocator()->Adapter())
 {
 }
 
@@ -70,11 +71,11 @@ SmartCastArray CheckerContext::CloneSmartCasts(bool const clearData) noexcept
     return smartCasts;
 }
 
-void CheckerContext::RestoreSmartCasts(SmartCastArray const &prevSmartCasts) noexcept
+void CheckerContext::RestoreSmartCasts(SmartCastArray const &otherSmartCasts)
 {
     smartCasts_.clear();
-    if (!prevSmartCasts.empty()) {
-        for (auto [variable, type] : prevSmartCasts) {
+    if (!otherSmartCasts.empty()) {
+        for (auto [variable, type] : otherSmartCasts) {
             smartCasts_.emplace(variable, type);
         }
     }
@@ -96,65 +97,130 @@ void CheckerContext::RemoveSmartCasts(SmartCastArray const &otherSmartCasts) noe
     }
 }
 
+//  Auxiliary private method returning combined type (if types differ) or 'nullptr' if types are identical
+//  and no smart cast change is required.
 checker::Type *CheckerContext::CombineTypes(checker::Type *const typeOne, checker::Type *const typeTwo) const noexcept
 {
     ASSERT(typeOne != nullptr && typeTwo != nullptr);
     auto *const checker = parent_->AsETSChecker();
 
     if (checker->Relation()->IsIdenticalTo(typeOne, typeTwo)) {
-        // no type change is required
         return nullptr;
     }
 
     return checker->CreateETSUnionType({typeOne, typeTwo});
 }
 
-void CheckerContext::CombineSmartCasts(SmartCastArray &alternateSmartCasts) noexcept
+void CheckerContext::AddSmartCasts(SmartCastArray const &otherSmartCasts)
 {
     auto *const checker = parent_->AsETSChecker();
 
-    auto smartCast = alternateSmartCasts.begin();
-    while (smartCast != alternateSmartCasts.end()) {
-        auto const currentCast = smartCasts_.find(smartCast->first);
-        if (currentCast == smartCasts_.end()) {
-            // Remove smart cast that doesn't present in the current set.
-            smartCast = alternateSmartCasts.erase(smartCast);
+    for (auto [variable, type] : otherSmartCasts) {
+        auto const it = smartCasts_.find(variable);
+        if (it == smartCasts_.end()) {
+            SetSmartCast(variable, type);
             continue;
         }
-
-        // Smart type was modified
-        if (auto *const smartType = CombineTypes(smartCast->second, currentCast->second); smartType != nullptr) {
-            // Remove it or set to new value
-            if (checker->Relation()->IsIdenticalTo(currentCast->first->TsType(), smartType)) {
-                smartCasts_.erase(currentCast);
-                smartCast = alternateSmartCasts.erase(smartCast);
-                continue;
+        // Smart cast presents in both sets
+        if (auto *const smartType = CombineTypes(it->second, type); smartType != nullptr) {
+            // Remove it or set to new combined value
+            if (checker->Relation()->IsIdenticalTo(it->first->TsType(), smartType)) {
+                smartCasts_.erase(it);
+            } else {
+                it->second = smartType;
             }
-
-            currentCast->second = smartType;
         }
-        ++smartCast;
     }
 
-    // Remove smart casts that don't present in the alternate set.
-    RemoveSmartCasts(alternateSmartCasts);
+    // Remove smart casts that don't present in the other set.
+    RemoveSmartCasts(otherSmartCasts);
+}
+
+void CheckerContext::CombineSmartCasts(SmartCastArray const &otherSmartCasts)
+{
+    auto *const checker = parent_->AsETSChecker();
+
+    for (auto [variable, type] : otherSmartCasts) {
+        auto const it = smartCasts_.find(variable);
+        if (it == smartCasts_.end()) {
+            continue;
+        }
+        // Smart cast presents in both sets
+        if (auto *const smartType = CombineTypes(it->second, type); smartType != nullptr) {
+            // Remove it or set to new combined value
+            if (checker->Relation()->IsIdenticalTo(it->first->TsType(), smartType)) {
+                smartCasts_.erase(it);
+            } else {
+                it->second = smartType;
+            }
+        }
+    }
+
+    // Remove smart casts that don't present in the other set.
+    RemoveSmartCasts(otherSmartCasts);
+}
+
+void CheckerContext::RemoveSmartCastsForAssignments(ir::AstNode const *node) noexcept
+{
+    if (node == nullptr) {  //  Just in case!
+        return;
+    }
+
+    if (!node->IsAssignmentExpression()) {
+        node->Iterate([this](ir::AstNode *childNode) { RemoveSmartCastsForAssignments(childNode); });
+        return;
+    }
+
+    auto const *assignment = node->AsAssignmentExpression();
+    if (assignment->Left()->IsIdentifier()) {
+        auto const *const ident = assignment->Left()->AsIdentifier();
+
+        auto const *variable = ident->Variable();
+        if (variable == nullptr) {
+            //  NOTE: we're interesting in the local variables ONLY!
+            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(ident->Name());
+        }
+
+        if (variable != nullptr) {
+            smartCasts_.erase(variable);
+        }
+    }
+
+    assignment->Right()->Iterate([this](ir::AstNode *childNode) { RemoveSmartCastsForAssignments(childNode); });
 }
 
 // Second return value shows if the 'IN_LOOP' flag should be cleared on exit from the loop (case of nested loops).
-std::pair<SmartCastArray, bool> CheckerContext::EnterLoop() noexcept
+std::pair<SmartCastArray, bool> CheckerContext::EnterLoop(ir::LoopStatement const &loop) noexcept
 {
     bool const clearFlag = !IsInLoop();
     if (clearFlag) {
         status_ |= CheckerStatus::IN_LOOP;
     }
 
-    return {CloneSmartCasts(true), clearFlag};
+    auto smartCasts = CloneSmartCasts();
+    loop.Iterate([this](ir::AstNode *childNode) { RemoveSmartCastsForAssignments(childNode); });
+
+    return {std::move(smartCasts), clearFlag};
 }
 
-void CheckerContext::ExitLoop(SmartCastArray &prevSmartCasts, bool const clearFlag) noexcept
+void CheckerContext::ExitLoop(SmartCastArray &prevSmartCasts, bool const clearFlag,
+                              ir::LoopStatement *loopStatement) noexcept
 {
     if (clearFlag) {
         status_ &= ~CheckerStatus::IN_LOOP;
+    }
+
+    if (!breakSmartCasts_.empty()) {
+        auto it = breakSmartCasts_.begin();
+
+        while (it != breakSmartCasts_.end()) {
+            if (it->first != loopStatement) {
+                ++it;
+            } else {
+                CombineSmartCasts(it->second);
+                it = breakSmartCasts_.erase(it);
+            }
+        }
     }
 
     //  Now we don't process smart casts inside the loops correctly, thus just combine them on exit from the loop.
@@ -321,4 +387,75 @@ checker::Type *CheckerContext::GetSmartCast(varbinder::Variable const *const var
     return it == smartCasts_.end() ? nullptr : it->second;
 }
 
+void CheckerContext::OnBreakStatement(ir::BreakStatement const *breakStatement)
+{
+    ir::Statement const *targetStatement = breakStatement->Target()->AsStatement();
+    ASSERT(targetStatement != nullptr);
+    if (targetStatement->IsLabelledStatement()) {
+        targetStatement = targetStatement->AsLabelledStatement()->Body();
+    }
+    ASSERT(targetStatement != nullptr);
+
+    auto const inInnerScope = [targetStatement](varbinder::Scope const *scope, ir::AstNode const *parent) -> bool {
+        do {
+            parent = parent->Parent();
+            if (parent->IsScopeBearer() && parent->Scope() == scope) {
+                return true;
+            }
+        } while (parent != targetStatement);
+        return false;
+    };
+
+    status_ |= CheckerStatus::MEET_BREAK;
+
+    if (smartCasts_.empty()) {
+        return;
+    }
+
+    SmartCastArray smartCasts {};
+    smartCasts.reserve(smartCasts_.size());
+
+    for (auto const [variable, type] : smartCasts_) {
+        if (!inInnerScope(variable->AsLocalVariable()->GetScope(), breakStatement)) {
+            smartCasts.emplace_back(variable, type);
+        }
+    }
+
+    if (!smartCasts.empty()) {
+        AddBreakSmartCasts(targetStatement, std::move(smartCasts));
+    }
+
+    ClearSmartCasts();
+}
+
+void CheckerContext::AddBreakSmartCasts(ir::Statement const *targetStatement, SmartCastArray &&smartCasts)
+{
+    breakSmartCasts_.emplace(targetStatement, std::move(smartCasts));
+}
+
+void CheckerContext::CombineBreakSmartCasts(ir::Statement const *targetStatement)
+{
+    ASSERT(smartCasts_.empty());
+
+    if (!breakSmartCasts_.empty()) {
+        bool firstCase = true;
+        auto it = breakSmartCasts_.begin();
+
+        while (it != breakSmartCasts_.end()) {
+            if (it->first != targetStatement) {
+                ++it;
+                continue;
+            }
+
+            if (firstCase) {
+                firstCase = false;
+                RestoreSmartCasts(it->second);
+            } else {
+                CombineSmartCasts(it->second);
+            }
+
+            it = breakSmartCasts_.erase(it);
+        }
+    }
+}
 }  // namespace ark::es2panda::checker

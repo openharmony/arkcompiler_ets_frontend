@@ -194,6 +194,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
 {
     if (resolved == nullptr) {
         ExtraCheckForResolvedError(ident);
+        return;
     }
 
     auto *smartType = Context().GetSmartCast(resolved);

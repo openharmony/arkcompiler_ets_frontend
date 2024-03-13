@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
 #include "checker/types/type.h"
+#include "ir/statements/loopStatement.h"
 #include "varbinder/variable.h"
 
 namespace ark::es2panda::checker {
@@ -60,6 +61,7 @@ using SmartCastArray = std::vector<std::pair<varbinder::Variable const *, checke
 using SmartCastTestMap = ArenaMap<varbinder::Variable const *, std::pair<checker::Type *, checker::Type *>>;
 using SmartCastTuple = std::tuple<varbinder::Variable const *, checker::Type *, checker::Type *>;
 using SmartCastTestArray = std::vector<SmartCastTuple>;
+using PreservedSmartCastsMap = ArenaMultiMap<ir::AstNode const *, SmartCastArray>;
 
 struct SmartCastCondition final {
     SmartCastCondition() = default;
@@ -158,8 +160,9 @@ public:
 
     [[nodiscard]] checker::Type *GetSmartCast(varbinder::Variable const *const variable) const noexcept;
     [[nodiscard]] SmartCastArray CloneSmartCasts(bool clearData = false) noexcept;
-    void RestoreSmartCasts(SmartCastArray const &prevSmartCasts) noexcept;
-    void CombineSmartCasts(SmartCastArray &alternateSmartCasts) noexcept;
+    void RestoreSmartCasts(SmartCastArray const &otherSmartCasts);
+    void CombineSmartCasts(SmartCastArray const &otherSmartCasts);
+    void AddSmartCasts(SmartCastArray const &otherSmartCasts);
 
     [[nodiscard]] SmartCastArray EnterTestExpression() noexcept
     {
@@ -180,14 +183,14 @@ public:
         return CloneTestSmartCasts(true);
     }
 
-    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop() noexcept;
+    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop(ir::LoopStatement const &loop) noexcept;
 
     [[nodiscard]] bool IsInLoop() const noexcept
     {
         return (status_ & CheckerStatus::IN_LOOP) != 0;
     }
 
-    void ExitLoop(SmartCastArray &prevSmartCasts, bool clearFlag) noexcept;
+    void ExitLoop(SmartCastArray &prevSmartCasts, bool clearFlag, ir::LoopStatement *loopStatement) noexcept;
 
     void EnterPath() noexcept
     {
@@ -209,6 +212,10 @@ public:
     void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
     void CheckBinarySmartCastCondition(ir::BinaryExpression *binaryExpression) noexcept;
 
+    void OnBreakStatement(ir::BreakStatement const *breakStatement);
+    void AddBreakSmartCasts(ir::Statement const *targetStatement, SmartCastArray &&smartCasts);
+    void CombineBreakSmartCasts(ir::Statement const *targetStatement);
+
 private:
     Checker *parent_;
     CheckerStatus status_;
@@ -221,6 +228,8 @@ private:
     SmartCastCondition testCondition_ {};
     SmartCastTestMap testSmartCasts_;
 
+    PreservedSmartCastsMap breakSmartCasts_;
+
     void RemoveSmartCasts(SmartCastArray const &otherSmartCasts) noexcept;
     [[nodiscard]] checker::Type *CombineTypes(checker::Type *typeOne, checker::Type *typeTwo) const noexcept;
     [[nodiscard]] static bool IsInValidChain(ir::AstNode const *parent) noexcept;
@@ -229,6 +238,7 @@ private:
     void ClearTestSmartCasts() noexcept;
     [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
     [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
+    void RemoveSmartCastsForAssignments(ir::AstNode const *node) noexcept;
 };
 }  // namespace ark::es2panda::checker
 

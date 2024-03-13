@@ -2839,7 +2839,7 @@ void ETSGen::ThrowException(const ir::Expression *expr)
     EmitThrow(expr, arg);
 }
 
-bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalNode, Label *prevFinnaly)
+bool ETSGen::ExtendWithFinalizer(ir::AstNode const *node, const ir::AstNode *originalNode, Label *prevFinnaly)
 {
     ASSERT(originalNode != nullptr);
 
@@ -2853,8 +2853,6 @@ bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalN
     }
 
     if (node->IsTryStatement() && node->AsTryStatement()->HasFinalizer()) {
-        auto *tryStm = node->AsTryStatement();
-
         Label *beginLabel = nullptr;
 
         if (prevFinnaly == nullptr) {
@@ -2876,7 +2874,8 @@ bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalN
 
         LabelPair insertion = compiler::LabelPair(beginLabel, endLabel);
 
-        tryStm->AddFinalizerInsertion(insertion, originalNode->AsStatement());
+        auto *tryStatement = const_cast<ir::AstNode *>(node)->AsTryStatement();
+        tryStatement->AddFinalizerInsertion(insertion, originalNode->AsStatement());
 
         return true;
     }

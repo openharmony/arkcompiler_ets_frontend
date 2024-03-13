@@ -309,6 +309,8 @@ ETSObjectType *ETSChecker::UpdateGlobalType(ETSObjectType *objType, util::String
         if (name == compiler::Signatures::BUILTIN_OBJECT_CLASS) {
             auto *nullish = CreateETSUnionType({objType, GlobalETSNullType(), GlobalETSUndefinedType()});
             GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
+            nullish = CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()});
+            GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_TYPE)] = nullish;
         }
     }
 

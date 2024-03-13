@@ -14,6 +14,6 @@
  */
 
 function fos<T extends Integral>(a0: T): T {
-    let myval = (): T|null => { return 2; }();
+    let myval: Short = 2;
     return a0 ?? myval;
 }
