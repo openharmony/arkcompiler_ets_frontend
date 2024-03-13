@@ -1647,7 +1647,13 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
                 continue;
             }
 
-            if (GetStringFromLiteral(caseTest) != GetStringFromLiteral(compareCaseTest)) {
+            if (caseTest->IsLiteral() && compareCaseTest->IsLiteral() &&
+                GetStringFromLiteral(caseTest) != GetStringFromLiteral(compareCaseTest)) {
+                continue;
+            }
+
+            if (!(IsConstantExpression(caseTest, caseTest->TsType()) || caseTest->IsLiteral()) ||
+                !(IsConstantExpression(compareCaseTest, compareCaseTest->TsType()) || compareCaseTest->IsLiteral())) {
                 continue;
             }
 
@@ -1720,6 +1726,10 @@ void ETSChecker::CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expr
     }
 
     checker::Type *caseType = currentCase->TsType();
+
+    if (!caseType->HasTypeFlag(checker::TypeFlag::VALID_SWITCH_TYPE)) {
+        ThrowTypeError("Unexpected type " + caseType->ToString(), pos);
+    }
 
     if (!CompareIdentifiersValuesAreDifferent(compareCase, GetStringFromIdentifierValue(caseType))) {
         ThrowTypeError("Variable has same value with another switch case", pos);
