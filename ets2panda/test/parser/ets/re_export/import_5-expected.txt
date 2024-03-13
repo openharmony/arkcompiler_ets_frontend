@@ -239,17 +239,47 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "foo",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "all",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 5
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 8
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "foo",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 22,
+                                "column": 9
+                              },
+                              "end": {
+                                "line": 22,
+                                "column": 12
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
-                              "line": 20,
+                              "line": 22,
                               "column": 5
                             },
                             "end": {
-                              "line": 20,
-                              "column": 8
+                              "line": 22,
+                              "column": 12
                             }
                           }
                         },
@@ -257,23 +287,23 @@
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 20,
+                            "line": 22,
                             "column": 5
                           },
                           "end": {
-                            "line": 20,
-                            "column": 10
+                            "line": 22,
+                            "column": 14
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 20,
+                          "line": 22,
                           "column": 5
                         },
                         "end": {
-                          "line": 20,
-                          "column": 11
+                          "line": 22,
+                          "column": 15
                         }
                       }
                     }
@@ -284,7 +314,7 @@
                       "column": 1
                     },
                     "end": {
-                      "line": 21,
+                      "line": 23,
                       "column": 2
                     }
                   }
@@ -295,7 +325,7 @@
                     "column": 14
                   },
                   "end": {
-                    "line": 21,
+                    "line": 23,
                     "column": 2
                   }
                 }
@@ -306,7 +336,7 @@
                   "column": 14
                 },
                 "end": {
-                  "line": 21,
+                  "line": 23,
                   "column": 2
                 }
               }
@@ -319,7 +349,7 @@
                 "column": 1
               },
               "end": {
-                "line": 21,
+                "line": 23,
                 "column": 2
               }
             }
@@ -354,7 +384,7 @@
       "column": 1
     },
     "end": {
-      "line": 22,
+      "line": 24,
       "column": 1
     }
   }

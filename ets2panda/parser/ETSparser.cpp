@@ -2518,6 +2518,13 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
         ThrowSyntaxError("Unexpected token.");
     }
 
+    // Note (oeotvos) As a temporary solution we allow the stdlib to use namespace import without an alias, but this
+    // should be handled at some point.
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM && !isReExport &&
+        (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) == 0) {
+        ThrowSyntaxError("Unexpected token, expected 'as' but found 'from'");
+    }
+
     auto *local = AllocNode<ir::Identifier>(util::StringView(""), Allocator());
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
         Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM || isReExport) {

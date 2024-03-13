@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,7 @@
  */
 
 import {foo} from "import_tests/packages";
-import * from "import_tests/packages";
+import * as all from "import_tests/packages";
 
-let x = foo(dbl /* double based signature */);
-let y = foo(flt /* float based signature */);
+let x = foo(all.dbl /* double based signature */);
+let y = foo(all.flt /* float based signature */);
