@@ -21,6 +21,6 @@
     "mRenameFileName": {
         "mEnable": true,
         "mNameGeneratorType": 1,
-        "mReservedFileNames": ["local", "rename_file_name", "index"]
+        "mReservedFileNames": ["local", "rename_file_name", "index", "ohmurl_test", "ohmurl-file"]
     }
 }

@@ -29,6 +29,11 @@ export interface PathAndExtension {
   ext: string | undefined;
 }
 
+export interface ProjectInfo {
+  packageDir: string, 
+  projectRootPath: string
+};
+
 export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
 export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
 

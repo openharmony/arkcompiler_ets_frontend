@@ -51,6 +51,8 @@
     "package.json",
     "tsconfig.base.json",
     "tsconfig.json",
-    "README.md"
+    "README.md",
+    "README-cn.md",
+    "Version.md"
   ]
 }

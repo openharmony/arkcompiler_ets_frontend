@@ -17,6 +17,8 @@ import {describe, it} from 'mocha';
 import {FileUtils} from '../../../src/utils/FileUtils';
 import {assert} from 'chai';
 
+const renameFileNameModule = require('../../../src/transformers/rename/RenameFileNameTransformer');
+
 describe('Tester Cases for <FileUtils>.', function () {
   /** test for readFile */
   it('Tester: <file not found> case for FileUtils#readFile', function () {
@@ -153,5 +155,25 @@ describe('Tester Cases for <FileUtils>.', function () {
     let prefix = 'D:\\HuaweiApp\\ohsdk\\ets\\3.2.7.5';
 
     assert.strictEqual(FileUtils.getPathWithoutPrefix(path, prefix), '');
+  });
+
+  it('Tester: <determine whether oh_modules or not.> case for renameFileNameModule#inInOhModules', function () {
+    let projectInfo = {
+      projectRootPath: '/test/Obfuscation/arkguard',
+      packageDir: 'oh_modules'
+    };
+    let originalPath = '/test/Obfuscation/rkguard/entry/src/main/ets/pages/Index.ets';
+
+    assert.strictEqual(renameFileNameModule.inInOhModules(projectInfo, originalPath), false);
+  });
+
+  it('Tester: <determine whether oh_modules or not.> case for renameFileNameModule#inInOhModules', function () {
+    let projectInfo = {
+      projectRootPath: '/test/Obfuscation/arkguard',
+      packageDir: 'oh_modules'
+    };
+    let originalPath = '/test/Obfuscation/arkguard/oh_modules/.ohpm/json5@2.2.3/oh_modules/json5/dist/index.mjs';
+
+    assert.strictEqual(renameFileNameModule.inInOhModules(projectInfo, originalPath), true);
   });
 });
