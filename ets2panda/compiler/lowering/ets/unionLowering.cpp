@@ -107,11 +107,9 @@ varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSChecker *che
 void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *vbind, ir::MemberExpression *expr)
 {
     ASSERT(expr->PropVar() == nullptr);
-    auto parent = expr->Parent();
-    if (parent->IsCallExpression() &&
-        !parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)) {
-        return;
-    }
+    [[maybe_unused]] auto parent = expr->Parent();
+    ASSERT(!(parent->IsCallExpression() && parent->AsCallExpression()->Callee() == expr &&
+             parent->AsCallExpression()->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE)));
     expr->SetPropVar(
         CreateUnionFieldClassProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
     ASSERT(expr->PropVar() != nullptr);
