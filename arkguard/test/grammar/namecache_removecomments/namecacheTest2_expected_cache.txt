@@ -1,0 +1,8 @@
+{
+  "IdentifierCache": {
+    "#testFunction:21:29": "i",
+    "testFunction#para1": "j",
+    "testFunction#para2": "k"
+  },
+  "MemberMethodCache": {}
+}

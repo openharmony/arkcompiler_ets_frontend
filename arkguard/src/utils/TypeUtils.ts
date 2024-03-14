@@ -25,6 +25,7 @@ import type {
   CompilerHost,
   CompilerOptions,
   Printer,
+  PrinterOptions,
   Program,
   SourceFile,
   TypeChecker,
@@ -41,8 +42,9 @@ export class TypeUtils {
    * @param oldAst
    *
    */
-  public static createNewSourceFile(oldAst: SourceFile): SourceFile {
-    let printer: Printer = createPrinter();
+  public static createNewSourceFile(oldAst: SourceFile, removeComments: boolean): SourceFile {
+    let printerOptions: PrinterOptions = {removeComments: removeComments};
+    let printer: Printer = createPrinter(printerOptions);
     let content: string = printer.printFile(oldAst);
 
     const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(oldAst.fileName);
