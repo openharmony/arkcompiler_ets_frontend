@@ -81,6 +81,35 @@ static void DumpPandaFileSizeStatistic(std::map<std::string, size_t> &stat)
     std::cout << "total: " << totalSize << std::endl;
 }
 
+static void DumpPandaFileSizePctStatistic(std::map<std::string, size_t> &stat)
+{
+    size_t totalSize = 0;
+    std::cout << "Panda file size statistic:" << std::endl;
+    constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
+
+    for (const auto &[name, size] : stat) {
+        if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
+            continue;
+        }
+        totalSize += size;
+    }
+
+    const int itemWidth = 32;   // The width of each item name is 32 bit. (item name is a data structure in abc file)
+    const int sectionWidth = 8; // The width of each section size is 8 bit. (section size is the size of each item)
+    const int precision = 2;    // Control the output precision of the size percentage.
+    const double percentFlag = 100.0f;  // Conversion of percentage output.
+    for (const auto &[name, size] : stat) {
+        if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
+            continue;
+        }
+        std::cout << std::left << std::setw(itemWidth) << name << " section: " << \
+        std::setw(sectionWidth) << size << ", percent: " << \
+        std::fixed << std::setprecision(precision) << (size * percentFlag / totalSize) << "%" << std::endl;
+    }
+
+    std::cout << "total: " << totalSize << std::endl;
+}
+
 static bool GenerateProgramsByWorkers(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
     const std::unique_ptr<panda::es2panda::aot::Options> &options, std::map<std::string, size_t> *statp)
 {
@@ -138,8 +167,9 @@ static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::P
     }
 
     bool dumpSize = options->SizeStat();
+    bool dumpSizePct = options->SizePctStat();
     std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = dumpSize ? &stat : nullptr;
+    std::map<std::string, size_t> *statp = (dumpSize || dumpSizePct) ? &stat : nullptr;
 
     if (!GenerateProgramsByWorkers(programsInfo, options, statp)) {
         return false;
@@ -147,6 +177,10 @@ static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::P
 
     if (dumpSize) {
         DumpPandaFileSizeStatistic(stat);
+    }
+
+    if (dumpSizePct) {
+        DumpPandaFileSizePctStatistic(stat);
     }
 
     return true;

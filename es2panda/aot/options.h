@@ -35,6 +35,7 @@ enum class OptionFlags {
     DEFAULT = 0,
     PARSE_ONLY = 1 << 1,
     SIZE_STAT = 1 << 2,
+    SIZE_PCT_STAT = 1 << 3,
 };
 
 inline std::underlying_type_t<OptionFlags> operator&(OptionFlags a, OptionFlags b)
@@ -108,6 +109,11 @@ public:
     bool SizeStat() const
     {
         return (options_ & OptionFlags::SIZE_STAT) != 0;
+    }
+
+    bool SizePctStat() const
+    {
+        return (options_ & OptionFlags::SIZE_PCT_STAT) != 0;
     }
 
     std::string ExtractContentFromBase64Input(const std::string &inputBase64String);

@@ -225,6 +225,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function");
     panda::PandArg<int> opFileThreadCount("file-threads", 0, "Number of worker threads to compile file");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
+    panda::PandArg<bool> opSizePctStat("dump-file-item-size", false, "Dump the size of each kind of file item "\
+        "of the abc file");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
     panda::PandArg<std::string> recordName("record-name", "", "Specify the record name");
@@ -283,6 +285,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opFunctionThreadCount);
     argparser_->Add(&opFileThreadCount);
     argparser_->Add(&opSizeStat);
+    argparser_->Add(&opSizePctStat);
     argparser_->Add(&opDumpLiteralBuffer);
 
     argparser_->Add(&inputExtension);
@@ -458,6 +461,10 @@ bool Options::Parse(int argc, const char **argv)
 
     if (opSizeStat.GetValue()) {
         options_ |= OptionFlags::SIZE_STAT;
+    }
+
+    if (opSizePctStat.GetValue()) {
+        options_ |= OptionFlags::SIZE_PCT_STAT;
     }
 
     compilerOptions_.recordSource = opRecordSource.GetValue();
