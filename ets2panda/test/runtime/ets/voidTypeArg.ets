@@ -13,15 +13,14 @@
  * limitations under the License.
  */
 
-class A {
-	static foo(): void {}
+function foo<T>(a0: T): T {
+    return a0;
 }
 
-class B extends A {
-	foo: number = 10
-}
+function main() : void {
+    let afoo = foo<void>(undefined);
+    let bfoo = foo<undefined>(undefined);
 
-function main(): void {
-    A.foo()
-    new B().foo
+    assert(afoo == undefined);
+    assert(bfoo == undefined);
 }

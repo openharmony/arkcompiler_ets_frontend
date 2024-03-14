@@ -19,6 +19,6 @@ class C {
 }
 
 function main(): void {
-    console.log(C.foo())
-    console.log(new C().foo)
+    C.foo()
+    new C().foo
 }

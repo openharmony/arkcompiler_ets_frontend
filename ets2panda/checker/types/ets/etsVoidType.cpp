@@ -18,14 +18,18 @@
 namespace ark::es2panda::checker {
 void ETSVoidType::Identical(TypeRelation *relation, Type *other)
 {
-    if (other->IsETSVoidType() || other->IsETSUndefinedType()) {
+    if (other->IsETSVoidType()) {
         relation->Result(true);
     }
 }
 
 bool ETSVoidType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    Identical(relation, target);
+    if (!target->IsETSUndefinedType()) {
+        Identical(relation, target);
+    } else {
+        relation->Result(true);
+    }
 
     return relation->IsTrue();
 }

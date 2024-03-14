@@ -13,15 +13,9 @@
  * limitations under the License.
  */
 
-class A {
-	static foo(): void {}
-}
-
-class B extends A {
-	foo: number = 10
-}
-
-function main(): void {
-    A.foo()
-    new B().foo
+function foo<T>() {}
+function foo2<T = void>() {}
+function main() {
+    foo<void>()
+    foo2<>()
 }
