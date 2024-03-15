@@ -13,28 +13,8 @@
  * limitations under the License.
  */
 
-function foo_i(value: Int): string {
-    return value.toString();
+function toString1(value: number): string {
+    return value.toString(value);
 }
 
-function foo_d(value: Double): string {
-    return value.toString();
-}
-
-function foo_n(value: Number): string {
-    return value.toString();
-}
-
-function main(): void {
-    let i: int = 4
-    let str_i: string = foo_i(i);
-    assert str_i == "4";
-
-    let d: double = 3.14
-    let str_d: string = foo_d(d);
-    assert str_d == "3.14";
-
-    let n: number = 5
-    let str_n: string = foo_n(n);
-    assert str_n == "5";
-}
+function main(): void {}

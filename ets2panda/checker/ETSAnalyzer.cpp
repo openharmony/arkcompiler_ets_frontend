@@ -1143,12 +1143,9 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     }
 
     if (baseType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        checker->Relation()->SetNode(expr);
-        expr->SetObjectType(checker->PrimitiveTypeAsETSBuiltinType(baseType)->AsETSObjectType());
-        checker->AddBoxingUnboxingFlagsToNode(expr, expr->ObjType());
-        auto [resType, resVar] = expr->ResolveObjectMember(checker);
-        expr->SetPropVar(resVar);
-        return expr->AdjustType(checker, resType);
+        checker->ThrowTypeError(
+            {"Property '", expr->Property()->AsIdentifier()->Name(), "' does not exist on type '", baseType, "'"},
+            expr->Object()->Start());
     }
 
     checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, expr->Object()->Start());
