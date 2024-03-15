@@ -1348,14 +1348,19 @@ export class TypeScriptLinter {
   }
 
   private processClassStaticBlocks(classDecl: ts.ClassDeclaration): void {
-    let hasStaticBlock = false;
+    let staticBlocksCntr = 0;
+    const staticBlockNodes: ts.Node[] = [];
     for (const element of classDecl.members) {
       if (ts.isClassStaticBlockDeclaration(element)) {
-        if (hasStaticBlock) {
-          this.incrementCounters(element, FaultID.MultipleStaticBlocks);
-        } else {
-          hasStaticBlock = true;
-        }
+        staticBlockNodes[staticBlocksCntr] = element;
+        staticBlocksCntr++;
+      }
+    }
+    if (staticBlocksCntr > 1) {
+      const autofix = this.autofixer?.fixMultipleStaticBlocks(staticBlockNodes);
+      // autofixes for all additional static blocks are the same
+      for (let i = 1; i < staticBlocksCntr; i++) {
+        this.incrementCounters(staticBlockNodes[i], FaultID.MultipleStaticBlocks, autofix);
       }
     }
   }
