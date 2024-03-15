@@ -57,7 +57,7 @@ import {needReadApiInfo, readProjectProperties, readProjectPropertiesByCollected
 import {ApiExtractor} from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
 import {EventList, TimeSumPrinter, TimeTracker} from './utils/PrinterUtils';
-import { ProjectInfo } from './common/type';
+import type { ProjectInfo } from './common/type';
 export {FileUtils} from './utils/FileUtils';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');

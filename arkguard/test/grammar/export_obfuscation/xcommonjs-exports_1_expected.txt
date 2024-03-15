@@ -12,17 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let k5 = 1;
-exports.v3 = k5;
+let m5 = 1;
+exports.v3 = m5;
 exports.w3 = 2;
 exports.x3 = function () {
     return 'Hello, world!';
 };
-class n4 {
+class m4 {
     y3 = '00001';
-    g4 = { i4: 'jack3', m4: 12 };
+    z3 = { a4: 'jack3', i4: 12 };
 }
-exports.n4 = n4;
+exports.m4 = m4;
 exports.o4 = class {
     q4 = 11;
     r4 = 15;

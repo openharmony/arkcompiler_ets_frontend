@@ -302,7 +302,7 @@ function canBeObfuscatedFilePath(filePath: string): boolean {
   return path.isAbsolute(filePath) || FileUtils.isRelativePath(filePath) || isBundleOhmUrl(filePath);
 }
 
-function isBundleOhmUrl(filePath: string): boolean{
+function isBundleOhmUrl(filePath: string): boolean {
   return filePath.startsWith(BUNDLE);
 }
 
