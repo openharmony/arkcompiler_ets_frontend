@@ -19,6 +19,13 @@
             "column": 9,
             "problem": "PropertyAccessByIndex",
             "autofixable": true,
+            "autofix": [
+                {
+                    "replacementText": "p.x",
+                    "start": 684,
+                    "end": 690
+                }
+            ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         }

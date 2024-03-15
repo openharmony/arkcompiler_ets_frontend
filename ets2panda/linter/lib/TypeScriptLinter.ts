@@ -85,6 +85,7 @@ export class TypeScriptLinter {
   walkedComments: Set<number>;
   libraryTypeCallDiagnosticChecker: LibraryTypeCallDiagnosticChecker;
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
+  syncAutofixes: Map<ts.Symbol, Autofix[]>;
 
   private sourceFile?: ts.SourceFile;
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
@@ -133,6 +134,7 @@ export class TypeScriptLinter {
       TypeScriptLinter.filteredDiagnosticMessages
     );
     this.supportedStdCallApiChecker = new SupportedStdCallApiChecker(this.tsUtils, this.tsTypeChecker);
+    this.syncAutofixes = new Map<ts.Symbol, Autofix[]>();
 
     this.initEtsHandlers();
     this.initCounters();
@@ -722,8 +724,15 @@ export class TypeScriptLinter {
     const propName = node.name;
     if (!!propName && ts.isNumericLiteral(propName)) {
       let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
-      const autofixable = autofix !== undefined;
-      if (!this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName)) {
+      let autofixable = false;
+
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(propName);
+      if (symbol !== undefined && autofix !== undefined) {
+        autofixable = true;
+        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName) ?
+          this.createSyncAutofixes(symbol, autofix) :
+          undefined;
+      } else {
         autofix = undefined;
       }
       this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
@@ -772,8 +781,17 @@ export class TypeScriptLinter {
     isDynamic = isLibraryType || this.tsUtils.isDynamicLiteralInitializer(node.parent);
     if (!isRecordObjectInitializer && !isDynamic) {
       let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
-      const autofixable = autofix !== undefined;
-      if (!this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName)) {
+      let autofixable = false;
+
+      const contextualType = this.tsTypeChecker.getContextualType(node.parent);
+      const symbol = contextualType !== undefined ? this.tsUtils.getPropertySymbol(contextualType, node) : undefined;
+
+      if (symbol !== undefined && autofix !== undefined) {
+        autofixable = true;
+        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName) ?
+          this.createSyncAutofixes(symbol, autofix) :
+          undefined;
+      } else {
         autofix = undefined;
       }
       this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
@@ -1581,8 +1599,15 @@ export class TypeScriptLinter {
       !this.isElementAcessAllowed(tsElemAccessBaseExprType)
     ) {
       let autofix = Autofixer.fixPropertyAccessByIndex(node);
-      const autofixable = autofix !== undefined;
-      if (!this.autofixesInfo.shouldAutofix(node, FaultID.PropertyAccessByIndex)) {
+      let autofixable = false;
+
+      const symbol = this.tsTypeChecker.getSymbolAtLocation(tsElementAccessExpr.argumentExpression);
+      if (symbol !== undefined && autofix !== undefined) {
+        autofixable = true;
+        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName) ?
+          this.createSyncAutofixes(symbol, autofix) :
+          undefined;
+      } else {
         autofix = undefined;
       }
       this.incrementCounters(node, FaultID.PropertyAccessByIndex, autofixable, autofix);
@@ -2227,12 +2252,26 @@ export class TypeScriptLinter {
         autofixable = true;
 
         if (this.autofixesInfo.shouldAutofix(node, FaultID.PrivateIdentifier)) {
-          autofix = [Autofixer.fixPrivateIdentifier(ident)];
+          autofix = this.createSyncAutofixes(classMember, [Autofixer.fixPrivateIdentifier(ident)]);
         }
       }
     }
 
     this.incrementCounters(node, FaultID.PrivateIdentifier, autofixable, autofix);
+  }
+
+  private createSyncAutofixes(symbol: ts.Symbol, autofixes: Autofix[]): Autofix[] {
+    if (!this.syncAutofixes.has(symbol)) {
+      this.syncAutofixes.set(symbol, []);
+    }
+
+    const autofixesRef = this.syncAutofixes.get(symbol);
+    if (autofixesRef === undefined) {
+      return autofixes;
+    }
+
+    autofixesRef.push(...autofixes);
+    return autofixesRef;
   }
 
   lint(sourceFile: ts.SourceFile): void {

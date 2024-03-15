@@ -32,11 +32,7 @@ export const AUTOFIX_ALL: AutofixInfo = {
  * algorithm is improved to guarantee that fixes can be applied
  * safely and won't break program code.
  */
-const UNSAFE_FIXES: FaultID[] = [
-  FaultID.LiteralAsPropertyName,
-  FaultID.PropertyAccessByIndex,
-  FaultID.PrivateIdentifier
-];
+const UNSAFE_FIXES: FaultID[] = [];
 
 export interface Autofix {
   replacementText: string;

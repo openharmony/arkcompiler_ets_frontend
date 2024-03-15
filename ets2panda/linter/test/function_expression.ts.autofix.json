@@ -270,7 +270,7 @@
             "line": 82,
             "column": 19,
             "problem": "PropertyAccessByIndex",
-            "autofixable": true,
+            "autofixable": false,
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },

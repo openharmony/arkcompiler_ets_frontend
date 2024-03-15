@@ -67,6 +67,18 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 617,
+                    "end": 628,
+                    "replacementText": "private p: number;"
+                },
+                {
+                    "start": 1121,
+                    "end": 1123,
+                    "replacementText": "p"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -83,6 +95,18 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 677,
+                    "end": 689,
+                    "replacementText": "private q?: string;"
+                },
+                {
+                    "start": 1142,
+                    "end": 1144,
+                    "replacementText": "q"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -99,6 +123,18 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 692,
+                    "end": 704,
+                    "replacementText": "private e!: string;"
+                },
+                {
+                    "start": 1152,
+                    "end": 1154,
+                    "replacementText": "e"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -107,6 +143,18 @@
             "column": 10,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 707,
+                    "end": 721,
+                    "replacementText": "private static s = 0;"
+                },
+                {
+                    "start": 1159,
+                    "end": 1161,
+                    "replacementText": "s"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -115,6 +163,18 @@
             "column": 12,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 724,
+                    "end": 741,
+                    "replacementText": "private readonly r = 20;"
+                },
+                {
+                    "start": 1169,
+                    "end": 1171,
+                    "replacementText": "r"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -123,6 +183,18 @@
             "column": 19,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 744,
+                    "end": 768,
+                    "replacementText": "private static readonly sr = 0;"
+                },
+                {
+                    "start": 1176,
+                    "end": 1179,
+                    "replacementText": "sr"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -131,6 +203,18 @@
             "column": 19,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 771,
+                    "end": 801,
+                    "replacementText": "private static readonly srq?: string;"
+                },
+                {
+                    "start": 1184,
+                    "end": 1188,
+                    "replacementText": "srq"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -139,6 +223,18 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 805,
+                    "end": 827,
+                    "replacementText": "private m(x: number): void { }"
+                },
+                {
+                    "start": 1224,
+                    "end": 1226,
+                    "replacementText": "m"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -163,6 +259,18 @@
             "column": 7,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 955,
+                    "end": 987,
+                    "replacementText": "private get g1(): number { return 10; }"
+                },
+                {
+                    "start": 1315,
+                    "end": 1318,
+                    "replacementText": "g1"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -171,6 +279,18 @@
             "column": 7,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 990,
+                    "end": 1012,
+                    "replacementText": "private set s1(x: number) { }"
+                },
+                {
+                    "start": 1329,
+                    "end": 1332,
+                    "replacementText": "s1"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -179,6 +299,18 @@
             "column": 14,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1016,
+                    "end": 1055,
+                    "replacementText": "private static get g2(): number { return 10; }"
+                },
+                {
+                    "start": 1352,
+                    "end": 1355,
+                    "replacementText": "g2"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -187,6 +319,18 @@
             "column": 14,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1058,
+                    "end": 1087,
+                    "replacementText": "private static set s2(x: number) { }"
+                },
+                {
+                    "start": 1363,
+                    "end": 1366,
+                    "replacementText": "s2"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -195,6 +339,18 @@
             "column": 22,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 617,
+                    "end": 628,
+                    "replacementText": "private p: number;"
+                },
+                {
+                    "start": 1121,
+                    "end": 1123,
+                    "replacementText": "p"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -211,6 +367,18 @@
             "column": 43,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 677,
+                    "end": 689,
+                    "replacementText": "private q?: string;"
+                },
+                {
+                    "start": 1142,
+                    "end": 1144,
+                    "replacementText": "q"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -219,6 +387,18 @@
             "column": 53,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 692,
+                    "end": 704,
+                    "replacementText": "private e!: string;"
+                },
+                {
+                    "start": 1152,
+                    "end": 1154,
+                    "replacementText": "e"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -227,6 +407,18 @@
             "column": 60,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 707,
+                    "end": 721,
+                    "replacementText": "private static s = 0;"
+                },
+                {
+                    "start": 1159,
+                    "end": 1161,
+                    "replacementText": "s"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -235,6 +427,18 @@
             "column": 70,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 724,
+                    "end": 741,
+                    "replacementText": "private readonly r = 20;"
+                },
+                {
+                    "start": 1169,
+                    "end": 1171,
+                    "replacementText": "r"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -243,6 +447,18 @@
             "column": 77,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 744,
+                    "end": 768,
+                    "replacementText": "private static readonly sr = 0;"
+                },
+                {
+                    "start": 1176,
+                    "end": 1179,
+                    "replacementText": "sr"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -251,6 +467,18 @@
             "column": 85,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 771,
+                    "end": 801,
+                    "replacementText": "private static readonly srq?: string;"
+                },
+                {
+                    "start": 1184,
+                    "end": 1188,
+                    "replacementText": "srq"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -259,6 +487,18 @@
             "column": 10,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 805,
+                    "end": 827,
+                    "replacementText": "private m(x: number): void { }"
+                },
+                {
+                    "start": 1224,
+                    "end": 1226,
+                    "replacementText": "m"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -283,6 +523,18 @@
             "column": 18,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 955,
+                    "end": 987,
+                    "replacementText": "private get g1(): number { return 10; }"
+                },
+                {
+                    "start": 1315,
+                    "end": 1318,
+                    "replacementText": "g1"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -291,6 +543,18 @@
             "column": 10,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 990,
+                    "end": 1012,
+                    "replacementText": "private set s1(x: number) { }"
+                },
+                {
+                    "start": 1329,
+                    "end": 1332,
+                    "replacementText": "s1"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -299,6 +563,18 @@
             "column": 15,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1016,
+                    "end": 1055,
+                    "replacementText": "private static get g2(): number { return 10; }"
+                },
+                {
+                    "start": 1352,
+                    "end": 1355,
+                    "replacementText": "g2"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -307,6 +583,18 @@
             "column": 7,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1058,
+                    "end": 1087,
+                    "replacementText": "private static set s2(x: number) { }"
+                },
+                {
+                    "start": 1363,
+                    "end": 1366,
+                    "replacementText": "s2"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -331,6 +619,18 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1401,
+                    "end": 1412,
+                    "replacementText": "private a: string;"
+                },
+                {
+                    "start": 1572,
+                    "end": 1574,
+                    "replacementText": "a"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -355,6 +655,18 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1494,
+                    "end": 1526,
+                    "replacementText": "private bar(): string { return 'baz'; }"
+                },
+                {
+                    "start": 1655,
+                    "end": 1659,
+                    "replacementText": "bar"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -371,6 +683,18 @@
             "column": 32,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1401,
+                    "end": 1412,
+                    "replacementText": "private a: string;"
+                },
+                {
+                    "start": 1572,
+                    "end": 1574,
+                    "replacementText": "a"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -387,6 +711,18 @@
             "column": 18,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1494,
+                    "end": 1526,
+                    "replacementText": "private bar(): string { return 'baz'; }"
+                },
+                {
+                    "start": 1655,
+                    "end": 1659,
+                    "replacementText": "bar"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },
@@ -403,6 +739,13 @@
             "column": 3,
             "problem": "PrivateIdentifier",
             "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1682,
+                    "end": 1693,
+                    "replacementText": "private a: number;"
+                }
+            ],
             "suggest": "",
             "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
         },

@@ -21,3 +21,16 @@ class C {
 class X {
     private foo: number = 42
 }
+
+class D {
+    #a: number = 1
+    #b: number = 2
+    
+    foo(): number {
+        return this.#a + this.#b
+    }
+
+    bar(): number {
+        return this.#a + this.#b - this.#a - this.#b
+    }
+}

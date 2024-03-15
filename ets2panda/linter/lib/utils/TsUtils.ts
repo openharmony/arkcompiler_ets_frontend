@@ -709,7 +709,7 @@ export class TsUtils {
     return false;
   }
 
-  private findProperty(type: ts.Type, name: string): ts.Symbol | undefined {
+  findProperty(type: ts.Type, name: string): ts.Symbol | undefined {
     const properties = this.tsTypeChecker.getPropertiesOfType(type);
     if (properties?.length) {
       for (const prop of properties) {
@@ -822,8 +822,7 @@ export class TsUtils {
     return true;
   }
 
-  private validateField(type: ts.Type, prop: ts.PropertyAssignment): boolean {
-    // Issue 15497: Use unescaped property name to find correpsponding property.
+  getPropertySymbol(type: ts.Type, prop: ts.PropertyAssignment): ts.Symbol | undefined {
     const propNameSymbol = this.tsTypeChecker.getSymbolAtLocation(prop.name);
     const propName = propNameSymbol ?
       ts.symbolName(propNameSymbol) :
@@ -831,6 +830,12 @@ export class TsUtils {
         ts.idText(prop.name) :
         prop.name.getText();
     const propSym = this.findProperty(type, propName);
+    return propSym;
+  }
+
+  private validateField(type: ts.Type, prop: ts.PropertyAssignment): boolean {
+    // Issue 15497: Use unescaped property name to find correpsponding property.
+    const propSym = this.getPropertySymbol(type, prop);
     if (!propSym?.declarations?.length) {
       return false;
     }
