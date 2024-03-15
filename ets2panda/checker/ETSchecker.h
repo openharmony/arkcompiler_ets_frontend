@@ -618,6 +618,7 @@ public:
     template <typename T, typename... Args>
     T *AllocNode(Args &&...args)
     {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 

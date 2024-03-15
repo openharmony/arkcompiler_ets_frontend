@@ -867,6 +867,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
             it->Check(this);
         }
     }
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     CreateAsyncProxyMethods(classDef);
 
     if (classDef->IsGlobal()) {
@@ -881,6 +882,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     }
 
     ValidateOverriding(classType, classDef->Start());
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     TransformProperties(classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);
@@ -905,12 +907,14 @@ void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
             continue;
         }
         auto *method = it->AsMethodDefinition();
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         asyncImpls.push_back(CreateAsyncProxy(method, classDef));
         auto *proxy = asyncImpls.back();
         for (auto *overload : method->Overloads()) {
             if (!overload->IsAsync()) {
                 continue;
             }
+            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
             auto *impl = CreateAsyncProxy(overload, classDef, false);
             impl->Function()->Id()->SetVariable(proxy->Function()->Id()->Variable());
             proxy->AddOverload(impl);
@@ -1569,7 +1573,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
 
         auto *const scope = this->Scope();
         ASSERT(scope->IsClassScope());
-
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         ir::MethodDefinition *getter = GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), false, this);
         classDef->Body().push_back(getter);
         getter->SetParent(classDef);
@@ -1589,6 +1593,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
 
             if (!classProp->IsReadonly()) {
                 ir::MethodDefinition *const setter =
+                    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                     GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
                 setter->SetParent(classDef);
 
@@ -1603,6 +1608,7 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
 
         if (!classProp->IsReadonly()) {
             ir::MethodDefinition *const setter =
+                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
                 GenerateDefaultGetterSetter(classProp, scope->AsClassScope(), true, this);
             setter->SetParent(classDef);
 

@@ -182,9 +182,11 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
     }
 
     CheckProgram(Program(), true);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     BuildDynamicCallClass(true);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     BuildDynamicCallClass(false);
-
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     BuildDynamicImportClass();
 
 #ifndef NDEBUG
