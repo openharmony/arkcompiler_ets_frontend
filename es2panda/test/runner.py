@@ -1488,6 +1488,7 @@ def main():
         runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
         runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
+        runner.add_directory("compiler/interpreter/lexicalEnv", "js", [])
 
         runners.append(runner)
 
