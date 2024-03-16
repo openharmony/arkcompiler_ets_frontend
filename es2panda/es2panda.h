@@ -21,6 +21,7 @@
 #include <util/patchFix.h>
 #include <util/programCache.h>
 #include <util/symbolTable.h>
+#include <abc2program/abc2program_compiler.h>
 
 #include <string>
 #include <unordered_map>
@@ -204,9 +205,11 @@ private:
     util::PatchFix *InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,
                                        util::SymbolTable *symbolTable);
     static void CleanPatchFixHelper(const util::PatchFix *patchFixHelper);
+    panda::pandasm::Program *AbcToAsmProgram(const std::string &fname, const CompilerOptions &options);
 
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;
+    panda::abc2program::Abc2ProgramCompiler *abcToAsmCompiler_;
     std::unique_ptr<parser::Transformer> transformer_ {nullptr};
     Error error_;
 };
