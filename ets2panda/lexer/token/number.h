@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -143,6 +143,12 @@ public:
     void Negate()
     {
         std::visit(overloaded {[](auto &value) { value = -value; }}, num_);
+        if (std::holds_alternative<int64_t>(num_)) {
+            int64_t num = std::get<int64_t>(num_);
+            if (num == INT32_MIN) {
+                SetValue<int32_t>(num);
+            }
+        }
     }
 
     template <typename RT>

@@ -171,10 +171,14 @@ std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::Resolve
             return {checker->GetTypeOfVariable(resolveRes[0]->Variable()), nullptr};
         }
         case 2U: {
-            // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
-            auto *resolvedType = checker->CreateETSExtensionFuncHelperType(
-                checker->GetTypeOfVariable(resolveRes[1]->Variable())->AsETSFunctionType(),
-                checker->GetTypeOfVariable(resolveRes[0]->Variable())->AsETSFunctionType());
+            auto classMethodType = checker->GetTypeOfVariable(resolveRes[1]->Variable());
+            auto extensionMethodType = checker->GetTypeOfVariable(resolveRes[0]->Variable());
+            auto *resolvedType = extensionMethodType;
+            if (classMethodType->IsETSFunctionType()) {
+                ASSERT(extensionMethodType->IsETSFunctionType());
+                resolvedType = checker->CreateETSExtensionFuncHelperType(classMethodType->AsETSFunctionType(),
+                                                                         extensionMethodType->AsETSFunctionType());
+            }
             return {resolvedType, nullptr};
         }
         default: {

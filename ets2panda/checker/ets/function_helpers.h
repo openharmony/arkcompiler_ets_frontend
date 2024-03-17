@@ -87,18 +87,25 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
 {
     Substitution *substitution = checker->NewSubstitution();
     auto *sigInfo = signature->GetSignatureInfo();
+
     for (size_t ix = 0; ix < arguments.size(); ix++) {
         auto *arg = arguments[ix];
         if (arg->IsObjectExpression()) {
             continue;
         }
-        auto *argType = MaybeBoxedType(checker, arg->Check(checker), arg);
-        auto *paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
-                          : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
-                                                          : nullptr;
+
+        auto *const argType = arg->IsSpreadElement()
+                                  ? MaybeBoxedType(checker, arg->AsSpreadElement()->Argument()->Check(checker),
+                                                   arg->AsSpreadElement()->Argument())
+                                  : MaybeBoxedType(checker, arg->Check(checker), arg);
+        auto *const paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
+                                : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
+                                                                : nullptr;
+
         if (paramType == nullptr) {
             continue;
         }
+
         if (!checker->EnhanceSubstitutionForType(sigInfo->typeParams, paramType, argType, substitution)) {
             return nullptr;
         }
@@ -159,7 +166,7 @@ static Signature *MaybeSubstituteTypeParameters(ETSChecker *checker, Signature *
     const Substitution *substitution =
         (typeArguments != nullptr)
             ? BuildExplicitSubstitutionForArguments(checker, signature, typeArguments->Params(), pos, flags)
-            : (signature->GetSignatureInfo()->params.empty()
+            : (signature->GetSignatureInfo()->params.empty() && signature->GetSignatureInfo()->restVar == nullptr
                    ? nullptr
                    : BuildImplicitSubstitutionForArguments(checker, signature, arguments));
 

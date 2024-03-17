@@ -170,7 +170,6 @@ bool Options::Parse(int argc, const char **argv)
     ark::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
     ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
     ark::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
-    ark::PandArg<std::string> opTsDeclOut("gen-ts-decl", "", "For given .ets file, generate .ts interop file");
 
     auto constexpr DEFAULT_THREAD_COUNT = 0;
     ark::PandArg<int> opThreadCount("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
@@ -255,7 +254,6 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&dumpAfterPhases);
     argparser_->Add(&dumpEtsSrcBeforePhases);
     argparser_->Add(&arktsConfig);
-    argparser_->Add(&opTsDeclOut);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -342,7 +340,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.arktsConfig = std::make_shared<ark::es2panda::ArkTsConfig>(arktsConfig.GetValue());
 
     // Some additional checks for ETS extension
-    if (!CheckEtsSpecificOptions(opTsDeclOut, compilationMode, arktsConfig)) {
+    if (!CheckEtsSpecificOptions(compilationMode, arktsConfig)) {
         return false;
     }
 
@@ -352,7 +350,6 @@ bool Options::Parse(int argc, const char **argv)
         return false;
     }
 
-    compilerOptions_.tsDeclOut = opTsDeclOut.GetValue();
     compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
     compilerOptions_.dumpAst = opDumpAst.GetValue();
     compilerOptions_.opDumpAstOnlySilent = opDumpAstOnlySilent.GetValue();

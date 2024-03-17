@@ -841,9 +841,11 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
     auto &signatures = ChooseSignatures(checker, calleeType, expr->IsETSConstructorCall(), isFunctionalInterface,
                                         isUnionTypeWithFunctionalInterface);
     // Remove static signatures if the callee is a member expression and the object is initialized
-    if (expr->Callee()->IsMemberExpression() && expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
-        expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
-            varbinder::VariableFlags::INITIALIZED)) {
+    if (expr->Callee()->IsMemberExpression() &&
+        (expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression() ||
+         (expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
+          expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
+              varbinder::VariableFlags::INITIALIZED)))) {
         signatures.erase(
             std::remove_if(signatures.begin(), signatures.end(),
                            [](checker::Signature *signature) { return signature->Function()->IsStatic(); }),
@@ -1970,14 +1972,7 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
         auto exceptionType = catchClause->Check(checker);
         if ((exceptionType != nullptr) && (catchClause->Param() != nullptr)) {
             auto *clauseType = exceptionType->AsETSObjectType();
-
-            for (auto *exception : exceptions) {
-                checker->Relation()->IsIdenticalTo(clauseType, exception);
-                if (checker->Relation()->IsTrue()) {
-                    checker->ThrowTypeError("Redeclaration of exception type", catchClause->Start());
-                }
-            }
-
+            checker->CheckExceptionClauseType(exceptions, catchClause, clauseType);
             exceptions.push_back(clauseType);
         }
     }
@@ -2054,6 +2049,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSArrayType *node) const
 checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
 
     auto *const targetType = expr->TypeAnnotation()->AsTypeNode()->GetType(checker);
     // Object expression requires that its type be set by the context before checking. in this case, the target type

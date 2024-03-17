@@ -41,7 +41,8 @@ void ETSObjectType::Iterate(const PropertyTraverser &cb) const
     }
 }
 
-varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, PropertySearchFlags flags) const
+varbinder::LocalVariable *ETSObjectType::SearchFieldsDecls(const util::StringView &name,
+                                                           PropertySearchFlags flags) const
 {
     varbinder::LocalVariable *res {};
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_FIELD) != 0) {
@@ -59,13 +60,13 @@ varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &nam
     if (res == nullptr && ((flags & PropertySearchFlags::SEARCH_STATIC_DECL) != 0)) {
         res = GetOwnProperty<PropertyType::STATIC_DECL>(name);
     }
+    return res;
+}
 
+varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, PropertySearchFlags flags) const
+{
+    varbinder::LocalVariable *res = SearchFieldsDecls(name, flags);
     if (res == nullptr && (flags & PropertySearchFlags::SEARCH_METHOD) != 0) {
-        res = GetOwnProperty<PropertyType::INSTANCE_FIELD>(name);
-        if (res != nullptr && res->TsType() != nullptr && res->TsType()->IsETSDynamicType()) {
-            return res;
-        }
-        res = nullptr;
         if ((flags & PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION) != 0) {
             if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
                 res = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
@@ -79,15 +80,7 @@ varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &nam
         }
     }
 
-    if ((flags & (PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::SEARCH_IN_BASE)) == 0) {
-        return res;
-    }
-
-    if (res != nullptr) {
-        return res;
-    }
-
-    if ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
+    if (res == nullptr && (flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
         for (auto *interface : interfaces_) {
             res = interface->GetProperty(name, flags);
             if (res != nullptr) {
@@ -96,7 +89,7 @@ varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &nam
         }
     }
 
-    if (superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
+    if (res == nullptr && superType_ != nullptr && ((flags & PropertySearchFlags::SEARCH_IN_BASE) != 0)) {
         res = superType_->GetProperty(name, flags);
     }
 
@@ -146,18 +139,8 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
         }
     };
 
-    // During function reference resolution, if the found properties type is not a function type, then it is a
-    // functional interface, because no other property can be found in the methods of the class. We have to
-    // return the found property, because we doesn't need to create a synthetic variable for functional
-    // interfaces due to the fact, that by nature they behave as fields, and can't have overloads, and they are
-    // subjected to hiding
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name); found != nullptr) {
-            if (found->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE)) {
-                // Functional interface found
-                return found;
-            }
-
             ASSERT(found->TsType()->IsETSFunctionType());
             addSignature(found);
         }
@@ -165,11 +148,6 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
 
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
         if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name); found != nullptr) {
-            if (found->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE)) {
-                // Functional interface found
-                return found;
-            }
-
             ASSERT(found->TsType()->IsETSFunctionType());
             addSignature(found);
         }

@@ -1355,4 +1355,4 @@
     }
   }
 }
-TypeError: Cannot inherit from class C, because field x is inherited with a different declaration type [invalidIndirectInheritanceFromClass.ets:25:17]
+TypeError: This expression is not callable. [invalidIndirectInheritanceFromClass.ets:28:15]

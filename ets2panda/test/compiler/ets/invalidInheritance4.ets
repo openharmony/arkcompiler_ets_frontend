@@ -13,19 +13,10 @@
  * limitations under the License.
  */
 
-#include "generateDeclarations.h"
-#include "checker/checker.h"
-#include "compiler/core/ASTVerifier.h"
-#include "compiler/core/compilerContext.h"
-#include "util/declgenEts2Ts.h"
-
-namespace ark::es2panda::compiler {
-
-bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
-{
-    auto *checker = ctx->checker;
-    return (ctx->compilerContext->Options()->tsDeclOut.empty() ||
-            util::GenerateTsDeclarations(checker->AsETSChecker(), program, ctx->compilerContext->Options()->tsDeclOut));
+class A {
+    name: () => String
 }
 
-}  // namespace ark::es2panda::compiler
+class B extends A {
+    name(): int {}
+}

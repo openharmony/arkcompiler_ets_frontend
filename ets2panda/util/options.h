@@ -210,17 +210,12 @@ public:
         }
     }
 
-    bool CheckEtsSpecificOptions(const ark::PandArg<std::string> &opTsDeclOut,
-                                 const es2panda::CompilationMode &compMode,
+    bool CheckEtsSpecificOptions(const es2panda::CompilationMode &compMode,
                                  const ark::PandArg<std::string> &arktsConfig)
     {
         if (extension_ != es2panda::ScriptExtension::ETS) {
             if (compMode == CompilationMode::PROJECT) {
                 errorMsg_ = "Error: only --extension=ets is supported for project compilation mode.";
-                return false;
-            }
-            if (!opTsDeclOut.GetValue().empty()) {
-                errorMsg_ = "Error: only --extension=ets is supported for --gen-ts-decl option";
                 return false;
             }
         } else {

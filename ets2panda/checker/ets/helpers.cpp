@@ -2243,18 +2243,7 @@ std::string ETSChecker::GetStringFromLiteral(ir::Expression *caseTest) const
 
 bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare)
 {
-    if (target->Declaration()->Type() != compare->Declaration()->Type()) {
-        return false;
-    }
-
-    if ((target->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE) &&
-         !compare->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE)) ||
-        (!target->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE) &&
-         compare->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE))) {
-        return false;
-    }
-
-    return true;
+    return target->Declaration()->Type() == compare->Declaration()->Type();
 }
 
 void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target)
@@ -2656,10 +2645,25 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
         typeAnn = DerefETSTypeReference(typeAnn);
     }
     if (!typeAnn->IsETSFunctionType()) {
+        if (typeAnn->IsETSUnionType()) {
+            return CheckLambdaAssignableUnion(typeAnn, lambda);
+        }
+
         return false;
     }
     ir::ETSFunctionType *calleeType = typeAnn->AsETSFunctionType();
     return lambda->Params().size() == calleeType->Params().size();
+}
+
+bool ETSChecker::CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda)
+{
+    for (auto *type : typeAnn->AsETSUnionType()->Types()) {
+        if (type->IsETSFunctionType()) {
+            return lambda->Params().size() == type->AsETSFunctionType()->Params().size();
+        }
+    }
+
+    return false;
 }
 
 void ETSChecker::InferTypesForLambda(ir::ScriptFunction *lambda, ir::ETSFunctionType *calleeType)
@@ -2966,4 +2970,16 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
 
     return true;
 }
+
+void ETSChecker::CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions,
+                                          ir::CatchClause *catchClause, checker::Type *clauseType)
+{
+    for (auto *exception : exceptions) {
+        this->Relation()->IsIdenticalTo(clauseType, exception);
+        if (this->Relation()->IsTrue()) {
+            this->ThrowTypeError("Redeclaration of exception type", catchClause->Start());
+        }
+    }
+}
+
 }  // namespace ark::es2panda::checker

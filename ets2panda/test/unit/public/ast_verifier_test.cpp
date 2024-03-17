@@ -22,6 +22,7 @@
 #include "parser/ETSparser.h"
 #include "varbinder/ETSBinder.h"
 #include "compiler/core/ASTVerifier.h"
+#include "test/utils/panda_executable_path_getter.h"
 
 #include <gtest/gtest.h>
 
@@ -56,8 +57,9 @@ public:
     ASTVerifierTest()
     {
         impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
+        auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
         // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-        char const *argv[] = {"../../../bin/es2panda test"};
+        char const *argv[] = {es2pandaPath.c_str()};
         cfg_ = impl_->CreateConfig(1, argv);
         allocator_ = new ark::ArenaAllocator(ark::SpaceType::SPACE_TYPE_COMPILER);
     }

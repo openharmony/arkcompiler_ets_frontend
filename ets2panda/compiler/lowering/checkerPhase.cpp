@@ -15,6 +15,7 @@
 
 #include "checkerPhase.h"
 #include "checker/checker.h"
+#include "checker/typeChecker/TypeChecker.h"
 #include "compiler/core/ASTVerifier.h"
 #include "varbinder/ETSBinder.h"
 #include "compiler/core/compilerContext.h"
@@ -22,7 +23,10 @@
 namespace ark::es2panda::compiler {
 bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    return ctx->checker->StartChecker(ctx->compilerContext->VarBinder(), *ctx->compilerContext->Options());
+    auto checkerResult =
+        ctx->checker->StartChecker(ctx->compilerContext->VarBinder(), *ctx->compilerContext->Options());
+    auto typeCheckerResult = checker::RunTypeChecker(ctx->checker, program->Extension(), program->Ast());
+    return checkerResult && typeCheckerResult;
 }
 
 }  // namespace ark::es2panda::compiler

@@ -382,17 +382,6 @@ static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, const ETSObjectTy
         auto *classProp = it->Declaration()->Node()->AsClassProperty();
         it->AddFlag(checker->GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::INSTANCE_FIELD>(it->AsLocalVariable());
-
-        if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
-            type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
-            it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
-        } else if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSTypeReference()) {
-            bool hasFunctionType = checker->HasETSFunctionType(classProp->TypeAnnotation());
-            if (hasFunctionType) {
-                type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
-                it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
-            }
-        }
     }
 
     for (auto &[_, it] : scope->StaticFieldScope()->Bindings()) {
@@ -401,17 +390,6 @@ static void ResolveDeclaredFieldsOfObject(ETSChecker *checker, const ETSObjectTy
         auto *classProp = it->Declaration()->Node()->AsClassProperty();
         it->AddFlag(checker->GetAccessFlagFromNode(classProp));
         type->AddProperty<PropertyType::STATIC_FIELD>(it->AsLocalVariable());
-
-        if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
-            type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
-            it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
-        } else if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSTypeReference()) {
-            bool hasFunctionType = checker->HasETSFunctionType(classProp->TypeAnnotation());
-            if (hasFunctionType) {
-                type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
-                it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
-            }
-        }
     }
 }
 
@@ -1267,7 +1245,8 @@ varbinder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpres
 
 PropertySearchFlags ETSChecker::GetInitialSearchFlags(const ir::MemberExpression *const memberExpr)
 {
-    constexpr auto FUNCTIONAL_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_FUNCTIONAL;
+    constexpr auto FUNCTIONAL_FLAGS =
+        PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_FUNCTIONAL | PropertySearchFlags::SEARCH_FIELD;
     constexpr auto GETTER_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_GETTER;
     constexpr auto SETTER_FLAGS = PropertySearchFlags::SEARCH_METHOD | PropertySearchFlags::IS_SETTER;
 

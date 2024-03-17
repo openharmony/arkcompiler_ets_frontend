@@ -594,6 +594,7 @@ private:
         ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
         return declNode_->AsTSInterfaceDeclaration()->TypeParams();
     }
+    varbinder::LocalVariable *SearchFieldsDecls(const util::StringView &name, PropertySearchFlags flags) const;
 
     ArenaAllocator *allocator_;
     util::StringView name_;

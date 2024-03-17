@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Huawei Device Co., Ltd. 2021 - 2023. All rights reserved.
+ * Copyright (c) Huawei Device Co., Ltd. 2021 - 2024. All rights reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,13 +17,16 @@
 #include "macros.h"
 #include "public/es2panda_lib.h"
 
+#include "test/utils/panda_executable_path_getter.h"
+
 class CheckerTest : public testing::Test {
 public:
     CheckerTest()
     {
         impl_ = es2panda_GetImpl(ES2PANDA_LIB_VERSION);
+        auto es2pandaPath = test::utils::PandaExecutablePathGetter {}.Get();
         // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-        char const *argv[] = {"../../../bin/es2panda test"};
+        char const *argv[] = {es2pandaPath.c_str()};
         cfg_ = impl_->CreateConfig(1, argv);
     }
 

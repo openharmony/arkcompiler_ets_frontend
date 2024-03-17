@@ -113,6 +113,10 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
     if (paramType->IsETSObjectType()) {
         return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution);
     }
+    if (paramType->IsETSArrayType()) {
+        return EnhanceSubstitutionForArray(typeParams, paramType->AsETSArrayType(), argumentType, substitution);
+    }
+
     return true;
 }
 
@@ -204,6 +208,15 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
     return true;
 }
 
+bool ETSChecker::EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *const paramType,
+                                             Type *const argumentType, Substitution *const substitution)
+{
+    auto *const elementType =
+        argumentType->IsETSArrayType() ? argumentType->AsETSArrayType()->ElementType() : argumentType;
+
+    return EnhanceSubstitutionForType(typeParams, paramType->ElementType(), elementType, substitution);
+}
+
 Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                         TypeRelationFlag flags)
 {
@@ -217,6 +230,24 @@ Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, co
         return nullptr;
     }
     return signature;
+}
+
+bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index)
+{
+    if (argument->IsArrowFunctionExpression()) {
+        auto *const arrowFuncExpr = argument->AsArrowFunctionExpression();
+
+        if (ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+            CheckLambdaAssignable(substitutedSig->Function()->Params()[index], lambda)) {
+            if (arrowFuncExpr->TsType() != nullptr) {
+                arrowFuncExpr->Check(this);
+                CreateLambdaObjectForLambdaReference(arrowFuncExpr, arrowFuncExpr->Function()->Signature()->Owner());
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
@@ -269,6 +300,9 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
             Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
             {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
         if (!invocationCtx.IsInvocable()) {
+            if (CheckOptionalLambdaFunction(argument, substitutedSig, index)) {
+                continue;
+            }
             return false;
         }
     }
@@ -1343,7 +1377,9 @@ static std::pair<ArenaVector<ir::AstNode *>, bool> CreateLambdaObjectPropertiesF
             properties.push_back(checker->CreateLambdaCapturedField(it, classScope, idx, lambda->Start()));
             idx++;
         } else if (!it->HasFlag(varbinder::VariableFlags::STATIC) &&
-                   !checker->Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL)) {
+                   !checker->Context().ContainingClass()->HasObjectFlag(ETSObjectFlags::GLOBAL) &&
+                   !(checker->Context().ContainingSignature() != nullptr &&
+                     checker->Context().ContainingSignature()->HasSignatureFlag(SignatureFlags::STATIC))) {
             saveThis = true;
         }
     }

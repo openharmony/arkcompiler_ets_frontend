@@ -241,6 +241,8 @@ public:
     Type *NegateNumericType(Type *type, ir::Expression *node);
     Type *BitwiseNegateNumericType(Type *type, ir::Expression *node);
     bool CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expression *expr, lexer::TokenType op);
+    void CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
+                                                    const ir::Expression *left, const ir::Expression *right);
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operationType, lexer::SourcePosition pos,
                                                    bool forcePromotion = false);
@@ -294,6 +296,7 @@ public:
     bool TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                        TypeRelationFlag flags = TypeRelationFlag::NONE);
     bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda);
+    bool CheckLambdaAssignableUnion(ir::AstNode *typeAnn, ir::ScriptFunction *lambda);
     bool IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typeArgument, const Substitution *substitution);
     Substitution *NewSubstitution()
     {
@@ -311,6 +314,8 @@ public:
                                                     Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
                                                    Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *paramType,
+                                                   Type *argumentType, Substitution *substitution);
     Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                 TypeRelationFlag flags);
     Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
@@ -321,6 +326,7 @@ public:
     bool ValidateSignatureRequiredParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                          TypeRelationFlag flags, const std::vector<bool> &argTypeInferenceRequired,
                                          bool throwError);
+    bool CheckOptionalLambdaFunction(ir::Expression *argument, Signature *substitutedSig, std::size_t index);
     bool ValidateSignatureRestParams(Signature *substitutedSig, const ArenaVector<ir::Expression *> &arguments,
                                      TypeRelationFlag flags, bool throwError);
     Signature *ValidateSignatures(ArenaVector<Signature *> &signatures,
@@ -535,6 +541,8 @@ public:
     void CheckNumberOfTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                     const lexer::SourcePosition &pos);
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *startFrom, const ir::AstNode *p);
+    void CheckExceptionClauseType(const std::vector<checker::ETSObjectType *> &exceptions, ir::CatchClause *catchClause,
+                                  checker::Type *clauseType);
     void CheckRethrowingFunction(ir::ScriptFunction *func);
     ETSObjectType *GetRelevantArgumentedTypeFromChild(ETSObjectType *child, ETSObjectType *target);
     util::StringView GetHashFromTypeArguments(const ArenaVector<Type *> &typeArgTypes);

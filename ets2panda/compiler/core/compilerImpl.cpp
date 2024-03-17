@@ -44,7 +44,6 @@
 #include "checker/ASchecker.h"
 #include "checker/JSchecker.h"
 #include "public/public.h"
-#include "util/declgenEts2Ts.h"
 
 namespace ark::es2panda::compiler {
 
