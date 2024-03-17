@@ -19,7 +19,19 @@ class Person {
     mother: Person;
     father: Person;
     num: bigint;
+    child: Person | null;
     constructor() {
         "use sendable";
+    }
+}
+
+function Test() {
+    class Pet<T, U> {
+        name: string;
+        color: T | undefined;
+        weight: U;
+        constructor() {
+            "use sendable";
+        }
     }
 }

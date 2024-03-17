@@ -725,11 +725,6 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
 
     if (strLit->Str().Is(USE_SENDABLE) && func->IsConstructor()) {
         auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
-        if (!classDef->Scope()->Parent()->IsModuleScope() && !classDef->Scope()->Parent()->IsGlobalScope()) {
-            auto line = strLit->Range().start.line;
-            auto column = (const_cast<lexer::LineIndex &>(lineIndex)).GetLocation(strLit->Range().start).col - 1;
-            throw Error {ErrorType::GENERIC, "Sendable class may only be declared in top level", line, column};
-        }
         classDef->SetSendable();
         func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
         for (auto *stmt : classDef->Body()) {
