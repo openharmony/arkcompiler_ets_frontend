@@ -1126,17 +1126,8 @@ private:
                 break;
             }
             default: {
-                size_t index = 0;
-                for (const auto *arg : arguments) {
-                    auto ttctx = TargetTypeContext(this, arg->TsType());
-                    VReg argReg = AllocReg();
-                    arg->Compile(this);
-                    // + 2U since we need to skip first 2 args in signature; first args is obj,
-                    // second arg is param2
-                    auto *argType = signature->Params()[index + 2U]->TsType();
-                    ApplyConversion(arg, nullptr);
-                    ApplyConversionAndStoreAccumulator(node, argReg, argType);
-                    index++;
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ARG(idx, 2U);
                 }
 
                 Rra().Emit<Range>(node, obj, arguments.size() + 2U, name, obj);
@@ -1163,16 +1154,8 @@ private:
                 break;
             }
             default: {
-                size_t index = 0;
-                for (const auto *arg : arguments) {
-                    auto ttctx = TargetTypeContext(this, arg->TsType());
-                    VReg argReg = AllocReg();
-                    arg->Compile(this);
-                    // + 3U since we need to skip first 3 args in signature; first arg is obj,
-                    // second arg is param2, third is param3
-                    auto *argType = signature->Params()[index + 3U]->TsType();
-                    ApplyConversionAndStoreAccumulator(node, argReg, argType);
-                    index++;
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ARG(idx, 3U);
                 }
 
                 Rra().Emit<Range>(node, obj, arguments.size() + 3U, name, obj);
