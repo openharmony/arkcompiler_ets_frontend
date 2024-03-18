@@ -353,6 +353,8 @@ public:
 
     bool HasVarDecl(const util::StringView &name) const;
 
+    bool HasLexEnvInCorrespondingFunctionScope(const FunctionParamScope *scope) const;
+
     template <TSBindingType type>
     Variable *FindLocalTSVariable(const util::StringView &name) const
     {
