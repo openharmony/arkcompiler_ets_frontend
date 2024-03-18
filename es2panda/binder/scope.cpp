@@ -88,34 +88,30 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
     return res->second;
 }
 
+bool Scope::HasLexEnvInCorrespondingFunctionScope(const FunctionParamScope *scope) const
+{
+    auto *funcVariableScope = scope->GetFunctionScope();
+    // we may only have function param scope without function scope in TS here
+    if ((funcVariableScope != nullptr) && (funcVariableScope->NeedLexEnv())) {
+        return true;
+    }
+    return false;
+}
+
 ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions options) const
 {
     uint32_t level = 0;
     uint32_t lexLevel = 0;
     const auto *iter = this;
     bool crossConcurrent = false;
-
-    if (iter->IsFunctionParamScope()) {
-        Variable *v = iter->FindLocal(name, options);
-
-        if (v != nullptr) {
-            return {name, const_cast<Scope *>(iter), level, lexLevel, v, crossConcurrent};
-        }
-
-        level++;
-        auto *funcVariableScope = iter->AsFunctionParamScope()->GetFunctionScope();
-
-        // we may only have function param scope without function scope in TS here
-        if ((funcVariableScope != nullptr) && (funcVariableScope->NeedLexEnv())) {
-            lexLevel++;
-        }
-
-        iter = iter->Parent();
-    }
-
+    // If the first scope is functionParamScope, it means its corresponding functionScope is not
+    // iterated. so by default we set prevScopeNotFunctionScope as true so under such case,
+    // functionScopeNotIterated will be true.
+    bool prevScopeNotFunctionScope = true;
     bool lexical = false;
 
     while (iter != nullptr) {
+        bool functionScopeNotIterated = iter->IsFunctionParamScope() && prevScopeNotFunctionScope;
         Variable *v = iter->FindLocal(name, options);
 
         if (v != nullptr) {
@@ -134,12 +130,17 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
             if (iter->IsFunctionScope() && !crossConcurrent) {
                 crossConcurrent = iter->Node()->AsScriptFunction()->IsConcurrent() ? true : false;
             }
-
             if (iter->AsVariableScope()->NeedLexEnv()) {
+                lexLevel++;
+            }
+        } else if (functionScopeNotIterated) {
+            level++;
+            if (HasLexEnvInCorrespondingFunctionScope(iter->AsFunctionParamScope())) {
                 lexLevel++;
             }
         }
 
+        prevScopeNotFunctionScope = !iter->IsFunctionVariableScope();
         iter = iter->Parent();
     }
 
