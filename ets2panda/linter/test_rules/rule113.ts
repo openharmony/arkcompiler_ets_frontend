@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+
+// fixable
 enum Color {
     RED,
     GREEN
@@ -23,4 +25,51 @@ enum Color {
 enum Color {
     BLACK = 3,
     BLUE
+}
+// ------
+
+// not fixable
+enum C {
+    A = 1
+}
+
+const x = 6
+let y = C.A
+
+enum C{
+    B = x
+}
+// ------
+
+// not fixable
+const d = 6
+
+enum D {
+    A = 1
+}
+
+enum D{
+    B = d
+}
+// ------
+
+// fixable
+enum Str {
+    A = 1,
+    B = "abc"
+}
+
+enum Str{
+    C = 2,
+    D,
+    E = "qwerty"
+}
+// ------
+
+enum Empty {
+
+}
+
+enum Empty {
+
 }
