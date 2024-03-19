@@ -165,6 +165,7 @@ public:
     void CheckInnerClassMembers(const ETSObjectType *classType);
     void CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus);
     void CheckClassDefinition(ir::ClassDefinition *classDef);
+    void CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType *classType);
     void FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
     void FindAssignments(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
     void CheckConstFields(const ETSObjectType *classType);
@@ -180,6 +181,9 @@ public:
                                                         const ETSObjectType *target);
     varbinder::Variable *ResolveInstanceExtension(const ir::MemberExpression *memberExpr);
     void CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig);
+    void CheckThisOrSuperCallInConstructor(ETSObjectType *classType, Signature *ctorSig);
+    void CheckExpressionsInConstructor(const ArenaVector<const ir::Expression *> &arguments);
+    ArenaVector<const ir::Expression *> CheckMemberOrCallOrObjectExpressionInConstructor(const ir::Expression *arg);
     void CheckValidInheritance(ETSObjectType *classType, ir::ClassDefinition *classDef);
     void CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
                          varbinder::LocalVariable *found, ETSObjectType *interfaceFound);
