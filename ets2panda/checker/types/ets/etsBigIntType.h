@@ -26,6 +26,7 @@ public:
                         ETSObjectFlags::CLASS | ETSObjectFlags::BUILTIN_BIGINT | ETSObjectFlags::RESOLVED_SUPER)
     {
         SetSuperType(super);
+        SetAssemblerName(compiler::Signatures::BUILTIN_BIGINT);
     }
 
     explicit ETSBigIntType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
@@ -39,6 +40,7 @@ public:
         AddTypeFlag(TypeFlag::CONSTANT);
         AddTypeFlag(TypeFlag::BIGINT_LITERAL);
         variable_ = super->Variable();
+        SetAssemblerName(compiler::Signatures::BUILTIN_BIGINT);
     }
 
     void Identical(TypeRelation *relation, Type *other) override;

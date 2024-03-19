@@ -93,6 +93,8 @@ public:
     bool DefinitelyNotETSNullish() const;
 
     bool PossiblyETSString() const;
+    bool PossiblyETSValueTyped() const;
+    bool PossiblyETSValueTypedExceptNullish() const;
 
     ETSStringType *AsETSStringType()
     {

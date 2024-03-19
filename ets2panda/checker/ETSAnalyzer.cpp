@@ -1402,13 +1402,7 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TypeofExpression *expr) c
     }
 
     expr->Argument()->Check(checker);
-    auto *unboxedType = checker->ETSBuiltinTypeAsPrimitiveType(expr->Argument()->TsType());
-
-    if (unboxedType != nullptr && unboxedType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
-        checker->FlagExpressionWithUnboxing(expr->Argument()->TsType(), unboxedType, expr->Argument());
-    }
-    expr->SetTsType(GetETSChecker()->GlobalETSStringLiteralType());
-
+    expr->SetTsType(GetETSChecker()->GlobalBuiltinETSStringType());
     return expr->TsType();
 }
 

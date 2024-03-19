@@ -504,7 +504,6 @@ public:
     Type *PrimitiveTypeAsETSBuiltinType(Type *objectType);
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
-    Type *GetBoxedType(ir::BoxingUnboxingFlags flag) const;
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
     util::StringView TypeToName(Type *type) const;
     Type *MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const;
@@ -513,6 +512,7 @@ public:
         return MaybeBoxedType(var, Allocator());
     }
     Type *MaybeBoxExpression(ir::Expression *expr);
+    Type *MaybeUnboxExpression(ir::Expression *expr);
     Type *MaybePromotedBuiltinType(Type *type) const;
     Type const *MaybePromotedBuiltinType(Type const *type) const;
     Type *MaybePrimitiveBuiltinType(Type *type) const;

@@ -481,7 +481,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        return {GlobalETSBooleanType(), CreateETSUnionType({leftType, rightType})};
+        return {GlobalETSBooleanType(), CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)})};
     }
 
     if (promotedType == nullptr && !bothConst) {

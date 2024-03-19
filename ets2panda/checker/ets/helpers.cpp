@@ -1434,16 +1434,13 @@ void ETSChecker::CheckSwitchDiscriminant(ir::Expression *discriminant)
 {
     ASSERT(discriminant->TsType());
 
-    auto discriminantType = discriminant->TsType();
+    auto discriminantType = MaybeUnboxExpression(discriminant);
     if (discriminantType->HasTypeFlag(TypeFlag::VALID_SWITCH_TYPE)) {
         return;
     }
 
     if (discriminantType->IsETSObjectType() &&
-        discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::VALID_SWITCH_TYPE)) {
-        if (discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
-            discriminant->SetBoxingUnboxingFlags(GetUnboxingFlag(ETSBuiltinTypeAsPrimitiveType(discriminantType)));
-        }
+        discriminantType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_STRING | ETSObjectFlags::ENUM)) {
         return;
     }
 
@@ -1469,6 +1466,15 @@ Type *ETSChecker::MaybeBoxExpression(ir::Expression *expr)
         expr->AddBoxingUnboxingFlags(GetBoxingFlag(promoted));
     }
     return promoted;
+}
+
+Type *ETSChecker::MaybeUnboxExpression(ir::Expression *expr)
+{
+    auto *primitive = MaybePrimitiveBuiltinType(expr->TsType());
+    if (primitive != expr->TsType()) {
+        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(primitive));
+    }
+    return primitive;
 }
 
 util::StringView ETSChecker::TypeToName(Type *type) const

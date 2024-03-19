@@ -1278,29 +1278,17 @@ void ETSCompiler::Compile(const ir::ThisExpression *expr) const
 void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
+    checker::ETSChecker const *checker = etsg->Checker();
     ir::Expression *arg = expr->Argument();
 
-    if (arg->IsNullLiteral()) {
-        etsg->LoadAccumulatorString(expr, "object");
-        return;
-    }
-    if (arg->IsUndefinedLiteral()) {
-        etsg->LoadAccumulatorString(expr, "undefined");
-        return;
-    }
-
     arg->Compile(etsg);
-    checker::Type *argType = arg->TsType();
-
-    auto boxingFlag = ir::BoxingUnboxingFlags::UNBOXING_FLAG & arg->GetBoxingUnboxingFlags();
-    if (boxingFlag != 0U) {
-        argType = etsg->Checker()->GetBoxedType(static_cast<ir::BoxingUnboxingFlags>(boxingFlag));
-    }
-    if (argType->HasTypeFlag(es2panda::checker::TypeFlag::ETS_PRIMITIVE)) {
-        etsg->LoadAccumulatorString(expr, etsg->Checker()->TypeToName(argType));
+    // NOTE(vpukhov): infer result type in analyzer
+    auto argType = arg->TsType();
+    if (auto unboxed = checker->MaybePrimitiveBuiltinType(argType);
+        unboxed->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        etsg->LoadAccumulatorString(expr, checker->TypeToName(unboxed));
         return;
     }
-
     if (argType->IsETSUndefinedType()) {
         etsg->LoadAccumulatorString(expr, "undefined");
         return;
@@ -1320,6 +1308,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) con
     auto argReg = etsg->AllocReg();
     etsg->StoreAccumulator(expr, argReg);
     etsg->CallThisStatic0(expr, argReg, Signatures::BUILTIN_RUNTIME_TYPEOF);
+    etsg->SetAccumulatorType(expr->TsType());
 }
 
 void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
