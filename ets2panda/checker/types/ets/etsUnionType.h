@@ -50,6 +50,8 @@ public:
 
     bool HasObjectType(ETSObjectFlags flag) const;
     bool HasUndefinedType() const;
+    bool HasType(Type *type) const;
+    bool HasNullishType(const ETSChecker *checker) const;
 
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 

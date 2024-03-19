@@ -675,4 +675,19 @@ bool ETSUnionType::HasUndefinedType() const
     }
     return false;
 }
+
+bool ETSUnionType::HasType(Type *type) const
+{
+    for (const auto &cType : constituentTypes_) {
+        if (cType == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ETSUnionType::HasNullishType(const ETSChecker *checker) const
+{
+    return HasType(checker->GlobalETSNullType()) || HasType(checker->GlobalETSUndefinedType());
+}
 }  // namespace ark::es2panda::checker

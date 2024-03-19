@@ -398,6 +398,9 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     auto *elementType = expr->TypeReference()->GetType(checker);
     checker->ValidateArrayIndex(expr->Dimension(), true);
     if (!elementType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        if (elementType->IsETSUnionType() && !elementType->AsETSUnionType()->HasNullishType(checker)) {
+            checker->ThrowTypeError({"Union types in array declaration must include a nullish type."}, expr->Start());
+        }
         if (elementType->IsETSObjectType()) {
             auto *calleeObj = elementType->AsETSObjectType();
             const auto flags = checker::ETSObjectFlags::ABSTRACT | checker::ETSObjectFlags::INTERFACE;
