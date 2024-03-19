@@ -83,7 +83,9 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
     }
 
     if (var->HasFlag(varbinder::VariableFlags::PRIVATE) || var->HasFlag(varbinder::VariableFlags::PROTECTED)) {
-        if (Context().ContainingClass() == obj && obj->IsPropertyInherited(var)) {
+        if ((Context().ContainingClass() == obj ||
+             Context().ContainingClass()->GetOriginalBaseType() == obj->GetOriginalBaseType()) &&
+            obj->IsPropertyInherited(var)) {
             return;
         }
 
