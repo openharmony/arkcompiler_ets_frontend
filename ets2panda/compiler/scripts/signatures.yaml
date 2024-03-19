@@ -421,6 +421,12 @@ signatures:
     return_type: BUILTIN_CLASS_CAST_EXCEPTION
     ref: BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION
 
+  - callee: BUILTIN_ERROR
+    method_name: $CTOR
+    params: [BUILTIN_OBJECT]
+    return_type: PRIMITIVE_VOID
+    ref: BUILTIN_ERROR_CTOR
+
   - callee: BUILTIN_BIGINT
     method_name: $CTOR
     params: [BUILTIN_STRING]

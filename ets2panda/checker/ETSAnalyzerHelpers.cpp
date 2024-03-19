@@ -330,8 +330,7 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
     expr->SetTsType(checker->GlobalETSBooleanType());
 }
 
-void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType,
-                                 checker::Type *argType)
+void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
 {
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
@@ -369,7 +368,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
             break;
         }
         case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
-            expr->SetTsType(argType);
+            expr->SetTsType(expr->Argument()->TsType());
             break;
         }
         default: {

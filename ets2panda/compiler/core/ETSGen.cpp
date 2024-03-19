@@ -2243,7 +2243,7 @@ void ETSGen::AssumeNonNullish(const ir::AstNode *node, checker::Type const *targ
 void ETSGen::EmitNullishException(const ir::AstNode *node)
 {
     RegScope ra(this);
-    VReg exception = StoreException(node);
+    VReg exception = AllocReg();
     NewObject(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION);
     CallThisStatic0(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION_CTOR);
     EmitThrow(node, exception);
@@ -2452,11 +2452,16 @@ void ETSGen::UnaryTilde(const ir::AstNode *node)
 
 void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
 {
-    RegScope rs(this);
-    VReg exception = StoreException(node);
-    Sa().Emit<LdaStr>(node, "$$ operator can only be used with ARKUI plugin");
-    StoreAccumulator(node, exception);
-    EmitThrow(node, exception);
+    auto const vtype = GetAccumulatorType();
+    const RegScope rs(this);
+    const auto errorReg = AllocReg();
+
+    NewObject(node, errorReg, Signatures::BUILTIN_ERROR);
+    LoadAccumulatorString(node, "$$ operator can only be used with ARKUI plugin");
+    Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, 1);
+    EmitThrow(node, errorReg);
+
+    SetAccumulatorType(vtype);  // forward, code is dead anyway
 }
 
 void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)
