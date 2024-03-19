@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,6 @@
 
 function is_null(v: Object | null | undefined) {
     return v instanceof null;
-}
-
-function is_undef(v: Object | null | undefined) {
-    return v instanceof undefined;
 }
 
 function is_obj(v: Object | null | undefined) {
@@ -55,10 +51,6 @@ function main() {
     assert(is_null(null) == true);
     assert(is_null(undefined) == false);
     assert(is_null(obj) == false);
-
-    assert(is_undef(null) == false);
-    assert(is_undef(undefined) == true);
-    assert(is_undef(obj) == false);
 
     assert(is_obj(null) == false);
     assert(is_obj(undefined) == false);

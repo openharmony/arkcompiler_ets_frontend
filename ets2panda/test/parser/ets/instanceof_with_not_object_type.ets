@@ -17,6 +17,7 @@ function a()
 {
 
 }
+
 function main()
 {
     let b = 0

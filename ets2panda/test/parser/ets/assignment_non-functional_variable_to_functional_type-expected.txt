@@ -947,4 +947,4 @@
     }
   }
 }
-TypeError: Assigning a non-functional variable "observable" to a functional type [assignment_non-functional_variable_to_functional_type.ets:23:71]
+TypeError: Type 'Observable|undefined' cannot be assigned to type '() => Observable|undefined' [assignment_non-functional_variable_to_functional_type.ets:23:71]

@@ -163,6 +163,9 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
     bool sourceIsFunctional = source->IsETSObjectType();
     auto *sourceFuncType = sourceIsFunctional ? source->AsETSObjectType()->GetFunctionalInterfaceInvokeType()
                                               : source->AsETSFunctionType();
+
+    SavedTypeRelationFlagsContext savedFlagsCtx(relation, relation->GetTypeRelationFlags() |
+                                                              TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING);
     Signature *match = ProcessSignatures(relation, target, sourceFuncType);
 
     if (match == nullptr) {

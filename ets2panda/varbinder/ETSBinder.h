@@ -20,7 +20,7 @@
 #include "varbinder/recordTable.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsReExportDeclaration.h"
-#include "util/pathHandler.h"
+#include "util/importPathManager.h"
 
 namespace ark::es2panda::varbinder {
 
@@ -47,7 +47,7 @@ public:
           lambdaObjects_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
           importSpecifiers_(Allocator()->Adapter()),
-          sourceList_(Allocator()->Adapter())
+          moduleList_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -207,18 +207,16 @@ public:
         defaultExport_ = defaultExport;
     }
 
-    void FillSourceList(const ArenaUnorderedMap<util::StringView, util::ParseInfo> &pathes)
+    void SetModuleList(const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &moduleList)
     {
-        for (const auto path : pathes) {
-            sourceList_.emplace(path.first, std::tuple<util::StringView, bool>(path.second.ModuleName(),
-                                                                               path.second.IsPackageModule()));
-        }
+        moduleList_ = moduleList;
     }
 
-    std::tuple<const util::StringView, const bool> GetModuleNameFromSource(const util::StringView &path) const
+    util::ImportPathManager::ModuleInfo GetModuleInfo(const util::StringView &path) const
     {
-        auto it = sourceList_.find(path);
-        ASSERT(it != sourceList_.end());
+        auto it = moduleList_.find(path);
+
+        ASSERT(it != moduleList_.end());
 
         return it->second;
     }
@@ -253,7 +251,7 @@ private:
     DynamicImportVariables dynamicImportVars_;
     ir::Identifier *thisParam_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
-    ArenaUnorderedMap<util::StringView, std::tuple<const util::StringView, const bool>> sourceList_;
+    ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> moduleList_;
     ir::AstNode *defaultExport_ {};
 };
 

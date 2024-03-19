@@ -3032,11 +3032,16 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
         auto *const paramNew = paramOld->Clone(Allocator(), paramOld->Parent())->AsETSParameterExpression();
 
         auto *const var = std::get<1>(VarBinder()->AddParamDecl(paramNew));
+
+        if (paramNew->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
+            var->AddFlag(varbinder::VariableFlags::BOXED);
+        }
+
         var->SetTsType(paramOld->Ident()->Variable()->TsType());
         var->SetScope(paramCtx.GetScope());
         paramNew->SetVariable(var);
 
-        paramNew->SetTsType(paramOld->TsType());
+        paramNew->SetTsType(MaybeBoxedType(paramOld->Ident()->Variable()));
 
         outParams.emplace_back(paramNew);
     }

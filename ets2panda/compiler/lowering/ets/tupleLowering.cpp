@@ -70,8 +70,8 @@ static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir
     // --------------
 
     // Compute necessary types and OpaqueTypeNodes
-    auto *const tupleTypeAtIdx = argumentType->AsETSTupleType()->GetTypeAtIndex(
-        checker->GetTupleElementAccessValue(argument->AsMemberExpression()->Property()->TsType()));
+    auto *const tupleTypeAtIdx = argumentType->AsETSTupleType()->GetTypeAtIndex(checker->GetTupleElementAccessValue(
+        argument->AsMemberExpression()->Property()->TsType(), argument->AsMemberExpression()->Property()->Start()));
 
     auto *const tupleElementTypeNode =
         checker->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType());

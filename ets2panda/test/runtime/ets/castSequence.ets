@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,10 +25,10 @@ function main(): void {
   assert a_Short instanceof Short
   assert b_double == 215.0
 
-  let a_Int : Int = 2142;
-  let b_Double : Double = a_Int as Double;
+  let a_char : char = 128 as char;
+  let b_Char = a_char as Char;
 
-  assert b_Double instanceof Double && b_Double.unboxed() == 2142.0
+  assert b_Char.unboxed() == 128 as char;
 
   return;
 }

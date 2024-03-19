@@ -218,6 +218,11 @@ public:
         return (flags_ & TypeRelationFlag::OVERRIDING_CONTEXT) != 0;
     }
 
+    [[nodiscard]] TypeRelationFlag GetTypeRelationFlags() const noexcept
+    {
+        return flags_;
+    }
+
     const Checker *GetChecker() const
     {
         return checker_;

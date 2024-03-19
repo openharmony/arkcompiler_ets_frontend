@@ -54,7 +54,8 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        return {IsConstantType(), value_ != 0};
+        // isNan = !(value_ == value_)
+        return {IsConstantType(), (value_ != 0) && (value_ == value_)};
     }
 
 private:

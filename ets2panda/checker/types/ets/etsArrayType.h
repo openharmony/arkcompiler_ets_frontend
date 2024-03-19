@@ -39,6 +39,17 @@ public:
     }
 
     void ToString(std::stringstream &ss, bool precise) const override;
+
+    const util::StringView &AssemblerName() const
+    {
+        return assemblerName_;
+    }
+
+    void SetAssemblerName(const util::StringView &newName)
+    {
+        assemblerName_ = newName;
+    }
+
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToAssemblerTypeWithRank(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;
@@ -53,6 +64,7 @@ public:
 
 private:
     Type *element_;
+    util::StringView assemblerName_;
 };
 }  // namespace ark::es2panda::checker
 

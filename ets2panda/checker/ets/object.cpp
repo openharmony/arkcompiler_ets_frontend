@@ -1069,7 +1069,7 @@ void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
     }
 }
 
-int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type) const
+int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type, const lexer::SourcePosition &pos)
 {
     ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
 
@@ -1083,14 +1083,31 @@ int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type) const
         case TypeFlag::INT: {
             return type->AsIntType()->GetValue();
         }
+        case TypeFlag::LONG: {
+            if (auto val = type->AsLongType()->GetValue();
+                val <= std::numeric_limits<int32_t>::max() && val >= std::numeric_limits<int32_t>::min()) {
+                return static_cast<int32_t>(val);
+            }
+
+            ThrowTypeError("Element accessor value is out of tuple size bounds.", pos);
+
+            break;
+        }
         default: {
             UNREACHABLE();
         }
     }
 }
 
-void ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, const ir::MemberExpression *const expr)
+void ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, ir::MemberExpression *const expr)
 {
+    auto *const expressionType = expr->Property()->Check(this);
+    auto const *const unboxedExpressionType = ETSBuiltinTypeAsPrimitiveType(expressionType);
+
+    if (expressionType->IsETSObjectType() && (unboxedExpressionType != nullptr)) {
+        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxedExpressionType));
+    }
+
     const auto *const exprType = expr->Property()->TsType();
     ASSERT(exprType != nullptr);
 
@@ -1098,11 +1115,11 @@ void ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, const ir::M
         ThrowTypeError("Only constant expression allowed for element access on tuples.", expr->Property()->Start());
     }
 
-    if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
+    if (!exprType->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX | TypeFlag::LONG)) {
         ThrowTypeError("Only integer type allowed for element access on tuples.", expr->Property()->Start());
     }
 
-    const int32_t exprValue = GetTupleElementAccessValue(exprType);
+    auto exprValue = GetTupleElementAccessValue(exprType, expr->Property()->Start());
     if (((exprValue >= tuple->GetTupleSize()) && !tuple->HasSpreadType()) || (exprValue < 0)) {
         ThrowTypeError("Element accessor value is out of tuple size bounds.", expr->Property()->Start());
     }

@@ -1178,9 +1178,35 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "String",
-                          "decorators": [],
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "String",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 26,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 26,
+                                  "column": 29
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 26,
+                                "column": 23
+                              },
+                              "end": {
+                                "line": 26,
+                                "column": 30
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
                               "line": 26,
@@ -1188,7 +1214,7 @@
                             },
                             "end": {
                               "line": 26,
-                              "column": 29
+                              "column": 30
                             }
                           }
                         },
@@ -1199,7 +1225,7 @@
                           },
                           "end": {
                             "line": 26,
-                            "column": 29
+                            "column": 30
                           }
                         }
                       },
@@ -1989,7 +2015,7 @@
       "column": 1
     },
     "end": {
-      "line": 35,
+      "line": 36,
       "column": 1
     }
   }

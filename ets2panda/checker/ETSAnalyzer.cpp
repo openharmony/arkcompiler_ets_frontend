@@ -504,7 +504,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSPrimitiveType *node) const
 {
-    return nullptr;
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSStructDeclaration *node) const
@@ -1571,7 +1572,7 @@ checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
         return type;
     }
 
-    auto [moduleName, isPackageModule] = checker->VarBinder()->AsETSBinder()->GetModuleNameFromSource(importPath);
+    auto [moduleName, isPackageModule] = checker->VarBinder()->AsETSBinder()->GetModuleInfo(importPath);
 
     std::vector<util::StringView> syntheticNames = checker->GetNameForSynteticObjectType(moduleName);
 
@@ -2043,6 +2044,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSArrayType *node) const
 {
     ETSChecker *checker = GetETSChecker();
     node->elementType_->Check(checker);
+    node->SetTsType(node->GetType(checker));
+
+    const auto arrayType = node->TsType()->AsETSArrayType();
+    checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
     return nullptr;
 }
 
@@ -2328,12 +2333,17 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
         const checker::SavedTypeRelationFlagsContext savedFlagsCtx(
             checker->Relation(), checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
-        st->TypeAnnotation()->Check(checker);
+        if (st->TypeAnnotation()->TsType() == nullptr) {
+            st->TypeAnnotation()->Check(checker);
+        }
 
         return nullptr;
     }
 
-    st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+    if (st->TypeParameterTypes().empty()) {
+        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+    }
+
     for (auto *const param : st->TypeParams()->Params()) {
         const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
             if (!node->IsIdentifier()) {
@@ -2353,7 +2363,9 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     const checker::SavedTypeRelationFlagsContext savedFlagsCtx(checker->Relation(),
                                                                checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
 
-    st->TypeAnnotation()->Check(checker);
+    if (st->TypeAnnotation()->TsType() == nullptr) {
+        st->TypeAnnotation()->Check(checker);
+    }
 
     return nullptr;
 }

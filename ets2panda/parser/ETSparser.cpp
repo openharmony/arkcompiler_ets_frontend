@@ -153,7 +153,9 @@ void ETSParser::ParseProgram(ScriptKind kind)
         statements.emplace_back(decl);
     }
     auto script = ParseETSGlobalScript(startLoc, statements);
-    GetProgram()->VarBinder()->AsETSBinder()->FillSourceList(this->GetPathes());
+
+    AddExternalSource(ParseSources());
+    GetProgram()->VarBinder()->AsETSBinder()->SetModuleList(this->ModuleList());
     GetProgram()->SetAst(script);
 }
 
@@ -164,8 +166,6 @@ ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
 
     auto topLevelStatements = ParseTopLevelDeclaration();
     statements.insert(statements.end(), topLevelStatements.begin(), topLevelStatements.end());
-
-    AddExternalSource(ParseSources(pathHandler_->GetParseList()));
 
     auto *etsScript = AllocNode<ir::ETSScript>(Allocator(), std::move(statements), GetProgram());
     etsScript->SetRange({startLoc, Lexer()->GetToken().End()});
@@ -187,8 +187,7 @@ void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
 }
 
 ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::string_view srcFile,
-                                                                       std::string_view importSrc,
-                                                                       const std::vector<std::string> &paths)
+                                                                       std::string_view importSrc)
 {
     auto isp = InnerSourceParser(this);
     SourceFile source(srcFile, importSrc);
@@ -200,33 +199,35 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseDefaultSources(std::stri
     auto statements = ParseImportDeclarations();
     GetContext().Status() &= ~ParserStatus::IN_DEFAULT_IMPORTS;
 
-    pathHandler_->CollectDefaultSources(paths);
-    AddExternalSource(ParseSources(pathHandler_->GetParseList()));
+    AddExternalSource(ParseSources());
     return statements;
 }
 
-std::vector<Program *> ETSParser::ParseSources(const ArenaVector<util::StringView> &paths)
+std::vector<Program *> ETSParser::ParseSources()
 {
     std::vector<Program *> programs;
 
-    for (const auto &path : paths) {
-        pathHandler_->MarkAsParsed(path);
-    }
+    auto &parseList = importPathManager_->ParseList();
 
-    for (const auto &path : paths) {
-        std::ifstream inputStream(path.Mutf8());
-
-        const auto data = pathHandler_->GetImportData(path, Extension());
+    // This parse list `paths` can grow in the meantime, so keep this index-based iteration
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t idx = 0; idx < parseList.size(); idx++) {
+        // check if already parsed
+        if (parseList[idx].isParsed) {
+            continue;
+        }
+        std::ifstream inputStream(parseList[idx].sourcePath.Mutf8());
+        const auto data = importPathManager_->GetImportData(parseList[idx].sourcePath, Extension());
         if (!data.hasDecl) {
             continue;
         }
 
-        if (GetProgram()->SourceFilePath().Is(path.Mutf8())) {
+        if (GetProgram()->SourceFilePath().Is(parseList[idx].sourcePath.Mutf8())) {
             break;
         }
 
         if (inputStream.fail()) {
-            ThrowSyntaxError({"Failed to open file: ", path.Mutf8()});
+            ThrowSyntaxError({"Failed to open file: ", parseList[idx].sourcePath.Mutf8()});
         }
 
         std::stringstream ss;
@@ -235,16 +236,19 @@ std::vector<Program *> ETSParser::ParseSources(const ArenaVector<util::StringVie
 
         auto currentLang = GetContext().SetLanguage(data.lang);
         auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
-        pathHandler_->MarkAsParsed(path);
-        auto newProg = ParseSource({path.Utf8(), extSrc->View().Utf8(), path.Utf8(), false});
+        auto newProg = ParseSource(
+            {parseList[idx].sourcePath.Utf8(), extSrc->View().Utf8(), parseList[idx].sourcePath.Utf8(), false});
+
         programs.emplace_back(newProg);
         GetContext().SetLanguage(currentLang);
     }
+
     return programs;
 }
 
 parser::Program *ETSParser::ParseSource(const SourceFile &sourceFile)
 {
+    importPathManager_->MarkAsParsed(sourceFile.filePath);
     auto *program = Allocator()->New<parser::Program>(Allocator(), GetProgram()->VarBinder());
     auto esp = ExternalSourceParser(this, program);
     auto lexer = InitLexer(sourceFile);
@@ -1466,34 +1470,6 @@ ir::ClassProperty *ETSParser::ParseInterfaceField()
     return field;
 }
 
-lexer::SourcePosition ETSParser::ParseEndLocInterfaceMethod(lexer::LexerPosition startPos, ir::ScriptFunction *func,
-                                                            ir::MethodDefinitionKind methodKind)
-{
-    if (func->HasBody()) {
-        return func->Body()->End();
-    }
-
-    if (func->ReturnTypeAnnotation() == nullptr) {
-        auto backupPos = Lexer()->Save();
-        Lexer()->Rewind(startPos);
-
-        while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            Lexer()->NextToken();
-        }
-
-        auto endLoc = Lexer()->GetToken().End();
-        Lexer()->Rewind(backupPos);
-
-        if (methodKind != ir::MethodDefinitionKind::SET) {
-            ThrowSyntaxError("Interface method must have a return type", endLoc);
-        }
-
-        return endLoc;
-    }
-
-    return func->ReturnTypeAnnotation()->End();
-}
-
 ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
@@ -1504,7 +1480,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     FunctionContext functionContext(this, ParserStatus::FUNCTION);
 
     lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
-    lexer::LexerPosition startPos = Lexer()->Save();
 
     auto [signature, throwMarker] = ParseFunctionSignature(ParserStatus::NEED_RETURN_TYPE);
 
@@ -1538,9 +1513,10 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     if ((flags & ir::ModifierFlags::STATIC) == 0 && body == nullptr) {
         func->AddModifier(ir::ModifierFlags::ABSTRACT);
     }
-
-    auto endLoc = ParseEndLocInterfaceMethod(startPos, func, methodKind);
-    func->SetRange({startLoc, endLoc});
+    func->SetRange({startLoc, body != nullptr                           ? body->End()
+                              : func->ReturnTypeAnnotation() != nullptr ? func->ReturnTypeAnnotation()->End()
+                              : func->Params().empty()                  ? Lexer()->GetToken().End()
+                                                                        : (*func->Params().end())->End()});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     funcExpr->SetRange(func->Range());
@@ -2367,11 +2343,13 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PACKAGE) {
         if (!IsETSModule() && GetProgram()->IsEntryPoint()) {
-            pathHandler_->SetModuleName(GetProgram()->AbsoluteName(), util::StringView(""), false);
+            // NOTE(rsipka): consider adding a filename name as module name to entry points as well
+            importPathManager_->InsertModuleInfo(GetProgram()->AbsoluteName(),
+                                                 util::ImportPathManager::ModuleInfo {util::StringView(""), false});
             return nullptr;
         }
-        pathHandler_->SetModuleName(GetProgram()->AbsoluteName(), GetProgram()->FileName(), false);
-        // NOTE(rsipka): setPackage should be eliminated from here, and should be reconsider its usage from program
+        importPathManager_->InsertModuleInfo(GetProgram()->AbsoluteName(),
+                                             util::ImportPathManager::ModuleInfo {GetProgram()->FileName(), false});
         GetProgram()->SetPackageName(GetProgram()->FileName());
         return nullptr;
     }
@@ -2389,8 +2367,12 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
         name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->ToString(Allocator());
 
     GetProgram()->SetPackageName(packageName);
-    pathHandler_->SetModuleName(GetProgram()->AbsoluteName(), packageName, true);  // NOTE: rid of it
-    pathHandler_->SetModuleName(GetProgram()->ResolvedFilePath(), packageName, true);
+    // NOTE(rsipka): handle these two cases, check that is it really required
+    importPathManager_->InsertModuleInfo(GetProgram()->AbsoluteName(),
+                                         util::ImportPathManager::ModuleInfo {packageName, true});
+    importPathManager_->InsertModuleInfo(GetProgram()->ResolvedFilePath(),
+                                         util::ImportPathManager::ModuleInfo {packageName, true});
+
     return packageDeclaration;
 }
 
@@ -2410,10 +2392,13 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
 
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
     auto importPath = Lexer()->GetToken().Ident();
-    auto resolvedImportPath = pathHandler_->AddPath(GetProgram()->AbsoluteName(), importPath);
+
+    auto resolvedImportPath = importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath);
+    importPathManager_->AddToParseList(resolvedImportPath,
+                                       (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U);
 
     auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);
-    auto importData = pathHandler_->GetImportData(resolvedImportPath, Extension());
+    auto importData = importPathManager_->GetImportData(resolvedImportPath, Extension());
     auto *source = AllocNode<ir::StringLiteral>(importPath);
     source->SetRange(Lexer()->GetToken().Loc());
 
@@ -3056,6 +3041,10 @@ ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags fl
     ir::TypeNode *potentialType = ParseTypeAnnotation(&options);
 
     if (potentialType != nullptr) {
+        if (potentialType->IsTSArrayType()) {
+            return potentialType;
+        }
+
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
             Lexer()->NextToken();  // eat '.'
         }
@@ -3172,6 +3161,26 @@ bool IsPunctuartorSpecialCharacter(lexer::TokenType tokenType)
         default:
             return false;
     }
+}
+
+ir::Expression *ETSParser::ParseExpressionOrTypeAnnotation(lexer::TokenType type,
+                                                           [[maybe_unused]] ExpressionParseFlags flags)
+{
+    if (type == lexer::TokenType::KEYW_INSTANCEOF) {
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
+            auto *typeAnnotation = AllocNode<ir::NullLiteral>();
+            typeAnnotation->SetRange(Lexer()->GetToken().Loc());
+            Lexer()->NextToken();
+
+            return typeAnnotation;
+        }
+
+        return ParseTypeAnnotation(&options);
+    }
+
+    return ParseExpression(ExpressionParseFlags::DISALLOW_YIELD);
 }
 
 bool ETSParser::IsArrowFunctionExpressionStart()

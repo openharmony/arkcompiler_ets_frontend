@@ -612,23 +612,8 @@ void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbi
         WrongContextErrorClassifyByType(ident, resolved);
     }
 
-    if (assignmentExpr->Right() == ident) {
-        const auto *const targetType = assignmentExpr->Left()->TsType();
-        ASSERT(targetType != nullptr);
-
-        if (targetType->IsETSObjectType() && targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            if (!type->IsETSFunctionType() &&
-                !(type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                ThrowTypeError({"Assigning a non-functional variable \"", ident->Name(), "\" to a functional type"},
-                               ident->Start());
-            }
-
-            return;
-        }
-
-        if (!resolved->Declaration()->PossibleTDZ()) {
-            WrongContextErrorClassifyByType(ident, resolved);
-        }
+    if (assignmentExpr->Right() == ident && (!resolved->Declaration()->PossibleTDZ() && !type->IsETSFunctionType())) {
+        WrongContextErrorClassifyByType(ident, resolved);
     }
 }
 
@@ -1491,7 +1476,7 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
     auto extRecords = etsBinder->GetGlobalRecordTable()->Program()->ExternalSources();
-    auto [name, isPackageModule] = etsBinder->GetModuleNameFromSource(importPath);
+    auto [name, isPackageModule] = etsBinder->GetModuleInfo(importPath);
     auto res = extRecords.find(name);
     ASSERT(res != extRecords.end());
 
@@ -2249,7 +2234,7 @@ bool ETSChecker::IsSameDeclarationType(varbinder::LocalVariable *target, varbind
 void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target)
 {
     auto boxingResult = PrimitiveTypeAsETSBuiltinType(target);
-    if (boxingResult != nullptr) {
+    if ((boxingResult != nullptr) && !relation->OnlyCheckBoxingUnboxing()) {
         relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxingResult));
         relation->Result(true);
     }
@@ -2258,7 +2243,7 @@ void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *targ
 void ETSChecker::AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self)
 {
     auto unboxingResult = UnboxingConverter(this, relation, source, self).Result();
-    if ((unboxingResult != nullptr) && relation->IsTrue()) {
+    if ((unboxingResult != nullptr) && relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
         relation->GetNode()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxingResult));
     }
 }
@@ -2298,7 +2283,9 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     ASSERT(relation != nullptr);
     checker::SavedTypeRelationFlagsContext savedTypeRelationFlagCtx(
         relation, (relation->ApplyWidening() ? TypeRelationFlag::WIDENING : TypeRelationFlag::NONE) |
-                      (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
+                      (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE) |
+                      (relation->OnlyCheckBoxingUnboxing() ? TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING
+                                                           : TypeRelationFlag::NONE));
     auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
     if (boxedSourceType == nullptr) {
         return;
@@ -2309,7 +2296,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
         return;
     }
     relation->IsAssignableTo(boxedSourceType, target);
-    if (relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
+    if (relation->IsTrue()) {
         AddBoxingFlagToPrimitiveType(relation, boxedSourceType);
     } else {
         auto unboxedTargetType = ETSBuiltinTypeAsPrimitiveType(target);

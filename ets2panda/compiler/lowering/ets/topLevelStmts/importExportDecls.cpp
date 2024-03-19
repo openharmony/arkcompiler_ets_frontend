@@ -15,14 +15,14 @@
 
 #include "compiler/lowering/ets/topLevelStmts/importExportDecls.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "util/importPathManager.h"
 
 namespace ark::es2panda::compiler {
 
 void ImportExportDecls::ParseDefaultSources()
 {
-    auto imports =
-        parser_->ParseDefaultSources(DEFAULT_IMPORT_SOURCE_FILE, defaultImportSource_, util::PathHandler::StdLib());
-    varbinder_->FillSourceList(parser_->GetPathes());
+    auto imports = parser_->ParseDefaultSources(DEFAULT_IMPORT_SOURCE_FILE, defaultImportSource_);
+    varbinder_->SetModuleList(parser_->ModuleList());
     varbinder_->SetDefaultImports(std::move(imports));
 }
 

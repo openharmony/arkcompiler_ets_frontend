@@ -1246,6 +1246,12 @@ void ParserImpl::CreateAmendedBinaryExpression(ir::Expression *const left, ir::E
     SetAmendedChildExpression(right, binaryExpr);
 }
 
+ir::Expression *ParserImpl::ParseExpressionOrTypeAnnotation([[maybe_unused]] lexer::TokenType type,
+                                                            [[maybe_unused]] ExpressionParseFlags flags)
+{
+    return ParseExpression(ExpressionParseFlags::DISALLOW_YIELD);
+}
+
 ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, ExpressionParseFlags flags)
 {
     lexer::TokenType operatorType = lexer_->GetToken().Type();
@@ -1266,7 +1272,7 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, Expressi
         newFlags |= ExpressionParseFlags::INSTANCEOF;
     }
 
-    ir::Expression *rightExpr = ParseExpression(newFlags);
+    ir::Expression *rightExpr = ParseExpressionOrTypeAnnotation(operatorType, ExpressionParseFlags::DISALLOW_YIELD);
     ir::ConditionalExpression *conditionalExpr = nullptr;
 
     if (rightExpr->IsConditionalExpression() && !rightExpr->IsGrouped()) {

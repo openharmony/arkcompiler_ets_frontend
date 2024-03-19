@@ -161,9 +161,11 @@ void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
     }
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *node) const
+void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
 {
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    etsg->LoadAccumulatorNull(node, node->TsType());
 }
 
 void ETSCompiler::Compile(const ir::ETSTuple *node) const
@@ -971,7 +973,7 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     } else if (expr->Callee()->IsSuperExpression() || expr->Callee()->IsThisExpression()) {
         ASSERT(!isReference && expr->IsETSConstructorCall());
         expr->Callee()->Compile(etsg);  // ctor is not a value!
-        etsg->SetVRegType(calleeReg, etsg->GetAccumulatorType());
+        etsg->StoreAccumulator(expr, calleeReg);
         EmitCall(expr, calleeReg, isStatic, signature, isReference);
     } else {
         ASSERT(isReference);
@@ -1972,9 +1974,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
+void ETSCompiler::Compile(const ir::TSArrayType *node) const
 {
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    etsg->LoadAccumulatorNull(node, node->TsType());
 }
 
 void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const
@@ -1989,11 +1993,11 @@ void ETSCompiler::CompileCastUnboxable(const ir::TSAsExpression *expr) const
             break;
         }
         case checker::ETSObjectFlags::BUILTIN_BYTE: {
-            etsg->CastToChar(expr);
+            etsg->CastToByte(expr);
             break;
         }
         case checker::ETSObjectFlags::BUILTIN_CHAR: {
-            etsg->CastToByte(expr);
+            etsg->CastToChar(expr);
             break;
         }
         case checker::ETSObjectFlags::BUILTIN_SHORT: {

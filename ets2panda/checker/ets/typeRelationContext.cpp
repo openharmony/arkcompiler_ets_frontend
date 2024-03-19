@@ -44,6 +44,16 @@ void AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *rela
 bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
                                                  const lexer::SourcePosition &pos)
 {
+    if (checker_->HasStatus(CheckerStatus::IN_INSTANCEOF_CONTEXT)) {
+        if (typeArgs != nullptr) {
+            checker_->ReportWarning(
+                {"Type parameter is erased from type '", type->Name(), "' when used in instanceof expression."}, pos);
+        }
+
+        result_ = type;
+        return true;
+    }
+
     checker_->CheckNumberOfTypeArguments(type, typeArgs, pos);
     if (type->TypeArguments().empty()) {
         result_ = type;

@@ -388,6 +388,7 @@ public:
     void ApplyConversionCast(const ir::AstNode *node, const checker::Type *targetType);
     void ApplyConversion(const ir::AstNode *node, const checker::Type *targetType);
     void ApplyCast(const ir::AstNode *node, const checker::Type *targetType);
+    void ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnboxingFlags targetType);
     void EmitUnboxingConversion(const ir::AstNode *node);
     void EmitBoxingConversion(const ir::AstNode *node);
     void SwapBinaryOpArgs(const ir::AstNode *node, VReg lhs);

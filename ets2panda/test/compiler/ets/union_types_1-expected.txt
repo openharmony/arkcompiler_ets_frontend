@@ -1245,9 +1245,35 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "C",
-                          "decorators": [],
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "C",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 35,
+                                  "column": 22
+                                },
+                                "end": {
+                                  "line": 35,
+                                  "column": 23
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 35,
+                                "column": 22
+                              },
+                              "end": {
+                                "line": 35,
+                                "column": 24
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
                               "line": 35,
@@ -1255,7 +1281,7 @@
                             },
                             "end": {
                               "line": 35,
-                              "column": 23
+                              "column": 24
                             }
                           }
                         },
@@ -1266,7 +1292,7 @@
                           },
                           "end": {
                             "line": 35,
-                            "column": 23
+                            "column": 24
                           }
                         }
                       },
@@ -1546,9 +1572,35 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "A",
-                          "decorators": [],
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "A",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 39,
+                                  "column": 22
+                                },
+                                "end": {
+                                  "line": 39,
+                                  "column": 23
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 39,
+                                "column": 22
+                              },
+                              "end": {
+                                "line": 39,
+                                "column": 24
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
                               "line": 39,
@@ -1556,7 +1608,7 @@
                             },
                             "end": {
                               "line": 39,
-                              "column": 23
+                              "column": 24
                             }
                           }
                         },
@@ -1567,7 +1619,7 @@
                           },
                           "end": {
                             "line": 39,
-                            "column": 23
+                            "column": 24
                           }
                         }
                       },
@@ -2695,9 +2747,35 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "C",
-                          "decorators": [],
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "C",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 54,
+                                  "column": 22
+                                },
+                                "end": {
+                                  "line": 54,
+                                  "column": 23
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 54,
+                                "column": 22
+                              },
+                              "end": {
+                                "line": 54,
+                                "column": 24
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
                               "line": 54,
@@ -2705,7 +2783,7 @@
                             },
                             "end": {
                               "line": 54,
-                              "column": 23
+                              "column": 24
                             }
                           }
                         },
@@ -2716,7 +2794,7 @@
                           },
                           "end": {
                             "line": 54,
-                            "column": 23
+                            "column": 24
                           }
                         }
                       },
@@ -2996,9 +3074,35 @@
                           }
                         },
                         "right": {
-                          "type": "Identifier",
-                          "name": "B",
-                          "decorators": [],
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "B",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 58,
+                                  "column": 22
+                                },
+                                "end": {
+                                  "line": 58,
+                                  "column": 23
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 58,
+                                "column": 22
+                              },
+                              "end": {
+                                "line": 58,
+                                "column": 24
+                              }
+                            }
+                          },
                           "loc": {
                             "start": {
                               "line": 58,
@@ -3006,7 +3110,7 @@
                             },
                             "end": {
                               "line": 58,
-                              "column": 23
+                              "column": 24
                             }
                           }
                         },
@@ -3017,7 +3121,7 @@
                           },
                           "end": {
                             "line": 58,
-                            "column": 23
+                            "column": 24
                           }
                         }
                       },
@@ -3560,7 +3664,7 @@
       "column": 1
     },
     "end": {
-      "line": 66,
+      "line": 67,
       "column": 1
     }
   }

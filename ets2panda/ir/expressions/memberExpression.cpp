@@ -318,8 +318,8 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 {
     ASSERT(baseType->IsETSTupleType());
 
-    auto *const tupleTypeAtIdx =
-        baseType->AsETSTupleType()->GetTypeAtIndex(checker->GetTupleElementAccessValue(Property()->TsType()));
+    auto *const tupleTypeAtIdx = baseType->AsETSTupleType()->GetTypeAtIndex(
+        checker->GetTupleElementAccessValue(Property()->TsType(), Property()->Start()));
 
     if ((!Parent()->IsAssignmentExpression() || Parent()->AsAssignmentExpression()->Left() != this) &&
         (!Parent()->IsUpdateExpression())) {
@@ -335,7 +335,9 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
 checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *baseType)
 {
     if (baseType->IsETSArrayType() || baseType->IsETSDynamicType()) {
-        checker->ValidateArrayIndex(property_);
+        if (!baseType->IsETSTupleType()) {
+            checker->ValidateArrayIndex(property_);
+        }
 
         if (baseType->IsETSTupleType()) {
             checker->ValidateTupleIndex(baseType->AsETSTupleType(), this);

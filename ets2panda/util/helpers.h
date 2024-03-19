@@ -20,6 +20,7 @@
 #include "mem/pool_manager.h"
 #include "util/ustring.h"
 #include "ir/module/importSpecifier.h"
+#include "parser/program/program.h"
 
 #include <cmath>
 #include <string>
@@ -115,13 +116,7 @@ public:
     static util::StringView ToStringView(ArenaAllocator *allocator, double number);
     static util::StringView ToStringView(ArenaAllocator *allocator, int32_t number);
     static util::StringView ToStringView(ArenaAllocator *allocator, uint32_t number);
-    static bool IsRelativePath(const std::string &path);
-    static bool IsRealPath(const std::string &path);
-    static bool IsCompatibleExtension(const std::string &extension);
     static bool EndsWith(const std::string &str, const std::string &suffix);
-    static std::string GetSourcePath(const std::string &path);
-    static std::string TruncateCompatibleExtension(const std::string &path);
-    static util::StringView TruncateCompatibleExtension(const util::StringView &path);
 
     static const ir::ScriptFunction *GetContainingConstructor(const ir::AstNode *node);
     static const ir::ScriptFunction *GetContainingConstructor(const ir::ClassProperty *node);
@@ -205,6 +200,9 @@ public:
     static std::string AppendAll(Elements &&...elems);
 
     static std::pair<std::string_view, std::string_view> SplitSignature(std::string_view signature);
+
+    static std::vector<std::string> &StdLib();
+    static bool IsStdLib(const parser::Program *program);
 
 private:
     template <LogLevel LOG_L, typename... Elements>

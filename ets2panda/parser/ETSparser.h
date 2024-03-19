@@ -19,7 +19,7 @@
 #include <optional>
 #include "parserFlags.h"
 #include "util/arktsconfig.h"
-#include "util/pathHandler.h"
+#include "util/importPathManager.h"
 #include "TypedParser.h"
 
 namespace ark::es2panda::ir {
@@ -44,9 +44,7 @@ public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
         : TypedParser(program, options, status), globalProgram_(GetProgram())
     {
-        pathHandler_ = std::make_unique<util::PathHandler>(Allocator());
-        pathHandler_->SetArkTsConfig(ArkTSConfig());
-        pathHandler_->SetStdLib(GetOptions().stdLib);
+        importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), ArkTSConfig(), GetOptions().stdLib);
     }
 
     ETSParser() = delete;
@@ -60,9 +58,9 @@ public:
         return true;
     }
 
-    ArenaUnorderedMap<util::StringView, util::ParseInfo> GetPathes() const
+    const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &ModuleList() const
     {
-        return pathHandler_->GetPathes();
+        return importPathManager_->ModuleList();
     }
 
     //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
@@ -109,8 +107,7 @@ public:
         return CreateFormattedStatements(sourceCode, insertingNodes, fileName);
     }
 
-    ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc,
-                                                                const std::vector<std::string> &paths);
+    ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
 
 private:
     void ParseProgram(ScriptKind kind) override;
@@ -125,8 +122,7 @@ private:
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
-    std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
-    std::vector<Program *> ParseSources(const ArenaVector<util::StringView> &paths);
+    std::vector<Program *> ParseSources();
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     ArenaVector<ir::ImportSpecifier *> ParseNamedSpecifiers();
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
@@ -161,8 +157,6 @@ private:
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool isRethrowsAllowed) override;
     ir::Expression *CreateParameterThis(util::StringView className) override;
-    lexer::SourcePosition ParseEndLocInterfaceMethod(lexer::LexerPosition startPos, ir::ScriptFunction *func,
-                                                     ir::MethodDefinitionKind methodKind);
     ir::TypeNode *ConvertToOptionalUnionType(ir::TypeNode *typeNode);
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefinition(ir::Identifier *fieldName, ir::ModifierFlags modifiers,
@@ -319,11 +313,13 @@ private:
 
     bool IsExternal() const override
     {
-        return pathHandler_->IsStdLib(GetProgram());
+        return util::Helpers::IsStdLib(GetProgram());
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+
+    ir::Expression *ParseExpressionOrTypeAnnotation(lexer::TokenType type, ExpressionParseFlags flags) override;
 
     ir::Expression *ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags) override;
 
@@ -357,7 +353,7 @@ private:
 private:
     parser::Program *globalProgram_;
     std::vector<ir::AstNode *> insertingNodes_ {};
-    std::unique_ptr<util::PathHandler> pathHandler_ {nullptr};
+    std::unique_ptr<util::ImportPathManager> importPathManager_ {nullptr};
 };
 
 class ExternalSourceParser {
