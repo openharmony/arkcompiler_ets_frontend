@@ -1866,7 +1866,10 @@ ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *t
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
     ir::Expression *type = ParseTsTypeAnnotation(&options);
 
-    if (throwError && lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        if (!throwError) {
+            return nullptr;
+        }
         ThrowSyntaxError("')' expected");
     }
 
@@ -1914,9 +1917,16 @@ ir::Expression *ParserImpl::ParseTsFunctionType(lexer::SourcePosition startLoc, 
 
     lexer_->NextToken();  // eat '=>'
 
-    TypeAnnotationParsingOptions options =
-        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
+    if (throwError) {
+        options |= TypeAnnotationParsingOptions::THROW_ERROR;
+    }
+    
     ir::Expression *returnTypeAnnotation = ParseTsTypeAnnotation(&options);
+
+    if (returnTypeAnnotation == nullptr) {
+        return nullptr;
+    }
 
     ir::Expression *funcType = nullptr;
 
