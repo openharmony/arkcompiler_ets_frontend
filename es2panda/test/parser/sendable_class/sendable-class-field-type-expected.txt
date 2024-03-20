@@ -138,12 +138,32 @@ slot _1
 {
   index: 16
     tag: 0
-    val: 2
+    val: 5
 },
 {
   index: 17
+    tag: 5
+    val: num
+},
+{
+  index: 18
+    tag: 0
+    val: 2
+},
+{
+  index: 19
     tag: 2
-    val: 4
+    val: 16
+},
+{
+  index: 20
+    tag: 0
+    val: 2
+},
+{
+  index: 21
+    tag: 2
+    val: 5
 },
 ------------------------------------
 slot _2
