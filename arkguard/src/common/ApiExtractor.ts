@@ -529,6 +529,47 @@ export namespace ApiExtractor {
   const projectExtensions: string[] = ['.ets', '.ts', '.js'];
   const projectDependencyExtensions: string[] = ['.d.ets', '.d.ts', '.ets', '.ts', '.js'];
   const resolvedModules = new Set();
+
+  function tryGetPackageID(filePath: string): string {
+    const ohPackageJsonPath = path.join(filePath, 'oh-package.json5');
+    let packgeNameAndVersion = '';
+    if (fs.existsSync(ohPackageJsonPath)) {
+      const ohPackageContent = json5.parse(fs.readFileSync(ohPackageJsonPath, 'utf-8'));
+      packgeNameAndVersion = ohPackageContent.name + ohPackageContent.version;
+    }
+    return packgeNameAndVersion;
+  }
+
+  function traverseFilesInDir(apiPath: string, apiType: ApiType): void {
+    let fileNames: string[] = fs.readdirSync(apiPath);
+    for (let fileName of fileNames) {
+      let filePath: string = path.join(apiPath, fileName);
+      try {
+        fs.accessSync(filePath, fs.constants.R_OK);
+      } catch (err) {
+        continue;
+      }
+      if (fs.statSync(filePath).isDirectory()) {
+        const packgeNameAndVersion = tryGetPackageID(filePath);
+        if (resolvedModules.has(packgeNameAndVersion)) {
+          continue;
+        }
+        traverseApiFiles(filePath, apiType);
+        packgeNameAndVersion.length > 0 && resolvedModules.add(packgeNameAndVersion);
+        continue;
+      }
+      const suffix: string = path.extname(filePath);
+      if ((apiType !== ApiType.PROJECT) && !projectDependencyExtensions.includes(suffix)) {
+        continue;
+      }
+
+      if (apiType === ApiType.PROJECT && !projectExtensions.includes(suffix)) {
+        continue;
+      }
+      parseFile(filePath, apiType);
+    }
+  }
+
   /**
    * traverse files of  api directory
    * @param apiPath api directory path
@@ -536,40 +577,8 @@ export namespace ApiExtractor {
    * @private
    */
   export const traverseApiFiles = function (apiPath: string, apiType: ApiType): void {
-    let fileNames: string[] = [];
     if (fs.statSync(apiPath).isDirectory()) {
-      fileNames = fs.readdirSync(apiPath);
-      for (let fileName of fileNames) {
-        let filePath: string = path.join(apiPath, fileName);
-        try {
-          fs.accessSync(filePath, fs.constants.R_OK);
-        } catch (err) {
-          continue;
-        }
-        if (fs.statSync(filePath).isDirectory()) {
-          const ohPackageJsonPath = path.join(filePath, 'oh-package.json5');
-          let packgeNameAndVersion = '';
-          if (fs.existsSync(ohPackageJsonPath)) {
-            const ohPackageContent = json5.parse(fs.readFileSync(ohPackageJsonPath, 'utf-8'));
-            packgeNameAndVersion = ohPackageContent.name + ohPackageContent.version;
-            if (resolvedModules.has(packgeNameAndVersion)) {
-              continue;
-            }
-          }
-          traverseApiFiles(filePath, apiType);
-          packgeNameAndVersion.length > 0 && resolvedModules.add(packgeNameAndVersion);
-          continue;
-        }
-        const suffix: string = path.extname(filePath);
-        if ((apiType !== ApiType.PROJECT) && !projectDependencyExtensions.includes(suffix)) {
-          continue;
-        }
-
-        if (apiType === ApiType.PROJECT && !projectExtensions.includes(suffix)) {
-          continue;
-        }
-        parseFile(filePath, apiType);
-      }
+      traverseFilesInDir(apiPath, apiType);
     } else {
       parseFile(apiPath, apiType);
     }
@@ -706,7 +715,8 @@ export namespace ApiExtractor {
    * parse api of third party libs like libs in node_modules
    * @param libPath
    */
-  export function parseThirdPartyLibsByPaths(libPaths: string[], scanningApiType: ApiType): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
+  export function parseThirdPartyLibsByPaths(libPaths: string[], scanningApiType: ApiType): {reservedProperties: string[];
+    reservedLibExportNames: string[] | undefined} {
     mPropertySet.clear();
     mLibExportNameSet.clear();
     libPaths.forEach(path => {

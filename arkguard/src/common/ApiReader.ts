@@ -138,8 +138,9 @@ function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean
  * @param filesForCompilation set collection of files
  * @param customProfiles
  */
-export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions, isHarCompiled: boolean):
-  {projectAndLibsReservedProperties: string[]; libExportNames: string[]} {
+export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<string>, customProfiles: IOptions, isHarCompiled: boolean): {
+  projectAndLibsReservedProperties: string[];
+  libExportNames: string[]} {
   const ApiType = ApiExtractor.ApiType;
   let scanningCommonType = undefined;
   let scanningLibsType = undefined;
@@ -174,18 +175,15 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
   const nameObfuscationConfig = customProfiles.mNameObfuscation;
   if (isEnabledPropertyObfuscation(customProfiles)) {
     // read project code export names
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(projProperties,
-      nameObfuscationConfig.mReservedProperties, [...structPropsSet]);
+    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(projProperties, nameObfuscationConfig.mReservedProperties, [...structPropsSet]);
 
     // read project lib export names
     if (sdkProperties && sdkProperties.length > 0) {
-      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties,
-        nameObfuscationConfig.mReservedProperties);
+      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties, nameObfuscationConfig.mReservedProperties);
     }
 
     if (scanProjectConfig.mKeepStringProperty && stringPropsSet.size > 0) {
-      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet],
-        nameObfuscationConfig.mReservedProperties);
+      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet], nameObfuscationConfig.mReservedProperties);
     }
   }
   structPropsSet.clear();

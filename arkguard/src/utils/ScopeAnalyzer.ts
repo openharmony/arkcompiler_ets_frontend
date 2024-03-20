@@ -681,7 +681,7 @@ namespace secharmony {
           return;
         }
         analyzeScope(sub);
-      })
+      });
       current = current.parent || current;
     }
 
@@ -802,7 +802,7 @@ namespace secharmony {
       current = current.parent || current;
     }
 
-    function writeMemberMethodCache(node: Node, lineAndColum: string) {
+    function writeMemberMethodCache(node: Node, lineAndColum: string): void {
       let gotNode;
       if (node.kind === SyntaxKind.Constructor) {
         gotNode = node.parent;

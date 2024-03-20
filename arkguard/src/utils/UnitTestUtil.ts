@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import { IOptions } from "../configs/IOptions";
-import { FileUtils } from "./FileUtils";
+import { IOptions } from '../configs/IOptions';
+import { FileUtils } from './FileUtils';
 
 export class UnitTestUtil {
   // The paths in mKeepFileSourceCode are relative paths. Join them with the directory where the obfuscation configuration file is located 
@@ -25,7 +25,7 @@ export class UnitTestUtil {
       const tempKeepSourceOfPaths = new Set<string>();
       const tempkeepFilesAndDependencies = new Set<string>();
 
-      const processPaths = (paths: Set<string>, targetPaths: Set<string>) => {
+      const processPaths = (paths: Set<string>, targetPaths: Set<string>): void => {
           paths.forEach(tempPath => {
               const absPath = FileUtils.getAbsPathBaseConfigPath(configPath, tempPath);
               targetPaths.add(absPath);
