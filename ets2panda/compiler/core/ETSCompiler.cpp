@@ -1097,7 +1097,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     etsg->StoreAccumulator(expr, objReg);
 
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-
+    auto const *const variable = expr->PropVar();
     if (auto const *const variableType = variable->TsType();
         variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
         checker::Signature *sig = variableType->AsETSFunctionType()->FindGetter();
