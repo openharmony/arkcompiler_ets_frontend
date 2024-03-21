@@ -216,6 +216,15 @@ export class TsUtils {
     );
   }
 
+  static isReadonlyArrayType(tsType: ts.Type): boolean {
+    return (
+      TsUtils.isTypeReference(tsType) &&
+      tsType.typeArguments?.length === 1 &&
+      tsType.target.typeParameters?.length === 1 &&
+      tsType.getSymbol()?.getName() === 'ReadonlyArray'
+    );
+  }
+
   isTypedArray(tsType: ts.Type): boolean {
     const symbol = tsType.symbol;
     if (!symbol) {
@@ -226,7 +235,7 @@ export class TsUtils {
   }
 
   isArray(tsType: ts.Type): boolean {
-    return TsUtils.isGenericArrayType(tsType) || this.isTypedArray(tsType);
+    return TsUtils.isGenericArrayType(tsType) || TsUtils.isReadonlyArrayType(tsType) || this.isTypedArray(tsType);
   }
 
   static isTuple(tsType: ts.Type): boolean {
