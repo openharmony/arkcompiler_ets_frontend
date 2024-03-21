@@ -2091,4 +2091,27 @@ export class TsUtils {
 
     return true;
   }
+
+  static isIntrinsicObjectType(type: ts.Type): boolean {
+    return !!(type.flags & ts.TypeFlags.NonPrimitive);
+  }
+
+  isStringType(tsType: ts.Type): boolean {
+    if ((tsType.getFlags() & ts.TypeFlags.String) !== 0) {
+      return true;
+    }
+
+    if (!TsUtils.isTypeReference(tsType)) {
+      return false;
+    }
+
+    const symbol = tsType.symbol;
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
+    return name === 'String' && this.isGlobalSymbol(symbol);
+  }
+
+  isStdMapType(type: ts.Type): boolean {
+    const sym = type.symbol;
+    return !!sym && sym.getName() === 'Map' && this.isGlobalSymbol(sym);
+  }
 }

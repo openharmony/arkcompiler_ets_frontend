@@ -1595,6 +1595,9 @@ export class TypeScriptLinter {
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isArray) ||
       this.tsUtils.isOrDerivedFrom(type, TsUtils.isTuple) ||
       this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
+      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStringType) ||
+      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdMapType) ||
+      TsUtils.isIntrinsicObjectType(type) ||
       TsUtils.isEnumType(type) ||
       // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
       TsUtils.isEsObjectType(typeNode)

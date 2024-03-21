@@ -29,13 +29,6 @@
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
         {
-            "line": 45,
-            "column": 3,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
             "line": 49,
             "column": 3,
             "problem": "PropertyAccessByIndex",
@@ -64,78 +57,8 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 142,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 143,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 144,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 145,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 146,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 147,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 151,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
             "line": 158,
             "column": 3,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 171,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 172,
-            "column": 1,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 173,
-            "column": 1,
             "problem": "PropertyAccessByIndex",
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
