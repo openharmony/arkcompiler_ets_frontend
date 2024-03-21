@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 module.exports = {
-    y4: 20,
-    z4: function () {
+    t4: 20,
+    u4: function () {
         return 'Hello, world2!';
     },
     a5: { p2: 22 }

@@ -19,10 +19,10 @@ function publicFoo2(): void {
     return;
 }
 export { publicFoo2 };
-function z2(): void {
+function b3(): void {
     return;
 }
-export { z2 as publicFoo3Alias };
+export { b3 as publicFoo3Alias };
 export function publicFoo4(): void {
     return;
 }

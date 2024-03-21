@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { ProjectInfo } from '../common/type';
+import type { ProjectInfo } from '../common/type';
 import type {IOptions} from '../configs/IOptions';
 import type {Node, TransformerFactory} from 'typescript';
 

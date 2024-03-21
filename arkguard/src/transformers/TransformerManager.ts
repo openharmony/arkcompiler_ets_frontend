@@ -19,7 +19,8 @@ import {join, resolve} from 'path';
 
 import type {IOptions} from '../configs/IOptions';
 import type {TransformPlugin} from './TransformPlugin';
-import { Extension, ProjectInfo } from '../common/type';
+import type { ProjectInfo } from '../common/type';
+import { Extension } from '../common/type';
 
 export class TransformerManager {
   private static sInstance: TransformerManager | null = null;
