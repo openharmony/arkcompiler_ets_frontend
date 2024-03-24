@@ -13,12 +13,7 @@
  * limitations under the License.
  */
 
-import * as test from "./folder/import_normal";
 import { xx1 } from "@bundle:com.example.myapplication/entry/ets/pages/testfile1";
 import { yy1 } from "@bundle:com.example.myapplication/entry/ets/pages/test_constructor";
-import xx2 from "@native:system.app";
 import { xx3 } from "@bundle:com.example.myapplication/share_library/Index";
-import u from "@package:pkg_modules/.ohpm/json5@2.2.3/pkg_modules/json5/dist/index";
 import { xx4 } from "@bundle:com.example.myapplication/entry@library_test/Index";
-
-export { Actor } from "./folder/import_normal";

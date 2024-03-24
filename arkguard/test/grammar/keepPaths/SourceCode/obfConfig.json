@@ -30,6 +30,7 @@
     "mRenameFileName": {
         "mEnable": false,
         "mNameGeneratorType": 1,
-        "mReservedFileNames": []
+        "mReservedFileNames": [],
+        "mOhmUrlUseNormalized": false
     }
 }

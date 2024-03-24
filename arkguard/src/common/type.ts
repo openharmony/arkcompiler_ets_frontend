@@ -31,7 +31,9 @@ export interface PathAndExtension {
 
 export interface ProjectInfo {
   packageDir: string, 
-  projectRootPath: string
+  projectRootPath: string,
+  localPackageSet: Set<string>,
+  useNormalized: boolean
 };
 
 /**

@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-import type { ProjectInfo } from '../common/type';
 import type {IOptions} from '../configs/IOptions';
 import type {Node, TransformerFactory} from 'typescript';
 
 export interface TransformPlugin {
   name: string;
   order: number
-  createTransformerFactory: (option: IOptions, projectInfo?: ProjectInfo) => TransformerFactory<Node>;
+  createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
 }
 
 export enum TransformerOrder {

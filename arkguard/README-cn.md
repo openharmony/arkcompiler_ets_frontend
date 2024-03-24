@@ -137,12 +137,17 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 
 #### -enable-filename-obfuscation
 
-开启文件/文件夹名称混淆。这个选项只在闭源HAR场景下生效，如果你使用这个选项，那么闭源HAR所有的文件/文件夹名称都会被混淆，除了下面场景:
+开启文件/文件夹名称混淆。如果使用这个选项，那么所有的文件/文件夹名称都会被混淆，除了下面场景:
 * oh-package.json5文件中'main'、'types'字段配置的文件/文件夹名称不会被混淆。
 * 模块内module.json5文件中'srcEntry'字段配置的文件/文件夹名称不会被混淆。
 * 被[`-keep-file-name`](#保留选项)指定的文件/文件夹名称不会被混淆。
 * 非ECMAScript模块引用方式（ECMAScript模块示例：`import {foo} from './filename'`）
 * 非路径引用方式，比如例子中的json5不会被混淆 `import module from 'json5'`
+**注意**：  
+**1.** 由于系统会在应用运行时加载某些指定的文件，针对这类文件，开发者需要手动在[`-keep-file-name`]选项中配置相应的白名单，防止指定文件被混淆，导致运行失败。
+上述需要手动配置白名单的情况，包括但不限于以下场景：
+(1) 当模块中包含Ability组件时。用户需要将`scr/main/module.json5`中，'abilities'字段下所有'srcEntry'对应的路径配置到白名单中。
+(2) 当模块中包含Worker多线程服务时，用户需要将`build-profiles.json5`中，'buildOption'-'sourceOption'-'workers'字段下所有的路径配置到白名单中。
 
 #### -enable-export-obfuscation
 

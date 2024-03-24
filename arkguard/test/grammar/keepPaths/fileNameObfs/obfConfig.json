@@ -28,6 +28,7 @@
     "mRenameFileName": {
         "mEnable": true,
         "mNameGeneratorType": 1,
-        "mReservedFileNames": ["local", "keepPaths", "fileNameObfs"]
+        "mReservedFileNames": ["local", "keepPaths", "fileNameObfs"],
+        "mOhmUrlUseNormalized": false
     }
 }

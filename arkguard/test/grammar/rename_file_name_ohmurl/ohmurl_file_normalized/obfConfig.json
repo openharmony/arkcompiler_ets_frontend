@@ -1,7 +1,7 @@
 {
     "mCompact": false,
     "mRemoveComments": false,
-    "mOutputDir": "../../local",
+    "mOutputDir": "../../../local",
     "mDisableHilog": false,
     "mDisableConsole": false,
     "mSimplify": false,
@@ -21,7 +21,7 @@
     "mRenameFileName": {
         "mEnable": true,
         "mNameGeneratorType": 1,
-        "mReservedFileNames": ["local", "rename_file_name", "index"],
-        "mOhmUrlUseNormalized": false
+        "mReservedFileNames": ["local", "rename_file_name_ohmurl", "ohmurl_file", "ohmurl_file_normalized", "ohmurl_test_new"],
+        "mOhmUrlStatus": 2
     }
 }

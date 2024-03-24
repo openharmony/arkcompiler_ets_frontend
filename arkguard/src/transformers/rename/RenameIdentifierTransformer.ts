@@ -493,7 +493,7 @@ namespace secharmony {
           return;
         }
 
-        let name = Reflect.get(node, "name") as Identifier;
+        let name = Reflect.get(node, 'name') as Identifier;
         if (name?.kind === SyntaxKind.Identifier) {
           identifierLineMap.set(name, lineAndColum);
         } else if ((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent) &&

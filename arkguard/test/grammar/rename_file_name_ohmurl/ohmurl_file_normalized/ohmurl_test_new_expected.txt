@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export class Actor { 
-    name: string = 'asuss';
-    age: number = 19;
-}
+import { xx1 } from "@normalized:N&&&entry/a/b/c/d/test&";
+import { yy1 } from "@normalized:N&&&entry/a/b/c/d/e&";
+import { xx3 } from "@normalized:N&share_library&&share_library/f&";
+import u from "@normalized:N&&&json5/g/h&2.2.3";
+import { xx4 } from "@normalized:N&&&library_test/f&1.0.0";

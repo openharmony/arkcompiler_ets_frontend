@@ -152,12 +152,17 @@ except the following:
 
 #### -enable-filename-obfuscation
 
-Specifies to obfuscate the file/folder names. This option only takes effect in OpenHarmony Archive(HAR) scenarios. If you use this option, all file/folder names will be obfuscated except the following:
+Specifies to obfuscate the file/folder names. If you use this option, all file/folder names will be obfuscated except the following:
 * the file/folder names configured in the 'main' and 'types' fields in the oh-package.json5.
 * the file/folder names configured in the 'srcEntry' field in the module.json5.
 * the file/folder names that are specified by [`-keep-file-name`](#keep-options).
 * non-ECMAScript module reference (ECMAScript module example: `import {foo} from './filename'`)
 * non-path reference, such as json5 will not be obfuscated `import module from 'json5'`
+**Note**: 
+**1.** Due to the system loading certain specified files during application runtime, developers need to configure the corresponding white list manually in the [` keep file name `] option to prevent specified files from being confused and causing runtime failures.
+The above situations that require configure white list manually include but are not limited to the following scenarios:
+(1) When the module contains Ability component, you need to configure all paths corresponding to 'srcEntry' in the 'abilities' field in `scr/main/module.json5` to the white list.
+(2) When the module contains multithreading services: Worker, you need to configure all the paths in the field 'buildOption'-'sourceOption'-'workers' in `build-profiles.json5` to the white list.
 
 #### -enable-export-obfuscation
 

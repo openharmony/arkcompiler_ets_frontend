@@ -21,7 +21,7 @@ import { Extension } from '../src/common/type';
 import { FileUtils } from '../src/utils/FileUtils';
 
 const testDirectory = path.resolve('./test/local');
-const NonExecutableFile = ['name_as_export_api_1.ts', 'name_as_import_api_1.ts', 'ohmurl_test.ts'];
+const NonExecutableFile = ['name_as_export_api_1.ts', 'name_as_import_api_1.ts', 'ohmurl_test.ts', 'ohmurl_test_new.ts'];
 
 function runTest(filePath) {
   try {

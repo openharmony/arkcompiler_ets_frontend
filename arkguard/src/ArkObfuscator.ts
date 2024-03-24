@@ -103,7 +103,7 @@ export class ArkObfuscator {
 
   private mTransformers: TransformerFactory<Node>[];
 
-  private projectInfo: ProjectInfo | undefined;
+  static mProjectInfo: ProjectInfo | undefined;
   
   // If isKeptCurrentFile is true, both identifier and property obfuscation are skipped.
   static mIsKeptCurrentFile: boolean = false;
@@ -153,6 +153,14 @@ export class ArkObfuscator {
     ArkObfuscator.mIsKeptCurrentFile = isKeptFile;
   }
 
+  public static get projectInfo(): ProjectInfo {
+    return ArkObfuscator.mProjectInfo;
+  }
+
+  public static set projectInfo(projectInfo: ProjectInfo) {
+    ArkObfuscator.mProjectInfo = projectInfo;
+  }
+
   private isCurrentFileInKeepPaths(customProfiles: IOptions, originalFilePath: string): boolean {
     const keepFileSourceCode = customProfiles.mKeepFileSourceCode;
     if (keepFileSourceCode === undefined || keepFileSourceCode.mKeepSourceOfPaths.size === 0) {
@@ -191,7 +199,7 @@ export class ArkObfuscator {
 
     this.initPerformancePrinter();
     // load transformers
-    this.mTransformers = new TransformerManager(this.mCustomProfiles, this.projectInfo).getTransformers();
+    this.mTransformers = new TransformerManager(this.mCustomProfiles).getTransformers();
 
     if (needReadApiInfo(this.mCustomProfiles)) {
       this.mCustomProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(
@@ -448,8 +456,8 @@ export class ArkObfuscator {
    * @param originalFilePath When filename obfuscation is enabled, it is used as the source code path.
    */
   public async obfuscate(content: SourceFile | string, sourceFilePath: string, previousStageSourceMap?: sourceMap.RawSourceMap,
-    historyNameCache?: Map<string, string>, originalFilePath?: string, pathInfo?: ProjectInfo): Promise<ObfuscationResultType> {
-    this.projectInfo = pathInfo;
+    historyNameCache?: Map<string, string>, originalFilePath?: string, projectInfo?: ProjectInfo): Promise<ObfuscationResultType> {
+    ArkObfuscator.projectInfo = projectInfo;
     let ast: SourceFile;
     let result: ObfuscationResultType = { content: undefined };
     if (this.isObfsIgnoreFile(sourceFilePath)) {
