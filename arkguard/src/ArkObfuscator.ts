@@ -114,7 +114,7 @@ export class ArkObfuscator {
     this.mTransformers = [];
   }
 
-  public addReservedProperties(newReservedProperties: string[]) {
+  public addReservedProperties(newReservedProperties: string[]): void {
     if (newReservedProperties.length === 0) {
       return;
     }
@@ -123,7 +123,7 @@ export class ArkObfuscator {
       nameObfuscationConfig?.mReservedProperties);
   }
 
-  public addReservedNames(newReservedNames: string[]) {
+  public addReservedNames(newReservedNames: string[]): void {
     if (newReservedNames.length === 0) {
       return;
     }
@@ -144,7 +144,7 @@ export class ArkObfuscator {
     return this.mConfigPath;
   }
 
-  public static get isKeptCurrentFile() {
+  public static get isKeptCurrentFile(): boolean {
     return ArkObfuscator.mIsKeptCurrentFile;
   }
 
@@ -236,7 +236,7 @@ export class ArkObfuscator {
 
     this.producePropertyCache(this.mCustomProfiles.mOutputDir);
     performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
-    performancePrinter?.timeSumPrinter?.print('Sum up time of processes')
+    performancePrinter?.timeSumPrinter?.print('Sum up time of processes');
     performancePrinter?.timeSumPrinter?.summarizeEventDuration();
   }
 

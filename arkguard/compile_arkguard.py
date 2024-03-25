@@ -34,7 +34,7 @@ def extract(package_path, dest_path, package_name):
 
 def copy_dir(source_path, dest_path):
     try:
-        shutil.rmtree(dest_path)
+        run_cmd(['rm', '-rf', dest_path])
         shutil.copytree(source_path, dest_path, dirs_exist_ok=True, symlinks=True)
     except Exception as err:
         raise Exception(err.decode())
@@ -45,7 +45,7 @@ def run_cmd(cmd, execution_ath=None):
                            stdin=subprocess.PIPE,
                            stderr=subprocess.PIPE,
                            cwd=execution_ath)
-    stdout, stderr = proc.communicate(timeout=60)
+    stdout, stderr = proc.communicate(timeout=300)
     if proc.returncode != 0:
         raise Exception(stderr.decode())
 
