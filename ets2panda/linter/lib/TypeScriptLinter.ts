@@ -1275,6 +1275,13 @@ export class TypeScriptLinter {
       }
     }
 
+    // Check captured variables for sendable class
+    if (isSendableClass) {
+      tsClassDecl.members.forEach((classMember) => {
+        this.scanCapturedVarsInSendableScope(classMember, tsClassDecl);
+      });
+    }
+
     this.processClassStaticBlocks(tsClassDecl);
   }
 
@@ -2285,6 +2292,60 @@ export class TypeScriptLinter {
     if (!this.tsUtils.isAllowedIndexSignature(node as ts.IndexSignatureDeclaration)) {
       this.incrementCounters(node, FaultID.IndexMember);
     }
+  }
+
+  private scanCapturedVarsInSendableScope(startNode: ts.Node, scope: ts.Node): void {
+    const callback = (node: ts.Node): void => {
+      if (ts.isIdentifier(node)) {
+        // No need to check decorators as they are covered by another rule.
+        if (ts.isDecorator(node.parent)) {
+          return;
+        }
+
+        const symbol = this.tsUtils.trueSymbolAtLocation(node);
+        if (symbol === undefined) {
+          this.incrementCounters(node, FaultID.SendableCapturedVars);
+          return;
+        }
+
+        const declarations = symbol.getDeclarations();
+        if (declarations?.length) {
+          const decl = declarations[0];
+
+          /*
+           * For class or interface members, the base object will be reported
+           * instead, so skip these cases.
+           */
+          if (ts.isClassOrTypeElement(decl) || ts.isEnumMember(decl)) {
+            return;
+          }
+
+          const declPosition = decl.getStart();
+          if (decl.getSourceFile().fileName !== node.getSourceFile().fileName ||
+            declPosition && declPosition >= scope.getStart() && declPosition < scope.getEnd()
+          ) {
+            return;
+          }
+        }
+        this.incrementCounters(node, FaultID.SendableCapturedVars);
+      }
+    };
+    // scan all subtree
+    forEachNodeInSubtree(startNode, callback);
+  }
+
+  private createSyncAutofixes(symbol: ts.Symbol, autofixes: Autofix[]): Autofix[] {
+    if (!this.syncAutofixes.has(symbol)) {
+      this.syncAutofixes.set(symbol, []);
+    }
+
+    const autofixesRef = this.syncAutofixes.get(symbol);
+    if (autofixesRef === undefined) {
+      return autofixes;
+    }
+
+    autofixesRef.push(...autofixes);
+    return autofixesRef;
   }
 
   lint(sourceFile: ts.SourceFile): void {

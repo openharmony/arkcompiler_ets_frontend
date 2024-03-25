@@ -15,237 +15,731 @@
     ],
     "nodes": [
         {
+            "line": 29,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 34,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 35,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 36,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 37,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 38,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 39,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 40,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 40,
+            "column": 24,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 41,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 41,
+            "column": 23,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 41,
+            "column": 36,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 42,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 42,
+            "column": 23,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 43,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 43,
+            "column": 24,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 44,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 44,
+            "column": 13,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 44,
+            "column": 25,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 45,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 46,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 47,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 48,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 48,
+            "column": 28,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 48,
+            "column": 37,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 53,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 54,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 57,
+            "column": 21,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 58,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 59,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 60,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 66,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 67,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 68,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 69,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 70,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 71,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 72,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 73,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 74,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 75,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 75,
+            "column": 26,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 76,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 77,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 78,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 78,
+            "column": 23,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 79,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 79,
+            "column": 24,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 80,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 80,
+            "column": 32,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 81,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 82,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 83,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 84,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 84,
+            "column": 20,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 85,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 86,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 86,
+            "column": 29,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 94,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 95,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 96,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 97,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 100,
+            "column": 49,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 101,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 102,
+            "column": 11,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
             "line": 65,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 66,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 67,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 68,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 69,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 70,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 71,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 72,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 73,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 74,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 75,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 76,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 77,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 78,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 79,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 80,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 81,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 82,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 83,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 84,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 85,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 86,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 87,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 88,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 89,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 90,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 91,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 92,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 93,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 94,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 95,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 96,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 97,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 98,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 99,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 100,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 101,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 102,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 103,
             "column": 3,
             "problem": "SendableComputedPropName",
+            "suggest": "",
             "rule": "Computed property names are not allowed in \"Sendable\" classes and interfaces (arkts-sendable-computed-prop-name)"
         },
         {
@@ -266,66 +760,77 @@
             "line": 172,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 173,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 174,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 175,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 176,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 177,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 178,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 179,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 180,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 181,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 182,
             "column": 3,
             "problem": "SendableComputedPropName",
+            "suggest": "",
             "rule": "Computed property names are not allowed in \"Sendable\" classes and interfaces (arkts-sendable-computed-prop-name)"
         },
         {

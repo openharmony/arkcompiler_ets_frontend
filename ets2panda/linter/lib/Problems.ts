@@ -98,6 +98,7 @@ export enum FaultID {
   SendablePropType,
   SendableDefiniteAssignment,
   SendableGenericTypes,
+  SendableCapturedVars,
   SendableClassDecorator,
   SendableObjectInitialization,
   SendableComputedPropName,

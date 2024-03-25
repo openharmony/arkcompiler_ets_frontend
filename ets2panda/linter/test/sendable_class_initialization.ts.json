@@ -15,6 +15,34 @@
     ],
     "nodes": [
         {
+            "line": 25,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 26,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 27,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 28,
+            "column": 10,
+            "problem": "SendableCapturedVars",
+            "suggest": "",
+            "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
             "line": 23,
             "column": 26,
             "problem": "ObjectLiteralNoContextType",
@@ -25,36 +53,42 @@
             "line": 25,
             "column": 27,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
             "line": 26,
             "column": 27,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
             "line": 27,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 27,
             "column": 40,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
             "line": 28,
             "column": 3,
             "problem": "SendablePropType",
+            "suggest": "",
             "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 28,
             "column": 41,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
@@ -68,24 +102,28 @@
             "line": 33,
             "column": 26,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
             "line": 34,
             "column": 26,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
             "line": 35,
             "column": 55,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         },
         {
             "line": 36,
             "column": 53,
             "problem": "SendableObjectInitialization",
+            "suggest": "",
             "rule": "Objects of \"Sendable\" type can not be initialized using object literal or array literal (arkts-sendable-obj-init)"
         }
     ]
