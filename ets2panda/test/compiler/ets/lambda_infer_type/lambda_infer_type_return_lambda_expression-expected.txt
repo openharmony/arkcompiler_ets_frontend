@@ -512,36 +512,6 @@
                 }
               }
             },
-            "value": {
-              "type": "CallExpression",
-              "callee": {
-                "type": "Identifier",
-                "name": "main1",
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 23,
-                    "column": 35
-                  },
-                  "end": {
-                    "line": 23,
-                    "column": 40
-                  }
-                }
-              },
-              "arguments": [],
-              "optional": false,
-              "loc": {
-                "start": {
-                  "line": 23,
-                  "column": 35
-                },
-                "end": {
-                  "line": 23,
-                  "column": 43
-                }
-              }
-            },
             "accessibility": "public",
             "static": true,
             "readonly": false,

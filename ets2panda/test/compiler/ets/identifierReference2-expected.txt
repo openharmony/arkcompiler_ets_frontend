@@ -285,21 +285,6 @@
                 }
               }
             },
-            "value": {
-              "type": "Identifier",
-              "name": "max",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 16,
-                  "column": 34
-                },
-                "end": {
-                  "line": 16,
-                  "column": 37
-                }
-              }
-            },
             "accessibility": "public",
             "static": true,
             "readonly": false,

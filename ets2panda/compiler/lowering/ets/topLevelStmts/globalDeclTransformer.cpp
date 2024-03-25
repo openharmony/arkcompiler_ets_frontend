@@ -84,15 +84,13 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
 {
     ir::ExpressionStatement *initStmt = nullptr;
     const auto initializer = classProperty->Value();
-    if (addInitializer_ && !classProperty->IsConst() && initializer != nullptr &&
-        !initializer->IsArrowFunctionExpression()) {
+    if (addInitializer_ && !classProperty->IsConst() && initializer != nullptr) {
         auto *ident = RefIdent(classProperty->Id()->Name());
         ident->SetRange(classProperty->Id()->Range());
 
         initializer->SetParent(nullptr);
         auto *assignmentExpression = util::NodeAllocator::Alloc<ir::AssignmentExpression>(
-            allocator_, ident, initializer->Clone(allocator_, nullptr)->AsExpression(),
-            lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+            allocator_, ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
         assignmentExpression->SetRange({ident->Start(), initializer->End()});
         assignmentExpression->SetTsType(initializer->TsType());
 
@@ -102,10 +100,11 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
 
         classProperty->SetRange({ident->Start(), initializer->End()});
 
-        if (classProperty->TypeAnnotation() != nullptr && !classProperty->TypeAnnotation()->IsETSFunctionType()) {
+        if (classProperty->TypeAnnotation() != nullptr) {
             classProperty->SetValue(nullptr);
         } else {
-            initializer->SetParent(classProperty);
+            // Code will be ignored, but checker is going to deduce the type.
+            classProperty->SetValue(initializer->Clone(allocator_, classProperty)->AsExpression());
         }
         initStmt = expressionStatement;
     } else {

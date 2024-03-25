@@ -222,7 +222,7 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
         isPromiseVoid = asAsync->GetPromiseTypeArg() == checker_->GlobalETSUndefinedType();
     }
 
-    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid) {
+    if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !checker_->IsAsyncImplMethod(methodDef)) {
         checker_->ThrowTypeError("Function with a non void return type must return a value.", func->Id()->Start());
     }
 

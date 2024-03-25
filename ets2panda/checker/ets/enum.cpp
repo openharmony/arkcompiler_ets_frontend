@@ -32,7 +32,6 @@
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/memberExpression.h"
-#include "ir/expressions/updateExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/forUpdateStatement.h"
 #include "ir/statements/ifStatement.h"
@@ -576,7 +575,16 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
     auto *const forLoopUpdate = [this, forLoopIIdent]() {
         auto *const incrementExpr =
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            AllocNode<ir::UpdateExpression>(forLoopIIdent, lexer::TokenType::PUNCTUATOR_PLUS_PLUS, true);
+            AllocNode<ir::AssignmentExpression>(
+                forLoopIIdent,
+                AllocNode<ir::BinaryExpression>(forLoopIIdent, AllocNode<ir::NumberLiteral>(lexer::Number(1)),
+                                                lexer::TokenType::PUNCTUATOR_PLUS),
+                lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        incrementExpr->Left()->SetTsType(GlobalIntType());
+        incrementExpr->Right()->AsBinaryExpression()->Left()->SetTsType(GlobalIntType());
+        incrementExpr->Right()->AsBinaryExpression()->Right()->SetTsType(GlobalIntType());
+        incrementExpr->Right()->AsBinaryExpression()->SetOperationType(GlobalIntType());
+        incrementExpr->Right()->SetTsType(GlobalIntType());
         incrementExpr->SetTsType(GlobalIntType());
         return incrementExpr;
     }();

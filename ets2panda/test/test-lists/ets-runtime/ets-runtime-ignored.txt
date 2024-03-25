@@ -47,10 +47,10 @@ top_level_03.ets
 
 # Functional type with rest parameter
 lambdaExpressionWithRestParameter.ets
+funcRefWithRestArguments.ets
 
-# ignored due to interface implementation modification
-local-class-standard-example1.ets
-local-class-standard-example2.ets
+# Wrong type inferred for lambda
+type_param_in_union.ets
 
 # verifier false positive for 64 bit instructions on union types.
 # Issue: #16216

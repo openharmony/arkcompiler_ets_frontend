@@ -504,7 +504,6 @@ public:
     void AssignParamScope(T *paramScope)
     {
         ASSERT(this->Parent() == paramScope);
-
         paramScope_ = paramScope;
     }
 

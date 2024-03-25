@@ -352,12 +352,11 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
 }
 
 void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
-                                                  ArrayExpression *const currentElement, const bool isArray,
-                                                  const bool isPreferredTuple, const std::size_t idx)
+                                                  ArrayExpression *const currentElement, const bool isPreferredTuple,
+                                                  const std::size_t idx)
 {
     if (isPreferredTuple) {
-        currentElement->SetPreferredType(isArray ? preferredType_
-                                                 : preferredType_->AsETSTupleType()->GetTypeAtIndex(idx));
+        currentElement->SetPreferredType(preferredType_->AsETSTupleType()->GetTypeAtIndex(idx));
 
         if (currentElement->GetPreferredType()->IsETSTupleType()) {
             checker->ValidateTupleMinElementSize(currentElement, currentElement->GetPreferredType()->AsETSTupleType());
@@ -372,7 +371,7 @@ void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const che
                                                  preferredType_->AsETSArrayType()->ElementType()->AsETSTupleType());
         }
 
-        currentElement->SetPreferredType(isArray ? preferredType_ : preferredType_->AsETSArrayType()->ElementType());
+        currentElement->SetPreferredType(preferredType_->AsETSArrayType()->ElementType());
         return;
     }
 
@@ -394,16 +393,17 @@ void ArrayExpression::GetPrefferedTypeFromFuncParam(checker::ETSChecker *checker
     }
     auto paramType = param->Check(checker);
     if (paramType->IsETSArrayType()) {
-        paramType = paramType->AsETSArrayType()->ElementType();
-    }
-    bool isAssignable = true;
-    for (auto elem : elements_) {
-        auto assignCtx = checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), paramType,
-                                                    elem->Start(), {""}, checker::TypeRelationFlag::NO_THROW | flags);
-        isAssignable &= assignCtx.IsAssignable();
-    }
-    if (isAssignable) {
-        preferredType_ = param->Check(checker);
+        auto *elementType = paramType->AsETSArrayType()->ElementType();
+        bool isAssignable = true;
+        for (auto elem : elements_) {
+            auto assignCtx =
+                checker::AssignmentContext(checker->Relation(), elem, elem->Check(checker), elementType, elem->Start(),
+                                           {""}, checker::TypeRelationFlag::NO_THROW | flags);
+            isAssignable &= assignCtx.IsAssignable();
+        }
+        if (isAssignable) {
+            preferredType_ = paramType;
+        }
     }
 }
 

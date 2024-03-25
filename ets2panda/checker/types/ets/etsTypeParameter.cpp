@@ -22,9 +22,8 @@ namespace ark::es2panda::checker {
 
 void ETSTypeParameter::ToString(std::stringstream &ss, bool precise) const
 {
-    // Need source file name to avoid clashes
     if (precise) {
-        ss << declNode_->Range().start.index << "." << declNode_->Range().start.line << ".";
+        ss << std::to_string(id_) << ".";
     }
     ss << declNode_->Name()->Name();
 }

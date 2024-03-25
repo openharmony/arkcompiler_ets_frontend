@@ -74,11 +74,11 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
 
     Type *lub = nullptr;
     for (auto *t : un->ConstituentTypes()) {
-        ASSERT(t->IsETSReferenceType());
+        ASSERT(t->IsETSReferenceType() || t->IsETSVoidType());
         if (t->IsETSNullType() || lub == t) {
             continue;
         }
-        if (t->IsETSUndefinedType()) {
+        if (t->IsETSUndefinedType() || t->IsETSVoidType()) {
             return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
         }
         if (lub == nullptr) {
@@ -248,12 +248,15 @@ static std::optional<Type *> TryMergeTypes(TypeRelation *relation, Type *const t
 void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &types)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    ASSERT(std::none_of(types.begin(), types.end(), [](auto *t) { return t->IsETSFunctionType(); }));
 
     // Linearize
     size_t const initialSz = types.size();
     for (size_t i = 0; i < initialSz; ++i) {
-        auto *const ct = types[i];
+        auto *ct = types[i];
+        if (ct->IsETSFunctionType()) {
+            ASSERT(ct->AsETSFunctionType()->CallSignatures().size() == 1);
+            ct = checker->FunctionTypeToFunctionalInterfaceType(ct->AsETSFunctionType()->CallSignatures()[0]);
+        }
         if (ct->IsETSUnionType()) {
             auto const &otherTypes = ct->AsETSUnionType()->ConstituentTypes();
             types.insert(types.end(), otherTypes.begin(), otherTypes.end());

@@ -76,7 +76,9 @@ checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
 {
-    return checker->CreateETSArrayType(elementType_->GetType(checker));
+    auto *type = checker->CreateETSArrayType(elementType_->GetType(checker));
+    SetTsType(type);
+    return type;
 }
 
 TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)

@@ -485,4 +485,4 @@
     }
   }
 }
-TypeError: Array element type 'int' is not assignable to explicit type 'Array<Int>' [arrAsArray.ets:19:9]
+TypeError: Expected type for array literal should be an array type, got Array<Int> [arrAsArray.ets:18:13]

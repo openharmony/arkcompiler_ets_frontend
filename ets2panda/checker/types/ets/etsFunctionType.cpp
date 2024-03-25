@@ -58,8 +58,6 @@ bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
         ASSERT(relation->GetNode() != nullptr);
         if (relation->GetNode()->IsArrowFunctionExpression()) {
             ASSERT(callSignatures_.size() == 1 && callSignatures_[0]->HasSignatureFlag(SignatureFlags::CALL));
-            relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(
-                relation->GetNode()->AsArrowFunctionExpression(), callSignatures_[0]->Owner());
             relation->Result(true);
             return true;
         }
@@ -129,27 +127,6 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
     return match;
 }
 
-static ETSObjectType *SubstitutedFunctionalInterfaceForSignature(TypeRelation *relation, Signature *signature,
-                                                                 ETSObjectType *functionalInterface)
-{
-    auto &interfaceArgs = functionalInterface->TypeArguments();
-    auto *checker = relation->GetChecker()->AsETSChecker();
-    Substitution *substitution = checker->NewSubstitution();
-    size_t i = 0;
-    for (auto *param : signature->Params()) {
-        auto *paramType = (param->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE))
-                              ? checker->PrimitiveTypeAsETSBuiltinType(param->TsType())
-                              : param->TsType();
-        substitution->emplace(interfaceArgs[i++]->AsETSTypeParameter(), paramType);
-    }
-    auto *retType = (signature->ReturnType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE))
-                        ? checker->PrimitiveTypeAsETSBuiltinType(signature->ReturnType())
-                        : signature->ReturnType();
-    substitution->emplace(interfaceArgs[i]->AsETSTypeParameter(), retType);
-
-    return functionalInterface->Substitute(relation, substitution);
-}
-
 void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (!source->IsETSFunctionType() &&
@@ -183,19 +160,6 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
     }
 
     ASSERT(relation->GetNode() != nullptr);
-    if (!sourceIsFunctional) {
-        auto *substitutedFuncInterface =
-            SubstitutedFunctionalInterfaceForSignature(relation, match, callSignatures_[0]->Owner());
-
-        if (relation->GetNode()->IsArrowFunctionExpression()) {
-            relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(
-                relation->GetNode()->AsArrowFunctionExpression(), substitutedFuncInterface);
-        } else {
-            relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForFunctionReference(relation->GetNode(), match,
-                                                                                           substitutedFuncInterface);
-        }
-    }
-
     relation->Result(true);
 }
 
@@ -274,8 +238,6 @@ void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
             relation->GetNode()->SetBoxingUnboxingFlags(savedBoxFlags);
         }
         if (relation->IsTrue()) {
-            relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(
-                relation->GetNode()->AsArrowFunctionExpression(), targetType->AsETSObjectType());
             relation->SetNode(savedNode);
             return;
         }

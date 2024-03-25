@@ -346,9 +346,6 @@ ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView nam
 
     auto *objType = CreateNewETSObjectType(name, declNode, flags);
     auto nameToGlobalBoxType = GetNameToGlobalBoxTypeMap();
-    if (nameToGlobalBoxType.find(name) != nameToGlobalBoxType.end()) {
-        return UpdateBoxedGlobalType(objType, name);
-    }
 
     return UpdateGlobalType(objType, name);
 }
@@ -617,4 +614,26 @@ Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size
 
     return signature;
 }
+
+ETSObjectType *ETSChecker::FunctionTypeToFunctionalInterfaceType(Signature *signature)
+{
+    auto *retType = signature->ReturnType();
+    if (signature->RestVar() != nullptr) {
+        auto *functionN = GlobalBuiltinFunctionType(GlobalBuiltinFunctionTypeVariadicThreshold())->AsETSObjectType();
+        auto *substitution = NewSubstitution();
+        substitution->emplace(functionN->TypeArguments()[0]->AsETSTypeParameter(), MaybePromotedBuiltinType(retType));
+        return functionN->Substitute(Relation(), substitution);
+    }
+
+    auto *funcIface = GlobalBuiltinFunctionType(signature->Params().size())->AsETSObjectType();
+    auto *substitution = NewSubstitution();
+    for (size_t i = 0; i < signature->Params().size(); i++) {
+        substitution->emplace(funcIface->TypeArguments()[i]->AsETSTypeParameter(),
+                              MaybePromotedBuiltinType(signature->Params()[i]->TsType()));
+    }
+    substitution->emplace(funcIface->TypeArguments()[signature->Params().size()]->AsETSTypeParameter(),
+                          MaybePromotedBuiltinType(signature->ReturnType()));
+    return funcIface->Substitute(Relation(), substitution);
+}
+
 }  // namespace ark::es2panda::checker

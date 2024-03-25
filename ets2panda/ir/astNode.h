@@ -76,6 +76,8 @@ class Expression;
 class SrcDumper;
 class Statement;
 class ClassElement;
+template <typename T>
+class Typed;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_CLASSES(nodeType, className) class className;
@@ -137,6 +139,18 @@ public:
     virtual bool IsTyped() const
     {
         return false;
+    }
+
+    Typed<AstNode> *AsTyped()
+    {
+        ASSERT(IsTyped());
+        return reinterpret_cast<Typed<AstNode> *>(this);
+    }
+
+    Typed<AstNode> const *AsTyped() const
+    {
+        ASSERT(IsTyped());
+        return reinterpret_cast<Typed<AstNode> const *>(this);
     }
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -454,45 +468,32 @@ public:
     DECLARE_FLAG_OPERATIONS(AstNodeFlags, astNodeFlags_);
 #undef DECLARE_FLAG_OPERATIONS
 
-    ir::ClassElement *AsClassElement()
-    {
-        ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
-        return reinterpret_cast<ir::ClassElement *>(this);
-    }
-
-    const ir::ClassElement *AsClassElement() const
-    {
-        ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
-        return reinterpret_cast<const ir::ClassElement *>(this);
-    }
+    ir::ClassElement *AsClassElement();
+    const ir::ClassElement *AsClassElement() const;
 
     static varbinder::Scope *EnclosingScope(const ir::AstNode *expr);
 
-    [[nodiscard]] virtual bool IsScopeBearer() const noexcept
-    {
-        return false;
-    }
-
-    [[nodiscard]] virtual varbinder::Scope *Scope() const noexcept
-    {
-        UNREACHABLE();
-    }
+    [[nodiscard]] virtual bool IsScopeBearer() const noexcept;
+    [[nodiscard]] virtual varbinder::Scope *Scope() const noexcept;
 
     virtual void ClearScope() noexcept;
 
     [[nodiscard]] ir::BlockStatement *GetTopStatement();
     [[nodiscard]] const ir::BlockStatement *GetTopStatement() const;
 
-    [[nodiscard]] virtual AstNode *Clone([[maybe_unused]] ArenaAllocator *const allocator,
-                                         [[maybe_unused]] AstNode *const parent)
-    {
-        UNREACHABLE();
-    }
+    [[nodiscard]] virtual AstNode *Clone(ArenaAllocator *const allocator, AstNode *const parent);
 
     virtual void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) = 0;
     virtual void Iterate(const NodeTraverser &cb) const = 0;
+
     void TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName);
+    void TransformChildrenRecursivelyPreorder(const NodeTransformer &cb, std::string_view transformationName);
+    void TransformChildrenRecursivelyPostorder(const NodeTransformer &cb, std::string_view transformationName);
+
     void IterateRecursively(const NodeTraverser &cb) const;
+    void IterateRecursivelyPreorder(const NodeTraverser &cb) const;
+    void IterateRecursivelyPostorder(const NodeTraverser &cb) const;
+
     bool IsAnyChild(const NodePredicate &cb) const;
     AstNode *FindChild(const NodePredicate &cb) const;
 

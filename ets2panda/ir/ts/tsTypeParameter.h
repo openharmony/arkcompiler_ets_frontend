@@ -57,9 +57,19 @@ public:
         return constraint_;
     }
 
+    void SetConstraint(TypeNode *constraint)
+    {
+        constraint_ = constraint;
+    }
+
     TypeNode *DefaultType() const
     {
         return defaultType_;
+    }
+
+    void SetDefaultType(TypeNode *defaultType)
+    {
+        defaultType_ = defaultType;
     }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

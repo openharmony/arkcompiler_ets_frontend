@@ -99,6 +99,11 @@ public:
         return preferredType_;
     }
 
+    [[nodiscard]] checker::Type const *GetPreferredType() const noexcept
+    {
+        return preferredType_;
+    }
+
     [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
@@ -132,7 +137,7 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
-    void HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *currentElement, bool isArray,
+    void HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *currentElement,
                                      bool isPreferredTuple, std::size_t idx);
 
     void Accept(ASTVisitorT *v) override

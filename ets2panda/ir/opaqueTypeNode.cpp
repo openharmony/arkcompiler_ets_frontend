@@ -36,7 +36,7 @@ void OpaqueTypeNode::Dump(ir::AstDumper *dumper) const
 
 void OpaqueTypeNode::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("OpaqueTypeNode");
+    dumper->Add(TsType()->ToString());
 }
 
 void OpaqueTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const

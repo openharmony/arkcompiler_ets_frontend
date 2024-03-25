@@ -165,8 +165,8 @@ private:
 
 class BoundContext {
 public:
-    explicit BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef);
-    explicit BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl);
+    explicit BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef, bool force = false);
+    explicit BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl, bool force = false);
     ~BoundContext();
 
     NO_COPY_SEMANTIC(BoundContext);

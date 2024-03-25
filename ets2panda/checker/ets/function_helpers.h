@@ -123,20 +123,12 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
     ArenaVector<Type *> instArgs {checker->Allocator()->Adapter()};
 
     for (auto *taExpr : params) {
-        if (taExpr->GetType(checker)->IsETSVoidType()) {
-            instArgs.push_back(MaybeBoxedType(checker, checker->GlobalETSUndefinedType(), taExpr));
-        } else {
-            instArgs.push_back(MaybeBoxedType(checker, taExpr->GetType(checker), taExpr));
-        }
+        instArgs.push_back(MaybeBoxedType(checker, taExpr->GetType(checker), taExpr));
     }
     for (size_t ix = instArgs.size(); ix < sigParams.size(); ++ix) {
         auto *dflt = sigParams[ix]->AsETSTypeParameter()->GetDefaultType();
         if (dflt == nullptr) {
             break;
-        }
-
-        if (dflt->IsETSVoidType()) {
-            dflt = checker->GlobalETSUndefinedType();
         }
 
         instArgs.push_back(dflt);

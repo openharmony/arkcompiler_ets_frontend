@@ -63,9 +63,8 @@ void TSAsExpression::Dump(ir::AstDumper *dumper) const
 
 void TSAsExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("(");
     expression_->Dump(dumper);
-    dumper->Add(") as ");
+    dumper->Add(" as ");
     TypeAnnotation()->Dump(dumper);
 }
 

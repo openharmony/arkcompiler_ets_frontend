@@ -52,6 +52,11 @@ public:
     template <typename>
     static constexpr bool STATIC_FALSE = false;
 
+    std::string_view FormattingFileName()
+    {
+        return GetContext().FormattingFileName();
+    }
+
     template <typename T>
     void SetFormattingFileName(T &&fileName)
     {
@@ -184,6 +189,18 @@ public:
         return CreateFormattedClassMethodDefinition(sourceCode, insertingNodes);
     }
 
+    ir::Statement *CreateFormattedTopLevelStatement(std::string_view sourceCode,
+                                                    std::vector<ir::AstNode *> &insertingNodes);
+
+    template <typename... Args>
+    ir::Statement *CreateFormattedTopLevelStatement(std::string_view sourceCode, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedTopLevelStatement(sourceCode, insertingNodes);
+    }
+
 private:
     NodeFormatType GetFormatPlaceholderType() const;
 
@@ -207,6 +224,7 @@ private:
                                     ir::ClassDefinitionModifiers modifiers);
 
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view sourceCode);
+    ir::Statement *CreateTopLevelStatement(std::string_view const sourceCode);
 
     //============================================================================================//
     //  END: Methods to create AST node(s)...
@@ -471,6 +489,27 @@ private:
     util::StringView savedSourceCode_ {};
     util::StringView savedSourceFile_ {};
     util::StringView savedSourceFilePath_ {};
+};
+
+class SavedFormattingFileName {
+public:
+    SavedFormattingFileName(ETSParser *parser, std::string_view fname)
+        : parser_(parser), savedFname_(parser->FormattingFileName())
+    {
+        parser->SetFormattingFileName(fname);
+    }
+
+    NO_COPY_SEMANTIC(SavedFormattingFileName);
+    NO_MOVE_SEMANTIC(SavedFormattingFileName);
+
+    ~SavedFormattingFileName()
+    {
+        parser_->SetFormattingFileName(savedFname_);
+    }
+
+private:
+    ETSParser *parser_;
+    std::string_view savedFname_;
 };
 
 }  // namespace ark::es2panda::parser

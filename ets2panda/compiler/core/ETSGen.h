@@ -396,12 +396,6 @@ public:
     void SwapBinaryOpArgs(const ir::AstNode *node, VReg lhs);
     VReg MoveAccToReg(const ir::AstNode *node);
 
-    void EmitLocalBoxCtor(ir::AstNode const *node);
-    void EmitLocalBoxGet(ir::AstNode const *node, checker::Type const *contentType);
-    void EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *lhsVar);
-    void EmitPropertyBoxSet(const ir::AstNode *node, const checker::Type *propType, VReg objectReg,
-                            const util::StringView &name);
-
     void LoadArrayLength(const ir::AstNode *node, VReg arrayReg);
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);
     void StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType);
@@ -646,10 +640,6 @@ public:
 
     void CreateBigIntObject(const ir::AstNode *node, VReg arg0,
                             std::string_view signature = Signatures::BUILTIN_BIGINT_CTOR);
-    void CreateLambdaObjectFromIdentReference(const ir::AstNode *node, ir::ClassDefinition *lambdaObj);
-    void CreateLambdaObjectFromMemberReference(const ir::AstNode *node, ir::Expression *obj,
-                                               ir::ClassDefinition *lambdaObj);
-    void InitLambdaObject(const ir::AstNode *node, checker::Signature *signature, std::vector<VReg> &arguments);
 
     void GetType(const ir::AstNode *node, bool isEtsPrimitive)
     {
@@ -970,15 +960,15 @@ private:
         }
     }
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
-#define COMPILE_ARG(idx)                                                                                      \
-    ASSERT((idx) < arguments.size());                                                                         \
-    ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                            \
-    auto *paramType##idx = Checker()->MaybeBoxedType(                                                         \
-        (idx) < signature->Params().size() ? signature->Params()[(idx)] : signature->RestVar(), Allocator()); \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                \
-    arguments[idx]->Compile(this);                                                                            \
-    VReg arg##idx = AllocReg();                                                                               \
-    ApplyConversion(arguments[idx], nullptr);                                                                 \
+#define COMPILE_ARG(idx)                                                                                       \
+    ASSERT((idx) < arguments.size());                                                                          \
+    ASSERT((idx) < signature->Params().size() || signature->RestVar() != nullptr);                             \
+    auto *param##idx = (idx) < signature->Params().size() ? signature->Params()[(idx)] : signature->RestVar(); \
+    auto *paramType##idx = param##idx->TsType();                                                               \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
+    arguments[idx]->Compile(this);                                                                             \
+    VReg arg##idx = AllocReg();                                                                                \
+    ApplyConversion(arguments[idx], nullptr);                                                                  \
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>

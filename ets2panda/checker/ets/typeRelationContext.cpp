@@ -147,10 +147,6 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
                                                       checker_->GetGlobalTypesHolder());
             }
 
-            if (paramType->IsETSVoidType()) {
-                paramType = checker_->GlobalETSUndefinedType();
-            }
-
             typeArgTypes.push_back(paramType);
         }
     }

@@ -33,18 +33,12 @@ public:
     NO_COPY_SEMANTIC(ArrowFunctionExpression);
     NO_MOVE_SEMANTIC(ArrowFunctionExpression);
 
-    explicit ArrowFunctionExpression(ArenaAllocator *const allocator, ScriptFunction *const func)
-        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION),
-          func_(func),
-          capturedVars_(allocator->Adapter()),
-          childLambdas_(allocator->Adapter())
+    explicit ArrowFunctionExpression(ScriptFunction *const func)
+        : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func)
     {
     }
 
     explicit ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *allocator);
-
-    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
-    friend class compiler::ETSCompiler;
 
     [[nodiscard]] const ScriptFunction *Function() const noexcept
     {
@@ -54,53 +48,6 @@ public:
     [[nodiscard]] ScriptFunction *Function() noexcept
     {
         return func_;
-    }
-
-    [[nodiscard]] const ClassDefinition *ResolvedLambda() const noexcept
-    {
-        return resolvedLambda_;
-    }
-
-    [[nodiscard]] ClassDefinition *ResolvedLambda() noexcept
-    {
-        return resolvedLambda_;
-    }
-
-    void AddCapturedVar(varbinder::Variable *var);
-
-    [[nodiscard]] ArenaVector<varbinder::Variable *> &CapturedVars() noexcept
-    {
-        return capturedVars_;
-    }
-
-    [[nodiscard]] const ArenaVector<varbinder::Variable *> &CapturedVars() const noexcept
-    {
-        return capturedVars_;
-    }
-
-    void SetResolvedLambda(ClassDefinition *const lambda) noexcept
-    {
-        resolvedLambda_ = lambda;
-    }
-
-    void SetPropagateThis() noexcept
-    {
-        propagateThis_ = true;
-    }
-
-    [[nodiscard]] ArenaVector<ArrowFunctionExpression *> ChildLambdas() const noexcept
-    {
-        return childLambdas_;
-    }
-
-    [[nodiscard]] ArrowFunctionExpression *ParentLambda() const noexcept
-    {
-        return parentLambda_;
-    }
-
-    void SetParentLambda(ArrowFunctionExpression *parentLambda) noexcept
-    {
-        parentLambda_ = parentLambda;
     }
 
     [[nodiscard]] ArrowFunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
@@ -125,11 +72,6 @@ public:
 
 private:
     ScriptFunction *func_;
-    ArenaVector<varbinder::Variable *> capturedVars_;
-    ArenaVector<ArrowFunctionExpression *> childLambdas_;
-    ArrowFunctionExpression *parentLambda_ {nullptr};
-    ir::ClassDefinition *resolvedLambda_ {nullptr};
-    bool propagateThis_ {false};
 };
 }  // namespace ark::es2panda::ir
 

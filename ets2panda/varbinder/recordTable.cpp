@@ -24,36 +24,40 @@
 #include "generated/signatures.h"
 
 namespace ark::es2panda::varbinder {
-BoundContext::BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef)
+BoundContext::BoundContext(RecordTable *recordTable, ir::ClassDefinition *classDef, bool force)
     : prev_(recordTable->boundCtx_),
       recordTable_(recordTable),
       currentRecord_(classDef),
       savedRecord_(recordTable->record_)
 {
-    if (classDef == nullptr || !recordTable_->classDefinitions_.insert(classDef).second) {
+    if (classDef == nullptr || (!force && !recordTable_->classDefinitions_.insert(classDef).second)) {
         return;
     }
 
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = classDef;
     recordIdent_ = classDef->Ident();
-    classDef->SetInternalName(FormRecordName());
+    if (classDef->InternalName().Empty()) {
+        classDef->SetInternalName(FormRecordName());
+    }
 }
 
-BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl)
+BoundContext::BoundContext(RecordTable *recordTable, ir::TSInterfaceDeclaration *interfaceDecl, bool force)
     : prev_(recordTable->boundCtx_),
       recordTable_(recordTable),
       currentRecord_(interfaceDecl),
       savedRecord_(recordTable->record_)
 {
-    if (interfaceDecl == nullptr || !recordTable_->interfaceDeclarations_.insert(interfaceDecl).second) {
+    if (interfaceDecl == nullptr || (!force && !recordTable_->interfaceDeclarations_.insert(interfaceDecl).second)) {
         return;
     }
 
     recordTable_->boundCtx_ = this;
     recordTable_->record_ = interfaceDecl;
     recordIdent_ = interfaceDecl->Id();
-    interfaceDecl->SetInternalName(FormRecordName());
+    if (interfaceDecl->InternalName() == "") {
+        interfaceDecl->SetInternalName(FormRecordName());
+    }
 }
 
 BoundContext::~BoundContext()

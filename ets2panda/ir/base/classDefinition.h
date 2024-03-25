@@ -20,7 +20,6 @@
 #include "varbinder/variable.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
-#include "util/bitset.h"
 #include "util/language.h"
 
 namespace ark::es2panda::ir {
@@ -237,6 +236,11 @@ public:
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept
     {
         return modifiers_;
+    }
+
+    void SetModifiers(ClassDefinitionModifiers modifiers) noexcept
+    {
+        modifiers_ = modifiers;
     }
 
     void AddProperties(ArenaVector<AstNode *> &&body)

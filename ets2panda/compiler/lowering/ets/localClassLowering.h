@@ -26,18 +26,13 @@ public:
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 
 protected:
-    void ReplaceReferencesFromTheParametersToTheLocalVariavbles(
-        ir::ClassDefinition *classDef,
-        const ArenaMap<varbinder::Variable *, varbinder::Variable *> &newLocalVariablesMap,
-        const ArenaSet<ir::Identifier *> &initializers);
-
-    void CreateTemporalLocalVariableForModifiedParameters(public_lib::Context *ctx, ir::ClassDefinition *classDef);
-
     void CreateClassPropertiesForCapturedVariables(public_lib::Context *ctx, ir::ClassDefinition *classDef,
+                                                   ArenaSet<varbinder::Variable *> const &capturedVars,
                                                    ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap,
                                                    ArenaMap<varbinder::Variable *, ir::ClassProperty *> &propertyMap);
 
     void ModifyConstructorParameters(public_lib::Context *ctx, ir::ClassDefinition *classDef,
+                                     ArenaSet<varbinder::Variable *> const &capturedVars,
                                      ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap,
                                      ArenaMap<varbinder::Variable *, varbinder::Variable *> &parameterMap);
 

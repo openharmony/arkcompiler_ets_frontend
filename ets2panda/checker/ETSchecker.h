@@ -57,8 +57,6 @@ public:
         // NOLINTNEXTLINE(readability-redundant-member-init)
         : Checker(),
           arrayTypes_(Allocator()->Adapter()),
-          localClasses_(Allocator()->Adapter()),
-          localClassInstantiations_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
           primitiveWrappers_(Allocator()),
           cachedComputedAbstracts_(Allocator()->Adapter()),
@@ -115,7 +113,7 @@ public:
     ETSObjectType *GlobalBuiltinPromiseType() const;
     ETSObjectType *GlobalBuiltinJSRuntimeType() const;
     ETSObjectType *GlobalBuiltinJSValueType() const;
-    ETSObjectType *GlobalBuiltinBoxType(const Type *contents) const;
+    ETSObjectType *GlobalBuiltinBoxType(Type *contents);
 
     ETSObjectType *GlobalBuiltinFunctionType(size_t nargs) const;
     size_t GlobalBuiltinFunctionTypeVariadicThreshold() const;
@@ -231,6 +229,7 @@ public:
     ETSFunctionType *CreateETSFunctionType(ArenaVector<Signature *> &signatures);
     ETSExtensionFuncHelperType *CreateETSExtensionFuncHelperType(ETSFunctionType *classMethodType,
                                                                  ETSFunctionType *extensionFunctionType);
+    ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     ETSEnumType *CreateETSEnumType(ir::TSEnumDeclaration const *enumDecl);
@@ -393,59 +392,6 @@ public:
     void CheckThrowMarkers(Signature *source, Signature *target);
     void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *callExpr, Signature *signature,
                                         const lexer::SourcePosition &pos, char const *errorMessage = nullptr);
-    void CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpression *lambda, ETSObjectType *functionalInterface);
-    ir::ClassProperty *CreateLambdaCapturedField(const varbinder::Variable *capturedVar, varbinder::ClassScope *scope,
-                                                 size_t &idx, const lexer::SourcePosition &pos);
-    ir::ClassProperty *CreateLambdaCapturedThis(varbinder::ClassScope *scope, size_t &idx,
-                                                const lexer::SourcePosition &pos);
-    void CreateLambdaObjectForFunctionReference(ir::AstNode *refNode, Signature *signature,
-                                                ETSObjectType *functionalInterface);
-    ir::AstNode *CreateLambdaImplicitField(varbinder::ClassScope *scope, const lexer::SourcePosition &pos);
-    ir::MethodDefinition *CreateLambdaImplicitCtor(const lexer::SourceRange &pos, bool isStaticReference,
-                                                   ETSObjectType *functionalInterface);
-    ir::MethodDefinition *CreateLambdaImplicitCtor(ArenaVector<ir::AstNode *> &properties);
-    ir::MethodDefinition *CreateProxyMethodForLambda(ir::ClassDefinition *klass, ir::ArrowFunctionExpression *lambda,
-                                                     ArenaVector<ir::AstNode *> &captured, bool isStatic);
-    varbinder::FunctionParamScope *CreateProxyMethodParams(ir::ArrowFunctionExpression *lambda,
-                                                           ArenaVector<ir::Expression *> &proxyParams,
-                                                           ArenaVector<ir::AstNode *> &captured, bool isStatic);
-    void ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body, const ArenaVector<ir::Expression *> &proxyParams,
-                                                  ir::ArrowFunctionExpression *lambda);
-    void ReplaceIdentifierReferencesInProxyMethod(
-        ir::AstNode *node, const ArenaVector<ir::Expression *> &proxyParams,
-        const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences);
-    void ReplaceIdentifierReferenceInProxyMethod(
-        ir::AstNode *node, const ArenaVector<ir::Expression *> &proxyParams,
-        const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences);
-    ir::Statement *CreateLambdaCtorFieldInit(util::StringView name, varbinder::Variable *var);
-    varbinder::FunctionParamScope *CreateLambdaCtorImplicitParams(ArenaVector<ir::Expression *> &params,
-                                                                  ArenaVector<ir::AstNode *> &properties);
-    std::tuple<varbinder::FunctionParamScope *, varbinder::Variable *> CreateLambdaCtorImplicitParam(
-        ArenaVector<ir::Expression *> &params, const lexer::SourceRange &pos, bool isStaticReference);
-    ir::MethodDefinition *CreateLambdaInvokeProto(util::StringView invokeName);
-    void CreateLambdaFuncDecl(ir::MethodDefinition *func, varbinder::LocalScope *scope);
-    void ResolveProxyMethod(ir::ClassDefinition *classDefinition, ir::MethodDefinition *proxyMethod,
-                            ir::ArrowFunctionExpression *lambda);
-    void ResolveLambdaObject(ir::ClassDefinition *lambdaObject, Signature *signature,
-                             ETSObjectType *functionalInterface, ir::AstNode *refNode);
-    void ResolveLambdaObject(ir::ClassDefinition *lambdaObject, ETSObjectType *functionalInterface,
-                             ir::ArrowFunctionExpression *lambda, ir::MethodDefinition *proxyMethod, bool saveThis);
-    void ResolveLambdaObjectCtor(ir::ClassDefinition *lambdaObject, bool isStaticReference);
-    void ResolveLambdaObjectCtor(ir::ClassDefinition *lambdaObject);
-    void ResolveLambdaObjectInvoke(ir::ClassDefinition *lambdaObject, Signature *signatureRef, bool ifaceOverride);
-    void ResolveLambdaObjectInvoke(ir::ClassDefinition *lambdaObject, ir::ArrowFunctionExpression *lambda,
-                                   ir::MethodDefinition *proxyMethod, bool isStatic, bool ifaceOverride);
-    void ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject, Signature *signatureRef,
-                                           bool ifaceOverride);
-    void ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject, ir::ArrowFunctionExpression *lambda,
-                                           ir::MethodDefinition *proxyMethod, bool isStatic, bool ifaceOverride);
-    ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ir::ClassDefinition *lambdaObject,
-                                                                         ir::ArrowFunctionExpression *lambda,
-                                                                         ir::ScriptFunction *invokeFunc, bool isStatic,
-                                                                         bool ifaceOverride);
-    ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(Signature *signatureRef,
-                                                                         ir::ScriptFunction *invokeFunc,
-                                                                         bool ifaceOverride);
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);
     void CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var);
@@ -469,6 +415,7 @@ public:
     ir::AstNode *GetProxyMethodBody(ir::ArrowFunctionExpression *lambda, varbinder::FunctionScope *scope);
     static std::string GetAsyncImplName(const util::StringView &name);
     static std::string GetAsyncImplName(ir::MethodDefinition *asyncMethod);
+    static bool IsAsyncImplMethod(ir::MethodDefinition const *method);
     std::vector<util::StringView> GetNameForSynteticObjectType(const util::StringView &source);
     template <checker::PropertyType TYPE>
     void BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType, ir::ETSImportDeclaration *importDecl,
@@ -539,11 +486,6 @@ public:
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
     util::StringView TypeToName(Type *type) const;
-    Type *MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const;
-    Type *MaybeBoxedType(const varbinder::Variable *var)
-    {
-        return MaybeBoxedType(var, Allocator());
-    }
     Type *MaybeBoxExpression(ir::Expression *expr);
     Type *MaybeUnboxExpression(ir::Expression *expr);
     Type *MaybePromotedBuiltinType(Type *type) const;
@@ -689,11 +631,8 @@ public:
         return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 
-    ETSObjectType *GetCachedFunctionlInterface(ir::ETSFunctionType *type);
+    ETSObjectType *GetCachedFunctionalInterface(ir::ETSFunctionType *type);
     void CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType);
-    const ArenaList<ir::ClassDefinition *> &GetLocalClasses() const;
-    const ArenaList<ir::ETSNewClassInstanceExpression *> &GetLocalClassInstantiations() const;
-    void AddToLocalClassInstantiationList(ir::ETSNewClassInstanceExpression *newExpr);
 
     ir::ETSParameterExpression *AddParam(util::StringView name, ir::TypeNode *type);
 
@@ -800,8 +739,6 @@ private:
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
 
     ArrayMap arrayTypes_;
-    ArenaList<ir::ClassDefinition *> localClasses_;
-    ArenaList<ir::ETSNewClassInstanceExpression *> localClassInstantiations_;
     GlobalArraySignatureMap globalArraySignatures_;
     PrimitiveWrappers primitiveWrappers_;
     ComputedAbstracts cachedComputedAbstracts_;

@@ -179,6 +179,12 @@ void ETSBinder::ResolveReferenceForScope(ir::AstNode *const node, Scope *const s
     }
 }
 
+void ETSBinder::ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope)
+{
+    auto lexScope = LexicalScope<Scope>::Enter(this, scope);
+    ResolveReference(node);
+}
+
 void ETSBinder::LookupIdentReference(ir::Identifier *ident)
 {
     const auto &name = ident->Name();
@@ -367,23 +373,6 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
     }
 }
 
-void ETSBinder::AddLambdaFunctionThisParam(const ir::ScriptFunction *const func, bool isExternal)
-{
-    auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-    auto *const thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
-    thisParam->Declaration()->BindNode(thisParam_);
-    if (!func->IsAsyncFunc() && !isExternal) {
-        Functions().push_back(func->Scope());
-    }
-}
-
-void ETSBinder::AddInvokeFunctionThisParam(ir::ScriptFunction *func)
-{
-    auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
-    auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
-    thisParam->Declaration()->BindNode(thisParam_);
-}
-
 void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic,
                                  bool isExternal)
 {
@@ -399,31 +388,6 @@ void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringVie
     if (!func->IsAsyncFunc() && !isExternal) {
         Functions().push_back(func->Scope());
     }
-}
-
-void ETSBinder::BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lambdaObject,
-                                  checker::Signature *signature, bool isExternal)
-{
-    auto boundCtx = BoundContext(GetGlobalRecordTable(), lambdaObject);
-    const auto &lambdaBody = lambdaObject->Body();
-
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 3U]->AsMethodDefinition()->Function(), isExternal);
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function(), isExternal);
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 1U]->AsMethodDefinition()->Function(), isExternal);
-
-    LambdaObjects().insert({refNode, {lambdaObject, signature}});
-}
-
-void ETSBinder::BuildFunctionType(ir::ETSFunctionType *funcType)
-{
-    auto boundCtx = BoundContext(GetGlobalRecordTable(), funcType->FunctionalInterface());
-
-    auto *invokeFunc = funcType->FunctionalInterface()->Body()->Body()[0]->AsMethodDefinition()->Function();
-    auto *funcScope = invokeFunc->Scope();
-    funcScope->BindName(recordTable_->RecordName());
-    AddInvokeFunctionThisParam(invokeFunc);
-
-    GetGlobalRecordTable()->Signatures().push_back(funcScope);
 }
 
 void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
@@ -918,62 +882,10 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
         ss << util::Helpers::FunctionName(Allocator(), func);
     }
 
-    signature->ToAssemblerType(GetContext(), ss);
+    signature->ToAssemblerType(ss);
 
     util::UString internalName(ss.str(), Allocator());
     funcScope->BindInternalName(internalName.View());
-}
-
-void ETSBinder::FormLambdaName(util::UString &name, const util::StringView &signature)
-{
-    name.Append(compiler::Signatures::LAMBDA_SEPARATOR);
-    auto replaced = std::string(signature.Utf8());
-    std::replace(replaced.begin(), replaced.end(), '.', '-');
-    std::replace(replaced.begin(), replaced.end(), ':', '-');
-    std::replace(replaced.begin(), replaced.end(), ';', '-');
-    replaced.append(std::to_string(0));
-    name.Append(replaced);
-}
-
-void ETSBinder::BuildLambdaObjectName(const ir::AstNode *refNode)
-{
-    auto found = lambdaObjects_.find(refNode);
-    ASSERT(found != lambdaObjects_.end());
-    auto *lambdaClass = found->second.first;
-    auto *signatureRef = found->second.second;
-
-    util::UString lambdaObjectName(lambdaClass->Ident()->Name(), Allocator());
-    FormLambdaName(lambdaObjectName, signatureRef->InternalName());
-    lambdaClass->Ident()->SetName(lambdaObjectName.View());
-    lambdaClass->SetInternalName(lambdaClass->Ident()->Name());
-
-    util::StringView assemblerName(lambdaClass->Ident()->Name());
-    auto *program = static_cast<const ir::ETSScript *>(refNode->GetTopStatement())->Program();
-    util::StringView moduleName = program->ModuleName();
-
-    if (!program->OmitModuleName()) {
-        assemblerName =
-            util::UString(moduleName.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() + assemblerName.Mutf8(),
-                          Allocator())
-                .View();
-    }
-
-    checker::ETSObjectType *lambdaObject = lambdaClass->TsType()->AsETSObjectType();
-    lambdaObject->SetName(lambdaClass->Ident()->Name());
-    lambdaObject->SetAssemblerName(lambdaClass->Ident()->Name());
-
-    const auto &lambdaBody = lambdaClass->Body();
-    auto *ctorFunc = lambdaBody[lambdaBody.size() - 3U]->AsMethodDefinition()->Function();
-    auto *ctorFuncScope = ctorFunc->Scope();
-    ctorFuncScope->BindName(lambdaClass->Ident()->Name());
-
-    auto *invoke0Func = lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function();
-    auto *invoke0FuncScope = invoke0Func->Scope();
-    invoke0FuncScope->BindName(lambdaClass->Ident()->Name());
-
-    auto *invokeFunc = lambdaBody[lambdaBody.size() - 1U]->AsMethodDefinition()->Function();
-    auto *invokeFuncScope = invokeFunc->Scope();
-    invokeFuncScope->BindName(lambdaClass->Ident()->Name());
 }
 
 void ETSBinder::InitImplicitThisParam()
