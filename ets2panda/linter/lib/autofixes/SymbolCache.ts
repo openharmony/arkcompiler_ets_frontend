@@ -88,6 +88,15 @@ export class SymbolCache {
     return this.typeChecker.getSymbolAtLocation(callExpression.expression);
   }
 
+  private handleIdentifier(node: ts.Node): ts.Symbol | undefined {
+    const identifier = node as ts.Identifier;
+    const symbol = this.typeChecker.getSymbolAtLocation(identifier);
+    if (symbol?.flags) {
+      return (symbol.flags & ts.SymbolFlags.Variable) !== 0 ? symbol : undefined;
+    }
+    return undefined;
+  }
+
   private addReference(symbol: ts.Symbol, node: ts.Node): void {
     let nodes = this.cache.get(symbol);
     if (nodes === undefined) {
@@ -105,7 +114,8 @@ export class SymbolCache {
     [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyDeclaration],
     [ts.SyntaxKind.PropertySignature, this.handlePropertySignature],
     [ts.SyntaxKind.FunctionDeclaration, this.handleFunctionDeclaration],
-    [ts.SyntaxKind.CallExpression, this.handleCallExpression]
+    [ts.SyntaxKind.CallExpression, this.handleCallExpression],
+    [ts.SyntaxKind.Identifier, this.handleIdentifier]
   ]);
 
   private readonly cache: Map<ts.Symbol, ts.Node[]> = new Map<ts.Symbol, ts.Node[]>();

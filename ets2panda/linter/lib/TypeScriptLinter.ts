@@ -1141,7 +1141,8 @@ export class TypeScriptLinter {
   private handleVariableDeclarationList(node: ts.Node): void {
     const varDeclFlags = ts.getCombinedNodeFlags(node);
     if (!(varDeclFlags & (ts.NodeFlags.Let | ts.NodeFlags.Const))) {
-      this.incrementCounters(node, FaultID.VarDeclaration);
+      const autofix = this.autofixer?.fixVarDeclaration(node as ts.VariableDeclarationList);
+      this.incrementCounters(node, FaultID.VarDeclaration, autofix);
     }
   }
 

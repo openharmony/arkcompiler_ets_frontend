@@ -18,6 +18,13 @@
             "line": 18,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 630,
+                    "end": 645,
+                    "replacementText": "let foo1 = bar1"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -25,6 +32,13 @@
             "line": 22,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 677,
+                    "end": 708,
+                    "replacementText": "let foo2 = bar2, toast2 = most2"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -32,6 +46,13 @@
             "line": 26,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 740,
+                    "end": 755,
+                    "replacementText": "let foo3 = bar3"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -39,6 +60,13 @@
             "line": 29,
             "column": 6,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 796,
+                    "end": 802,
+                    "replacementText": "let a4"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -53,6 +81,13 @@
             "line": 32,
             "column": 6,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 850,
+                    "end": 856,
+                    "replacementText": "let a5"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -60,6 +95,13 @@
             "line": 35,
             "column": 22,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 920,
+                    "end": 930,
+                    "replacementText": "let c6 = 1"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -67,6 +109,13 @@
             "line": 38,
             "column": 6,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 973,
+                    "end": 983,
+                    "replacementText": "let i7 = 0"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -95,6 +144,13 @@
             "line": 42,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 1062,
+                    "end": 1073,
+                    "replacementText": "let a9 = b9"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -109,6 +165,13 @@
             "line": 44,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 1087,
+                    "end": 1100,
+                    "replacementText": "let foo10 = 1"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -116,6 +179,13 @@
             "line": 46,
             "column": 9,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 1110,
+                    "end": 1123,
+                    "replacementText": "let foo11 = 2"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -151,6 +221,13 @@
             "line": 51,
             "column": 13,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 1254,
+                    "end": 1277,
+                    "replacementText": "() => { foo13(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -172,6 +249,13 @@
             "line": 56,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 1319,
+                    "end": 1336,
+                    "replacementText": "let bar15 = foo15"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -186,6 +270,13 @@
             "line": 56,
             "column": 32,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 1350,
+                    "end": 1374,
+                    "replacementText": "() => { foo15(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -193,6 +284,13 @@
             "line": 58,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 1377,
+                    "end": 1413,
+                    "replacementText": "let bar16 = function () { foo16(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
@@ -200,6 +298,13 @@
             "line": 58,
             "column": 13,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 1389,
+                    "end": 1413,
+                    "replacementText": "() => { foo16(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -214,6 +319,13 @@
             "line": 58,
             "column": 51,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 1427,
+                    "end": 1440,
+                    "replacementText": "() => { }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -501,6 +613,13 @@
             "line": 115,
             "column": 14,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 2425,
+                    "end": 2449,
+                    "replacementText": "() => { foo39(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -508,6 +627,13 @@
             "line": 117,
             "column": 13,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 2467,
+                    "end": 2481,
+                    "replacementText": "(a) => { }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -529,6 +655,13 @@
             "line": 118,
             "column": 19,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 2501,
+                    "end": 2525,
+                    "replacementText": "() => { foo40(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -543,6 +676,13 @@
             "line": 120,
             "column": 28,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 2556,
+                    "end": 2580,
+                    "replacementText": "() => { foo41(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -564,6 +704,13 @@
             "line": 122,
             "column": 25,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 2607,
+                    "end": 2631,
+                    "replacementText": "() => { foo42(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
@@ -585,6 +732,13 @@
             "line": 124,
             "column": 32,
             "problem": "FunctionExpression",
+            "autofix": [
+                {
+                    "start": 2665,
+                    "end": 2689,
+                    "replacementText": "() => { foo43(); }"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
