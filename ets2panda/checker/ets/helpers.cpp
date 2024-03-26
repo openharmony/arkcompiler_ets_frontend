@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1355,10 +1355,8 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
 std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType, Type *actualType, bool const strict)
 {
-    static checker::Type *globalNullType = CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()});
-
     if (!strict) {
-        return {globalNullType, GetNonNullishType(actualType)};
+        return {CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()}), GetNonNullishType(actualType)};
     }
 
     if (testedType->IsETSNullType()) {
@@ -1369,7 +1367,7 @@ std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType
         return {GlobalETSUndefinedType(), RemoveUndefinedType(actualType)};
     }
 
-    return {globalNullType, GetNonNullishType(actualType)};
+    return {CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()}), GetNonNullishType(actualType)};
 }
 
 // Auxiliary method to reduce the size of common 'CheckTestSmartCastConditions' function.
