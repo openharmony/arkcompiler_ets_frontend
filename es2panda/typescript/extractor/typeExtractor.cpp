@@ -63,10 +63,9 @@ const std::set<ir::AstNodeType> PRUNING_SET = {
 
 TypeExtractor::TypeExtractor(const ir::BlockStatement *rootNode, bool typeDtsExtractor, bool typeDtsBuiltin,
                              ArenaAllocator *allocator, compiler::CompilerContext *context)
-    : rootNode_(rootNode), typeDtsExtractor_(typeDtsExtractor), typeDtsBuiltin_(typeDtsBuiltin)
+    : rootNode_(rootNode), typeDtsExtractor_(typeDtsExtractor), typeDtsBuiltin_(typeDtsBuiltin),
+      recorder_(std::make_unique<TypeRecorder>(allocator, context))
 {
-    recorder_ = std::make_unique<TypeRecorder>(allocator, context);
-
     getterMap_[ir::AstNodeType::IDENTIFIER] =
         std::bind(&TypeExtractor::GetTypeIndexFromIdentifierNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::CLASS_EXPRESSION] =

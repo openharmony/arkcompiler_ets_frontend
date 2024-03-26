@@ -2542,8 +2542,8 @@ void ParserImpl::ValidatePrivateProperty(ir::Statement *stmt, std::unordered_set
             unusedType |= PrivateGetterSetterType::STATIC;
         }
 
-        if (usedPrivateNames.find(name) == usedPrivateNames.end()) {
-            usedPrivateNames.insert(name);
+        auto insertRet = usedPrivateNames.insert(name);
+        if (insertRet.second) {
             unusedGetterSetterPairs[name] = unusedType;
             return;
         }

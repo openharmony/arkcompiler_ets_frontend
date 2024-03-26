@@ -48,8 +48,8 @@ enum class ScriptExtension {
 };
 
 struct SourceFile {
-    SourceFile(std::string fn, std::string rn, parser::ScriptKind sk, ScriptExtension se)
-        : fileName(fn), recordName(rn), scriptKind(sk), scriptExtension(se)
+    SourceFile(const std::string &fn, const std::string &recordName, parser::ScriptKind sk, ScriptExtension se)
+        : fileName(fn), recordName(recordName), scriptKind(sk), scriptExtension(se)
     {
     }
 
@@ -111,8 +111,8 @@ enum class ErrorType {
 class Error : public std::exception {
 public:
     Error() noexcept = default;
-    explicit Error(ErrorType type, std::string_view message) noexcept : type_(type), message_(message) {}
-    explicit Error(ErrorType type, std::string_view message, size_t line, size_t column) noexcept
+    explicit Error(ErrorType type, const std::string_view &message) noexcept : type_(type), message_(message) {}
+    explicit Error(ErrorType type, const std::string_view &message, size_t line, size_t column) noexcept
         : type_(type), message_(message), line_(line), col_(column)
     {
     }

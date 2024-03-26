@@ -22,7 +22,7 @@
 
 namespace panda::es2panda::lexer {
 
-RegExpError::RegExpError(std::string_view m) : message(m) {}
+RegExpError::RegExpError(const std::string_view &m) : message(m) {}
 
 RegExp::RegExp(util::StringView p, util::StringView f, RegExpFlags reFlags) : patternStr(p), flagsStr(f), flags(reFlags)
 {
@@ -84,7 +84,7 @@ static uint32_t HexValue(char32_t cp)
     return (cp - LEX_CHAR_LOWERCASE_A + OFFSET);
 }
 
-static void ThrowError(std::string_view message)
+static void ThrowError(const std::string_view &message)
 {
     throw RegExpError(message);
 }

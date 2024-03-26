@@ -377,7 +377,7 @@ Emitter::~Emitter()
     delete prog_;
 }
 
-void Emitter::SetPkgNameField(std::string pkgName)
+void Emitter::SetPkgNameField(const std::string &pkgName)
 {
     auto pkgNameField = panda::pandasm::Field(LANG_EXT);
     pkgNameField.name = "pkgName@" + pkgName;

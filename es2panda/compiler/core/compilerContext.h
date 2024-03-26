@@ -45,7 +45,7 @@ class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
                     bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, bool isRecordSource,
-                    std::string sourceFile, std::string pkgName, util::StringView recordName,
+                    const std::string &sourceFile, const std::string &pkgName, util::StringView recordName,
                     util::PatchFix *patchFixHelper);
 
     NO_COPY_SEMANTIC(CompilerContext);
