@@ -134,6 +134,7 @@ public:
     void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse, Label **end)
     {
         auto type = GetAccumulatorType();
+        ASSERT(type != nullptr);
         auto realEndLabel = [end, ifFalse, this](bool useFalseLabel) {
             if (useFalseLabel) {
                 return ifFalse;
