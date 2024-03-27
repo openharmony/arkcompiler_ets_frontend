@@ -2718,7 +2718,7 @@ void ParserImpl::CheckClassPrivateIdentifier(ClassElmentDescriptor *desc)
 
 void ParserImpl::CheckFieldKey(ir::Expression *propName)
 {
-    if (propName->IsNumberLiteral()) {
+    if (propName->IsNumberLiteral() || propName->IsBigIntLiteral()) {
         return;
     }
 
