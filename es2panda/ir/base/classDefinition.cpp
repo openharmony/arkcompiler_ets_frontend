@@ -520,7 +520,7 @@ void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
     }
 }
 
-static void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation)
+void ClassDefinition::AddFieldType(FieldType &fieldType, const Expression *typeAnnotation) const
 {
     switch (typeAnnotation->Type()) {
         case AstNodeType::TS_NUMBER_KEYWORD: {
@@ -536,17 +536,56 @@ static void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation)
             break;
         }
         case AstNodeType::TS_TYPE_REFERENCE: {
-            fieldType |= FieldType::TS_TYPE_REF;
+            AddFieldTypeForTypeReference(typeAnnotation->AsTSTypeReference(), fieldType);
             break;
         }
         case AstNodeType::TS_BIGINT_KEYWORD: {
             fieldType |= FieldType::BIGINT;
             break;
         }
+        case AstNodeType::TS_NULL_KEYWORD: {
+            fieldType |= FieldType::TS_NULL;
+            break;
+        }
+        case AstNodeType::TS_UNDEFINED_KEYWORD: {
+            fieldType |= FieldType::TS_UNDEFINED;
+            break;
+        }
         default: {
             UNREACHABLE();
         }
     }
+}
+
+void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType) const
+{
+    auto typeName = typeReference->TypeName();
+    ASSERT(typeName != nullptr);
+
+    if (typeName->IsIdentifier()) {
+        util::StringView propertyName = typeName->AsIdentifier()->Name();
+        
+        if (IsTypeParam(propertyName)) {
+            fieldType |= FieldType::TYPE_PARAMETER;
+            return;
+        }
+    }
+    fieldType |= FieldType::TS_TYPE_REF;
+}
+
+bool ClassDefinition::IsTypeParam(const util::StringView &propertyName) const
+{
+    if (typeParams_ == nullptr) {
+        return false;
+    }
+
+    for (auto param : typeParams_->Params()) {
+        util::StringView paramName = param->Name()->AsIdentifier()->Name();
+        if (paramName == propertyName) {
+            return true;
+        }
+    }
+    return false;
 }
 
 int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const

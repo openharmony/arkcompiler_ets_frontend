@@ -20,6 +20,7 @@
 #include <ir/base/classProperty.h>
 #include <ir/base/methodDefinition.h>
 #include <ir/expressions/privateIdentifier.h>
+#include <ir/ts/tsTypeReference.h>
 #include <util/bitset.h>
 
 namespace panda::es2panda::compiler {
@@ -44,6 +45,9 @@ enum class FieldType {
     BOOLEAN = (1 << 2),
     TS_TYPE_REF = (1 << 3),
     BIGINT = (1 << 4),
+    TYPE_PARAMETER = (1 << 5),
+    TS_NULL = (1 << 6),
+    TS_UNDEFINED = (1 << 7),
 };
 DEFINE_BITOPS(FieldType)
 
@@ -247,6 +251,9 @@ private:
     void StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void InstanceInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void CompileComputedKeys(compiler::PandaGen *pg) const;
+    void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation) const;
+    void AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType) const;
+    bool IsTypeParam(const util::StringView &propertyName) const;
     int32_t CreateFieldTypeBuffer(compiler::PandaGen *pg) const;
     void CompileSendableClass(compiler::PandaGen *pg) const;
     void CompileGetterOrSetter(compiler::PandaGen *pg, compiler::VReg dest, const MethodDefinition *prop) const;
