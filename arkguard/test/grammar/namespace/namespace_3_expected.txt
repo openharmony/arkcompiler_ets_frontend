@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 export namespace Imp2 {
-    class g {
+    class h {
         name: string = "tmp";
     }
 }

@@ -14,8 +14,10 @@
  */
 
 export function foo() {
-  foo: String;
-  print() {
-    return this.foo;
+  let foo1 = "string";
+  {
+    function foo() {
+      console.log(foo1);
+    }
   }
 }

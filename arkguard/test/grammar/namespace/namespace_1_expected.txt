@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 namespace Foo {
-    class c {
+    class d {
         name: string = "Foo";
     }
-    function b(d: string) {
-        return d;
+    function c(e: string) {
+        return e;
     }
 }

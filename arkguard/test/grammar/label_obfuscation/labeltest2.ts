@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,9 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type g2 = t;
-let newValue = u + 1;
-export { b2, c2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+function testFunc() {  
+  myLabel: function testFunc2() {  
+    console.log("This is testFunc2.");  
+  }    
+  testFunc2(); 
+}
+
+function testFunc3() {
+  myLabel2: function testFunc4() {
+    console.log("This is testFunc4");
+  }
+}

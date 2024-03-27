@@ -19,14 +19,19 @@ import {
   isObjectBindingPattern,
   isShorthandPropertyAssignment,
   isSourceFile,
+  isStructDeclaration,
   setParentRecursive,
-  visitEachChild
+  visitEachChild,
+  isConstructorDeclaration
 } from 'typescript';
 
 import type {
   BindingElement,
+  ClassElement,
   Identifier,
   Node,
+  SourceFile,
+  StructDeclaration,
   TransformationContext,
   Transformer,
   TransformerFactory
@@ -37,8 +42,8 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
-import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
-import { EventList, TimeSumPrinter } from '../../utils/PrinterUtils';
+import {ArkObfuscator, performancePrinter} from '../../ArkObfuscator';
+import {EventList} from '../../utils/PrinterUtils';
 
 namespace secharmony {
   const createShorthandPropertyTransformerFactory = function (option: IOptions): TransformerFactory<Node> {
@@ -98,11 +103,35 @@ namespace secharmony {
             node.name, node.initializer);
         }
 
+        /** 
+         * Remove virtual constructor to avoid being printed into the output file
+         * @param {SourceFile} node - Virtual constructor node
+        */
+        if (isStructDeclaration(node)) {
+          return tryRemoveVirtualConstructor(node);
+        }
+
         return visitEachChild(node, transformShortHandProperty, context);
       }
 
       function isElementsInObjectBindingPattern(node: Node): node is BindingElement {
         return node.parent && isObjectBindingPattern(node.parent) && isBindingElement(node);
+      }
+
+      function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration {
+        const sourceFile = NodeUtils.getSourceFileOfNode(node);
+        const tempStructMembers: ClassElement[] = [];
+        if (sourceFile && sourceFile.isDeclarationFile && NodeUtils.isInETSFile(sourceFile)) {
+          for (let member of node.members) {
+            // @ts-ignore
+            if (!isConstructorDeclaration(member) || !member.virtual) {
+              tempStructMembers.push(member);
+            }
+          }
+          const structMembersWithVirtualConstructor = factory.createNodeArray(tempStructMembers);
+          return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, structMembersWithVirtualConstructor);
+        }
+        return node;
       }
     }
   };

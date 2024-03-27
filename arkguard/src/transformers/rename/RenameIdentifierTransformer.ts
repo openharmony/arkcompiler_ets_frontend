@@ -138,11 +138,7 @@ namespace secharmony {
 
       let checker: TypeChecker = undefined;
       let manager: ScopeManager = createScopeManager();
-      let shadowIdentifiers: Identifier[] = undefined;
-      let shadowStructs: StructDeclaration[] = undefined;
 
-      let identifierIndex: number = 0;
-      let structIndex: number = 0;
       return renameTransformer;
 
       /**
@@ -160,16 +156,12 @@ namespace secharmony {
           return node;
         }
 
-        performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);
-        const shadowSourceAst: SourceFile = TypeUtils.createNewSourceFile(node, option.mRemoveComments);
-        performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_SHADOW, performancePrinter.timeSumPrinter);
-
         performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
-        checker = TypeUtils.createChecker(shadowSourceAst);
+        checker = TypeUtils.createChecker(node);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_CHECKER, performancePrinter.timeSumPrinter);
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
-        manager.analyze(shadowSourceAst, checker, exportObfuscation);
+        manager.analyze(node, checker, exportObfuscation);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.SCOPE_ANALYZE, performancePrinter.timeSumPrinter);
 
         // the reservedNames of manager contain the struct name.
@@ -186,15 +178,10 @@ namespace secharmony {
         performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
 
         root = undefined;
-        // collect all identifiers of shadow sourceFile
-        const identifiersAndStructs = collectIdentifiersAndStructs(shadowSourceAst, context);
-        shadowIdentifiers = identifiersAndStructs.shadowIdentifiers;
-        shadowStructs = identifiersAndStructs.shadowStructs;
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         let ret: Node = visit(node);
 
-        ret = tryRemoveVirtualConstructor(ret);
         let parentNodes = setParentRecursive(ret, true);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         return parentNodes;
@@ -472,13 +459,10 @@ namespace secharmony {
         }
 
         if (isLabeledStatement(node.parent) || isBreakOrContinueStatement(node.parent)) {
-          identifierIndex += 1;
           return updateLabelNode(node);
         }
 
-        const shadowNode: Identifier = shadowIdentifiers[identifierIndex];
-        identifierIndex += 1;
-        return updateNameNode(node, shadowNode);
+        return updateNameNode(node);
       }
 
       function handlePositionInfo(node: Node): void {
@@ -549,30 +533,9 @@ namespace secharmony {
         }
       }
 
-      function tryRemoveVirtualConstructor(node: Node): Node {
-        if (isStructDeclaration(node)) {
-          const shadowNode: StructDeclaration = shadowStructs[structIndex];
-          structIndex++;
-          const sourceFile = NodeUtils.getSourceFileOfNode(shadowNode);
-          const tempStructMembers: ClassElement[] = [];
-          if (sourceFile && sourceFile.isDeclarationFile) {
-            for (let index = 0; index < node.members.length; index++) {
-              const member = node.members[index];
-              // @ts-ignore
-              if (isConstructorDeclaration(member) && shadowNode.members[index].virtual) {
-                continue;
-              }
-              tempStructMembers.push(member);
-            }
-            const structMembersWithVirtualConstructor = factory.createNodeArray(tempStructMembers);
-            return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses,
-              structMembersWithVirtualConstructor);
-          }
-        }
-        return visitEachChild(node, tryRemoveVirtualConstructor, context);
-      }
+      
 
-      function updateNameNode(node: Identifier, shadowNode: Identifier): Node {
+      function updateNameNode(node: Identifier): Node {
         // skip property in property access expression
         if (NodeUtils.isPropertyAccessNode(node)) {
           return node;
@@ -582,11 +545,11 @@ namespace secharmony {
           return node;
         }
         
-        let sym: Symbol | undefined = checker.getSymbolAtLocation(shadowNode);
+        let sym: Symbol | undefined = checker.getSymbolAtLocation(node);
         let mangledPropertyNameOfNoSymbolImportExport = '';
         if ((!sym || sym.name === 'default')) {
-          if (exportObfuscation && noSymbolIdentifier.has(shadowNode.escapedText as string) && trySearchImportExportSpecifier(shadowNode)) {
-            mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(shadowNode.escapedText as string);
+          if (exportObfuscation && noSymbolIdentifier.has(node.escapedText as string) && trySearchImportExportSpecifier(node)) {
+            mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(node.escapedText as string);
           } else {
             return node;
           }

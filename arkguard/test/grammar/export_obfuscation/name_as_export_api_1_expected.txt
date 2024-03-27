@@ -12,32 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class j2 {
+    static readonly m1: number = 1;
+    private n1: string = 'hello';
+    o1() {
+        return 1;
+    }
+}
+export { j2 as q2 };
+class l2 {
+    static readonly m1: number = 1;
+    private n1: string = 'hello';
+    o1() {
+        return 1;
+    }
+}
+class m2 {
+}
 class n2 {
-    static readonly m1: number = 1;
-    private n1: string = 'hello';
-    o1() {
-        return 1;
-    }
 }
-export { n2 as u2 };
 class o2 {
-    static readonly m1: number = 1;
-    private n1: string = 'hello';
-    o1() {
-        return 1;
-    }
 }
-class q2 {
-}
-class s2 {
-}
-class t2 {
-}
-export { o2, q2, s2 as v2, t2 };
-export function l2() {
+export { l2, m2, n2 as s2, o2 };
+export function h2() {
     return 1 + 1;
 }
-export function m2() {
+export function i2() {
     return 1 + 1;
 }
-export { w2, a3 as z2 };
+export { t2, v2 as u2 };

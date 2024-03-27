@@ -705,13 +705,11 @@ namespace secharmony {
         }
 
         current.defs.forEach((def) => {
-          if (def.name !== param.name.getText()) {
-            return;
+          if (isIdentifier(param.name) && (def.name === param.name.escapedText)) {
+            current.defs.delete(def);
+            current.mangledNames.add(def.name);
+            root.constructorReservedParams.add(def.name);
           }
-
-          current.defs.delete(def);
-          current.mangledNames.add(def.name);
-          root.constructorReservedParams.add(def.name);
         });
       };
 
