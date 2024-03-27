@@ -1022,7 +1022,11 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
      *
      *  TODO(xucheng): should support static private property
      */
-    if (program_->TargetApiVersion() > 10) {
+     
+     // When targetApiVersion is greater than 10, for classes with decorators,
+     // the static public class properties in them will go through the transform process.
+     // The number 10 is used to indicate the target api version
+    if (program_->TargetApiVersion() > 10 && !(node->IsClassDecoratorPresent())) {
         return {};
     }
 
@@ -1034,6 +1038,11 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
         }
         auto *classProperty = it->AsClassProperty();
         if (!classProperty->IsStatic()) {
+            continue;
+        }
+
+        // if property in the form of `static #a`, it will not be processed.
+        if (classProperty->IsPrivate()) {
             continue;
         }
 
@@ -1057,6 +1066,14 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
                                                    true, false);
         }
         auto assignment = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        
+        // When TargetApiVersion is greater than 10, for classes with decorators,
+        // the value of the public static class property in the class will be assigned to nullptr,
+        // and the value will be assigned outside the class.
+        // The number 10 is used to indicate the target api version
+        if (program_->TargetApiVersion() > 10) {
+            classProperty->RemoveValue();
+        }
         res.push_back(AllocNode<ir::ExpressionStatement>(assignment));
     }
     return res;
