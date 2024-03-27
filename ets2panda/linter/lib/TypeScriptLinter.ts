@@ -86,6 +86,8 @@ export class TypeScriptLinter {
   libraryTypeCallDiagnosticChecker: LibraryTypeCallDiagnosticChecker;
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
   syncAutofixes: Map<ts.Symbol, Autofix[]>;
+  private readonly fixedEnumsInFile: Map<ts.SourceFile, Set<ts.Symbol>>;
+  private readonly nonFixableEnumsInFile: Map<ts.SourceFile, Set<ts.Symbol>>;
 
   private sourceFile?: ts.SourceFile;
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
@@ -135,6 +137,8 @@ export class TypeScriptLinter {
     );
     this.supportedStdCallApiChecker = new SupportedStdCallApiChecker(this.tsUtils, this.tsTypeChecker);
     this.syncAutofixes = new Map<ts.Symbol, Autofix[]>();
+    this.fixedEnumsInFile = new Map<ts.SourceFile, Set<ts.Symbol>>();
+    this.nonFixableEnumsInFile = new Map<ts.SourceFile, Set<ts.Symbol>>();
 
     this.initEtsHandlers();
     this.initCounters();
@@ -569,6 +573,41 @@ export class TypeScriptLinter {
     this.handleDeclarationInferredType(tsParam);
   }
 
+  private enumMergingGetAutofix(enumNode: ts.EnumDeclaration,
+    enumSymbol: ts.Symbol, enumDeclsInFile: ts.Declaration[]): Autofix[] | undefined {
+    const nodeSrcFile = enumNode.getSourceFile();
+
+    if (this.fixedEnumsInFile.get(nodeSrcFile)?.has(enumSymbol)) {
+      return [{ start: enumNode.getStart(), end: enumNode.getEnd(), replacementText: '' }];
+    }
+
+    if (this.nonFixableEnumsInFile.get(nodeSrcFile)?.has(enumSymbol)) {
+      return undefined;
+    }
+
+    const members: ts.EnumMember[] = [];
+    for (const decl of enumDeclsInFile) {
+      for (const member of (decl as ts.EnumDeclaration).members) {
+        if (!member.initializer || member.initializer.kind === ts.SyntaxKind.NumericLiteral ||
+            member.initializer.kind === ts.SyntaxKind.StringLiteral) {
+          continue;
+        }
+        if (!this.nonFixableEnumsInFile.has(nodeSrcFile)) {
+          this.nonFixableEnumsInFile.set(nodeSrcFile, new Set<ts.Symbol>());
+        }
+        this.nonFixableEnumsInFile.get(nodeSrcFile)?.add(enumSymbol);
+        return undefined;
+      }
+      members.push(...(decl as ts.EnumDeclaration).members);
+    }
+
+    if (!this.fixedEnumsInFile.has(nodeSrcFile)) {
+      this.fixedEnumsInFile.set(nodeSrcFile, new Set<ts.Symbol>());
+    }
+    this.fixedEnumsInFile.get(nodeSrcFile)?.add(enumSymbol);
+    return Autofixer.fixEnumMerging(enumNode, members);
+  }
+
   private handleEnumDeclaration(node: ts.Node): void {
     const enumNode = node as ts.EnumDeclaration;
     this.countDeclarationsWithDuplicateName(enumNode.name, enumNode);
@@ -588,13 +627,31 @@ export class TypeScriptLinter {
      * See 'countDeclarationsWithDuplicateName' method for details.
      */
     let enumDeclCount = 0;
+    const enumDeclsInFile: ts.Declaration[] = [];
+    const nodeSrcFile = enumNode.getSourceFile();
     for (const decl of enumDecls) {
       if (decl.kind === ts.SyntaxKind.EnumDeclaration) {
+        if (nodeSrcFile === decl.getSourceFile()) {
+          enumDeclsInFile.push(decl);
+        }
         enumDeclCount++;
       }
     }
+
     if (enumDeclCount > 1) {
-      this.incrementCounters(node, FaultID.EnumMerging);
+      let autofix: Autofix[] | undefined = undefined;
+      if (enumDeclsInFile.length > 1) {
+        autofix = this.enumMergingGetAutofix(enumNode, enumSymbol, enumDeclsInFile);
+      }
+
+      let autofixable = false;
+      if (autofix !== undefined) {
+        autofixable = true;
+        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.EnumMerging) ?
+          this.createSyncAutofixes(enumSymbol, autofix) :
+          undefined;
+      }
+      this.incrementCounters(node, FaultID.EnumMerging, autofixable, autofix);
     }
   }
 

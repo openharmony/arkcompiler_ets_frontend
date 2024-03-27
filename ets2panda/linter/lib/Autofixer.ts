@@ -176,6 +176,12 @@ function recursiveCommaOperator(tsExprNode: ts.BinaryExpression): string {
   return text;
 }
 
+export function fixEnumMerging(tsNode: ts.EnumDeclaration, members: ts.EnumMember[]): Autofix[] | undefined {
+  const fullEnum = ts.factory.createEnumDeclaration(tsNode.modifiers, tsNode.name, members);
+  const fullText = printer.printNode(ts.EmitHint.Unspecified, fullEnum, tsNode.getSourceFile());
+  return [{ start: tsNode.getStart(), end: tsNode.getEnd(), replacementText: fullText }];
+}
+
 const printer: ts.Printer = ts.createPrinter({
   omitTrailingSemicolon: false,
   removeComments: false,
