@@ -42,6 +42,7 @@ import type {IOptions} from './configs/IOptions';
 import {FileUtils} from './utils/FileUtils';
 import {TransformerManager} from './transformers/TransformerManager';
 import {getSourceMapGenerator} from './utils/SourceMapUtil';
+import { mergeSourceMap } from './utils/SourceMapMergingUtil';
 
 import {
   deleteLineInfoForNameString,
@@ -333,43 +334,6 @@ export class ArkObfuscator {
     }
   }
 
-  async mergeSourceMap(originMap: sourceMap.RawSourceMap, newMap: sourceMap.RawSourceMap): Promise<RawSourceMap> {
-    if (!originMap) {
-      return newMap as RawSourceMap;
-    }
-
-    if (!newMap) {
-      return originMap as RawSourceMap;
-    }
-
-    const originConsumer: sourceMap.SourceMapConsumer = await new sourceMap.SourceMapConsumer(originMap);
-    const newConsumer: sourceMap.SourceMapConsumer = await new sourceMap.SourceMapConsumer(newMap);
-    const newMappingList: sourceMap.MappingItem[] = [];
-    newConsumer.eachMapping((mapping: sourceMap.MappingItem) => {
-      if (mapping.originalLine == null) {
-        return;
-      }
-
-      const originalPos = originConsumer.originalPositionFor({
-        line: mapping.originalLine,
-        column: mapping.originalColumn
-      });
-
-      if (originalPos.source == null) {
-        return;
-      }
-
-      mapping.originalLine = originalPos.line;
-      mapping.originalColumn = originalPos.column;
-      newMappingList.push(mapping);
-    });
-
-    const updatedGenerator: sourceMap.SourceMapGenerator = sourceMap.SourceMapGenerator.fromSourceMap(newConsumer);
-    updatedGenerator['_file'] = originMap.file;
-    updatedGenerator['_mappings']['_array'] = newMappingList;
-    return JSON.parse(updatedGenerator.toString()) as RawSourceMap;
-  }
-
   /**
    * A Printer to output obfuscated codes.
    */
@@ -549,7 +513,7 @@ export class ArkObfuscator {
       sourceMapJson.sourceRoot = '';
       sourceMapJson.file = path.basename(sourceFilePath);
       if (previousStageSourceMap) {
-        sourceMapJson = await this.mergeSourceMap(previousStageSourceMap, sourceMapJson as sourceMap.RawSourceMap);
+        sourceMapJson = mergeSourceMap(previousStageSourceMap as RawSourceMap, sourceMapJson);
       }
       result.sourceMap = sourceMapJson;
       let nameCache = renameIdentifierModule.nameCache;

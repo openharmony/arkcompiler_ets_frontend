@@ -40,7 +40,8 @@
     "commander": "^9.3.0",
     "fs-extra": "^10.1.0",
     "json5": "^2.2.3",
-    "source-map": "0.7.4"
+    "source-map": "0.7.4",
+    "magic-string": "0.30.8"
   },
   "peerDependencies": {
     "typescript": "*"
