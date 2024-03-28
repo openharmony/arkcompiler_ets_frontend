@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+// Fixable
+
 function addNum(a: number, b: number): void {
     function logToConsole(message: String): void {
         console.log(message)
@@ -34,3 +36,56 @@ function addNum2(a: number, b: number): void {
 
     logToConsole("result is " + result)
 }
+
+
+function NestedOne(a: number, b: number): void {
+    function NestedTwo(message: String): void {
+        function NestedThree(message: String): void {
+            console.log("NestedThree");
+        }
+    }
+}
+
+
+function NestedOne1(a: number, b: number): void {
+    function NestedTwo(message: String): void {
+        console.log("NestedTwo")
+    }
+
+    function NestedTooToo(message: String): void {
+        console.log("NestedTooToo")
+    }
+}
+
+function NestedOne2(a: number, b: number): void {
+    function NestedTwo(message: String): void {
+        function NestedThree(message: String): void {
+            console.log("NestedThree")
+        }
+
+        function NestedThreeToo(message: String): void {
+            console.log("NestedThreeToo")
+        }
+    }
+}
+
+// Not fixable
+function decoratorFoo(): void {
+    @decorator
+    function decorated(): void {
+    }
+
+    function* generatorFunction() {
+        return 3;
+    }
+
+    function thisFoo() {
+        return this.what;
+    }
+
+    notFixable();
+
+    function notFixable(): void {
+    }
+}
+

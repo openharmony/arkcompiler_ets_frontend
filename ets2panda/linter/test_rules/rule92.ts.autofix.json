@@ -18,6 +18,13 @@
             "line": 19,
             "column": 5,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 672,
+                    "end": 753,
+                    "replacementText": "let logToConsole: (message: String) => void = (message: String): void => {\n    console.log(message);\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -25,6 +32,13 @@
             "line": 42,
             "column": 5,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1154,
+                    "end": 1307,
+                    "replacementText": "let NestedTwo: (message: String) => void = (message: String): void => {\n    function NestedThree(message: String): void {\n        console.log(\"NestedThree\");\n    }\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -32,6 +46,13 @@
             "line": 43,
             "column": 9,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1206,
+                    "end": 1301,
+                    "replacementText": "let NestedThree: (message: String) => void = (message: String): void => {\n    console.log(\"NestedThree\");\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -39,6 +60,13 @@
             "line": 51,
             "column": 5,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1366,
+                    "end": 1448,
+                    "replacementText": "let NestedTwo: (message: String) => void = (message: String): void => {\n    console.log(\"NestedTwo\");\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -46,6 +74,13 @@
             "line": 55,
             "column": 5,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1454,
+                    "end": 1542,
+                    "replacementText": "let NestedTooToo: (message: String) => void = (message: String): void => {\n    console.log(\"NestedTooToo\");\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -53,6 +88,13 @@
             "line": 61,
             "column": 5,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1600,
+                    "end": 1862,
+                    "replacementText": "let NestedTwo: (message: String) => void = (message: String): void => {\n    function NestedThree(message: String): void {\n        console.log(\"NestedThree\");\n    }\n    function NestedThreeToo(message: String): void {\n        console.log(\"NestedThreeToo\");\n    }\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -60,6 +102,13 @@
             "line": 62,
             "column": 9,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1652,
+                    "end": 1746,
+                    "replacementText": "let NestedThree: (message: String) => void = (message: String): void => {\n    console.log(\"NestedThree\");\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -67,6 +116,13 @@
             "line": 66,
             "column": 9,
             "problem": "LocalFunction",
+            "autofix": [
+                {
+                    "start": 1756,
+                    "end": 1856,
+                    "replacementText": "let NestedThreeToo: (message: String) => void = (message: String): void => {\n    console.log(\"NestedThreeToo\");\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },

@@ -412,6 +412,72 @@ export class Autofixer {
     return result;
   }
 
+  private isFunctionDeclarationFirst(tsFunctionDeclaration: ts.FunctionDeclaration): boolean {
+    if (tsFunctionDeclaration.name === undefined) {
+      return false;
+    }
+
+    const symbol = this.typeChecker.getSymbolAtLocation(tsFunctionDeclaration.name);
+    if (symbol === undefined) {
+      return false;
+    }
+
+    let minPos = tsFunctionDeclaration.pos;
+    this.symbolCache.getReferences(symbol).forEach((ident) => {
+      if (ident.pos < minPos) {
+        minPos = ident.pos;
+      }
+    });
+
+    return minPos >= tsFunctionDeclaration.pos;
+  }
+
+  fixNestedFunction(tsFunctionDeclaration: ts.FunctionDeclaration): Autofix[] | undefined {
+    const isGenerator = tsFunctionDeclaration.asteriskToken !== undefined;
+    const hasThisKeyword = tsFunctionDeclaration.body === undefined ?
+      false :
+      scopeContainsThis(tsFunctionDeclaration.body);
+    const canBeFixed = !isGenerator && !hasThisKeyword;
+    if (!canBeFixed) {
+      return undefined;
+    }
+
+    const name = tsFunctionDeclaration.name?.escapedText;
+    const type = tsFunctionDeclaration.type;
+    const body = tsFunctionDeclaration.body;
+    if (!name || !type || !body) {
+      return undefined;
+    }
+
+    // Check only illegal decorators, cause all decorators for function declaration are illegal
+    if (ts.getIllegalDecorators(tsFunctionDeclaration)) {
+      return undefined;
+    }
+
+    if (!this.isFunctionDeclarationFirst(tsFunctionDeclaration)) {
+      return undefined;
+    }
+
+    const typeParameters = tsFunctionDeclaration.typeParameters;
+    const parameters = tsFunctionDeclaration.parameters;
+    const modifiers = ts.getModifiers(tsFunctionDeclaration);
+
+    const token = ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken);
+    const typeDecl = ts.factory.createFunctionTypeNode(typeParameters, parameters, type);
+    const arrowFunc = ts.factory.createArrowFunction(modifiers, typeParameters, parameters, type, token, body);
+
+    const declaration: ts.VariableDeclaration = ts.factory.createVariableDeclaration(name,
+      undefined,
+      typeDecl,
+      arrowFunc);
+    const list: ts.VariableDeclarationList = ts.factory.createVariableDeclarationList([declaration], ts.NodeFlags.Let);
+
+    const statement = ts.factory.createVariableStatement(modifiers, list);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, statement, tsFunctionDeclaration.getSourceFile());
+    return [{ start: tsFunctionDeclaration.getStart(), end: tsFunctionDeclaration.getEnd(), replacementText: text }];
+  }
+
+
   private readonly privateIdentifierCache = new Map<ts.Symbol, Autofix[] | undefined>();
 
   private fixSinglePrivateIdentifier(ident: ts.PrivateIdentifier): Autofix {
