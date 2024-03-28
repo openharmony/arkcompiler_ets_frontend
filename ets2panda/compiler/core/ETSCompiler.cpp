@@ -1124,9 +1124,9 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     etsg->StoreAccumulator(expr, objReg);
 
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-    auto const *const variable = expr->PropVar();
-    if (auto const *const variableType = variable->TsType();
-        variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+    ASSERT(expr->PropVar()->TsType() != nullptr);
+    const checker::Type *const variableType = expr->PropVar()->TsType();
+    if (variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
         checker::Signature *sig = variableType->AsETSFunctionType()->FindGetter();
         etsg->CallThisVirtual0(expr, objReg, sig->InternalName());
     } else if (objectType->IsETSDynamicType()) {
@@ -1135,7 +1135,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
         etsg->LoadUnionProperty(expr, expr->TsType(), objReg, propName);
     } else {
         const auto fullName = etsg->FormClassPropReference(objectType->AsETSObjectType(), propName);
-        etsg->LoadProperty(expr, expr->TsType(), objReg, fullName);
+        etsg->LoadProperty(expr, variableType, objReg, fullName);
     }
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
 
