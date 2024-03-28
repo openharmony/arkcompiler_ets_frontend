@@ -1,2 +1,0 @@
-# panda#11106
-LongLiteralLimits.ets
