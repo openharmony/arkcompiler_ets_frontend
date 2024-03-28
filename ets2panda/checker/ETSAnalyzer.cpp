@@ -1830,7 +1830,8 @@ checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::S
         funcReturnType = returnTypeAnnotation->GetType(checker);
 
         if (st->argument_ == nullptr) {
-            if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType()) {
+            if (!funcReturnType->IsETSVoidType() && funcReturnType != checker->GlobalVoidType() &&
+                !funcReturnType->IsETSAsyncFuncReturnType()) {
                 checker->ThrowTypeError("Missing return value.", st->Start());
             }
             funcReturnType = checker->GlobalVoidType();
@@ -1857,10 +1858,13 @@ checker::Type *ETSAnalyzer::GetFunctionReturnType(ir::ReturnStatement *st, ir::S
     } else {
         //  Case when function's return type should be inferred from return statement(s):
         if (containingFunc->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
-            InferReturnType(checker, containingFunc, funcReturnType, st->argument_);
+            InferReturnType(checker, containingFunc, funcReturnType,
+                            st->argument_);  // This removes the NEED_RETURN_TYPE flag, so only the first return
+                                             // statement going to land here...
         } else {
             //  All subsequent return statements:
-            ProcessReturnStatements(checker, containingFunc, funcReturnType, st, st->argument_);
+            ProcessReturnStatements(checker, containingFunc, funcReturnType, st,
+                                    st->argument_);  // and the remaining return statements will get processed here.
         }
     }
 
@@ -1888,6 +1892,11 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     }
 
     st->returnType_ = GetFunctionReturnType(st, containingFunc);
+
+    if (containingFunc->ReturnTypeAnnotation() == nullptr) {
+        containingFunc->AddReturnStatement(st);
+    }
+
     return nullptr;
 }
 

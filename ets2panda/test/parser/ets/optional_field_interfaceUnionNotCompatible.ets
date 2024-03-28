@@ -18,7 +18,7 @@ interface I
    field? : String | Number;
 }
 
-class C implements I
+abstract class C implements I
 {
    field_? : Object | String;
    

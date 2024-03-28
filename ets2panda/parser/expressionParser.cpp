@@ -325,9 +325,16 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
         endLoc = body->End();
     }
 
+    // clang-format off
     funcNode = AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(typeParamDecl, std::move(desc->params), returnTypeAnnotation), body,
-        arrowFunctionContext->Flags(), false, context_.GetLanguage());
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+                        body,
+                        ir::FunctionSignature(typeParamDecl, std::move(desc->params), returnTypeAnnotation),
+                        arrowFunctionContext->Flags(),
+                        {},
+                        false,
+                        context_.GetLanguage()});
+    // clang-format on
     funcNode->SetRange({desc->startLoc, endLoc});
 
     auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(Allocator(), funcNode);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,10 +16,29 @@
 interface inter {
     get my_field (): int;
     set my_field(param: int);
+
+    get_field(): int;
 }
 
 class A implements inter {
     my_field: int = 3;
+
+    get_field(): int {
+      assert false;
+      return 1;
+    }
+}
+
+class B extends A{
+    laca: int = 1;
+    get my_field (): int{return this.laca}
+    set my_field(param: int) {
+        this.laca = param;
+    }
+    
+    get_field(): int {
+      return this.laca;
+    }
 }
 
 function main() {
@@ -30,4 +49,10 @@ function main() {
     assert a1.my_field == 3;
     a1.my_field = 5;
     assert a1.my_field == 5;
+
+    let a2: inter = new B();
+    assert a2.my_field == a2.get_field();
+    a2.my_field = 2;
+    assert a2.get_field() == 2;
+    assert a2.my_field == a2.get_field();
 }

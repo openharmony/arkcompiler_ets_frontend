@@ -77,7 +77,8 @@ public:
     void StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index);
     void LoadElementDynamic(const ir::AstNode *node, VReg objectReg);
 
-    void StoreUnionProperty(const ir::AstNode *node, VReg objReg, const util::StringView &propName);
+    void StoreUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
+                            const util::StringView &propName);
     void LoadUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
                            const util::StringView &propName);
 

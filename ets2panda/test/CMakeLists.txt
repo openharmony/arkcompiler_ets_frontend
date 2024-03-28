@@ -31,6 +31,31 @@ endif()
 
 add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
 
+function(ets2panda_add_gtest TARGET)
+    # Parse arguments
+    cmake_parse_arguments(
+            ARG
+            ""
+            ""
+            "CPP_SOURCES"
+            ${ARGN}
+    )
+
+    MESSAGE(${TARGET})
+    panda_add_gtest(
+            NAME ${TARGET}
+            SOURCES ${ARG_CPP_SOURCES}
+            LIBRARIES
+            es2panda-public es2panda-lib
+            INCLUDE_DIRS
+            ${ES2PANDA_PATH}
+            ${ES2PANDA_BINARY_ROOT}
+            SANITIZERS
+            ${PANDA_SANITIZERS_LIST}
+    )
+endfunction(ets2panda_add_gtest)
+
+
 if(PANDA_WITH_ETS)
     if (NOT (PANDA_ENABLE_ADDRESS_SANITIZER OR PANDA_ENABLE_THREAD_SANITIZER) OR
         NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" OR
@@ -66,6 +91,10 @@ if(PANDA_REGRESSION_TESTS)
     )
     add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin)
     add_dependencies(es2panda_tests es2panda-plugin-test)
+
+    ets2panda_add_gtest(es2panda_dynamic_call_test
+            CPP_SOURCES unit/dynamic/dynamic_call_test.cpp
+    )
 
     panda_add_gtest(
         NAME es2panda_astverifier_tests

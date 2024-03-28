@@ -365,7 +365,7 @@ void ETSLReference::SetValue() const
     }
 
     if (objectType->IsETSUnionType()) {
-        etsg_->StoreUnionProperty(Node(), baseReg_, propName);
+        etsg_->StoreUnionProperty(Node(), memberExprTsType, baseReg_, propName);
         return;
     }
 

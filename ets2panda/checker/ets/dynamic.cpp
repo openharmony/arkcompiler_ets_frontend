@@ -21,6 +21,7 @@
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "checker/ets/dynamic/dynamicCall.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/methodDefinition.h"
@@ -62,28 +63,6 @@ ir::ETSParameterExpression *ETSChecker::AddParam(varbinder::FunctionParamScope *
     return param;
 }
 
-static bool IsByValueCall(varbinder::ETSBinder *varbinder, ir::Expression *callee)
-{
-    if (callee->IsMemberExpression()) {
-        return !callee->AsMemberExpression()->ObjType()->IsETSDynamicType();
-    }
-
-    if (callee->IsETSTypeReference()) {
-        return false;
-    }
-
-    auto *var = callee->AsIdentifier()->Variable();
-    auto *data = varbinder->DynamicImportDataForVar(var);
-    if (data != nullptr) {
-        auto *specifier = data->specifier;
-        if (specifier->IsImportSpecifier()) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 template <typename T>
 ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                            Language lang)
@@ -105,7 +84,7 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
     info->params.push_back(objParam->Ident()->Variable()->AsLocalVariable());
 
     ir::ETSParameterExpression *param2;
-    if (!IsByValueCall(VarBinder()->AsETSBinder(), callee)) {
+    if (!DynamicCall::IsByValue(VarBinder()->AsETSBinder(), callee)) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         param2 = AddParam(paramScope, "qname_start", GlobalIntType());
         params.push_back(param2);
@@ -129,10 +108,11 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
         params.push_back(param);
         info->params.push_back(param->Ident()->Variable()->AsLocalVariable());
     }
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+
+    auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
     auto *func = AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), nullptr), nullptr,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {nullptr, std::move(funcSignature),
+                                                             ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE});
     func->SetScope(scope);
 
     scope->BindNode(func);
@@ -171,45 +151,6 @@ static void ToString([[maybe_unused]] ETSChecker *checker, const ArenaVector<var
     }
 }
 
-void ETSChecker::CreateDynamicCallQualifiedName(ir::Expression *callee, bool isConstruct)
-{
-    ir::Expression *obj = callee;
-    ArenaVector<util::StringView> parts(Allocator()->Adapter());
-
-    if (isConstruct) {
-        auto *name = obj->AsETSTypeReference()->Part()->Name();
-        while (name->IsTSQualifiedName()) {
-            auto *qname = name->AsTSQualifiedName();
-            name = qname->Left();
-            parts.push_back(qname->Right()->AsIdentifier()->Name());
-        }
-        obj = name;
-    } else {
-        while (obj->IsMemberExpression() && obj->AsMemberExpression()->ObjType()->IsETSDynamicType()) {
-            auto *memExpr = obj->AsMemberExpression();
-            obj = memExpr->Object();
-            parts.push_back(memExpr->Property()->AsIdentifier()->Name());
-        }
-    }
-    if (obj->IsIdentifier()) {
-        auto *var = obj->AsIdentifier()->Variable();
-        auto *data = VarBinder()->AsETSBinder()->DynamicImportDataForVar(var);
-        if (data != nullptr) {
-            ASSERT(data->import->Language().IsDynamic());
-            auto *specifier = data->specifier;
-            if (specifier->IsImportSpecifier()) {
-                parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
-            }
-        }
-    }
-
-    if (parts.empty()) {
-        return;
-    }
-    std::reverse(parts.begin(), parts.end());
-    DynamicCallNames(isConstruct)->try_emplace(parts, 0);
-}
-
 template <typename T>
 Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                     Language lang, bool isConstruct)
@@ -225,10 +166,11 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, cons
 
     std::stringstream ss;
     ss << "dyncall";
-    if (IsByValueCall(VarBinder()->AsETSBinder(), callee)) {
+    if (DynamicCall::IsByValue(VarBinder()->AsETSBinder(), callee)) {
         ss << "-byvalue";
     } else {
-        CreateDynamicCallQualifiedName(callee, isConstruct);
+        const auto callNames = DynamicCall::ResolveCall(VarBinder()->AsETSBinder(), callee);
+        DynamicCallNames(isConstruct)->try_emplace(callNames.name, 0);
     }
 
     ToString(this, arguments, ss);
@@ -268,23 +210,28 @@ std::pair<ir::ScriptFunction *, ir::Identifier *> ETSChecker::CreateScriptFuncti
         body->SetScope(scope);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto signature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
+        // clang-format off
         func = AllocNode<ir::ScriptFunction>(
-            ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-            ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::STATIC_BLOCK |
-                                                        ir::ScriptFunctionFlags::EXPRESSION,
-                                                    ir::ModifierFlags::STATIC});
+            Allocator(), ir::ScriptFunction::ScriptFunctionData {
+                            body,
+                            std::move(signature),
+                            ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::EXPRESSION,
+                            ir::ModifierFlags::STATIC,
+                         });
+        // clang-format on
     } else {
         builder(scope, &statements, &params);
         auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
         body->SetScope(scope);
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         id = AllocNode<ir::Identifier>(compiler::Signatures::CTOR, Allocator());
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
         func = AllocNode<ir::ScriptFunction>(
-            ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-            ir::ScriptFunction::ScriptFunctionData {
-                ir::ScriptFunctionFlags::CONSTRUCTOR | ir::ScriptFunctionFlags::EXPRESSION, ir::ModifierFlags::PUBLIC});
+            Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature),
+                                                                 ir::ScriptFunctionFlags::CONSTRUCTOR |
+                                                                     ir::ScriptFunctionFlags::EXPRESSION,
+                                                                 ir::ModifierFlags::PUBLIC});
     }
 
     func->SetScope(scope);
@@ -578,10 +525,11 @@ ir::MethodDefinition *ETSChecker::CreateClassMethod(varbinder::ClassScope *class
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     body->SetScope(scope);
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+
+    auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
     auto *func = AllocNode<ir::ScriptFunction>(
-        ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::METHOD, modifierFlags});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(funcSignature),
+                                                             ir::ScriptFunctionFlags::METHOD, modifierFlags});
 
     func->SetScope(scope);
     scope->BindNode(func);

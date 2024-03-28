@@ -96,6 +96,61 @@ varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &nam
     return res;
 }
 
+bool ETSObjectType::IsPropertyInherited(const varbinder::Variable *var)
+{
+    if (var->HasFlag(varbinder::VariableFlags::PRIVATE)) {
+        return GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) == var;
+    }
+
+    if (var->HasFlag(varbinder::VariableFlags::PROTECTED)) {
+        return (GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) ==
+                var) ||
+               this->IsPropertyOfAscendant(var);
+    }
+
+    return true;
+}
+
+bool ETSObjectType::IsPropertyOfAscendant(const varbinder::Variable *var) const
+{
+    if (this->SuperType() == nullptr) {
+        return false;
+    }
+
+    if (this->SuperType()->GetProperty(var->Name(),
+                                       PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) == var) {
+        return true;
+    }
+
+    return this->SuperType()->IsPropertyOfAscendant(var);
+}
+
+bool ETSObjectType::IsSignatureInherited(Signature *signature)
+{
+    if (signature->HasSignatureFlag(SignatureFlags::PRIVATE)) {
+        return signature->Owner() == this;
+    }
+
+    if (signature->HasSignatureFlag(SignatureFlags::PROTECTED)) {
+        return signature->Owner() == this || this->IsDescendantOf(signature->Owner());
+    }
+
+    return true;
+}
+
+bool ETSObjectType::IsDescendantOf(const ETSObjectType *ascendant) const
+{
+    if (this->SuperType() == nullptr) {
+        return false;
+    }
+
+    if (this->SuperType() == ascendant) {
+        return true;
+    }
+
+    return this->SuperType()->IsDescendantOf(ascendant);
+}
+
 varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
                                                                               PropertySearchFlags flags) const
 {

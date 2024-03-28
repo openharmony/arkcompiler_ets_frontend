@@ -88,9 +88,12 @@ ir::MethodDefinition *GlobalClassHandler::CreateInitMethod()
     ArenaVector<ir::Statement *> statements(allocator_->Adapter());
     auto *initBody = NodeAllocator::Alloc<ir::BlockStatement>(allocator_, allocator_, std::move(statements));
 
-    auto *initFunc =
-        NodeAllocator::Alloc<ir::ScriptFunction>(allocator_, ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                 initBody, functionFlags, false, Language(Language::Id::ETS));
+    auto funcSignature = ir::FunctionSignature(nullptr, std::move(params), nullptr);
+
+    auto *initFunc = NodeAllocator::Alloc<ir::ScriptFunction>(
+        allocator_, allocator_,
+        ir::ScriptFunction::ScriptFunctionData {
+            initBody, std::move(funcSignature), functionFlags, {}, false, Language(Language::Id::ETS)});
 
     initFunc->SetIdent(initIdent);
     initFunc->AddModifier(functionModifiers);
@@ -162,9 +165,11 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateCCtor(const ArenaVector<ir::AstN
 
     auto *body = NodeAllocator::Alloc<ir::BlockStatement>(allocator_, allocator_, std::move(statements));
     auto *func = NodeAllocator::Alloc<ir::ScriptFunction>(
-        allocator_, ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-        ir::ScriptFunction::ScriptFunctionData {ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
+        allocator_, allocator_,
+        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::HIDDEN,
                                                 ir::ModifierFlags::STATIC, false, Language(Language::Id::ETS)});
+
     func->SetIdent(id);
 
     auto *funcExpr = NodeAllocator::Alloc<ir::FunctionExpression>(allocator_, func);

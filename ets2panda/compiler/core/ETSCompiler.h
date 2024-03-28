@@ -42,6 +42,8 @@ private:
     void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, bool isStatic,
                   checker::Signature *signature, bool isReference) const;
 
+    static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr);
+
     ETSGen *GetETSGen() const;
 };
 

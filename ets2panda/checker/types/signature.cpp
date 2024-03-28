@@ -160,8 +160,6 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
         ss << signatureInfo_->restVar->Name();
         ss << ": ";
         signatureInfo_->restVar->TsType()->ToString(ss, precise);
-
-        ss << "[]";
     }
 
     ss << ")";

@@ -788,8 +788,12 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identif
     }
     functionContext.AddFlag(throwMarker);
 
-    auto *funcNode = AllocNode<ir::ScriptFunction>(std::move(signature), body, functionContext.Flags(), false,
-                                                   GetContext().GetLanguage());
+    // clang-format off
+    auto *funcNode = AllocNode<ir::ScriptFunction>(
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+                        body, std::move(signature), functionContext.Flags(), {}, false, GetContext().GetLanguage()});
+    // clang-format on
+
     funcNode->SetRange({startLoc, endLoc});
 
     return funcNode;
@@ -1507,8 +1511,8 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags, i
     }
 
     auto *func = AllocNode<ir::ScriptFunction>(
-        std::move(signature), body,
-        ir::ScriptFunction::ScriptFunctionData {functionContext.Flags(), flags, true, GetContext().GetLanguage()});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {body, std::move(signature), functionContext.Flags(), flags,
+                                                             true, GetContext().GetLanguage()});
 
     if ((flags & ir::ModifierFlags::STATIC) == 0 && body == nullptr) {
         func->AddModifier(ir::ModifierFlags::ABSTRACT);

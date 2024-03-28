@@ -23,13 +23,14 @@
 
 namespace ark::es2panda::ir {
 
-ScriptFunction::ScriptFunction(FunctionSignature &&signature, AstNode *body, ScriptFunctionData &&data)
+ScriptFunction::ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data)
     : AstNode(AstNodeType::SCRIPT_FUNCTION, data.flags),
-      irSignature_(std::move(signature)),
-      body_(body),
+      irSignature_(std::move(data.signature)),
+      body_(data.body),
       funcFlags_(data.funcFlags),
       declare_(data.declare),
-      lang_(data.lang)
+      lang_(data.lang),
+      returnStatements_(allocator->Adapter())
 {
     for (auto *param : irSignature_.Params()) {
         param->SetParent(this);

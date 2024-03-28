@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
+#include "ir/statements/returnStatement.h"
 #include "ir/astNode.h"
 #include "varbinder/scope.h"
 #include "util/enumbitops.h"
@@ -38,6 +39,8 @@ class ScriptFunction : public AstNode {
 public:
     // Need to reduce the number of constructor parameters to pass OHOS CI code check
     struct ScriptFunctionData {
+        AstNode *body = nullptr;
+        FunctionSignature &&signature;
         ir::ScriptFunctionFlags funcFlags = ir::ScriptFunctionFlags::NONE;
         ir::ModifierFlags flags = ir::ModifierFlags::NONE;
         bool declare = false;
@@ -50,13 +53,7 @@ public:
     NO_COPY_SEMANTIC(ScriptFunction);
     NO_MOVE_SEMANTIC(ScriptFunction);
 
-    explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ScriptFunctionData &&data);
-
-    explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ir::ScriptFunctionFlags funcFlags,
-                            bool declare, Language lang)
-        : ScriptFunction(std::move(signature), body, {funcFlags, {}, declare, lang})
-    {
-    }
+    explicit ScriptFunction(ArenaAllocator *allocator, ScriptFunctionData &&data);
 
     [[nodiscard]] const Identifier *Id() const noexcept
     {
@@ -88,6 +85,16 @@ public:
         return irSignature_.Params();
     }
 
+    const ArenaVector<ReturnStatement *> &ReturnStatements() const
+    {
+        return returnStatements_;
+    }
+
+    ArenaVector<ReturnStatement *> &ReturnStatements()
+    {
+        return returnStatements_;
+    }
+
     [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
         return irSignature_.TypeParams();
@@ -106,6 +113,11 @@ public:
     [[nodiscard]] AstNode *Body() noexcept
     {
         return body_;
+    }
+
+    void AddReturnStatement(ReturnStatement *returnStatement)
+    {
+        returnStatements_.push_back(returnStatement);
     }
 
     void SetBody(AstNode *body) noexcept
@@ -298,6 +310,7 @@ private:
     checker::Signature *signature_ {};
     bool declare_;
     es2panda::Language lang_;
+    ArenaVector<ReturnStatement *> returnStatements_;
 };
 }  // namespace ark::es2panda::ir
 

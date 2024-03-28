@@ -321,7 +321,7 @@ keywords:
 
   - name: 'object'
     token: KEYW_OBJECT
-    keyword_like: [ets, ts]
+    keyword_like: [ts]
 
   - name: 'of'
     token: KEYW_OF

@@ -570,11 +570,13 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
     ArenaVector<ir::Statement *> statements = ParseStatementList();
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
-    auto *func =
-        AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                      ir::ScriptFunction::ScriptFunctionData {
-                                          ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
-                                          ir::ModifierFlags::STATIC, false, context_.GetLanguage()});
+    // clang-format off
+    auto *func = AllocNode<ir::ScriptFunction>(
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+            body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+            ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
+            ir::ModifierFlags::STATIC, false, context_.GetLanguage()});
+    // clang-format on
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *staticBlock = AllocNode<ir::ClassStaticBlock>(funcExpr, Allocator());
@@ -657,10 +659,14 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     }
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
-    auto *func = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
-                                               ir::ScriptFunctionFlags::CONSTRUCTOR |
-                                                   ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
-                                               false, context_.GetLanguage());
+    auto *func = AllocNode<ir::ScriptFunction>(
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {body,
+                                                             ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                                                             ir::ScriptFunctionFlags::CONSTRUCTOR |
+                                                                 ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
+                                                             {},
+                                                             false,
+                                                             context_.GetLanguage()});
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
@@ -915,8 +921,10 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus)
     }
 
     functionContext.AddFlag(throw_marker);
-    auto *funcNode = AllocNode<ir::ScriptFunction>(std::move(signature), body, functionContext.Flags(),
-                                                   isDeclare && letDeclare, context_.GetLanguage());
+    auto *funcNode = AllocNode<ir::ScriptFunction>(
+        Allocator(),
+        ir::ScriptFunction::ScriptFunctionData {
+            body, std::move(signature), functionContext.Flags(), {}, isDeclare && letDeclare, context_.GetLanguage()});
     funcNode->SetRange({startLoc, endLoc});
 
     return funcNode;

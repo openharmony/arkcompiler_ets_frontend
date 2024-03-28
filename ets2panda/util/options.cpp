@@ -252,7 +252,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&dumpBeforePhases);
     argparser_->Add(&dumpEtsSrcBeforePhases);
     argparser_->Add(&dumpAfterPhases);
-    argparser_->Add(&dumpEtsSrcBeforePhases);
+    argparser_->Add(&dumpEtsSrcAfterPhases);
     argparser_->Add(&arktsConfig);
 
     argparser_->PushBackTail(&inputFile);
@@ -344,7 +344,7 @@ bool Options::Parse(int argc, const char **argv)
         return false;
     }
 
-    if ((dumpEtsSrcAfterPhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
+    if ((dumpEtsSrcBeforePhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
         extension_ != es2panda::ScriptExtension::ETS) {
         errorMsg_ = "--dump-ets-src-* option is valid only with ETS extension";
         return false;
@@ -368,7 +368,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.verifierErrors = SplitToStringSet(verifierErrors.GetValue());
     compilerOptions_.dumpBeforePhases = SplitToStringSet(dumpBeforePhases.GetValue());
     compilerOptions_.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
-    compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpBeforePhases.GetValue());
+    compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
     compilerOptions_.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
 
     return true;

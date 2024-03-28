@@ -320,61 +320,13 @@ public:
         return superType_ == nullptr;
     }
 
-    bool IsPropertyInherited(const varbinder::Variable *var)
-    {
-        if (var->HasFlag(varbinder::VariableFlags::PRIVATE)) {
-            return GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) ==
-                   var;
-        }
+    bool IsPropertyInherited(const varbinder::Variable *var);
 
-        if (var->HasFlag(varbinder::VariableFlags::PROTECTED)) {
-            return (GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) ==
-                    var) ||
-                   this->IsPropertyOfAscendant(var);
-        }
+    bool IsPropertyOfAscendant(const varbinder::Variable *var) const;
 
-        return true;
-    }
+    bool IsSignatureInherited(Signature *signature);
 
-    bool IsPropertyOfAscendant(const varbinder::Variable *var) const
-    {
-        if (this->SuperType() == nullptr) {
-            return false;
-        }
-
-        if (this->SuperType()->GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD |
-                                                            PropertySearchFlags::SEARCH_DECL) == var) {
-            return true;
-        }
-
-        return this->SuperType()->IsPropertyOfAscendant(var);
-    }
-
-    bool IsSignatureInherited(Signature *signature)
-    {
-        if (signature->HasSignatureFlag(SignatureFlags::PRIVATE)) {
-            return signature->Owner() == this;
-        }
-
-        if (signature->HasSignatureFlag(SignatureFlags::PROTECTED)) {
-            return signature->Owner() == this || this->IsDescendantOf(signature->Owner());
-        }
-
-        return true;
-    }
-
-    bool IsDescendantOf(const ETSObjectType *ascendant) const
-    {
-        if (this->SuperType() == nullptr) {
-            return false;
-        }
-
-        if (this->SuperType() == ascendant) {
-            return true;
-        }
-
-        return this->SuperType()->IsDescendantOf(ascendant);
-    }
+    bool IsDescendantOf(const ETSObjectType *ascendant) const;
 
     const util::StringView &Name() const
     {
@@ -468,6 +420,13 @@ public:
     void AddProperty(varbinder::LocalVariable *prop) const
     {
         properties_[static_cast<size_t>(TYPE)].emplace(prop->Name(), prop);
+        propertiesInstantiated_ = true;
+    }
+
+    template <PropertyType TYPE>
+    void RemoveProperty(varbinder::LocalVariable *prop)
+    {
+        properties_[static_cast<size_t>(TYPE)].erase(prop->Name());
         propertiesInstantiated_ = true;
     }
 

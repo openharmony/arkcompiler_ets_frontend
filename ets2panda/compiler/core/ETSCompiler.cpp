@@ -16,6 +16,7 @@
 #include "ETSCompiler.h"
 
 #include "compiler/base/catchTable.h"
+#include "checker/ets/dynamic/dynamicCall.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
@@ -256,46 +257,38 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
     etsg->LoadAccumulator(expr, arr);
 }
 
-static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg, compiler::VReg &objReg,
-                                ir::Expression *name, checker::Signature *signature,
-                                const ArenaVector<ir::Expression *> &arguments)
+static std::pair<VReg, VReg> LoadDynamicName(compiler::ETSGen *etsg, const ir::AstNode *node,
+                                             const ArenaVector<util::StringView> &dynName, bool isConstructor)
 {
     auto *checker = const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker());
-    ArenaVector<util::StringView> parts(checker->Allocator()->Adapter());
+    auto *callNames = checker->DynamicCallNames(isConstructor);
 
-    while (name->IsTSQualifiedName()) {
-        auto *qname = name->AsTSQualifiedName();
-        name = qname->Left();
-        parts.push_back(qname->Right()->AsIdentifier()->Name());
-    }
+    auto qnameStart = etsg->AllocReg();
+    auto qnameLen = etsg->AllocReg();
 
-    auto *var = name->AsIdentifier()->Variable();
-    auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
-    if (data != nullptr) {
-        auto *import = data->import;
-        auto *specifier = data->specifier;
-        ASSERT(import->Language().IsDynamic());
-        etsg->LoadAccumulatorDynamicModule(node, import);
-        if (specifier->IsImportSpecifier()) {
-            parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
-        }
+    TargetTypeContext ttctx(etsg, nullptr);  // without this ints will be cast to JSValue
+    etsg->LoadAccumulatorInt(node, callNames->at(dynName));
+    etsg->StoreAccumulator(node, qnameStart);
+    etsg->LoadAccumulatorInt(node, dynName.size());
+    etsg->StoreAccumulator(node, qnameLen);
+    return {qnameStart, qnameLen};
+}
+
+static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg, const ir::Expression *typeRef,
+                                checker::Signature *signature, const ArenaVector<ir::Expression *> &arguments)
+{
+    auto objReg = etsg->AllocReg();
+
+    auto callInfo = checker::DynamicCall::ResolveCall(etsg->VarBinder(), typeRef);
+    if (callInfo.obj->IsETSImportDeclaration()) {
+        etsg->LoadAccumulatorDynamicModule(node, callInfo.obj->AsETSImportDeclaration());
     } else {
-        name->Compile(etsg);
+        callInfo.obj->Compile(etsg);
     }
 
     etsg->StoreAccumulator(node, objReg);
 
-    std::reverse(parts.begin(), parts.end());
-    auto *callNames = checker->DynamicCallNames(true);
-    auto qnameStart = etsg->AllocReg();
-    auto qnameLen = etsg->AllocReg();
-    {
-        TargetTypeContext ttctx(etsg, nullptr);  // without this ints will be cast to JSValue
-        etsg->LoadAccumulatorInt(node, callNames->at(parts));
-        etsg->StoreAccumulator(node, qnameStart);
-        etsg->LoadAccumulatorInt(node, parts.size());
-        etsg->StoreAccumulator(node, qnameLen);
-    }
+    auto [qnameStart, qnameLen] = LoadDynamicName(etsg, node, callInfo.name, true);
     etsg->CallDynamic(node, objReg, qnameStart, qnameLen, signature, arguments);
 }
 
@@ -330,9 +323,8 @@ void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
     ETSGen *etsg = GetETSGen();
     if (expr->TsType()->IsETSDynamicType()) {
         compiler::RegScope rs(etsg);
-        auto objReg = etsg->AllocReg();
-        auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
-        CreateDynamicObject(expr, etsg, objReg, name, expr->signature_, expr->GetArguments());
+        auto *name = expr->GetTypeRef();
+        CreateDynamicObject(expr, etsg, name, expr->signature_, expr->GetArguments());
     } else {
         ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()), expr);
         etsg->InitObject(expr, expr->signature_, expr->GetArguments());
@@ -745,8 +737,15 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
     auto *signature = expr->Signature();
 
     for (size_t i = 0; i < argumentCount; i++) {
-        auto *paramType = checker->MaybeBoxedType(
-            i < signature->Params().size() ? signature->Params()[i] : signature->RestVar(), checker->Allocator());
+        checker::Type *paramType;
+        if (i < signature->Params().size()) {
+            paramType = checker->MaybeBoxedType(signature->Params()[i], checker->Allocator());
+        } else {
+            ASSERT(signature->RestVar() != nullptr);
+            auto *restType = signature->RestVar()->TsType();
+            ASSERT(restType->IsETSArrayType());
+            paramType = restType->AsETSArrayType()->ElementType();
+        }
 
         auto *arg = arguments[i];
         auto *cast = checker->Allocator()->New<ir::TSAsExpression>(arg, nullptr, false);
@@ -820,55 +819,23 @@ bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *
     return enumInterface != nullptr;
 }
 
-void ETSCompiler::GetDynamicNameParts(const ir::CallExpression *expr, ArenaVector<util::StringView> &parts) const
-{
-    ETSGen *etsg = GetETSGen();
-    ir::Expression *obj = expr->callee_;
-    while (obj->IsMemberExpression() && obj->AsMemberExpression()->ObjType()->IsETSDynamicType()) {
-        auto *memExpr = obj->AsMemberExpression();
-        obj = memExpr->Object();
-        parts.push_back(memExpr->Property()->AsIdentifier()->Name());
-    }
-
-    if (!obj->IsMemberExpression() && obj->IsIdentifier()) {
-        auto *var = obj->AsIdentifier()->Variable();
-        auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
-        if (data != nullptr) {
-            auto *import = data->import;
-            auto *specifier = data->specifier;
-            ASSERT(import->Language().IsDynamic());
-            etsg->LoadAccumulatorDynamicModule(expr, import);
-            if (specifier->IsImportSpecifier()) {
-                parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
-            }
-            return;
-        }
-    }
-    obj->Compile(etsg);
-}
-
 void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const
 {
     ETSGen *etsg = GetETSGen();
-    compiler::VReg dynParam2 = etsg->AllocReg();
-    auto *checker = const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker());
-    ArenaVector<util::StringView> parts(checker->Allocator()->Adapter());
-    GetDynamicNameParts(expr, parts);
+    auto callInfo = checker::DynamicCall::ResolveCall(etsg->VarBinder(), expr->Callee());
+    if (callInfo.obj->IsETSImportDeclaration()) {
+        etsg->LoadAccumulatorDynamicModule(expr, callInfo.obj->AsETSImportDeclaration());
+    } else {
+        callInfo.obj->Compile(etsg);
+    }
     etsg->StoreAccumulator(expr, calleeReg);
 
-    if (!parts.empty()) {
-        std::reverse(parts.begin(), parts.end());
-        auto *callNames = checker->DynamicCallNames(false);
-        compiler::VReg dynParam3 = etsg->AllocReg();
-        {
-            TargetTypeContext ttctx(etsg, nullptr);  // without this ints will be cast to JSValue
-            etsg->LoadAccumulatorInt(expr, callNames->at(parts));
-            etsg->StoreAccumulator(expr, dynParam2);
-            etsg->LoadAccumulatorInt(expr, parts.size());
-            etsg->StoreAccumulator(expr, dynParam3);
-        }
-        etsg->CallDynamic(expr, calleeReg, dynParam2, dynParam3, expr->Signature(), expr->Arguments());
+    if (!callInfo.name.empty()) {
+        auto [qnameStart, qnameLen] = LoadDynamicName(etsg, expr, callInfo.name, false);
+        etsg->CallDynamic(expr, calleeReg, qnameStart, qnameLen, expr->Signature(), expr->Arguments());
     } else {
+        compiler::VReg dynParam2 = etsg->AllocReg();
+
         auto lang = expr->Callee()->TsType()->IsETSDynamicFunctionType()
                         ? expr->Callee()->TsType()->AsETSDynamicFunctionType()->Language()
                         : expr->Callee()->TsType()->AsETSDynamicType()->Language();
@@ -1053,7 +1020,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) con
     UNREACHABLE();
 }
 
-static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr)
+bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr)
 {
     if (!expr->IsComputed()) {
         return false;

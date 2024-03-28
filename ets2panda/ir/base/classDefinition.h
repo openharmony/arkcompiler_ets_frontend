@@ -46,6 +46,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     INNER = 1U << 9U,
     FROM_EXTERNAL = 1U << 10U,
     LOCAL = 1U << 11U,
+    CLASSDEFINITION_CHECKED = 1U << 12U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED
 };
 
@@ -202,6 +203,11 @@ public:
         return (modifiers_ & ClassDefinitionModifiers::GLOBAL_INITIALIZED) != 0;
     }
 
+    [[nodiscard]] bool IsClassDefinitionChecked() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::CLASSDEFINITION_CHECKED) != 0;
+    }
+
     [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;
@@ -215,6 +221,11 @@ public:
     void SetInnerModifier() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::INNER;
+    }
+
+    void SetClassDefinitionChecked() noexcept
+    {
+        modifiers_ |= ClassDefinitionModifiers::CLASSDEFINITION_CHECKED;
     }
 
     [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept

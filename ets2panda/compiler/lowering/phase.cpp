@@ -39,7 +39,6 @@
 #include "ets/defaultParameterLowering.h"
 #include "lexer/token/sourceLocation.h"
 #include "public/es2panda_lib.h"
-#include "utils/json_builder.h"
 
 namespace ark::es2panda::compiler {
 
@@ -79,6 +78,11 @@ static InitScopesPhaseAS g_initScopesPhaseAs;
 static InitScopesPhaseTs g_initScopesPhaseTs;
 static InitScopesPhaseJs g_initScopesPhaseJs;
 // NOLINTEND(fuchsia-statically-constructed-objects)
+
+static void CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
+                                    const std::string &name);
+static void CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
+                                   const std::string &name);
 
 std::vector<Phase *> GetETSPhaseList()
 {
@@ -181,8 +185,8 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     return true;
 }
 
-void Phase::CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
-                                    const std::string &name) const
+static void CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
+                                    const std::string &name)
 {
     if (options->dumpBeforePhases.count(name) > 0) {
         std::cout << "Before phase " << name << ":" << std::endl;
@@ -196,8 +200,8 @@ void Phase::CheckOptionsBeforePhase(const CompilerOptions *options, const parser
     }
 }
 
-void Phase::CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
-                                   const std::string &name) const
+static void CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
+                                   const std::string &name)
 {
     if (options->dumpAfterPhases.count(name) > 0) {
         std::cout << "After phase " << name << ":" << std::endl;

@@ -173,12 +173,31 @@ void ETSUnionType::RelationTarget(TypeRelation *relation, Type *source, RelFN co
         }
         return;
     }
+
+    /* #16160: for ETSFunctionType and functional interfaces, need to check assignability apart from
+       plain subtyping
+    */
+    int related = 0;
+    for (auto *ct : ConstituentTypes()) {
+        if (!relFn(relation, ct, source)) {
+            continue;
+        }
+        related++;
+    }
+    if (related > 1) {
+        AmbiguousUnionOperation(relation);
+    }
+    if (related == 1) {
+        relation->Result(true);
+        return;
+    }
+
     if (source == refSource) {
         relation->Result(false);
         return;
     }
 
-    int related = 0;
+    related = 0;
     for (auto *ct : ConstituentTypes()) {  // NOTE(vpukhov): just test if union is supertype of any numeric
         if (!relFn(relation, checker->MaybePrimitiveBuiltinType(ct), source)) {
             continue;

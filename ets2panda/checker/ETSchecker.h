@@ -54,7 +54,7 @@ using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<u
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
-using DynamicCallNamesMap = ArenaMap<ArenaVector<util::StringView>, uint32_t>;
+using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
 
 class ETSChecker final : public Checker {
 public:
@@ -415,6 +415,13 @@ public:
                                            bool ifaceOverride);
     void ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition *lambdaObject, ir::ArrowFunctionExpression *lambda,
                                            ir::MethodDefinition *proxyMethod, bool isStatic, bool ifaceOverride);
+    ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(ir::ClassDefinition *lambdaObject,
+                                                                         ir::ArrowFunctionExpression *lambda,
+                                                                         ir::ScriptFunction *invokeFunc, bool isStatic,
+                                                                         bool ifaceOverride);
+    ArenaVector<ir::Expression *> ResolveCallParametersForLambdaFuncBody(Signature *signatureRef,
+                                                                         ir::ScriptFunction *invokeFunc,
+                                                                         bool ifaceOverride);
     void CheckCapturedVariables();
     void CheckCapturedVariableInSubnodes(ir::AstNode *node, varbinder::Variable *var);
     void CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var);
@@ -555,13 +562,15 @@ public:
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
     Type *SelectGlobalIntegerTypeForNumeric(Type *type);
     const Type *TryGettingFunctionTypeFromInvokeFunction(const Type *type) const;
-
+    ir::ClassProperty *ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope);
     ir::Expression *GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,
                                                    const std::string &className);
     void GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
                                   ir::ClassProperty *field, varbinder::FunctionParamScope *paramScope, bool isSetter);
-    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *field, varbinder::ClassScope *scope,
+    static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *const property,
+                                                             ir::ClassProperty *field, varbinder::ClassScope *scope,
                                                              bool isSetter, ETSChecker *checker);
+    void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
 
     bool IsInLocalClass(const ir::AstNode *node) const;
     // Exception
@@ -684,7 +693,6 @@ private:
     template <typename T>
     ir::ScriptFunction *CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                    Language lang);
-    void CreateDynamicCallQualifiedName(ir::Expression *callee, bool isConstruct);
     ir::ClassStaticBlock *CreateDynamicCallClassInitializer(varbinder::ClassScope *classScope, Language lang,
                                                             bool isConstruct);
     ir::ClassStaticBlock *CreateDynamicModuleClassInitializer(varbinder::ClassScope *classScope,
