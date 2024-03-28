@@ -45,7 +45,7 @@ enum class FieldType {
     BOOLEAN = (1 << 2),
     TS_TYPE_REF = (1 << 3),
     BIGINT = (1 << 4),
-    TYPE_PARAMETER = (1 << 5),
+    GENERIC = (1 << 5), // import type / type parameter
     TS_NULL = (1 << 6),
     TS_UNDEFINED = (1 << 7),
 };
@@ -241,6 +241,8 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
     void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
+    const ir::AstNode *GetDeclNodeFromIdentifier(const ir::Identifier *identifier,
+                                                 const ir::Identifier **variable) const;
 
 private:
     compiler::VReg CompileHeritageClause(compiler::PandaGen *pg) const;

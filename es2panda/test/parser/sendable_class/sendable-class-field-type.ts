@@ -13,6 +13,15 @@
  * limitations under the License.
  */
 
+import { Country } from './test'
+
+const enum City {
+    BEIJING = 'beijing',
+    SHANGHAI = 'shanghai',
+};
+
+interface Position {};
+
 class Person {
     name: string;
     private age: number;
@@ -20,6 +29,10 @@ class Person {
     father: Person;
     num: bigint;
     child: Person | null;
+    country: Country;
+    city: City;
+    pos: Position;
+    mix: Country | City | Position;
     constructor() {
         "use sendable";
     }
