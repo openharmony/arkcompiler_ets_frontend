@@ -564,13 +564,53 @@ void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeRe
 
     if (typeName->IsIdentifier()) {
         util::StringView propertyName = typeName->AsIdentifier()->Name();
-        
-        if (IsTypeParam(propertyName)) {
-            fieldType |= FieldType::TYPE_PARAMETER;
+        binder::ScopeFindResult result = scope_->Find(propertyName);
+
+        if (IsTypeParam(propertyName) || (result.variable != nullptr && result.variable->IsModuleVariable())) {
+            fieldType |= FieldType::GENERIC;
             return;
         }
+
+        const ir::Identifier *identifier = nullptr;
+        const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier(), &identifier);
+
+        if (declNode != nullptr) {
+            auto originalNode = declNode->Original();
+            if (originalNode && originalNode->Type() == ir::AstNodeType::TS_ENUM_DECLARATION) {
+                fieldType |= FieldType::STRING | FieldType::NUMBER;
+                return;
+            }
+        }
     }
+    // sendable class / sendable interface will be TS_TYPE_REF
+    // other types that are not sendable type will be restricted in the linter
     fieldType |= FieldType::TS_TYPE_REF;
+}
+
+const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifier *identifier,
+    const ir::Identifier **variable) const
+{
+    if (identifier == nullptr) {
+        return nullptr;
+    }
+
+    std::vector<binder::Variable *> variables;
+    variables.reserve(identifier->TSVariables().size() + 1U);
+    variables.emplace_back(identifier->Variable());
+    for (const auto &v : identifier->TSVariables()) {
+        variables.emplace_back(v);
+    }
+
+    for (const auto &v : variables) {
+        if (v == nullptr || v->Declaration() == nullptr || v->Declaration()->Node() == nullptr) {
+            continue;
+        }
+
+        auto res = v->Declaration()->Node();
+        *variable = identifier;
+        return res;
+    }
+    return nullptr;
 }
 
 bool ClassDefinition::IsTypeParam(const util::StringView &propertyName) const

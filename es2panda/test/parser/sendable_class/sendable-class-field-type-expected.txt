@@ -1,5 +1,21 @@
 .language ECMAScript
 
+.function any .#14695981039346656037#(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda.str BEIJING
+	sta v0
+	lda.str beijing
+	stobjbyvalue 0x0, a3, v0
+	lda.str SHANGHAI
+	sta v0
+	lda.str shanghai
+	stobjbyvalue 0x2, a3, v0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
 .function any .Person(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -28,15 +44,28 @@ label_2:
 }
 
 .function any .func_main_0(any a0, any a1, any a2) {
-label_1: 
+label_4: 
 label_0: 
+	ldundefined
+	sta v0
 	definefunc 0x0, .Test, 0x0
+	definefunc 0x1, .#14695981039346656037#, 0x1
+	sta v1
+	lda v0
+	istrue
+	jnez label_3
+label_2: 
+	createemptyobject
+	sta v0
+label_3: 
+	lda v1
+	callarg1 0x2, v0
 	ldhole
 	sta v0
-	callruntime.definesendableclass 0x1, .Person, _4, 0x0, v0
+	callruntime.definesendableclass 0x4, .Person, _4, 0x0, v0
 	ldundefined
 	returnundefined
-label_2: 
+label_5: 
 }
 
 
@@ -46,30 +75,50 @@ slot _0
 {
   index: 0
     tag: 2
-    val: 0
+    val: 1
 },
 {
   index: 1
-    tag: 2
-    val: 0
+    tag: 5
+    val: ./test
 },
 {
   index: 2
     tag: 2
-    val: 0
+    val: 1
 },
 {
   index: 3
-    tag: 2
-    val: 0
+    tag: 5
+    val: Country
 },
 {
   index: 4
+    tag: 5
+    val: Country
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
     tag: 2
     val: 0
 },
 {
-  index: 5
+  index: 7
+    tag: 2
+    val: 0
+},
+{
+  index: 8
+    tag: 2
+    val: 0
+},
+{
+  index: 9
     tag: 2
     val: 0
 },
@@ -292,12 +341,92 @@ slot _3
 {
   index: 24
     tag: 0
-    val: 2
+    val: 5
 },
 {
   index: 25
+    tag: 5
+    val: country
+},
+{
+  index: 26
+    tag: 0
+    val: 2
+},
+{
+  index: 27
     tag: 2
-    val: 6
+    val: 32
+},
+{
+  index: 28
+    tag: 0
+    val: 5
+},
+{
+  index: 29
+    tag: 5
+    val: city
+},
+{
+  index: 30
+    tag: 0
+    val: 2
+},
+{
+  index: 31
+    tag: 2
+    val: 3
+},
+{
+  index: 32
+    tag: 0
+    val: 5
+},
+{
+  index: 33
+    tag: 5
+    val: pos
+},
+{
+  index: 34
+    tag: 0
+    val: 2
+},
+{
+  index: 35
+    tag: 2
+    val: 8
+},
+{
+  index: 36
+    tag: 0
+    val: 5
+},
+{
+  index: 37
+    tag: 5
+    val: mix
+},
+{
+  index: 38
+    tag: 0
+    val: 2
+},
+{
+  index: 39
+    tag: 2
+    val: 43
+},
+{
+  index: 40
+    tag: 0
+    val: 2
+},
+{
+  index: 41
+    tag: 2
+    val: 10
 },
 ------------------------------------
 slot _4
