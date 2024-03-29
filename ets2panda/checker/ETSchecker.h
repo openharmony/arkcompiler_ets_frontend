@@ -697,15 +697,17 @@ private:
     [[noreturn]] void ThrowError(ir::Identifier *ident);
     void WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *resolved);
     void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id, ir::TypeNode const *annotation);
-    [[noreturn]] void NotResolvedError(ir::Identifier *ident, const varbinder::Variable *classVar,
+    [[noreturn]] void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
                                        const ETSObjectType *classType);
-    void ValidateCallExpressionIdentifier(ir::Identifier *ident, Type *type);
-    void ValidateNewClassInstanceIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
-    void ValidateMemberIdentifier(ir::Identifier *ident, varbinder::Variable *resolved, Type *type);
-    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
-    void ValidateAssignmentIdentifier(ir::Identifier *ident, varbinder::Variable *resolved, Type *type);
-    bool ValidateBinaryExpressionIdentifier(ir::Identifier *ident, Type *type);
-    void ValidateGetterSetter(const ir::MemberExpression *memberExpr, const varbinder::LocalVariable *prop,
+    void ValidateCallExpressionIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
+                                          Type *const type);
+    void ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
+    void ValidateMemberIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved, Type *const type);
+    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved);
+    void ValidateAssignmentIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
+                                      Type *const type);
+    bool ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type);
+    void ValidateGetterSetter(const ir::MemberExpression *const memberExpr, const varbinder::LocalVariable *const prop,
                               PropertySearchFlags searchFlag);
     void ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *memberExpr, varbinder::LocalVariable *prop);
     void ResolveMemberReferenceValidate(varbinder::LocalVariable *prop, PropertySearchFlags searchFlag,

@@ -83,8 +83,14 @@ void ETSChecker::ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType 
     }
 }
 
-void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type)
+void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
+                                                  Type *const type)
 {
+    if (resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) &&
+        ident->Parent()->AsCallExpression()->Callee() != ident) {
+        ThrowTypeError({"Class or interface '", ident->Name(), "' cannot be used as object"}, ident->Start());
+    }
+
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
         return;
     }
@@ -185,7 +191,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
     switch (ident->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION: {
             // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            ValidateCallExpressionIdentifier(ident, resolvedType);
+            ValidateCallExpressionIdentifier(ident, resolved, resolvedType);
             break;
         }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
