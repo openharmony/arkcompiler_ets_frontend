@@ -27,6 +27,12 @@ import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 import { FaultID } from '../Problems';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
+import { SENDABLE_DECORATOR } from './consts/SendableAPI';
+import {
+  ARKTS_COLLECTIONS_D_ETS,
+  COLLECTIONS_ARRAY_TYPE,
+  COLLECTIONS_NAMESPACE
+} from './consts/SupportedDetsIndexableTypes';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
 export class TsUtils {
@@ -243,7 +249,7 @@ export class TsUtils {
   }
 
   // does something similar to relatedByInheritanceOrIdentical function
-  isOrDerivedFrom(tsType: ts.Type, checkType: CheckType): boolean {
+  isOrDerivedFrom(tsType: ts.Type, checkType: CheckType, checkedBaseTypes?: Set<ts.Type>): boolean {
     tsType = TsUtils.reduceReference(tsType);
 
     if (checkType.call(this, tsType)) {
@@ -254,6 +260,9 @@ export class TsUtils {
       return false;
     }
 
+    // Avoid type recursion in heritage by caching checked types.
+    (checkedBaseTypes ||= new Set<ts.Type>()).add(tsType);
+
     for (const tsTypeDecl of tsType.symbol.declarations) {
       const isClassOrInterfaceDecl = ts.isClassDeclaration(tsTypeDecl) || ts.isInterfaceDeclaration(tsTypeDecl);
       const isDerived = isClassOrInterfaceDecl && !!tsTypeDecl.heritageClauses;
@@ -261,7 +270,7 @@ export class TsUtils {
         continue;
       }
       for (const heritageClause of tsTypeDecl.heritageClauses) {
-        if (this.processParentTypesCheck(heritageClause.types, checkType)) {
+        if (this.processParentTypesCheck(heritageClause.types, checkType, checkedBaseTypes)) {
           return true;
         }
       }
@@ -593,10 +602,18 @@ export class TsUtils {
     return false;
   }
 
-  private processParentTypesCheck(parentTypes: ts.NodeArray<ts.Expression>, checkType: CheckType): boolean {
+  private processParentTypesCheck(
+    parentTypes: ts.NodeArray<ts.Expression>,
+    checkType: CheckType,
+    checkedBaseTypes: Set<ts.Type>
+  ): boolean {
     for (const baseTypeExpr of parentTypes) {
       const baseType = TsUtils.reduceReference(this.tsTypeChecker.getTypeAtLocation(baseTypeExpr));
-      if (baseType && this.isOrDerivedFrom(baseType, checkType)) {
+      if (
+        baseType &&
+        !checkedBaseTypes.has(baseType) &&
+        this.isOrDerivedFrom(baseType, checkType, checkedBaseTypes)
+      ) {
         return true;
       }
     }
@@ -1680,5 +1697,163 @@ export class TsUtils {
       }
       return false;
     });
+  }
+
+  static getDecoratorName(decorator: ts.Decorator): string {
+    let decoratorName = '';
+    if (ts.isIdentifier(decorator.expression)) {
+      decoratorName = decorator.expression.text;
+    } else if (ts.isCallExpression(decorator.expression) && ts.isIdentifier(decorator.expression.expression)) {
+      decoratorName = decorator.expression.expression.text;
+    }
+    return decoratorName;
+  }
+
+  isSendableType(type: ts.Type): boolean {
+    if ((type.flags & (ts.TypeFlags.Boolean | ts.TypeFlags.Number | ts.TypeFlags.String |
+                       ts.TypeFlags.BigInt | ts.TypeFlags.Null | ts.TypeFlags.Undefined |
+                       ts.TypeFlags.TypeParameter)) !== 0) {
+      return true;
+    }
+
+    // Only the sendable union type is supported
+    if ((type.flags & ts.TypeFlags.Union) !== 0 && (type.flags & ts.TypeFlags.EnumLiteral) === 0 &&
+         this.isSendableUnionType(type as ts.UnionType)) {
+      return true;
+    }
+
+    // Const enum type is supported
+    if ((type.flags & (ts.TypeFlags.Enum | ts.TypeFlags.EnumLiteral)) !== 0 &&
+         TsUtils.isConstEnumType(type)) {
+      return true;
+    }
+
+    return this.isSendableClassOrInterface(type);
+  }
+
+  isSendableClassOrInterface(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    if (!sym) {
+      return false;
+    }
+
+    const targetType = TsUtils.reduceReference(type);
+
+    // class with @Sendable decorator
+    if (targetType.isClass()) {
+      if (sym.declarations?.length) {
+        const decl = sym.declarations[0];
+        if (ts.isClassDeclaration(decl)) {
+          return TsUtils.hasSendableDecorator(decl);
+        }
+      }
+    }
+    // ISendable interface, or a class/interface that implements/extends ISendable interface
+    return this.isOrDerivedFrom(type, TsUtils.isISendableInterface);
+  }
+
+  static isConstEnumType(type: ts.Type): boolean {
+    const targetType = TsUtils.reduceReference(type);
+    const sym = targetType.symbol;
+    if (!sym) {
+      return false;
+    }
+    return TsUtils.isConstEnum(sym);
+  }
+
+  static isConstEnum(sym: ts.Symbol): boolean {
+
+    /*
+     * The check in the second part is used when there is only one member in the enum
+     * In this case we need to go through the Parent to get the enum symbol
+     */
+    if (sym.flags === ts.SymbolFlags.ConstEnum || sym.flags === ts.SymbolFlags.EnumMember && (sym as any).parent &&
+                                                  (sym as any).parent.flags === ts.SymbolFlags.ConstEnum) {
+      return true;
+    }
+    return false;
+  }
+
+  isSendableUnionType(type: ts.UnionType): boolean {
+    const types = type?.types;
+    if (!types) {
+      return false;
+    }
+
+    return types.every((type) => {
+      return this.isSendableType(type);
+    });
+  }
+
+  static hasSendableDecorator(decl: ts.ClassDeclaration): boolean {
+    const decorators = ts.getDecorators(decl);
+    return !!decorators?.some((x) => {
+      return TsUtils.getDecoratorName(x) === SENDABLE_DECORATOR;
+    });
+  }
+
+  static hasNonSendableDecorator(decl: ts.ClassDeclaration): boolean {
+    const decorators = ts.getDecorators(decl);
+    return !!decorators?.some((x) => {
+      return TsUtils.getDecoratorName(x) !== SENDABLE_DECORATOR;
+    });
+  }
+
+  static isInSendableClassAndHasDecorators(declaration: ts.HasDecorators): boolean {
+    const classNode = TsUtils.getClassNodeFromDeclaration(declaration);
+    return !!classNode && TsUtils.hasSendableDecorator(classNode) && ts.getDecorators(declaration) !== undefined;
+  }
+
+  private static getClassNodeFromDeclaration(declaration: ts.HasDecorators): ts.ClassDeclaration | undefined {
+    if (declaration.kind === ts.SyntaxKind.Parameter) {
+      return ts.isClassDeclaration(declaration.parent.parent) ? declaration.parent.parent : undefined;
+    }
+    return ts.isClassDeclaration(declaration.parent) ? declaration.parent : undefined;
+  }
+
+  static isISendableInterface(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    return sym !== undefined && TsUtils.isObjectType(type) && (type.objectFlags & ts.ObjectFlags.Interface) !== 0 &&
+      sym.name === 'ISendable';
+  }
+
+  isAllowedIndexSignature(node: ts.IndexSignatureDeclaration): boolean {
+    // For now, relax index signature only for 'collections.Array<T>.[_: number]: T'.
+
+    if (node.parameters.length !== 1) {
+      return false;
+    }
+
+    const paramType = this.tsTypeChecker.getTypeAtLocation(node.parameters[0]);
+    if ((paramType.flags & ts.TypeFlags.Number) === 0) {
+      return false;
+    }
+
+    return TsUtils.isArkTSCollectionsArrayDeclaration(node.parent);
+  }
+
+  static isArkTSCollectionsArrayType(type: ts.Type): boolean {
+    const symbol = type.aliasSymbol ?? type.getSymbol();
+    if (symbol?.declarations === undefined || symbol.declarations.length < 1) {
+      return false;
+    }
+
+    return TsUtils.isArkTSCollectionsArrayDeclaration(symbol.declarations[0]);
+  }
+
+  private static isArkTSCollectionsArrayDeclaration(decl: ts.Declaration): boolean {
+    if (!ts.isClassDeclaration(decl) || !decl.name || decl.name.text !== COLLECTIONS_ARRAY_TYPE) {
+      return false;
+    }
+
+    if (!ts.isModuleBlock(decl.parent) || decl.parent.parent.name.text !== COLLECTIONS_NAMESPACE) {
+      return false;
+    }
+
+    if (path.basename(decl.getSourceFile().fileName).toLowerCase() !== ARKTS_COLLECTIONS_D_ETS) {
+      return false;
+    }
+
+    return true;
   }
 }

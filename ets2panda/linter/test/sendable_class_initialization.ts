@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,11 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
-
-export function forEachNodeInSubtree(
-  node: ts.Node,
-  cb: (n: ts.Node) => void,
-  stopCond?: (n: ts.Node) => boolean
-): void {
-  cb(node);
-  if (stopCond?.(node)) {
-    return;
-  }
-
-  ts.forEachChild(node, (child) => {
-    forEachNodeInSubtree(child, cb, stopCond);
-  });
+@Sendable
+class SendableClass9 {
+  prop1: SendableClass9 = {a: 1}; // ERROR, the initialization for "Sendable" objects is limited
+  prop2: SendableClass9 = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
 }
+
+let v0: SendableClass9 = {b: 1}; // ERROR, the initialization for "Sendable" objects is limited
+let v1: SendableClass9 = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited

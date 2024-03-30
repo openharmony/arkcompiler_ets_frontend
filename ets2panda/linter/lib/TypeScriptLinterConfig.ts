@@ -125,7 +125,6 @@ export class LinterConfig {
     [ts.SyntaxKind.DeleteExpression, FaultID.DeleteOperator],
     [ts.SyntaxKind.TypePredicate, FaultID.IsOperator],
     [ts.SyntaxKind.YieldExpression, FaultID.YieldExpression],
-    [ts.SyntaxKind.IndexSignature, FaultID.IndexMember],
     [ts.SyntaxKind.WithStatement, FaultID.WithStatement],
     [ts.SyntaxKind.IndexedAccessType, FaultID.IndexedAccessType],
     [ts.SyntaxKind.UnknownKeyword, FaultID.UnknownType],

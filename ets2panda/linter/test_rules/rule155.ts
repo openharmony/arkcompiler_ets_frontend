@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+@Sendable
+class A{
+    a: number;
+    b: number = 1;
+    c!: number;
+    d!: number = 1;
+    e?: number;
+}
 
-export function forEachNodeInSubtree(
-  node: ts.Node,
-  cb: (n: ts.Node) => void,
-  stopCond?: (n: ts.Node) => boolean
-): void {
-  cb(node);
-  if (stopCond?.(node)) {
-    return;
-  }
-
-  ts.forEachChild(node, (child) => {
-    forEachNodeInSubtree(child, cb, stopCond);
-  });
+class B{
+    a: number;
+    b: number = 1;
+    c!: number;
+    d!: number = 1;
+    e?: number;
 }
