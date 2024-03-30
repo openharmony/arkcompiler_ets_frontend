@@ -17,6 +17,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 const TS_EXT = ".ts";
+const ETS_EXT = ".ets";
 const TSX_EXT = ".tsx";
 const D_TS_EXT = '.d.ts';
 
@@ -108,7 +109,7 @@ for (let testDir of testDirs) {
 
     // Get tests from test directory.
     let testFiles = fs.readdirSync(testDir).filter(x =>
-        (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) || x.trimEnd().endsWith(TSX_EXT));
+        (x.trimEnd().endsWith(TS_EXT) && !x.trimEnd().endsWith(D_TS_EXT)) || x.trimEnd().endsWith(TSX_EXT) || x.trimEnd().endsWith(ETS_EXT));
 
     if (!testFiles) continue;
 

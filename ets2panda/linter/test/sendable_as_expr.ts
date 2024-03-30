@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,15 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+class NonSendableClass4 {}
 
-export function forEachNodeInSubtree(
-  node: ts.Node,
-  cb: (n: ts.Node) => void,
-  stopCond?: (n: ts.Node) => boolean
-): void {
-  cb(node);
-  if (stopCond?.(node)) {
-    return;
-  }
+@Sendable
+class SendableClass6 {}
 
-  ts.forEachChild(node, (child) => {
-    forEachNodeInSubtree(child, cb, stopCond);
-  });
-}
+let v0 = new SendableClass6() as NonSendableClass4; // OK
+
+let v1 = new NonSendableClass4() as SendableClass6; // ERROR, non-sendable data can not be cast to "Sendable" data
+
+let tmp1 = new NonSendableClass4();
+
+let v2 = tmp1 as SendableClass6; // ERROR, non-sendable data can not be cast to "Sendable" data

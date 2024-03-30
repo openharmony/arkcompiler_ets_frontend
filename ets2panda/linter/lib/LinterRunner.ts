@@ -257,6 +257,6 @@ function shouldProcessFile(options: LintOptions, fileFsPath: string): boolean {
 
   return (
     !pathContainsDirectory(path.resolve(fileFsPath), ARKTS_IGNORE_DIRS_OH_MODULES) ||
-    options.isFileFromModuleCb !== undefined && options.isFileFromModuleCb(fileFsPath)
+    !!options.isFileFromModuleCb?.(fileFsPath)
   );
 }

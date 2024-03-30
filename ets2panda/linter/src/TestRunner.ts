@@ -73,7 +73,8 @@ function runTests(testDirs: string[]): number {
     const testFiles: string[] = fs.readdirSync(testDir).filter((x) => {
       return (
         x.trimEnd().endsWith(ts.Extension.Ts) && !x.trimEnd().endsWith(ts.Extension.Dts) ||
-        x.trimEnd().endsWith(ts.Extension.Tsx)
+        x.trimEnd().endsWith(ts.Extension.Tsx) ||
+        x.trimEnd().endsWith(ts.Extension.Ets)
       );
     });
     Logger.info(`\nProcessing "${testDir}" directory:\n`);

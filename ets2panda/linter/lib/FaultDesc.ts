@@ -97,3 +97,12 @@ faultDesc[FaultID.ErrorSuppression] = 'Error suppression annotation';
 faultDesc[FaultID.StrictDiagnostic] = 'Strict diagnostic';
 faultDesc[FaultID.ImportAfterStatement] = 'Import declaration after other declaration or statement';
 faultDesc[FaultID.EsObjectType] = 'Restricted "ESObject" type';
+faultDesc[FaultID.SendableClassInheritance] = 'Sendable class inheritance';
+faultDesc[FaultID.SendablePropType] = 'Sendable class property';
+faultDesc[FaultID.SendableDefiniteAssignment] = 'Use of definite assignment assertion in "Sendable" class';
+faultDesc[FaultID.SendableGenericTypes] = 'Sendable generic types';
+faultDesc[FaultID.SendableClassDecorator] = 'Sendable class decorator';
+faultDesc[FaultID.SendableObjectInitialization] = 'Object literal or array literal is not allowed to \
+                                                                   initialize a "Sendable" object';
+faultDesc[FaultID.SendableComputedPropName] = 'Sendable computed property name';
+faultDesc[FaultID.SendableAsExpr] = 'Sendable as expr';
