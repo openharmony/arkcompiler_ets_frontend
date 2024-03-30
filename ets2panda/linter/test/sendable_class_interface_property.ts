@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import {lang} from './@arkts.lang';
+
 class NonSendableClass2 {}
 
 @Sendable
@@ -77,11 +79,8 @@ enum RegularEnum2 {
   Memr3 = 2
 };
 
-// Implement ISendable interface
-interface ISendable {}
-
 // Implement interface extending ISendable
-interface ISendableExt1 extends ISendable {
+interface ISendableExt1 extends lang.ISendable {
   prop1: number; // OK
   prop2: string; // OK
   prop3: boolean; // OK
@@ -99,7 +98,7 @@ interface ISendableExt1 extends ISendable {
   prop15: ConstEnum2; // OK
 }
 // Implement interface extending ISendable
-interface ISendableExt2 extends ISendable {
+interface ISendableExt2 extends lang.ISendable {
   prop1: string[]; // ERROR, sendable interface property cannot be array
   prop2: NonSendableClass2; // ERROR, sendable interface property cannot be non-sendable-class
   prop3: NonSendableClass2 | null; // ERROR, sendable interface property cannot be non-sendable-class union type

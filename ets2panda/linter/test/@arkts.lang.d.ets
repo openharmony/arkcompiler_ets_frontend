@@ -13,14 +13,35 @@
  * limitations under the License.
  */
 
-export const ARKTS_COLLECTIONS_D_ETS = '@arkts.collections.d.ets';
+declare namespace lang {
+  interface ISendable {}
+}
 
-export const COLLECTIONS_NAMESPACE = 'collections';
+// sendable class
+@Sendable
+class sendableClassA {}
 
-export const COLLECTIONS_ARRAY_TYPE = 'Array';
+// sendable class var
+let sendableVar = sendableClassA
 
-export const ARKTS_LANG_D_ETS = '@arkts.lang.d.ets';
+// non-sendable class
+class nonSendableClassB {}
 
-export const LANG_NAMESPACE = 'lang';
+// non-sendable class var
+let nonSendableVar = nonSendableClassB
 
-export const ISENDABLE_TYPE = 'ISendable';
+// sendable interface
+interface sendableInterface extends lang.ISendable {}
+
+// non-sendable interface
+interface nonSendableInterface {}
+
+export { 
+  sendableClassA,
+  sendableVar,
+  nonSendableClassB,
+  nonSendableVar,
+  sendableInterface,
+  nonSendableInterface,
+  lang,
+};
