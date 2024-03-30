@@ -222,7 +222,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
         }
         case ir::AstNodeType::UPDATE_EXPRESSION:
         case ir::AstNodeType::UNARY_EXPRESSION: {
-            if (!resolved->Declaration()->PossibleTDZ()) {
+            if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ()) {
                 WrongContextErrorClassifyByType(ident, resolved);
             }
             break;
@@ -237,7 +237,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
             break;
         }
         default: {
-            if (!resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
+            if (resolved != nullptr && !resolved->Declaration()->PossibleTDZ() && !resolvedType->IsETSFunctionType()) {
                 WrongContextErrorClassifyByType(ident, resolved);
             }
             break;
