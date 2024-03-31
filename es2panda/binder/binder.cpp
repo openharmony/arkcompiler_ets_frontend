@@ -411,8 +411,10 @@ void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *sc
     }
 
     if (scriptFunc->IsArrow()) {
-        VariableScope *outerVarScope = outerScope->EnclosingVariableScope();
-        outerVarScope->AddFlag(VariableScopeFlags::INNER_ARROW);
+        const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(scriptFunc);
+        if (ctor) {
+            ctor->Scope()->AddFlag(VariableScopeFlags::INNER_ARROW);
+        }
     }
 
     ASSERT(scope_->IsFunctionScope() || scope_->IsTSModuleScope() || scope_->IsTSEnumScope());
