@@ -1,7 +1,7 @@
 {
   "IdentifierCache": {
-    "#clsEpx1": "z1",
-    "#clsEpx2": "a2"
+    "#clsEpx1": "b2",
+    "#clsEpx2": "c2"
   },
   "MemberMethodCache": {
     "AAA:17:17": "AAA"

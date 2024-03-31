@@ -395,23 +395,30 @@ export class ArkObfuscator {
     return (suffix !== 'js' && suffix !== 'ts' && suffix !== 'ets');
   }
 
-  private convertLineInfoForCache(consumer: sourceMap.SourceMapConsumer, targetCache: string) : Object {
+  private convertLineBasedOnSourceMap(targetCache: string, consumer?: sourceMap.SourceMapConsumer): Object {
     let originalCache : Map<string, string> = renameIdentifierModule.nameCache.get(targetCache);
     let updatedCache: Object = {};
     for (const [key, value] of originalCache) {
       let newKey: string = key;
       if (!key.includes(':')) {
+        // The identifier which is not functionlike do not save line info.
         updatedCache[newKey] = value;
         continue;
       }
       const [scopeName, oldStartLine, oldStartColum, oldEndLine, oldEndColum] = key.split(':');
-      const startPosition = consumer.originalPositionFor({line: Number(oldStartLine), column: Number(oldStartColum)});
-      const startLine = startPosition.line;
-      const endPosition = consumer.originalPositionFor({line: Number(oldEndLine), column: Number(oldEndColum)});
-      const endLine = endPosition.line;
-      newKey = `${scopeName}:${startLine}:${endLine}`;
-      // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
-      if (startLine && endLine) {
+      if (consumer) {
+        const startPosition = consumer.originalPositionFor({line: Number(oldStartLine), column: Number(oldStartColum)});
+        const startLine = startPosition.line;
+        const endPosition = consumer.originalPositionFor({line: Number(oldEndLine), column: Number(oldEndColum)});
+        const endLine = endPosition.line;
+        newKey = `${scopeName}:${startLine}:${endLine}`;
+        // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
+        if (startLine && endLine) {
+          updatedCache[newKey] = value;
+        }
+      } else {
+        // In Arkguard, we save line info of source code, so do not need to use sourcemap mapping.
+        newKey = `${scopeName}:${oldStartLine}:${oldEndLine}`;
         updatedCache[newKey] = value;
       }
     }
@@ -547,9 +554,18 @@ export class ArkObfuscator {
       result.sourceMap = sourceMapJson;
       let nameCache = renameIdentifierModule.nameCache;
       if (this.mCustomProfiles.mEnableNameCache) {
-        const consumer = await new sourceMap.SourceMapConsumer(sourceMapJson as sourceMap.RawSourceMap);
-        let newIdentifierCache: Object = this.convertLineInfoForCache(consumer, IDENTIFIER_CACHE);
-        let newMemberMethodCache: Object = this.convertLineInfoForCache(consumer, MEM_METHOD_CACHE);
+        let newIdentifierCache!: Object;
+        let newMemberMethodCache!: Object;
+        if (previousStageSourceMap) {
+          // The process in sdk, need to use sourcemap mapping.
+          const consumer = await new sourceMap.SourceMapConsumer(previousStageSourceMap);
+          newIdentifierCache = this.convertLineBasedOnSourceMap(IDENTIFIER_CACHE, consumer);
+          newMemberMethodCache = this.convertLineBasedOnSourceMap(MEM_METHOD_CACHE, consumer);
+        } else {
+          // The process in Arkguard.
+          newIdentifierCache = this.convertLineBasedOnSourceMap(IDENTIFIER_CACHE);
+          newMemberMethodCache = this.convertLineBasedOnSourceMap(MEM_METHOD_CACHE);
+        }
         nameCache.set(IDENTIFIER_CACHE, newIdentifierCache);
         nameCache.set(MEM_METHOD_CACHE, newMemberMethodCache);
         result.nameCache = {[IDENTIFIER_CACHE]: newIdentifierCache, [MEM_METHOD_CACHE]: newMemberMethodCache};
@@ -560,6 +576,8 @@ export class ArkObfuscator {
     this.mTextWriter.clear();
     if (renameIdentifierModule.nameCache) {
       renameIdentifierModule.nameCache.clear();
+      renameIdentifierModule.identifierLineMap.clear();
+      renameIdentifierModule.classMangledName.clear();
     }
 
     renameIdentifierModule.historyNameCache = undefined;

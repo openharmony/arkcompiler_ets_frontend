@@ -13,18 +13,18 @@
  * limitations under the License.
  */
 
-class Person7 {
-    0 = function () {
+class Person6 {
+    [1] = function () {
         console.log('func_exp');
     };
 
-    1 = () => {
+    [2] = () => {
         console.log('arrow');
     };
 
-    2 = class {
+    ['class'] = class {
         str_literal: string = 'myclass';
-        constructor () {
+        constructor() {
             this.str_literal = 'newclass';
         }
     };

@@ -28,6 +28,15 @@ import {
   isStructDeclaration,
   setParentRecursive,
   visitEachChild,
+  isPropertyDeclaration,
+  isMethodDeclaration,
+  isGetAccessor,
+  isSetAccessor,
+  isClassDeclaration,
+  isFunctionExpression,
+  isArrowFunction,
+  isVariableDeclaration,
+  isPropertyAssignment
 } from 'typescript';
 
 import type {
@@ -68,16 +77,22 @@ import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGe
 import type {IOptions} from '../../configs/IOptions';
 import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
+import type { MangledSymbolInfo } from '../../common/type';
 import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
 import {collectIdentifiersAndStructs} from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
-import {globalMangledTable, historyMangledTable, reservedProperties} from './RenamePropertiesTransformer';
-import {memberMethodCache} from '../../utils/ScopeAnalyzer';
+import {
+  globalMangledTable,
+  historyMangledTable,
+  reservedProperties,
+  globalSwappedMangledTable
+} from './RenamePropertiesTransformer';
 import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
+import { isViewPUBasedClass } from '../../utils/OhsUtil';
 
 namespace secharmony {
   /**
@@ -112,9 +127,8 @@ namespace secharmony {
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
       let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', '__global'];
       profile?.mReservedToplevelNames?.forEach(item => reservedProperties.add(item));
-      let mangledSymbolNames: Map<Symbol, string> = new Map<Symbol, string>();
+      let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
-      memberMethodCache.clear();
       noSymbolIdentifier.clear();
 
       let historyMangledNames: Set<string> = undefined;
@@ -181,7 +195,6 @@ namespace secharmony {
         let ret: Node = visit(node);
 
         ret = tryRemoveVirtualConstructor(ret);
-        nameCache.set(MEM_METHOD_CACHE, memberMethodCache);
         let parentNodes = setParentRecursive(ret, true);
         performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_NODES, performancePrinter.timeSumPrinter);
         return parentNodes;
@@ -252,16 +265,15 @@ namespace secharmony {
           } else {
             mangled = getMangled(scope, generator);
           }
-
           // add new names to name cache
           let identifierCache = nameCache?.get(IDENTIFIER_CACHE);
-          if (identifierCache) {
-            const isFunction: boolean = Reflect.has(def, 'isFunction');
-            const pathWithLine: string = splicePathWithLineInfo(isFunction, def, scope.loc, original);
-            (identifierCache as Map<string, string>).set(pathWithLine, mangled);
-          }
+          (identifierCache as Map<string, string>).set(path, mangled);
+          let symbolInfo: MangledSymbolInfo = {
+            mangledName: mangled,
+            originalNameWithScope: path
+          };
           scope.mangledNames.add(mangled);
-          mangledSymbolNames.set(def, mangled);
+          mangledSymbolNames.set(def, symbolInfo);
         });
       }
 
@@ -417,17 +429,30 @@ namespace secharmony {
         return results;
       }
 
-      function splicePathWithLineInfo(isFunction: boolean, sym: Symbol, scope: string, origin: string): string {
-        let path: string = scope + '#' + origin;
-        if (!isFunction) {
-          return path;
+      function isFunctionLike(node: Node): boolean {
+        switch (node.kind) {
+          case SyntaxKind.FunctionDeclaration:
+          case SyntaxKind.MethodDeclaration:
+          case SyntaxKind.GetAccessor:
+          case SyntaxKind.SetAccessor:
+          case SyntaxKind.Constructor:
+          case SyntaxKind.FunctionExpression:
+          case SyntaxKind.ArrowFunction:
+            return true;
         }
-        let positions = Reflect.get(sym, 'lineInfo') as Array<number>;
-        let startLine = positions[0]; // 0: startLine in lineInfo
-        let startCharacter = positions[1]; // 1: startCharacter in lineInfo
-        let endLine = positions[2]; // 2: endLine in lineInfo
-        let endCharacter = positions[3]; // 3: endCharacter in lineInfo
-        return path + ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
+        return false;
+      }
+
+      function nodeHasFunctionLikeChild(node: Node): boolean {
+        let hasFunctionLikeChild: boolean = false;
+        let childVisitor: (child: Node) => Node = (child: Node): Node => {
+          if (!hasFunctionLikeChild && child && isFunctionLike(child)) {
+            hasFunctionLikeChild = true;
+          }
+          return child;
+        };
+        visitEachChild(node, childVisitor, context);
+        return hasFunctionLikeChild;
       }
 
       /**
@@ -436,6 +461,12 @@ namespace secharmony {
        * @param node
        */
       function visit(node: Node): Node {
+        let needHandlePositionInfo: boolean = isFunctionLike(node) || nodeHasFunctionLikeChild(node);
+        if (needHandlePositionInfo) {
+          // Obtain line info for nameCache.
+          handlePositionInfo(node);
+        }
+
         if (!isIdentifier(node) || !node.parent) {
           return visitEachChild(node, visit, context);
         }
@@ -448,6 +479,74 @@ namespace secharmony {
         const shadowNode: Identifier = shadowIdentifiers[identifierIndex];
         identifierIndex += 1;
         return updateNameNode(node, shadowNode);
+      }
+
+      function handlePositionInfo(node: Node): void {
+        const sourceFile = NodeUtils.getSourceFileOfNode(node);
+        if (node && node.pos < 0 && node.end < 0) {
+          // Node must have a real position for following operations.
+          // Adapting to the situation that the node does not have a real postion.
+          return;
+        }
+        const startPosition = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+        const endPosition = sourceFile.getLineAndCharacterOfPosition(node.getEnd());
+        // 1: The line number in sourceFile starts from 0 while in IDE starts from 1.
+        const startLine = startPosition.line + 1;
+        const startCharacter = startPosition.character + 1; // 1: Same as above.
+        const endLine = endPosition.line + 1; // 1: Same as above.
+        const endCharacter = endPosition.character + 1; // 1: Same as above.
+        const lineAndColum: string = ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
+
+        let isProperty: boolean = isMethodDeclaration(node) || isGetAccessor(node) ||
+                                  isSetAccessor(node) || (isConstructorDeclaration(node) &&
+                                  !(isClassDeclaration(node.parent) && isViewPUBasedClass(node.parent)));
+        // Arrow functions are anoymous, only function expressions are considered.
+        let isPropertyParent: boolean = isFunctionExpression(node) &&
+                                        (isPropertyDeclaration(node.parent) || isPropertyAssignment(node.parent));
+        let isMemberMethod: boolean = isProperty || isPropertyParent;
+        if (isMemberMethod) {
+          writeMemberMethodCache(node, lineAndColum);
+          return;
+        }
+
+        let name = Reflect.get(node, "name") as Identifier;
+        if (name?.kind === SyntaxKind.Identifier) {
+          identifierLineMap.set(name, lineAndColum);
+        } else if ((isFunctionExpression(node) || isArrowFunction(node)) && isVariableDeclaration(node.parent) &&
+          node.parent.name?.kind === SyntaxKind.Identifier) {
+          // The node is anonymous, and we need to find its parent node.
+          // e.g.: let foo = function() {};
+          identifierLineMap.set(node.parent.name, lineAndColum);
+        }
+      }
+
+      function writeMemberMethodCache(node: Node, lineAndColum: string): void {
+        let gotNode;
+        if (node.kind === SyntaxKind.Constructor) {
+          gotNode = node.parent;
+        } else if ((node.kind === SyntaxKind.FunctionExpression &&
+          (isPropertyDeclaration(node.parent) || isPropertyAssignment(node.parent)))) {
+          gotNode = node.parent.initializer ?? node.parent;
+        } else {
+          gotNode = node;
+        }
+        let escapedText: string = gotNode.name?.escapedText;
+        if (!escapedText) {
+          return;
+        }
+        let valueName: string = escapedText.toString();
+        let originalName: string = valueName;
+        if (globalSwappedMangledTable.size !== 0 && globalSwappedMangledTable.has(valueName)) {
+          originalName = globalSwappedMangledTable.get(valueName);
+        }
+        if (node.kind === SyntaxKind.Constructor && classMangledName.has(gotNode.name)) {
+          valueName = classMangledName.get(gotNode.name);
+        }
+        let keyName = originalName + lineAndColum;
+        let memberMethodCache = nameCache?.get(MEM_METHOD_CACHE);
+        if (memberMethodCache) {
+          (memberMethodCache as Map<string, string>).set(keyName, valueName);
+        }
       }
 
       function tryRemoveVirtualConstructor(node: Node): Node {
@@ -493,7 +592,23 @@ namespace secharmony {
           }
         }
 
-        let mangledName: string = mangledSymbolNames.get(sym);
+        // Add new names to name cache
+        const symbolInfo: MangledSymbolInfo = mangledSymbolNames.get(sym);
+        const identifierCache = nameCache?.get(IDENTIFIER_CACHE);
+        const lineAndColumn = identifierLineMap?.get(node);
+        // We only save the line info of FunctionLike.
+        const isFunction: boolean = sym ? Reflect.has(sym, 'isFunction') : false;
+        if (isFunction && symbolInfo && lineAndColumn) {
+          const originalName = symbolInfo.originalNameWithScope;
+          const pathWithLine: string = originalName + lineAndColumn;
+          (identifierCache as Map<string, string>).set(pathWithLine, symbolInfo.mangledName);
+          (identifierCache as Map<string, string>).delete(originalName);
+        }
+
+        let mangledName: string = mangledSymbolNames.get(sym)?.mangledName;
+        if (node?.parent.kind === SyntaxKind.ClassDeclaration) {
+          classMangledName.set(node, mangledName);
+        }
         if (!mangledName && mangledPropertyNameOfNoSymbolImportExport !== '') {
           mangledName = mangledPropertyNameOfNoSymbolImportExport;
         }
@@ -560,6 +675,8 @@ namespace secharmony {
   export let nameCache: Map<string, string | Map<string, string>> = new Map();
   export let historyNameCache: Map<string, string> = undefined;
   export let globalNameCache: Map<string, string> = new Map();
+  export let identifierLineMap: Map<Identifier, string> = new Map();
+  export let classMangledName: Map<Node, string> = new Map();
 }
 
 export = secharmony;

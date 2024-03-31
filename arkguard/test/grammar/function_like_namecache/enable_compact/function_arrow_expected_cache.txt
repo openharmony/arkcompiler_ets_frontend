@@ -1,8 +1,8 @@
 {
   "IdentifierCache": {
+    "#__function": "j",
     "#arrowFunc:16:18": "g",
-    "#blankFunc:19:19": "h",
-    "#__function": "j"
+    "#blankFunc:19:19": "h"
   },
   "MemberMethodCache": {}
 }

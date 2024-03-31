@@ -13,26 +13,19 @@
  * limitations under the License.
  */
 
-class Person5 {
-    private age: number = 10;
-    name: string = 'Tony';
-
-    prop_func1 = function () {
+class Person7 {
+    0 = function () {
         console.log('func_exp');
     };
 
-    prop_func2 = function foo () {
-        console.log('func_exp2');
-    };
-
-    prop_arrow = () => {
+    1 = () => {
         console.log('arrow');
     };
 
-    prop_class = class {
-        #pri_prop: string = 'myproperty';
-        constructor () {
-            this.#pri_prop = 'newproperty';
+    2 = class {
+        str_literal: string = 'myclass';
+        constructor() {
+            this.str_literal = 'newclass';
         }
     };
 }
