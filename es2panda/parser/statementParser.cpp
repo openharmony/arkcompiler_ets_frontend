@@ -675,6 +675,10 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
         classDefinition->SetAsExportDefault();
     }
 
+    if (!decorators.empty()) {
+        classDefinition->SetClassDecoratorPresent();
+    }
+
     auto location = classDefinition->Ident() ? classDefinition->Ident()->Start() : startLoc;
     auto className = classDefinition->GetName();
     ASSERT(!className.Empty());

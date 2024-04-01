@@ -80,7 +80,8 @@ public:
           indexSignatures_(std::move(indexSignatures)),
           declare_(declare),
           abstract_(abstract),
-          exportDefault_(false)
+          exportDefault_(false),
+          isClassDecoratorPresent_(false)
     {
     }
 
@@ -230,6 +231,16 @@ public:
         return isSendable_;
     }
 
+    void SetClassDecoratorPresent()
+    {
+        isClassDecoratorPresent_ = true;
+    }
+
+    bool IsClassDecoratorPresent() const
+    {
+        return isClassDecoratorPresent_;
+    }
+
     const FunctionExpression *Ctor() const;
 
     util::StringView GetName() const;
@@ -279,6 +290,7 @@ private:
     bool hasComputedKey_ {false};
     bool hasPrivateElement_ {false};
     bool isSendable_ {false};
+    bool isClassDecoratorPresent_ {false};
 };
 
 }  // namespace panda::es2panda::ir
