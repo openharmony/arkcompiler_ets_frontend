@@ -38,6 +38,26 @@ class SendableClass4<T, U> {
   prop14: ConstEnum1; // OK
   prop15: ConstEnum2; // OK
   prop16: ConstEnum2 = ConstEnum2.Memc2; // OK
+  prop17: ConstEnum | ConstEnum1 | ConstEnum2; // OK
+  prop18: ConstEnum | SendableClass3; // OK
+  prop19: ConstEnum1 | SendableClass10; // OK
+  prop20: N.ConstEnum | ConstEnum; // OK
+  prop21: alias4; // OK
+  prop22: alias5; // OK
+  prop23: alias6; // OK
+  prop24: SendableClass3 | alias4 | alias5; // OK
+  prop25: number | boolean; // OK
+  prop26: boolean | bigint; // OK
+  prop27: boolean | null; // OK
+  prop28: bigint | null; // OK
+  prop29: alias14; // OK
+  prop30: alias15; // OK
+  prop31: (number);
+  prop32: (boolean | bigint);
+  prop33: number | (SendableClass3 | ((null | string)));
+  prop34: alias16;
+  prop35: alias17;
+  prop36: alias18;
 }
 
 @Sendable
@@ -53,6 +73,33 @@ class SendableClass3 {
   prop9: RegularEnum1; // ERROR, sendable class property cannot be non-sendable-type
   prop10: RegularEnum2; // ERROR, sendable class property cannot be non-sendable-type
   prop11: RegularEnum2 = RegularEnum2.Memr3; // ERROR, sendable class property cannot be non-sendable-type
+  prop12: ConstEnum1.Memc1; // ERROR, sendable class property cannot be enum member type
+  prop13: ConstEnum2.Memc2; // ERROR, sendable class property cannot be enum member type
+  prop14: ConstEnum | ConstEnum1.Memc1; // ERROR, sendable class property cannot be non-sendable union type
+  prop15: ConstEnum2 | RegularEnum1; // ERROR, sendable class property cannot be non-sendable union type
+  prop16: RegularEnum2.Memr2 | SendableClass10; // ERROR, sendable class property cannot be non-sendable union type
+  prop17: alias7; // ERROR, sendable class property cannot be non-sendable alias type
+  prop18: alias8; // ERROR, sendable class property cannot be non-sendable alias type
+  prop19: alias9; // ERROR, sendable class property cannot be non-sendable alias type
+  prop20: alias6 | NonSendableInterface; // ERROR, sendable class property cannot be non-sendable union type
+  prop21: alias7 | SendableClass3; // ERROR, sendable class property cannot be non-sendable union type
+  prop22: SendableClass10 | alias8; // ERROR, sendable class property cannot be non-sendable union type
+  prop23: 1; // ERROR, sendable class property cannot be numeric literal type
+  prop24: 'x'; // ERROR, sendable class property cannot be string literal type
+  prop25: true; // ERROR, sendable class property cannot be boolean literal type
+  prop26: 2n; // ERROR, sendable class property cannot be bigint literal type
+  prop27: true | false; // ERROR, sendable class property cannot be non-sendable union type
+  prop271: 3 | 'y' | false | 4; // ERROR, sendable class property cannot be non-sendable union type
+  prop28: SendableClass3 | 5; // ERROR, sendable class property cannot be non-sendable union type
+  prop29: alias10; // ERROR, sendable class property cannot be non-sendable alias type
+  prop30: alias11; // ERROR, sendable class property cannot be non-sendable alias type
+  prop31: alias12; // ERROR, sendable class property cannot be non-sendable alias type
+  prop32: alias13; // ERROR, sendable class property cannot be non-sendable alias type
+  prop33: (10);
+  prop34: (true | 'false');
+  prop35: number | (SendableClass3 | ((string | NonSendableClass2)));
+  prop36: alias19;
+  prop37: alias20;
   ["aaa"]: number; // ERROR, sendable class property name cannot be computed property
 }
 
@@ -60,6 +107,23 @@ type alias0 = number | null;
 type alias1 = SendableClass10;
 type alias2 = NonSendableClass2;
 type alias3 = NonSendableClass2 | undefined;
+type alias4 = ConstEnum;
+type alias5 = ConstEnum1 | ConstEnum2;
+type alias6 = ConstEnum | SendableClass3;
+type alias7 = RegularEnum | RegularEnum1 | ConstEnum;
+type alias8 = ConstEnum1.Memc1;
+type alias9 = ConstEnum | ConstEnum2.Memc3;
+type alias10 = 10;
+type alias11 = 'foo';
+type alias12 = 20 | 'bar';
+type alias13 = true | false;
+type alias14 = number | boolean;
+type alias15 = boolean | null | undefined;
+type alias16 = (number);
+type alias17 = (boolean | null);
+type alias18 = (SendableClass3 | string);
+type alias19 = number | (string | ((SendableClass3 | NonSendableClass2)));
+type alias20 = (1 | '2' | true);
 
 const enum ConstEnum {};
 const enum ConstEnum1 {
@@ -78,6 +142,12 @@ enum RegularEnum2 {
   Memr2 = 'aa',
   Memr3 = 2
 };
+
+export declare namespace N {
+  export const enum ConstEnum {
+    E1 = 1
+  }
+}
 
 // Implement interface extending ISendable
 interface ISendableExt1 extends lang.ISendable {
