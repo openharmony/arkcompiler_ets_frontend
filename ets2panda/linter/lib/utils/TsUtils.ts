@@ -1044,7 +1044,8 @@ export class TsUtils {
     [FaultID.ObjectLiteralNoContextType, TsUtils.getObjectLiteralNoContextTypeHighlightRange],
     [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange],
     [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange],
-    [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange]
+    [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
+    [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1166,6 +1167,16 @@ export class TsUtils {
       return [params[0].getStart(), params[params.length - 1].getEnd()];
     }
     return undefined;
+  }
+
+  // highlight ranges for Sendable rules
+
+  static getSendableDefiniteAssignmentHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    const name = (nodeOrComment as ts.PropertyDeclaration).name;
+    const exclamationToken = (nodeOrComment as ts.PropertyDeclaration).exclamationToken;
+    return [name.getStart(), exclamationToken ? exclamationToken.getEnd() : name.getEnd()];
   }
 
   isStdRecordType(type: ts.Type): boolean {
@@ -1806,16 +1817,19 @@ export class TsUtils {
     });
   }
 
-  static hasNonSendableDecorator(decl: ts.ClassDeclaration): boolean {
+  static getNonSendableDecorators(decl: ts.ClassDeclaration): ts.Decorator[] | undefined {
     const decorators = ts.getDecorators(decl);
-    return !!decorators?.some((x) => {
+    return decorators?.filter((x) => {
       return TsUtils.getDecoratorName(x) !== SENDABLE_DECORATOR;
     });
   }
 
-  static isInSendableClassAndHasDecorators(declaration: ts.HasDecorators): boolean {
+  static getDecoratorsIfInSendableClass(declaration: ts.HasDecorators): readonly ts.Decorator[] | undefined {
     const classNode = TsUtils.getClassNodeFromDeclaration(declaration);
-    return !!classNode && TsUtils.hasSendableDecorator(classNode) && ts.getDecorators(declaration) !== undefined;
+    if (classNode === undefined || !TsUtils.hasSendableDecorator(classNode)) {
+      return undefined;
+    }
+    return ts.getDecorators(declaration);
   }
 
   private static getClassNodeFromDeclaration(declaration: ts.HasDecorators): ts.ClassDeclaration | undefined {

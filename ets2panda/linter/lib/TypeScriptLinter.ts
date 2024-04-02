@@ -579,9 +579,9 @@ export class TypeScriptLinter {
 
   private handleParameter(node: ts.Node): void {
     const tsParam = node as ts.ParameterDeclaration;
-    if (TsUtils.isInSendableClassAndHasDecorators(tsParam)) {
-      this.incrementCounters(node, FaultID.SendableClassDecorator);
-    }
+    TsUtils.getDecoratorsIfInSendableClass(tsParam)?.forEach((decorator) => {
+      this.incrementCounters(decorator, FaultID.SendableClassDecorator);
+    });
     this.handleDeclarationDestructuring(tsParam);
     this.handleDeclarationInferredType(tsParam);
   }
@@ -838,9 +838,9 @@ export class TypeScriptLinter {
     if (!ts.isClassDeclaration(classNode) || !TsUtils.hasSendableDecorator(classNode)) {
       return;
     }
-    if (TsUtils.isInSendableClassAndHasDecorators(node)) {
-      this.incrementCounters(node, FaultID.SendableClassDecorator);
-    }
+    TsUtils.getDecoratorsIfInSendableClass(node)?.forEach((decorator) => {
+      this.incrementCounters(decorator, FaultID.SendableClassDecorator);
+    });
     const type = this.tsTypeChecker.getTypeFromTypeNode(typeNode);
     const isSendablePropType = this.tsUtils.isSendableType(type);
     if (!isSendablePropType) {
@@ -1428,9 +1428,9 @@ export class TypeScriptLinter {
 
     const isSendableClass = TsUtils.hasSendableDecorator(tsClassDecl);
     if (isSendableClass) {
-      if (TsUtils.hasNonSendableDecorator(tsClassDecl)) {
-        this.incrementCounters(tsClassDecl, FaultID.SendableClassDecorator);
-      }
+      TsUtils.getNonSendableDecorators(tsClassDecl)?.forEach((decorator) => {
+        this.incrementCounters(decorator, FaultID.SendableClassDecorator);
+      });
       tsClassDecl.typeParameters?.forEach((typeParamDecl) => {
         this.checkSendableTypeParameter(typeParamDecl);
       });
@@ -1617,9 +1617,9 @@ export class TypeScriptLinter {
 
   private handleMethodDeclaration(node: ts.Node): void {
     const tsMethodDecl = node as ts.MethodDeclaration;
-    if (TsUtils.isInSendableClassAndHasDecorators(tsMethodDecl)) {
-      this.incrementCounters(node, FaultID.SendableClassDecorator);
-    }
+    TsUtils.getDecoratorsIfInSendableClass(tsMethodDecl)?.forEach((decorator) => {
+      this.incrementCounters(decorator, FaultID.SendableClassDecorator);
+    });
     let isStatic = false;
     if (tsMethodDecl.modifiers) {
       for (const mod of tsMethodDecl.modifiers) {
@@ -2220,9 +2220,9 @@ export class TypeScriptLinter {
   }
 
   private handleGetAccessor(node: ts.GetAccessorDeclaration): void {
-    if (TsUtils.isInSendableClassAndHasDecorators(node)) {
-      this.incrementCounters(node, FaultID.SendableClassDecorator);
-    }
+    TsUtils.getDecoratorsIfInSendableClass(node)?.forEach((decorator) => {
+      this.incrementCounters(decorator, FaultID.SendableClassDecorator);
+    });
 
     /**
      * Reserved if needed
@@ -2232,9 +2232,9 @@ export class TypeScriptLinter {
   }
 
   private handleSetAccessor(node: ts.SetAccessorDeclaration): void {
-    if (TsUtils.isInSendableClassAndHasDecorators(node)) {
-      this.incrementCounters(node, FaultID.SendableClassDecorator);
-    }
+    TsUtils.getDecoratorsIfInSendableClass(node)?.forEach((decorator) => {
+      this.incrementCounters(decorator, FaultID.SendableClassDecorator);
+    });
 
     /**
      * Reserved if needed
