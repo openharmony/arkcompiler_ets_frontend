@@ -16,9 +16,22 @@
 class NonSendableClass3 {}
 
 @Sendable
+class SendableClass3 {}
+
+@Sendable
 class SendableClass5<T, U> {
   prop1: T;
   prop2: U;
+}
+
+@Sendable
+class SendableClass6<T=NonSendableClass3> { // ERROR, sendable class generic type cannot be non-sendable-class
+  prop1: T;
+}
+
+@Sendable
+class SendableClass7<T=SendableClass3> { // OK
+  prop1: T;
 }
 
 let ins1 = new SendableClass5<number, string>; // OK

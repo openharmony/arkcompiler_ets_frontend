@@ -91,30 +91,30 @@ class sendableClass8 extends localNonSendableClassB {} // ERROR
 
 // class + interface
 
-// case1: extends local interface
-// == case1.1: extends sendable
+// case1: implements local interface
+// == case1.1: implements sendable
 @Sendable
 class sendableClass9 implements localSendableInterface {} // OK
 
-// == case1.2: extends non-sendable
+// == case1.2: implements non-sendable
 @Sendable
 class sendableClass10 implements localNonSendableInterface {} // OK
 
-// case2: extends import interface
-// == case2.1: extends sendable
+// case2: implements import interface
+// == case2.1: implements sendable
 @Sendable
 class sendableClass11 implements sendableInterface {} // OK
 
-// == case2.2: extends non-sendable
+// == case2.2: implements non-sendable
 @Sendable
 class sendableClass12 implements nonSendableInterface {} // OK
 
-// case3: extends type alias
-// == case3.1: extends sendable
+// case3: implements type alias
+// == case3.1: implements sendable
 @Sendable
 class sendableClass13 implements localSendableInterfaceAlias {} // OK
 
-// == case3.2: extends non-sendable
+// == case3.2: implements non-sendable
 @Sendable
 class sendableClass14 implements localNonSendableInterfaceAlias {} // OK
 
@@ -150,23 +150,36 @@ class sendableClass22 extends localNonSendableClassB {} // OK
 
 // class + interface
 
-// case1: extends local interface
-// == case1.1: extends sendable
+// case1: implements local interface
+// == case1.1: implements sendable
 class sendableClass23 implements localSendableInterface {} // ERROR
 
-// == case1.2: extends non-sendable
+// == case1.2: implements non-sendable
 class sendableClass24 implements localNonSendableInterface {} // OK
 
-// case2: extends import interface
-// == case2.1: extends sendable
+// case2: implements import interface
+// == case2.1: implements sendable
 class sendableClass25 implements sendableInterface {} // ERROR
 
-// == case2.2: extends non-sendable
+// == case2.2: implements non-sendable
 class sendableClass26 implements nonSendableInterface {} // OK
 
-// case3: extends type alias
-// == case4.1: extends sendable
+// case3: implements type alias
+// == case4.1: implements sendable
 class sendableClass27 implements localSendableInterfaceAlias {} // ERROR
 
-// == case4.2: extends non-sendable
+// == case4.2: implements non-sendable
 class sendableClass28 implements localNonSendableInterfaceAlias {} // OK
+
+// ISendable created by developer is not a sendable interface
+
+interface ISendable {}
+
+interface fakeSendableInterface extends ISendable {}
+
+// fake sendable interface type alias
+type fakeSendableInterfaceAlias = fakeSendableInterface
+
+class sendableClass29 implements fakeSendableInterface {} // OK
+
+class sendableClass30 implements fakeSendableInterfaceAlias {} // OK

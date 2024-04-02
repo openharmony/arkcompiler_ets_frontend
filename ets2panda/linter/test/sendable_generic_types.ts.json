@@ -15,63 +15,83 @@
     ],
     "nodes": [
         {
-            "line": 25,
+            "line": 28,
+            "column": 24,
+            "problem": "SendableGenericTypes",
+            "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
+        },
+        {
+            "line": 38,
             "column": 39,
             "problem": "SendableGenericTypes",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
-            "line": 26,
+            "line": 39,
             "column": 31,
             "problem": "SendableGenericTypes",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
-            "line": 26,
+            "line": 39,
             "column": 41,
             "problem": "SendableGenericTypes",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
-            "line": 28,
+            "line": 41,
             "column": 9,
             "problem": "ClassAsObject",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         },
         {
-            "line": 31,
+            "line": 44,
             "column": 29,
             "problem": "ClassAsObject",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         },
         {
-            "line": 31,
+            "line": 44,
             "column": 46,
             "problem": "ClassAsObject",
             "suggest": "",
             "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         },
         {
-            "line": 33,
+            "line": 46,
             "column": 26,
             "problem": "SendableGenericTypes",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
-            "line": 20,
+            "line": 23,
             "column": 3,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'prop1' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'prop1' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 21,
+            "line": 24,
             "column": 3,
             "problem": "StrictDiagnostic",
             "suggest": "Property 'prop2' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'prop2' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 29,
+            "column": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'prop1' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'prop1' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 34,
+            "column": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'prop1' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'prop1' has no initializer and is not definitely assigned in the constructor."
         }
     ]
 }
