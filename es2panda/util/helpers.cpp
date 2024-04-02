@@ -738,7 +738,7 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
     return false;
 }
 
-std::string Helpers::GetHashString(std::string str)
+std::string Helpers::GetHashString(const std::string &str)
 {
     uint64_t result = FNV_OFFSET;
 

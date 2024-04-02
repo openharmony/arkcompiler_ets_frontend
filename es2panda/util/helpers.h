@@ -109,7 +109,7 @@ public:
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
     static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
-    static std::string GetHashString(std::string str);
+    static std::string GetHashString(const std::string &str);
     static std::wstring Utf8ToUtf16(const std::string &utf8);
     template <typename T, typename... Args>
     static T FileStream(const std::string &str, Args &&...args);

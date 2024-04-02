@@ -429,10 +429,8 @@ private:
 class FunctionType : public BaseType {
 public:
     explicit FunctionType(TypeExtractor *extractor, const ir::AstNode *node, const util::StringView &name)
-        : BaseType(extractor), paramsTypeIndex_(recorder_->Allocator()->Adapter())
+        : BaseType(extractor), name_(name), paramsTypeIndex_(recorder_->Allocator()->Adapter())
     {
-        name_ = name;
-
         auto fn = [this](const auto *func) {
             typeIndexShift_ = recorder_->GetNodeTypeIndex(func);
             if (typeIndexShift_ != PrimitiveType::ANY) {

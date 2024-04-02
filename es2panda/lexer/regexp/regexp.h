@@ -38,7 +38,7 @@ DEFINE_BITOPS(RegExpFlags)
 
 class RegExpError : std::exception {
 public:
-    explicit RegExpError(std::string_view m);
+    explicit RegExpError(const std::string_view &m);
     std::string message;
 };
 

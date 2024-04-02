@@ -22,7 +22,7 @@ namespace panda::es2panda::compiler {
 
 CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
                                  bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, 
-                                 bool isRecordSource, std::string sourceFile, std::string pkgName, 
+                                 bool isRecordSource, const std::string &sourceFile, const std::string &pkgName,
                                  util::StringView recordName, util::PatchFix *patchFixHelper)
     : binder_(binder), isDebug_(isDebug), isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode),
       isMergeAbc_(isMergeAbc), isTypeExtractorEnabled_(isTypeExtractorEnabled), isJsonInputFile_(isJsonInputFile),

@@ -32,7 +32,7 @@ public:
     explicit StringView() noexcept = default;
     explicit StringView(const ArenaString *str) noexcept : sv_(*str) {}
     // NOLINTNEXTLINE(google-explicit-constructor)
-    StringView(std::string_view sv) noexcept : sv_(sv) {}
+    StringView(const std::string_view &sv) noexcept : sv_(sv) {}
     // NOLINTNEXTLINE(google-explicit-constructor)
     StringView(const char *str) noexcept : sv_(str) {}
     DEFAULT_COPY_SEMANTIC(StringView);
@@ -206,7 +206,7 @@ public:
                 if (!HasNext()) {
                     return false;
                 }
-                iter_++;
+                ++iter_;
             }
             iter_ -= count;
             return true;

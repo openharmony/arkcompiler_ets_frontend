@@ -128,7 +128,7 @@ public:
 
 private:
     void SetCommonjsField(bool isCommonjs);
-    void SetPkgNameField(std::string pkgName);
+    void SetPkgNameField(const std::string &pkgName);
     void GenCommonjsRecord() const;
     void GenESTypeAnnotationRecord() const;
     void AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context);
