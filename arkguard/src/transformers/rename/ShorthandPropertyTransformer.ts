@@ -66,29 +66,32 @@ namespace secharmony {
 
       function transformShortHandProperty(node: Node): Node {
         /**
-         * ShortHandProperty example:
-         * `let name = 'hello;`
-         * `let info = {name};`
+         * example:
+         * `let name1 = 'hello';`
+         * `let info = {name1};`
+         * obfuscated example:
+         * `let name1 = 'hello';`;
+         * `let info = {name1: name1};`
          */
         if (isShorthandPropertyAssignment((node))) {
           // update parent
           return factory.createPropertyAssignment(factory.createIdentifier(node.name.text), node.name);
         }
-        /**
-         * orinal ObjectBinding:
-         * `const { x, y } = { x: 1, y: 2 };`
-         * `const { x: a, y: b} = { x, y };`
-         * obfuscated ObjectBinding:
-         * `const { x: a, y: b } = { x: 1, y: 2 };`
-         * `const { x: c, y: d } = { x: a, y: b };`
-         */
-        if (isObjectBindingPattern(node) && NodeUtils.isObjectBindingPatternAssignment(node)) {
-          return node;
-        }
 
         /**
-         * exclude, eg {name, ...rest}= {'name': 'akira', age : 22}
-         * exclude, eg let [name, age] = ['akira', 22];
+         * exclude grammar instance: let [name2, age2] = ['akira', 22];
+         * 
+         * grammar: {name1, ...rest}= {'name1': 'akira', age : 22};
+         * an alias will be created for name1.
+         * no alias will be created for rest.
+         * 
+         * include grammars:
+         * orinal ObjectBinding():
+         * const { name3, age3 } = foo3();
+         * const { name4, addr4: { contry, place} } = foo4();
+         * obfuscated ObjectBinding:
+         * `const { name3: name3, age3: age3 } = foo3();`
+         * `const { name4: name4, addr4: { contry: contry, place: place}  } = { name4: 4, addr4: { contry:5, place:6} };`
          */
         if (isElementsInObjectBindingPattern(node) && !node.propertyName && !node.dotDotDotToken) {
           return factory.createBindingElement(node.dotDotDotToken, factory.createIdentifier((node.name as Identifier).text),
