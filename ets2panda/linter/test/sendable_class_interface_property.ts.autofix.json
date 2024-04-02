@@ -15,20 +15,6 @@
     ],
     "nodes": [
         {
-            "line": 43,
-            "column": 3,
-            "problem": "SendablePropType",
-            "autofixable": false,
-            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
-        },
-        {
-            "line": 44,
-            "column": 3,
-            "problem": "SendablePropType",
-            "autofixable": false,
-            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
-        },
-        {
             "line": 45,
             "column": 3,
             "problem": "SendablePropType",
@@ -94,12 +80,26 @@
         {
             "line": 54,
             "column": 3,
+            "problem": "SendablePropType",
+            "autofixable": false,
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
+        },
+        {
+            "line": 55,
+            "column": 3,
+            "problem": "SendablePropType",
+            "autofixable": false,
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
+        },
+        {
+            "line": 56,
+            "column": 3,
             "problem": "SendableComputedPropName",
             "autofixable": false,
             "rule": "Computed property names are not allowed in \"Sendable\" classes and interfaces (arkts-sendable-computed-prop-name)"
         },
         {
-            "line": 68,
+            "line": 70,
             "column": 3,
             "problem": "EnumMemberNonConstInit",
             "autofixable": false,
@@ -107,12 +107,19 @@
             "rule": "Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)"
         },
         {
-            "line": 77,
+            "line": 79,
             "column": 3,
             "problem": "EnumMemberNonConstInit",
             "autofixable": false,
             "suggest": "",
             "rule": "Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)"
+        },
+        {
+            "line": 102,
+            "column": 3,
+            "problem": "SendablePropType",
+            "autofixable": false,
+            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
         },
         {
             "line": 103,
@@ -180,19 +187,12 @@
         {
             "line": 112,
             "column": 3,
-            "problem": "SendablePropType",
-            "autofixable": false,
-            "rule": "Properties in \"Sendable\" classes and interfaces must have a Sendable data type (arkts-sendable-prop-types)"
-        },
-        {
-            "line": 113,
-            "column": 3,
             "problem": "SendableComputedPropName",
             "autofixable": false,
             "rule": "Computed property names are not allowed in \"Sendable\" classes and interfaces (arkts-sendable-computed-prop-name)"
         },
         {
-            "line": 23,
+            "line": 25,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -200,7 +200,7 @@
             "rule": "Property 'prop1' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 24,
+            "line": 26,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -208,7 +208,7 @@
             "rule": "Property 'prop2' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 25,
+            "line": 27,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -216,7 +216,7 @@
             "rule": "Property 'prop3' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 26,
+            "line": 28,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -224,7 +224,7 @@
             "rule": "Property 'prop4' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 27,
+            "line": 29,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -232,7 +232,7 @@
             "rule": "Property 'prop5' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 28,
+            "line": 30,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -240,7 +240,7 @@
             "rule": "Property 'prop6' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 30,
+            "line": 32,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -248,7 +248,7 @@
             "rule": "Property 'prop8' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 32,
+            "line": 34,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -256,7 +256,7 @@
             "rule": "Property 'prop10' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 33,
+            "line": 35,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -264,7 +264,7 @@
             "rule": "Property 'prop11' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 34,
+            "line": 36,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -272,7 +272,7 @@
             "rule": "Property 'prop12' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 35,
+            "line": 37,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -280,7 +280,7 @@
             "rule": "Property 'prop13' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 36,
+            "line": 38,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -288,7 +288,7 @@
             "rule": "Property 'prop14' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 37,
+            "line": 39,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -296,7 +296,7 @@
             "rule": "Property 'prop15' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 43,
+            "line": 45,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -304,7 +304,7 @@
             "rule": "Property 'prop1' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 44,
+            "line": 46,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -312,7 +312,7 @@
             "rule": "Property 'prop2' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 45,
+            "line": 47,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -320,7 +320,7 @@
             "rule": "Property 'prop3' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 46,
+            "line": 48,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -328,7 +328,7 @@
             "rule": "Property 'prop4' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 48,
+            "line": 50,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -336,7 +336,7 @@
             "rule": "Property 'prop6' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 50,
+            "line": 52,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -344,7 +344,7 @@
             "rule": "Property 'prop8' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 51,
+            "line": 53,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -352,7 +352,7 @@
             "rule": "Property 'prop9' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 52,
+            "line": 54,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
@@ -360,7 +360,7 @@
             "rule": "Property 'prop10' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 54,
+            "line": 56,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,

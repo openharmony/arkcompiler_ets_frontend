@@ -31,7 +31,10 @@ import { SENDABLE_DECORATOR } from './consts/SendableAPI';
 import {
   ARKTS_COLLECTIONS_D_ETS,
   COLLECTIONS_ARRAY_TYPE,
-  COLLECTIONS_NAMESPACE
+  COLLECTIONS_NAMESPACE,
+  ARKTS_LANG_D_ETS,
+  LANG_NAMESPACE,
+  ISENDABLE_TYPE
 } from './consts/SupportedDetsIndexableTypes';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
@@ -1752,6 +1755,17 @@ export class TsUtils {
     return this.isOrDerivedFrom(type, TsUtils.isISendableInterface);
   }
 
+  typeContainsSendableClassOrInterface(type: ts.Type): boolean {
+    // Only check type contains sendable class / interface
+    if ((type.flags & ts.TypeFlags.Union) !== 0) {
+      return !!(type as ts.UnionType)?.types?.some((type) => {
+        return this.typeContainsSendableClassOrInterface(type);
+      });
+    }
+
+    return this.isSendableClassOrInterface(type);
+  }
+
   static isConstEnumType(type: ts.Type): boolean {
     const targetType = TsUtils.reduceReference(type);
     const sym = targetType.symbol;
@@ -1812,9 +1826,28 @@ export class TsUtils {
   }
 
   static isISendableInterface(type: ts.Type): boolean {
-    const sym = type.getSymbol();
-    return sym !== undefined && TsUtils.isObjectType(type) && (type.objectFlags & ts.ObjectFlags.Interface) !== 0 &&
-      sym.name === 'ISendable';
+    const symbol = type.aliasSymbol ?? type.getSymbol();
+    if (symbol?.declarations === undefined || symbol.declarations.length < 1) {
+      return false;
+    }
+
+    return TsUtils.isArkTSISendableDeclaration(symbol.declarations[0]);
+  }
+
+  private static isArkTSISendableDeclaration(decl: ts.Declaration): boolean {
+    if (!ts.isInterfaceDeclaration(decl) || !decl.name || decl.name.text !== ISENDABLE_TYPE) {
+      return false;
+    }
+
+    if (!ts.isModuleBlock(decl.parent) || decl.parent.parent.name.text !== LANG_NAMESPACE) {
+      return false;
+    }
+
+    if (path.basename(decl.getSourceFile().fileName).toLowerCase() !== ARKTS_LANG_D_ETS) {
+      return false;
+    }
+
+    return true;
   }
 
   isAllowedIndexSignature(node: ts.IndexSignatureDeclaration): boolean {
