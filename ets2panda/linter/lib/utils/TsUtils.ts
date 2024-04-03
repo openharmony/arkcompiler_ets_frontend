@@ -1044,7 +1044,8 @@ export class TsUtils {
     [FaultID.ObjectLiteralNoContextType, TsUtils.getObjectLiteralNoContextTypeHighlightRange],
     [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange],
     [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange],
-    [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange]
+    [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
+    [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1166,6 +1167,16 @@ export class TsUtils {
       return [params[0].getStart(), params[params.length - 1].getEnd()];
     }
     return undefined;
+  }
+
+  // highlight ranges for Sendable rules
+
+  static getSendableDefiniteAssignmentHighlightRange(
+    nodeOrComment: ts.Node | ts.CommentRange
+  ): [number, number] | undefined {
+    const name = (nodeOrComment as ts.PropertyDeclaration).name;
+    const exclamationToken = (nodeOrComment as ts.PropertyDeclaration).exclamationToken;
+    return [name.getStart(), exclamationToken ? exclamationToken.getEnd() : name.getEnd()];
   }
 
   isStdRecordType(type: ts.Type): boolean {
@@ -1712,22 +1723,56 @@ export class TsUtils {
     return decoratorName;
   }
 
+  static unwrapParenthesizedTypeNode(typeNode: ts.TypeNode): ts.TypeNode {
+    let unwrappedTypeNode = typeNode;
+    while (ts.isParenthesizedTypeNode(unwrappedTypeNode)) {
+      unwrappedTypeNode = unwrappedTypeNode.type;
+    }
+
+    return unwrappedTypeNode;
+  }
+
+  isSendableTypeNode(typeNode: ts.TypeNode): boolean {
+
+    /*
+     * In order to correctly identify the usage of the enum member or
+     * const enum in type annotation, we need to handle union type and
+     * type alias cases by processing the type node and checking the
+     * symbol in case of type reference node.
+     */
+
+    typeNode = TsUtils.unwrapParenthesizedTypeNode(typeNode);
+
+    // Only a sendable union type is supported
+    if (ts.isUnionTypeNode(typeNode)) {
+      return typeNode.types.every((elemType) => {
+        return this.isSendableTypeNode(elemType);
+      });
+    }
+
+    const sym = ts.isTypeReferenceNode(typeNode) ?
+      this.trueSymbolAtLocation(typeNode.typeName) :
+      undefined;
+
+    if (sym && sym.getFlags() & ts.SymbolFlags.TypeAlias) {
+      const typeDecl = TsUtils.getDeclaration(sym);
+      if (typeDecl && ts.isTypeAliasDeclaration(typeDecl)) {
+        return this.isSendableTypeNode(typeDecl.type);
+      }
+    }
+
+    // Const enum type is supported
+    if (TsUtils.isConstEnum(sym)) {
+      return true;
+    }
+
+    return this.isSendableType(this.tsTypeChecker.getTypeFromTypeNode(typeNode));
+  }
+
   isSendableType(type: ts.Type): boolean {
     if ((type.flags & (ts.TypeFlags.Boolean | ts.TypeFlags.Number | ts.TypeFlags.String |
                        ts.TypeFlags.BigInt | ts.TypeFlags.Null | ts.TypeFlags.Undefined |
                        ts.TypeFlags.TypeParameter)) !== 0) {
-      return true;
-    }
-
-    // Only the sendable union type is supported
-    if ((type.flags & ts.TypeFlags.Union) !== 0 && (type.flags & ts.TypeFlags.EnumLiteral) === 0 &&
-         this.isSendableUnionType(type as ts.UnionType)) {
-      return true;
-    }
-
-    // Const enum type is supported
-    if ((type.flags & (ts.TypeFlags.Enum | ts.TypeFlags.EnumLiteral)) !== 0 &&
-         TsUtils.isConstEnumType(type)) {
       return true;
     }
 
@@ -1766,26 +1811,8 @@ export class TsUtils {
     return this.isSendableClassOrInterface(type);
   }
 
-  static isConstEnumType(type: ts.Type): boolean {
-    const targetType = TsUtils.reduceReference(type);
-    const sym = targetType.symbol;
-    if (!sym) {
-      return false;
-    }
-    return TsUtils.isConstEnum(sym);
-  }
-
-  static isConstEnum(sym: ts.Symbol): boolean {
-
-    /*
-     * The check in the second part is used when there is only one member in the enum
-     * In this case we need to go through the Parent to get the enum symbol
-     */
-    if (sym.flags === ts.SymbolFlags.ConstEnum || sym.flags === ts.SymbolFlags.EnumMember && (sym as any).parent &&
-                                                  (sym as any).parent.flags === ts.SymbolFlags.ConstEnum) {
-      return true;
-    }
-    return false;
+  static isConstEnum(sym: ts.Symbol | undefined): boolean {
+    return !!sym && sym.flags === ts.SymbolFlags.ConstEnum;
   }
 
   isSendableUnionType(type: ts.UnionType): boolean {
@@ -1806,16 +1833,19 @@ export class TsUtils {
     });
   }
 
-  static hasNonSendableDecorator(decl: ts.ClassDeclaration): boolean {
+  static getNonSendableDecorators(decl: ts.ClassDeclaration): ts.Decorator[] | undefined {
     const decorators = ts.getDecorators(decl);
-    return !!decorators?.some((x) => {
+    return decorators?.filter((x) => {
       return TsUtils.getDecoratorName(x) !== SENDABLE_DECORATOR;
     });
   }
 
-  static isInSendableClassAndHasDecorators(declaration: ts.HasDecorators): boolean {
+  static getDecoratorsIfInSendableClass(declaration: ts.HasDecorators): readonly ts.Decorator[] | undefined {
     const classNode = TsUtils.getClassNodeFromDeclaration(declaration);
-    return !!classNode && TsUtils.hasSendableDecorator(classNode) && ts.getDecorators(declaration) !== undefined;
+    if (classNode === undefined || !TsUtils.hasSendableDecorator(classNode)) {
+      return undefined;
+    }
+    return ts.getDecorators(declaration);
   }
 
   private static getClassNodeFromDeclaration(declaration: ts.HasDecorators): ts.ClassDeclaration | undefined {

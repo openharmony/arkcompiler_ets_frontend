@@ -13,11 +13,24 @@
  * limitations under the License.
  */
 
+class nonSendableClass9 {}
+
 @Sendable
-class SendableClass9 {
-  prop1: SendableClass9 = {a: 1}; // ERROR, the initialization for "Sendable" objects is limited
-  prop2: SendableClass9 = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
+class SendableClass9 {}
+
+@Sendable
+class SendableClass10<T> {
+  prop1: number | null = {a: 1}; // OK
+  prop2: string | bigint | null = [1, 2]; // OK
+  prop3: SendableClass9 = {a: 1}; // ERROR, the initialization for "Sendable" objects is limited
+  prop4: SendableClass9 = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
+  prop5: SendableClass9 | T | BigInt = {a: 1}; // ERROR, the initialization for "Sendable" objects is limited
+  prop6: SendableClass9 | T | BigInt  = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
 }
 
-let v0: SendableClass9 = {b: 1}; // ERROR, the initialization for "Sendable" objects is limited
-let v1: SendableClass9 = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
+let v0: string | nonSendableClass9 | undefined | null = {a: 1}; // OK
+let v1: undefined | nonSendableClass9 | null = [1, 2]; // OK
+let v2: SendableClass9 = {a: 1}; // ERROR, the initialization for "Sendable" objects is limited
+let v3: SendableClass9 = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
+let v4: SendableClass9 | nonSendableClass9 | BigInt = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
+let v5: SendableClass9 | nonSendableClass9 | null = [1, 2]; // ERROR, the initialization for "Sendable" objects is limited
