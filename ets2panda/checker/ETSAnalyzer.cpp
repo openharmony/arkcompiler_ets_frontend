@@ -158,12 +158,13 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
 
     this->CheckMethodModifiers(node);
 
-    if (node->IsNative() && scriptFunc->ReturnTypeAnnotation() == nullptr) {
-        checker->ThrowTypeError("'Native' method should have explicit return type", scriptFunc->Start());
-    }
-
-    if (node->IsNative() && (scriptFunc->IsGetter() || scriptFunc->IsSetter())) {
-        checker->ThrowTypeError("'Native' modifier is invalid for Accessors", scriptFunc->Start());
+    if (node->IsNative()) {
+        if (scriptFunc->ReturnTypeAnnotation() == nullptr) {
+            checker->ThrowTypeError("'Native' method should have explicit return type", scriptFunc->Start());
+        }
+        if (scriptFunc->IsGetter() || scriptFunc->IsSetter()) {
+            checker->ThrowTypeError("'Native' modifier is invalid for Accessors", scriptFunc->Start());
+        }
     }
 
     DoBodyTypeChecking(checker, node, scriptFunc);
