@@ -394,7 +394,6 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
                                               : sourceType->HasTypeFlag(TypeFlag::ETS_BOOLEAN);
     bool const isChar = objectType != nullptr ? objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)
                                               : sourceType->HasTypeFlag(TypeFlag::CHAR);
-
     if (checker::Type *assignableType = GetAssignableBuiltinType(checker, objectType, isBool, isChar, numericTypes);
         assignableType != nullptr) {
         return assignableType;

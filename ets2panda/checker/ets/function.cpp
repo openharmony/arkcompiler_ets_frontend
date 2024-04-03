@@ -289,7 +289,6 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                        {"Type '", argumentType, "' is not compatible with type '",
                                         TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
                                        flags);
-
         if (!invocationCtx.IsInvocable()) {
             if (!CheckOptionalLambdaFunction(argument, substitutedSig, index)) {
                 return false;
