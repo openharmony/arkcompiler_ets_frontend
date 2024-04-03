@@ -85,37 +85,30 @@ function compareContent(filePath) {
   const resultPathAndExtension = FileUtils.getFileSuffix(filePath);
   const resultCachePath = resultPathAndExtension.path + '.ts.cache.json';
   const expectationCachePath = sourcePathAndExtension.path + '_expected_cache.txt';
-  const resultMapPath = resultPathAndExtension.path + '.ts.map';
-  const expectationMapPath = sourcePathAndExtension.path + '_expected_map.txt';
   const hasExpectationFile = fs.existsSync(expectationPath);
   const hasExpectationCache = fs.existsSync(expectationCachePath);
   const hasResultCache = fs.existsSync(resultCachePath);
-  const hasExpectationMap = fs.existsSync(expectationMapPath);
-  const hasResultMap = fs.existsSync(resultMapPath);
-  if (hasExpectationFile) {
-    compareActualAndExpection(filePath, expectationPath);
-  }
-  if(hasExpectationCache && hasResultCache) {
-    compareActualAndExpection(resultCachePath, expectationCachePath);
-  }
-  if(hasExpectationMap && hasResultMap) {
-    compareActualAndExpection(resultMapPath, expectationMapPath);
-  }
-}
-
-function compareActualAndExpection(actualPath, expectationPath) {
-  const actual = fs.readFileSync(actualPath).toString();
-  const expectation = fs.readFileSync(expectationPath).toString();
-  if (actual === expectation) {
-    contentcomparationSuccessCount++;
-  } else {
-    contentcomparationFailureCount++;
-    contentComparisionFailureFiles.push(actualPath);
-    const differences = diff.diffLines(actual, expectation);
-    differences.forEach(part => {
-      const color = part.added ? '\x1b[32m' : part.removed ? '\x1b[31m' : '\x1b[0m';
-      console.log(color + part.value + '\x1b[0m');
-    });
+  if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
+    let actual;
+    let expectation;
+    if (hasExpectationFile) {
+      actual = fs.readFileSync(filePath).toString();
+      expectation = fs.readFileSync(expectationPath).toString();
+    } else {
+      actual = fs.readFileSync(resultCachePath).toString();
+      expectation = fs.readFileSync(expectationCachePath).toString();
+    }
+    if (actual === expectation) {
+      contentcomparationSuccessCount++;
+    } else {
+      contentcomparationFailureCount++;
+      contentComparisionFailureFiles.push(filePath);
+      const differences = diff.diffLines(actual, expectation);
+      differences.forEach(part => {
+        const color = part.added ? '\x1b[32m' : part.removed ? '\x1b[31m' : '\x1b[0m';
+        console.log(color + part.value + '\x1b[0m');
+      });
+    }
   }
 }
 
