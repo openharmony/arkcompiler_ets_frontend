@@ -66,6 +66,8 @@ void TSDeclGen::Generate()
     license << " */\n\n";
     Out(license.str());
     Out("declare const exports: any;");
+    OutEndl();
+    Out("let ETSGLOBAL: any = (globalThis as any).Panda.getClass('LETSGLOBAL;');");
     OutEndl(2U);
 
     for (auto *globalStatement : program_->Ast()->Statements()) {
@@ -556,8 +558,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
     OutEndl();
 
     if (state_.inGlobalClass) {
-        Out("(", methodName, " as any) = (globalThis as any).Panda.getFunction('", state_.currentClassDescriptor,
-            "', '", methodName, "');");
+        Out("(", methodName, " as any) = ETSGLOBAL.", methodName, ";");
         OutEndl();
         GenExports(methodName);
         if (methodName == compiler::Signatures::INIT_METHOD) {
@@ -570,6 +571,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
 void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
 {
     if (state_.inGlobalClass) {
+        GenGlobalVarDeclaration(classProp);
         return;
     }
 
@@ -586,6 +588,28 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
         Out(" = {} as any");
     }
     Out(";");
+    OutEndl();
+}
+
+void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
+{
+    if (!globalVar->IsExported() && !globalVar->IsDefaultExported()) {
+        return;
+    }
+
+    const auto varName = GetKeyName(globalVar->Key());
+    DebugPrint("GenGlobalVarDeclaration: " + varName);
+    if (!globalVar->IsConst()) {
+        Warning("Not constant global variables are not supported, variable \"" + varName + "\" was skipped");
+        return;
+    }
+
+    Out("const ", varName, ": ");
+    GenType(globalVar->TsType());
+    Out(" = ETSGLOBAL.", varName, ';');
+    OutEndl();
+
+    GenExports(varName);
     OutEndl();
 }
 
