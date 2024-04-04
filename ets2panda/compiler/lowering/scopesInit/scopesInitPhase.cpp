@@ -740,6 +740,16 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
     Iterate(importSpec);
 }
 
+void InitScopesPhaseETS::VisitImportSpecifier(ir::ImportSpecifier *importSpec)
+{
+    if (importSpec->Parent()->AsETSImportDeclaration()->IsPureDynamic()) {
+        auto [decl, var] =
+            VarBinder()->NewVarDecl<varbinder::LetDecl>(importSpec->Start(), importSpec->Local()->Name(), importSpec);
+        var->AddFlag(varbinder::VariableFlags::INITIALIZED);
+    }
+    Iterate(importSpec);
+}
+
 //  Auxiliary method to avoid extra nested levels and too large function size
 void AddOverload(ir::MethodDefinition *overload, varbinder::Variable *variable) noexcept
 {

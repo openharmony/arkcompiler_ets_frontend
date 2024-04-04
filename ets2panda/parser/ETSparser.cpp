@@ -2337,7 +2337,7 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     ir::ImportSource *reExportSource = ParseSourceFromClause(true);
 
     lexer::SourcePosition endLoc = reExportSource->Source()->End();
-    auto *reExportDeclaration = AllocNode<ir::ETSImportDeclaration>(reExportSource, specifiers);
+    auto *reExportDeclaration = AllocNode<ir::ETSImportDeclaration>(reExportSource, std::move(specifiers));
     reExportDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(reExportDeclaration);

@@ -29,9 +29,9 @@ class RestParameterTest : public testing::Test {
 public:
     RestParameterTest()
     {
-        constexpr auto COMPILER_SIZE = 268435456;
+        const auto compilerSize = 268435456;
 
-        mem::MemConfig::Initialize(0, 0, COMPILER_SIZE, 0, 0, 0);
+        mem::MemConfig::Initialize(0, 0, compilerSize, 0, 0, 0);
         PoolManager::Initialize(PoolType::MMAP);
     }
     ~RestParameterTest() override
@@ -325,34 +325,6 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
     )");
     CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL-lambda$invoke$0-i64[]-i32-0.invoke:i64[];i32;");
 }
-
-// NOTE(aleksisch): lambda with rest broken, throws CTE
-// TEST_F(RestParameterTest, lambda_with_rest_parameters_0)
-//{
-//    SetCurrentProgram(R"(
-//        let fn = (...args: long[]): int => {
-//            return 1;
-//        }
-//    )");
-//    CheckRestParameterFlag("FunctionalInterface-i64[]-i32-0.invoke:i64[];i32;");
-//}
-
-// TEST_F(RestParameterTest, lambda_with_rest_parameters_1)
-//{
-//     SetCurrentProgram(R"(
-//         class A {
-//             fn = (...args: long[]): int => {
-//                 return 1;
-//             }
-//         }
-//
-//         let fn = (o: Object, ...args: long[]): int => {
-//             return 1;
-//         }
-//     )");
-//     CheckRestParameterFlag("FunctionalInterface-i64[]-i32-0.invoke:i64[];i32;");
-//     CheckRestParameterFlag("FunctionalInterface-std-core-Object-i64[]-i32-0.invoke:std.core.Object;i64[];i32;");
-// }
 
 // === Abstract method of abstract class ===
 TEST_F(RestParameterTest, abstract_function_without_rest_parameter_0)

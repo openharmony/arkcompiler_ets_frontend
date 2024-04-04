@@ -253,13 +253,13 @@ checker::Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
         resolved = FindVariableInGlobal(ident);
     }
 
+    ident->SetVariable(resolved);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ValidateResolvedIdentifier(ident, resolved);
 
     ValidatePropertyAccess(resolved, Context().ContainingClass(), ident->Start());
     SaveCapturedVariable(resolved, ident);
 
-    ident->SetVariable(resolved);
     return GetTypeOfVariable(resolved);
 }
 

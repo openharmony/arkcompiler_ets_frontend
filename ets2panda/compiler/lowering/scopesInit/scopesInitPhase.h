@@ -337,7 +337,7 @@ private:
     void VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock) override;
     void VisitBlockExpression(ir::BlockExpression *blockExpr) override;
     void VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec) override;
-    void VisitImportSpecifier([[maybe_unused]] ir::ImportSpecifier *importSpec) override {};
+    void VisitImportSpecifier([[maybe_unused]] ir::ImportSpecifier *importSpec) override;
     void VisitImportDefaultSpecifier([[maybe_unused]] ir::ImportDefaultSpecifier *importSpec) override {};
     void VisitETSReExportDeclaration(ir::ETSReExportDeclaration *reExport) override;
     void VisitETSParameterExpression(ir::ETSParameterExpression *paramExpr) override;

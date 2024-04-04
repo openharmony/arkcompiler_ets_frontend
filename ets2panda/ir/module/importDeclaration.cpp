@@ -22,6 +22,7 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
+
 void ImportDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (auto *transformedNode = cb(source_); source_ != transformedNode) {
