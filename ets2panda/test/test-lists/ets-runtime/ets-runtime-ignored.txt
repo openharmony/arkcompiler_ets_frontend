@@ -16,9 +16,6 @@ generic-set.ets
 # panda#11502
 nullCoalesc.ets
 
-# panda#13365
-non-const-capture.ets
-
 # panda#11104
 unboxing.ets
 
