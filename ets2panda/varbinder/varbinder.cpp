@@ -482,6 +482,7 @@ void VarBinder::AddCompilableFunction(ir::ScriptFunction *func)
 {
     if (func->IsArrow()) {
         VariableScope *outerVarScope = scope_->EnclosingVariableScope();
+        ASSERT(outerVarScope != nullptr);
         outerVarScope->AddFlag(ScopeFlags::INNER_ARROW);
     }
 

@@ -35,7 +35,7 @@
 namespace ark::es2panda::checker {
 Checker::Checker()
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
-      context_(&allocator_, CheckerStatus::NO_OPTS),
+      context_(this, CheckerStatus::NO_OPTS),
       globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
       relation_(allocator_.New<TypeRelation>(this))
 {

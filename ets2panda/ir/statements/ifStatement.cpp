@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,7 +14,6 @@
  */
 
 #include "ifStatement.h"
-#include <cstddef>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -99,5 +98,28 @@ checker::Type *IfStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 checker::Type *IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+IfStatement *IfStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
+    auto *const consequent = consequent_->Clone(allocator, nullptr)->AsStatement();
+    auto *const alternate = alternate_ != nullptr ? consequent_->Clone(allocator, nullptr)->AsStatement() : nullptr;
+
+    if (auto *const clone = allocator->New<IfStatement>(test, consequent, alternate); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        test->SetParent(clone);
+        consequent->SetParent(clone);
+        if (alternate != nullptr) {
+            alternate->SetParent(clone);
+        }
+
+        clone->SetRange(Range());
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace ark::es2panda::ir

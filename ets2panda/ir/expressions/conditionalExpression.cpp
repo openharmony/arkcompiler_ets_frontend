@@ -84,22 +84,14 @@ checker::Type *ConditionalExpression::Check(checker::ETSChecker *checker)
 
 ConditionalExpression *ConditionalExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const test = test_ != nullptr ? test_->Clone(allocator, nullptr)->AsExpression() : nullptr;
-    auto *const consequent = consequent_ != nullptr ? consequent_->Clone(allocator, nullptr)->AsExpression() : nullptr;
-    auto *const alternate = alternate_ != nullptr ? alternate_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const test = test_->Clone(allocator, nullptr)->AsExpression();
+    auto *const consequent = consequent_->Clone(allocator, nullptr)->AsExpression();
+    auto *const alternate = alternate_->Clone(allocator, nullptr)->AsExpression();
 
     if (auto *const clone = allocator->New<ConditionalExpression>(test, consequent, alternate); clone != nullptr) {
-        if (test != nullptr) {
-            test->SetParent(clone);
-        }
-
-        if (consequent != nullptr) {
-            consequent->SetParent(clone);
-        }
-
-        if (alternate != nullptr) {
-            alternate->SetParent(clone);
-        }
+        test->SetParent(clone);
+        consequent->SetParent(clone);
+        alternate->SetParent(clone);
 
         if (parent != nullptr) {
             clone->SetParent(parent);

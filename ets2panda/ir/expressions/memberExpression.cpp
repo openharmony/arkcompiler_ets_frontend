@@ -17,6 +17,7 @@
 
 #include "checker/TSchecker.h"
 #include "checker/ets/castingContext.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"

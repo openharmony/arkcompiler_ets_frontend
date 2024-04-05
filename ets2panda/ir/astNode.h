@@ -22,9 +22,6 @@
 #include "lexer/token/sourceLocation.h"
 #include "util/enumbitops.h"
 
-#include <functional>
-#include "macros.h"
-
 namespace ark::es2panda::compiler {
 class PandaGen;
 class ETSGen;

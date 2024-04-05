@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,23 +13,28 @@
  * limitations under the License.
  */
 
-function foo_i(value: int): string {
+function foo_i(value: Int): string {
     return value.toString();
 }
 
-function foo_d(value: double): string {
+function foo_d(value: Double): string {
     return value.toString();
 }
 
-function foo_n(value: number): string {
+function foo_n(value: Number): string {
     return value.toString();
 }
 
 function main(): void {
-    let str_i: string = foo_i(4);
+    let i: int = 4
+    let str_i: string = foo_i(i);
     assert str_i == "4";
-    let str_d: string = foo_d(3.14);
+
+    let d: double = 3.14
+    let str_d: string = foo_d(d);
     assert str_d == "3.14";
-    let str_n: string = foo_n(5);
+
+    let n: number = 5
+    let str_n: string = foo_n(n);
     assert str_n == "5";
 }

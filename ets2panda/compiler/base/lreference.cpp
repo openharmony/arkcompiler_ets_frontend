@@ -22,7 +22,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/types/ets/etsUnionType.h"
-#include "ir/astNode.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "ir/base/spreadElement.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classDefinition.h"

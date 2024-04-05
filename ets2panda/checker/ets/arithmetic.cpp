@@ -15,10 +15,7 @@
 
 #include "arithmetic.h"
 
-#include "ir/expressions/identifier.h"
 #include "varbinder/variable.h"
-#include "varbinder/scope.h"
-#include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {
@@ -484,7 +481,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        return {GlobalETSBooleanType(), CreateETSUnionType({leftType, rightType})};
+        return {GlobalETSBooleanType(), CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)})};
     }
 
     if (promotedType == nullptr && !bothConst) {
@@ -650,17 +647,22 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
 {
     checker::Type *const leftType = left->Check(this);
 
+    if (leftType == nullptr) {
+        ThrowTypeError("Unexpected type error in binary expression", left->Start());
+    }
+
     if (operationType == lexer::TokenType::KEYW_INSTANCEOF) {
         AddStatus(checker::CheckerStatus::IN_INSTANCEOF_CONTEXT);
     }
 
-    checker::Type *rightType = right->Check(this);
+    Context().CheckTestSmartCastCondition(operationType);
 
+    checker::Type *rightType = right->Check(this);
     if (right->IsTypeNode()) {
         rightType = right->AsTypeNode()->GetType(this);
     }
 
-    if ((leftType == nullptr) || (rightType == nullptr)) {
+    if (rightType == nullptr) {
         ThrowTypeError("Unexpected type error in binary expression", pos);
     }
 

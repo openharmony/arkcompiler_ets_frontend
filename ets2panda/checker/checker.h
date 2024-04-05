@@ -16,20 +16,10 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_H
 #define ES2PANDA_CHECKER_CHECKER_H
 
-#include "varbinder/enumMemberResult.h"
-#include "checker/checkerContext.h"
-#include "checker/SemanticAnalyzer.h"
-#include "checker/types/typeRelation.h"
-#include "util/enumbitops.h"
-#include "util/ustring.h"
 #include "es2panda.h"
 
-#include "macros.h"
-
-#include <cstdint>
-#include <initializer_list>
-#include <unordered_map>
-#include <unordered_set>
+#include "checker/checkerContext.h"
+#include "checker/SemanticAnalyzer.h"
 
 namespace ark::es2panda::parser {
 class Program;
@@ -71,60 +61,61 @@ class Checker {
 public:
     explicit Checker();
     virtual ~Checker() = default;
+
     NO_COPY_SEMANTIC(Checker);
     NO_MOVE_SEMANTIC(Checker);
 
-    ArenaAllocator *Allocator()
+    [[nodiscard]] ArenaAllocator *Allocator() noexcept
     {
         return &allocator_;
     }
 
-    varbinder::Scope *Scope() const
+    [[nodiscard]] varbinder::Scope *Scope() const noexcept
     {
         return scope_;
     }
 
-    CheckerContext &Context()
+    [[nodiscard]] CheckerContext &Context() noexcept
     {
         return context_;
     }
 
-    bool HasStatus(CheckerStatus status)
+    [[nodiscard]] bool HasStatus(CheckerStatus status) noexcept
     {
         return (context_.Status() & status) != 0;
     }
 
-    void RemoveStatus(CheckerStatus status)
+    void RemoveStatus(CheckerStatus status) noexcept
     {
         context_.Status() &= ~status;
     }
 
-    void AddStatus(CheckerStatus status)
+    void AddStatus(CheckerStatus status) noexcept
     {
         context_.Status() |= status;
     }
 
-    TypeRelation *Relation() const
+    [[nodiscard]] TypeRelation *Relation() const noexcept
     {
         return relation_;
     }
 
-    GlobalTypesHolder *GetGlobalTypesHolder() const
+    [[nodiscard]] GlobalTypesHolder *GetGlobalTypesHolder() const noexcept
     {
         return globalTypes_;
     }
 
-    RelationHolder &IdenticalResults()
+    [[nodiscard]] RelationHolder &IdenticalResults() noexcept
     {
         return identicalResults_;
     }
 
-    RelationHolder &AssignableResults()
+    [[nodiscard]] RelationHolder &AssignableResults() noexcept
     {
         return assignableResults_;
     }
 
-    RelationHolder &ComparableResults()
+    [[nodiscard]] RelationHolder &ComparableResults() noexcept
     {
         return comparableResults_;
     }
@@ -134,28 +125,30 @@ public:
         return uncheckedCastableResults_;
     }
 
-    RelationHolder &SupertypeResults()
+    [[nodiscard]] RelationHolder &SupertypeResults() noexcept
     {
         return supertypeResults_;
     }
 
-    std::unordered_set<const void *> &TypeStack()
+    [[nodiscard]] std::unordered_set<const void *> &TypeStack() noexcept
     {
         return typeStack_;
     }
 
-    virtual bool IsETSChecker()
+    [[nodiscard]] virtual bool IsETSChecker() const noexcept
     {
         return false;
     }
 
-    ETSChecker *AsETSChecker()
+    [[nodiscard]] ETSChecker *AsETSChecker()
     {
+        ASSERT(IsETSChecker());
         return reinterpret_cast<ETSChecker *>(this);
     }
 
-    const ETSChecker *AsETSChecker() const
+    [[nodiscard]] const ETSChecker *AsETSChecker() const
     {
+        ASSERT(IsETSChecker());
         return reinterpret_cast<const ETSChecker *>(this);
     }
 
@@ -288,7 +281,7 @@ public:
                                  Signature *containingSignature)
         : checker_(checker), prev_(checker->context_)
     {
-        checker_->context_ = CheckerContext(checker->Allocator(), newStatus, containingClass, containingSignature);
+        checker_->context_ = CheckerContext(checker, newStatus, containingClass, containingSignature);
     }
 
     NO_COPY_SEMANTIC(SavedCheckerContext);

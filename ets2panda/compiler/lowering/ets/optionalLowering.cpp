@@ -71,7 +71,7 @@ static ir::AstNode *LowerOptionalExpr(GetSource const &getSource, SetSource cons
     stmts[0]->AsVariableDeclaration()->Declarators()[0]->SetInit(getSource(expr));
     stmts[1]->AsExpressionStatement()->GetExpression()->AsConditionalExpression()->SetAlternate(chain->GetExpression());
 
-    setSource(expr, parser->CreateFormattedExpression("@@I1!", parser::DEFAULT_SOURCE_FILE,
+    setSource(expr, parser->CreateFormattedExpression("@@I1", parser::DEFAULT_SOURCE_FILE,
                                                       tmpIdentClone->Clone(allocator, nullptr)));
     return sequenceExpr;
 }

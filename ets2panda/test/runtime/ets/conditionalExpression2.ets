@@ -14,7 +14,7 @@
  */
 
 function foo(form?: String) {
-    const f = (form == undefined) ? "abc" : form!
+    const f = (form == undefined) ? "abc" : form
     switch (f) {
         case "abc":
             return 41

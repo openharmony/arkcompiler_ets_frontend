@@ -95,7 +95,9 @@ public:
     {
         if (phaseName == "ScopesInitPhase") {
             accumulatedChecks_.insert("NodeHasParentForAll");
+            accumulatedChecks_.insert("NodeHasSourceRangeForAll");
             accumulatedChecks_.insert("EveryChildHasValidParentForAll");
+            accumulatedChecks_.insert("EveryChildInParentRangeForAll");
             accumulatedChecks_.insert("VariableHasScopeForAll");
         }
         if (phaseName == "CheckerPhase") {

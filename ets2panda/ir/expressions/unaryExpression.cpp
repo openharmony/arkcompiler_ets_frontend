@@ -20,7 +20,6 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
-#include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
 void UnaryExpression::TransformChildren(const NodeTransformer &cb)
@@ -83,4 +82,5 @@ UnaryExpression *UnaryExpression::Clone(ArenaAllocator *const allocator, AstNode
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
+
 }  // namespace ark::es2panda::ir

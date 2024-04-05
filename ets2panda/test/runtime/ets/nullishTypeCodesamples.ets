@@ -59,8 +59,14 @@ class DTree<T> {
 class B {
     public b: boolean = true;
 };
+
+
+function dummy(): B | undefined {
+    return  new B();
+}
+
 function testb(): void {
-    let b: B | undefined = new B();
+    let b: B | undefined = dummy();
     if (b?.b == false) {
         b!.b = true;
     }
@@ -71,14 +77,19 @@ class Test {
 }
 
 type int32 = int;
+
+function dummy1(): int32 | null {
+    return null;
+}
+
 function testf(a: int32 | undefined): int32 {
-    let x: int32 | null = null;
+    let x: int32 | null = dummy1();
     return a! + x!;
 }
 
 function testcond() {
     let _a: null | undefined = null, options_x: null | undefined = null;
-    return (_a = options_x) !== null && _a !== undefined ? _a : 1;
+    return (_a = options_x) !== null && _a != undefined ? _a : 1;
 }
 
 type float32 = float;

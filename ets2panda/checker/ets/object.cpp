@@ -15,7 +15,6 @@
 
 #include "boxingConverter.h"
 #include "varbinder/variableFlags.h"
-#include "checker/ets/castingContext.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
@@ -28,33 +27,23 @@
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/expressionStatement.h"
-#include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/callExpression.h"
-#include "ir/expressions/superExpression.h"
 #include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/thisExpression.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/statements/returnStatement.h"
 #include "ir/ts/tsClassImplements.h"
 #include "ir/ts/tsInterfaceHeritage.h"
-#include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
-#include "varbinder/variable.h"
-#include "varbinder/scope.h"
 #include "varbinder/declaration.h"
-#include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
-#include "checker/types/typeFlag.h"
 #include "checker/types/ets/etsDynamicType.h"
-#include "checker/types/ets/types.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
 #include "ir/ets/etsUnionType.h"
 
@@ -1334,11 +1323,13 @@ PropertySearchFlags ETSChecker::GetSearchFlags(const ir::MemberExpression *const
         (targetRef->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE) ||
          (targetRef->HasFlag(varbinder::VariableFlags::TYPE_ALIAS) &&
           targetRef->TsType()->Variable()->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)))) {
-        searchFlag &= ~(PropertySearchFlags::SEARCH_INSTANCE);
+        searchFlag &= ~PropertySearchFlags::SEARCH_INSTANCE;
     } else if (memberExpr->Object()->IsThisExpression() ||
+               (targetRef != nullptr && targetRef->Declaration() != nullptr &&
+                targetRef->Declaration()->IsLetOrConstDecl()) ||
                (memberExpr->Object()->IsIdentifier() && memberExpr->ObjType()->GetDeclNode() != nullptr &&
                 memberExpr->ObjType()->GetDeclNode()->IsTSInterfaceDeclaration())) {
-        searchFlag &= ~(PropertySearchFlags::SEARCH_STATIC);
+        searchFlag &= ~PropertySearchFlags::SEARCH_STATIC;
     }
     return searchFlag;
 }

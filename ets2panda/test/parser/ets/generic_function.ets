@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,10 +14,10 @@
  */
 
 interface Comparable2 {
-  localeCompare(other: Object): int;
+  localeCompare(other: Object|null): int;
 }
 
-function compare<T extends Comparable2>(x: T, y: T): int {
+function compare<T extends Comparable2>(x: T|null, y: T|null): int {
   if (x == null) return y == null ? 0 : -1;
   if (y == null) return 1;
   return x.localeCompare(y);

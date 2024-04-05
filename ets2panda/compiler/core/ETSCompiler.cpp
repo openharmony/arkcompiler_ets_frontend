@@ -19,7 +19,6 @@
 #include "checker/ets/dynamic/dynamicCall.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
-#include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
@@ -1005,13 +1004,25 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
         return;
     }
 
-    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    auto *const smartType = expr->TsType();
+    auto ttctx = compiler::TargetTypeContext(etsg, smartType);
 
     ASSERT(expr->Variable() != nullptr);
     if (!expr->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
         etsg->LoadVar(expr, expr->Variable());
     } else {
-        etsg->SetAccumulatorType(expr->TsType());
+        etsg->SetAccumulatorType(smartType);
+    }
+
+    //  In case when smart cast type of identifier differs from common variable type
+    //  set the accumulator type to the correct actual value and perform cast if required
+    if (!etsg->Checker()->AsETSChecker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(smartType),
+                                                                    expr->Variable()->TsType())) {
+        etsg->SetAccumulatorType(smartType);
+        if (smartType->IsETSReferenceType() &&  //! smartType->DefinitelyNotETSNullish() &&
+            (expr->Parent() == nullptr || !expr->Parent()->IsTSAsExpression())) {
+            etsg->CastToReftype(expr, smartType, false);
+        }
     }
 }
 
@@ -1052,63 +1063,31 @@ bool ETSCompiler::CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpres
 void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    auto lambda = etsg->VarBinder()->LambdaObjects().find(expr);
-    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
-        etsg->CreateLambdaObjectFromMemberReference(expr, expr->object_, lambda->second.first);
-        etsg->SetAccumulatorType(expr->TsType());
+
+    if (HandleLambdaObject(expr, etsg)) {
         return;
     }
 
     compiler::RegScope rs(etsg);
 
-    auto *const objectType = etsg->Checker()->GetApparentType(expr->Object()->TsType());
-
     if (CompileComputed(etsg, expr)) {
         return;
     }
 
+    if (HandleArrayTypeLengthProperty(expr, etsg)) {
+        return;
+    }
+
+    if (HandleEnumTypes(expr, etsg)) {
+        return;
+    }
+
+    if (HandleStaticProperties(expr, etsg)) {
+        return;
+    }
+
+    auto *const objectType = etsg->Checker()->GetApparentType(expr->Object()->TsType());
     auto &propName = expr->Property()->AsIdentifier()->Name();
-
-    if (objectType->IsETSArrayType() && propName.Is("length")) {
-        auto ottctx = compiler::TargetTypeContext(etsg, objectType);
-        etsg->CompileAndCheck(expr->Object());
-
-        compiler::VReg objReg = etsg->AllocReg();
-        etsg->StoreAccumulator(expr, objReg);
-
-        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-        etsg->LoadArrayLength(expr, objReg);
-        etsg->ApplyConversion(expr, expr->TsType());
-        return;
-    }
-
-    if (objectType->IsETSEnumType() || objectType->IsETSStringEnumType()) {
-        auto const *const enumInterface = [objectType, expr]() -> checker::ETSEnumInterface const * {
-            if (objectType->IsETSEnumType()) {
-                return expr->TsType()->AsETSEnumType();
-            }
-            return expr->TsType()->AsETSStringEnumType();
-        }();
-
-        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-        etsg->LoadAccumulatorInt(expr, enumInterface->GetOrdinal());
-        return;
-    }
-
-    if (etsg->Checker()->IsVariableStatic(expr->PropVar())) {
-        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-
-        if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-            checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
-            etsg->CallStatic0(expr, sig->InternalName());
-            etsg->SetAccumulatorType(expr->TsType());
-            return;
-        }
-
-        util::StringView fullName = etsg->FormClassPropReference(expr->Object()->TsType()->AsETSObjectType(), propName);
-        etsg->LoadStaticProperty(expr, expr->TsType(), fullName);
-        return;
-    }
 
     auto ottctx = compiler::TargetTypeContext(etsg, expr->Object()->TsType());
     etsg->CompileAndCheck(expr->Object());
@@ -1118,9 +1097,10 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     etsg->StoreAccumulator(expr, objReg);
 
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-
-    if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-        checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
+    auto const *const variable = expr->PropVar();
+    if (auto const *const variableType = variable->TsType();
+        variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+        checker::Signature *sig = variableType->AsETSFunctionType()->FindGetter();
         etsg->CallThisVirtual0(expr, objReg, sig->InternalName());
     } else if (objectType->IsETSDynamicType()) {
         etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, propName);
@@ -1131,6 +1111,75 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
         etsg->LoadProperty(expr, expr->TsType(), objReg, fullName);
     }
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
+}
+
+bool ETSCompiler::HandleLambdaObject(const ir::MemberExpression *expr, ETSGen *etsg) const
+{
+    auto lambda = etsg->VarBinder()->LambdaObjects().find(expr);
+    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
+        etsg->CreateLambdaObjectFromMemberReference(expr, expr->object_, lambda->second.first);
+        etsg->SetAccumulatorType(expr->TsType());
+        return true;
+    }
+    return false;
+}
+
+bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr, ETSGen *etsg) const
+{
+    auto *const objectType = etsg->Checker()->GetApparentType(expr->Object()->TsType());
+    auto &propName = expr->Property()->AsIdentifier()->Name();
+    if (objectType->IsETSArrayType() && propName.Is("length")) {
+        auto ottctx = compiler::TargetTypeContext(etsg, objectType);
+        etsg->CompileAndCheck(expr->Object());
+
+        compiler::VReg objReg = etsg->AllocReg();
+        etsg->StoreAccumulator(expr, objReg);
+
+        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+        etsg->LoadArrayLength(expr, objReg);
+        etsg->ApplyConversion(expr, expr->TsType());
+        return true;
+    }
+    return false;
+}
+
+bool ETSCompiler::HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg) const
+{
+    auto *const objectType = etsg->Checker()->GetApparentType(expr->Object()->TsType());
+    if (objectType->IsETSEnumType() || objectType->IsETSStringEnumType()) {
+        auto const *const enumInterface = [objectType, expr]() -> checker::ETSEnumInterface const * {
+            if (objectType->IsETSEnumType()) {
+                return expr->TsType()->AsETSEnumType();
+            }
+            return expr->TsType()->AsETSStringEnumType();
+        }();
+
+        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+        etsg->LoadAccumulatorInt(expr, enumInterface->GetOrdinal());
+        return true;
+    }
+    return false;
+}
+
+bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGen *etsg) const
+{
+    auto &propName = expr->Property()->AsIdentifier()->Name();
+    auto const *const variable = expr->PropVar();
+    if (etsg->Checker()->IsVariableStatic(variable)) {
+        auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+
+        if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+            checker::Signature *sig = variable->TsType()->AsETSFunctionType()->FindGetter();
+            etsg->CallStatic0(expr, sig->InternalName());
+            etsg->SetAccumulatorType(expr->TsType());
+            return true;
+        }
+
+        util::StringView fullName = etsg->FormClassPropReference(expr->Object()->TsType()->AsETSObjectType(), propName);
+        etsg->LoadStaticProperty(expr, expr->TsType(), fullName);
+        return true;
+    }
+    return false;
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::NewExpression *expr) const
@@ -1229,29 +1278,17 @@ void ETSCompiler::Compile(const ir::ThisExpression *expr) const
 void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
+    checker::ETSChecker const *checker = etsg->Checker();
     ir::Expression *arg = expr->Argument();
 
-    if (arg->IsNullLiteral()) {
-        etsg->LoadAccumulatorString(expr, "object");
-        return;
-    }
-    if (arg->IsUndefinedLiteral()) {
-        etsg->LoadAccumulatorString(expr, "undefined");
-        return;
-    }
-
     arg->Compile(etsg);
-    checker::Type *argType = arg->TsType();
-
-    auto boxingFlag = ir::BoxingUnboxingFlags::UNBOXING_FLAG & arg->GetBoxingUnboxingFlags();
-    if (boxingFlag != 0U) {
-        argType = etsg->Checker()->GetBoxedType(static_cast<ir::BoxingUnboxingFlags>(boxingFlag));
-    }
-    if (argType->HasTypeFlag(es2panda::checker::TypeFlag::ETS_PRIMITIVE)) {
-        etsg->LoadAccumulatorString(expr, etsg->Checker()->TypeToName(argType));
+    // NOTE(vpukhov): infer result type in analyzer
+    auto argType = arg->TsType();
+    if (auto unboxed = checker->MaybePrimitiveBuiltinType(argType);
+        unboxed->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        etsg->LoadAccumulatorString(expr, checker->TypeToName(unboxed));
         return;
     }
-
     if (argType->IsETSUndefinedType()) {
         etsg->LoadAccumulatorString(expr, "undefined");
         return;
@@ -1271,6 +1308,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) con
     auto argReg = etsg->AllocReg();
     etsg->StoreAccumulator(expr, argReg);
     etsg->CallThisStatic0(expr, argReg, Signatures::BUILTIN_RUNTIME_TYPEOF);
+    etsg->SetAccumulatorType(expr->TsType());
 }
 
 void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
@@ -1537,7 +1575,7 @@ static void CompileImpl(const ir::BreakStatement *self, [[maybe_unused]] CodeGen
 void ETSCompiler::Compile(const ir::BreakStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+    if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
     }
     CompileImpl(st, etsg);
@@ -1554,7 +1592,7 @@ static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
 void ETSCompiler::Compile(const ir::ContinueStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+    if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
     }
     CompileImpl(st, etsg);
@@ -1748,7 +1786,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     if (st->Argument() == nullptr) {
-        if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+        if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
             return;
         }
 
@@ -1777,7 +1815,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     etsg->ApplyConversion(st->Argument(), nullptr);
     etsg->ApplyConversion(st->Argument(), st->ReturnType());
 
-    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+    if (etsg->ExtendWithFinalizer(st->Parent(), st)) {
         return;
     }
 

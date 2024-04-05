@@ -24,7 +24,7 @@
 #include "varbinder/ETSBinder.h"
 #include "parser/program/program.h"
 #include "checker/ets/aliveAnalyzer.h"
-
+#include "checker/types/globalTypesHolder.h"
 #include "ir/base/scriptFunction.h"
 #include "util/helpers.h"
 
@@ -318,6 +318,12 @@ Type *ETSChecker::GlobalWildcardType() const
 ETSObjectType *ETSChecker::GlobalETSObjectType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSObjectType);
+}
+
+ETSUnionType *ETSChecker::GlobalETSNullishType() const
+{
+    auto *ret = (GetGlobalTypesHolder()->*&GlobalTypesHolder::GlobalETSNullishType)();
+    return ret != nullptr ? ret->AsETSUnionType() : nullptr;
 }
 
 ETSUnionType *ETSChecker::GlobalETSNullishObjectType() const

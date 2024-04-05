@@ -16,12 +16,6 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_TYPE_RELATION_CONTEXT_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_TYPE_RELATION_CONTEXT_H
 
-#include "ir/expression.h"
-#include "ir/base/classDefinition.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "checker/types/type.h"
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::checker {

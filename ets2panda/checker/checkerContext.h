@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +16,9 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
-#include <macros.h>
+#include "checker/types/type.h"
+#include "ir/statements/loopStatement.h"
 #include "varbinder/variable.h"
-#include "util/enumbitops.h"
-
-#include <vector>
 
 namespace ark::es2panda::checker {
 
@@ -46,70 +44,96 @@ enum class CheckerStatus : uint32_t {
     IGNORE_VISIBILITY = 1U << 14U,
     IN_INSTANCE_EXTENSION_METHOD = 1U << 15U,
     IN_LOCAL_CLASS = 1U << 16U,
-    IN_INSTANCEOF_CONTEXT = 1U << 17U
+    IN_INSTANCEOF_CONTEXT = 1U << 17U,
+    IN_TEST_EXPRESSION = 1U << 18U,
+    IN_LOOP = 1U << 19U,
+    MEET_RETURN = 1U << 20U,
+    MEET_BREAK = 1U << 21U,
+    MEET_CONTINUE = 1U << 22U,
+    MEET_THROW = 1U << 23U,
 };
 
 DEFINE_BITOPS(CheckerStatus)
 
 using CapturedVarsMap = ArenaUnorderedMap<varbinder::Variable *, lexer::SourcePosition>;
+using SmartCastMap = ArenaMap<varbinder::Variable const *, checker::Type *>;
+using SmartCastArray = std::vector<std::pair<varbinder::Variable const *, checker::Type *>>;
+using SmartCastTestMap = ArenaMap<varbinder::Variable const *, std::pair<checker::Type *, checker::Type *>>;
+using SmartCastTuple = std::tuple<varbinder::Variable const *, checker::Type *, checker::Type *>;
+using SmartCastTestArray = std::vector<SmartCastTuple>;
+using PreservedSmartCastsMap = ArenaMultiMap<ir::AstNode const *, SmartCastArray>;
 
-class CheckerContext {
+struct SmartCastCondition final {
+    SmartCastCondition() = default;
+    ~SmartCastCondition() = default;
+
+    DEFAULT_COPY_SEMANTIC(SmartCastCondition);
+    DEFAULT_MOVE_SEMANTIC(SmartCastCondition);
+
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    varbinder::Variable const *variable = nullptr;
+    checker::Type *testedType = nullptr;
+    bool negate = false;
+    bool strict = true;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
+};
+
+using SmartCastTypes = std::optional<SmartCastTestArray>;
+
+class CheckerContext final {
 public:
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus)
-        : CheckerContext(allocator, newStatus, nullptr)
+    explicit CheckerContext(Checker *checker, CheckerStatus newStatus) : CheckerContext(checker, newStatus, nullptr) {}
+
+    explicit CheckerContext(Checker *checker, CheckerStatus newStatus, const ETSObjectType *containingClass)
+        : CheckerContext(checker, newStatus, containingClass, nullptr)
     {
     }
 
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, const ETSObjectType *containingClass)
-        : CheckerContext(allocator, newStatus, containingClass, nullptr)
-    {
-    }
+    explicit CheckerContext(Checker *checker, CheckerStatus newStatus, const ETSObjectType *containingClass,
+                            Signature *containingSignature);
 
-    explicit CheckerContext(ArenaAllocator *allocator, CheckerStatus newStatus, const ETSObjectType *containingClass,
-                            Signature *containingSignature)
-        : status_(newStatus),
-          capturedVars_(allocator->Adapter()),
-          containingClass_(containingClass),
-          containingSignature_(containingSignature)
-    {
-    }
+    CheckerContext() = delete;
+    ~CheckerContext() = default;
 
-    const CapturedVarsMap &CapturedVars() const
+    DEFAULT_COPY_SEMANTIC(CheckerContext);
+    DEFAULT_MOVE_SEMANTIC(CheckerContext);
+
+    [[nodiscard]] const CapturedVarsMap &CapturedVars() const noexcept
     {
         return capturedVars_;
     }
 
-    CapturedVarsMap &CapturedVars()
+    [[nodiscard]] CapturedVarsMap &CapturedVars() noexcept
     {
         return capturedVars_;
     }
 
-    const CheckerStatus &Status() const
+    [[nodiscard]] const CheckerStatus &Status() const noexcept
     {
         return status_;
     }
 
-    ETSObjectType *ContainingClass() const
+    [[nodiscard]] ETSObjectType *ContainingClass() const noexcept
     {
         return const_cast<ETSObjectType *>(containingClass_);
     }
 
-    Signature *ContainingSignature() const
+    [[nodiscard]] Signature *ContainingSignature() const noexcept
     {
         return containingSignature_;
     }
 
-    CheckerStatus &Status()
+    [[nodiscard]] CheckerStatus &Status() noexcept
     {
         return status_;
     }
 
-    void SetContainingSignature(Signature *containingSignature)
+    void SetContainingSignature(Signature *containingSignature) noexcept
     {
         containingSignature_ = containingSignature;
     }
 
-    void SetContainingClass(ETSObjectType *containingClass)
+    void SetContainingClass(ETSObjectType *containingClass) noexcept
     {
         containingClass_ = containingClass;
     }
@@ -119,15 +143,102 @@ public:
         capturedVars_.emplace(var, pos);
     }
 
-    DEFAULT_COPY_SEMANTIC(CheckerContext);
-    DEFAULT_MOVE_SEMANTIC(CheckerContext);
-    ~CheckerContext() = default;
+    void ClearSmartCasts() noexcept
+    {
+        smartCasts_.clear();
+    }
+
+    void RemoveSmartCast(varbinder::Variable const *const variable) noexcept
+    {
+        smartCasts_.erase(variable);
+    }
+
+    void SetSmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
+    {
+        smartCasts_.insert_or_assign(variable, smartType);
+    }
+
+    [[nodiscard]] checker::Type *GetSmartCast(varbinder::Variable const *const variable) const noexcept;
+    [[nodiscard]] SmartCastArray CloneSmartCasts(bool clearData = false) noexcept;
+    void RestoreSmartCasts(SmartCastArray const &otherSmartCasts);
+    void CombineSmartCasts(SmartCastArray const &otherSmartCasts);
+    void AddSmartCasts(SmartCastArray const &otherSmartCasts);
+
+    [[nodiscard]] SmartCastArray EnterTestExpression() noexcept
+    {
+        status_ |= CheckerStatus::IN_TEST_EXPRESSION;
+        ClearTestSmartCasts();
+        return CloneSmartCasts(false);
+    }
+
+    [[nodiscard]] bool IsInTestExpression() const noexcept
+    {
+        return (status_ & CheckerStatus::IN_TEST_EXPRESSION) != 0;
+    }
+
+    SmartCastTypes ExitTestExpression()
+    {
+        status_ &= ~CheckerStatus::IN_TEST_EXPRESSION;
+        CheckTestSmartCastCondition(lexer::TokenType::EOS);
+        return CloneTestSmartCasts(true);
+    }
+
+    [[nodiscard]] std::pair<SmartCastArray, bool> EnterLoop(ir::LoopStatement const &loop) noexcept;
+
+    [[nodiscard]] bool IsInLoop() const noexcept
+    {
+        return (status_ & CheckerStatus::IN_LOOP) != 0;
+    }
+
+    void ExitLoop(SmartCastArray &prevSmartCasts, bool clearFlag, ir::LoopStatement *loopStatement) noexcept;
+
+    void EnterPath() noexcept
+    {
+        status_ &= ~(CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK | CheckerStatus::MEET_CONTINUE |
+                     CheckerStatus::MEET_THROW);
+    }
+
+    [[nodiscard]] bool ExitPath() noexcept
+    {
+        auto const rc = (status_ & (CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK |
+                                    CheckerStatus::MEET_CONTINUE | CheckerStatus::MEET_THROW)) != 0;
+        status_ &= ~(CheckerStatus::MEET_RETURN | CheckerStatus::MEET_BREAK | CheckerStatus::MEET_CONTINUE |
+                     CheckerStatus::MEET_THROW);
+        return rc;
+    }
+
+    void CheckTestSmartCastCondition(lexer::TokenType operatorType);
+    void CheckIdentifierSmartCastCondition(ir::Identifier const *identifier) noexcept;
+    void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
+    void CheckBinarySmartCastCondition(ir::BinaryExpression *binaryExpression) noexcept;
+
+    void OnBreakStatement(ir::BreakStatement const *breakStatement);
+    void AddBreakSmartCasts(ir::Statement const *targetStatement, SmartCastArray &&smartCasts);
+    void CombineBreakSmartCasts(ir::Statement const *targetStatement);
 
 private:
+    Checker *parent_;
     CheckerStatus status_;
     CapturedVarsMap capturedVars_;
+    SmartCastMap smartCasts_;
     const ETSObjectType *containingClass_ {nullptr};
     Signature *containingSignature_ {nullptr};
+
+    lexer::TokenType operatorType_ = lexer::TokenType::EOS;
+    SmartCastCondition testCondition_ {};
+    SmartCastTestMap testSmartCasts_;
+
+    PreservedSmartCastsMap breakSmartCasts_;
+
+    void RemoveSmartCasts(SmartCastArray const &otherSmartCasts) noexcept;
+    [[nodiscard]] checker::Type *CombineTypes(checker::Type *typeOne, checker::Type *typeTwo) const noexcept;
+    [[nodiscard]] static bool IsInValidChain(ir::AstNode const *parent) noexcept;
+    void CheckSmartCastEqualityCondition(ir::BinaryExpression *binaryExpression) noexcept;
+    [[nodiscard]] SmartCastTypes CloneTestSmartCasts(bool clearData = true) noexcept;
+    void ClearTestSmartCasts() noexcept;
+    [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
+    [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
+    void RemoveSmartCastsForAssignments(ir::AstNode const *node) noexcept;
 };
 }  // namespace ark::es2panda::checker
 

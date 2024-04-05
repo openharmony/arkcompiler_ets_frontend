@@ -351,6 +351,11 @@ Type *GlobalTypesHolder::GlobalETSNullishObjectType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT));
 }
 
+Type *GlobalTypesHolder::GlobalETSNullishType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULLISH_TYPE));
+}
+
 Type *GlobalTypesHolder::GlobalWildcardType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_WILDCARD));

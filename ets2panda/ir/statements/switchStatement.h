@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,31 +30,33 @@ class SwitchCaseStatement;
 
 class SwitchStatement : public Statement {
 public:
+    SwitchStatement() = delete;
+    ~SwitchStatement() override = default;
+
+    NO_COPY_SEMANTIC(SwitchStatement);
+    NO_MOVE_SEMANTIC(SwitchStatement);
+
     explicit SwitchStatement(Expression *discriminant, ArenaVector<SwitchCaseStatement *> &&cases)
         : Statement(AstNodeType::SWITCH_STATEMENT), discriminant_(discriminant), cases_(std::move(cases))
     {
     }
 
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class checker::TSAnalyzer;
-
-    const Expression *Discriminant() const
+    [[nodiscard]] const Expression *Discriminant() const noexcept
     {
         return discriminant_;
     }
 
-    Expression *Discriminant()
+    [[nodiscard]] Expression *Discriminant() noexcept
     {
         return discriminant_;
     }
 
-    const ArenaVector<SwitchCaseStatement *> &Cases() const
+    [[nodiscard]] const ArenaVector<SwitchCaseStatement *> &Cases() const noexcept
     {
         return cases_;
     }
 
-    ArenaVector<SwitchCaseStatement *> &Cases()
+    [[nodiscard]] ArenaVector<SwitchCaseStatement *> &Cases() noexcept
     {
         return cases_;
     }
@@ -69,7 +71,7 @@ public:
         return scope_;
     }
 
-    void SetScope(varbinder::LocalScope *scope)
+    void SetScope(varbinder::LocalScope *scope) noexcept
     {
         scope_ = scope;
     }

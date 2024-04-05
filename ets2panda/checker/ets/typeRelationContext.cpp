@@ -115,6 +115,15 @@ bool InstantiationContext::ValidateTypeArg(Type *constraintType, Type *typeArg)
     if (typeArg->IsWildcardType()) {
         return true;
     }
+
+    if (typeArg->IsETSVoidType() && constraintType->IsETSUnionType()) {
+        for (auto const it : constraintType->AsETSUnionType()->ConstituentTypes()) {
+            if (it->IsETSUndefinedType() || it->IsETSVoidType()) {
+                return true;
+            }
+        }
+    }
+
     return checker_->Relation()->IsAssignableTo(typeArg, constraintType);
 }
 

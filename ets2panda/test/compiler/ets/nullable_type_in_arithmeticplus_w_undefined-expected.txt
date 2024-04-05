@@ -588,4 +588,4 @@
     }
   }
 }
-TypeError: Bad operand type: multiple types left in the normalized union type (Double|null). Unions are not allowed in binary expressions except equality. [nullable_type_in_arithmeticplus_w_undefined.ets:19:18]
+TypeError: Bad operand type, the types of the operands must be numeric type or String. [nullable_type_in_arithmeticplus_w_undefined.ets:19:18]

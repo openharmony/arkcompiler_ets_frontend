@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,12 @@
  * limitations under the License.
  */
 
+function dummy(): String[] | null {
+    return null;
+}
+
 function main(): void {
-    let a: String[] | null = null;
+    let a: String[] | null = dummy();
     let b = a?.[1];
     let d: String = "foo";
     let c: String = b ?? d;

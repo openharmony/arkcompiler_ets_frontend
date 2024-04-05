@@ -15,7 +15,8 @@
 
 #include <functional>
 #include "checker/ETSchecker.h"
-#include "checker/ets/boxingConverter.h"
+
+#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/byteType.h"
 #include "checker/types/ets/charType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
@@ -32,9 +33,7 @@
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/ETSBinder.h"
-#include "parser/program/program.h"
+#include "checker/ets/boxingConverter.h"
 #include "util/helpers.h"
 #include "checker/types/ts/bigintType.h"
 
@@ -310,6 +309,8 @@ ETSObjectType *ETSChecker::UpdateGlobalType(ETSObjectType *objType, util::String
         if (name == compiler::Signatures::BUILTIN_OBJECT_CLASS) {
             auto *nullish = CreateETSUnionType({objType, GlobalETSNullType(), GlobalETSUndefinedType()});
             GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_OBJECT)] = nullish;
+            nullish = CreateETSUnionType({GlobalETSNullType(), GlobalETSUndefinedType()});
+            GetGlobalTypesHolder()->GlobalTypes()[static_cast<size_t>(GlobalTypeId::ETS_NULLISH_TYPE)] = nullish;
         }
     }
 

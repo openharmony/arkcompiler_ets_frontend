@@ -37,6 +37,11 @@ public:
     void ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const override;
 
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        return {IsConstantType(), false};
+    }
 };
 
 class ETSUndefinedType : public Type {
@@ -55,6 +60,11 @@ public:
     void ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const override;
 
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
+
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        return {IsConstantType(), false};
+    }
 };
 
 }  // namespace ark::es2panda::checker

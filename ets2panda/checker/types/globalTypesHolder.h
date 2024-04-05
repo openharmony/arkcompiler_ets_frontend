@@ -19,7 +19,7 @@
 #include "checker/types/type.h"
 
 namespace ark::es2panda::checker {
-enum class GlobalTypeId {
+enum class GlobalTypeId : std::size_t {
     NUMBER,
     ANY,
     STRING,
@@ -56,6 +56,7 @@ enum class GlobalTypeId {
     ETS_OBJECT_BUILTIN,
     ETS_NULL,
     ETS_UNDEFINED,
+    ETS_NULLISH_TYPE,
     ETS_NULLISH_OBJECT,
     ETS_WILDCARD,
     ETS_BOOLEAN_BUILTIN,
@@ -179,6 +180,7 @@ public:
     Type *GlobalETSObjectType();
     Type *GlobalETSNullType();
     Type *GlobalETSUndefinedType();
+    Type *GlobalETSNullishType();
     Type *GlobalETSNullishObjectType();
     Type *GlobalWildcardType();
     Type *GlobalETSBooleanBuiltinType();

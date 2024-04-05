@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_UNARY_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_UNARY_EXPRESSION_H
 
+#include "checker/checkerContext.h"
 #include "ir/expression.h"
-#include "lexer/token/tokenType.h"
 
 namespace ark::es2panda::compiler {
 class PandaGen;
@@ -51,6 +51,11 @@ public:
     [[nodiscard]] lexer::TokenType OperatorType() const noexcept
     {
         return operator_;
+    }
+
+    [[nodiscard]] Expression *Argument() noexcept
+    {
+        return argument_;
     }
 
     [[nodiscard]] const Expression *Argument() const noexcept

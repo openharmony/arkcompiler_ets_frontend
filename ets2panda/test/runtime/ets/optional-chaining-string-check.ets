@@ -17,6 +17,10 @@ class Person {
     name: String = "Bill";
 }
 
+function dummy(): Person | null {
+    return null;
+}
+
 function main(): void {
   let bill : Person = new Person();
   let name = bill.name;
@@ -27,7 +31,7 @@ function main(): void {
   name = bill.name;
   assert(name == "Bill");
 
-  let juan: Person | null = null;
+  let juan: Person | null = dummy();
   name = juan?.name ?? "Juan";
   assert (name.length == 4);
 

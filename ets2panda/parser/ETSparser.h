@@ -16,8 +16,6 @@
 #ifndef ES2PANDA_PARSER_CORE_ETS_PARSER_H
 #define ES2PANDA_PARSER_CORE_ETS_PARSER_H
 
-#include <optional>
-#include "parserFlags.h"
 #include "util/arktsconfig.h"
 #include "util/importPathManager.h"
 #include "TypedParser.h"

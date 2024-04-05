@@ -22,6 +22,6 @@ class B extends A {
 }
 
 function main(): void {
-    console.log(A.foo())
-    console.log(new B().foo)
+    A.foo()
+    new B().foo
 }

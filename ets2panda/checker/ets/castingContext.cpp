@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,7 @@
  */
 
 #include "castingContext.h"
+#include "checker/types/type.h"
 
 namespace ark::es2panda::checker {
 CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
@@ -26,9 +27,14 @@ CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Typ
     relation->SetNode(node);
     relation->Result(false);
 
-    relation->IsCastableTo(source, target);
-    if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
-        relation->RaiseError(list, pos);
+    if (!relation->IsIdenticalTo(source, target)) {
+        relation->IsCastableTo(source, target);
+        if (!relation->IsTrue() && source->ToString() == target->ToString()) {
+            relation->Result(true);
+        }
+        if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
+            relation->RaiseError(list, pos);
+        }
     }
 
     uncheckedCast_ = relation->UncheckedCast();

@@ -520,22 +520,9 @@
                                 "alternate": {
                                   "type": "MemberExpression",
                                   "object": {
-                                    "type": "TSNonNullExpression",
-                                    "expression": {
-                                      "type": "Identifier",
-                                      "name": "gensym$_2",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 19,
-                                          "column": 33
-                                        },
-                                        "end": {
-                                          "line": 19,
-                                          "column": 41
-                                        }
-                                      }
-                                    },
+                                    "type": "Identifier",
+                                    "name": "gensym$_2",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 19,
@@ -907,4 +894,3 @@
     }
   }
 }
-TypeError: Bad operand type, the operand of the non-nullish expression must be a nullish type [array_indexing_with_chaining_non_nullish.ets:19:33]

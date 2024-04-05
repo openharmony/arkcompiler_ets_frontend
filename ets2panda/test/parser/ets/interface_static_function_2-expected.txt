@@ -1115,4 +1115,4 @@
     }
   }
 }
-TypeError: 'xyz' is a static property of 'I' [interface_static_function_2.ets:34:7]
+TypeError: 'xyz' is a static property of 'C' [interface_static_function_2.ets:34:7]

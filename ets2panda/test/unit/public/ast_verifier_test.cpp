@@ -121,6 +121,22 @@ TEST_F(ASTVerifierTest, NullParent)
     ASSERT_EQ(messages[0].Invariant(), check);
 }
 
+TEST_F(ASTVerifierTest, NullRange)
+{
+    ark::es2panda::compiler::ast_verifier::ASTVerifier verifier {Allocator()};
+    StringLiteral emptyNode;
+
+    const auto check = "NodeHasSourceRange";
+    auto checks = ark::es2panda::compiler::ast_verifier::InvariantNameSet {};
+    checks.insert(check);
+    const auto &messages = verifier.Verify(&emptyNode, checks);
+    bool hasSourceRange = messages.empty();
+    ASSERT_FALSE(hasSourceRange);
+    ASSERT_EQ(messages.size(), 1);
+
+    ASSERT_EQ(messages[0].Invariant(), check);
+}
+
 TEST_F(ASTVerifierTest, NullType)
 {
     ASTVerifier verifier {Allocator()};

@@ -543,7 +543,8 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
 
-        if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function()->IsOverload() &&
+        if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
+            member->AsMethodDefinition()->Function()->IsOverload() &&
             member->AsMethodDefinition()->Function()->Body() != nullptr) {
             continue;
         }

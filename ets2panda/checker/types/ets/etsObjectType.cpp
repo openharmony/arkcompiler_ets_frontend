@@ -15,11 +15,12 @@
 
 #include "etsObjectType.h"
 
-#include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
+#include "checker/types/ts/objectType.h"
 #include "checker/types/typeFlag.h"
 #include "checker/types/typeRelation.h"
+#include "checker/types/globalTypesHolder.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
@@ -940,4 +941,33 @@ void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringVie
     ss << compiler::Signatures::MANGLE_SEPARATOR;
 }
 
+std::uint32_t ETSObjectType::GetPrecedence(ETSObjectType const *type) noexcept
+{
+    ASSERT(type != nullptr);
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
+        return 1U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
+        return 2U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
+        return 3U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
+        return 4U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
+        return 5U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
+        return 6U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
+        return 7U;
+    }
+    if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_BIGINT)) {
+        return 8U;
+    }
+    return 0U;
+}
 }  // namespace ark::es2panda::checker

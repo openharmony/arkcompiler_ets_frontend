@@ -26,36 +26,49 @@ class ETSAnalyzer;
 namespace ark::es2panda::ir {
 class Expression;
 
-class IfStatement : public Statement {
+class IfStatement final : public Statement {
 public:
+    IfStatement() = delete;
+    ~IfStatement() override = default;
+
+    NO_COPY_SEMANTIC(IfStatement);
+    NO_MOVE_SEMANTIC(IfStatement);
+
     explicit IfStatement(Expression *test, Statement *consequent, Statement *alternate)
         : Statement(AstNodeType::IF_STATEMENT), test_(test), consequent_(consequent), alternate_(alternate)
     {
     }
 
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class checker::TSAnalyzer;
-
-    const Expression *Test() const
+    [[nodiscard]] const Expression *Test() const noexcept
     {
         return test_;
     }
 
-    const Statement *Consequent() const
+    [[nodiscard]] Expression *Test() noexcept
+    {
+        return test_;
+    }
+
+    [[nodiscard]] const Statement *Consequent() const noexcept
     {
         return consequent_;
     }
 
-    Statement *Alternate()
+    [[nodiscard]] Statement *Consequent() noexcept
+    {
+        return consequent_;
+    }
+
+    [[nodiscard]] Statement *Alternate() noexcept
     {
         return alternate_;
     }
 
-    const Statement *Alternate() const
+    [[nodiscard]] const Statement *Alternate() const noexcept
     {
         return alternate_;
     }
+
     void TransformChildren(const NodeTransformer &cb) override;
 
     void Iterate(const NodeTraverser &cb) const override;
@@ -70,6 +83,8 @@ public:
     {
         v->Accept(this);
     }
+
+    [[nodiscard]] IfStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
 private:
     Expression *test_;

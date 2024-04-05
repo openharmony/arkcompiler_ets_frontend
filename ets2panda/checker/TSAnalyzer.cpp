@@ -668,10 +668,10 @@ checker::Type *TSAnalyzer::Check(ir::ConditionalExpression *expr) const
     checker::Type *testType = expr->Test()->Check(checker);
 
     checker->CheckTruthinessOfType(testType, expr->Test()->Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(expr->Test(), testType, expr->consequent_);
+    checker->CheckTestingKnownTruthyCallableOrAwaitableType(expr->Test(), testType, expr->Consequent());
 
-    checker::Type *consequentType = expr->consequent_->Check(checker);
-    checker::Type *alternateType = expr->alternate_->Check(checker);
+    checker::Type *consequentType = expr->Consequent()->Check(checker);
+    checker::Type *alternateType = expr->Alternate()->Check(checker);
 
     return checker->CreateUnionType({consequentType, alternateType});
 }
@@ -1400,14 +1400,14 @@ checker::Type *TSAnalyzer::Check(ir::FunctionDeclaration *st) const
 checker::Type *TSAnalyzer::Check(ir::IfStatement *st) const
 {
     TSChecker *checker = GetTSChecker();
-    checker::Type *testType = st->test_->Check(checker);
+    checker::Type *testType = st->Test()->Check(checker);
     checker->CheckTruthinessOfType(testType, st->Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(st->test_, testType, st->consequent_);
+    checker->CheckTestingKnownTruthyCallableOrAwaitableType(st->Test(), testType, st->Consequent());
 
-    st->consequent_->Check(checker);
+    st->Consequent()->Check(checker);
 
     if (st->Alternate() != nullptr) {
-        st->alternate_->Check(checker);
+        st->Alternate()->Check(checker);
     }
 
     return nullptr;
@@ -1459,7 +1459,7 @@ checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
     TSChecker *checker = GetTSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    checker::Type *exprType = st->discriminant_->Check(checker);
+    checker::Type *exprType = st->Discriminant()->Check(checker);
     bool exprIsLiteral = checker::TSChecker::IsLiteralType(exprType);
 
     for (auto *it : st->Cases()) {

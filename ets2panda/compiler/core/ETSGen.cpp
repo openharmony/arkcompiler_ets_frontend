@@ -44,6 +44,7 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::compiler {
 
@@ -857,8 +858,9 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
         LoadAccumulatorBoolean(node, true);
         return;
     }
-    if (target->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-        GetAccumulatorType()->DefinitelyNotETSNullish()) {
+    if (target->IsETSArrayType() ||
+        (target->IsETSObjectType() &&
+         !(target->AsETSObjectType()->IsGlobalETSObjectType() && GetAccumulatorType()->PossiblyETSUndefined()))) {
         InternalIsInstance(node, target);
         return;
     }
@@ -875,7 +877,7 @@ void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const 
     SetLabel(node, end);
 }
 
-// isinstance can only be used for Object and [] types, ensure source is not nullish!
+// isinstance can only be used for Object and [] types, ensure source is not undefined!
 void ETSGen::InternalIsInstance(const ir::AstNode *node, const es2panda::checker::Type *target)
 {
     ASSERT(target->IsETSObjectType() || target->IsETSArrayType());
@@ -1197,6 +1199,15 @@ void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signature
 {
     if (node->HasAstNodeFlags(ir::AstNodeFlags::CHECKCAST)) {
         CheckedReferenceNarrowing(node, boxedType);
+    }
+
+    // to cast to primitive types we probably have to cast to corresponding boxed built-in types first.
+    auto *const checker = Checker()->AsETSChecker();
+    auto const *accumulatorType = GetAccumulatorType();
+    if (accumulatorType->IsETSObjectType() &&  //! accumulatorType->DefinitelyNotETSNullish() &&
+        !checker->Relation()->IsIdenticalTo(const_cast<checker::Type *>(accumulatorType),
+                                            const_cast<checker::Type *>(boxedType))) {
+        CastToReftype(node, boxedType, false);
     }
 
     Ra().Emit<CallVirtAccShort, 0>(node, signatureFlag, dummyReg_, 0);
@@ -2047,12 +2058,12 @@ void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL: {
             Label *ifFalse = AllocLabel();
-            BinaryStrictEquality<JneObj, Jeqz>(node, lhs, ifFalse);
+            RefEqualityStrict<JneObj, Jeqz>(node, lhs, ifFalse);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
             Label *ifFalse = AllocLabel();
-            BinaryStrictEquality<JeqObj, Jnez>(node, lhs, ifFalse);
+            RefEqualityStrict<JeqObj, Jnez>(node, lhs, ifFalse);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
@@ -2143,7 +2154,8 @@ void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
         }
     }
     ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
-    ASSERT(GetAccumulatorType() == node->AsExpression()->TsType());
+    ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
+                                                const_cast<checker::Type *>(node->AsExpression()->TsType())));
 }
 
 void ETSGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse)
@@ -2232,74 +2244,105 @@ void ETSGen::AssumeNonNullish(const ir::AstNode *node, checker::Type const *targ
 void ETSGen::EmitNullishException(const ir::AstNode *node)
 {
     RegScope ra(this);
-    VReg exception = StoreException(node);
+    VReg exception = AllocReg();
     NewObject(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION);
     CallThisStatic0(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION_CTOR);
     EmitThrow(node, exception);
     SetAccumulatorType(nullptr);
 }
 
-void ETSGen::BinaryEqualityRefDynamic(const ir::AstNode *node, bool testEqual, VReg lhs, VReg rhs, Label *ifFalse)
+void ETSGen::RefEqualityLooseDynamic(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse)
 {
-    // NOTE: vpukhov. implement
+    // NOTE(vpukhov): implement
+    EmitEtsEquals(node, lhs, rhs);
+    BranchIfFalse(node, ifFalse);
+}
+
+void ETSGen::HandleLooseNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue)
+{
+    Label *ifLhsNullish = AllocLabel();
+    Label *out = AllocLabel();
+
     LoadAccumulator(node, lhs);
-    if (testEqual) {
-        Ra().Emit<JneObj>(node, rhs, ifFalse);
-    } else {
-        Ra().Emit<JeqObj>(node, rhs, ifFalse);
-    }
+    BranchIfNullish(node, ifLhsNullish);
+
+    LoadAccumulator(node, rhs);
+    BranchIfNullish(node, ifFalse);
+    JumpTo(node, out);
+
+    SetLabel(node, ifLhsNullish);
+    LoadAccumulator(node, rhs);
+    BranchIfNotNullish(node, ifFalse);
+    JumpTo(node, ifTrue);
+
+    SetLabel(node, out);
+    SetAccumulatorType(nullptr);
 }
 
-static bool MayUseStringEquals(checker::Type const *type)
+static std::optional<std::pair<checker::Type const *, util::StringView>> SelectLooseObjComparator(
+    checker::ETSChecker *checker, checker::Type *lhs, checker::Type *rhs)
 {
-    if (!type->IsETSUnionType()) {
-        return type->IsETSStringType();
+    auto alhs = checker->GetApparentType(checker->GetNonNullishType(lhs));
+    auto arhs = checker->GetApparentType(checker->GetNonNullishType(rhs));
+    alhs = alhs->IsETSStringType() ? checker->GlobalBuiltinETSStringType() : alhs;
+    arhs = arhs->IsETSStringType() ? checker->GlobalBuiltinETSStringType() : arhs;
+    if (!alhs->IsETSObjectType() || !arhs->IsETSObjectType()) {
+        return std::nullopt;
     }
-    auto const &ct = type->AsETSUnionType()->ConstituentTypes();
-    return std::all_of(ct.begin(), ct.end(),
-                       [](auto t) { return t->IsETSStringType() || t->DefinitelyETSNullish(); }) &&
-           std::any_of(ct.begin(), ct.end(), [](auto t) { return t->IsETSStringType(); });
+    if (!checker->Relation()->IsIdenticalTo(alhs, arhs)) {
+        return std::nullopt;
+    }
+    auto obj = alhs->AsETSObjectType();
+    if (!obj->HasObjectFlag(checker::ETSObjectFlags::VALUE_TYPED)) {
+        return std::nullopt;
+    }
+    // NOTE(vpukhov): emit faster code
+    auto methodSig =
+        util::UString(std::string(obj->AssemblerName()) + ".equals:std.core.Object;u1;", checker->Allocator()).View();
+    return std::make_pair(checker->GetNonConstantTypeFromPrimitiveType(obj), methodSig);
 }
 
-void ETSGen::BinaryEqualityRef(const ir::AstNode *node, bool testEqual, VReg lhs, VReg rhs, Label *ifFalse)
+void ETSGen::RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse)
 {
-    Label *ifTrue = AllocLabel();
-    if (GetVRegType(lhs)->IsETSDynamicType() || GetVRegType(rhs)->IsETSDynamicType()) {
-        BinaryEqualityRefDynamic(node, testEqual, lhs, rhs, ifFalse);
+    auto ltype = GetVRegType(lhs);
+    auto rtype = GetVRegType(rhs);
+    if (ltype->IsETSDynamicType() || rtype->IsETSDynamicType()) {
+        RefEqualityLooseDynamic(node, lhs, rhs, ifFalse);
         return;
     }
 
-    if (GetVRegType(lhs)->DefinitelyETSNullish() || GetVRegType(rhs)->DefinitelyETSNullish()) {
-        LoadAccumulator(node, GetVRegType(lhs)->DefinitelyETSNullish() ? rhs : lhs);
-        testEqual ? BranchIfNotNullish(node, ifFalse) : BranchIfNullish(node, ifFalse);
-    } else {
-        Label *ifLhsNullish = AllocLabel();
-
-        LoadAccumulator(node, lhs);
-        BranchIfNullish(node, ifLhsNullish);
-
-        LoadAccumulator(node, rhs);
-        BranchIfNullish(node, testEqual ? ifFalse : ifTrue);
-
-        LoadAccumulator(node, lhs);
-
-        if (GetVRegType(lhs)->IsETSBigIntType()) {  // remove
-            CallThisStatic1(node, lhs, Signatures::BUILTIN_BIGINT_EQUALS, rhs);
-        } else if (MayUseStringEquals(GetVRegType(lhs))) {  // workaround check
-            AssumeNonNullish(node, Checker()->GlobalBuiltinETSStringType());
-            CallThisStatic1(node, lhs, Signatures::BUILTIN_STRING_EQUALS, rhs);
-        } else {
-            CallThisVirtual1(node, lhs, Signatures::BUILTIN_OBJECT_EQUALS, rhs);
+    if (ltype->DefinitelyETSNullish() || rtype->DefinitelyETSNullish()) {
+        LoadAccumulator(node, ltype->DefinitelyETSNullish() ? rhs : lhs);
+        BranchIfNotNullish(node, ifFalse);
+    } else if (!ltype->PossiblyETSValueTypedExceptNullish() || !rtype->PossiblyETSValueTypedExceptNullish()) {
+        auto ifTrue = AllocLabel();
+        if ((ltype->PossiblyETSUndefined() && rtype->PossiblyETSNull()) ||
+            (rtype->PossiblyETSUndefined() && ltype->PossiblyETSNull())) {
+            HandleLooseNullishEquality(node, lhs, rhs, ifFalse, ifTrue);
         }
-        testEqual ? BranchIfFalse(node, ifFalse) : BranchIfTrue(node, ifFalse);
-        JumpTo(node, ifTrue);
-
-        SetLabel(node, ifLhsNullish);
+        LoadAccumulator(node, lhs);
+        Ra().Emit<JneObj>(node, rhs, ifFalse);
+        SetLabel(node, ifTrue);
+    } else if (auto spec = SelectLooseObjComparator(  // try to select specific type
+                   const_cast<checker::ETSChecker *>(Checker()), const_cast<checker::Type *>(ltype),
+                   const_cast<checker::Type *>(rtype));
+               spec.has_value()) {
+        auto ifTrue = AllocLabel();
+        if (ltype->PossiblyETSNullish() || rtype->PossiblyETSNullish()) {
+            HandleLooseNullishEquality(node, lhs, rhs, ifFalse, ifTrue);
+        }
         LoadAccumulator(node, rhs);
-        testEqual ? BranchIfNotNullish(node, ifFalse) : BranchIfNullish(node, ifFalse);
-        // fallthrough
+        AssumeNonNullish(node, spec->first);
+        StoreAccumulator(node, rhs);
+        LoadAccumulator(node, lhs);
+        AssumeNonNullish(node, spec->first);
+        CallThisVirtual1(node, lhs, spec->second, rhs);
+        BranchIfFalse(node, ifFalse);
+        SetLabel(node, ifTrue);
+    } else {
+        EmitEtsEquals(node, lhs, rhs);
+        BranchIfFalse(node, ifFalse);
     }
-    SetLabel(node, ifTrue);
     SetAccumulatorType(nullptr);
 }
 
@@ -2441,11 +2484,16 @@ void ETSGen::UnaryTilde(const ir::AstNode *node)
 
 void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
 {
-    RegScope rs(this);
-    VReg exception = StoreException(node);
-    Sa().Emit<LdaStr>(node, "$$ operator can only be used with ARKUI plugin");
-    StoreAccumulator(node, exception);
-    EmitThrow(node, exception);
+    auto const vtype = GetAccumulatorType();
+    const RegScope rs(this);
+    const auto errorReg = AllocReg();
+
+    NewObject(node, errorReg, Signatures::BUILTIN_ERROR);
+    LoadAccumulatorString(node, "$$ operator can only be used with ARKUI plugin");
+    Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, 1);
+    EmitThrow(node, errorReg);
+
+    SetAccumulatorType(vtype);  // forward, code is dead anyway
 }
 
 void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)
@@ -2791,7 +2839,7 @@ void ETSGen::ThrowException(const ir::Expression *expr)
     EmitThrow(expr, arg);
 }
 
-bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalNode, Label *prevFinnaly)
+bool ETSGen::ExtendWithFinalizer(ir::AstNode const *node, const ir::AstNode *originalNode, Label *prevFinnaly)
 {
     ASSERT(originalNode != nullptr);
 
@@ -2805,8 +2853,6 @@ bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalN
     }
 
     if (node->IsTryStatement() && node->AsTryStatement()->HasFinalizer()) {
-        auto *tryStm = node->AsTryStatement();
-
         Label *beginLabel = nullptr;
 
         if (prevFinnaly == nullptr) {
@@ -2828,7 +2874,8 @@ bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalN
 
         LabelPair insertion = compiler::LabelPair(beginLabel, endLabel);
 
-        tryStm->AddFinalizerInsertion(insertion, originalNode->AsStatement());
+        auto *tryStatement = const_cast<ir::AstNode *>(node)->AsTryStatement();
+        tryStatement->AddFinalizerInsertion(insertion, originalNode->AsStatement());
 
         return true;
     }

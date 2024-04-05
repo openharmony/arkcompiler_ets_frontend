@@ -520,22 +520,9 @@
                                 "alternate": {
                                   "type": "MemberExpression",
                                   "object": {
-                                    "type": "TSNonNullExpression",
-                                    "expression": {
-                                      "type": "Identifier",
-                                      "name": "gensym$_2",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 19,
-                                          "column": 33
-                                        },
-                                        "end": {
-                                          "line": 19,
-                                          "column": 41
-                                        }
-                                      }
-                                    },
+                                    "type": "Identifier",
+                                    "name": "gensym$_2",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 19,

@@ -188,18 +188,27 @@ checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expre
 
     ArenaVector<ir::Expression *> params {checker->Allocator()->Adapter()};
     checker->CopyParams(arrowFunc->Params(), params);
+    checker::Type *funcReturnType = nullptr;
 
     auto *typeAnnotation = arrowFunc->ReturnTypeAnnotation();
     if (typeAnnotation != nullptr) {
         typeAnnotation = typeAnnotation->Clone(checker->Allocator(), nullptr);
         typeAnnotation->SetTsType(arrowFunc->ReturnTypeAnnotation()->TsType());
+    } else {
+        if ((arrowFunc->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0) {
+            InferReturnType(checker, arrowFunc, funcReturnType, callee);
+        } else if (arrowFunc->Signature()->ReturnType() != nullptr) {
+            auto newTypeAnnotation = callee->AsArrowFunctionExpression()->CreateTypeAnnotation(checker);
+            typeAnnotation = arrowFunc->ReturnTypeAnnotation();
+            funcReturnType = newTypeAnnotation->GetType(checker);
+        }
     }
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), typeAnnotation);
     auto *funcType = checker->AllocNode<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
 
     funcType->SetScope(arrowFunc->Scope()->AsFunctionScope()->ParamScope());
-    auto *const funcIface = funcType->Check(checker);
+    auto *const funcIface = typeAnnotation != nullptr ? funcType->Check(checker) : funcReturnType;
     checker->Relation()->SetNode(callee);
     checker->Relation()->IsAssignableTo(calleeType, funcIface);
     return funcIface;
@@ -330,8 +339,7 @@ void ProcessExclamationMark(ETSChecker *checker, ir::UnaryExpression *expr, chec
     expr->SetTsType(checker->GlobalETSBooleanType());
 }
 
-void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType,
-                                 checker::Type *argType)
+void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr, checker::Type *operandType)
 {
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
@@ -369,7 +377,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
             break;
         }
         case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
-            expr->SetTsType(argType);
+            expr->SetTsType(expr->Argument()->TsType());
             break;
         }
         default: {
@@ -499,12 +507,15 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
     if (stArgument != nullptr && stArgument->IsArrowFunctionExpression()) {
         auto arrowFunc = stArgument->AsArrowFunctionExpression();
         auto typeAnnotation = arrowFunc->CreateTypeAnnotation(checker);
+
+        auto *argumentType = arrowFunc->TsType();
         funcReturnType = typeAnnotation->GetType(checker);
-        const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(arrowFunc->TsType());
+
+        const Type *sourceType = checker->TryGettingFunctionTypeFromInvokeFunction(argumentType);
         const Type *targetType = checker->TryGettingFunctionTypeFromInvokeFunction(funcReturnType);
 
         checker::AssignmentContext(
-            checker->Relation(), arrowFunc, arrowFunc->TsType(), funcReturnType, stArgument->Start(),
+            checker->Relation(), arrowFunc, argumentType, funcReturnType, stArgument->Start(),
             {"Type '", sourceType, "' is not compatible with the enclosing method's return type '", targetType, "'"},
             checker::TypeRelationFlag::DIRECT_RETURN);
     }

@@ -305,6 +305,7 @@ const ir::ScriptFunction *Helpers::GetContainingConstructor(const ir::ClassPrope
 {
     for (const auto *parent = node->Parent(); parent != nullptr; parent = parent->Parent()) {
         if (parent->IsClassDefinition()) {
+            ASSERT(parent->AsClassDefinition()->Ctor() != nullptr);
             return parent->AsClassDefinition()->Ctor()->Function();
         }
     }
@@ -512,6 +513,7 @@ util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::Scri
 
             if (methodDef->Key()->IsIdentifier()) {
                 auto *ident = methodDef->Id();
+                ASSERT(ident != nullptr);
 
                 if (!ident->IsPrivateIdent()) {
                     return ident->Name();

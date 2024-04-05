@@ -37,10 +37,6 @@ public:
     {
     }
 
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::TSAnalyzer;
-    friend class checker::ETSAnalyzer;
-
     [[nodiscard]] const Expression *Test() const noexcept
     {
         return test_;
@@ -62,6 +58,11 @@ public:
         return consequent_;
     }
 
+    [[nodiscard]] Expression *Consequent() noexcept
+    {
+        return consequent_;
+    }
+
     void SetConsequent(Expression *expr) noexcept
     {
         consequent_ = expr;
@@ -69,6 +70,11 @@ public:
     }
 
     [[nodiscard]] const Expression *Alternate() const noexcept
+    {
+        return alternate_;
+    }
+
+    [[nodiscard]] Expression *Alternate() noexcept
     {
         return alternate_;
     }

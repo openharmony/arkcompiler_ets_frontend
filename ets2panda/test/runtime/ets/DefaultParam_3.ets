@@ -48,7 +48,7 @@ function main(): void {
     assert foo12(new MyType(10), new MyType(5)) == 30;
 }
 
-function foo1(a: MyType = new MyType(8)): int {
+function foo1(a: MyType|null = new MyType(8)): int {
     if (a == null) {
         return -1;
     }
@@ -69,7 +69,7 @@ function foo4(a?: MyType): int {
     if (a == null) {
         return 0;
     }
-    return a!.x;
+    return a.x;
 }
 
 function foo5(a?: MyType, b?: MyType): int {
@@ -79,7 +79,7 @@ function foo5(a?: MyType, b?: MyType): int {
     if (b == null) {
         return -1;
     }
-    return a!.x + b!.x;
+    return a!.x + b.x;
 }
 
 function foo6(a?: MyType, b?: MyType, c?: MyType): int {
@@ -91,14 +91,14 @@ function foo6(a?: MyType, b?: MyType, c?: MyType): int {
         return -1;
     }
 
-    return a!.x + b!.x + c!.x;
+    return a!.x + b!.x + c.x;
 }
 
 function foo7(a: MyType = new MyType(5), b?: MyType): int {
     if (b == null) {
         return 0;
     }
-    return a.x + b!.x;
+    return a.x + b.x;
 }
 
 function foo8(a?: MyType, b: MyType = new MyType(5), c?: MyType): int {

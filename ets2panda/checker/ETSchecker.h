@@ -16,19 +16,10 @@
 #ifndef ES2PANDA_CHECKER_ETS_CHECKER_H
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
-#include "checker/checkerContext.h"
-#include "varbinder/scope.h"
 #include "checker/checker.h"
-#include "checker/ets/primitiveWrappers.h"
-#include "checker/ets/typeConverter.h"
-#include "checker/types/ets/etsObjectType.h"
-#include "checker/types/ets/etsTupleType.h"
+
 #include "checker/types/ets/types.h"
-#include "checker/types/globalTypesHolder.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "lexer/token/tokenType.h"
-#include "util/ustring.h"
+#include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
 
 namespace ark::es2panda::varbinder {
@@ -76,6 +67,11 @@ public:
     {
     }
 
+    ~ETSChecker() override = default;
+
+    NO_COPY_SEMANTIC(ETSChecker);
+    NO_MOVE_SEMANTIC(ETSChecker);
+
     [[nodiscard]] static inline TypeFlag ETSType(const Type *const type) noexcept
     {
         return static_cast<TypeFlag>(type->TypeFlags() & TypeFlag::ETS_TYPE);
@@ -102,6 +98,7 @@ public:
     Type *GlobalWildcardType() const;
 
     ETSObjectType *GlobalETSObjectType() const;
+    ETSUnionType *GlobalETSNullishType() const;
     ETSUnionType *GlobalETSNullishObjectType() const;
     ETSObjectType *GlobalBuiltinETSStringType() const;
     ETSObjectType *GlobalBuiltinETSBigIntType() const;
@@ -133,7 +130,8 @@ public:
     Type *GuaranteedTypeForUncheckedCast(Type *base, Type *substituted);
     Type *GuaranteedTypeForUncheckedCallReturn(Signature *sig);
     Type *GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *prop);
-    bool IsETSChecker() override
+
+    [[nodiscard]] bool IsETSChecker() const noexcept override
     {
         return true;
     }
@@ -216,7 +214,6 @@ public:
     {
         return CreateETSUnionType(Span<Type *const>(constituentTypes));
     }
-    Type *CreateNullishType(Type *type, bool isNull, bool isUndefined);
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
     ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
@@ -477,8 +474,12 @@ public:
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
     void CheckTruthinessOfType(ir::Expression *expr);
+
     void CheckNonNullish(ir::Expression const *expr);
     Type *GetNonNullishType(Type *type);
+    Type *RemoveNullType(Type *type);
+    Type *RemoveUndefinedType(Type *type);
+
     void ConcatConstantString(util::UString &target, Type *type);
     Type *HandleStringConcatenation(Type *leftType, Type *rightType);
     Type *ResolveIdentifier(ir::Identifier *ident);
@@ -494,16 +495,15 @@ public:
     {
         return type->IsETSReferenceType();
     }
-    const ir::AstNode *FindJumpTarget(ir::AstNodeType nodeType, const ir::AstNode *node, const ir::Identifier *target);
+    const ir::AstNode *FindJumpTarget(const ir::AstNode *node) const;
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
-    void CheckSwitchDiscriminant(ir::Expression *discriminant);
+    Type *CheckSwitchDiscriminant(ir::Expression *discriminant);
     Type *ETSBuiltinTypeAsPrimitiveType(Type *objectType);
     Type *ETSBuiltinTypeAsConditionalType(Type *objectType);
     Type *PrimitiveTypeAsETSBuiltinType(Type *objectType);
     void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnboxingType);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxingType);
-    Type *GetBoxedType(ir::BoxingUnboxingFlags flag) const;
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxingType) const;
     util::StringView TypeToName(Type *type) const;
     Type *MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const;
@@ -512,10 +512,11 @@ public:
         return MaybeBoxedType(var, Allocator());
     }
     Type *MaybeBoxExpression(ir::Expression *expr);
+    Type *MaybeUnboxExpression(ir::Expression *expr);
     Type *MaybePromotedBuiltinType(Type *type) const;
     Type const *MaybePromotedBuiltinType(Type const *type) const;
     Type *MaybePrimitiveBuiltinType(Type *type) const;
-    void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> *cases);
+    void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases);
     std::string GetStringFromIdentifierValue(checker::Type *caseType) const;
     bool CompareIdentifiersValuesAreDifferent(ir::Expression *compareValue, const std::string &caseValue);
     void CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expression *compareCase,
@@ -571,6 +572,15 @@ public:
                                                              ir::ClassProperty *field, varbinder::ClassScope *scope,
                                                              bool isSetter, ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
+
+    // Smart cast support
+    [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
+    [[nodiscard]] std::pair<Type *, Type *> CheckTestNullishCondition(Type *testedType, Type *actualType, bool strict);
+    [[nodiscard]] std::pair<Type *, Type *> CheckTestObjectCondition(ETSObjectType *testedType, Type *actualType,
+                                                                     bool strict);
+    [[nodiscard]] std::pair<Type *, Type *> CheckTestObjectCondition(ETSArrayType *testedType, Type *actualType);
+
+    void ApplySmartCast(varbinder::Variable const *variable, checker::Type *smartType) noexcept;
 
     bool IsInLocalClass(const ir::AstNode *node) const;
     // Exception

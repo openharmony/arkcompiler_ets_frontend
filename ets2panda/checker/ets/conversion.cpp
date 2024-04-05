@@ -19,6 +19,7 @@
 #include "checker/ets/narrowingConverter.h"
 #include "checker/ets/unboxingConverter.h"
 #include "checker/ets/wideningConverter.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker::conversion {
 void Identity(TypeRelation *const relation, Type *const source, Type *const target)

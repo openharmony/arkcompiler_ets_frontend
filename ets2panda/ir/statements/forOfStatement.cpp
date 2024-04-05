@@ -171,10 +171,6 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 checker::Type *ForOfStatement::CheckIteratorMethod(checker::ETSChecker *const checker)
 {
     if (auto *exprType = right_->TsType(); exprType != nullptr) {
-        if (exprType->IsETSTypeParameter()) {
-            exprType = checker->GetApparentType(exprType->AsETSTypeParameter()->GetConstraintType());
-        }
-
         if (exprType->IsETSObjectType()) {
             return CheckIteratorMethodForObject(checker, exprType->AsETSObjectType());
         }

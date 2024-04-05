@@ -134,6 +134,7 @@ public:
     void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse, Label **end)
     {
         auto type = GetAccumulatorType();
+        ASSERT(type != nullptr);
         auto realEndLabel = [end, ifFalse, this](bool useFalseLabel) {
             if (useFalseLabel) {
                 return ifFalse;
@@ -299,7 +300,7 @@ public:
 
     void EmitNullishException(const ir::AstNode *node);
     void ThrowException(const ir::Expression *expr);
-    bool ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *originalNode, Label *prevFinnaly = nullptr);
+    bool ExtendWithFinalizer(ir::AstNode const *node, const ir::AstNode *originalNode, Label *prevFinnaly = nullptr);
 
     void Negate(const ir::AstNode *node);
     void LogicalNot(const ir::AstNode *node);
@@ -654,10 +655,22 @@ private:
                                    bool acceptUndefined);
     void CheckedReferenceNarrowingObject(const ir::AstNode *node, const checker::Type *target);
 
+    void HandleLooseNullishEquality(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse, Label *ifTrue);
+
     void EmitIsUndefined([[maybe_unused]] const ir::AstNode *node)
     {
 #ifdef PANDA_WITH_ETS
         Sa().Emit<EtsIsundefined>(node);
+#else
+        UNREACHABLE();
+#endif  // PANDA_WITH_ETS
+    }
+
+    void EmitEtsEquals([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const VReg lhs,
+                       [[maybe_unused]] const VReg rhs)
+    {
+#ifdef PANDA_WITH_ETS
+        Ra().Emit<EtsEquals>(node, lhs, rhs);
 #else
         UNREACHABLE();
 #endif  // PANDA_WITH_ETS
@@ -719,8 +732,21 @@ private:
         }
     }
 
-    void BinaryEqualityRef(const ir::AstNode *node, bool testEqual, VReg lhs, VReg rhs, Label *ifFalse);
-    void BinaryEqualityRefDynamic(const ir::AstNode *node, bool testEqual, VReg lhs, VReg rhs, Label *ifFalse);
+    template <typename Br>
+    void InverseCondition(const ir::AstNode *node, Br const &br, Label *target, bool inverse = true)
+    {
+        if (!inverse) {
+            br(target);
+            return;
+        }
+        Label *loc = AllocLabel();
+        br(loc);
+        JumpTo(node, target);
+        SetLabel(node, loc);
+    }
+
+    void RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
+    void RefEqualityLooseDynamic(const ir::AstNode *node, VReg lhs, VReg rhs, Label *ifFalse);
 
     template <typename Compare, typename Cond>
     void BinaryNumberComparison(const ir::AstNode *node, VReg lhs, Label *ifFalse)
@@ -730,7 +756,7 @@ private:
     }
 
     template <typename DynCompare>
-    void BinaryDynamicStrictEquality(const ir::AstNode *node, VReg lhs, Label *ifFalse)
+    void RefEqualityStrictDynamic(const ir::AstNode *node, VReg lhs, Label *ifFalse)
     {
         ASSERT(GetAccumulatorType()->IsETSDynamicType() && GetVRegType(lhs)->IsETSDynamicType());
         RegScope scope(this);
@@ -753,7 +779,9 @@ private:
             RegScope rs(this);
             VReg arg0 = AllocReg();
             StoreAccumulator(node, arg0);
-            BinaryEqualityRef(node, !std::is_same_v<CondCompare, Jeqz>, lhs, arg0, ifFalse);
+            InverseCondition(
+                node, [this, node, lhs, arg0](Label *tgt) { RefEqualityLoose(node, lhs, arg0, tgt); }, ifFalse,
+                std::is_same_v<CondCompare, Jeqz>);
             SetAccumulatorType(Checker()->GlobalETSBooleanType());
             return;
         }
@@ -792,10 +820,10 @@ private:
     }
 
     template <typename ObjCompare, typename DynCompare>
-    void BinaryStrictEquality(const ir::AstNode *node, VReg lhs, Label *ifFalse)
+    void RefEqualityStrict(const ir::AstNode *node, VReg lhs, Label *ifFalse)
     {
         if (GetAccumulatorType()->IsETSDynamicType() || GetVRegType(lhs)->IsETSDynamicType()) {
-            BinaryDynamicStrictEquality<DynCompare>(node, lhs, ifFalse);
+            RefEqualityStrictDynamic<DynCompare>(node, lhs, ifFalse);
         } else {
             Ra().Emit<ObjCompare>(node, lhs, ifFalse);
         }

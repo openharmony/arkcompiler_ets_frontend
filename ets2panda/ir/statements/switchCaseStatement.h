@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,22 +23,28 @@ class Expression;
 
 class SwitchCaseStatement : public Statement {
 public:
+    SwitchCaseStatement() = delete;
+    ~SwitchCaseStatement() override = default;
+
+    NO_COPY_SEMANTIC(SwitchCaseStatement);
+    NO_MOVE_SEMANTIC(SwitchCaseStatement);
+
     explicit SwitchCaseStatement(Expression *test, ArenaVector<Statement *> &&consequent)
         : Statement(AstNodeType::SWITCH_CASE_STATEMENT), test_(test), consequent_(std::move(consequent))
     {
     }
 
-    Expression *Test()
+    [[nodiscard]] Expression *Test() noexcept
     {
         return test_;
     }
 
-    const Expression *Test() const
+    [[nodiscard]] const Expression *Test() const noexcept
     {
         return test_;
     }
 
-    const ArenaVector<Statement *> &Consequent() const
+    [[nodiscard]] const ArenaVector<Statement *> &Consequent() const noexcept
     {
         return consequent_;
     }
@@ -52,6 +58,9 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+
+    void CheckAndTestCase(checker::ETSChecker *checker, checker::Type *comparedExprType, checker::Type *unboxedDiscType,
+                          ir::Expression *node, bool &isDefaultCase);
 
     void Accept(ASTVisitorT *v) override
     {
