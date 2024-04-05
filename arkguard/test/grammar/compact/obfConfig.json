@@ -13,6 +13,6 @@
         "mKeepStringProperty": false,
         "mTopLevel": false
     },
-    "mEnableSourceMap": true,
+    "mEnableSourceMap": false,
     "mEnableNameCache": false
 }
