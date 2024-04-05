@@ -370,6 +370,7 @@ Emitter::Emitter(const CompilerContext *context)
     if (context->Binder()->Program()->Kind() == parser::ScriptKind::MODULE) {
         AddHasTopLevelAwaitRecord(context->Binder()->Program()->HasTLA(), context);
     }
+    AddSharedModuleRecord(context);
 }
 
 Emitter::~Emitter()
@@ -503,6 +504,27 @@ void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *cont
         hasTLARecord.field_list.emplace_back(std::move(hasTLAField));
 
         prog_->record_table.emplace(hasTLARecord.name, std::move(hasTLARecord));
+    }
+}
+
+void Emitter::AddSharedModuleRecord(const CompilerContext *context)
+{
+    bool isShared = context->Binder()->Program()->IsShared();
+
+    auto sharedModuleField = panda::pandasm::Field(LANG_EXT);
+    sharedModuleField.name = "isSharedModule";
+    sharedModuleField.type = panda::pandasm::Type("u8", 0);
+    sharedModuleField.metadata->SetValue(
+        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isShared))
+    );
+
+    if (context->IsMergeAbc()) {
+        rec_->field_list.emplace_back(std::move(sharedModuleField));
+    } else if (isShared) {
+        auto sharedModuleRecord = panda::pandasm::Record("_SharedModuleRecord", LANG_EXT);
+        sharedModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+        sharedModuleRecord.field_list.emplace_back(std::move(sharedModuleField));
+        prog_->record_table.emplace(sharedModuleRecord.name, std::move(sharedModuleRecord));
     }
 }
 

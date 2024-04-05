@@ -103,12 +103,15 @@ bool Options::CollectInputFilesFromFileList(const std::string &input, const std:
         return false;
     }
 
-    constexpr size_t ITEM_COUNT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile, pkgName]
-    constexpr size_t ITEM_COUNT_NOT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile; outputfile]
+    // item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule]
+    constexpr size_t ITEM_COUNT_MERGE = 6;
+    // item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule]
+    constexpr size_t ITEM_COUNT_NOT_MERGE = 6;
     while (std::getline(ifs, line)) {
         std::vector<std::string> itemList = GetStringItems(line, LIST_ITEM_SEPERATOR);
-        if ((compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_MERGE) ||
-            (!compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_NOT_MERGE)) {
+        // For compatibility, only throw error when item list's size is bigger than given size.
+        if ((compilerOptions_.mergeAbc && itemList.size() > ITEM_COUNT_MERGE) ||
+            (!compilerOptions_.mergeAbc && itemList.size() > ITEM_COUNT_NOT_MERGE)) {
             std::cerr << "Failed to parse line " << line << " of the input file: '"
                       << input << "'." << std::endl
                       << "Expected " << (compilerOptions_.mergeAbc ? ITEM_COUNT_MERGE : ITEM_COUNT_NOT_MERGE)
@@ -132,6 +135,10 @@ bool Options::CollectInputFilesFromFileList(const std::string &input, const std:
         src.sourcefile = itemList[3];
         if (compilerOptions_.mergeAbc) {
             src.pkgName = itemList[4];
+        }
+
+        if (itemList.size() == ITEM_COUNT_MERGE) {
+            src.isSharedModule = itemList[5] == "true" ? true : false;
         }
 
         sourceFiles_.push_back(src);

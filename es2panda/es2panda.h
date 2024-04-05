@@ -61,6 +61,7 @@ struct SourceFile {
     std::string sourcefile {};
     std::string pkgName {};
     uint32_t hash {0};
+    bool isSharedModule {false};
 };
 
 struct PatchFixOptions {

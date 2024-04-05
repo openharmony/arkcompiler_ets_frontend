@@ -47,7 +47,8 @@ Program::Program(Program &&other)
       hasTLA_(other.hasTLA_),
       isDebug_(other.isDebug_),
       targetApiVersion_(other.targetApiVersion_),
-      useDefineSemantic_(other.useDefineSemantic_)
+      useDefineSemantic_(other.useDefineSemantic_),
+      isShared_(other.isShared_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;
@@ -64,6 +65,11 @@ Program &Program::operator=(Program &&other)
     extension_ = other.extension_;
     lineIndex_ = other.lineIndex_;
     isDtsFile_ = other.isDtsFile_;
+    hasTLA_ = other.hasTLA_;
+    isDebug_ = other.isDebug_;
+    targetApiVersion_ = other.targetApiVersion_;
+    useDefineSemantic_ = other.useDefineSemantic_;
+    isShared_ = other.isShared_;
 
     other.ast_ = nullptr;
 

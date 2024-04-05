@@ -81,7 +81,6 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string rname(input.recordName);
     std::string sourcefile(input.sourcefile);
     std::string pkgName(input.pkgName);
-    parser::ScriptKind kind(input.scriptKind);
 
     auto *patchFixHelper = InitPatchFixHelper(input, options, symbolTable);
 
@@ -93,7 +92,8 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
         if (fname.substr(fname.find_last_of(".") + 1) == "abc") {
             return AbcToAsmProgram(fname, options);
         }
-        auto ast = parser_->Parse(fname, src, rname, options, kind);
+
+        auto ast = parser_->Parse(input, options);
         ast.Binder()->SetProgram(&ast);
 
         if (options.dumpAst) {

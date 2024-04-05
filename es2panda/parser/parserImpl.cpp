@@ -128,13 +128,13 @@ std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const std::string &fileName,
     return lexer;
 }
 
-Program ParserImpl::Parse(const std::string &fileName, const std::string &source, const std::string &recordName,
-                          const CompilerOptions &options, ScriptKind kind)
+Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &options)
 {
-    program_.SetKind(kind);
-    program_.SetRecordName(recordName);
+    program_.SetKind(sourceFile.scriptKind);
+    program_.SetRecordName(sourceFile.recordName);
     program_.SetDebug(options.isDebug);
     program_.SetTargetApiVersion(options.targetApiVersion);
+    program_.SetShared(sourceFile.isSharedModule);
     if (Extension() == ScriptExtension::TS) {
         program_.SetDefineSemantic(options.useDefineSemantic);
     }
@@ -142,8 +142,8 @@ Program ParserImpl::Parse(const std::string &fileName, const std::string &source
     /*
      * In order to make the lexer's memory alive, the return value 'lexer' can not be omitted.
      */
-    auto lexer = InitLexer(fileName, source);
-    switch (kind) {
+    auto lexer = InitLexer(sourceFile.fileName, std::string {sourceFile.source});
+    switch (sourceFile.scriptKind) {
         case ScriptKind::SCRIPT: {
             ParseScript();
             break;

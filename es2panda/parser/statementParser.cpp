@@ -3152,6 +3152,9 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 
     lexer::SourcePosition endLoc = source->End();
     auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers), assertClause, isType);
+    if (importDeclaration->Specifiers().empty() && program_.IsShared()) {
+        ThrowSyntaxError("Arkts-no-side-effects-import is not allowed in shared module.");
+    }
     importDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(importDeclaration);
