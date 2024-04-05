@@ -33,7 +33,7 @@ class C extends A {
 }
 
 function main() {
-    assert(new B().foo(new Y()) == "A.foo(Y)");
+    assert(new B().foo(new Y()) == "B.foo(X)");
     assert(new B().foo(new Double()) == "B.foo(Floating)");
     assert(new C().foo2(new Y()) == "C.foo2(Y)")
 }

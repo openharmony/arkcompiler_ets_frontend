@@ -1157,8 +1157,8 @@ Signature *ETSChecker::CheckEveryAbstractSignatureIsOverridden(ETSFunctionType *
 
         bool isOverridden = false;
         for (auto sourceSig : source->CallSignatures()) {
-            Relation()->IsCompatibleTo(*targetSig, sourceSig);
-            if (Relation()->IsTrue() && (*targetSig)->Function()->Id()->Name() == sourceSig->Function()->Id()->Name()) {
+            if ((*targetSig)->Function()->Id()->Name() == sourceSig->Function()->Id()->Name() &&
+                Relation()->IsCompatibleTo(*targetSig, sourceSig)) {
                 target->CallSignatures().erase(targetSig);
                 isOverridden = true;
                 break;
@@ -1205,8 +1205,7 @@ bool ETSChecker::IsMethodOverridesOther(Signature *base, Signature *derived)
     if (IsOverridableIn(base)) {
         SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK |
                                                                     TypeRelationFlag::OVERRIDING_CONTEXT);
-        Relation()->IsCompatibleTo(base, derived);
-        if (Relation()->IsTrue()) {
+        if (Relation()->IsCompatibleTo(base, derived)) {
             CheckThrowMarkers(derived, base);
 
             if (derived->HasSignatureFlag(SignatureFlags::STATIC)) {
@@ -1314,7 +1313,6 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         return isOverridingAnySignature;
     }
 
-    bool suitableSignatureFound = false;
     for (auto *it : target->TsType()->AsETSFunctionType()->CallSignatures()) {
         auto *itSubst = AdjustForTypeParameters(signature, it);
 
@@ -1335,11 +1333,8 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
             continue;
         }
 
-        auto errorCode = CheckOverride(signature, itSubst);
-        if (errorCode == OverrideErrorCode::NO_ERROR) {
-            suitableSignatureFound = true;
-        } else if (!suitableSignatureFound) {
-            ThrowOverrideError(signature, it, errorCode);
+        if (auto err = CheckOverride(signature, itSubst); err != OverrideErrorCode::NO_ERROR) {
+            ThrowOverrideError(signature, it, err);
         }
 
         if (signature->Owner()->HasObjectFlag(ETSObjectFlags::INTERFACE) &&
@@ -1596,7 +1591,8 @@ void ETSChecker::CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpressio
     auto *lambdaObject =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         AllocNode<ir::ClassDefinition>(Allocator(), identNode, std::move(properties),
-                                       ir::ClassDefinitionModifiers::DECLARATION, Language(Language::Id::ETS));
+                                       ir::ClassDefinitionModifiers::DECLARATION, ir::ModifierFlags::FINAL,
+                                       Language(Language::Id::ETS));
     lambda->SetResolvedLambda(lambdaObject);
     lambda->SetTsType(functionalInterface);
     lambdaObject->SetScope(classScope);
@@ -2084,13 +2080,7 @@ ir::ModifierFlags ETSChecker::GetFlagsForProxyLambda(bool isStatic)
 {
     // If every captured variable in the lambda is local variable, the proxy method can be 'static' since it doesn't
     // use any of the classes properties
-    ir::ModifierFlags flags = ir::ModifierFlags::PUBLIC;
-
-    if (isStatic) {
-        flags |= ir::ModifierFlags::STATIC;
-    }
-
-    return flags;
+    return ir::ModifierFlags::PUBLIC | (isStatic ? ir::ModifierFlags::STATIC : ir::ModifierFlags::FINAL);
 }
 
 ir::ScriptFunction *ETSChecker::CreateProxyFunc(ir::ArrowFunctionExpression *lambda,
@@ -2177,12 +2167,10 @@ ir::MethodDefinition *ETSChecker::CreateProxyMethodForLambda(ir::ClassDefinition
     auto *proxySignatureInfo = CreateSignatureInfo();
     auto *proxySignature = CreateSignature(proxySignatureInfo, GlobalVoidType(), func);
 
-    SignatureFlags signatureFlags = SignatureFlags::CALL;
-    if (isStatic) {
-        signatureFlags |= SignatureFlags::STATIC;
-    }
+    SignatureFlags signatureFlags =
+        SignatureFlags::PROXY | SignatureFlags::CALL | (isStatic ? SignatureFlags::STATIC : SignatureFlags::FINAL);
 
-    proxySignature->AddSignatureFlag(signatureFlags | SignatureFlags::PROXY);
+    proxySignature->AddSignatureFlag(signatureFlags);
     proxySignature->SetOwnerVar(func->Id()->Variable());
     auto *proxyType = CreateETSFunctionType(proxySignature);
     func->SetSignature(proxySignature);
@@ -2565,7 +2553,8 @@ void ETSChecker::CreateLambdaObjectForFunctionReference(ir::AstNode *refNode, Si
     auto *lambdaObject =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         Allocator()->New<ir::ClassDefinition>(Allocator(), identNode, std::move(properties),
-                                              ir::ClassDefinitionModifiers::DECLARATION, Language(Language::Id::ETS));
+                                              ir::ClassDefinitionModifiers::DECLARATION, ir::ModifierFlags::FINAL,
+                                              Language(Language::Id::ETS));
     lambdaObject->SetScope(classScope);
     // Set the parent nodes
     ctor->SetParent(lambdaObject);
@@ -2707,9 +2696,9 @@ ir::MethodDefinition *ETSChecker::CreateLambdaInvokeProto(util::StringView invok
     body->SetScope(scope);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *func = AllocNode<ir::ScriptFunction>(
-        Allocator(),
-        ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
-                                                ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC});
+        Allocator(), ir::ScriptFunction::ScriptFunctionData {
+                         body, ir::FunctionSignature(nullptr, std::move(params), nullptr),
+                         ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::FINAL});
     func->SetScope(scope);
 
     scope->BindNode(func);
@@ -2724,8 +2713,9 @@ ir::MethodDefinition *ETSChecker::CreateLambdaInvokeProto(util::StringView invok
 
     auto *nameClone = name->Clone(Allocator(), nullptr);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *method = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, nameClone, funcExpr,
-                                                   ir::ModifierFlags::PUBLIC, Allocator(), false);
+    auto *method =
+        AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, nameClone, funcExpr,
+                                        ir::ModifierFlags::PUBLIC | ir::ModifierFlags::FINAL, Allocator(), false);
 
     return method;
 }
@@ -2928,7 +2918,7 @@ static Signature *CreateInvokeSignature(ETSChecker *checker, Signature *signatur
     auto *invokeSignature = checker->CreateSignature(
         invokeSignatureInfo, ifaceOverride ? checker->GlobalETSObjectType() : signatureRef->ReturnType(), invokeFunc);
     invokeSignature->SetOwner(lambdaObjectType);
-    invokeSignature->AddSignatureFlag(checker::SignatureFlags::CALL);
+    invokeSignature->AddSignatureFlag(SignatureFlags::CALL | SignatureFlags::FINAL);
 
     return invokeSignature;
 }

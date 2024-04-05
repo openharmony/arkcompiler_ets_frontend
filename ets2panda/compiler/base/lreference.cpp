@@ -315,9 +315,9 @@ void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *memberExpr)
     etsg_->StoreAccumulator(Node(), argReg);
 
     if (sig->Function()->IsStatic()) {
-        etsg_->CallThisStatic0(Node(), argReg, sig->InternalName());
+        etsg_->CallExact(Node(), sig->InternalName(), argReg);
     } else {
-        etsg_->CallThisVirtual1(Node(), baseReg_, sig->InternalName(), argReg);
+        etsg_->CallVirtual(Node(), sig, baseReg_, argReg);
     }
 }
 

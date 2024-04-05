@@ -77,13 +77,6 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
     // make exact types match mandatory
     expr->Compile(this);
 
-    if (expr->TsType()->IsETSTupleType()) {
-        // This piece of code is necessary to handle multidimensional tuples. As a tuple is stored as an
-        // array of `Objects`. If we make an array inside of the tuple type, then we won't be able to derefer a
-        // 2 dimensional array, with an array that expects to return `Object` after index access.
-        CheckedReferenceNarrowing(expr, expr->TsType());
-    }
-
     auto const *const accType = GetAccumulatorType();
     if (accType == expr->TsType() || expr->TsType()->IsETSTypeParameter()) {
         return;
@@ -791,7 +784,7 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
             //      dyn_value instanceof DynamicDecl
             // Bytecode:
             //      call runtime intrinsic_dynamic
-            CallStatic2(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
+            CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
         } else if (lhsType == Checker()->GlobalETSObjectType()) {
             // Semantics:
             //      let obj: Object = ...
@@ -809,7 +802,7 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
             BranchIfFalse(node, ifFalse);
             LoadAccumulator(node, srcReg);
             Sa().Emit<Checkcast>(node, Checker()->GlobalBuiltinDynamicType(lang)->AssemblerName());
-            CallStatic2(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
+            CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC, srcReg, dynTypeReg);
             SetLabel(node, ifFalse);
         } else {
             // Semantics:
@@ -836,7 +829,7 @@ void ETSGen::IsInstanceDynamic(const ir::BinaryExpression *const node, const VRe
                 //      lda.type + call runtime instrinsic_static
                 Sa().Emit<LdaType>(node, rhsType->AsETSObjectType()->AssemblerName());
                 VReg typeReg = MoveAccToReg(node);
-                CallStatic2(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC, srcReg, typeReg);
+                CallExact(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC, srcReg, typeReg);
             }
         } else {
             UNREACHABLE();
@@ -1279,7 +1272,7 @@ void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signature
         CastToReftype(node, boxedType, false);
     }
 
-    Ra().Emit<CallVirtAccShort, 0>(node, signatureFlag, dummyReg_, 0);
+    Ra().Emit<CallAccShort, 0>(node, signatureFlag, dummyReg_, 0);
     SetAccumulatorType(targetType);
     if (node->IsExpression()) {
         const_cast<ir::Expression *>(node->AsExpression())->SetTsType(const_cast<checker::Type *>(targetType));
@@ -2330,8 +2323,8 @@ void ETSGen::EmitNullishException(const ir::AstNode *node)
 {
     RegScope ra(this);
     VReg exception = AllocReg();
-    NewObject(node, exception, Signatures::BUILTIN_NULLPOINTER_ERROR);
-    CallThisStatic0(node, exception, Signatures::BUILTIN_NULLPOINTER_ERROR_CTOR);
+    NewObject(node, Signatures::BUILTIN_NULLPOINTER_ERROR, exception);
+    CallExact(node, Signatures::BUILTIN_NULLPOINTER_ERROR_CTOR, exception);
     EmitThrow(node, exception);
     SetAccumulatorType(nullptr);
 }
@@ -2421,7 +2414,7 @@ void ETSGen::RefEqualityLoose(const ir::AstNode *node, VReg lhs, VReg rhs, Label
         StoreAccumulator(node, rhs);
         LoadAccumulator(node, lhs);
         AssumeNonNullish(node, spec->first);
-        CallThisVirtual1(node, lhs, spec->second, rhs);
+        CallExact(node, spec->second, lhs, rhs);
         BranchIfFalse(node, ifFalse);
         SetLabel(node, ifTrue);
     } else {
@@ -2509,7 +2502,7 @@ void ETSGen::UnaryMinus(const ir::AstNode *node)
     if (GetAccumulatorType()->IsETSBigIntType()) {
         const VReg value = AllocReg();
         StoreAccumulator(node, value);
-        CallThisStatic0(node, value, Signatures::BUILTIN_BIGINT_NEGATE);
+        CallExact(node, Signatures::BUILTIN_BIGINT_NEGATE, value);
         return;
     }
 
@@ -2544,7 +2537,7 @@ void ETSGen::UnaryTilde(const ir::AstNode *node)
     if (GetAccumulatorType()->IsETSBigIntType()) {
         const VReg value = AllocReg();
         StoreAccumulator(node, value);
-        CallThisStatic0(node, value, Signatures::BUILTIN_BIGINT_OPERATOR_BITWISE_NOT);
+        CallExact(node, Signatures::BUILTIN_BIGINT_OPERATOR_BITWISE_NOT, value);
         SetAccumulatorType(Checker()->GlobalETSBigIntType());
         return;
     }
@@ -2573,7 +2566,7 @@ void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
     const RegScope rs(this);
     const auto errorReg = AllocReg();
 
-    NewObject(node, errorReg, Signatures::BUILTIN_ERROR);
+    NewObject(node, Signatures::BUILTIN_ERROR, errorReg);
     LoadAccumulatorString(node, "$$ operator can only be used with ARKUI plugin");
     Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_ERROR_CTOR, errorReg, 1);
     EmitThrow(node, errorReg);
@@ -2660,7 +2653,7 @@ void ETSGen::StringBuilderAppend(const ir::AstNode *node, VReg builder)
     VReg arg0 = AllocReg();
     StoreAccumulator(node, arg0);
 
-    CallThisStatic1(node, builder, signature, arg0);
+    CallExact(node, signature, builder, arg0);
     SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalStringBuilderBuiltinType());
 }
 
@@ -2700,7 +2693,7 @@ void ETSGen::BuildString(const ir::Expression *node)
     StoreAccumulator(node, builder);
 
     AppendString(node, builder);
-    CallThisStatic0(node, builder, Signatures::BUILTIN_STRING_BUILDER_TO_STRING);
+    CallExact(node, Signatures::BUILTIN_STRING_BUILDER_TO_STRING, builder);
 
     SetAccumulatorType(node->TsType());
 }
@@ -2708,14 +2701,14 @@ void ETSGen::BuildString(const ir::Expression *node)
 void ETSGen::CallBigIntUnaryOperator(const ir::Expression *node, VReg arg, const util::StringView signature)
 {
     LoadAccumulator(node, arg);
-    CallThisStatic0(node, arg, signature);
+    CallExact(node, signature, arg);
     SetAccumulatorType(Checker()->GlobalETSBigIntType());
 }
 
 void ETSGen::CallBigIntBinaryOperator(const ir::Expression *node, VReg lhs, VReg rhs, const util::StringView signature)
 {
     LoadAccumulator(node, lhs);
-    CallThisStatic1(node, lhs, signature, rhs);
+    CallExact(node, signature, lhs, rhs);
     SetAccumulatorType(Checker()->GlobalETSBigIntType());
 }
 
@@ -2723,7 +2716,7 @@ void ETSGen::CallBigIntBinaryComparison(const ir::Expression *node, VReg lhs, VR
                                         const util::StringView signature)
 {
     LoadAccumulator(node, lhs);
-    CallThisStatic1(node, lhs, signature, rhs);
+    CallExact(node, signature, lhs, rhs);
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
@@ -2761,15 +2754,15 @@ void ETSGen::BuildTemplateString(const ir::TemplateLiteral *node)
         }
     }
 
-    CallThisStatic0(node, builder, Signatures::BUILTIN_STRING_BUILDER_TO_STRING);
+    CallExact(node, Signatures::BUILTIN_STRING_BUILDER_TO_STRING, builder);
 
     SetAccumulatorType(Checker()->GlobalBuiltinETSStringType());
 }
 
-void ETSGen::NewObject(const ir::AstNode *const node, const VReg ctor, const util::StringView name)
+void ETSGen::NewObject(const ir::AstNode *const node, const util::StringView name, VReg athis)
 {
-    Ra().Emit<Newobj>(node, ctor, name);
-    SetVRegType(ctor, Checker()->GlobalETSObjectType());
+    Ra().Emit<Newobj>(node, athis, name);
+    SetVRegType(athis, Checker()->GlobalETSObjectType());
 }
 
 void ETSGen::NewArray(const ir::AstNode *const node, const VReg arr, const VReg dim, const checker::Type *const arrType)
@@ -2886,7 +2879,7 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
 
 void ETSGen::LoadStringLength(const ir::AstNode *node)
 {
-    Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_STRING_LENGTH, dummyReg_, 0);
+    Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_STRING_LENGTH, dummyReg_, 0);
     SetAccumulatorType(Checker()->GlobalIntType());
 }
 
@@ -2904,7 +2897,7 @@ void ETSGen::DoubleIsNaN(const ir::AstNode *node)
 
 void ETSGen::LoadStringChar(const ir::AstNode *node, const VReg stringObj, const VReg charIndex)
 {
-    Ra().Emit<CallVirtShort>(node, Signatures::BUILTIN_STRING_CHAR_AT, stringObj, charIndex);
+    Ra().Emit<CallShort>(node, Signatures::BUILTIN_STRING_CHAR_AT, stringObj, charIndex);
     SetAccumulatorType(Checker()->GlobalCharType());
 }
 

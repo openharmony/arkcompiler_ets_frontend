@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,12 +25,13 @@ class KlassA {
         return "KlassA::Bar()";
     }
 
+    // NOTE(vpukhov): Baz order affects override resoluition!
     public Baz(x: A, y: B) : String {
-        return "KlassA::Baz(A, B)";
+        return "KlassA::Baz(B, B)";
     }
 
-    public final Baz(x: B, y: B) : String {
-        return "KlassA::Baz(B, B)";
+    public final Baz(x: A, y: A) : String {
+        return "KlassA::Baz(A, A)";
     }
 }
 
@@ -53,8 +54,8 @@ class KlassC extends KlassB {
         return "KlassC::Foo()";
     }
 
-    public Baz(x: A, y: A) : String {
-        return "KlassC::Baz(A, A)";
+    public Baz(x: B, y: B) : String {
+        return "KlassC::Baz(B, B)";
     }
 
     public final CheckThisAndSuper() : void {
@@ -99,9 +100,9 @@ function main() : void {
     let objA : A = new A();
     let objB : B = new B();
 
-    assert(c.Baz(objA, objA) == "KlassC::Baz(A, A)");
+    assert(c.Baz(objB, objB) == "KlassC::Baz(B, B)");
     assert(c.Baz(objA, objB) == "KlassB::Baz(A, B)");
-    assert(c.Baz(objB, objB) == "KlassA::Baz(B, B)");
+    assert(c.Baz(objA, objA) == "KlassA::Baz(A, A)");
 
     c.CheckThisAndSuper();
 

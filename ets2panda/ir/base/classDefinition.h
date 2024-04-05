@@ -84,8 +84,8 @@ public:
     }
 
     explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ArenaVector<AstNode *> &&body,
-                             ClassDefinitionModifiers modifiers, Language lang)
-        : TypedAstNode(AstNodeType::CLASS_DEFINITION),
+                             ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
+        : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
