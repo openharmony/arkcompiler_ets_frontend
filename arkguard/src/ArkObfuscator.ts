@@ -190,7 +190,7 @@ export class ArkObfuscator {
 
     this.initPerformancePrinter();
     // load transformers
-    this.mTransformers = TransformerManager.getInstance(this.mCustomProfiles, this.projectInfo).getTransformers();
+    this.mTransformers = new TransformerManager(this.mCustomProfiles, this.projectInfo).getTransformers();
 
     if (needReadApiInfo(this.mCustomProfiles)) {
       this.mCustomProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(
