@@ -23,30 +23,20 @@ import type { ProjectInfo } from '../common/type';
 import { Extension } from '../common/type';
 
 export class TransformerManager {
-  private static sInstance: TransformerManager | null = null;
-
   private static readonly sLoadPath: string = join(__dirname, '../', 'transformers');
 
   private readonly mTransformers: TransformerFactory<Node>[];
 
-  public static getInstance(options: IOptions, projectInfo?: ProjectInfo): TransformerManager {
-    if (!this.sInstance) {
-      this.sInstance = new TransformerManager();
-      this.sInstance.loadTransformers(options, projectInfo);
-    }
-
-    return this.sInstance as TransformerManager;
-  }
-
-  private constructor() {
+  public constructor(options: IOptions, projectInfo?: ProjectInfo) {
     this.mTransformers = [];
+    this.loadTransformers(options, projectInfo);
   }
 
   public getTransformers(): TransformerFactory<Node>[] {
     return this.mTransformers;
   }
 
-  private loadTransformers(options: IOptions, projectInfo?: ProjectInfo): TransformerFactory<Node>[] {
+  private loadTransformers(options: IOptions, projectInfo?: ProjectInfo): void {
     let subFiles: string[] = readdirSync(TransformerManager.sLoadPath);
     let plugins: TransformPlugin[] = [];
     for (const subFile of subFiles) {
@@ -83,7 +73,5 @@ export class TransformerManager {
         this.mTransformers.push(transformerFactory);
       }
     });
-
-    return this.mTransformers;
   }
 }
