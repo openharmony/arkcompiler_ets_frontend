@@ -1,0 +1,1 @@
+function foo1() {let a = 1; let b = 2;let c = 3;let d = 4;return a + b + c + d;}function foo2() { }

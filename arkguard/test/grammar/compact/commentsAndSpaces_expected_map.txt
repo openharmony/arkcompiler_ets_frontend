@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "commentsAndSpaces.ts",
+  "sourceRoot": "",
+  "sources": [
+    "test/grammar/compact/commentsAndSpaces.ts"
+  ],
+  "names": [],
+  "mappings": "AAeA,SAAS,IAAI,IACX,IAAI,CAAC,GAAG,CAAC,CAAC,CAGF,IAAI,CAAC,GAAG,CAAC,CAGjB,IAAI,CAAC,GAAG,CAAC,CAIT,IAAI,CAAC,GAAG,CAAC,CACT,OAAO,CAAC,GAAG,CAAC,GAAG,CAAC,GAAG,CAAC,CACtB,CAOA,SAAS,IAAI,KAAI,CAAC"
+}
