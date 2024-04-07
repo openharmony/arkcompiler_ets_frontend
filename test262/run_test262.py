@@ -555,6 +555,49 @@ def get_threads(args):
     return threads
 
 
+def get_host_args_of_product_name(args):
+    product_name = args.product_name
+    ark_dir = f"{ARGS_PREFIX}{product_name}/{ARK_DIR_SUFFIX}"
+    icui_dir = f"{ARGS_PREFIX}{product_name}/{ICUI_DIR_SUFFIX}"
+    ark_js_runtime_dir = f"{ARGS_PREFIX}{product_name}/{ARK_JS_RUNTIME_DIR_SUFFIX}"
+    zlib_dir = f"{ARGS_PREFIX}{product_name}/{ZLIB_DIR_SUFFIX}"
+
+    ark_tool = os.path.join(ark_js_runtime_dir, "ark_js_vm")
+    libs_dir = f"{icui_dir}:{LLVM_DIR}:{ark_js_runtime_dir}:{zlib_dir}"
+    ark_aot_tool = os.path.join(ark_js_runtime_dir, "ark_aot_compiler")
+    merge_abc_binary = os.path.join(ark_dir, "merge_abc")
+
+    return ark_tool, libs_dir, ark_aot_tool, merge_abc_binary
+
+
+def get_host_args_of_host_type(args, host_type, ark_tool, ark_aot_tool, libs_dir, ark_frontend,
+                               ark_frontend_binary, opt_level, es2abc_thread_count,
+                               merge_abc_binary, merge_abc_mode, product_name):
+    host_args = f"-B test262/run_sunspider.py "
+    host_args += f"--ark-tool={ark_tool} "
+    if args.ark_aot:
+        host_args += f"--ark-aot "
+    if args.run_pgo:
+        host_args += f"--run-pgo "
+    host_args += f"--ark-aot-tool={ark_aot_tool} "
+    host_args += f"--libs-dir={libs_dir} "
+    host_args += f"--ark-frontend={ark_frontend} "
+    host_args += f"--ark-frontend-binary={ark_frontend_binary} "
+    host_args += f"--opt-level={opt_level} "
+    host_args += f"--es2abc-thread-count={es2abc_thread_count} "
+    host_args += f"--merge-abc-binary={merge_abc_binary} "
+    host_args += f"--merge-abc-mode={merge_abc_mode} "
+    host_args += f"--product-name={product_name} "
+
+    return host_args
+
+def get_host_args_of_ark_arch(args):
+    host_args += f"--ark-arch={args.ark_arch} "
+    host_args += f"--ark-arch-root={args.ark_arch_root} "
+
+    return host_args
+
+
 def get_host_args(args, host_type):
     host_args = ""
     ark_tool = DEFAULT_ARK_TOOL
@@ -570,16 +613,7 @@ def get_host_args(args, host_type):
     product_name = DEFAULT_PRODUCT_NAME
 
     if args.product_name:
-        product_name = args.product_name
-        ark_dir = f"{ARGS_PREFIX}{product_name}/{ARK_DIR_SUFFIX}"
-        icui_dir = f"{ARGS_PREFIX}{product_name}/{ICUI_DIR_SUFFIX}"
-        ark_js_runtime_dir = f"{ARGS_PREFIX}{product_name}/{ARK_JS_RUNTIME_DIR_SUFFIX}"
-        zlib_dir = f"{ARGS_PREFIX}{product_name}/{ZLIB_DIR_SUFFIX}"
-
-        ark_tool = os.path.join(ark_js_runtime_dir, "ark_js_vm")
-        libs_dir = f"{icui_dir}:{LLVM_DIR}:{ark_js_runtime_dir}:{zlib_dir}"
-        ark_aot_tool = os.path.join(ark_js_runtime_dir, "ark_aot_compiler")
-        merge_abc_binary = os.path.join(ark_dir, "merge_abc")
+        ark_tool, libs_dir, ark_aot_tool, merge_abc_binary = get_host_args_of_product_name(args)
 
     if args.hostArgs:
         host_args = args.hostArgs
@@ -610,26 +644,14 @@ def get_host_args(args, host_type):
 
     if args.merge_abc_mode:
         merge_abc_mode = args.merge_abc_mode
+
     if host_type == DEFAULT_HOST_TYPE:
-        host_args = f"-B test262/run_sunspider.py "
-        host_args += f"--ark-tool={ark_tool} "
-        if args.ark_aot:
-            host_args += f"--ark-aot "
-        if args.run_pgo:
-            host_args += f"--run-pgo "
-        host_args += f"--ark-aot-tool={ark_aot_tool} "
-        host_args += f"--libs-dir={libs_dir} "
-        host_args += f"--ark-frontend={ark_frontend} "
-        host_args += f"--ark-frontend-binary={ark_frontend_binary} "
-        host_args += f"--opt-level={opt_level} "
-        host_args += f"--es2abc-thread-count={es2abc_thread_count} "
-        host_args += f"--merge-abc-binary={merge_abc_binary} "
-        host_args += f"--merge-abc-mode={merge_abc_mode} "
-        host_args += f"--product-name={product_name} "
+        host_args = get_host_args_of_host_type(args, host_type, ark_tool, ark_aot_tool, libs_dir, ark_frontend,
+                                               ark_frontend_binary, opt_level, es2abc_thread_count,
+                                               merge_abc_binary, merge_abc_mode, product_name)
 
     if args.ark_arch != ark_arch:
-        host_args += f"--ark-arch={args.ark_arch} "
-        host_args += f"--ark-arch-root={args.ark_arch_root} "
+        host_args = get_host_args_of_ark_arch(args)
 
     return host_args
 

@@ -362,43 +362,62 @@ class ArkProgram():
             return exec_command(cmd_args)
         return 0
 
-    def gen_abc(self):
-        js_file = self.js_file
+    def gen_abc_for_merge_abc_mode(self, js_file, dependencies):
         file_name_pre = os.path.splitext(js_file)[0]
-        file_name = os.path.basename(js_file)
-        file_dir = os.path.split(js_file)[0]
-        out_file = f"{file_name_pre}.abc"
-        out_proto = f"{file_name_pre}.proto"
         proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
-        self.abc_file = out_file
-        mod_opt_index = 0
-        compile_as_module = False
-        cmd_args = []
-        dependency_cmd_args = []
-        frontend_tool = self.ark_frontend_binary
-        merge_abc_mode = self.merge_abc_mode
-        dependencies = []
-        merge_abc_binary = self.args.merge_abc_binary
-        retcode = 0
 
-        # pre-generate the dependencies' abc when ark_frontend is [es2panda]
-        if (file_name in self.module_list or file_name in self.dynamicImport_list):
-            if ("dynamic-import" in js_file):
-                search_dir = os.path.dirname(js_file)
-            else:
-                search_dir = os.path.dirname(js_file.replace(BASE_OUT_DIR, DATA_DIR))
-            dependencies = collect_module_dependencies(js_file, search_dir, [])
-            compile_as_module = self.check_compile_mode(js_file)
-            if (self.ark_frontend == ARK_FRONTEND_LIST[1]):
-                if list(set(dependencies)):
-                    for dependency in list(set(dependencies)):
-                        dependency_file = os.path.basename(dependency)
-                        dependency_name = os.path.splitext(dependency_file)[0]
-                        out_dependency_pre = '%s/%s' % (file_dir, dependency_name)
-                        out_dependency_proto = f"{out_dependency_pre}.protoBin"
-                        is_dependency_proto_existed = os.path.exists(out_dependency_proto)
-                        if not is_dependency_proto_existed:
-                            self.gen_dependency_proto(dependency)
+        if "dynamic-import" in js_file:
+            return self.gen_apart_abc(dependencies)
+        else:
+            return self.gen_merged_abc(dependencies, file_name_pre, proto_bin_file)
+
+    def gen_abc_for_script_mode(self, cmd_args, retcode):
+        retcode = exec_command(cmd_args)
+        if retcode == 1:
+            return retcode
+        self.abc_cmd = cmd_args
+
+    def gen_abc_for_dynamic_import(self, js_file, retcode):
+        file_name_pre = os.path.splitext(js_file)[0]
+        out_file = f"{file_name_pre}.abc"
+        proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
+        merge_abc_binary = self.args.merge_abc_binary
+
+        if ("dynamic-import" in js_file and not os.path.exists(out_file)):
+            file_dir = os.path.split(self.js_file)[0]
+            proto_abc_file = ".".join([os.path.splitext(os.path.basename(self.js_file))[0], "abc"])
+            cmd_args = [merge_abc_binary, '--input', proto_bin_file,
+                        '--suffix', PROTO_BIN_SUFFIX, '--outputFilePath',
+                        file_dir, '--output', proto_abc_file]
+            retcode = exec_command(cmd_args)
+            if retcode == 1:
+                return retcode
+            self.abc_cmd = cmd_args
+
+    def get_abc_from_import_statement(self, js_file):
+        file_name_pre = os.path.splitext(js_file)[0]
+        out_file = f"{file_name_pre}.abc"
+
+        self.abc_file = os.path.abspath(out_file)
+        js_dir = os.path.dirname(js_file)
+        for line in fileinput.input(js_file):
+            import_line = re.findall(r"^(?:ex|im)port.*\.js", line)
+            if len(import_line):
+                import_file = re.findall(r"['\"].*\.js", import_line[0])
+                if len(import_file):
+                    abc_file = import_file[0][1:].replace(".js", ".abc")
+                    abc_file = os.path.abspath(f'{js_dir}/{abc_file}')
+                    if self.abc_file.find(abc_file) < 0:
+                        self.abc_file += f':{abc_file}'
+
+    def gen_command(self, js_file, compile_as_module):
+        cmd_args = []
+        mod_opt_index = 0
+        frontend_tool = self.ark_frontend_binary
+        file_name_pre = os.path.splitext(js_file)[0]
+        merge_abc_mode = self.merge_abc_mode
+        proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
+        out_file = f"{file_name_pre}.abc"
 
         if self.ark_frontend == ARK_FRONTEND_LIST[0]:
             mod_opt_index = 3
@@ -428,43 +447,76 @@ class ArkProgram():
             if compile_as_module:
                 cmd_args.insert(mod_opt_index, "--module")
                 self.module = True
+
+        return cmd_args
+
+    def gen_dependencies_proto(self, js_file):
+        file_dir = os.path.split(js_file)[0]
+        compile_as_module = False
+        dependencies = []
+
+        if ("dynamic-import" in js_file):
+            search_dir = os.path.dirname(js_file)
+        else:
+            search_dir = os.path.dirname(js_file.replace(BASE_OUT_DIR, DATA_DIR))
+
+        dependencies = collect_module_dependencies(js_file, search_dir, [])
+        compile_as_module = self.check_compile_mode(js_file)
+
+        if (self.ark_frontend == ARK_FRONTEND_LIST[1]):
+            if list(set(dependencies)):
+                for dependency in list(set(dependencies)):
+                    dependency_file = os.path.basename(dependency)
+                    dependency_name = os.path.splitext(dependency_file)[0]
+                    out_dependency_pre = '%s/%s' % (file_dir, dependency_name)
+                    out_dependency_proto = f"{out_dependency_pre}.protoBin"
+                    is_dependency_proto_existed = os.path.exists(out_dependency_proto)
+                    if not is_dependency_proto_existed:
+                        self.gen_dependency_proto(dependency)
+
+        return compile_as_module, dependencies
+
+    def gen_abc(self):
+        js_file = self.js_file
+        file_name_pre = os.path.splitext(js_file)[0]
+        file_name = os.path.basename(js_file)
+        file_dir = os.path.split(js_file)[0]
+        out_file = f"{file_name_pre}.abc"
+        out_proto = f"{file_name_pre}.proto"
+        proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
+        self.abc_file = out_file
+        mod_opt_index = 0
+        compile_as_module = False
+        cmd_args = []
+        dependency_cmd_args = []
+        frontend_tool = self.ark_frontend_binary
+        merge_abc_mode = self.merge_abc_mode
+        dependencies = []
+        merge_abc_binary = self.args.merge_abc_binary
+        retcode = 0
+
+        # generate the dependencies' proto when ark_frontend is [es2panda]
+        if (file_name in self.module_list or file_name in self.dynamicImport_list):
+            compile_as_module, dependencies = self.gen_dependencies_proto(js_file)
+
+        # generate execution command
+        cmd_args = self.gen_command(js_file, compile_as_module)
+
         # get abc file list from import statement
         if merge_abc_mode == "0" and self.ark_aot and self.module:
-            self.abc_file = os.path.abspath(out_file)
-            js_dir = os.path.dirname(js_file)
-            for line in fileinput.input(js_file):
-                import_line = re.findall(r"^(?:ex|im)port.*\.js", line)
-                if len(import_line):
-                    import_file = re.findall(r"['\"].*\.js", import_line[0])
-                    if len(import_file):
-                        abc_file = import_file[0][1:].replace(".js", ".abc")
-                        abc_file = os.path.abspath(f'{js_dir}/{abc_file}')
-                        if self.abc_file.find(abc_file) < 0:
-                            self.abc_file += f':{abc_file}'
+            self.get_abc_from_import_statement(js_file)
 
+        # generate abc file by script mode
         if not os.path.exists(out_proto):
-            retcode = exec_command(cmd_args)
-            if retcode == 1:
-                return retcode
-            self.abc_cmd = cmd_args
+            self.gen_abc_for_script_mode(cmd_args, retcode)
 
+        # generate abc file by script mode for dynamic-import
         if self.ark_frontend == ARK_FRONTEND_LIST[1]:
-            if ("dynamic-import" in js_file and not os.path.exists(out_file)):
-                file_dir = os.path.split(self.js_file)[0]
-                proto_abc_file = ".".join([os.path.splitext(os.path.basename(self.js_file))[0], "abc"])
-                cmd_args = [merge_abc_binary, '--input', proto_bin_file,
-                            '--suffix', PROTO_BIN_SUFFIX, '--outputFilePath',
-                            file_dir, '--output', proto_abc_file]
-                retcode = exec_command(cmd_args)
-                if retcode == 1:
-                    return retcode
-                self.abc_cmd = cmd_args
+            self.gen_abc_for_dynamic_import(js_file, retcode)
 
+        # generate merged abc file
         if merge_abc_mode != "0":
-            if "dynamic-import" in js_file:
-                return self.gen_apart_abc(dependencies)
-            else:
-                return self.gen_merged_abc(dependencies, file_name_pre, proto_bin_file)
+            self.gen_abc_for_merge_abc_mode(js_file, dependencies)
 
         return retcode
 
