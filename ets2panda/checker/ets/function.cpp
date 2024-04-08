@@ -1324,7 +1324,8 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir:
 
     bool isSignatureInherited = callee->IsSignatureInherited(signature);
     const auto *currentOutermost = containingClass->OutermostClass();
-    if (((signature->HasSignatureFlag(SignatureFlags::PROTECTED) && containingClass->IsDescendantOf(callee)) ||
+    if (!signature->HasSignatureFlag(SignatureFlags::PRIVATE) &&
+        ((signature->HasSignatureFlag(SignatureFlags::PROTECTED) && containingClass->IsDescendantOf(callee)) ||
          (currentOutermost != nullptr && currentOutermost == callee->OutermostClass())) &&
         isSignatureInherited) {
         return;
