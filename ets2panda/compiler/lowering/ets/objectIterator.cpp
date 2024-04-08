@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -160,16 +160,18 @@ bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *
     auto *const varbinder = ctx->compilerContext->VarBinder()->AsETSBinder();
     ASSERT(varbinder != nullptr);
 
-    program->Ast()->TransformChildrenRecursively([this, parser, checker, varbinder](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsForOfStatement()) {
-            if (auto const *const exprType = ast->AsForOfStatement()->Right()->TsType();
-                exprType != nullptr && ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) ||
-                                        exprType->IsETSUnionType() || exprType->IsETSTypeParameter())) {
-                return ProcessObjectIterator(parser, checker, varbinder, ast->AsForOfStatement());
+    program->Ast()->TransformChildrenRecursively(
+        [this, parser, checker, varbinder](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsForOfStatement()) {
+                if (auto const *const exprType = ast->AsForOfStatement()->Right()->TsType();
+                    exprType != nullptr && ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) ||
+                                            exprType->IsETSUnionType() || exprType->IsETSTypeParameter())) {
+                    return ProcessObjectIterator(parser, checker, varbinder, ast->AsForOfStatement());
+                }
             }
-        }
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

@@ -31,10 +31,13 @@ ETSReExportDeclaration::ETSReExportDeclaration(ETSImportDeclaration *etsImportDe
     }
 }
 
-void ETSReExportDeclaration::TransformChildren(const NodeTransformer &cb)
+void ETSReExportDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (etsImportDeclarations_ != nullptr) {
-        etsImportDeclarations_ = cb(etsImportDeclarations_)->AsETSImportDeclaration();
+        if (auto *transformedNode = cb(etsImportDeclarations_); etsImportDeclarations_ != transformedNode) {
+            etsImportDeclarations_->SetTransformedNode(transformationName, transformedNode);
+            etsImportDeclarations_ = transformedNode->AsETSImportDeclaration();
+        }
     }
 }
 

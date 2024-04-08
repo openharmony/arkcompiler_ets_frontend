@@ -22,9 +22,12 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ClassExpression::TransformChildren(const NodeTransformer &cb)
+void ClassExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    def_ = cb(def_)->AsClassDefinition();
+    if (auto *transformedNode = cb(def_); def_ != transformedNode) {
+        def_->SetTransformedNode(transformationName, transformedNode);
+        def_ = transformedNode->AsClassDefinition();
+    }
 }
 
 void ClassExpression::Iterate(const NodeTraverser &cb) const

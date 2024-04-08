@@ -81,17 +81,30 @@ void MethodDefinition::Iterate(const NodeTraverser &cb) const
     }
 }
 
-void MethodDefinition::TransformChildren(const NodeTransformer &cb)
+void MethodDefinition::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    key_ = cb(key_)->AsExpression();
-    value_ = cb(value_)->AsExpression();
+    if (auto *transformedNode = cb(key_); key_ != transformedNode) {
+        key_->SetTransformedNode(transformationName, transformedNode);
+        key_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(value_); value_ != transformedNode) {
+        value_->SetTransformedNode(transformationName, transformedNode);
+        value_ = transformedNode->AsExpression();
+    }
 
     for (auto *&it : overloads_) {
-        it = cb(it)->AsMethodDefinition();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsMethodDefinition();
+        }
     }
 
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 }
 

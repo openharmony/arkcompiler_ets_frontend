@@ -257,7 +257,7 @@ public:
         return variable_;
     }
 
-    void SetVariable(varbinder::Variable *const variable) noexcept
+    void SetVariable(varbinder::Variable *variable) noexcept
     {
         variable_ = variable;
     }
@@ -463,12 +463,12 @@ public:
         return reinterpret_cast<const ir::ClassElement *>(this);
     }
 
-    [[nodiscard]] virtual bool IsScopeBearer() const
+    [[nodiscard]] virtual bool IsScopeBearer() const noexcept
     {
         return false;
     }
 
-    virtual varbinder::Scope *Scope() const
+    [[nodiscard]] virtual varbinder::Scope *Scope() const noexcept
     {
         UNREACHABLE();
     }
@@ -482,9 +482,9 @@ public:
         UNREACHABLE();
     }
 
-    virtual void TransformChildren(const NodeTransformer &cb) = 0;
+    virtual void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) = 0;
     virtual void Iterate(const NodeTraverser &cb) const = 0;
-    void TransformChildrenRecursively(const NodeTransformer &cb);
+    void TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName);
     void IterateRecursively(const NodeTraverser &cb) const;
     bool IsAnyChild(const NodePredicate &cb) const;
     AstNode *FindChild(const NodePredicate &cb) const;
@@ -498,6 +498,8 @@ public:
     virtual void Compile([[maybe_unused]] compiler::ETSGen *etsg) const {};
     virtual checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) = 0;
     virtual checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
+
+    void SetTransformedNode(std::string_view transformationName, AstNode *transformedNode);
 
     using ASTVisitorT = visitor::ASTAbstractVisitor;
 
@@ -521,11 +523,18 @@ protected:
     AstNode *parent_ {};
     lexer::SourceRange range_ {};
     AstNodeType type_;
-    varbinder::Variable *variable_ {};
     ModifierFlags flags_ {};
     mutable AstNodeFlags astNodeFlags_ {};
     mutable BoxingUnboxingFlags boxingUnboxingFlags_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+private:
+    varbinder::Variable *variable_ {};
+    AstNode *originalNode_ = nullptr;
+    // {lowering_phase_name, new_generated_node}
+    std::optional<std::pair<std::string_view, AstNode *>> transformedNode_ = std::nullopt;
+
+    void SetOriginalNode(AstNode *originalNode);
 };
 
 template <typename T>

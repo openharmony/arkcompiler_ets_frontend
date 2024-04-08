@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,10 +24,17 @@
 #include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
-void TSImportEqualsDeclaration::TransformChildren(const NodeTransformer &cb)
+void TSImportEqualsDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    id_ = cb(id_)->AsIdentifier();
-    moduleReference_ = cb(moduleReference_)->AsExpression();
+    if (auto *transformedNode = cb(id_); id_ != transformedNode) {
+        id_->SetTransformedNode(transformationName, transformedNode);
+        id_ = transformedNode->AsIdentifier();
+    }
+
+    if (auto *transformedNode = cb(moduleReference_); moduleReference_ != transformedNode) {
+        moduleReference_->SetTransformedNode(transformationName, transformedNode);
+        moduleReference_ = transformedNode->AsExpression();
+    }
 }
 
 void TSImportEqualsDeclaration::Iterate(const NodeTraverser &cb) const

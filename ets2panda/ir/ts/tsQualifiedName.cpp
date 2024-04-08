@@ -38,10 +38,17 @@ void TSQualifiedName::Iterate(const NodeTraverser &cb) const
     cb(right_);
 }
 
-void TSQualifiedName::TransformChildren(const NodeTransformer &cb)
+void TSQualifiedName::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    left_ = cb(left_)->AsExpression();
-    right_ = cb(right_)->AsIdentifier();
+    if (auto *transformedNode = cb(left_); left_ != transformedNode) {
+        left_->SetTransformedNode(transformationName, transformedNode);
+        left_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(right_); right_ != transformedNode) {
+        right_->SetTransformedNode(transformationName, transformedNode);
+        right_ = transformedNode->AsIdentifier();
+    }
 }
 
 void TSQualifiedName::Dump(ir::AstDumper *dumper) const

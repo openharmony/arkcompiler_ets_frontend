@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "functionDeclaration.h"
 
 #include "varbinder/variable.h"
-#include "varbinder/scope.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
@@ -24,13 +23,19 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
-void FunctionDeclaration::TransformChildren(const NodeTransformer &cb)
+void FunctionDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
-    func_ = cb(func_)->AsScriptFunction();
+    if (auto *transformedNode = cb(func_); func_ != transformedNode) {
+        func_->SetTransformedNode(transformationName, transformedNode);
+        func_ = transformedNode->AsScriptFunction();
+    }
 }
 
 void FunctionDeclaration::Iterate(const NodeTraverser &cb) const

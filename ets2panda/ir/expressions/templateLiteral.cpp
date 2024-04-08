@@ -50,14 +50,20 @@ TemplateLiteral *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-void TemplateLiteral::TransformChildren(const NodeTransformer &cb)
+void TemplateLiteral::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : expressions_) {
-        it = cb(it)->AsExpression();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsExpression();
+        }
     }
 
     for (auto *&it : quasis_) {
-        it = cb(it)->AsTemplateElement();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsTemplateElement();
+        }
     }
 }
 

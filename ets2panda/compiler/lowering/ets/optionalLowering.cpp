@@ -131,12 +131,14 @@ bool OptionalLowering::Perform(public_lib::Context *ctx, parser::Program *progra
         }
     }
 
-    program->Ast()->TransformChildrenRecursively([ctx](ir::AstNode *const node) -> ir::AstNode * {
-        if (node->IsChainExpression()) {
-            return RefineSourceRanges(LowerChain(ctx, node->AsChainExpression()));
-        }
-        return node;
-    });
+    program->Ast()->TransformChildrenRecursively(
+        [ctx](ir::AstNode *const node) -> ir::AstNode * {
+            if (node->IsChainExpression()) {
+                return RefineSourceRanges(LowerChain(ctx, node->AsChainExpression()));
+            }
+            return node;
+        },
+        Name());
 
     return true;
 }

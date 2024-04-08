@@ -25,9 +25,12 @@
 #include "ir/ets/etsTypeReferencePart.h"
 
 namespace ark::es2panda::ir {
-void ETSTypeReference::TransformChildren(const NodeTransformer &cb)
+void ETSTypeReference::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    part_ = cb(part_)->AsETSTypeReferencePart();
+    if (auto *transformedNode = cb(part_); part_ != transformedNode) {
+        part_->SetTransformedNode(transformationName, transformedNode);
+        part_ = transformedNode->AsETSTypeReferencePart();
+    }
 }
 
 void ETSTypeReference::Iterate(const NodeTraverser &cb) const

@@ -121,10 +121,17 @@ ValidationInfo Property::ValidateExpression()
     return info;
 }
 
-void Property::TransformChildren(const NodeTransformer &cb)
+void Property::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    key_ = cb(key_)->AsExpression();
-    value_ = cb(value_)->AsExpression();
+    if (auto *transformedNode = cb(key_); key_ != transformedNode) {
+        key_->SetTransformedNode(transformationName, transformedNode);
+        key_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(value_); value_ != transformedNode) {
+        value_->SetTransformedNode(transformationName, transformedNode);
+        value_ = transformedNode->AsExpression();
+    }
 }
 
 void Property::Iterate(const NodeTraverser &cb) const

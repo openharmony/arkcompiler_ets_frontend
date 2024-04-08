@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,10 +23,17 @@
 #include "checker/TSchecker.h"
 
 namespace ark::es2panda::ir {
-void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb)
+void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    objectType_ = static_cast<TypeNode *>(cb(objectType_));
-    indexType_ = static_cast<TypeNode *>(cb(indexType_));
+    if (auto *transformedNode = cb(objectType_); objectType_ != transformedNode) {
+        objectType_->SetTransformedNode(transformationName, transformedNode);
+        objectType_ = static_cast<TypeNode *>(transformedNode);
+    }
+
+    if (auto *transformedNode = cb(indexType_); indexType_ != transformedNode) {
+        indexType_->SetTransformedNode(transformationName, transformedNode);
+        indexType_ = static_cast<TypeNode *>(transformedNode);
+    }
 }
 
 void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const

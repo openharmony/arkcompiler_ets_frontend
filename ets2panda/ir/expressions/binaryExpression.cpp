@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,10 +24,17 @@
 #include "ir/visitor/AstVisitor.h"
 
 namespace ark::es2panda::ir {
-void BinaryExpression::TransformChildren(const NodeTransformer &cb)
+void BinaryExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    left_ = cb(left_)->AsExpression();
-    right_ = cb(right_)->AsExpression();
+    if (auto *transformedNode = cb(left_); left_ != transformedNode) {
+        left_->SetTransformedNode(transformationName, transformedNode);
+        left_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(right_); right_ != transformedNode) {
+        right_->SetTransformedNode(transformationName, transformedNode);
+        right_ = transformedNode->AsExpression();
+    }
 }
 
 void BinaryExpression::Iterate(const NodeTraverser &cb) const

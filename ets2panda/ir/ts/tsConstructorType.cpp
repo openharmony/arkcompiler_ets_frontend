@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,20 +15,17 @@
 
 #include "tsConstructorType.h"
 
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/types/signature.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace ark::es2panda::ir {
-void TSConstructorType::TransformChildren(const NodeTransformer &cb)
+void TSConstructorType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    signature_.TransformChildren(cb);
+    signature_.TransformChildren(cb, transformationName);
 }
 
 void TSConstructorType::Iterate(const NodeTraverser &cb) const

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,9 +23,12 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void TSParameterProperty::TransformChildren(const NodeTransformer &cb)
+void TSParameterProperty::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    parameter_ = cb(parameter_)->AsExpression();
+    if (auto *transformedNode = cb(parameter_); parameter_ != transformedNode) {
+        parameter_->SetTransformedNode(transformationName, transformedNode);
+        parameter_ = transformedNode->AsExpression();
+    }
 }
 
 void TSParameterProperty::Iterate(const NodeTraverser &cb) const

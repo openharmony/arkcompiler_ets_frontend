@@ -23,7 +23,11 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void BooleanLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void BooleanLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                       [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void BooleanLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void BooleanLiteral::Dump(ir::AstDumper *dumper) const

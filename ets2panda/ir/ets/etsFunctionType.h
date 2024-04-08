@@ -33,18 +33,19 @@ public:
     {
     }
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::Scope *Scope() const override
+    [[nodiscard]] varbinder::Scope *Scope() const noexcept override
     {
         return scope_;
     }
 
     void SetScope(varbinder::Scope *scope)
     {
+        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -98,7 +99,7 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;

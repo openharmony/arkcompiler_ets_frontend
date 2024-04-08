@@ -21,13 +21,9 @@
 #include "compiler/core/regScope.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
-#include "ir/expressions/identifier.h"
 #include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/expressions/memberExpression.h"
 
 #include "checker/TSchecker.h"
 #include "checker/ts/destructuringContext.h"
@@ -99,10 +95,17 @@ bool AssignmentExpression::ConvertibleToAssignmentPattern(bool mustBePattern)
     return convResult;
 }
 
-void AssignmentExpression::TransformChildren(const NodeTransformer &cb)
+void AssignmentExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    left_ = cb(left_)->AsExpression();
-    right_ = cb(right_)->AsExpression();
+    if (auto *transformedNode = cb(left_); left_ != transformedNode) {
+        left_->SetTransformedNode(transformationName, transformedNode);
+        left_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(right_); right_ != transformedNode) {
+        right_->SetTransformedNode(transformationName, transformedNode);
+        right_ = transformedNode->AsExpression();
+    }
 }
 
 void AssignmentExpression::Iterate(const NodeTraverser &cb) const

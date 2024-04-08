@@ -43,10 +43,13 @@ SequenceExpression *SequenceExpression::Clone(ArenaAllocator *const allocator, A
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-void SequenceExpression::TransformChildren(const NodeTransformer &cb)
+void SequenceExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : sequence_) {
-        it = cb(it)->AsExpression();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsExpression();
+        }
     }
 }
 

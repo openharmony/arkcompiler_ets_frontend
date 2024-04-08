@@ -58,14 +58,16 @@ bool LambdaConstructionPhase::Perform(public_lib::Context *ctx, parser::Program 
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const node) -> AstNodePtr {
-        if (node->IsArrowFunctionExpression() &&
-            node->AsArrowFunctionExpression()->Function()->Body()->IsExpression()) {
-            return ConvertExpression(checker, node->AsArrowFunctionExpression());
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [checker](ir::AstNode *const node) -> AstNodePtr {
+            if (node->IsArrowFunctionExpression() &&
+                node->AsArrowFunctionExpression()->Function()->Body()->IsExpression()) {
+                return ConvertExpression(checker, node->AsArrowFunctionExpression());
+            }
 
-        return node;
-    });
+            return node;
+        },
+        Name());
 
     return true;
 }

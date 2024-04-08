@@ -35,17 +35,17 @@ public:
     // NOTE (somas): this friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::Scope *Scope() const override
+    [[nodiscard]] varbinder::Scope *Scope() const noexcept override
     {
         return scope_;
     }
 
-    void SetScope(varbinder::Scope *scope)
+    void SetScope(varbinder::Scope *scope) noexcept
     {
         scope_ = scope;
     }
@@ -65,7 +65,7 @@ public:
         trailingBlocks_.emplace(stmt, trailingBlock);
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,10 +27,13 @@
 #include "ir/ts/tsNamedTupleMember.h"
 
 namespace ark::es2panda::ir {
-void TSTupleType::TransformChildren(const NodeTransformer &cb)
+void TSTupleType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : elementTypes_) {
-        it = static_cast<TypeNode *>(cb(it));
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 

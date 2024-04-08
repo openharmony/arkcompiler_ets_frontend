@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,26 +15,33 @@
 
 #include "tsModuleDeclaration.h"
 
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 #include "ir/base/decorator.h"
-#include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void TSModuleDeclaration::TransformChildren(const NodeTransformer &cb)
+void TSModuleDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
-    name_ = cb(name_)->AsExpression();
+    if (auto *transformedNode = cb(name_); name_ != transformedNode) {
+        name_->SetTransformedNode(transformationName, transformedNode);
+        name_ = transformedNode->AsExpression();
+    }
 
     if (body_ != nullptr) {
-        body_ = cb(body_)->AsStatement();
+        if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+            body_->SetTransformedNode(transformationName, transformedNode);
+            body_ = transformedNode->AsStatement();
+        }
     }
 }
 

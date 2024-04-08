@@ -47,12 +47,18 @@ NewExpression *NewExpression::Clone(ArenaAllocator *const allocator, AstNode *co
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-void NewExpression::TransformChildren(const NodeTransformer &cb)
+void NewExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    callee_ = cb(callee_)->AsExpression();
+    if (auto *transformedNode = cb(callee_); callee_ != transformedNode) {
+        callee_->SetTransformedNode(transformationName, transformedNode);
+        callee_ = transformedNode->AsExpression();
+    }
 
     for (auto *&it : arguments_) {
-        it = cb(it)->AsExpression();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsExpression();
+        }
     }
 }
 

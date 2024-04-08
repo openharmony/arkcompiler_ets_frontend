@@ -22,11 +22,22 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ConditionalExpression::TransformChildren(const NodeTransformer &cb)
+void ConditionalExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    test_ = cb(test_)->AsExpression();
-    consequent_ = cb(consequent_)->AsExpression();
-    alternate_ = cb(alternate_)->AsExpression();
+    if (auto *transformedNode = cb(test_); test_ != transformedNode) {
+        test_->SetTransformedNode(transformationName, transformedNode);
+        test_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(consequent_); consequent_ != transformedNode) {
+        consequent_->SetTransformedNode(transformationName, transformedNode);
+        consequent_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(alternate_); alternate_ != transformedNode) {
+        alternate_->SetTransformedNode(transformationName, transformedNode);
+        alternate_ = transformedNode->AsExpression();
+    }
 }
 
 void ConditionalExpression::Iterate(const NodeTraverser &cb) const

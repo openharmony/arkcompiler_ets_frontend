@@ -47,10 +47,13 @@ TSTypeParameterInstantiation *TSTypeParameterInstantiation::Clone(ArenaAllocator
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-void TSTypeParameterInstantiation::TransformChildren(const NodeTransformer &cb)
+void TSTypeParameterInstantiation::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : params_) {
-        it = static_cast<TypeNode *>(cb(it));
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 

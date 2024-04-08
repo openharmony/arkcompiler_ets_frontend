@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,6 @@
 #include "astNode.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "typeNode.h"
 
 namespace ark::es2panda::ir {
 
@@ -53,12 +52,14 @@ const ir::BlockStatement *AstNode::GetTopStatement() const
     return GetTopStatementImpl<const ir::BlockStatement *>(this);
 }
 
-void AstNode::TransformChildrenRecursively(const NodeTransformer &cb)
+void AstNode::TransformChildrenRecursively(const NodeTransformer &cb, std::string_view transformationName)
 {
-    TransformChildren([=](AstNode *child) {
-        child->TransformChildrenRecursively(cb);
-        return cb(child);
-    });
+    TransformChildren(
+        [=](AstNode *child) {
+            child->TransformChildrenRecursively(cb, transformationName);
+            return cb(child);
+        },
+        transformationName);
 }
 
 void AstNode::IterateRecursively(const NodeTraverser &cb) const
@@ -121,5 +122,18 @@ std::string AstNode::DumpEtsSrc() const
 {
     ir::SrcDumper dumper {this};
     return dumper.Str();
+}
+
+void AstNode::SetOriginalNode(AstNode *originalNode)
+{
+    ASSERT(originalNode_ == nullptr);
+    originalNode_ = originalNode;
+}
+
+void AstNode::SetTransformedNode(std::string_view const transformationName, AstNode *transformedNode)
+{
+    ASSERT(!transformedNode_.has_value());
+    transformedNode->SetOriginalNode(this);
+    transformedNode_ = std::make_optional(std::make_pair(transformationName, transformedNode));
 }
 }  // namespace ark::es2panda::ir

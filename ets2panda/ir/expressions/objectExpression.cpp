@@ -30,19 +30,11 @@
 #include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/nullLiteral.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/expressions/literals/numberLiteral.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/validationInfo.h"
-#include "util/bitset.h"
 
 namespace ark::es2panda::ir {
 ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpression const &other,
@@ -190,18 +182,27 @@ void ObjectExpression::SetOptional(bool optional)
     optional_ = optional;
 }
 
-void ObjectExpression::TransformChildren(const NodeTransformer &cb)
+void ObjectExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
     for (auto *&it : properties_) {
-        it = cb(it)->AsExpression();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsExpression();
+        }
     }
 
-    if (TypeAnnotation() != nullptr) {
-        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    if (auto *typeAnnotation = TypeAnnotation(); typeAnnotation != nullptr) {
+        if (auto *transformedNode = cb(typeAnnotation); typeAnnotation != transformedNode) {
+            typeAnnotation->SetTransformedNode(transformationName, transformedNode);
+            SetTsTypeAnnotation(static_cast<TypeNode *>(transformedNode));
+        }
     }
 }
 

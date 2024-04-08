@@ -47,18 +47,19 @@ public:
         }
     }
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::LocalScope *Scope() const override
+    [[nodiscard]] varbinder::LocalScope *Scope() const noexcept override
     {
         return scope_;
     }
 
     void SetScope(varbinder::LocalScope *scope)
     {
+        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -119,7 +120,7 @@ public:
 
     static varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker, varbinder::EnumVariable *enumVar,
                                                           const ir::AstNode *expr);
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;

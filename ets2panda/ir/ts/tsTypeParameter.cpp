@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+/*
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,16 +24,25 @@
 #include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
-void TSTypeParameter::TransformChildren(const NodeTransformer &cb)
+void TSTypeParameter::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    name_ = cb(name_)->AsIdentifier();
+    if (auto *transformedNode = cb(name_); name_ != transformedNode) {
+        name_->SetTransformedNode(transformationName, transformedNode);
+        name_ = transformedNode->AsIdentifier();
+    }
 
     if (constraint_ != nullptr) {
-        constraint_ = static_cast<TypeNode *>(cb(constraint_));
+        if (auto *transformedNode = cb(constraint_); constraint_ != transformedNode) {
+            constraint_->SetTransformedNode(transformationName, transformedNode);
+            constraint_ = static_cast<TypeNode *>(transformedNode);
+        }
     }
 
     if (defaultType_ != nullptr) {
-        defaultType_ = static_cast<TypeNode *>(cb(defaultType_));
+        if (auto *transformedNode = cb(defaultType_); defaultType_ != transformedNode) {
+            defaultType_->SetTransformedNode(transformationName, transformedNode);
+            defaultType_ = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 

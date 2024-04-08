@@ -15,7 +15,6 @@
 
 #include "variableDeclarator.h"
 
-#include "varbinder/variableFlags.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -25,21 +24,24 @@
 #include "ir/typeNode.h"
 #include "ir/expression.h"
 #include "ir/statements/variableDeclaration.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/expressions/identifier.h"
 
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "checker/ts/destructuringContext.h"
 
 namespace ark::es2panda::ir {
-void VariableDeclarator::TransformChildren(const NodeTransformer &cb)
+void VariableDeclarator::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    id_ = cb(id_)->AsExpression();
+    if (auto *transformedNode = cb(id_); id_ != transformedNode) {
+        id_->SetTransformedNode(transformationName, transformedNode);
+        id_ = transformedNode->AsExpression();
+    }
 
     if (init_ != nullptr) {
-        init_ = cb(init_)->AsExpression();
+        if (auto *transformedNode = cb(init_); init_ != transformedNode) {
+            init_->SetTransformedNode(transformationName, transformedNode);
+            init_ = transformedNode->AsExpression();
+        }
     }
 }
 

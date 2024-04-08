@@ -13,12 +13,9 @@
  * limitations under the License.
  */
 
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "varbinder/variableFlags.h"
 #include "checker/checker.h"
 #include "checker/checkerContext.h"
-#include "checker/ets/narrowingWideningConverter.h"
-#include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "ir/astNode.h"
@@ -29,47 +26,27 @@
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/classDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/switchCaseStatement.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/objectExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
-#include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/expressions/literals/charLiteral.h"
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/arrowFunctionExpression.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/literals/undefinedLiteral.h"
-#include "ir/expressions/literals/nullLiteral.h"
 #include "ir/statements/labelledStatement.h"
-#include "ir/statements/tryStatement.h"
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
-#include "ir/ets/etsParameterExpression.h"
-#include "ir/ts/tsAsExpression.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsPrimitiveType.h"
-#include "ir/ts/tsQualifiedName.h"
 #include "varbinder/variable.h"
 #include "varbinder/scope.h"
 #include "varbinder/declaration.h"
-#include "parser/ETSparser.h"
-#include "parser/program/program.h"
 #include "checker/ETSchecker.h"
-#include "varbinder/ETSBinder.h"
 #include "checker/ets/typeRelationContext.h"
-#include "checker/ets/boxingConverter.h"
-#include "checker/ets/unboxingConverter.h"
-#include "checker/types/ets/types.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
@@ -268,6 +245,8 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *const typeAliasNode,
                                                        const ir::TSTypeParameterInstantiation *const exactTypeParams)
 {
+    static std::string_view const TRANSFORMATION_NAME = __func__;
+
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const clonedNode = typeAliasNode->TypeAnnotation()->Clone(Allocator(), typeAliasNode);
 
@@ -280,7 +259,7 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 
     // Only transforming a temporary cloned node, so no modification is made in the AST
     clonedNode->TransformChildrenRecursively(
-        [&checkTypealias, &exactTypeParams, typeAliasNode](ir::AstNode *const node) -> ir::AstNode * {
+        [this, &checkTypealias, &exactTypeParams, typeAliasNode](ir::AstNode *const node) -> ir::AstNode * {
             if (!node->IsETSTypeReference()) {
                 return node;
             }
@@ -306,8 +285,9 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
                 return node;
             }
 
-            return typeParamType;
-        });
+            return typeParamType->Clone(Allocator(), nullptr);
+        },
+        TRANSFORMATION_NAME);
 
     if (checkTypealias) {
         clonedNode->Check(this);

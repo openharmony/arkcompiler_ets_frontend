@@ -23,16 +23,21 @@
 #include "ir/srcDump.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"
-#include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::ir {
-void ETSStructDeclaration::TransformChildren(const NodeTransformer &cb)
+void ETSStructDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
-    def_ = cb(def_)->AsClassDefinition();
+    if (auto *transformedNode = cb(def_); def_ != transformedNode) {
+        def_->SetTransformedNode(transformationName, transformedNode);
+        def_ = transformedNode->AsClassDefinition();
+    }
 }
 
 void ETSStructDeclaration::Iterate(const NodeTraverser &cb) const

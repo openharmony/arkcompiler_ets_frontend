@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,11 +25,22 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ForInStatement::TransformChildren(const NodeTransformer &cb)
+void ForInStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    left_ = cb(left_);
-    right_ = cb(right_)->AsExpression();
-    body_ = cb(body_)->AsStatement();
+    if (auto *transformedNode = cb(left_); left_ != transformedNode) {
+        left_->SetTransformedNode(transformationName, transformedNode);
+        left_ = transformedNode;
+    }
+
+    if (auto *transformedNode = cb(right_); right_ != transformedNode) {
+        right_->SetTransformedNode(transformationName, transformedNode);
+        right_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+        body_->SetTransformedNode(transformationName, transformedNode);
+        body_ = transformedNode->AsStatement();
+    }
 }
 
 void ForInStatement::Iterate(const NodeTraverser &cb) const

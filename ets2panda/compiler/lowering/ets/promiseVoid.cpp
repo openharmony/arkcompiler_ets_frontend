@@ -32,36 +32,43 @@
 #include "util/ustring.h"
 
 namespace ark::es2panda::compiler {
-static ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body)
+ir::BlockStatement *PromiseVoidInferencePhase::HandleAsyncScriptFunctionBody(checker::ETSChecker *checker,
+                                                                             ir::BlockStatement *body)
 {
     (void)checker;
-    body->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsReturnStatement()) {
-            auto *returnStmt = ast->AsReturnStatement();
-            const auto *arg = returnStmt->Argument();
-            if (arg == nullptr) {
-                auto *voidId =
-                    checker->AllocNode<ir::Identifier>(compiler::Signatures::UNDEFINED, checker->Allocator());
-                const auto &returnLoc = returnStmt->Range();
-                voidId->SetRange({returnLoc.end, returnLoc.end});
-                returnStmt->SetArgument(voidId);
+    body->TransformChildrenRecursively(
+        [checker](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsReturnStatement()) {
+                auto *returnStmt = ast->AsReturnStatement();
+                const auto *arg = returnStmt->Argument();
+                if (arg == nullptr) {
+                    auto *voidId =
+                        checker->AllocNode<ir::Identifier>(compiler::Signatures::UNDEFINED, checker->Allocator());
+                    const auto &returnLoc = returnStmt->Range();
+                    voidId->SetRange({returnLoc.end, returnLoc.end});
+                    returnStmt->SetArgument(voidId);
+                }
             }
-        }
-        return ast;
-    });
+            return ast;
+        },
+        Name());
+
     return body;
 }
 
-static void SetRangeRecursively(ir::TypeNode *node, const lexer::SourceRange &loc)
+void PromiseVoidInferencePhase::SetRangeRecursively(ir::TypeNode *node, const lexer::SourceRange &loc)
 {
     node->SetRange(loc);
-    node->TransformChildrenRecursively([loc](ir::AstNode *ast) -> ir::AstNode * {
-        ast->SetRange(loc);
-        return ast;
-    });
+    node->TransformChildrenRecursively(
+        [loc](ir::AstNode *ast) -> ir::AstNode * {
+            ast->SetRange(loc);
+            return ast;
+        },
+        Name());
 }
 
-static ir::TypeNode *CreatePromiseVoidType(checker::ETSChecker *checker, const lexer::SourceRange &loc)
+ir::TypeNode *PromiseVoidInferencePhase::CreatePromiseVoidType(checker::ETSChecker *checker,
+                                                               const lexer::SourceRange &loc)
 {
     auto *voidParam = [checker]() {
         auto paramsVector = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
@@ -160,7 +167,7 @@ bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Progra
         return {loc.end, loc.end};
     };
 
-    const auto transformer = [checker, genTypeLocation](ir::AstNode *ast) -> AstNodePtr {
+    const auto transformer = [this, checker, genTypeLocation](ir::AstNode *ast) -> AstNodePtr {
         if (!(ast->IsScriptFunction() && ast->AsScriptFunction()->IsAsyncFunc())) {
             return ast;
         }
@@ -184,7 +191,7 @@ bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Progra
         return ast;
     };
 
-    program->Ast()->TransformChildrenRecursively(transformer);
+    program->Ast()->TransformChildrenRecursively(transformer, Name());
 
     return true;
 }

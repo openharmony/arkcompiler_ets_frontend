@@ -222,14 +222,16 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
     auto *const parser = ctx->parser->AsETSParser();
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([ctx, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsAssignmentExpression() &&
-            ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-            return HandleOpAssignment(ctx, checker, parser, ast->AsAssignmentExpression());
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [ctx, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsAssignmentExpression() &&
+                ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+                return HandleOpAssignment(ctx, checker, parser, ast->AsAssignmentExpression());
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

@@ -22,7 +22,11 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                          [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void OmittedExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void OmittedExpression::Dump(ir::AstDumper *dumper) const

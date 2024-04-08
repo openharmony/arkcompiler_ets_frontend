@@ -63,22 +63,23 @@ public:
 
     [[nodiscard]] BlockExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
-    bool IsScopeBearer() const noexcept override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::Scope *Scope() const noexcept override
+    [[nodiscard]] varbinder::Scope *Scope() const noexcept override
     {
         return scope_;
     }
 
     void SetScope(varbinder::Scope *scope)
     {
+        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;

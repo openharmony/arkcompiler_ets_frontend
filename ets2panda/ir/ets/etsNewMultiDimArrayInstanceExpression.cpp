@@ -15,7 +15,6 @@
 
 #include "etsNewMultiDimArrayInstanceExpression.h"
 
-#include "varbinder/ETSBinder.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -23,11 +22,19 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
+void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb,
+                                                              std::string_view const transformationName)
 {
-    typeReference_ = static_cast<TypeNode *>(cb(typeReference_));
+    if (auto *transformedNode = cb(typeReference_); typeReference_ != transformedNode) {
+        typeReference_->SetTransformedNode(transformationName, transformedNode);
+        typeReference_ = static_cast<TypeNode *>(transformedNode);
+    }
+
     for (auto *&dim : dimensions_) {
-        dim = cb(dim)->AsExpression();
+        if (auto *transformedNode = cb(dim); dim != transformedNode) {
+            dim->SetTransformedNode(transformationName, transformedNode);
+            dim = transformedNode->AsExpression();
+        }
     }
 }
 

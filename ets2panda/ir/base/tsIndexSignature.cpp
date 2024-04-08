@@ -27,10 +27,17 @@ TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const noexcept
                                                                          : TSIndexSignatureKind::STRING;
 }
 
-void TSIndexSignature::TransformChildren(const NodeTransformer &cb)
+void TSIndexSignature::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    param_ = cb(param_)->AsExpression();
-    typeAnnotation_ = static_cast<TypeNode *>(cb(typeAnnotation_));
+    if (auto *transformedNode = cb(param_); param_ != transformedNode) {
+        param_->SetTransformedNode(transformationName, transformedNode);
+        param_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(typeAnnotation_); typeAnnotation_ != transformedNode) {
+        typeAnnotation_->SetTransformedNode(transformationName, transformedNode);
+        typeAnnotation_ = static_cast<TypeNode *>(transformedNode);
+    }
 }
 
 void TSIndexSignature::Iterate(const NodeTraverser &cb) const

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,9 +24,12 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace ark::es2panda::ir {
-void TSClassImplements::TransformChildren(const NodeTransformer &cb)
+void TSClassImplements::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    expression_ = cb(expression_)->AsExpression();
+    if (auto *transformedNode = cb(expression_); expression_ != transformedNode) {
+        expression_->SetTransformedNode(transformationName, transformedNode);
+        expression_ = transformedNode->AsExpression();
+    }
 }
 
 void TSClassImplements::Iterate(const NodeTraverser &cb) const

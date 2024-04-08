@@ -55,34 +55,55 @@ bool ClassDefinition::HasMatchingPrivateKey(const util::StringView &name) const
     });
 }
 
-void ClassDefinition::TransformChildren(const NodeTransformer &cb)
+void ClassDefinition::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (ident_ != nullptr) {
-        ident_ = cb(ident_)->AsIdentifier();
+        if (auto *transformedNode = cb(ident_); ident_ != transformedNode) {
+            ident_->SetTransformedNode(transformationName, transformedNode);
+            ident_ = transformedNode->AsIdentifier();
+        }
     }
 
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterDeclaration();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterDeclaration();
+        }
     }
 
     if (superClass_ != nullptr) {
-        superClass_ = cb(superClass_)->AsExpression();
+        if (auto *transformedNode = cb(superClass_); superClass_ != transformedNode) {
+            superClass_->SetTransformedNode(transformationName, transformedNode);
+            superClass_ = transformedNode->AsExpression();
+        }
     }
 
     if (superTypeParams_ != nullptr) {
-        superTypeParams_ = cb(superTypeParams_)->AsTSTypeParameterInstantiation();
+        if (auto *transformedNode = cb(superTypeParams_); superTypeParams_ != transformedNode) {
+            superTypeParams_->SetTransformedNode(transformationName, transformedNode);
+            superTypeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+        }
     }
 
     for (auto *&it : implements_) {
-        it = cb(it)->AsTSClassImplements();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsTSClassImplements();
+        }
     }
 
     if (ctor_ != nullptr) {
-        ctor_ = cb(ctor_)->AsMethodDefinition();
+        if (auto *transformedNode = cb(ctor_); ctor_ != transformedNode) {
+            ctor_->SetTransformedNode(transformationName, transformedNode);
+            ctor_ = transformedNode->AsMethodDefinition();
+        }
     }
 
     for (auto *&it : body_) {
-        it = cb(it);
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode;
+        }
     }
 }
 

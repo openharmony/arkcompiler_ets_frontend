@@ -66,14 +66,22 @@ void ScriptFunction::SetIdent(Identifier *id) noexcept
     id_->SetParent(this);
 }
 
-void ScriptFunction::TransformChildren(const NodeTransformer &cb)
+void ScriptFunction::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (id_ != nullptr) {
-        id_ = cb(id_)->AsIdentifier();
+        if (auto *transformedNode = cb(id_); id_ != transformedNode) {
+            id_->SetTransformedNode(transformationName, transformedNode);
+            id_ = transformedNode->AsIdentifier();
+        }
     }
-    irSignature_.TransformChildren(cb);
+
+    irSignature_.TransformChildren(cb, transformationName);
+
     if (body_ != nullptr) {
-        body_ = cb(body_);
+        if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+            body_->SetTransformedNode(transformationName, transformedNode);
+            body_ = transformedNode;
+        }
     }
 }
 

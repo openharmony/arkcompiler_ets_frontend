@@ -22,9 +22,12 @@
 #include "ir/astDump.h"
 
 namespace ark::es2panda::ir {
-void UnaryExpression::TransformChildren(const NodeTransformer &cb)
+void UnaryExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    argument_ = cb(argument_)->AsExpression();
+    if (auto *transformedNode = cb(argument_); argument_ != transformedNode) {
+        argument_->SetTransformedNode(transformationName, transformedNode);
+        argument_ = transformedNode->AsExpression();
+    }
 }
 
 void UnaryExpression::Iterate(const NodeTraverser &cb) const

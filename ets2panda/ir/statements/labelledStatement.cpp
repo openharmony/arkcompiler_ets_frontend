@@ -22,10 +22,17 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void LabelledStatement::TransformChildren(const NodeTransformer &cb)
+void LabelledStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    ident_ = cb(ident_)->AsIdentifier();
-    body_ = cb(body_)->AsStatement();
+    if (auto *transformedNode = cb(ident_); ident_ != transformedNode) {
+        ident_->SetTransformedNode(transformationName, transformedNode);
+        ident_ = transformedNode->AsIdentifier();
+    }
+
+    if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+        body_->SetTransformedNode(transformationName, transformedNode);
+        body_ = transformedNode->AsStatement();
+    }
 }
 
 void LabelledStatement::Iterate(const NodeTraverser &cb) const

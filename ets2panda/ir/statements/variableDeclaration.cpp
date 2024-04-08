@@ -16,7 +16,6 @@
 #include "variableDeclaration.h"
 
 #include "macros.h"
-#include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
@@ -25,20 +24,23 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 #include "ir/base/decorator.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
 #include "ir/statements/variableDeclarator.h"
 
 namespace ark::es2panda::ir {
-void VariableDeclaration::TransformChildren(const NodeTransformer &cb)
+void VariableDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
     for (auto *&it : declarators_) {
-        it = cb(it)->AsVariableDeclarator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsVariableDeclarator();
+        }
     }
 }
 

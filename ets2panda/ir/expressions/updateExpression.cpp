@@ -26,14 +26,14 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 #include "ir/expressions/unaryExpression.h"
-#include "ir/ts/tsAsExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/memberExpression.h"
 
 namespace ark::es2panda::ir {
-void UpdateExpression::TransformChildren(const NodeTransformer &cb)
+void UpdateExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    argument_ = cb(argument_)->AsExpression();
+    if (auto *transformedNode = cb(argument_); argument_ != transformedNode) {
+        argument_->SetTransformedNode(transformationName, transformedNode);
+        argument_ = transformedNode->AsExpression();
+    }
 }
 
 void UpdateExpression::Iterate(const NodeTraverser &cb) const

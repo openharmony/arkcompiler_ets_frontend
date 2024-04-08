@@ -22,11 +22,12 @@
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
-#include <string>
-#include <utility>
-
 namespace ark::es2panda::ir {
-void CharLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void CharLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                    [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void CharLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void CharLiteral::Dump(ir::AstDumper *dumper) const

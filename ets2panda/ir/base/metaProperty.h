@@ -41,7 +41,7 @@ public:
         return kind_;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
     [[nodiscard]] MetaProperty *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 

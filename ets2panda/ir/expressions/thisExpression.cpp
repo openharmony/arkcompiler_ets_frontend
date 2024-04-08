@@ -21,16 +21,15 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/statements/blockStatement.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "ir/expressions/callExpression.h"
 
 namespace ark::es2panda::ir {
-void ThisExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void ThisExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                       [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void ThisExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void ThisExpression::Dump(ir::AstDumper *dumper) const

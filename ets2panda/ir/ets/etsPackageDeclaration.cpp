@@ -22,9 +22,12 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ETSPackageDeclaration::TransformChildren(const NodeTransformer &cb)
+void ETSPackageDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    name_ = cb(name_)->AsExpression();
+    if (auto *transformedNode = cb(name_); name_ != transformedNode) {
+        name_->SetTransformedNode(transformationName, transformedNode);
+        name_ = transformedNode->AsExpression();
+    }
 }
 
 void ETSPackageDeclaration::Iterate([[maybe_unused]] const NodeTraverser &cb) const

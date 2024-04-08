@@ -23,7 +23,11 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void BigIntLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void BigIntLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                      [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void BigIntLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void BigIntLiteral::Dump(ir::AstDumper *dumper) const

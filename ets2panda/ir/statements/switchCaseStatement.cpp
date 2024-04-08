@@ -23,14 +23,20 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void SwitchCaseStatement::TransformChildren(const NodeTransformer &cb)
+void SwitchCaseStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (test_ != nullptr) {
-        test_ = cb(test_)->AsExpression();
+        if (auto *transformedNode = cb(test_); test_ != transformedNode) {
+            test_->SetTransformedNode(transformationName, transformedNode);
+            test_ = transformedNode->AsExpression();
+        }
     }
 
     for (auto *&it : consequent_) {
-        it = cb(it)->AsStatement();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsStatement();
+        }
     }
 }
 

@@ -23,9 +23,12 @@
 #include "ir/expressions/memberExpression.h"
 
 namespace ark::es2panda::ir {
-void ChainExpression::TransformChildren(const NodeTransformer &cb)
+void ChainExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    expression_ = cb(expression_)->AsExpression();
+    if (auto *transformedNode = cb(expression_); expression_ != transformedNode) {
+        expression_->SetTransformedNode(transformationName, transformedNode);
+        expression_ = transformedNode->AsExpression();
+    }
 }
 
 void ChainExpression::Iterate(const NodeTraverser &cb) const

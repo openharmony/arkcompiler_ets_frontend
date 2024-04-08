@@ -20,10 +20,13 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ETSUnionType::TransformChildren(const NodeTransformer &cb)
+void ETSUnionType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : types_) {
-        it = static_cast<TypeNode *>(cb(it));
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 

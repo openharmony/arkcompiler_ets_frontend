@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,9 +23,12 @@
 #include "checker/TSchecker.h"
 
 namespace ark::es2panda::ir {
-void TSTypeQuery::TransformChildren(const NodeTransformer &cb)
+void TSTypeQuery::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    exprName_ = cb(exprName_)->AsExpression();
+    if (auto *transformedNode = cb(exprName_); exprName_ != transformedNode) {
+        exprName_->SetTransformedNode(transformationName, transformedNode);
+        exprName_ = transformedNode->AsExpression();
+    }
 }
 
 void TSTypeQuery::Iterate(const NodeTraverser &cb) const

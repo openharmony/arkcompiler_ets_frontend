@@ -31,6 +31,9 @@ public:
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
+    ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body);
+    void SetRangeRecursively(ir::TypeNode *node, const lexer::SourceRange &loc);
+    ir::TypeNode *CreatePromiseVoidType(checker::ETSChecker *checker, const lexer::SourceRange &loc);
 };
 
 }  // namespace ark::es2panda::compiler

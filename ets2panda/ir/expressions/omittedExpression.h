@@ -28,7 +28,7 @@ public:
 
     explicit OmittedExpression() : Expression(AstNodeType::OMITTED_EXPRESSION) {}
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
     [[nodiscard]] OmittedExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 

@@ -263,27 +263,27 @@ public:
 
     [[nodiscard]] std::size_t FormalParamsLength() const noexcept;
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::FunctionScope *Scope() const override
+    [[nodiscard]] varbinder::FunctionScope *Scope() const noexcept override
     {
         return scope_;
     }
 
-    void SetScope(varbinder::FunctionScope *scope)
+    void SetScope(varbinder::FunctionScope *scope) noexcept
     {
         scope_ = scope;
     }
 
-    [[nodiscard]] es2panda::Language Language() const
+    [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;

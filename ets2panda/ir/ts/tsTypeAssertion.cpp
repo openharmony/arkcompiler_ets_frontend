@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,10 +23,19 @@
 #include "ir/typeNode.h"
 
 namespace ark::es2panda::ir {
-void TSTypeAssertion::TransformChildren(const NodeTransformer &cb)
+void TSTypeAssertion::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
-    expression_ = cb(expression_)->AsExpression();
+    if (auto *typeAnnotation = TypeAnnotation(); typeAnnotation != nullptr) {
+        if (auto *transformedNode = cb(typeAnnotation); typeAnnotation != transformedNode) {
+            typeAnnotation->SetTransformedNode(transformationName, transformedNode);
+            SetTsTypeAnnotation(static_cast<TypeNode *>(transformedNode));
+        }
+    }
+
+    if (auto *transformedNode = cb(expression_); expression_ != transformedNode) {
+        expression_->SetTransformedNode(transformationName, transformedNode);
+        expression_ = transformedNode->AsExpression();
+    }
 }
 
 void TSTypeAssertion::Iterate(const NodeTraverser &cb) const

@@ -24,9 +24,12 @@
 #include "macros.h"
 
 namespace ark::es2panda::ir {
-void TSArrayType::TransformChildren(const NodeTransformer &cb)
+void TSArrayType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    elementType_ = static_cast<TypeNode *>(cb(elementType_));
+    if (auto *transformedNode = cb(elementType_); elementType_ != transformedNode) {
+        elementType_->SetTransformedNode(transformationName, transformedNode);
+        elementType_ = static_cast<TypeNode *>(transformedNode);
+    }
 }
 
 void TSArrayType::Iterate(const NodeTraverser &cb) const

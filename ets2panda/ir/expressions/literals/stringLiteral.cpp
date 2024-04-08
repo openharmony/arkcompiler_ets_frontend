@@ -14,17 +14,19 @@
  */
 
 #include "stringLiteral.h"
-#include <cstddef>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "macros.h"
 
 namespace ark::es2panda::ir {
-void StringLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void StringLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                      [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void StringLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void StringLiteral::Dump(ir::AstDumper *dumper) const

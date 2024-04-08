@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,13 +22,23 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void IfStatement::TransformChildren(const NodeTransformer &cb)
+void IfStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    test_ = cb(test_)->AsExpression();
-    consequent_ = cb(consequent_)->AsStatement();
+    if (auto *transformedNode = cb(test_); test_ != transformedNode) {
+        test_->SetTransformedNode(transformationName, transformedNode);
+        test_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(consequent_); consequent_ != transformedNode) {
+        consequent_->SetTransformedNode(transformationName, transformedNode);
+        consequent_ = transformedNode->AsStatement();
+    }
 
     if (alternate_ != nullptr) {
-        alternate_ = cb(alternate_)->AsStatement();
+        if (auto *transformedNode = cb(alternate_); alternate_ != transformedNode) {
+            alternate_->SetTransformedNode(transformationName, transformedNode);
+            alternate_ = transformedNode->AsStatement();
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,21 +22,33 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb)
+void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
     if (decl_ != nullptr) {
-        decl_ = cb(decl_);
+        if (auto *transformedNode = cb(decl_); decl_ != transformedNode) {
+            decl_->SetTransformedNode(transformationName, transformedNode);
+            decl_ = transformedNode;
+        }
     } else {
         if (source_ != nullptr) {
-            source_ = cb(source_)->AsStringLiteral();
+            if (auto *transformedNode = cb(source_); source_ != transformedNode) {
+                source_->SetTransformedNode(transformationName, transformedNode);
+                source_ = transformedNode->AsStringLiteral();
+            }
         }
 
         for (auto *&it : specifiers_) {
-            it = cb(it)->AsExportSpecifier();
+            if (auto *transformedNode = cb(it); it != transformedNode) {
+                it->SetTransformedNode(transformationName, transformedNode);
+                it = transformedNode->AsExportSpecifier();
+            }
         }
     }
 }

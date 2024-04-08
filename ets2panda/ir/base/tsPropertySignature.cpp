@@ -21,12 +21,18 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
-void TSPropertySignature::TransformChildren(const NodeTransformer &cb)
+void TSPropertySignature::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    key_ = cb(key_)->AsExpression();
+    if (auto *transformedNode = cb(key_); key_ != transformedNode) {
+        key_->SetTransformedNode(transformationName, transformedNode);
+        key_ = transformedNode->AsExpression();
+    }
 
-    if (TypeAnnotation() != nullptr) {
-        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    if (auto *const typeAnnotation = TypeAnnotation(); typeAnnotation != nullptr) {
+        if (auto *transformedNode = cb(typeAnnotation); typeAnnotation != transformedNode) {
+            typeAnnotation->SetTransformedNode(transformationName, transformedNode);
+            SetTsTypeAnnotation(static_cast<TypeNode *>(transformedNode));
+        }
     }
 }
 

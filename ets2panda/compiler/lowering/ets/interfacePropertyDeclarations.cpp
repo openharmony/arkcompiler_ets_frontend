@@ -110,8 +110,9 @@ static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const c
 
     func->SetScope(functionScope);
 
-    auto methodIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator(), nullptr);
-    auto *decl = checker->Allocator()->New<varbinder::VarDecl>(field->Key()->AsIdentifier()->Name());
+    auto const &name = field->Key()->AsIdentifier()->Name();
+    auto methodIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+    auto *decl = checker->Allocator()->New<varbinder::VarDecl>(name);
     auto var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
 
     methodIdent->SetVariable(var);
@@ -182,7 +183,6 @@ static ir::Expression *UpdateInterfacePropertys(checker::ETSChecker *const check
             newPropertyList.emplace_back(setter);
             getter->AddOverload(setter);
         }
-        getter->Function()->Id()->SetVariable(var);
         scope->AsClassScope()->InstanceFieldScope()->EraseBinding(name);
     }
 
@@ -204,9 +204,11 @@ bool InterfacePropertyDeclarationsPhase::Perform(public_lib::Context *ctx, parse
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const ast) -> ir::AstNode * {
-        return ast->IsTSInterfaceBody() ? UpdateInterfacePropertys(checker, ast->AsTSInterfaceBody()) : ast;
-    });
+    program->Ast()->TransformChildrenRecursively(
+        [checker](ir::AstNode *const ast) -> ir::AstNode * {
+            return ast->IsTSInterfaceBody() ? UpdateInterfacePropertys(checker, ast->AsTSInterfaceBody()) : ast;
+        },
+        Name());
 
     return true;
 }

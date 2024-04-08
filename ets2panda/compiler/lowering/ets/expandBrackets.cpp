@@ -165,18 +165,20 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
     auto *const checker = ctx->checker->AsETSChecker();
     ASSERT(checker != nullptr);
 
-    program->Ast()->TransformChildrenRecursively([this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
-        if (ast->IsETSNewArrayInstanceExpression()) {
-            return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
+            if (ast->IsETSNewArrayInstanceExpression()) {
+                return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());
+            }
 
-        if (ast->IsETSNewMultiDimArrayInstanceExpression()) {
-            return ProcessNewMultiDimArrayInstanceExpression(parser, checker,
-                                                             ast->AsETSNewMultiDimArrayInstanceExpression());
-        }
+            if (ast->IsETSNewMultiDimArrayInstanceExpression()) {
+                return ProcessNewMultiDimArrayInstanceExpression(parser, checker,
+                                                                 ast->AsETSNewMultiDimArrayInstanceExpression());
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

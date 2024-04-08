@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,13 +24,19 @@
 #include "ir/statements/blockStatement.h"
 
 namespace ark::es2panda::ir {
-void CatchClause::TransformChildren(const NodeTransformer &cb)
+void CatchClause::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (param_ != nullptr) {
-        param_ = cb(param_)->AsExpression();
+        if (auto *transformedNode = cb(param_); param_ != transformedNode) {
+            param_->SetTransformedNode(transformationName, transformedNode);
+            param_ = transformedNode->AsExpression();
+        }
     }
 
-    body_ = cb(body_)->AsBlockStatement();
+    if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+        body_->SetTransformedNode(transformationName, transformedNode);
+        body_ = transformedNode->AsBlockStatement();
+    }
 }
 
 void CatchClause::Iterate(const NodeTraverser &cb) const

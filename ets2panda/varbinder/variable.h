@@ -66,68 +66,68 @@ public:
     VARIABLE_TYPES(DECLARE_CHECKS_CASTS)
 #undef DECLARE_CHECKS_CASTS
 
-    const Decl *Declaration() const
+    [[nodiscard]] const Decl *Declaration() const noexcept
     {
         return decl_;
     }
 
-    Decl *Declaration()
+    [[nodiscard]] Decl *Declaration() noexcept
     {
         return decl_;
     }
 
-    VariableFlags Flags() const
+    [[nodiscard]] VariableFlags Flags() const noexcept
     {
         return flags_;
     }
 
-    checker::Type *TsType() const
+    [[nodiscard]] checker::Type *TsType() const noexcept
     {
         return tsType_;
     }
 
-    Scope *GetScope() const
+    [[nodiscard]] Scope *GetScope() const noexcept
     {
         return scope_;
     }
 
-    void SetTsType(checker::Type *tsType)
+    void SetTsType(checker::Type *tsType) noexcept
     {
         tsType_ = tsType;
     }
 
-    void SetScope(varbinder::Scope *scope)
+    void SetScope(varbinder::Scope *scope) noexcept
     {
         scope_ = scope;
     }
 
-    void AddFlag(VariableFlags flag)
+    void AddFlag(VariableFlags flag) noexcept
     {
         flags_ |= flag;
     }
 
-    bool HasFlag(VariableFlags flag) const
+    [[nodiscard]] bool HasFlag(VariableFlags flag) const noexcept
     {
         return (flags_ & flag) != 0;
     }
 
-    void RemoveFlag(VariableFlags flag)
+    void RemoveFlag(VariableFlags flag) noexcept
     {
         flags_ &= ~flag;
     }
 
-    void Reset(Decl *decl, VariableFlags flags)
+    void Reset(Decl *decl, VariableFlags flags) noexcept
     {
         decl_ = decl;
         flags_ = flags;
     }
 
-    bool LexicalBound() const
+    [[nodiscard]] bool LexicalBound() const noexcept
     {
         return HasFlag(VariableFlags::LEXICAL_BOUND);
     }
 
-    const util::StringView &Name() const;
+    [[nodiscard]] const util::StringView &Name() const;
     virtual void SetLexical(Scope *scope) = 0;
 
 protected:
@@ -137,9 +137,11 @@ protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Decl *decl_ {};
     VariableFlags flags_ {};
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+private:
     checker::Type *tsType_ {};
     Scope *scope_ {};
-    // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 class LocalVariable : public Variable {

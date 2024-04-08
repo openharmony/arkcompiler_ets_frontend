@@ -23,19 +23,28 @@
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "ir/expressions/memberExpression.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace ark::es2panda::ir {
-void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb)
+void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+        }
     }
 
-    tag_ = cb(tag_)->AsExpression();
-    quasi_ = cb(quasi_)->AsTemplateLiteral();
+    if (auto *transformedNode = cb(tag_); tag_ != transformedNode) {
+        tag_->SetTransformedNode(transformationName, transformedNode);
+        tag_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(quasi_); quasi_ != transformedNode) {
+        quasi_->SetTransformedNode(transformationName, transformedNode);
+        quasi_ = transformedNode->AsTemplateLiteral();
+    }
 }
 
 void TaggedTemplateExpression::Iterate(const NodeTraverser &cb) const

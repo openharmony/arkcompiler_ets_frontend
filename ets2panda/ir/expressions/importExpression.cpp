@@ -22,9 +22,12 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ImportExpression::TransformChildren(const NodeTransformer &cb)
+void ImportExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    source_ = cb(source_)->AsExpression();
+    if (auto *transformedNode = cb(source_); source_ != transformedNode) {
+        source_->SetTransformedNode(transformationName, transformedNode);
+        source_ = transformedNode->AsExpression();
+    }
 }
 
 void ImportExpression::Iterate(const NodeTraverser &cb) const

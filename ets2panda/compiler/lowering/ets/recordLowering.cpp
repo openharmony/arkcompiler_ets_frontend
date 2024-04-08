@@ -53,13 +53,15 @@ bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
     }
 
     // Replace Record Object Expressions with Block Expressions
-    program->Ast()->TransformChildrenRecursively([this, ctx](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsObjectExpression()) {
-            return UpdateObjectExpression(ast->AsObjectExpression(), ctx);
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [this, ctx](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsObjectExpression()) {
+                return UpdateObjectExpression(ast->AsObjectExpression(), ctx);
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

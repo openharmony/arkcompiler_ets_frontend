@@ -24,7 +24,7 @@ class ETSNullType : public TypeNode {
 public:
     explicit ETSNullType() : TypeNode(AstNodeType::ETS_NULL_TYPE) {}
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
@@ -44,7 +44,7 @@ class ETSUndefinedType : public TypeNode {
 public:
     explicit ETSUndefinedType() : TypeNode(AstNodeType::ETS_UNDEFINED_TYPE) {}
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
