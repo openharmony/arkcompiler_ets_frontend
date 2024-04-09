@@ -564,6 +564,37 @@ checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayEx
     return annotationType;
 }
 
+void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Expression *init)
+{
+    if (localTypeAnnotation != nullptr && localTypeAnnotation->IsETSTypeReference()) {
+        bool isAnnotationTypeAlias = true;
+        while (localTypeAnnotation->IsETSTypeReference() && isAnnotationTypeAlias) {
+            auto *node = localTypeAnnotation->AsETSTypeReference()
+                             ->Part()
+                             ->Name()
+                             ->AsIdentifier()
+                             ->Variable()
+                             ->Declaration()
+                             ->Node();
+
+            isAnnotationTypeAlias = node->IsTSTypeAliasDeclaration();
+            if (isAnnotationTypeAlias) {
+                localTypeAnnotation = node->AsTSTypeAliasDeclaration()->TypeAnnotation();
+            }
+        }
+    }
+
+    if (localTypeAnnotation != nullptr && localTypeAnnotation->IsETSFunctionType() &&
+        init->IsArrowFunctionExpression()) {
+        auto *const arrowFuncExpr = init->AsArrowFunctionExpression();
+        ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+        if (lambda->Params().size() == localTypeAnnotation->AsETSFunctionType()->Params().size() &&
+            NeedTypeInference(lambda)) {
+            InferTypesForLambda(lambda, localTypeAnnotation->AsETSFunctionType());
+        }
+    }
+}
+
 checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
@@ -633,14 +664,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         init->AsObjectExpression()->SetPreferredType(annotationType);
     }
 
-    if (typeAnnotation != nullptr && typeAnnotation->IsETSFunctionType() && init->IsArrowFunctionExpression()) {
-        auto *const arrowFuncExpr = init->AsArrowFunctionExpression();
-        ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-        if (lambda->Params().size() == typeAnnotation->AsETSFunctionType()->Params().size() &&
-            NeedTypeInference(lambda)) {
-            InferTypesForLambda(lambda, typeAnnotation->AsETSFunctionType());
-        }
-    }
+    InferAliasLambdaType(typeAnnotation, init);
+
     checker::Type *initType = init->Check(this);
 
     if (initType == nullptr) {
