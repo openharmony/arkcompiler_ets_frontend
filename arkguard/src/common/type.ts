@@ -34,6 +34,16 @@ export interface ProjectInfo {
   projectRootPath: string
 };
 
+/**
+ * MangledSymbolInfo:
+ * mangledName - the name of the node after obfuscation
+ * originalNameWithScope - the original name with scope info of the node
+ */
+export interface MangledSymbolInfo {
+  mangledName: string,
+  originalNameWithScope: string
+}
+
 export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
 export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
 

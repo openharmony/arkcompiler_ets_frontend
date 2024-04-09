@@ -1,6 +1,6 @@
 {
   "IdentifierCache": {
-    "#MyClass": "u1",
+    "#MyClass": "w1",
     "#a": "a"
   },
   "MemberMethodCache": {

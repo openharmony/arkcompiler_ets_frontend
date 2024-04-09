@@ -1,0 +1,14 @@
+{
+  "IdentifierCache": {
+    "#consoleInFunctionExp": "i",
+    "#ConsoleInClass": "j",
+    "#ConsoleInClass2": "k",
+    "#__function": "l",
+    "#consoleInArrowFunc:16:18": "h",
+    "#funExp:20:22": "m"
+  },
+  "MemberMethodCache": {
+    "ConsoleInClass:25:27": "j",
+    "memberFunc:31:33": "g"
+  }
+}

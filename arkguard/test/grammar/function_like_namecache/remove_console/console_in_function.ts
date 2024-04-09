@@ -13,19 +13,22 @@
  * limitations under the License.
  */
 
-class Person8 {
-    'func' = function () {
-        console.log('func_exp');
-    };
+const consoleInArrowFunc = () => {
+    console.log('1');
+};
 
-    'arrow' = () => {
-        console.log('arrow');
-    };
+const consoleInFunctionExp = function funExp() {
+    console.log('2');
+};
 
-    'class' = class {
-        str_literal: string = 'myclass';
-        constructor () {
-            this.str_literal = 'newclass';
-        }
-    };
+class ConsoleInClass {
+    constructor() {
+        console.log('3');
+    }
+}
+
+class ConsoleInClass2 {
+    memberFunc() {
+        console.log('4');
+    }
 }

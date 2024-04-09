@@ -63,7 +63,6 @@ import type {
 
 import {NodeUtils} from './NodeUtils';
 import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
-import {globalSwappedMangledTable} from '../transformers/rename/RenamePropertiesTransformer';
 
 /**
  * kind of a scope
@@ -72,7 +71,6 @@ namespace secharmony {
   type ForLikeStatement = ForStatement | ForInOrOfStatement;
   type ClassLikeDeclaration = ClassDeclaration | ClassExpression;
   export const noSymbolIdentifier: Set<string> = new Set();
-  export let memberMethodCache: Map<string, string> = new Map();
 
   /**
    * type of scope
@@ -756,27 +754,8 @@ namespace secharmony {
       } else {
         symbol = checker.getSymbolAtLocation(node.name);
       }
-      const sourceFile = NodeUtils.getSourceFileOfNode(node);
-      const startPosition = sourceFile.getLineAndCharacterOfPosition(node.getStart());
-      const endPosition = sourceFile.getLineAndCharacterOfPosition(node.getEnd());
-      let startLine = startPosition.line + 1;
-      let startCharacter = startPosition.character + 1;
-      let endLine = endPosition.line + 1;
-      let endCharacter = endPosition.character + 1;
-
       if (symbol) {
         Reflect.set(symbol, 'isFunction', true);
-        Reflect.set(symbol, 'lineInfo', [startLine, startCharacter, endLine, endCharacter]);
-      }
-
-      let isProperty: boolean = isMethodDeclaration(node) || isGetAccessor(node) ||
-                                isSetAccessor(node) || (isConstructorDeclaration(node) &&
-                                !(isClassDeclaration(node.parent) && isViewPUBasedClass(node.parent)));
-      let isPropertyParent: boolean = isFunctionExpression(node) && isPropertyDeclaration(node.parent);
-      let isMemberMethod: boolean = isProperty || isPropertyParent;
-      if (isMemberMethod) {
-        let lineAndColum: string = ':' + startLine + ':' + startCharacter + ':' + endLine + ':' + endCharacter;
-        writeMemberMethodCache(node, lineAndColum);
       }
 
       addSymbolInScope(node);
@@ -800,28 +779,6 @@ namespace secharmony {
 
       excludeConstructorParameter(node);
       current = current.parent || current;
-    }
-
-    function writeMemberMethodCache(node: Node, lineAndColum: string): void {
-      let gotNode;
-      if (node.kind === SyntaxKind.Constructor) {
-        gotNode = node.parent;
-      } else if ((node.kind === SyntaxKind.FunctionExpression && isPropertyDeclaration(node.parent))) {
-        gotNode = node.parent.initializer ? node.parent.initializer : node.parent;
-      } else {
-        gotNode = node;
-      }
-      let escapedText: string = gotNode.name?.escapedText;
-      if (!escapedText) {
-        return;
-      }
-      let valueName: string = escapedText.toString();
-      let originalName: string = valueName;
-      if (globalSwappedMangledTable.size !== 0 && globalSwappedMangledTable.has(valueName)) {
-        originalName = globalSwappedMangledTable.get(valueName);
-      }
-      let keyName = originalName + lineAndColum;
-      memberMethodCache.set(keyName, valueName);
     }
 
     function analyzeSwitch(node: CaseBlock): void {

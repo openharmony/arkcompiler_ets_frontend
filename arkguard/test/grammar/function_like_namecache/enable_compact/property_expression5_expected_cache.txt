@@ -1,0 +1,9 @@
+{
+  "IdentifierCache": {
+    "MyFoo#func": "u1",
+    "#MyFoo:18:20": "t1"
+  },
+  "MemberMethodCache": {
+    "foo:16:16": "foo"
+  }
+}

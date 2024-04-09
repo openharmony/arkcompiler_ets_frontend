@@ -13,19 +13,8 @@
  * limitations under the License.
  */
 
-class Person6 {
-    [1] = function () {
-        console.log('func_exp');
-    };
+MyFoo({ myfunction: function foo() {} });
 
-    [2] = () => {
-        console.log('arrow');
-    };
-
-    ['class'] = class {
-        str_literal: string = 'myclass';
-        constructor () {
-            this.str_literal = 'newclass';
-        }
-    };
+function MyFoo(func: Object) {
+    return;
 }
