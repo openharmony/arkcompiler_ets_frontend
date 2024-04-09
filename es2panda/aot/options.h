@@ -139,6 +139,11 @@ public:
 
 private:
     es2panda::CompilerOptions compilerOptions_ {};
+    void CollectInputAbcFile(const std::string &fileName, const std::string &inputExtension);
+    void CollectInputSourceFile(const std::vector<std::string> &itemList, const std::string &inputExtension);
+    bool CheckFilesValidity(const std::string &input, const std::vector<std::string> &itemList,
+                            const std::string &line);
+    bool IsAbcFile(const std::string &fileName, const std::string &inputExtension);
     es2panda::parser::ScriptKind scriptKind_ {es2panda::parser::ScriptKind::SCRIPT};
     OptionFlags options_ {OptionFlags::DEFAULT};
     panda::PandArgParser *argparser_;

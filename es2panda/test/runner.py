@@ -584,7 +584,7 @@ class AbcToAsmTest(Test):
     def run(self, runner):
         output_abc_file = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
         gen_abc_cmd = runner.cmd_prefix + [runner.es2panda]
-        gen_abc_cmd.extend(["--dump-asm-program", "--output=" + output_abc_file])
+        gen_abc_cmd.extend(["--dump-asm-program", "--debug-info", "--output=" + output_abc_file])
         gen_abc_cmd.append(self.path)
         self.log_cmd(gen_abc_cmd)
         process_gen_abc = subprocess.Popen(gen_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -595,7 +595,7 @@ class AbcToAsmTest(Test):
             self.passed = True
             return self
         abc_to_asm_cmd = runner.cmd_prefix + [runner.es2panda]
-        abc_to_asm_cmd.extend(["--dump-asm-program", "--enable-abc-input"])
+        abc_to_asm_cmd.extend(["--dump-asm-program", "--debug-info", "--enable-abc-input"])
         abc_to_asm_cmd.append(output_abc_file)
         self.log_cmd(abc_to_asm_cmd)
         process_abc_to_asm = subprocess.Popen(abc_to_asm_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

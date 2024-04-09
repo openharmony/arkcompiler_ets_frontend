@@ -34,8 +34,12 @@
 
 namespace panda::es2panda::aot {
 constexpr char PROCESS_AS_LIST_MARK = '@';
+// item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule]
+constexpr size_t ITEM_COUNT_MERGE = 6;
+// item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule]
+constexpr size_t ITEM_COUNT_NOT_MERGE = 6;
 const std::string LIST_ITEM_SEPERATOR = ";";
-const std::set<std::string> VALID_EXTENSIONS = { "js", "ts", "as" };
+const std::set<std::string> VALID_EXTENSIONS = { "js", "ts", "as", "abc" };
 
 template <class T>
 T RemoveExtension(T const &filename)
@@ -52,6 +56,8 @@ static es2panda::ScriptExtension GetScriptExtensionFromStr(const std::string &ex
         return es2panda::ScriptExtension::TS;
     } else if (extension == "as") {
         return es2panda::ScriptExtension::AS;
+    } else if (extension == "abc") {
+        return es2panda::ScriptExtension::ABC;
     } else {
         return es2panda::ScriptExtension::JS;
     }
@@ -90,6 +96,68 @@ static std::vector<std::string> GetStringItems(std::string &input, const std::st
     return items;
 }
 
+void Options::CollectInputAbcFile(const std::string &fileName, const std::string &inputExtension)
+{
+    es2panda::SourceFile src(fileName, "", parser::ScriptKind::SCRIPT, GetScriptExtension(fileName,
+                             inputExtension));
+    src.isSourceMode = false;
+    sourceFiles_.push_back(src);
+}
+
+void Options::CollectInputSourceFile(const std::vector<std::string> &itemList, const std::string &inputExtension)
+{
+    std::string fileName = itemList[0];
+    std::string recordName = compilerOptions_.mergeAbc ? itemList[1] : "";
+    constexpr uint32_t SCRIPT_KIND_IDX = 2;
+    constexpr uint32_t SOURCE_FIEL_IDX = 3;
+    constexpr uint32_t PKG_NAME_IDX = 4;
+    constexpr uint32_t Is_SHARED_MODULE_IDX = 5;
+    parser::ScriptKind scriptKind;
+    if (itemList[SCRIPT_KIND_IDX] == "script") {
+        scriptKind = parser::ScriptKind::SCRIPT;
+    } else if (itemList[SCRIPT_KIND_IDX] == "commonjs") {
+        scriptKind = parser::ScriptKind::COMMONJS;
+    } else {
+        scriptKind = parser::ScriptKind::MODULE;
+    }
+
+    es2panda::SourceFile src(fileName, recordName, scriptKind, GetScriptExtension(fileName, inputExtension));
+    src.sourcefile = itemList[SOURCE_FIEL_IDX];
+    if (compilerOptions_.mergeAbc) {
+        src.pkgName = itemList[PKG_NAME_IDX];
+    }
+
+    if (itemList.size() == ITEM_COUNT_MERGE) {
+        src.isSharedModule = itemList[Is_SHARED_MODULE_IDX] == "true";
+    }
+
+    sourceFiles_.push_back(src);
+    if (!compilerOptions_.mergeAbc) {
+        outputFiles_.insert({fileName, itemList[PKG_NAME_IDX]});
+    }
+}
+
+bool Options::CheckFilesValidity(const std::string &input, const std::vector<std::string> &itemList,
+                                 const std::string &line)
+{
+    // For compatibility, only throw error when item list's size is bigger than given size.
+    if ((compilerOptions_.mergeAbc && itemList.size() > ITEM_COUNT_MERGE) ||
+        (!compilerOptions_.mergeAbc && itemList.size() > ITEM_COUNT_NOT_MERGE) || itemList.empty()) {
+        std::cerr << "Failed to parse line " << line << " of the input file: '"
+            << input << "'." << std::endl
+            << "Expected " << (compilerOptions_.mergeAbc ? ITEM_COUNT_MERGE : ITEM_COUNT_NOT_MERGE)
+            << " items per line, but found " << itemList.size() << " items." << std::endl
+            << "Please check the file format and content for correctness." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool Options::IsAbcFile(const std::string &fileName, const std::string &inputExtension)
+{
+    return (GetScriptExtension(fileName, inputExtension) == es2panda::ScriptExtension::ABC);
+}
+
 // Options
 bool Options::CollectInputFilesFromFileList(const std::string &input, const std::string &inputExtension)
 {
@@ -103,47 +171,15 @@ bool Options::CollectInputFilesFromFileList(const std::string &input, const std:
         return false;
     }
 
-    // item list: [filePath; recordName; moduleKind; sourceFile; pkgName; isSharedModule]
-    constexpr size_t ITEM_COUNT_MERGE = 6;
-    // item list: [filePath; recordName; moduleKind; sourceFile; outputfile; isSharedModule]
-    constexpr size_t ITEM_COUNT_NOT_MERGE = 6;
     while (std::getline(ifs, line)) {
         std::vector<std::string> itemList = GetStringItems(line, LIST_ITEM_SEPERATOR);
-        // For compatibility, only throw error when item list's size is bigger than given size.
-        if ((compilerOptions_.mergeAbc && itemList.size() > ITEM_COUNT_MERGE) ||
-            (!compilerOptions_.mergeAbc && itemList.size() > ITEM_COUNT_NOT_MERGE)) {
-            std::cerr << "Failed to parse line " << line << " of the input file: '"
-                      << input << "'." << std::endl
-                      << "Expected " << (compilerOptions_.mergeAbc ? ITEM_COUNT_MERGE : ITEM_COUNT_NOT_MERGE)
-                      << " items per line, but found " << itemList.size() << " items." << std::endl
-                      << "Please check the file format and content for correctness." << std::endl;
+        if (!CheckFilesValidity(input, itemList, line)) {
             return false;
         }
-
-        std::string fileName = itemList[0];
-        std::string recordName = compilerOptions_.mergeAbc ? itemList[1] : "";
-        parser::ScriptKind scriptKind;
-        if (itemList[2] == "script") {
-            scriptKind = parser::ScriptKind::SCRIPT;
-        } else if (itemList[2] == "commonjs") {
-            scriptKind = parser::ScriptKind::COMMONJS;
+        if (IsAbcFile(itemList[0], inputExtension)) {
+            CollectInputAbcFile(itemList[0], inputExtension);
         } else {
-            scriptKind = parser::ScriptKind::MODULE;
-        }
-
-        es2panda::SourceFile src(fileName, recordName, scriptKind, GetScriptExtension(fileName, inputExtension));
-        src.sourcefile = itemList[3];
-        if (compilerOptions_.mergeAbc) {
-            src.pkgName = itemList[4];
-        }
-
-        if (itemList.size() == ITEM_COUNT_MERGE) {
-            src.isSharedModule = itemList[5] == "true" ? true : false;
-        }
-
-        sourceFiles_.push_back(src);
-        if (!compilerOptions_.mergeAbc) {
-            outputFiles_.insert({fileName, itemList[4]});
+            CollectInputSourceFile(itemList, inputExtension);
         }
     }
     return true;
@@ -205,7 +241,7 @@ bool Options::Parse(int argc, const char **argv)
 
     // parser
     panda::PandArg<std::string> inputExtension("extension", "js",
-                                               "Parse the input as the given extension (options: js | ts | as)");
+                                               "Parse the input as the given extension (options: js | ts | as | abc)");
     panda::PandArg<bool> opModule("module", false, "Parse the input as module");
     panda::PandArg<bool> opCommonjs("commonjs", false, "Parse the input as commonjs");
     panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
@@ -262,8 +298,8 @@ bool Options::Parse(int argc, const char **argv)
     // version
     panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version");
     panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
-    panda::PandArg<int> targetApiVersion("target-api-version", 11, "Specify the targeting api version for es2abc to "\
-        "generated the corresponding version of bytecode");
+    panda::PandArg<int> targetApiVersion("target-api-version", util::Helpers::DEFAULT_TARGET_API_VERSION,
+        "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -382,7 +418,7 @@ bool Options::Parse(int argc, const char **argv)
     std::string extension = inputExtension.GetValue();
     if (!extension.empty()) {
         if (VALID_EXTENSIONS.find(extension) == VALID_EXTENSIONS.end()) {
-            errorMsg_ = "Invalid extension (available options: js, ts, as)";
+            errorMsg_ = "Invalid extension (available options: js, ts, as, abc)";
             return false;
         }
     }
@@ -433,6 +469,7 @@ bool Options::Parse(int argc, const char **argv)
             CollectInputFilesFromFileDirectory(fpath, extension);
         } else {
             es2panda::SourceFile src(sourceFile_, recordName_, scriptKind_, GetScriptExtension(sourceFile_, extension));
+            src.isSourceMode = !IsAbcFile(sourceFile_, extension);
             sourceFiles_.push_back(src);
         }
     } else if (!base64InputIsEmpty) {

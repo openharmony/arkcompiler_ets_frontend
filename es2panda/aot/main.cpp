@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <abc2program/program_dump.h>
 #include <assembly-program.h>
 #include <assembly-emitter.h>
 #include <emitFiles.h>
@@ -25,7 +26,6 @@
 #include <util/moduleHelpers.h>
 #include <util/programCache.h>
 #include <util/workerQueue.h>
-#include <abc2program/program_dump.h>
 
 #include <iostream>
 
