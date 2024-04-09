@@ -140,6 +140,11 @@ static pandasm::Function GenScriptFunction(CompilerContext const *context, const
 pandasm::Function *ETSFunctionEmitter::GenFunctionSignature()
 {
     auto func = GenScriptFunction(Cg()->Context(), Cg()->RootNode()->AsScriptFunction());
+
+    if (Cg()->RootNode()->AsScriptFunction()->IsExternal()) {
+        func.metadata->SetAttribute(Signatures::EXTERNAL);
+    }
+
     auto *funcElement = new pandasm::Function(func.name, func.language);
     *funcElement = std::move(func);
     GetProgramElement()->SetFunction(funcElement);

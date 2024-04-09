@@ -588,6 +588,9 @@ public:
                                                              varbinder::ClassScope *scope, bool isSetter,
                                                              ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
+    ir::MethodDefinition *GenerateSetterForProperty(ir::ClassProperty *originalProp, ir::ClassProperty *interfaceProp,
+                                                    ir::ClassProperty *classProp, ETSObjectType *classType,
+                                                    ir::MethodDefinition *getter);
     ETSObjectType *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
     void ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);

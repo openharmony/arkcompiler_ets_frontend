@@ -701,11 +701,13 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
         bool functionOverridden = false;
         bool isGetter = false;
         bool isSetter = false;
+        bool isExternal = false;
         for (auto abstractSignature = (*it)->CallSignatures().begin();
              abstractSignature != (*it)->CallSignatures().end();) {
             bool foundSignature = false;
             isGetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::GETTER);
             isSetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::SETTER);
+            isExternal = (*abstractSignature)->Function()->IsExternal();
             for (auto *const implemented : implementedSignatures) {
                 Signature *substImplemented = AdjustForTypeParameters(*abstractSignature, implemented);
 
@@ -749,6 +751,10 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
 
         for (auto *field : classType->Fields()) {
             if (field->Name() == (*it)->Name()) {
+                if (isExternal) {
+                    field->Declaration()->Node()->AddModifier(ir::ModifierFlags::EXTERNAL);
+                }
+
                 field->Declaration()->Node()->AddModifier(isGetter && isSetter ? ir::ModifierFlags::GETTER_SETTER
                                                           : isGetter           ? ir::ModifierFlags::GETTER
                                                                                : ir::ModifierFlags::SETTER);
