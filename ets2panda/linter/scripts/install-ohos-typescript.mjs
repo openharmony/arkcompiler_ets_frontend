@@ -52,7 +52,7 @@ function getTypescript(detectedOS) {
     if (detectedOS === 'Linux') {
         if (!fs.existsSync(typescript_dir)) {
             for (let i = 0; i < 5; i++) {
-                shell.exec(`git clone --depth=1 https://gitee.com/openharmony/third_party_typescript.git ${typescript_dir}`)
+                shell.exec(`git clone --depth=1 https://gitee.com/openharmony/third_party_typescript.git ${typescript_dir}`, { stdio: 'ignore', fatal: true } )
                 if (fs.existsSync(typescript_dir)) {
                     break;
                 }
