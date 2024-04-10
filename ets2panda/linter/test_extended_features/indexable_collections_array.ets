@@ -27,3 +27,61 @@ const str = "abc";
 console.log(array1[str]); // Illegal
 
 console.log(set1[0]); // Illegal
+
+let int8arr = new collections.Int8Array(10);
+let uint8arr = new collections.Uint8Array(10);
+let uint8clampedarr = new collections.Uint8ClampedArray(10);
+let int16arr = new collections.Int16Array(10);
+let uint16arr = new collections.Uint16Array(10);
+let int32arr = new collections.Int32Array(10);
+let uint32arr = new collections.Uint32Array(10);
+let float32arr = new collections.Float32Array(10);
+let float64arr = new collections.Float64Array(10);
+let bigint64arr = new collections.BigInt64Array(10);
+let biguint64arr = new collections.BigUint64Array(10);
+
+console.log(int8arr[0]); // Legal
+console.log(uint8arr[0]); // Legal
+console.log(uint8clampedarr[0]); // Illegal
+console.log(int16arr[0]); // Legal
+console.log(uint16arr[0]); // Legal
+console.log(int32arr[0]); // Legal
+console.log(uint32arr[0]); // Legal
+console.log(float32arr[0]); // Illegal
+console.log(float64arr[0]); // Illegal
+console.log(bigint64arr[0]); // Illegal
+console.log(biguint64arr[0]); // Illegal
+console.log(int8arr[num]); // Legal
+console.log(uint8arr[num]); // Legal
+console.log(uint8clampedarr[num]); // Illegal
+console.log(int16arr[num]); // Legal
+console.log(uint16arr[num]); // Legal
+console.log(int32arr[num]); // Legal
+console.log(uint32arr[num]); // Legal
+console.log(float32arr[num]); // Illegal
+console.log(float64arr[num]); // Illegal
+console.log(bigint64arr[num]); // Illegal
+console.log(biguint64arr[num]); // Illegal
+
+console.log(int8arr["str"]); // Illegal
+console.log(uint8arr["str"]); // Illegal
+console.log(uint8clampedarr["str"]); // Illegal
+console.log(int16arr["str"]); // Illegal
+console.log(uint16arr["str"]); // Illegal
+console.log(int32arr["str"]); // Illegal
+console.log(uint32arr["str"]); // Illegal
+console.log(float32arr["str"]); // Illegal
+console.log(float64arr["str"]); // Illegal
+console.log(bigint64arr["str"]); // Illegal
+console.log(biguint64arr["str"]); // Illegal
+console.log(int8arr[str]); // Illegal
+console.log(uint8arr[str]); // Illegal
+console.log(uint8clampedarr[str]); // Illegal
+console.log(int16arr[str]); // Illegal
+console.log(uint16arr[str]); // Illegal
+console.log(int32arr[str]); // Illegal
+console.log(uint32arr[str]); // Illegal
+console.log(float32arr[str]); // Illegal
+console.log(float64arr[str]); // Illegal
+console.log(bigint64arr[str]); // Illegal
+console.log(biguint64arr[str]); // Illegal

@@ -30,7 +30,7 @@ import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
 import {
   ARKTS_COLLECTIONS_D_ETS,
-  COLLECTIONS_ARRAY_TYPE,
+  ARKTS_COLLECTIONS_TYPES,
   COLLECTIONS_NAMESPACE,
   ARKTS_LANG_D_ETS,
   LANG_NAMESPACE,
@@ -1881,7 +1881,11 @@ export class TsUtils {
   }
 
   isAllowedIndexSignature(node: ts.IndexSignatureDeclaration): boolean {
-    // For now, relax index signature only for 'collections.Array<T>.[_: number]: T'.
+
+    /*
+     * For now, relax index signature only for specific array-like types
+     * with the following signature: 'collections.Array<T>.[_: number]: T'.
+     */
 
     if (node.parameters.length !== 1) {
       return false;
@@ -1892,20 +1896,20 @@ export class TsUtils {
       return false;
     }
 
-    return TsUtils.isArkTSCollectionsArrayDeclaration(node.parent);
+    return TsUtils.isArkTSCollectionsArrayLikeDeclaration(node.parent);
   }
 
-  static isArkTSCollectionsArrayType(type: ts.Type): boolean {
+  static isArkTSCollectionsArrayLikeType(type: ts.Type): boolean {
     const symbol = type.aliasSymbol ?? type.getSymbol();
     if (symbol?.declarations === undefined || symbol.declarations.length < 1) {
       return false;
     }
 
-    return TsUtils.isArkTSCollectionsArrayDeclaration(symbol.declarations[0]);
+    return TsUtils.isArkTSCollectionsArrayLikeDeclaration(symbol.declarations[0]);
   }
 
-  private static isArkTSCollectionsArrayDeclaration(decl: ts.Declaration): boolean {
-    if (!ts.isClassDeclaration(decl) || !decl.name || decl.name.text !== COLLECTIONS_ARRAY_TYPE) {
+  private static isArkTSCollectionsArrayLikeDeclaration(decl: ts.Declaration): boolean {
+    if (!ts.isClassDeclaration(decl) || !decl.name || !ARKTS_COLLECTIONS_TYPES.includes(decl.name.text)) {
       return false;
     }
 
