@@ -1919,4 +1919,177 @@ export class TsUtils {
 
     return true;
   }
+
+  classMemberHasDuplicateName(
+    targetMember: ts.ClassElement, tsClassLikeDecl: ts.ClassLikeDeclaration, classType?: ts.Type
+  ): boolean {
+
+    /*
+     * If two class members have the same name where one is a private identifer,
+     * then such members are considered to have duplicate names.
+     */
+    if (!TsUtils.isIdentifierOrPrivateIdentifier(targetMember.name)) {
+      return false;
+    }
+
+    for (const classMember of tsClassLikeDecl.members) {
+      if (targetMember === classMember) {
+        continue;
+      }
+
+      // Check constructor parameter properties.
+      if (ts.isConstructorDeclaration(classMember) && classMember.parameters.some((x) => {
+        return ts.isIdentifier(x.name) && TsUtils.hasAccessModifier(x) &&
+          TsUtils.isPrivateIdentifierDuplicateOfIdentifier(targetMember.name as ts.Identifier, x.name);
+      })) {
+        return true;
+      }
+
+      if (!TsUtils.isIdentifierOrPrivateIdentifier(classMember.name)) {
+        continue;
+      }
+
+      if (TsUtils.isPrivateIdentifierDuplicateOfIdentifier(targetMember.name, classMember.name)) {
+        return true;
+      }
+    }
+
+    classType ??= this.tsTypeChecker.getTypeAtLocation(tsClassLikeDecl);
+    if (classType) {
+      const baseType = TsUtils.getBaseClassType(classType);
+      if (baseType) {
+        const baseDecl = baseType.getSymbol()?.valueDeclaration as ts.ClassLikeDeclaration;
+        if (baseDecl) {
+          return this.classMemberHasDuplicateName(targetMember, baseDecl);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private static isIdentifierOrPrivateIdentifier(node?: ts.PropertyName): node is ts.Identifier | ts.PrivateIdentifier {
+    if (!node) {
+      return false;
+    }
+    return ts.isIdentifier(node) || ts.isPrivateIdentifier(node);
+  }
+
+  private static isPrivateIdentifierDuplicateOfIdentifier(
+    ident1: ts.Identifier | ts.PrivateIdentifier,
+    ident2: ts.Identifier | ts.PrivateIdentifier
+  ): boolean {
+    if (ts.isIdentifier(ident1) && ts.isPrivateIdentifier(ident2)) {
+      return ident1.text === ident2.text.substring(1);
+    }
+    if (ts.isIdentifier(ident2) && ts.isPrivateIdentifier(ident1)) {
+      return ident2.text === ident1.text.substring(1);
+    }
+    if (ts.isPrivateIdentifier(ident1) && ts.isPrivateIdentifier(ident2)) {
+      return ident1.text.substring(1) === ident2.text.substring(1);
+    }
+    return false;
+  }
+
+  findIdentifierNameForSymbol(symbol: ts.Symbol): string | undefined {
+    let name = TsUtils.getIdentifierNameFromString(symbol.name);
+    if (name === undefined || name === symbol.name) {
+      return name;
+    }
+
+    const parentType = this.getTypeByProperty(symbol);
+    if (parentType === undefined) {
+      return undefined;
+    }
+
+    while (this.findProperty(parentType, name) !== undefined) {
+      name = '_' + name;
+    }
+
+    return name;
+  }
+
+  private static getIdentifierNameFromString(str: string): string | undefined {
+    let result: string = '';
+
+    let offset = 0;
+    while (offset < str.length) {
+      const codePoint = str.codePointAt(offset);
+      if (!codePoint) {
+        return undefined;
+      }
+
+      const charSize = TsUtils.charSize(codePoint);
+
+      if (offset === 0 && !ts.isIdentifierStart(codePoint, undefined)) {
+        result = '__';
+      }
+
+      if (!ts.isIdentifierPart(codePoint, undefined)) {
+        if (codePoint === 0x20) {
+          result += '_';
+        } else {
+          result += 'x' + codePoint.toString(16);
+        }
+      } else {
+        for (let i = 0; i < charSize; i++) {
+          result += str.charAt(offset + i);
+        }
+      }
+
+      offset += charSize;
+    }
+
+    return result;
+  }
+
+  private static charSize(codePoint: number): number {
+    return codePoint >= 0x10000 ? 2 : 1;
+  }
+
+  private getTypeByProperty(symbol: ts.Symbol): ts.Type | undefined {
+    if (symbol.declarations === undefined) {
+      return undefined;
+    }
+
+    for (const propDecl of symbol.declarations) {
+      if (
+        !ts.isPropertyDeclaration(propDecl) &&
+        !ts.isPropertyAssignment(propDecl) &&
+        !ts.isPropertySignature(propDecl)
+      ) {
+        return undefined;
+      }
+
+      const type = this.tsTypeChecker.getTypeAtLocation(propDecl.parent);
+      if (type !== undefined) {
+        return type;
+      }
+    }
+
+    return undefined;
+  }
+
+  static isPropertyOfInternalClassOrInterface(symbol: ts.Symbol): boolean {
+    if (symbol.declarations === undefined) {
+      return false;
+    }
+
+    for (const propDecl of symbol.declarations) {
+      if (!ts.isPropertyDeclaration(propDecl) && !ts.isPropertySignature(propDecl)
+      ) {
+        return false;
+      }
+
+      if (!ts.isClassDeclaration(propDecl.parent) && !ts.isInterfaceDeclaration(propDecl.parent)) {
+        return false;
+      }
+
+      if (TsUtils.hasModifier(ts.getModifiers(propDecl.parent), ts.SyntaxKind.ExportKeyword)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

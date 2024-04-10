@@ -20,7 +20,7 @@ Logger.init(new LoggerImpl());
 import { TypeScriptLinter } from '../lib/TypeScriptLinter';
 import { lint } from '../lib/LinterRunner';
 import { parseCommandLine } from './CommandLineParser';
-import type { Autofix } from '../lib/Autofixer';
+import type { Autofix } from '../lib/autofixes/Autofixer';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
@@ -34,7 +34,6 @@ interface TestNodeInfo {
   line: number;
   column: number;
   problem: string;
-  autofixable?: boolean;
   autofix?: Autofix[];
   suggest?: string;
   rule?: string;
@@ -48,7 +47,6 @@ enum Mode {
 const RESULT_EXT: string[] = [];
 RESULT_EXT[Mode.DEFAULT] = '.json';
 RESULT_EXT[Mode.AUTOFIX] = '.autofix.json';
-const AUTOFIX_CONFIG_EXT = '.autofix.cfg.json';
 const AUTOFIX_SKIP_EXT = '.autofix.skip';
 const ARGS_CONFIG_EXT = '.args.json';
 const DIFF_EXT = '.diff';
@@ -114,10 +112,6 @@ function parseArgs(testDir: string, testFile: string, mode: Mode): CommandLineOp
 
   if (mode === Mode.AUTOFIX) {
     args.push('--autofix');
-    const autofixCfg = path.join(testDir, testFile + AUTOFIX_CONFIG_EXT);
-    if (fs.existsSync(autofixCfg)) {
-      args.push(autofixCfg);
-    }
   }
 
   return parseCommandLine(args);
@@ -177,7 +171,6 @@ function runTest(testDir: string, testFile: string, mode: Mode): boolean {
       line: x.line,
       column: x.column,
       problem: x.problem,
-      autofixable: mode === Mode.AUTOFIX ? x.autofixable : undefined,
       autofix: mode === Mode.AUTOFIX ? x.autofix : undefined,
       suggest: x.suggest,
       rule: x.rule
@@ -201,7 +194,7 @@ function expectedAndActualMatch(expectedNodes: TestNodeInfo[], actualNodes: Test
     if (actual.line !== expect.line || actual.column !== expect.column || actual.problem !== expect.problem) {
       return reportDiff(expect, actual);
     }
-    if (actual.autofixable !== expect.autofixable || !autofixArraysMatch(expect.autofix, actual.autofix)) {
+    if (!autofixArraysMatch(expect.autofix, actual.autofix)) {
       return reportDiff(expect, actual);
     }
     if (expect.suggest && actual.suggest !== expect.suggest) {

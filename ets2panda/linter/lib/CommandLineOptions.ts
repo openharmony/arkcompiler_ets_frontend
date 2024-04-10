@@ -14,7 +14,6 @@
  */
 
 import type * as ts from 'typescript';
-import type { AutofixInfo } from './autofixes/AutofixInfo';
 
 export interface CommandLineOptions {
   testMode?: boolean;
@@ -23,5 +22,5 @@ export interface CommandLineOptions {
   warningsAsErrors: boolean;
   parsedConfigFile?: ts.ParsedCommandLine;
   inputFiles: string[];
-  autofixInfo?: AutofixInfo[];
+  enableAutofix: boolean;
 }

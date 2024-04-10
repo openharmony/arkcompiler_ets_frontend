@@ -20,3 +20,7 @@ export type Cb2Good = (a: any, f?: string) => number;
 
 export function F1Good(cb?: Cb1Good) {}
 export function F2Good(cb?: Cb2Good) {}
+
+export class ExportLitAsPropName {
+  1: number;
+}

@@ -15,9 +15,7 @@
 
 import { Logger } from '../lib/Logger';
 import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
-import { decodeAutofixInfo } from './LinterInfo';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
-import { AUTOFIX_ALL } from '../lib/Autofixer';
 import { Command, Option } from 'commander';
 import * as ts from 'typescript';
 import * as fs from 'node:fs';
@@ -62,7 +60,7 @@ function addProjectFolder(projectFolder: string, previous: string[]): string[] {
 }
 
 function formCommandLineOptions(program: Command): CommandLineOptions {
-  const opts: CommandLineOptions = { inputFiles: inputFiles, warningsAsErrors: false };
+  const opts: CommandLineOptions = { inputFiles: inputFiles, warningsAsErrors: false, enableAutofix: false };
   const options = program.opts();
   if (options.TSC_Errors) {
     opts.logTscErrors = true;
@@ -80,7 +78,7 @@ function formCommandLineOptions(program: Command): CommandLineOptions {
     doProjectArg(options.project, opts);
   }
   if (options.autofix) {
-    doAutofixArg(options.autofix, opts);
+    opts.enableAutofix = true;
   }
   if (options.warningsAsErrors) {
     opts.warningsAsErrors = true;
@@ -171,17 +169,5 @@ function doProjectArg(cfgPath: string, opts: CommandLineOptions): void {
   } catch (error) {
     Logger.error('Failed to read config file: ' + error);
     process.exit(-1);
-  }
-}
-
-function doAutofixArg(autofixOptVal: string | boolean, opts: CommandLineOptions): void {
-  if (typeof autofixOptVal === 'string') {
-    const autofixInfoStr = fs.readFileSync(autofixOptVal).toString();
-    const autofixInfos = JSON.parse(autofixInfoStr);
-    opts.autofixInfo = autofixInfos.autofixInfo.map((x: string) => {
-      return decodeAutofixInfo(x);
-    });
-  } else {
-    opts.autofixInfo = [AUTOFIX_ALL];
   }
 }

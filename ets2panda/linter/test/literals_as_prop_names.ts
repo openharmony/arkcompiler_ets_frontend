@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { ExportLitAsPropName } from './ignore_files/good';
+
 class LiteralAsPropertyName {
   public one: string = "1111111111";
   private 2: string;
@@ -46,7 +48,7 @@ console.log(litAsPropName_fix.one);
 console.log(litAsPropName_fix._2);
 console.log(litAsPropName_fix.Two);
 
-let x = {"name": 20, 2: 30} 
+let x = {"name": 20, 2: 30}
 
 console.log(x["name"]);
 console.log(x[2]);
@@ -65,5 +67,12 @@ console.log(x_fix._2);
 interface litAsPropNameIface {
   one: string;
   2: string;
-  'Two': number;
+  '__2': number;
 }
+const int: litAsPropNameIface = {
+  one: '12321',
+  2: 'weqwewq',
+  '__2': 123
+};
+
+const imp: ExportLitAsPropName = { 1: 234 };

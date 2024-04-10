@@ -23,7 +23,6 @@ import type { LintRunResult } from './LintRunResult';
 import * as path from 'node:path';
 import type { LintOptions } from './LintOptions';
 import type { CommandLineOptions } from './CommandLineOptions';
-import { AutofixInfoSet } from './Autofixer';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
@@ -101,7 +100,7 @@ export function lint(options: LintOptions): LintRunResult {
   const tscStrictDiagnostics = getTscDiagnostics(tscCompiledProgram, srcFiles);
   const linter = new TypeScriptLinter(
     tsProgram.getTypeChecker(),
-    new AutofixInfoSet(cmdOptions.autofixInfo),
+    cmdOptions.enableAutofix,
     cancellationToken,
     options.incrementalLintInfo,
     tscStrictDiagnostics,

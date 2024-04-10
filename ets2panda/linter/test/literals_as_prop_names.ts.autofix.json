@@ -15,201 +15,220 @@
     ],
     "nodes": [
         {
-            "line": 18,
+            "line": 20,
             "column": 3,
             "problem": "LiteralAsPropertyName",
-            "autofixable": true,
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 687,
-                    "end": 688
+                    "start": 747,
+                    "end": 748
                 },
                 {
                     "replacementText": "__2",
-                    "start": 779,
-                    "end": 780
+                    "start": 839,
+                    "end": 840
                 },
                 {
                     "replacementText": "litAsPropName.__2",
-                    "start": 852,
-                    "end": 868
+                    "start": 912,
+                    "end": 928
                 }
             ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
-            "line": 24,
+            "line": 26,
             "column": 3,
             "problem": "LiteralAsPropertyName",
-            "autofixable": true,
             "autofix": [
                 {
                     "replacementText": "__2",
-                    "start": 687,
-                    "end": 688
+                    "start": 747,
+                    "end": 748
                 },
                 {
                     "replacementText": "__2",
-                    "start": 779,
-                    "end": 780
+                    "start": 839,
+                    "end": 840
                 },
                 {
                     "replacementText": "litAsPropName.__2",
-                    "start": 852,
-                    "end": 868
+                    "start": 912,
+                    "end": 928
                 }
             ],
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
-        },
-        {
-            "line": 28,
-            "column": 13,
-            "problem": "PropertyAccessByIndex",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "replacementText": "litAsPropName.one",
-                    "start": 817,
-                    "end": 837
-                }
-            ],
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 29,
-            "column": 13,
-            "problem": "PropertyAccessByIndex",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "replacementText": "__2",
-                    "start": 687,
-                    "end": 688
-                },
-                {
-                    "replacementText": "__2",
-                    "start": 779,
-                    "end": 780
-                },
-                {
-                    "replacementText": "litAsPropName.__2",
-                    "start": 852,
-                    "end": 868
-                }
-            ],
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
         {
             "line": 30,
             "column": 13,
             "problem": "PropertyAccessByIndex",
-            "autofixable": true,
             "autofix": [
                 {
-                    "replacementText": "litAsPropName.Two",
-                    "start": 883,
-                    "end": 903
+                    "replacementText": "litAsPropName.one",
+                    "start": 877,
+                    "end": 897
                 }
             ],
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
         {
-            "line": 49,
-            "column": 9,
-            "problem": "ObjectLiteralNoContextType",
-            "autofixable": false,
+            "line": 31,
+            "column": 13,
+            "problem": "PropertyAccessByIndex",
+            "autofix": [
+                {
+                    "replacementText": "__2",
+                    "start": 747,
+                    "end": 748
+                },
+                {
+                    "replacementText": "__2",
+                    "start": 839,
+                    "end": 840
+                },
+                {
+                    "replacementText": "litAsPropName.__2",
+                    "start": 912,
+                    "end": 928
+                }
+            ],
             "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
         {
-            "line": 49,
-            "column": 22,
-            "problem": "LiteralAsPropertyName",
-            "autofixable": false,
+            "line": 32,
+            "column": 13,
+            "problem": "PropertyAccessByIndex",
+            "autofix": [
+                {
+                    "replacementText": "Two",
+                    "start": 760,
+                    "end": 765
+                },
+                {
+                    "replacementText": "Two",
+                    "start": 851,
+                    "end": 856
+                },
+                {
+                    "replacementText": "litAsPropName.Two",
+                    "start": 943,
+                    "end": 963
+                }
+            ],
             "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
         {
             "line": 51,
-            "column": 13,
-            "problem": "PropertyAccessByIndex",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "replacementText": "x.name",
-                    "start": 1309,
-                    "end": 1318
-                }
-            ],
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 52,
-            "column": 13,
-            "problem": "PropertyAccessByIndex",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "replacementText": "x.__2",
-                    "start": 1333,
-                    "end": 1337
-                }
-            ],
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 59,
-            "column": 13,
+            "column": 9,
             "problem": "ObjectLiteralNoContextType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
-            "line": 67,
-            "column": 3,
+            "line": 51,
+            "column": 22,
             "problem": "LiteralAsPropertyName",
-            "autofixable": false,
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
-            "line": 34,
+            "line": 53,
+            "column": 13,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 54,
+            "column": 13,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 61,
+            "column": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 69,
+            "column": 3,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "___2",
+                    "start": 1637,
+                    "end": 1638
+                },
+                {
+                    "replacementText": "___2",
+                    "start": 1719,
+                    "end": 1720
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
+        },
+        {
+            "line": 74,
+            "column": 3,
+            "problem": "LiteralAsPropertyName",
+            "autofix": [
+                {
+                    "replacementText": "___2",
+                    "start": 1637,
+                    "end": 1638
+                },
+                {
+                    "replacementText": "___2",
+                    "start": 1719,
+                    "end": 1720
+                }
+            ],
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
+        },
+        {
+            "line": 78,
+            "column": 36,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
+        },
+        {
+            "line": 36,
             "column": 11,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Property '_2' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property '_2' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 35,
+            "line": 37,
             "column": 3,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Property 'Two' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'Two' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 55,
+            "line": 57,
             "column": 12,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Property 'name' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'name' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 56,
+            "line": 58,
             "column": 12,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Property '_2' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property '_2' has no initializer and is not definitely assigned in the constructor."
         }
