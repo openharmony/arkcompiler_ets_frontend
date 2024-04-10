@@ -85,7 +85,6 @@ function runIDEMode(cmdOptions: CommandLineOptions): void {
           suggest: x.suggest,
           rule: x.rule,
           severity: x.severity,
-          autofixable: x.autofixable,
           autofix: x.autofix
         };
       });

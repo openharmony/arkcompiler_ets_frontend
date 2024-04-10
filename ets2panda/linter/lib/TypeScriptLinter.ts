@@ -21,8 +21,8 @@ import { faultsAttrs } from './FaultAttrs';
 import { faultDesc } from './FaultDesc';
 import { cookBookMsg, cookBookTag } from './CookBookMsg';
 import { LinterConfig } from './TypeScriptLinterConfig';
-import type { Autofix, AutofixInfoSet } from './Autofixer';
-import * as Autofixer from './Autofixer';
+import type { Autofix } from './autofixes/Autofixer';
+import { Autofixer } from './autofixes/Autofixer';
 import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
 import { Logger } from './Logger';
@@ -36,7 +36,6 @@ import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyH
 import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
-import { scopeContainsThis } from './utils/functions/ContainsThis';
 import { isStructDeclaration, isStruct } from './utils/functions/IsStruct';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
 import type { IncrementalLintInfo } from './IncrementalLintInfo';
@@ -85,9 +84,8 @@ export class TypeScriptLinter {
   walkedComments: Set<number>;
   libraryTypeCallDiagnosticChecker: LibraryTypeCallDiagnosticChecker;
   supportedStdCallApiChecker: SupportedStdCallApiChecker;
-  syncAutofixes: Map<ts.Symbol, Autofix[]>;
-  private readonly fixedEnumsInFile: Map<ts.SourceFile, Set<ts.Symbol>>;
-  private readonly nonFixableEnumsInFile: Map<ts.SourceFile, Set<ts.Symbol>>;
+
+  autofixer: Autofixer | undefined;
 
   private sourceFile?: ts.SourceFile;
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
@@ -121,7 +119,7 @@ export class TypeScriptLinter {
 
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
-    private readonly autofixesInfo: AutofixInfoSet,
+    private readonly enableAutofix: boolean,
     private readonly cancellationToken?: ts.CancellationToken,
     private readonly incrementalLintInfo?: IncrementalLintInfo,
     private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>,
@@ -136,9 +134,6 @@ export class TypeScriptLinter {
       TypeScriptLinter.filteredDiagnosticMessages
     );
     this.supportedStdCallApiChecker = new SupportedStdCallApiChecker(this.tsUtils, this.tsTypeChecker);
-    this.syncAutofixes = new Map<ts.Symbol, Autofix[]>();
-    this.fixedEnumsInFile = new Map<ts.SourceFile, Set<ts.Symbol>>();
-    this.nonFixableEnumsInFile = new Map<ts.SourceFile, Set<ts.Symbol>>();
 
     this.initEtsHandlers();
     this.initCounters();
@@ -208,13 +203,12 @@ export class TypeScriptLinter {
   incrementCounters(
     node: ts.Node | ts.CommentRange,
     faultId: number,
-    autofixable: boolean = false,
     autofix?: Autofix[]
   ): void {
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (TypeScriptLinter.ideMode) {
-      this.incrementCountersIdeMode(node, faultId, autofixable, autofix);
+      this.incrementCountersIdeMode(node, faultId, autofix);
     } else {
       const faultDescr = faultDesc[faultId];
       const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
@@ -245,7 +239,6 @@ export class TypeScriptLinter {
   private incrementCountersIdeMode(
     node: ts.Node | ts.CommentRange,
     faultId: number,
-    autofixable: boolean,
     autofix?: Autofix[]
   ): void {
     if (!TypeScriptLinter.ideMode) {
@@ -275,9 +268,8 @@ export class TypeScriptLinter {
       suggest: isMsgNumValid ? cookBookMsg[cookBookMsgNum] : '',
       rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
       ruleTag: cookBookMsgNum,
-      autofixable: autofixable,
       autofix: autofix,
-      autofixTitle: isMsgNumValid && autofixable ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
+      autofixTitle: isMsgNumValid && autofix !== undefined ? cookBookRefToFixTitle.get(cookBookMsgNum) : undefined
     };
     this.problemsInfos.push(badNodeInfo);
     // problems with autofixes might be collected separately
@@ -356,83 +348,12 @@ export class TypeScriptLinter {
     }
   }
 
-  private static isPrivateIdentifierDuplicateOfIdentifier(
-    ident1: ts.Identifier | ts.PrivateIdentifier,
-    ident2: ts.Identifier | ts.PrivateIdentifier
-  ): boolean {
-    if (ts.isIdentifier(ident1) && ts.isPrivateIdentifier(ident2)) {
-      return ident1.text === ident2.text.substring(1);
-    }
-    if (ts.isIdentifier(ident2) && ts.isPrivateIdentifier(ident1)) {
-      return ident2.text === ident1.text.substring(1);
-    }
-    if (ts.isPrivateIdentifier(ident1) && ts.isPrivateIdentifier(ident2)) {
-      return ident1.text.substring(1) === ident2.text.substring(1);
-    }
-    return false;
-  }
-
-  private static isIdentifierOrPrivateIdentifier(node?: ts.PropertyName): node is ts.Identifier | ts.PrivateIdentifier {
-    if (!node) {
-      return false;
-    }
-    return ts.isIdentifier(node) || ts.isPrivateIdentifier(node);
-  }
-
   private countClassMembersWithDuplicateName(tsClassDecl: ts.ClassDeclaration): void {
     for (const currentMember of tsClassDecl.members) {
-      if (this.classMemberHasDuplicateName(currentMember, tsClassDecl)) {
+      if (this.tsUtils.classMemberHasDuplicateName(currentMember, tsClassDecl)) {
         this.incrementCounters(currentMember, FaultID.DeclWithDuplicateName);
       }
     }
-  }
-
-  private classMemberHasDuplicateName(
-    targetMember: ts.ClassElement, tsClassLikeDecl: ts.ClassLikeDeclaration, classType?: ts.Type
-  ): boolean {
-
-    /*
-     * If two class members have the same name where one is a private identifer,
-     * then such members are considered to have duplicate names.
-     */
-    if (!TypeScriptLinter.isIdentifierOrPrivateIdentifier(targetMember.name)) {
-      return false;
-    }
-
-    for (const classMember of tsClassLikeDecl.members) {
-      if (targetMember === classMember) {
-        continue;
-      }
-
-      // Check constructor parameter properties.
-      if (ts.isConstructorDeclaration(classMember) && classMember.parameters.some((x) => {
-        return ts.isIdentifier(x.name) && TsUtils.hasAccessModifier(x) &&
-          TypeScriptLinter.isPrivateIdentifierDuplicateOfIdentifier(targetMember.name as ts.Identifier, x.name);
-      })) {
-        return true;
-      }
-
-      if (!TypeScriptLinter.isIdentifierOrPrivateIdentifier(classMember.name)) {
-        continue;
-      }
-
-      if (TypeScriptLinter.isPrivateIdentifierDuplicateOfIdentifier(targetMember.name, classMember.name)) {
-        return true;
-      }
-    }
-
-    classType ??= this.tsTypeChecker.getTypeAtLocation(tsClassLikeDecl);
-    if (classType) {
-      const baseType = TsUtils.getBaseClassType(classType);
-      if (baseType) {
-        const baseDecl = baseType.getSymbol()?.valueDeclaration as ts.ClassLikeDeclaration;
-        if (baseDecl) {
-          return this.classMemberHasDuplicateName(targetMember, baseDecl);
-        }
-      }
-    }
-
-    return false;
   }
 
   private isPrototypePropertyAccess(
@@ -586,41 +507,6 @@ export class TypeScriptLinter {
     this.handleDeclarationInferredType(tsParam);
   }
 
-  private enumMergingGetAutofix(enumNode: ts.EnumDeclaration,
-    enumSymbol: ts.Symbol, enumDeclsInFile: ts.Declaration[]): Autofix[] | undefined {
-    const nodeSrcFile = enumNode.getSourceFile();
-
-    if (this.fixedEnumsInFile.get(nodeSrcFile)?.has(enumSymbol)) {
-      return [{ start: enumNode.getStart(), end: enumNode.getEnd(), replacementText: '' }];
-    }
-
-    if (this.nonFixableEnumsInFile.get(nodeSrcFile)?.has(enumSymbol)) {
-      return undefined;
-    }
-
-    const members: ts.EnumMember[] = [];
-    for (const decl of enumDeclsInFile) {
-      for (const member of (decl as ts.EnumDeclaration).members) {
-        if (!member.initializer || member.initializer.kind === ts.SyntaxKind.NumericLiteral ||
-            member.initializer.kind === ts.SyntaxKind.StringLiteral) {
-          continue;
-        }
-        if (!this.nonFixableEnumsInFile.has(nodeSrcFile)) {
-          this.nonFixableEnumsInFile.set(nodeSrcFile, new Set<ts.Symbol>());
-        }
-        this.nonFixableEnumsInFile.get(nodeSrcFile)?.add(enumSymbol);
-        return undefined;
-      }
-      members.push(...(decl as ts.EnumDeclaration).members);
-    }
-
-    if (!this.fixedEnumsInFile.has(nodeSrcFile)) {
-      this.fixedEnumsInFile.set(nodeSrcFile, new Set<ts.Symbol>());
-    }
-    this.fixedEnumsInFile.get(nodeSrcFile)?.add(enumSymbol);
-    return Autofixer.fixEnumMerging(enumNode, members);
-  }
-
   private handleEnumDeclaration(node: ts.Node): void {
     const enumNode = node as ts.EnumDeclaration;
     this.countDeclarationsWithDuplicateName(enumNode.name, enumNode);
@@ -652,19 +538,8 @@ export class TypeScriptLinter {
     }
 
     if (enumDeclCount > 1) {
-      let autofix: Autofix[] | undefined = undefined;
-      if (enumDeclsInFile.length > 1) {
-        autofix = this.enumMergingGetAutofix(enumNode, enumSymbol, enumDeclsInFile);
-      }
-
-      let autofixable = false;
-      if (autofix !== undefined) {
-        autofixable = true;
-        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.EnumMerging) ?
-          this.createSyncAutofixes(enumSymbol, autofix) :
-          undefined;
-      }
-      this.incrementCounters(node, FaultID.EnumMerging, autofixable, autofix);
+      const autofix = this.autofixer?.fixEnumMerging(enumSymbol, enumDeclsInFile);
+      this.incrementCounters(node, FaultID.EnumMerging, autofix);
     }
   }
 
@@ -706,7 +581,7 @@ export class TypeScriptLinter {
       !throwExprType.isClassOrInterface() ||
       !this.tsUtils.isOrDerivedFrom(throwExprType, this.tsUtils.isStdErrorType)
     ) {
-      this.incrementCounters(node, FaultID.ThrowStatement, false, undefined);
+      this.incrementCounters(node, FaultID.ThrowStatement);
     }
   }
 
@@ -793,19 +668,8 @@ export class TypeScriptLinter {
   private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
     const propName = node.name;
     if (!!propName && ts.isNumericLiteral(propName)) {
-      let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
-      let autofixable = false;
-
-      const symbol = this.tsTypeChecker.getSymbolAtLocation(propName);
-      if (symbol !== undefined && autofix !== undefined) {
-        autofixable = true;
-        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName) ?
-          this.createSyncAutofixes(symbol, autofix) :
-          undefined;
-      } else {
-        autofix = undefined;
-      }
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
+      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
+      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
     }
 
     const decorators = ts.getDecorators(node);
@@ -868,28 +732,16 @@ export class TypeScriptLinter {
 
     isDynamic = isLibraryType || this.tsUtils.isDynamicLiteralInitializer(node.parent);
     if (!isRecordObjectInitializer && !isDynamic) {
-      let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
-      let autofixable = false;
-
-      const contextualType = this.tsTypeChecker.getContextualType(node.parent);
-      const symbol = contextualType !== undefined ? this.tsUtils.getPropertySymbol(contextualType, node) : undefined;
-
-      if (symbol !== undefined && autofix !== undefined) {
-        autofixable = true;
-        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName) ?
-          this.createSyncAutofixes(symbol, autofix) :
-          undefined;
-      } else {
-        autofix = undefined;
-      }
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
+      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyAssignment(node);
+      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
     }
   }
 
   private handlePropertySignature(node: ts.PropertySignature): void {
     const propName = node.name;
     if (!!propName && ts.isNumericLiteral(propName)) {
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName);
+      const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
+      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
     }
     this.handleSendableInterfaceProperty(node);
   }
@@ -999,19 +851,11 @@ export class TypeScriptLinter {
   private handleFunctionExpression(node: ts.Node): void {
     const funcExpr = node as ts.FunctionExpression;
     const isGenerator = funcExpr.asteriskToken !== undefined;
-    const hasThisKeyword = scopeContainsThis(funcExpr.body);
-    const isCalledRecursively = this.tsUtils.isFunctionCalledRecursively(funcExpr);
     const [hasUnfixableReturnType, newRetTypeNode] = this.handleMissingReturnType(funcExpr);
-    const autofixable = !isGenerator && !hasThisKeyword && !isCalledRecursively && !hasUnfixableReturnType;
-    let autofix: Autofix[] | undefined;
-    if (autofixable && this.autofixesInfo.shouldAutofix(funcExpr, FaultID.FunctionExpression)) {
-      autofix = [
-        Autofixer.fixFunctionExpression(
-          funcExpr, funcExpr.parameters, funcExpr.typeParameters, newRetTypeNode, ts.getModifiers(funcExpr)
-        )
-      ];
-    }
-    this.incrementCounters(funcExpr, FaultID.FunctionExpression, autofixable, autofix);
+    const autofix = this.autofixer?.fixFunctionExpression(
+      funcExpr, newRetTypeNode, ts.getModifiers(funcExpr), isGenerator, hasUnfixableReturnType
+    );
+    this.incrementCounters(funcExpr, FaultID.FunctionExpression, autofix);
     if (isGenerator) {
       this.incrementCounters(funcExpr, FaultID.GeneratorFunction);
     }
@@ -1085,7 +929,6 @@ export class TypeScriptLinter {
       return [false, undefined];
     }
 
-    let autofixable = false;
     let autofix: Autofix[] | undefined;
     let newRetTypeNode: ts.TypeNode | undefined;
     const isFuncExpr = ts.isFunctionExpression(funcLikeDecl);
@@ -1103,12 +946,8 @@ export class TypeScriptLinter {
         hasLimitedRetTypeInference = true;
       } else if (hasLimitedRetTypeInference) {
         newRetTypeNode = this.tsTypeChecker.typeToTypeNode(tsRetType, funcLikeDecl, ts.NodeBuilderFlags.None);
-        autofixable = !!newRetTypeNode;
-
-        if (newRetTypeNode && !isFuncExpr &&
-          this.autofixesInfo.shouldAutofix(funcLikeDecl, FaultID.LimitedReturnTypeInference)
-        ) {
-          autofix = [Autofixer.fixMissingReturnType(funcLikeDecl, newRetTypeNode)];
+        if (this.autofixer !== undefined && newRetTypeNode && !isFuncExpr) {
+          autofix = this.autofixer.fixMissingReturnType(funcLikeDecl, newRetTypeNode);
         }
       }
     }
@@ -1118,7 +957,7 @@ export class TypeScriptLinter {
      * See handleFunctionExpression for details.
      */
     if (hasLimitedRetTypeInference && !isFuncExpr) {
-      this.incrementCounters(funcLikeDecl, FaultID.LimitedReturnTypeInference, autofixable, autofix);
+      this.incrementCounters(funcLikeDecl, FaultID.LimitedReturnTypeInference, autofix);
     }
 
     return [hasLimitedRetTypeInference && !newRetTypeNode, newRetTypeNode];
@@ -1271,11 +1110,8 @@ export class TypeScriptLinter {
       }
     }
     if (tsParentNode && tsParentNode.kind === ts.SyntaxKind.ExpressionStatement) {
-      let autofix: Autofix[] | undefined = undefined;
-      if (this.autofixesInfo.shouldAutofix(tsExprNode, FaultID.CommaOperator)) {
-        autofix = Autofixer.fixCommaOperator(tsExprNode);
-      }
-      this.incrementCounters(tsExprNode, FaultID.CommaOperator, true, autofix);
+      const autofix = this.autofixer?.fixCommaOperator(tsExprNode);
+      this.incrementCounters(tsExprNode, FaultID.CommaOperator, autofix);
       return;
     }
 
@@ -1404,11 +1240,8 @@ export class TypeScriptLinter {
      * So each 'catch' which has explicit type for the exception object goes to problems.
      */
     if (tsCatch.variableDeclaration?.type) {
-      let autofix: Autofix[] | undefined;
-      if (this.autofixesInfo.shouldAutofix(tsCatch, FaultID.CatchWithUnsupportedType)) {
-        autofix = [Autofixer.dropTypeOnVarDecl(tsCatch.variableDeclaration)];
-      }
-      this.incrementCounters(node, FaultID.CatchWithUnsupportedType, true, autofix);
+      const autofix = this.autofixer?.dropTypeOnVarDecl(tsCatch.variableDeclaration);
+      this.incrementCounters(node, FaultID.CatchWithUnsupportedType, autofix);
     }
   }
 
@@ -1606,7 +1439,8 @@ export class TypeScriptLinter {
     if (tsTypeAssertion.type.getText() === 'const') {
       this.incrementCounters(tsTypeAssertion, FaultID.ConstAssertion);
     } else {
-      this.incrementCounters(node, FaultID.TypeAssertion, true, [Autofixer.fixTypeAssertion(tsTypeAssertion)]);
+      const autofix = this.autofixer?.fixTypeAssertion(tsTypeAssertion);
+      this.incrementCounters(node, FaultID.TypeAssertion, autofix);
     }
   }
 
@@ -1779,19 +1613,8 @@ export class TypeScriptLinter {
       !ts.isArrayLiteralExpression(tsElementAccessExpr.expression) &&
       !this.isElementAcessAllowed(tsElemAccessBaseExprType, tsElemAccessArgType)
     ) {
-      let autofix = Autofixer.fixPropertyAccessByIndex(node);
-      let autofixable = false;
-
-      const symbol = this.tsTypeChecker.getSymbolAtLocation(tsElementAccessExpr.argumentExpression);
-      if (symbol !== undefined && autofix !== undefined) {
-        autofixable = true;
-        autofix = this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName) ?
-          this.createSyncAutofixes(symbol, autofix) :
-          undefined;
-      } else {
-        autofix = undefined;
-      }
-      this.incrementCounters(node, FaultID.PropertyAccessByIndex, autofixable, autofix);
+      const autofix = this.autofixer?.fixPropertyAccessByIndex(tsElementAccessExpr);
+      this.incrementCounters(node, FaultID.PropertyAccessByIndex, autofix);
     }
 
     if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
@@ -2428,16 +2251,8 @@ export class TypeScriptLinter {
         paramTypes = this.collectCtorParamTypes(ctorDecl);
       }
 
-      const autofixable = !!paramTypes;
-      let autofix: Autofix[] | undefined;
-
-      if (autofixable && paramTypes !== undefined &&
-        this.autofixesInfo.shouldAutofix(node, FaultID.ParameterProperties)
-      ) {
-        autofix = Autofixer.fixCtorParameterProperties(ctorDecl, paramTypes);
-      }
-
-      this.incrementCounters(node, FaultID.ParameterProperties, autofixable, autofix);
+      const autofix = this.autofixer?.fixCtorParameterProperties(ctorDecl, paramTypes);
+      this.incrementCounters(node, FaultID.ParameterProperties, autofix);
     }
   }
 
@@ -2461,23 +2276,8 @@ export class TypeScriptLinter {
 
   private handlePrivateIdentifier(node: ts.Node): void {
     const ident = node as ts.PrivateIdentifier;
-    let autofix: Autofix[] | undefined;
-    let autofixable = false;
-
-    const classMember = this.tsTypeChecker.getSymbolAtLocation(ident);
-    if (classMember && (classMember.getFlags() & ts.SymbolFlags.ClassMember) !== 0 && classMember.valueDeclaration) {
-      const memberDecl = classMember.valueDeclaration as ts.ClassElement;
-      const parentDecl = memberDecl.parent;
-      if (ts.isClassLike(parentDecl) && !this.classMemberHasDuplicateName(memberDecl, parentDecl)) {
-        autofixable = true;
-
-        if (this.autofixesInfo.shouldAutofix(node, FaultID.PrivateIdentifier)) {
-          autofix = this.createSyncAutofixes(classMember, [Autofixer.fixPrivateIdentifier(ident)]);
-        }
-      }
-    }
-
-    this.incrementCounters(node, FaultID.PrivateIdentifier, autofixable, autofix);
+    const autofix = this.autofixer?.fixPrivateIdentifier(ident);
+    this.incrementCounters(node, FaultID.PrivateIdentifier, autofix);
   }
 
   private handleIndexSignature(node: ts.Node): void {
@@ -2486,21 +2286,11 @@ export class TypeScriptLinter {
     }
   }
 
-  private createSyncAutofixes(symbol: ts.Symbol, autofixes: Autofix[]): Autofix[] {
-    if (!this.syncAutofixes.has(symbol)) {
-      this.syncAutofixes.set(symbol, []);
-    }
-
-    const autofixesRef = this.syncAutofixes.get(symbol);
-    if (autofixesRef === undefined) {
-      return autofixes;
-    }
-
-    autofixesRef.push(...autofixes);
-    return autofixesRef;
-  }
-
   lint(sourceFile: ts.SourceFile): void {
+    if (this.enableAutofix) {
+      this.autofixer = new Autofixer(this.tsTypeChecker, this.tsUtils, sourceFile, this.cancellationToken);
+    }
+
     this.walkedComments.clear();
     this.sourceFile = sourceFile;
     this.visitSourceFile(this.sourceFile);

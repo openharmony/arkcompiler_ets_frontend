@@ -18,7 +18,6 @@
             "line": 18,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 622,
@@ -43,7 +42,6 @@
             "line": 22,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 622,
@@ -68,7 +66,6 @@
             "line": 25,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 622,
@@ -93,7 +90,6 @@
             "line": 32,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
         },
@@ -101,7 +97,6 @@
             "line": 39,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
         },
@@ -109,7 +104,6 @@
             "line": 47,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
         },
@@ -117,7 +111,6 @@
             "line": 51,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
         },
@@ -125,7 +118,6 @@
             "line": 57,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 921,
@@ -145,7 +137,6 @@
             "line": 59,
             "column": 5,
             "problem": "EnumMemberNonConstInit",
-            "autofixable": false,
             "suggest": "",
             "rule": "Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)"
         },
@@ -153,7 +144,6 @@
             "line": 62,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 921,
@@ -173,7 +163,6 @@
             "line": 65,
             "column": 5,
             "problem": "EnumMemberNonConstInit",
-            "autofixable": false,
             "suggest": "",
             "rule": "Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)"
         },
@@ -181,7 +170,6 @@
             "line": 69,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 1018,
@@ -201,7 +189,6 @@
             "line": 73,
             "column": 1,
             "problem": "EnumMerging",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 1018,

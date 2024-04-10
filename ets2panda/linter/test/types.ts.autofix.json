@@ -18,7 +18,6 @@
             "line": 17,
             "column": 15,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -26,7 +25,6 @@
             "line": 18,
             "column": 15,
             "problem": "SymbolType",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
@@ -34,7 +32,6 @@
             "line": 19,
             "column": 20,
             "problem": "UnknownType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -42,7 +39,6 @@
             "line": 26,
             "column": 18,
             "problem": "ObjectLiteralNoContextType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -50,7 +46,6 @@
             "line": 32,
             "column": 16,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -58,7 +53,6 @@
             "line": 34,
             "column": 15,
             "problem": "IndexedAccessType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)"
         },
@@ -66,7 +60,6 @@
             "line": 36,
             "column": 24,
             "problem": "UnknownType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -74,7 +67,6 @@
             "line": 37,
             "column": 20,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -82,7 +74,6 @@
             "line": 43,
             "column": 3,
             "problem": "LocalFunction",
-            "autofixable": false,
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -90,7 +81,6 @@
             "line": 43,
             "column": 24,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -98,7 +88,6 @@
             "line": 43,
             "column": 30,
             "problem": "IsOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "Type guarding is supported with \"instanceof\" and \"as\" (arkts-no-is)"
         },
@@ -106,7 +95,6 @@
             "line": 54,
             "column": 26,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -114,7 +102,6 @@
             "line": 56,
             "column": 3,
             "problem": "LiteralAsPropertyName",
-            "autofixable": false,
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
@@ -122,7 +109,6 @@
             "line": 57,
             "column": 3,
             "problem": "ComputedPropertyName",
-            "autofixable": false,
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
@@ -130,7 +116,6 @@
             "line": 58,
             "column": 3,
             "problem": "ComputedPropertyName",
-            "autofixable": false,
             "suggest": "",
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
@@ -138,7 +123,6 @@
             "line": 62,
             "column": 3,
             "problem": "LiteralAsPropertyName",
-            "autofixable": true,
             "autofix": [
                 {
                     "replacementText": "__2",
@@ -158,7 +142,6 @@
             "line": 67,
             "column": 3,
             "problem": "LiteralAsPropertyName",
-            "autofixable": true,
             "autofix": [
                 {
                     "replacementText": "__2",
@@ -178,7 +161,6 @@
             "line": 71,
             "column": 19,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -186,7 +168,6 @@
             "line": 72,
             "column": 3,
             "problem": "IndexMember",
-            "autofixable": false,
             "suggest": "",
             "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)"
         },
@@ -194,7 +175,6 @@
             "line": 72,
             "column": 18,
             "problem": "UnknownType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -202,7 +182,6 @@
             "line": 76,
             "column": 32,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -210,7 +189,6 @@
             "line": 77,
             "column": 11,
             "problem": "InOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"in\" operator is not supported (arkts-no-in)"
         },
@@ -218,7 +196,6 @@
             "line": 78,
             "column": 5,
             "problem": "PropertyAccessByIndex",
-            "autofixable": false,
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -226,7 +203,6 @@
             "line": 92,
             "column": 22,
             "problem": "IntersectionType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)"
         },
@@ -234,7 +210,6 @@
             "line": 94,
             "column": 28,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -242,7 +217,6 @@
             "line": 96,
             "column": 3,
             "problem": "CallSignature",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use \"class\" instead of a type with call signature (arkts-no-call-signatures)"
         },
@@ -250,7 +224,6 @@
             "line": 111,
             "column": 19,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -258,7 +231,6 @@
             "line": 112,
             "column": 12,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -266,7 +238,6 @@
             "line": 112,
             "column": 35,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -274,7 +245,6 @@
             "line": 116,
             "column": 9,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -282,7 +252,6 @@
             "line": 116,
             "column": 25,
             "problem": "ObjectLiteralNoContextType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -290,7 +259,6 @@
             "line": 119,
             "column": 9,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -298,7 +266,6 @@
             "line": 119,
             "column": 15,
             "problem": "TypeAssertion",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 2630,
@@ -313,7 +280,6 @@
             "line": 119,
             "column": 16,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -321,7 +287,6 @@
             "line": 120,
             "column": 20,
             "problem": "TypeAssertion",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 2657,
@@ -336,7 +301,6 @@
             "line": 124,
             "column": 13,
             "problem": "ObjectLiteralNoContextType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -344,7 +308,6 @@
             "line": 125,
             "column": 3,
             "problem": "PropertyAccessByIndex",
-            "autofixable": false,
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -352,7 +315,6 @@
             "line": 126,
             "column": 15,
             "problem": "PropertyAccessByIndex",
-            "autofixable": false,
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
@@ -360,7 +322,6 @@
             "line": 128,
             "column": 12,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -368,7 +329,6 @@
             "line": 138,
             "column": 3,
             "problem": "LocalFunction",
-            "autofixable": false,
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -376,7 +336,6 @@
             "line": 157,
             "column": 5,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -384,7 +343,6 @@
             "line": 106,
             "column": 3,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Property 'val' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'val' has no initializer and is not definitely assigned in the constructor."
         },
@@ -392,7 +350,6 @@
             "line": 148,
             "column": 3,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Type 'undefined' is not assignable to type 'string'.",
             "rule": "Type 'undefined' is not assignable to type 'string'."
         },
@@ -400,7 +357,6 @@
             "line": 149,
             "column": 18,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'string'.",
             "rule": "Argument of type 'undefined' is not assignable to parameter of type 'string'."
         },
@@ -408,7 +364,6 @@
             "line": 150,
             "column": 17,
             "problem": "StrictDiagnostic",
-            "autofixable": false,
             "suggest": "Argument of type 'undefined' is not assignable to parameter of type 'number'.",
             "rule": "Argument of type 'undefined' is not assignable to parameter of type 'number'."
         }
