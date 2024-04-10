@@ -29,6 +29,7 @@ import fileinput
 import subprocess
 from utils import *
 from config import *
+import mix_compile
 
 
 def parse_args():
@@ -92,6 +93,8 @@ def parse_args():
     parser.add_argument('--run-pgo', action='store_true',
                         required=False,
                         help="Run test262 with aot pgo")
+    parser.add_argument('--abc2program', action='store_true',
+                        help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     arguments = parser.parse_args()
     return arguments
 
@@ -106,73 +109,6 @@ ARK_FRONTEND = DEFAULT_ARK_FRONTEND
 ARK_FRONTEND_BINARY = DEFAULT_ARK_FRONTEND_BINARY
 ARK_ARCH = DEFAULT_ARK_ARCH
 PROTO_BIN_SUFFIX = "protoBin"
-
-
-def output(retcode, msg):
-    if retcode == 0:
-        if msg != '':
-            print(str(msg))
-    elif retcode == -6:
-        sys.stderr.write("Aborted (core dumped)")
-    elif retcode == -4:
-        sys.stderr.write("Aborted (core dumped)")
-    elif retcode == -11:
-        sys.stderr.write("Segmentation fault (core dumped)")
-    elif msg != '':
-        sys.stderr.write(str(msg))
-    else:
-        sys.stderr.write("Unknown Error: " + str(retcode))
-
-
-def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
-    proc = subprocess.Popen(cmd_args,
-                            stderr=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            close_fds=True,
-                            start_new_session=True)
-    cmd_string = " ".join(cmd_args)
-    code_format = 'utf-8'
-    if platform.system() == "Windows":
-        code_format = 'gbk'
-
-    try:
-        (output_res, errs) = proc.communicate(timeout=timeout)
-        ret_code = proc.poll()
-
-        if errs.decode(code_format, 'ignore') != '':
-            output(1, errs.decode(code_format, 'ignore'))
-            return 1
-
-        if ret_code and ret_code != 1:
-            code = ret_code
-            msg = f"Command {cmd_string}: \n"
-            msg += f"error: {str(errs.decode(code_format, 'ignore'))}"
-        else:
-            code = 0
-            msg = str(output_res.decode(code_format, 'ignore'))
-
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        proc.terminate()
-        os.kill(proc.pid, signal.SIGTERM)
-        code = 1
-        msg = f"Timeout:'{cmd_string}' timed out after' {str(timeout)} seconds"
-    except Exception as err:
-        code = 1
-        msg = f"{cmd_string}: unknown error: {str(err)}"
-    output(code, msg)
-    return code
-
-
-def print_command(cmd_args):
-    sys.stderr.write("\n")
-    sys.stderr.write(" ".join(cmd_args))
-    sys.stderr.write("\n")
-
-
-# for debug use, to keep aot file
-def run_command(cmd_args):
-    return subprocess.run(" ".join(cmd_args))
 
 
 class ArkProgram():
@@ -196,6 +132,9 @@ class ArkProgram():
         self.es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
         self.merge_abc_binary = DEFAULT_MERGE_ABC_BINARY
         self.merge_abc_mode = DEFAULT_MERGE_ABC_MODE
+        self.abc2program = False
+        # when enabling abc2program, may generate a list of abc files
+        self.abc_outputs = []
 
     def proce_parameters(self):
         if self.args.ark_tool:
@@ -230,6 +169,9 @@ class ArkProgram():
 
         if self.args.merge_abc_mode:
             self.merge_abc_mode = self.args.merge_abc_mode
+        
+        if self.args.abc2program:
+            self.abc2program = self.args.abc2program
 
         self.module_list = MODULE_LIST
 
@@ -271,7 +213,7 @@ class ArkProgram():
     def gen_dependency_proto(self, dependency):
         cmd_args = []
         output_file = os.path.splitext(dependency.replace(DATA_DIR, BASE_OUT_DIR))[0]
-        output_abc = f"{output_file}.abc"
+        output_abc = f"{output_file}{ABC_EXT}"
         frontend_tool = self.ark_frontend_binary
         merge_abc_binary = self.args.merge_abc_binary
         merge_abc_mode = self.merge_abc_mode
@@ -308,7 +250,7 @@ class ArkProgram():
         for dependency in list(set(dependencies)):
             cmd_args = []
             output_file = os.path.splitext(dependency.replace(DATA_DIR, BASE_OUT_DIR))[0]
-            output_abc = os.path.basename(f"{output_file}.abc")
+            output_abc = os.path.basename(f"{output_file}{ABC_EXT}")
             file_dir = os.path.split(self.js_file)[0]
             is_apart_abc_existed = os.path.exists(file_dir + "/" + output_abc)
             dependency_file_prefix = os.path.basename(dependency)[:-3]
@@ -379,7 +321,7 @@ class ArkProgram():
 
     def gen_abc_for_dynamic_import(self, js_file, retcode):
         file_name_pre = os.path.splitext(js_file)[0]
-        out_file = f"{file_name_pre}.abc"
+        out_file = f"{file_name_pre}{ABC_EXT}"
         proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
         merge_abc_binary = self.args.merge_abc_binary
 
@@ -396,7 +338,7 @@ class ArkProgram():
 
     def get_abc_from_import_statement(self, js_file):
         file_name_pre = os.path.splitext(js_file)[0]
-        out_file = f"{file_name_pre}.abc"
+        out_file = f"{file_name_pre}{ABC_EXT}"
 
         self.abc_file = os.path.abspath(out_file)
         js_dir = os.path.dirname(js_file)
@@ -405,7 +347,7 @@ class ArkProgram():
             if len(import_line):
                 import_file = re.findall(r"['\"].*\.js", import_line[0])
                 if len(import_file):
-                    abc_file = import_file[0][1:].replace(".js", ".abc")
+                    abc_file = import_file[0][1:].replace(".js", ABC_EXT)
                     abc_file = os.path.abspath(f'{js_dir}/{abc_file}')
                     if self.abc_file.find(abc_file) < 0:
                         self.abc_file += f':{abc_file}'
@@ -417,7 +359,7 @@ class ArkProgram():
         file_name_pre = os.path.splitext(js_file)[0]
         merge_abc_mode = self.merge_abc_mode
         proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
-        out_file = f"{file_name_pre}.abc"
+        out_file = f"{file_name_pre}{ABC_EXT}"
 
         if self.ark_frontend == ARK_FRONTEND_LIST[0]:
             mod_opt_index = 3
@@ -475,13 +417,35 @@ class ArkProgram():
                         self.gen_dependency_proto(dependency)
 
         return compile_as_module, dependencies
+    
+    def gen_abc_for_mix_compile_mode(self, dependencies, out_file):
+        record_names = set()
+        files_info_list = []
+        # In some cases of circular reference, the js file will be from BASE_OUT_DIR, remove it
+        dependencies = [os.path.abspath(dependency) for dependency in dependencies]
+        dependencies.insert(0, os.path.abspath(self.js_file))
+        for dependency in dependencies:
+            record_name = os.path.splitext(os.path.basename(dependency))[0]
+            if record_name in record_names:
+                continue
+
+            record_names.add(record_name)
+            compile_mode = 'esm' if self.check_compile_mode(dependency) else 'script'
+            files_info_list.append(f"{dependency};{record_name};{compile_mode};xxx;yyy\n")
+
+        mix_compiler = mix_compile.MixCompiler(out_file, files_info_list, self.opt_level,
+                                               self.es2abc_thread_count, self.ark_frontend_binary)
+
+        retcode = mix_compiler.mix_compile()
+        self.abc_outputs = mix_compiler.abc_outputs
+        return retcode
 
     def gen_abc(self):
         js_file = self.js_file
         file_name_pre = os.path.splitext(js_file)[0]
         file_name = os.path.basename(js_file)
         file_dir = os.path.split(js_file)[0]
-        out_file = f"{file_name_pre}.abc"
+        out_file = f"{file_name_pre}{ABC_EXT}"
         out_proto = f"{file_name_pre}.proto"
         proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
         self.abc_file = out_file
@@ -498,6 +462,9 @@ class ArkProgram():
         # generate the dependencies' proto when ark_frontend is [es2panda]
         if (file_name in self.module_list or file_name in self.dynamicImport_list):
             compile_as_module, dependencies = self.gen_dependencies_proto(js_file)
+        
+        if self.abc2program:
+            return self.gen_abc_for_mix_compile_mode(dependencies, out_file)
 
         # generate execution command
         cmd_args = self.gen_command(js_file, compile_as_module)
@@ -607,6 +574,17 @@ class ArkProgram():
             print_command(cmd_args)
         return retcode
 
+    def execute_abc2program_outputs(self, cmd_args):
+        retcode = 0
+        for abc in self.abc_outputs:
+            abc = get_formated_path(abc)
+            cmd_args[-1] = abc
+            retcode = exec_command(cmd_args)
+            if retcode:
+                print_command(cmd_args)
+                return retcode
+        return retcode
+
     def execute(self):
         unforce_gc = False
         if platform.system() == "Windows":
@@ -618,11 +596,8 @@ class ArkProgram():
             os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         else:
             sys.exit(f" test262 on {platform.system()} not supported")
-        file_name_pre = os.path.splitext(self.js_file)[0]
-        # In the case of Windows, it is necessary to convert ' \\' to '/', otherwise there will be a crash or the file cannot be found
-        # Maintain consistent interface path with DevEco Studio 
-        if platform.system() == "Windows":
-            file_name_pre = file_name_pre.replace("\\", "/")
+
+        file_name_pre = get_formated_path(os.path.splitext(self.js_file)[0])
         cmd_args = []
         if self.arch == ARK_ARCH_LIST[1]:
             qemu_tool = "qemu-aarch64"
@@ -649,9 +624,13 @@ class ArkProgram():
 
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
         cmd_args.insert(-1, f'--entry-point={record_name}')
-        retcode = exec_command(cmd_args)
-        if retcode:
-            print_command(cmd_args)
+        retcode = 0
+        if self.abc2program:
+            retcode = self.execute_abc2program_outputs(cmd_args)
+        else:
+            retcode = exec_command(cmd_args)
+            if retcode:
+                print_command(cmd_args)
         return retcode
 
     def run_generator_ap(self):

@@ -19,6 +19,7 @@ Description: Implement the public interface in the 262 use case
 """
 
 import os
+import signal
 import sys
 import subprocess
 import datetime
@@ -26,12 +27,93 @@ import time
 import shutil
 import platform
 import re
+from config import DEFAULT_TIMEOUT
 
 TERM_NORMAL = '\033[0m'
 TERM_YELLOW = '\033[1;33m'
 TERM_BLUE = '\033[1;34m'
 TERM_RED = '\033[1;31m'
 TERM_FUCHSIA = '\033[1;35m'
+
+ABC_EXT = ".abc"
+TEMP_ABC_EXT = ".temp.abc"
+TXT_EXT = ".txt"
+TEMP_TXT_EXT = ".temp.txt"
+
+
+def output(retcode, msg):
+    if retcode == 0:
+        if msg != '':
+            print(str(msg))
+    elif retcode == -6:
+        sys.stderr.write("Aborted (core dumped)")
+    elif retcode == -4:
+        sys.stderr.write("Aborted (core dumped)")
+    elif retcode == -11:
+        sys.stderr.write("Segmentation fault (core dumped)")
+    elif msg != '':
+        sys.stderr.write(str(msg))
+    else:
+        sys.stderr.write("Unknown Error: " + str(retcode))
+
+
+def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
+    proc = subprocess.Popen(cmd_args,
+                            stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            close_fds=True,
+                            start_new_session=True)
+    cmd_string = " ".join(cmd_args)
+    code_format = 'utf-8'
+    if platform.system() == "Windows":
+        code_format = 'gbk'
+
+    try:
+        (output_res, errs) = proc.communicate(timeout=timeout)
+        ret_code = proc.poll()
+
+        if errs.decode(code_format, 'ignore') != '':
+            output(1, errs.decode(code_format, 'ignore'))
+            return 1
+
+        if ret_code and ret_code != 1:
+            code = ret_code
+            msg = f"Command {cmd_string}: \n"
+            msg += f"error: {str(errs.decode(code_format, 'ignore'))}"
+        else:
+            code = 0
+            msg = str(output_res.decode(code_format, 'ignore'))
+
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.terminate()
+        os.kill(proc.pid, signal.SIGTERM)
+        code = 1
+        msg = f"Timeout:'{cmd_string}' timed out after' {str(timeout)} seconds"
+    except Exception as err:
+        code = 1
+        msg = f"{cmd_string}: unknown error: {str(err)}"
+    output(code, msg)
+    return code
+
+
+def print_command(cmd_args):
+    sys.stderr.write("\n")
+    sys.stderr.write(" ".join(cmd_args))
+    sys.stderr.write("\n")
+
+
+# for debug use, to keep aot file
+def run_command(cmd_args):
+    return subprocess.run(" ".join(cmd_args))
+
+
+def get_formated_path(path):
+    # In the case of Windows, it is necessary to convert ' \\' to '/', otherwise there will be a crash or the file cannot be found
+    # Maintain consistent interface path with DevEco Studio 
+    if platform.system() == "Windows":
+        return path.replace("\\", "/")
+    return path
 
 
 def current_time():

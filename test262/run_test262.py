@@ -120,7 +120,13 @@ def parse_args():
                         help="ark's product name")
     parser.add_argument('--run-pgo', action='store_true',
                         help="Run test262 with aot pgo")
-    return parser.parse_args()
+    parser.add_argument('--abc2program', action='store_true',
+                        help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
+    
+    args = parser.parse_args()
+    if args.abc2program and (args.run_pgo or args.ark_aot):
+        sys.exit("Error: '--abc2program' used together with  '--ark-aot' or '--run-pgo' is not supported")
+    return args
 
 
 def run_check(runnable, env=None):
@@ -588,6 +594,8 @@ def get_host_args_of_host_type(args, host_type, ark_tool, ark_aot_tool, libs_dir
     host_args += f"--merge-abc-binary={merge_abc_binary} "
     host_args += f"--merge-abc-mode={merge_abc_mode} "
     host_args += f"--product-name={product_name} "
+    if args.abc2program:
+        host_args = f"{host_args}--abc2program "
 
     return host_args
 
