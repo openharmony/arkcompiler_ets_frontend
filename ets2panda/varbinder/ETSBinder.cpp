@@ -96,7 +96,7 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
 {
     const auto &name = ident->Name();
     if (name == compiler::Signatures::UNDEFINED || name == compiler::Signatures::NULL_LITERAL ||
-        name == compiler::Signatures::READONLY_TYPE_NAME) {
+        name == compiler::Signatures::READONLY_TYPE_NAME || name == compiler::Signatures::PARTIAL_TYPE_NAME) {
         return;
     }
     auto *iter = GetScope();
@@ -372,6 +372,13 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
         }
         ResolveReference(stmt);
     }
+}
+
+void ETSBinder::AddFunctionThisParam(ir::ScriptFunction *func)
+{
+    auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, func->Scope()->ParamScope());
+    auto *thisParam = AddMandatoryParam(MANDATORY_PARAM_THIS);
+    thisParam->Declaration()->BindNode(thisParam_);
 }
 
 void ETSBinder::BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic,
@@ -862,6 +869,29 @@ bool ETSBinder::BuildInternalName(ir::ScriptFunction *scriptFunc)
     bool compilable = scriptFunc->Body() != nullptr && !isExternal;
     if (!compilable) {
         recordTable_->Signatures().push_back(funcScope);
+    }
+
+    return compilable;
+}
+
+bool ETSBinder::BuildInternalNameWithCustomRecordTable(ir::ScriptFunction *const scriptFunc,
+                                                       RecordTable *const recordTable)
+{
+    const bool isExternal = recordTable->IsExternal();
+    if (isExternal) {
+        scriptFunc->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
+    }
+
+    if (scriptFunc->IsArrow()) {
+        return true;
+    }
+
+    auto *const funcScope = scriptFunc->Scope();
+    funcScope->BindName(recordTable->RecordName());
+
+    const bool compilable = scriptFunc->Body() != nullptr && !isExternal;
+    if (!compilable) {
+        recordTable->Signatures().push_back(funcScope);
     }
 
     return compilable;

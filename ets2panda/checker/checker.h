@@ -189,6 +189,7 @@ public:
 
     friend class ScopeContext;
     friend class TypeStackElement;
+    friend class NamedTypeStackElement;
     friend class SavedCheckerContext;
     friend class NamedTypeStackElement;
 

@@ -949,8 +949,9 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     if (st->TsType() == nullptr) {
-        for (auto *const node : st->Statements()) {
-            node->Check(checker);
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (std::size_t idx = 0; idx < st->Statements().size(); idx++) {
+            st->Statements()[idx]->Check(checker);
         }
 
         auto lastStmt = st->Statements().back();
@@ -1806,15 +1807,19 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
     ETSChecker *checker = GetETSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    for (size_t i = 0; i < st->Statements().size(); i++) {
-        auto el = st->Statements()[i];
-        el->Check(checker);
+    // Iterator type checking of statements is modified to index type, to allow modifying the statement list during
+    // checking without invalidating the iterator
+    //---- Don't modify this to iterator, as it may break things during checking
+    for (std::size_t idx = 0; idx < st->Statements().size(); ++idx) {
+        auto *stmt = st->Statements()[idx];
+        stmt->Check(checker);
 
         //  NOTE! Processing of trailing blocks was moved here so that smart casts could be applied correctly
-        if (auto const tb = st->trailingBlocks_.find(el); tb != st->trailingBlocks_.end()) {
+        if (auto const tb = st->trailingBlocks_.find(stmt); tb != st->trailingBlocks_.end()) {
             auto *const trailingBlock = tb->second;
             trailingBlock->Check(checker);
-            st->Statements().emplace(std::next(st->Statements().begin() + i), trailingBlock);
+            st->Statements().emplace(std::next(st->Statements().begin() + idx), trailingBlock);
+            ++idx;
         }
     }
 

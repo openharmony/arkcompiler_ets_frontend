@@ -130,6 +130,8 @@ defines:
     ref: NULL_LITERAL
   - name: 'Readonly'
     ref: READONLY_TYPE_NAME
+  - name: 'Partial'
+    ref: PARTIAL_TYPE_NAME
 
 packages:
   - name: 'std.core'

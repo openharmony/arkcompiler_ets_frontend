@@ -145,8 +145,10 @@ public:
     void BuildProgram();
 
     void BuildFunctionName(const ir::ScriptFunction *func) const;
+    bool BuildInternalNameWithCustomRecordTable(ir::ScriptFunction *scriptFunc, RecordTable *recordTable);
     void BuildProxyMethod(ir::ScriptFunction *func, const util::StringView &containingClassName, bool isStatic,
                           bool isExternal);
+    void AddFunctionThisParam(ir::ScriptFunction *func);
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports)
     {

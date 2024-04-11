@@ -180,6 +180,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/objectLiteralLowering.cpp",
   "compiler/lowering/ets/opAssignment.cpp",
   "compiler/lowering/ets/optionalLowering.cpp",
+  "compiler/lowering/ets/partialExportClassGen.cpp",
   "compiler/lowering/ets/promiseVoid.cpp",
   "compiler/lowering/ets/recordLowering.cpp",
   "compiler/lowering/ets/stringComparison.cpp",

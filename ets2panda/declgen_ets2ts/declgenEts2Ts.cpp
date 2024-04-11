@@ -525,7 +525,7 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
     DebugPrint("GenClassDeclaration: " + className);
 
     if (className == compiler::Signatures::DYNAMIC_MODULE_CLASS || className == compiler::Signatures::JSNEW_CLASS ||
-        className == compiler::Signatures::JSCALL_CLASS) {
+        className == compiler::Signatures::JSCALL_CLASS || (className.find("$partial") != std::string::npos)) {
         return;
     }
 
