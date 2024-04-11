@@ -350,6 +350,7 @@ set(ES2PANDA_LIB_SRC
   parser/ASparser.cpp
   parser/JSparser.cpp
   parser/parserImpl.cpp
+  parser/ETSFormattedParser.cpp
   parser/ETSparser.cpp
   parser/ETSNolintParser.cpp
   parser/TSparser.cpp

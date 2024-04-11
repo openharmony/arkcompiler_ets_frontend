@@ -138,7 +138,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
 
     GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs);
 
-    auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts, parser::DEFAULT_SOURCE_FILE);
+    auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
     loweringResult->SetParent(objExpr->Parent());
 
     auto scopeCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(objExpr));

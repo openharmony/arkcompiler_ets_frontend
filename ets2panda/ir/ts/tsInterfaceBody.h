@@ -19,24 +19,30 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-class TSInterfaceBody : public Expression {
+class TSInterfaceBody final : public Expression {
 public:
+    TSInterfaceBody() = delete;
+    ~TSInterfaceBody() override = default;
+
+    NO_COPY_SEMANTIC(TSInterfaceBody);
+    NO_MOVE_SEMANTIC(TSInterfaceBody);
+
     explicit TSInterfaceBody(ArenaVector<AstNode *> &&body)
         : Expression(AstNodeType::TS_INTERFACE_BODY), body_(std::move(body))
     {
     }
 
-    ArenaVector<AstNode *> *BodyPtr()
+    [[nodiscard]] ArenaVector<AstNode *> *BodyPtr()
     {
         return &body_;
     }
 
-    ArenaVector<AstNode *> &Body()
+    [[nodiscard]] ArenaVector<AstNode *> &Body() noexcept
     {
         return body_;
     }
 
-    const ArenaVector<AstNode *> &Body() const
+    [[nodiscard]] ArenaVector<AstNode *> const &Body() const noexcept
     {
         return body_;
     }

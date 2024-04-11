@@ -121,11 +121,10 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
     whileStatement += "@@I7 = @@I8.next(); }";
 
     // Parse ArkTS code string and create corresponding AST nodes
-    auto *const loweringResult =
-        parser->CreateFormattedStatement(whileStatement, parser::DEFAULT_SOURCE_FILE, iterIdent,
-                                         forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
-                                         nextIdent->Clone(allocator, nullptr), nextIdent->Clone(allocator, nullptr),
-                                         nextIdent->Clone(allocator, nullptr), iterIdent->Clone(allocator, nullptr));
+    auto *const loweringResult = parser->CreateFormattedStatement(
+        whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
+        nextIdent->Clone(allocator, nullptr), nextIdent->Clone(allocator, nullptr),
+        nextIdent->Clone(allocator, nullptr), iterIdent->Clone(allocator, nullptr));
     loweringResult->SetParent(forOfStatement->Parent());
 
     TransferForOfLoopBody(forOfStatement->Body(),

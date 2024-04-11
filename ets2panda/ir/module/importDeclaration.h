@@ -17,7 +17,6 @@
 #define ES2PANDA_IR_MODULE_IMPORT_DECLARATION_H
 
 #include "ir/statement.h"
-#include "util/ustring.h"
 
 namespace ark::es2panda::ir {
 class StringLiteral;

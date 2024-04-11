@@ -41,6 +41,11 @@ public:
         return statements_;
     }
 
+    [[nodiscard]] ArenaVector<ir::Statement *> &Statements() noexcept
+    {
+        return statements_;
+    }
+
     void AddStatements(ArenaVector<ir::Statement *> const &statements)
     {
         std::copy_if(statements.begin(), statements.end(), std::back_inserter(statements_),

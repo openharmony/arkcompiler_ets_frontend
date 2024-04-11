@@ -19,11 +19,9 @@
 
 #include "macros.h"
 #include "parser/parserFlags.h"
-#include "util/arktsconfig.h"
 #include "util/helpers.h"
 #include "util/language.h"
 #include "varbinder/varbinder.h"
-#include "varbinder/scope.h"
 #include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
 #include "lexer/ETSLexer.h"
@@ -44,13 +42,8 @@
 #include "ir/statements/classDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/variableDeclaration.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/sequenceExpression.h"
 #include "ir/expressions/callExpression.h"
-#include "ir/expressions/blockExpression.h"
 #include "ir/expressions/thisExpression.h"
-#include "ir/expressions/superExpression.h"
 #include "ir/expressions/typeofExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/updateExpression.h"
@@ -58,14 +51,10 @@
 #include "ir/expressions/unaryExpression.h"
 #include "ir/expressions/yieldExpression.h"
 #include "ir/expressions/awaitExpression.h"
-#include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/expressions/literals/charLiteral.h"
 #include "ir/expressions/literals/nullLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/literals/undefinedLiteral.h"
-#include "ir/expressions/templateLiteral.h"
-#include "ir/expressions/objectExpression.h"
 #include "ir/module/importDeclaration.h"
 #include "ir/module/importDefaultSpecifier.h"
 #include "ir/module/importSpecifier.h"
@@ -73,7 +62,6 @@
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/statements/assertStatement.h"
 #include "ir/statements/blockStatement.h"
-#include "ir/statements/emptyStatement.h"
 #include "ir/statements/ifStatement.h"
 #include "ir/statements/labelledStatement.h"
 #include "ir/statements/switchStatement.h"
@@ -83,7 +71,6 @@
 #include "ir/statements/forOfStatement.h"
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/breakStatement.h"
-#include "ir/statements/continueStatement.h"
 #include "ir/statements/debuggerStatement.h"
 #include "ir/ets/etsLaunchExpression.h"
 #include "ir/ets/etsClassLiteral.h"
@@ -125,11 +112,26 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsNonNullExpression.h"
 #include "ir/ts/tsThisType.h"
-#include "libpandabase/os/file.h"
 #include "generated/signatures.h"
 
 namespace ark::es2panda::parser {
 using namespace std::literals::string_literals;
+
+ETSParser::ETSParser(Program *program, const CompilerOptions &options, ParserStatus status)
+    : TypedParser(program, options, status), globalProgram_(GetProgram())
+{
+    importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), ArkTSConfig(), GetOptions().stdLib);
+}
+
+bool ETSParser::IsETSParser() const noexcept
+{
+    return true;
+}
+
+const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &ETSParser::ModuleList() const
+{
+    return importPathManager_->ModuleList();
+}
 
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
@@ -583,7 +585,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
     return flags;
 }
 
-static bool IsClassMethodModifier(lexer::TokenType type)
+bool ETSParser::IsClassMethodModifier(lexer::TokenType type) noexcept
 {
     switch (type) {
         case lexer::TokenType::KEYW_STATIC:
@@ -716,8 +718,7 @@ void ETSParser::ParseClassFieldDefinition(ir::Identifier *fieldName, ir::Modifie
 }
 
 ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
-                                                            ir::Identifier *className,
-                                                            [[maybe_unused]] ir::Identifier *identNode)
+                                                            ir::Identifier *className)
 {
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
     auto methodKind = ir::MethodDefinitionKind::METHOD;
@@ -946,7 +947,7 @@ ir::AstNode *ETSParser::ParseInnerConstructorDeclaration(ir::ModifierFlags membe
 
 ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &properties,
                                        ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags memberModifiers,
-                                       ir::Identifier *identNode, const lexer::SourcePosition &startLoc)
+                                       const lexer::SourcePosition &startLoc)
 {
     if (Lexer()->Lookahead() != lexer::LEX_CHAR_LEFT_PAREN && Lexer()->Lookahead() != lexer::LEX_CHAR_LESS_THAN &&
         (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_GET ||
@@ -966,7 +967,7 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto *classMethod = ParseClassMethodDefinition(memberName, memberModifiers, nullptr, identNode);
+        auto *classMethod = ParseClassMethodDefinition(memberName, memberModifiers, nullptr);
         classMethod->SetStart(startLoc);
         return classMethod;
     }
@@ -977,11 +978,9 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
     return placeholder;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
-ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
-                                          [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                          [[maybe_unused]] ir::ModifierFlags flags,
-                                          [[maybe_unused]] ir::Identifier *identNode)
+ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
+                                          ir::ClassDefinitionModifiers modifiers,
+                                          [[maybe_unused]] ir::ModifierFlags flags)
 {
     auto startLoc = Lexer()->GetToken().Start();
     auto savedPos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
@@ -1034,7 +1033,7 @@ ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir:
         }
     }
 
-    return ParseInnerRest(properties, modifiers, memberModifiers, identNode, startLoc);
+    return ParseInnerRest(properties, modifiers, memberModifiers, startLoc);
 }
 
 ir::MethodDefinition *ETSParser::ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
@@ -1371,7 +1370,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
 
     // Parse ClassBody
-    auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags, identNode);
+    auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags);
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         util::StringView(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
@@ -3822,8 +3821,7 @@ ir::Identifier *ETSParser::ParseClassIdent([[maybe_unused]] ir::ClassDefinitionM
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementParsingFlags flags,
-                                                     [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                                     [[maybe_unused]] ir::ModifierFlags modFlags)
+                                                     ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags modFlags)
 {
     return ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
                                      ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
@@ -4073,315 +4071,6 @@ void ETSParser::CheckDeclare()
             ThrowSyntaxError("Unexpected token.");
         }
     }
-}
-
-//================================================================================================//
-//  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
-//================================================================================================//
-
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-static constexpr char const INVALID_NUMBER_NODE[] = "Invalid node number in format expression.";
-static constexpr char const INVALID_FORMAT_NODE[] = "Invalid node type in format expression.";
-static constexpr char const INSERT_NODE_ABSENT[] = "There is no any node to insert at the placeholder position.";
-static constexpr char const INVALID_INSERT_NODE[] =
-    "Inserting node type differs from that required by format specification.";
-// NOLINTEND(modernize-avoid-c-arrays)
-
-ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderIdent() const
-{
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
-    Lexer()->NextToken();
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
-
-    char const *const identData = Lexer()->GetToken().Ident().Bytes();
-
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cert-err34-c)
-    auto identNumber = std::atoi(identData + 1U);
-    if (identNumber <= 0) {
-        ThrowSyntaxError(INVALID_NUMBER_NODE, Lexer()->GetToken().Start());
-    }
-
-    return {*identData, static_cast<decltype(std::declval<ParserImpl::NodeFormatType>().second)>(identNumber - 1)};
-}
-
-ir::AstNode *ETSParser::ParseFormatPlaceholder()
-{
-    if (insertingNodes_.empty()) {
-        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-    }
-
-    if (auto nodeFormat = GetFormatPlaceholderIdent(); nodeFormat.first == EXPRESSION_FORMAT_NODE) {
-        return ParseExpressionFormatPlaceholder(std::make_optional(nodeFormat));
-    } else if (nodeFormat.first == IDENTIFIER_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-        return ParseIdentifierFormatPlaceholder(std::make_optional(nodeFormat));
-    } else if (nodeFormat.first == TYPE_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-        return ParseTypeFormatPlaceholder(std::make_optional(nodeFormat));
-    } else if (nodeFormat.first == STATEMENT_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-        return ParseStatementFormatPlaceholder(std::make_optional(nodeFormat));
-    }
-
-    ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-}
-
-ir::Expression *ETSParser::ParseExpressionFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> nodeFormat)
-{
-    if (!nodeFormat.has_value()) {
-        if (insertingNodes_.empty()) {
-            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        }
-
-        if (nodeFormat = GetFormatPlaceholderIdent(); nodeFormat->first == TYPE_FORMAT_NODE) {
-            return ParseTypeFormatPlaceholder(std::move(nodeFormat));
-        } else if (nodeFormat->first == IDENTIFIER_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-            return ParseIdentifierFormatPlaceholder(std::move(nodeFormat));
-        } else if (nodeFormat->first != EXPRESSION_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
-            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        }
-    }
-
-    auto *const insertingNode =
-        nodeFormat->second < insertingNodes_.size() ? insertingNodes_[nodeFormat->second] : nullptr;
-    if (insertingNode == nullptr || !insertingNode->IsExpression()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-    }
-
-    auto *const insertExpression = insertingNode->AsExpression();
-    Lexer()->NextToken();
-    return insertExpression;
-}
-
-ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> nodeFormat)
-{
-    if (!nodeFormat.has_value()) {
-        if (insertingNodes_.empty()) {
-            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        }
-
-        if (nodeFormat = GetFormatPlaceholderIdent(); nodeFormat->first != TYPE_FORMAT_NODE) {
-            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        }
-    }
-
-    auto *const insertingNode =
-        nodeFormat->second < insertingNodes_.size() ? insertingNodes_[nodeFormat->second] : nullptr;
-    if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsTypeNode()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-    }
-
-    auto *const insertType = insertingNode->AsExpression()->AsTypeNode();
-    Lexer()->NextToken();
-    return insertType;
-}
-
-// NOLINTNEXTLINE(google-default-arguments)
-ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> nodeFormat)
-{
-    if (!nodeFormat.has_value()) {
-        if (insertingNodes_.empty()) {
-            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        }
-
-        if (nodeFormat = GetFormatPlaceholderIdent(); nodeFormat->first != IDENTIFIER_FORMAT_NODE) {
-            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        }
-    }
-
-    auto *const insertingNode =
-        nodeFormat->second < insertingNodes_.size() ? insertingNodes_[nodeFormat->second] : nullptr;
-    if (insertingNode == nullptr || !insertingNode->IsExpression() || !insertingNode->AsExpression()->IsIdentifier()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-    }
-
-    auto *const insertIdentifier = insertingNode->AsExpression()->AsIdentifier();
-    Lexer()->NextToken();
-    return insertIdentifier;
-}
-
-ir::Statement *ETSParser::ParseStatementFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> nodeFormat)
-{
-    if (!nodeFormat.has_value()) {
-        if (insertingNodes_.empty()) {
-            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
-        }
-
-        if (nodeFormat = GetFormatPlaceholderIdent(); nodeFormat->first != STATEMENT_FORMAT_NODE) {
-            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
-        }
-    }
-
-    auto *const insertingNode =
-        nodeFormat->second < insertingNodes_.size() ? insertingNodes_[nodeFormat->second] : nullptr;
-    if (insertingNode == nullptr || !insertingNode->IsStatement()) {
-        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
-    }
-
-    auto *const insertStatement = insertingNode->AsStatement();
-    Lexer()->NextToken();
-    return insertStatement;
-}
-
-ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode, std::string_view const fileName)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({fileName, source.View().Utf8()});
-
-    lexer::SourcePosition const startLoc = lexer->GetToken().Start();
-    lexer->NextToken();
-
-    auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
-    auto const statementNumber = statements.size();
-    if (statementNumber == 0U) {
-        return nullptr;
-    }
-
-    if (statementNumber == 1U) {
-        return statements[0U];
-    }
-
-    auto *const blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
-    blockStmt->SetRange({startLoc, lexer->GetToken().End()});
-
-    for (auto *statement : blockStmt->Statements()) {
-        statement->SetParent(blockStmt);
-    }
-
-    return blockStmt;
-}
-
-ir::Statement *ETSParser::CreateFormattedStatement(std::string_view const sourceCode,
-                                                   std::vector<ir::AstNode *> &insertingNodes,
-                                                   std::string_view const fileName)
-{
-    insertingNodes_.swap(insertingNodes);
-    auto const statement = CreateStatement(sourceCode, fileName);
-    insertingNodes_.swap(insertingNodes);
-    return statement;
-}
-
-ArenaVector<ir::Statement *> ETSParser::CreateStatements(std::string_view const sourceCode,
-                                                         std::string_view const fileName)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({fileName, source.View().Utf8()});
-
-    lexer->NextToken();
-    return ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
-}
-
-ArenaVector<ir::Statement *> ETSParser::CreateFormattedStatements(std::string_view const sourceCode,
-                                                                  std::vector<ir::AstNode *> &insertingNodes,
-                                                                  std::string_view const fileName)
-{
-    insertingNodes_.swap(insertingNodes);
-    auto statements = CreateStatements(sourceCode, fileName);
-    insertingNodes_.swap(insertingNodes);
-    return statements;
-}
-
-ir::MethodDefinition *ETSParser::CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view const sourceCode,
-                                                        std::string_view const fileName)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({fileName, source.View().Utf8()});
-
-    auto const startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken();
-
-    if (IsClassMethodModifier(Lexer()->GetToken().Type())) {
-        modifiers |= ParseClassMethodModifiers(false);
-    }
-
-    ir::MethodDefinition *methodDefinition = nullptr;
-    auto *methodName = ExpectIdentifier();
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
-        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        methodDefinition = ParseClassMethodDefinition(methodName, modifiers);
-        methodDefinition->SetStart(startLoc);
-    }
-
-    return methodDefinition;
-}
-
-ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags modifiers,
-                                                             std::string_view const sourceCode,
-                                                             std::string_view const fileName)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({fileName, source.View().Utf8()});
-
-    auto const startLoc = Lexer()->GetToken().Start();
-    Lexer()->NextToken();
-
-    if (IsClassMethodModifier(Lexer()->GetToken().Type())) {
-        modifiers |= ParseClassMethodModifiers(false);
-    }
-
-    if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_CONSTRUCTOR) {
-        ThrowSyntaxError({"Unexpected token. 'Constructor' keyword is expected."});
-    }
-
-    if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
-        ThrowSyntaxError({"Constructor should not be async."});
-    }
-
-    auto *memberName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-    modifiers |= ir::ModifierFlags::CONSTRUCTOR;
-    Lexer()->NextToken();
-
-    auto *const methodDefinition = ParseClassMethodDefinition(memberName, modifiers);
-    methodDefinition->SetStart(startLoc);
-
-    return methodDefinition;
-}
-
-ir::Expression *ETSParser::CreateExpression(std::string_view const sourceCode, ExpressionParseFlags const flags,
-                                            std::string_view const fileName)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({fileName, source.View().Utf8()});
-
-    lexer::SourcePosition const startLoc = lexer->GetToken().Start();
-    lexer->NextToken();
-
-    ir::Expression *returnExpression = ParseExpression(flags);
-    returnExpression->SetRange({startLoc, lexer->GetToken().End()});
-
-    return returnExpression;
-}
-
-ir::Expression *ETSParser::CreateFormattedExpression(std::string_view const sourceCode,
-                                                     std::vector<ir::AstNode *> &insertingNodes,
-                                                     std::string_view const fileName)
-{
-    ir::Expression *returnExpression;
-    insertingNodes_.swap(insertingNodes);
-
-    if (auto statements = CreateStatements(sourceCode, fileName);
-        statements.size() == 1U && statements.back()->IsExpressionStatement()) {
-        returnExpression = statements.back()->AsExpressionStatement()->GetExpression();
-    } else {
-        returnExpression = AllocNode<ir::BlockExpression>(std::move(statements));
-    }
-
-    insertingNodes_.swap(insertingNodes);
-    return returnExpression;
-}
-
-ir::TypeNode *ETSParser::CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view const sourceCode,
-                                              std::string_view const fileName)
-{
-    util::UString source {sourceCode, Allocator()};
-    auto const isp = InnerSourceParser(this);
-    auto const lexer = InitLexer({fileName, source.View().Utf8()});
-
-    lexer->NextToken();
-    return ParseTypeAnnotation(options);
 }
 
 ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous, ir::ModifierFlags modifiers)

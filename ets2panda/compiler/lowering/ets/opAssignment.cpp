@@ -193,10 +193,9 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     // Parse ArkTS code string and create and process corresponding AST node(s)
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
-    auto *loweringResult =
-        parser->CreateFormattedExpression(newAssignmentStatements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2,
-                                          property, GetClone(allocator, ident1), GetClone(allocator, ident2),
-                                          GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
+    auto *loweringResult = parser->CreateFormattedExpression(
+        newAssignmentStatements, ident1, object, ident2, property, GetClone(allocator, ident1),
+        GetClone(allocator, ident2), GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
     loweringResult->SetParent(assignment->Parent());
     InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 

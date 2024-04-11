@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,6 @@
 #include "parserContext.h"
 #include "parser/program/program.h"
 
-#include <algorithm>
-
 namespace ark::es2panda::parser {
 
 ParserContext::ParserContext(const Program *program, ParserStatus status)
@@ -28,17 +26,13 @@ ParserContext::ParserContext(const Program *program, ParserStatus status)
 const ParserContext *ParserContext::FindLabel(const util::StringView &label) const
 {
     const auto *iter = this;
-    do {
-        if (iter->label_.Empty()) {
-            return nullptr;
-        }
-
+    while (iter != nullptr && !iter->label_.Empty()) {
         if (iter->label_ == label) {
             return iter;
         }
 
         iter = iter->prev_;
-    } while (iter != nullptr);
+    }
 
     return nullptr;
 }

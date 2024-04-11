@@ -37,8 +37,7 @@ public:
         program->VarBinder()->SetProgram(program);
         program->VarBinder()->InitTopScope();
         auto etsParser = parser::ETSParser(program, CompilerOptions {});
-        auto expr =
-            etsParser.CreateExpression(strExpr, parser::ExpressionParseFlags::NO_OPTS, parser::DEFAULT_SOURCE_FILE);
+        auto expr = etsParser.CreateExpression(strExpr);
         return {program, expr};
     }
 

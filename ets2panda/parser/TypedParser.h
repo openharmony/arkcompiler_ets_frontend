@@ -37,6 +37,7 @@ protected:
     ir::TSModuleBlock *ParseTsModuleBlock();
     ir::TSModuleDeclaration *ParseModuleOrNamespaceDeclaration(const lexer::SourcePosition &startLoc);
     ArenaVector<ir::AstNode *> ParseTypeLiteralOrInterface();
+    ArenaVector<ir::AstNode *> ParseTypeLiteralOrInterfaceBody();
     void CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::AstNode *> &members);
 
     ir::ArrowFunctionExpression *ParseGenericArrowFunction();
@@ -60,10 +61,8 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ClassDefinition *ParseClassDefinition(ir::ClassDefinitionModifiers modifiers,
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
-    // NOLINTNEXTLINE(google-default-arguments)
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE,
-                                   ir::Identifier *identNode = nullptr) override;
+                                   ir::ModifierFlags flags) override;
 
     static bool CheckClassElementInterfaceBody(ir::AstNode *property, ArenaVector<ir::AstNode *> &properties);
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,

@@ -16,14 +16,11 @@
 #include "parserImpl.h"
 
 #include "varbinder/privateBinding.h"
-#include "varbinder/tsBinding.h"
-#include "ir/astDump.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/methodDefinition.h"
-#include "ir/base/property.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expression.h"
@@ -33,21 +30,15 @@
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
-#include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/expressions/literals/nullLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
-#include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/superExpression.h"
-#include "ir/module/exportDefaultDeclaration.h"
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
-#include "ir/statements/emptyStatement.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/functionDeclaration.h"
-#include "ir/statements/classDeclaration.h"
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
@@ -569,6 +560,10 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 
     ArenaVector<ir::Statement *> statements = ParseStatementList();
 
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        ThrowSyntaxError("Expected a '}'");
+    }
+
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     // clang-format off
     auto *func = AllocNode<ir::ScriptFunction>(
@@ -587,11 +582,9 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
     return staticBlock;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
-                                           [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                           [[maybe_unused]] ir::ModifierFlags flags,
-                                           [[maybe_unused]] ir::Identifier *identNode)
+                                           ir::ClassDefinitionModifiers modifiers,
+                                           [[maybe_unused]] ir::ModifierFlags flags)
 {
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
         lexer_->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
@@ -780,8 +773,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     return classDefinition;
 }
 
-ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
-                                                 ir::Identifier *identNode)
+ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
     auto savedCtx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&context_);
 
@@ -793,19 +785,27 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
 
     SavedClassPrivateContext classContext(this);
 
-    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-            lexer_->NextToken();
-            continue;
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+        lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
+        properties = std::move(ParseAstNodesArrayFormatPlaceholder());
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            ThrowSyntaxError("Expected a '}'");
         }
+    } else {
+        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
+                lexer_->NextToken();
+                continue;
+            }
 
-        ir::AstNode *property = ParseClassElement(properties, modifiers, flags, identNode);
+            ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
 
-        if (CheckClassElement(property, ctor, properties)) {
-            continue;
+            if (CheckClassElement(property, ctor, properties)) {
+                continue;
+            }
+
+            properties.push_back(property);
         }
-
-        properties.push_back(property);
     }
 
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
@@ -837,16 +837,21 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        ir::Expression *parameter = ParseFunctionParameter();
-        ValidateRestParameter(parameter);
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+        lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
+        params = std::move(ParseExpressionsArrayFormatPlaceholder());
+    } else {
+        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            ir::Expression *parameter = ParseFunctionParameter();
+            ValidateRestParameter(parameter);
 
-        params.push_back(parameter);
+            params.push_back(parameter);
 
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            lexer_->NextToken();
-        } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ThrowSyntaxError("Invalid token: comma or right parenthesis expected.");
+            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+                lexer_->NextToken();
+            } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+                ThrowSyntaxError("Invalid token: comma or right parenthesis expected.");
+            }
         }
     }
 
@@ -1084,10 +1089,36 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
                      lexer_->GetToken().Start());
 }
 
+ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder(
+    [[maybe_unused]] std::optional<NodeFormatType> nodeFormat) const
+{
+    ThrowSyntaxError("Identifier expected");
+}
+
+ir::Statement *ParserImpl::ParseStatementFormatPlaceholder() const
+{
+    ThrowSyntaxError("Statement expected");
+}
+
+ArenaVector<ir::Statement *> &ParserImpl::ParseStatementsArrayFormatPlaceholder() const
+{
+    ThrowSyntaxError("ArenaVector of ir::Statement *'s expected.");
+}
+
+ArenaVector<ir::AstNode *> &ParserImpl::ParseAstNodesArrayFormatPlaceholder() const
+{
+    ThrowSyntaxError("ArenaVector of ir::AstNode *'s expected.");
+}
+
+ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholder() const
+{
+    ThrowSyntaxError("ArenaVector of ir::Expression *'s expected.");
+}
+
 ir::Identifier *ParserImpl::ExpectIdentifier(bool isReference, bool isUserDefinedType)
 {
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
-        return ParseIdentifierFormatPlaceholder();
+        return ParseIdentifierFormatPlaceholder(std::nullopt);
     }
 
     if (lexer_->GetToken().IsDefinableTypeName() && isUserDefinedType) {

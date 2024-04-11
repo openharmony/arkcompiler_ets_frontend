@@ -16,26 +16,15 @@
 #ifndef ES2PANDA_PARSER_CORE_PARSER_IMPL_H
 #define ES2PANDA_PARSER_CORE_PARSER_IMPL_H
 
-#include "varbinder/varbinder.h"
 #include "es2panda.h"
-#include "ir/astNode.h"
 #include "ir/base/scriptFunctionSignature.h"
 #include "lexer/token/sourceLocation.h"
 #include "lexer/token/tokenType.h"
-#include "macros.h"
-#include "mem/arena_allocator.h"
 #include "parser/context/classPrivateContext.h"
 #include "parser/context/parserContext.h"
 #include "parser/parserFlags.h"
 #include "parser/program/program.h"
-#include "util/enumbitops.h"
-#include "util/ustring.h"
 #include "util/helpers.h"
-
-#include <memory>
-#include <sstream>
-#include <unordered_map>
-#include <unordered_set>
 
 namespace ark::es2panda::lexer {
 enum class TokenFlags : uint32_t;
@@ -107,6 +96,11 @@ namespace ark::es2panda::parser {
 class ETSParser;
 
 using FunctionSignature = std::tuple<ir::FunctionSignature, ark::es2panda::ir::ScriptFunctionFlags>;
+
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char const ARRAY_FORMAT_NODE = '[';
+inline constexpr char const STATEMENT_FORMAT_NODE = 'S';
+// NOLINTEND(modernize-avoid-c-arrays)
 
 class ClassElementDescriptor {
 public:
@@ -327,6 +321,8 @@ protected:
                                                               ir::TypeNode *returnTypeAnnotation, bool isAsync);
     ir::CallExpression *ParseCallExpression(ir::Expression *callee, bool isOptionalChain = false,
                                             bool handleEval = true);
+    ArenaVector<ir::Expression *> ParseCallExpressionArguments(bool &trailingComma);
+
     ir::TemplateLiteral *ParseTemplateLiteral();
     ir::Expression *ParseLeftHandSideExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers);
@@ -451,11 +447,8 @@ protected:
                                                       ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     virtual ir::Identifier *ParseClassIdent(ir::ClassDefinitionModifiers modifiers);
     virtual ir::Statement *ParsePotentialConstEnum(VariableParsingFlags flags);
-    // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
-                                           ir::ClassDefinitionModifiers modifiers,
-                                           ir::ModifierFlags flags = ir::ModifierFlags::NONE,
-                                           ir::Identifier *identNode = nullptr);
+                                           ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags);
     virtual bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                                    ArenaVector<ir::AstNode *> &properties);
     virtual void ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *typeAnnotation);
@@ -520,13 +513,12 @@ protected:
         return ir::ScriptFunctionFlags::NONE;
     }
 
-    using NodeFormatType = std::pair<char, std::size_t>;
-    // NOLINTNEXTLINE(google-default-arguments)
-    virtual ir::Identifier *ParseIdentifierFormatPlaceholder(
-        [[maybe_unused]] std::optional<NodeFormatType> nodeFormat = std::nullopt)
-    {
-        ThrowSyntaxError("Identifier expected");
-    }
+    using NodeFormatType = std::tuple<bool, char, std::size_t>;
+    virtual ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) const;
+    virtual ir::Statement *ParseStatementFormatPlaceholder() const;
+    virtual ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() const;
+    virtual ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() const;
+    virtual ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder() const;
 
     virtual std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus newStatus, ParserStatus contextStatus);
@@ -563,8 +555,7 @@ protected:
     virtual ir::Expression *ParseSuperClassReference();
 
     using ClassBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
-    ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE,
-                             ir::Identifier *identNode = nullptr);
+    ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE);
 
     Program *GetProgram() const
     {
