@@ -132,9 +132,6 @@ namespace secharmony {
           return tryUpdateDynamicImport(node);
         }
 
-        if (isStructDeclaration(node)) {
-          return tryRemoveVirtualConstructor(node);
-        }
         return visitEachChild(node, updateNodeInfo, context);
       }
     }
@@ -330,20 +327,4 @@ function tryValidateFileExisting(importPath: string): PathAndExtension | undefin
     return { path: importPath, ext: undefined };
   }
   return undefined;
-}
-
-function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration {
-  const sourceFile = NodeUtils.getSourceFileOfNode(node);
-  const tempStructMembers: ClassElement[] = [];
-  if (sourceFile && sourceFile.isDeclarationFile && NodeUtils.isInETSFile(sourceFile)) {
-    for (let member of node.members) {
-      // @ts-ignore
-      if (!isConstructorDeclaration(member) || !member.virtual) {
-        tempStructMembers.push(member);
-      }
-    }
-    const structMembersWithVirtualConstructor = factory.createNodeArray(tempStructMembers);
-    return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, structMembersWithVirtualConstructor);
-  }
-  return node;
 }

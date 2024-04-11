@@ -18,9 +18,12 @@ import {before, describe} from 'mocha';
 import {createSourceFile, ScriptTarget, SourceFile} from 'typescript';
 
 import {TypeUtils} from '../../../src/utils/TypeUtils';
+import { FileUtils } from '../../../src/utils/FileUtils';
+import { Extension, PathAndExtension } from '../../../src/common/type';
 
 describe('test for TypeUtils', function () {
   let sourceFile: SourceFile;
+  let jsSourceFile: SourceFile;
 
   before('init sourceFile', function () {
     const fileContent = `
@@ -33,33 +36,37 @@ describe('test for TypeUtils', function () {
       }
     }
     `;
+    const jsFileContent = `
+    //This is a comment
+    class Demo{
+      constructor(public  title: string, public  content: string, public  mark: number) {
+          this.title = title
+          this.content = content
+          this.mark = mark
+      }
+    }
+    `;
 
     sourceFile = createSourceFile('demo.ts', fileContent, ScriptTarget.ES2015, true);
+    jsSourceFile = createSourceFile('demo.js', jsFileContent, ScriptTarget.ES2015, true);
   });
 
-  describe('test for method createNewSourceFile(keep comments)', function () {
-    it('functional test', function () {
-      const removeComments = false;
-      const newSource = TypeUtils.createNewSourceFile(sourceFile, removeComments);
-      const astText = newSource.text;
+  describe('test for method createObfSourceFile', function () {
+    it('js test', function () {
+      const ast = TypeUtils.createObfSourceFile(jsSourceFile.fileName, jsSourceFile.text);
+      const astExtension: PathAndExtension = FileUtils.getFileSuffix(ast.fileName);
+      const astFileSuffix = astExtension.ext;
 
-      assert.strictEqual(sourceFile.statements.length, newSource.statements.length);
-      assert.notStrictEqual(sourceFile.fileName, newSource.fileName);
-      assert.isTrue(newSource.fileName.endsWith('.ts'));
-      assert.isTrue(astText.startsWith('//This is a comment'));
+      assert.strictEqual(jsSourceFile.text, ast.text);
+      assert.strictEqual(Extension.TS, astFileSuffix);
     });
-  });
+    it('ts test', function () {
+      const ast = TypeUtils.createObfSourceFile(sourceFile.fileName, sourceFile.text);
+      const astExtension: PathAndExtension = FileUtils.getFileSuffix(ast.fileName);
+      const astFileSuffix = astExtension.ext;
 
-  describe('test for method createNewSourceFile(remove comments)', function () {
-    it('functional test', function () {
-      const removeComments = true;
-      const newSource = TypeUtils.createNewSourceFile(sourceFile, removeComments);
-      const astText = newSource.text;
-
-      assert.strictEqual(sourceFile.statements.length, newSource.statements.length);
-      assert.notStrictEqual(sourceFile.fileName, newSource.fileName);
-      assert.isTrue(newSource.fileName.endsWith('.ts'));
-      assert.isTrue(!astText.startsWith('//This is a comment'));
+      assert.strictEqual(sourceFile.text, ast.text);
+      assert.strictEqual(Extension.TS, astFileSuffix);
     });
   });
 

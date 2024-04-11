@@ -15,8 +15,7 @@
 
 import {
   createPrinter,
-  createSourceFile, createTextWriter,
-  ScriptTarget,
+  createTextWriter,
   transform,
   createObfTextSingleLineWriter,
 } from 'typescript';
@@ -59,6 +58,7 @@ import esInfo from './configs/preset/es_reserved_properties.json';
 import {EventList, TimeSumPrinter, TimeTracker} from './utils/PrinterUtils';
 import type { ProjectInfo } from './common/type';
 export {FileUtils} from './utils/FileUtils';
+import {TypeUtils} from './utils/TypeUtils';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
@@ -216,7 +216,9 @@ export class ArkObfuscator {
 
     performancePrinter?.filesPrinter?.startEvent(EventList.ALL_FILES_OBFUSCATION);
     readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
-    this.readPropertyCache(this.mCustomProfiles.mOutputDir);
+    const propertyCachePath = path.join(this.mCustomProfiles.mOutputDir, 
+                                        path.basename(this.mSourceFiles[0])) // Get dir name
+    this.readPropertyCache(propertyCachePath);
 
     // support directory and file obfuscate
     for (const sourcePath of this.mSourceFiles) {
@@ -234,7 +236,7 @@ export class ArkObfuscator {
       await this.obfuscateDir(sourcePath, dirPrefix);
     }
 
-    this.producePropertyCache(this.mCustomProfiles.mOutputDir);
+    this.producePropertyCache(propertyCachePath);
     performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
     performancePrinter?.timeSumPrinter?.print('Sum up time of processes');
     performancePrinter?.timeSumPrinter?.summarizeEventDuration();
@@ -493,7 +495,7 @@ export class ArkObfuscator {
 
     performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter, sourceFilePath);
     if (typeof content === 'string') {
-      ast = createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true);
+      ast = TypeUtils.createObfSourceFile(sourceFilePath, content);
     } else {
       ast = content;
     }
@@ -535,6 +537,10 @@ export class ArkObfuscator {
     let sourceMapGenerator: SourceMapGenerator = undefined;
     if (this.mCustomProfiles.mEnableSourceMap) {
       sourceMapGenerator = getSourceMapGenerator(sourceFilePath);
+    }
+
+    if (sourceFilePath.endsWith(".js")) {
+      TypeUtils.tsToJs(ast);
     }
 
     performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);

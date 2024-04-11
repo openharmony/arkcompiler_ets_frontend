@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 export namespace Ns {
-    function e() {
+    function f() {
         return null;
     }
-    class f {
+    class g {
         name: string;
     }
 }

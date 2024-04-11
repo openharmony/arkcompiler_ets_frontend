@@ -14,44 +14,45 @@
  */
 
 import {
+  ScriptTarget,
   createCompilerHost,
-  createPrinter,
   createProgram,
   createSourceFile,
-  ScriptTarget,
 } from 'typescript';
 
 import type {
   CompilerHost,
   CompilerOptions,
-  Printer,
-  PrinterOptions,
   Program,
   SourceFile,
   TypeChecker,
 } from 'typescript';
-
-import path from 'path';
-import { Extension } from '../common/type';
-import type { PathAndExtension } from '../common/type';
+import { Extension, PathAndExtension } from '../common/type';
 import { FileUtils } from './FileUtils';
 
 export class TypeUtils {
   /**
-   * performing symbol analysis on the original abstract syntax tree can cause sourcemap errors
-   * @param oldAst
-   *
+   * Create .d.ets, .d.ts, .ts ast from .d.ets, .d.ts, .ts content.
+   * Create .ts ast from .ets, .js content
+   * @param {string} sourceFilePath 
+   * @param {string} content - The content in sourceFilePath
    */
-  public static createNewSourceFile(oldAst: SourceFile, removeComments: boolean): SourceFile {
-    let printerOptions: PrinterOptions = {removeComments: removeComments};
-    let printer: Printer = createPrinter(printerOptions);
-    let content: string = printer.printFile(oldAst);
+  public static createObfSourceFile(sourceFilePath: string, content: string): SourceFile {
+    const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(sourceFilePath);
+    const fileSuffix = pathOrExtension.ext;
 
-    const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(oldAst.fileName);
-    const fileSuffix = pathOrExtension.ext === Extension.DETS ? Extension.DETS : Extension.TS;
-    const { dir, name } = path.parse(oldAst.fileName);
-    const targetName: string = path.join(dir, name) + '__tmp' + fileSuffix;
-    return createSourceFile(targetName, content, ScriptTarget.ES2015, true);
+    if (fileSuffix === Extension.JS) {
+      sourceFilePath = pathOrExtension.path + Extension.TS;
+    }
+
+    return createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true);
+  }
+
+  public static tsToJs(ast: SourceFile) {
+    const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(ast.fileName);
+    const fileSuffix = Extension.JS;
+    const targetName: string = pathOrExtension.path + fileSuffix;
+    ast.fileName = targetName;
   }
 
   public static createChecker(ast: SourceFile): TypeChecker {

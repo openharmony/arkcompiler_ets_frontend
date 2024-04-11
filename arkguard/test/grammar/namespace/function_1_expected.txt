@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 export function foo() {
-    foo: String;
-    print();
+    let a = "string";
     {
-        return this.foo;
+        function b() {
+            console.log(a);
+        }
     }
 }
