@@ -23,6 +23,83 @@ declare namespace collections {
         [k: number]: T; // Illegal
         [s: string]: T; // Illegal
     }
+
+    class Int8Array {
+        constructor(length: number);
+
+        [k: number]: number; // Ok
+        [s: string]: number; // Illegal
+    }
+
+    class Uint8Array {
+        constructor(length: number);
+
+        [k: number]: number; // Ok
+        [s: string]: number; // Illegal
+    }
+
+    class Uint8ClampedArray {
+        constructor(length: number);
+
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Int16Array {
+        constructor(length: number);
+
+        [k: number]: number; // Ok
+        [s: string]: number; // Illegal
+    }
+
+    class Uint16Array {
+        constructor(length: number);
+
+        [k: number]: number; // Ok
+        [s: string]: number; // Illegal
+    }
+
+    class Int32Array {
+        constructor(length: number);
+
+        [k: number]: number; // Ok
+        [s: string]: number; // Illegal
+    }
+
+    class Uint32Array {
+        constructor(length: number);
+
+        [k: number]: number; // Ok
+        [s: string]: number; // Illegal
+    }
+
+    class BigInt64Array {
+        constructor(length: number);
+
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class BigUint64Array {
+        constructor(length: number);
+
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Float32Array {
+        constructor(length: number);
+
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Float64Array {
+        constructor(length: number);
+
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
 }
 
 declare namespace utils {
@@ -34,6 +111,61 @@ declare namespace utils {
     class Set<T> {
         [k: number]: T; // Illegal
         [s: string]: T; // Illegal
+    }
+
+    class Int8Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Uint8Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Uint8ClampedArray {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Int16Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Uint16Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Int32Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Uint32Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class BigInt64Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class BigUint64Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Float32Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
+    }
+
+    class Float64Array {
+        [k: number]: number; // Illegal
+        [s: string]: number; // Illegal
     }
 }
 
