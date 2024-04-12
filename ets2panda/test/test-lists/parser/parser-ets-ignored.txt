@@ -26,5 +26,4 @@ compiler/ets/rethrowingMethodCheck1.ets
 compiler/ets/rethrowingMethodCheck2.ets
 compiler/ets/rethrowingMethodCheck3.ets
 
-compiler/ets/generics_implicit_lambda1.ets
 parser/ets/async_with_lambda.ets

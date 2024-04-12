@@ -1,7 +1,6 @@
 # panda#15005: Added to the skip list to stabilize fe_dev_202312
 parser/ets/declare_iface.ets
 parser/ets/interfaces.ets
-parser/ets/literals.ets
 parser/ets/test_interface.ets
 # End of panda#15005
 
@@ -45,21 +44,12 @@ compiler/ets/dynamic_call.ets
 compiler/ets/dynamic-equality.ets
 compiler/ets/dynamic-equality-error.ets
 compiler/ets/dynamic_instanceof.ets
-compiler/ets/dynamic_instanceof_error.ets
 compiler/ets/dynamicJsImport.ets
 compiler/ets/dynamicLambda.ets
 compiler/ets/dynamicLambda_error.ets
 compiler/ets/dynamicLambdaJSValue.ets
-compiler/ets/dynamicLambdaJSValueCast.ets
 compiler/ets/dynamicObjectLiteral.ets
-parser/ets/dynamic_import_tests/dynamic_class_ctor_decl_import_bad.ets
-parser/ets/dynamic_import_tests/dynamic_class_field_decl_import_bad_1.ets
-parser/ets/dynamic_import_tests/dynamic_class_field_decl_import_bad_2.ets
-parser/ets/dynamic_import_tests/dynamic_class_method_decl_import_bad_1.ets
-parser/ets/dynamic_import_tests/dynamic_class_method_decl_import_bad_2.ets
 parser/ets/dynamic_import_tests/dynamic_decl_import.ets
-parser/ets/dynamic_import_tests/dynamic_func_decl_import_bad.ets
-parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.ets
 
 # Requires smart casts
 parser/ets/null-coalesc-negative.ets
@@ -83,10 +73,7 @@ parser/ets/nullableType.ets
 
 # 15577 inference for union-typed targets
 compiler/ets/optionalLambdaParameter.ets
-compiler/ets/tuple_types_12.ets
-compiler/ets/tuple_types_7.ets
 compiler/ets/tuple_types_9_neg.ets
-parser/ets/tuple_type_1.ets
 
 # 15771 broken ast varbinder scopes in etsglobal
 parser/ets/optional-chaining-array.ets
@@ -98,9 +85,6 @@ parser/ets/optional_chaining_object_property.ets
 compiler/ets/etsObjectToString4.ets
 compiler/ets/etsObjectToString5.ets
 compiler/ets/generic_variance_1.ets
-
-# 14595
-compiler/ets/n_assignGenericWithNullableTypeParamToNonNullable.ets
 
 # Related to void revert
 compiler/ets/lambda_infer_type/lambda_cast_infer_type_void.ets
