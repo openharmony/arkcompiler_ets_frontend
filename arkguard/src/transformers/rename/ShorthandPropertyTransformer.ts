@@ -117,22 +117,6 @@ namespace secharmony {
       function isElementsInObjectBindingPattern(node: Node): node is BindingElement {
         return node.parent && isObjectBindingPattern(node.parent) && isBindingElement(node);
       }
-
-      function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration {
-        const sourceFile = NodeUtils.getSourceFileOfNode(node);
-        const tempStructMembers: ClassElement[] = [];
-        if (sourceFile && sourceFile.isDeclarationFile && NodeUtils.isInETSFile(sourceFile)) {
-          for (let member of node.members) {
-            // @ts-ignore
-            if (!isConstructorDeclaration(member) || !member.virtual) {
-              tempStructMembers.push(member);
-            }
-          }
-          const structMembersWithVirtualConstructor = factory.createNodeArray(tempStructMembers);
-          return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, structMembersWithVirtualConstructor);
-        }
-        return node;
-      }
     }
   };
 
@@ -143,4 +127,20 @@ namespace secharmony {
   };
 }
 
+function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration {
+  const sourceFile = NodeUtils.getSourceFileOfNode(node);
+  const tempStructMembers: ClassElement[] = [];
+  if (sourceFile && sourceFile.isDeclarationFile && NodeUtils.isInETSFile(sourceFile)) {
+    for (let member of node.members) {
+      // @ts-ignore
+      if (!isConstructorDeclaration(member) || !member.virtual) {
+        tempStructMembers.push(member);
+      }
+    }
+    const structMembersWithVirtualConstructor = factory.createNodeArray(tempStructMembers);
+    return factory.updateStructDeclaration(node, node.modifiers, node.name, 
+      node.typeParameters, node.heritageClauses, structMembersWithVirtualConstructor);
+  }
+  return node;
+}
 export = secharmony;
