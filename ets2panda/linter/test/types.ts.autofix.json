@@ -74,6 +74,14 @@
             "line": 43,
             "column": 3,
             "problem": "LocalFunction",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1235,
+                    "end": 1313,
+                    "replacementText": "let isNumber: (x: any) => x is number = (x: any): x is number => {\n    return typeof x === 'number';\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
@@ -329,6 +337,14 @@
             "line": 138,
             "column": 3,
             "problem": "LocalFunction",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 3075,
+                    "end": 3192,
+                    "replacementText": "let arrayFunc: <T extends object>(array: Array<T>) => Array<string> = <T extends object>(array: Array<T>): Array<string> => {\n    return array.map((x) => x.toString());\n};"
+                }
+            ],
             "suggest": "",
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },

@@ -896,7 +896,8 @@ export class TypeScriptLinter {
     }
     const funcDeclParent = tsFunctionDeclaration.parent;
     if (!ts.isSourceFile(funcDeclParent) && !ts.isModuleBlock(funcDeclParent)) {
-      this.incrementCounters(tsFunctionDeclaration, FaultID.LocalFunction);
+      const autofix = this.autofixer?.fixNestedFunction(tsFunctionDeclaration);
+      this.incrementCounters(tsFunctionDeclaration, FaultID.LocalFunction, autofix);
     }
     if (tsFunctionDeclaration.asteriskToken) {
       this.incrementCounters(node, FaultID.GeneratorFunction);

@@ -78,6 +78,16 @@ export class SymbolCache {
     return this.typeChecker.getSymbolAtLocation(propertySignature.name);
   }
 
+  private handleFunctionDeclaration(node: ts.Node): ts.Symbol | undefined {
+    const functionDeclaration = node as ts.FunctionDeclaration;
+    return functionDeclaration.name ? this.typeChecker.getSymbolAtLocation(functionDeclaration.name) : undefined;
+  }
+
+  private handleCallExpression(node: ts.Node): ts.Symbol | undefined {
+    const callExpression = node as ts.CallExpression;
+    return this.typeChecker.getSymbolAtLocation(callExpression.expression);
+  }
+
   private addReference(symbol: ts.Symbol, node: ts.Node): void {
     let nodes = this.cache.get(symbol);
     if (nodes === undefined) {
@@ -93,7 +103,9 @@ export class SymbolCache {
     [ts.SyntaxKind.PrivateIdentifier, this.handlePrivateIdentifier],
     [ts.SyntaxKind.PropertyAssignment, this.handlePropertyAssignment],
     [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyDeclaration],
-    [ts.SyntaxKind.PropertySignature, this.handlePropertySignature]
+    [ts.SyntaxKind.PropertySignature, this.handlePropertySignature],
+    [ts.SyntaxKind.FunctionDeclaration, this.handleFunctionDeclaration],
+    [ts.SyntaxKind.CallExpression, this.handleCallExpression]
   ]);
 
   private readonly cache: Map<ts.Symbol, ts.Node[]> = new Map<ts.Symbol, ts.Node[]>();
