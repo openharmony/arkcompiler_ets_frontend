@@ -15,7 +15,7 @@
 
 let Dog;
 export default Dog = {
-  age: 2,
+  age: 8,
   getAge(){
     return this.age;
   }
@@ -25,7 +25,7 @@ const Cat = class {
   private readonly mAge: number;
 
   constructor() {
-    this.mAge = 2;
+    this.mAge = 8;
   }
 
   getAge() {

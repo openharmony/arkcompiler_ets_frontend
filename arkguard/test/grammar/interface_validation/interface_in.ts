@@ -13,23 +13,23 @@
  * limitations under the License.
  */
 
-import assert = require('assert');
+import assert from 'assert';
 
-let deck = {
-  suits: ["hearts", "spades", "clubs", "diamonds"],
+let cards = {
+  poker: ["hearts", "spades", "clubs", "diamonds"],
   createCardPicker: function () {
     return () => {
       let pickedCard = 42;
-      let pickedSuit = pickedCard / 14;
+      let pickedPoker = pickedCard / 14;
 
-      return {suit: this.suits[pickedSuit], card: pickedCard / 14};
+      return {type: this.poker[pickedPoker], card: pickedCard / 14};
     }
   }
 }
 
-let cardPicker = deck.createCardPicker();
+let cardPicker = cards.createCardPicker();
 let pickedCard = cardPicker();
 
 assert(pickedCard.card === 3, 'success');
 
-assert(pickedCard.suit === 'diamonds', 'success');
+assert(pickedCard.type === 'diamonds', 'success');

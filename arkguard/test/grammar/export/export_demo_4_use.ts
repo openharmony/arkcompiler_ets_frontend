@@ -18,4 +18,4 @@ const assert = require('assert');
 const Cat = require('./export_demo_4');
 
 const cat = new Cat();
-assert.strictEqual(cat.getAge(), 2);
+assert.strictEqual(cat.getAge(), 4);

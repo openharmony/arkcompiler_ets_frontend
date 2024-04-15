@@ -14,12 +14,12 @@
  */
 
 namespace ts {
-  let friendA: { getX(o: A): number, setX(o: A, v: number): void };
-  class A { 
+  let friendA1: { getX(o: A1): number, setX(o: A1, m: number): void };
+  class A1 { 
     x: number;
 
-    constructor (v: number) {
-      this.x = v;
+    constructor (m: number) {
+      this.x = m;
     }
 
     getX () {
@@ -27,22 +27,22 @@ namespace ts {
     }
 
     obj() {
-      friendA = {
+      friendA1 = {
         getX(obj) { return obj.x },
         setX(obj, value) { obj.x = value }
       };
     }
   };
 
-  class B {
-    constructor(a: A) {
-      const x = friendA.getX(a); // ok
-      friendA.setX(a, x + 1); // ok
+  class B1 {
+    constructor(a: A1) {
+      const x = friendA1.getX(a); // ok
+      friendA1.setX(a, x + 1); // ok
     }
   };
 
-  const a = new A(41);
+  const a = new A1(41);
   a.obj();
-  const b = new B(a);
+  const b = new B1(a);
   a.getX();
 }

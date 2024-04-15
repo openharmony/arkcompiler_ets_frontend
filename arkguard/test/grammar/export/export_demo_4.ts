@@ -14,7 +14,7 @@
  */
 
 const Dog = {
-  age: 2,
+  age: 4,
   getAge(){
     return this.age;
   }
@@ -24,7 +24,7 @@ const Cat = class {
   private readonly mAge: number;
 
   constructor() {
-    this.mAge = 2;
+    this.mAge = 4;
   }
 
   getAge() {
