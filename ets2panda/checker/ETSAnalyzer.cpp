@@ -565,6 +565,87 @@ checker::Type *ETSAnalyzer::GetPreferredType(ir::ArrayExpression *expr) const
     return expr->preferredType_;
 }
 
+static void CheckArrayElement(ETSChecker *checker, checker::Type *elementType,
+                              std::vector<checker::Type *> targetElementType, ir::Expression *currentElement,
+                              bool &isSecondaryChosen)
+{
+    // clang-format off
+    if ((targetElementType[0]->IsETSArrayType() &&
+         targetElementType[0]->AsETSArrayType()->ElementType()->IsETSArrayType() &&
+         !(targetElementType[0]->AsETSArrayType()->ElementType()->IsETSTupleType() &&
+           targetElementType[1] == nullptr)) ||
+        (!checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType[0],
+                                     currentElement->Start(),
+                                     {"Array element type '", elementType, "' is not assignable to explicit type '",
+                                      targetElementType[0], "'"},
+                                     TypeRelationFlag::NO_THROW).IsAssignable() &&
+         !(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()))) {
+        if (targetElementType[1] == nullptr) {
+            checker->ThrowTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
+                                     targetElementType[1], "'"},
+                                    currentElement->Start());
+        } else if (!(targetElementType[0]->IsETSArrayType() && currentElement->IsArrayExpression()) &&
+                   !checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType[1],
+                                               currentElement->Start(),
+                                               {"Array element type '", elementType,
+                                                "' is not assignable to explicit type '", targetElementType[1], "'"},
+                                               TypeRelationFlag::NO_THROW).IsAssignable()) {
+            checker->ThrowTypeError({"Array element type '", elementType, "' is not assignable to explicit type '",
+                                     targetElementType[1], "'"},
+                                    currentElement->Start());
+            // clang-format on
+        } else {
+            isSecondaryChosen = true;
+        }
+    }
+}
+
+static void CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::vector<checker::Type *> targetElementType,
+                         bool isPreferredTuple, bool isArray)
+{
+    bool isSecondaryChosen = false;
+
+    for (std::size_t idx = 0; idx < expr->Elements().size(); ++idx) {
+        auto *const currentElement = expr->Elements()[idx];
+
+        if (currentElement->IsArrayExpression()) {
+            expr->HandleNestedArrayExpression(checker, currentElement->AsArrayExpression(), isArray, isPreferredTuple,
+                                              idx);
+        }
+
+        if (currentElement->IsObjectExpression()) {
+            currentElement->AsObjectExpression()->SetPreferredType(expr->GetPreferredType());
+        }
+
+        checker::Type *elementType = currentElement->Check(checker);
+
+        if (!elementType->IsETSArrayType() && isPreferredTuple) {
+            auto const *const tupleType = expr->GetPreferredType()->AsETSTupleType();
+
+            auto *compareType = tupleType->GetTypeAtIndex(idx);
+            if (compareType == nullptr) {
+                checker->ThrowTypeError({"Too many elements in array initializer for tuple with size of ",
+                                         static_cast<uint32_t>(tupleType->GetTupleSize())},
+                                        currentElement->Start());
+            }
+
+            checker::AssignmentContext(checker->Relation(), currentElement, elementType, compareType,
+                                       currentElement->Start(),
+                                       {"Array initializer's type is not assignable to tuple type at index: ", idx});
+
+            elementType = compareType;
+        }
+
+        if (targetElementType[0] == elementType) {
+            continue;
+        }
+
+        CheckArrayElement(checker, elementType, targetElementType, currentElement, isSecondaryChosen);
+    }
+
+    expr->SetPreferredType(isSecondaryChosen ? targetElementType[1] : targetElementType[0]);
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -585,48 +666,12 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
         const bool isPreferredTuple = expr->preferredType_->IsETSTupleType();
         auto *targetElementType = expr->GetPreferredType();
+        Type *targetElementTypeSecondary = nullptr;
         if (isPreferredTuple && !isArray) {
-            targetElementType = targetElementType->AsETSTupleType()->ElementType();
+            targetElementTypeSecondary = targetElementType->AsETSTupleType()->ElementType();
         }
 
-        for (std::size_t idx = 0; idx < expr->elements_.size(); ++idx) {
-            auto *const currentElement = expr->elements_[idx];
-
-            if (currentElement->IsArrayExpression()) {
-                expr->HandleNestedArrayExpression(checker, currentElement->AsArrayExpression(), isArray,
-                                                  isPreferredTuple, idx);
-            }
-
-            if (currentElement->IsObjectExpression()) {
-                currentElement->AsObjectExpression()->SetPreferredType(expr->preferredType_);
-            }
-
-            checker::Type *elementType = currentElement->Check(checker);
-
-            if (!elementType->IsETSArrayType() && isPreferredTuple) {
-                auto const *const tupleType = expr->GetPreferredType()->AsETSTupleType();
-
-                auto *compareType = tupleType->GetTypeAtIndex(idx);
-                if (compareType == nullptr) {
-                    checker->ThrowTypeError({"Too many elements in array initializer for tuple with size of ",
-                                             static_cast<uint32_t>(tupleType->GetTupleSize())},
-                                            currentElement->Start());
-                }
-
-                checker::AssignmentContext(
-                    checker->Relation(), currentElement, elementType, compareType, currentElement->Start(),
-                    {"Array initializer's type is not assignable to tuple type at index: ", idx});
-
-                elementType = compareType;
-            }
-
-            checker::AssignmentContext(checker->Relation(), currentElement, elementType, targetElementType,
-                                       currentElement->Start(),
-                                       {"Array element type '", elementType, "' is not assignable to explicit type '",
-                                        targetElementType, "'"});
-        }
-
-        expr->SetPreferredType(targetElementType);
+        CheckElement(expr, checker, {targetElementType, targetElementTypeSecondary}, isPreferredTuple, isArray);
     }
 
     if (expr->preferredType_ == nullptr) {
