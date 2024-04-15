@@ -32,6 +32,7 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/unaryExpression.h>
+#include <ir/statement.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/expressionStatement.h>
 #include <ir/statements/variableDeclaration.h>
@@ -832,6 +833,19 @@ void Helpers::ThrowError(ErrorType type, const parser::Program *program, const l
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     throw Error {type, msg, loc.line, loc.col};
+}
+
+bool Helpers::IsUseShared(const ir::Statement *statement)
+{
+    if (!statement->IsExpressionStatement()) {
+        return false;
+    }
+
+    if (!statement->AsExpressionStatement()->GetExpression()->IsStringLiteral()) {
+        return false;
+    }
+
+    return statement->AsExpressionStatement()->GetExpression()->AsStringLiteral()->Str().Is(USE_SHARED);
 }
 
 }  // namespace panda::es2panda::util

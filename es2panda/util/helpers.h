@@ -32,6 +32,7 @@ class Identifier;
 class AstNode;
 class ObjectExpression;
 class StringLiteral;
+class Statement;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda {
@@ -118,6 +119,7 @@ public:
         ir::ScriptFunction *&concurrentFunc);
     static void ThrowError(ErrorType type, const parser::Program *program, const lexer::SourcePosition &pos,
         const std::string_view &msg);
+    static bool IsUseShared(const ir::Statement *statement);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
@@ -131,6 +133,7 @@ public:
     static constexpr std::string_view SHOW_SOURCE = "show source";
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
     static constexpr std::string_view USE_SENDABLE = "use sendable";
+    static constexpr std::string_view USE_SHARED = "use shared";
     static const uint64_t FNV_PRIME = 1099511628211U;
     static const uint64_t FNV_OFFSET = 14695981039346656037U;
 private:
