@@ -19,7 +19,6 @@ import {join, resolve} from 'path';
 
 import type {IOptions} from '../configs/IOptions';
 import type {TransformPlugin} from './TransformPlugin';
-import type { ProjectInfo } from '../common/type';
 import { Extension } from '../common/type';
 
 export class TransformerManager {
@@ -27,16 +26,16 @@ export class TransformerManager {
 
   private readonly mTransformers: TransformerFactory<Node>[];
 
-  public constructor(options: IOptions, projectInfo?: ProjectInfo) {
+  public constructor(options: IOptions) {
     this.mTransformers = [];
-    this.loadTransformers(options, projectInfo);
+    this.loadTransformers(options);
   }
 
   public getTransformers(): TransformerFactory<Node>[] {
     return this.mTransformers;
   }
 
-  private loadTransformers(options: IOptions, projectInfo?: ProjectInfo): void {
+  private loadTransformers(options: IOptions): void {
     let subFiles: string[] = readdirSync(TransformerManager.sLoadPath);
     let plugins: TransformPlugin[] = [];
     for (const subFile of subFiles) {
@@ -67,7 +66,7 @@ export class TransformerManager {
     });
 
     plugins.forEach((plugin: TransformPlugin) => {
-      let transformerFactory: TransformerFactory<Node> = plugin?.createTransformerFactory(options, projectInfo);
+      let transformerFactory: TransformerFactory<Node> = plugin?.createTransformerFactory(options);
       let name: string = plugin?.name;
       if (transformerFactory && name) {
         this.mTransformers.push(transformerFactory);

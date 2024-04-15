@@ -22,6 +22,7 @@ import fs from 'fs';
 import path from 'path';
 
 export const BUNDLE = '@bundle:';
+export const NORMALIZE = '@normalized:';
 
 export class FileUtils {
   /**

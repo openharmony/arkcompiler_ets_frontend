@@ -49,11 +49,12 @@ import type { IOptions } from '../../configs/IOptions';
 import type { TransformPlugin } from '../TransformPlugin';
 import { TransformerOrder } from '../TransformPlugin';
 import type { IFileNameObfuscationOption } from '../../configs/INameObfuscationOption';
+import { OhmUrlStatus } from '../../configs/INameObfuscationOption';
 import { NameGeneratorType, getNameGenerator } from '../../generator/NameFactory';
 import type { INameGenerator, NameGeneratorOptions } from '../../generator/INameGenerator';
-import { FileUtils, BUNDLE } from '../../utils/FileUtils';
+import { FileUtils, BUNDLE, NORMALIZE } from '../../utils/FileUtils';
 import { NodeUtils } from '../../utils/NodeUtils';
-import { orignalFilePathForSearching, performancePrinter } from '../../ArkObfuscator';
+import { orignalFilePathForSearching, performancePrinter, ArkObfuscator } from '../../ArkObfuscator';
 import type { PathAndExtension, ProjectInfo } from '../../common/type';
 import { EventList } from '../../utils/PrinterUtils';
 namespace secharmony {
@@ -67,12 +68,15 @@ namespace secharmony {
   let profile: IFileNameObfuscationOption | undefined;
   let generator: INameGenerator | undefined;
   let reservedFileNames: Set<string> | undefined;
+  let localPackageSet: Set<string> | undefined;
+  let useNormalized: boolean = false;
+
   /**
    * Rename Properties Transformer
    *
    * @param option obfuscation options
    */
-  const createRenameFileNameFactory = function (options: IOptions, projectInfo?: ProjectInfo): TransformerFactory<Node> {
+  const createRenameFileNameFactory = function (options: IOptions): TransformerFactory<Node> {
     profile = options?.mRenameFileName;
     if (!profile || !profile.mEnable) {
       return null;
@@ -81,6 +85,11 @@ namespace secharmony {
     return renameFileNameFactory;
 
     function renameFileNameFactory(context: TransformationContext): Transformer<Node> {
+      let projectInfo: ProjectInfo = ArkObfuscator.mProjectInfo;
+      if (projectInfo && projectInfo.localPackageSet) {
+        localPackageSet = projectInfo.localPackageSet;
+        useNormalized = projectInfo.useNormalized;
+      }
       let options: NameGeneratorOptions = {};
       if (profile.mNameGeneratorType === NameGeneratorType.HEX) {
         options.hexWithPrefixSuffix = true;
@@ -113,7 +122,7 @@ namespace secharmony {
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.FILENAME_OBFUSCATION, performancePrinter.timeSumPrinter);
         let ret: Node = updateNodeInfo(node);
-        if (!inInOhModules(projectInfo, orignalFilePathForSearching) && isSourceFile(ret)) {
+        if (!isInOhModules(projectInfo, orignalFilePathForSearching) && isSourceFile(ret)) {
           const orignalAbsPath = ret.fileName;
           const mangledAbsPath: string = getMangleCompletePath(orignalAbsPath);
           ret.fileName = mangledAbsPath;
@@ -137,7 +146,7 @@ namespace secharmony {
     }
   };
 
-  export function inInOhModules(proInfo: ProjectInfo, originalPath: string): boolean {
+  export function isInOhModules(proInfo: ProjectInfo, originalPath: string): boolean {
     let ohPackagePath: string = '';
     if (proInfo && proInfo.projectRootPath && proInfo.packageDir) {
       ohPackagePath = FileUtils.toUnixPath(path.resolve(proInfo.projectRootPath, proInfo.packageDir));
@@ -160,6 +169,47 @@ namespace secharmony {
 
   function isImportCall(n: Node): n is ImportCall {
     return n.kind === SyntaxKind.CallExpression && (<CallExpression>n).expression.kind === SyntaxKind.ImportKeyword;
+  }
+
+  function canBeObfuscatedFilePath(filePath: string): boolean {
+    return path.isAbsolute(filePath) || FileUtils.isRelativePath(filePath) || isLocalDependencyOhmUrl(filePath);
+  }
+
+  function isLocalDependencyOhmUrl(filePath: string): boolean {
+    // mOhmUrlStatus: for unit test in Arkguard
+    if (profile?.mOhmUrlStatus === OhmUrlStatus.AT_BUNDLE ||
+        profile?.mOhmUrlStatus === OhmUrlStatus.NORMALIZED) {
+      return true;
+    }
+
+    let packageName: string;
+    // Only hap and local har need be mangled.
+    if (useNormalized) {
+      if (!filePath.startsWith(NORMALIZE)) {
+        return false;
+      }
+      packageName = handleNormalizedOhmUrl(filePath, true);
+    } else {
+      if (!filePath.startsWith(BUNDLE)) {
+        return false;
+      }
+      packageName = getAtBundlePgkName(filePath);
+    }
+    return localPackageSet && localPackageSet.has(packageName);
+  }
+
+  function getAtBundlePgkName(ohmUrl: string): string {
+    /* Unnormalized OhmUrl Format:
+    * hap/hsp: @bundle:${bundleName}/${moduleName}/
+    * har: @bundle:${bundleName}/${moduleName}@${harName}/
+    * package name is {moduleName} in hap/hsp or {harName} in har.
+    */
+    let moduleName: string = ohmUrl.split('/')[1]; // 1: the index of moduleName in array.
+    const indexOfSign: number = moduleName.indexOf('@');
+    if (indexOfSign !== -1) {
+      moduleName = moduleName.slice(indexOfSign + 1); // 1: the index start from indexOfSign + 1.
+    }
+    return moduleName;
   }
 
   // dynamic import example: let module = import('./a')
@@ -207,7 +257,7 @@ namespace secharmony {
 
   function getMangleIncompletePath(orignalPath: string): string {
     // The ohmUrl format does not have file extension
-    if (isBundleOhmUrl(orignalPath)) {
+    if (isLocalDependencyOhmUrl(orignalPath)) {
       const mangledOhmUrl = mangleOhmUrl(orignalPath);
       return mangledOhmUrl;
     }
@@ -233,20 +283,48 @@ namespace secharmony {
   }
 
   export function mangleOhmUrl(ohmUrl: string): string {
-    const originalOhmUrlSegments: string[] = FileUtils.splitFilePath(ohmUrl);
-    /**
-     * OhmUrl Format:
-     * fixed parts in hap/hsp: @bundle:${bundleName}/${moduleName}/
-     * fixed parts in har: @bundle:${bundleName}/${moduleName}@${harName}/
-     * hsp example: @bundle:com.example.myapplication/entry/index
-     * har example: @bundle:com.example.myapplication/entry@library_test/index
-     * we do not mangle fixed parts.
-     */
-    const prefixSegments: string[] = originalOhmUrlSegments.slice(0, 2); // 2: length of fixed parts in array
-    const urlSegments: string[] = originalOhmUrlSegments.slice(2); // 2: index of mangled parts in array
-    const mangledOhmUrlSegments: string[] = urlSegments.map(originalSegment => mangleFileNamePart(originalSegment));
-    let mangledOhmUrl: string = prefixSegments.join('/') + '/' + mangledOhmUrlSegments.join('/');
+    let mangledOhmUrl: string;
+    // mOhmUrlStatus: for unit test in Arkguard
+    if (useNormalized || profile?.mOhmUrlStatus === OhmUrlStatus.NORMALIZED) {
+      /**
+       * Normalized OhmUrl Format:
+       * hap/hsp: @normalized:N&<module name>&<bundle name>&<standard import path>&
+       * har: @normalized:N&&<bundle name>&<standard import path>&<version>
+       * we only mangle <standard import path>.
+       */
+      mangledOhmUrl = handleNormalizedOhmUrl(ohmUrl);
+    } else {
+      /**
+       * OhmUrl Format:
+       * fixed parts in hap/hsp: @bundle:${bundleName}/${moduleName}/
+       * fixed parts in har: @bundle:${bundleName}/${moduleName}@${harName}/
+       * hsp example: @bundle:com.example.myapplication/entry/index
+       * har example: @bundle:com.example.myapplication/entry@library_test/index
+       * we do not mangle fixed parts.
+       */
+      const originalOhmUrlSegments: string[] = FileUtils.splitFilePath(ohmUrl);
+      const prefixSegments: string[] = originalOhmUrlSegments.slice(0, 2); // 2: length of fixed parts in array
+      const urlSegments: string[] = originalOhmUrlSegments.slice(2); // 2: index of mangled parts in array
+      const mangledOhmUrlSegments: string[] = urlSegments.map(originalSegment => mangleFileNamePart(originalSegment));
+      mangledOhmUrl = prefixSegments.join('/') + '/' + mangledOhmUrlSegments.join('/');
+    }
     return mangledOhmUrl;
+  }
+
+  function handleNormalizedOhmUrl(ohmUrl: string, needPkgName?: boolean): string {
+    let originalOhmUrlSegments: string[] = ohmUrl.split('&');
+    const standardImportPath = originalOhmUrlSegments[3]; // 3: index of standard import path in array.
+    const index = standardImportPath.indexOf('/');
+    const pakName = standardImportPath.substring(0, index);
+    if (needPkgName) {
+      return pakName;
+    }
+    const realImportPath = standardImportPath.substring(index + 1); // 1: index of real import path in array.
+    const originalImportPathSegments: string[] = FileUtils.splitFilePath(realImportPath);
+    const mangledImportPathSegments: string[] = originalImportPathSegments.map(originalSegment => mangleFileNamePart(originalSegment));
+    const mangledImportPath: string = pakName + '/' + mangledImportPathSegments.join('/');
+    originalOhmUrlSegments[3] = mangledImportPath; // 3: index of standard import path in array.
+    return originalOhmUrlSegments.join('&');
   }
 
   function mangleFileName(orignalPath: string): string {
@@ -294,14 +372,6 @@ namespace secharmony {
 }
 
 export = secharmony;
-
-function canBeObfuscatedFilePath(filePath: string): boolean {
-  return path.isAbsolute(filePath) || FileUtils.isRelativePath(filePath) || isBundleOhmUrl(filePath);
-}
-
-function isBundleOhmUrl(filePath: string): boolean {
-  return filePath.startsWith(BUNDLE);
-}
 
 // typescript doesn't add the json extension.
 const extensionOrder: string[] = ['.ets', '.ts', '.d.ets', '.d.ts', '.js'];

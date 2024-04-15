@@ -43,6 +43,14 @@ export interface IFileNameObfuscationOption {
   readonly mNameGeneratorType: NameGeneratorType;
 
   mReservedFileNames: string[];
+
+  readonly mOhmUrlStatus?: OhmUrlStatus;
+}
+
+export enum OhmUrlStatus {
+  NONE,
+  AT_BUNDLE,
+  NORMALIZED
 }
 
 export interface IPrinterOption {

@@ -157,23 +157,23 @@ describe('Tester Cases for <FileUtils>.', function () {
     assert.strictEqual(FileUtils.getPathWithoutPrefix(path, prefix), '');
   });
 
-  it('Tester: <determine whether oh_modules or not.> case for renameFileNameModule#inInOhModules', function () {
+  it('Tester: <determine whether oh_modules or not.> case for renameFileNameModule#isInOhModules', function () {
     let projectInfo = {
       projectRootPath: '/test/Obfuscation/arkguard',
       packageDir: 'oh_modules'
     };
     let originalPath = '/test/Obfuscation/rkguard/entry/src/main/ets/pages/Index.ets';
 
-    assert.strictEqual(renameFileNameModule.inInOhModules(projectInfo, originalPath), false);
+    assert.strictEqual(renameFileNameModule.isInOhModules(projectInfo, originalPath), false);
   });
 
-  it('Tester: <determine whether oh_modules or not.> case for renameFileNameModule#inInOhModules', function () {
+  it('Tester: <determine whether oh_modules or not.> case for renameFileNameModule#isInOhModules', function () {
     let projectInfo = {
       projectRootPath: '/test/Obfuscation/arkguard',
       packageDir: 'oh_modules'
     };
     let originalPath = '/test/Obfuscation/arkguard/oh_modules/.ohpm/json5@2.2.3/oh_modules/json5/dist/index.mjs';
 
-    assert.strictEqual(renameFileNameModule.inInOhModules(projectInfo, originalPath), true);
+    assert.strictEqual(renameFileNameModule.isInOhModules(projectInfo, originalPath), true);
   });
 });
