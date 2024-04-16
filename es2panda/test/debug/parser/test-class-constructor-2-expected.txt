@@ -1,0 +1,1 @@
+SyntaxError: Unexpected super keyword [test-class-constructor-2.js:20:27]

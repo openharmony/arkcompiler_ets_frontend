@@ -168,6 +168,8 @@ def get_args():
         help='run bytecode tests')
     parser.add_argument('--debugger', dest='debugger', action='store_true', default=False,
         help='run debugger tests')
+    parser.add_argument('--debug', dest='debug', action='store_true', default=False,
+        help='run debug tests')
 
     return parser.parse_args()
 
@@ -1665,6 +1667,11 @@ def main():
         runner.add_directory("bytecode/ts/api11", "ts", ["--dump-assembly", "--module", "--target-api-version=11"])
         runner.add_directory("bytecode/ts/api12", "ts", ["--dump-assembly", "--module", "--target-api-version=12"])
 
+        runners.append(runner)
+
+    if args.debug:
+        runner = RegressionRunner(args)
+        runner.add_directory("debug/parser", "js", ["--parse-only", "--dump-ast"])
         runners.append(runner)
 
     failed_tests = 0
