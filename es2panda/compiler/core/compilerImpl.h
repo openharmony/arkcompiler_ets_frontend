@@ -20,7 +20,6 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <os/thread.h>
-#include <typescript/extractor/typeExtractor.h>
 #include <util/patchFix.h>
 
 #include <string>
@@ -56,7 +55,6 @@ private:
     size_t threadCount_ {0};
     CompileFuncQueue *queue_ {nullptr};
     util::PatchFix *patchFixHelper_ {nullptr};
-    std::unique_ptr<extractor::TypeExtractor> extractor_ {};
 };
 }  // namespace panda::es2panda::compiler
 

@@ -21,7 +21,6 @@
 #include <ir/astNode.h>
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
-#include <typescript/extractor/typeRecorder.h>
 #include <util/patchFix.h>
 #include <util/ustring.h>
 
@@ -110,9 +109,6 @@ public:
 
     void AddFunction(FunctionEmitter *func, CompilerContext *context);
     void AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context);
-    void FillTypeInfoRecord(CompilerContext *context, bool typeFlag, int64_t typeSummaryIndex,
-        const std::string &recordName) const;
-    void FillTypeLiteralBuffers(const extractor::TypeRecorder *recorder) const;
     static void GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Literal>>> &literalBuffers,
                                   const LiteralBuffer *buff);
     static void DumpAsm(const panda::pandasm::Program *prog);
@@ -120,7 +116,6 @@ public:
     panda::pandasm::Program *GetProgram() const;
     void GenJsonContentRecord(const CompilerContext *context);
     void GenRecordNameInfo() const;
-    void GenTypeInfoRecord() const;
     std::mutex &GetEmitterLock()
     {
         return m_;
@@ -130,7 +125,6 @@ private:
     void SetCommonjsField(bool isCommonjs);
     void SetPkgNameField(const std::string &pkgName);
     void GenCommonjsRecord() const;
-    void GenESTypeAnnotationRecord() const;
     void AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context);
     void AddSharedModuleRecord(const CompilerContext *context);
 

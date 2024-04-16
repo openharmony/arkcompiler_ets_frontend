@@ -20,7 +20,6 @@
 #include <binder/variable.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/compilerContext.h>
-#include <compiler/core/emitter/typeExtractorEmitter.h>
 #include <compiler/core/pandagen.h>
 #include <compiler/debugger/debuginfoDumper.h>
 #include <compiler/base/catchTable.h>
@@ -217,10 +216,6 @@ void FunctionEmitter::GenFunctionInstructions()
         ins->Transform(&pandaIns);
         GenInstructionDebugInfo(ins, &pandaIns);
     }
-
-    if (pg_->Context()->IsTypeExtractorEnabled()) {
-        TypeExtractorEmitter(pg_, func_);
-    }
 }
 
 void FunctionEmitter::GenFunctionCatchTables()
@@ -355,7 +350,6 @@ Emitter::Emitter(const CompilerContext *context)
         return;
     }
 
-    GenESTypeAnnotationRecord();
     if (context->IsMergeAbc()) {
         auto recordName = context->Binder()->Program()->FormatedRecordName().Mutf8();
         rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')), LANG_EXT);
@@ -393,21 +387,6 @@ void Emitter::GenRecordNameInfo() const
     if (rec_) {
         prog_->record_table.emplace(rec_->name, std::move(*rec_));
     }
-}
-
-void Emitter::GenTypeInfoRecord() const
-{
-    auto typeInfoRecord = panda::pandasm::Record(TypeExtractorEmitter::TYPE_INFO_RECORD, LANG_EXT);
-    typeInfoRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    prog_->record_table.emplace(typeInfoRecord.name, std::move(typeInfoRecord));
-}
-
-void Emitter::GenESTypeAnnotationRecord() const
-{
-    auto typeAnnotationRecord = panda::pandasm::Record(TypeExtractorEmitter::TYPE_ANNOTATION, LANG_EXT);
-    typeAnnotationRecord.metadata->SetAttribute("external");
-    typeAnnotationRecord.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
-    prog_->record_table.emplace(typeAnnotationRecord.name, std::move(typeAnnotationRecord));
 }
 
 void Emitter::GenJsonContentRecord(const CompilerContext *context)
@@ -526,21 +505,6 @@ void Emitter::AddSharedModuleRecord(const CompilerContext *context)
         sharedModuleRecord.field_list.emplace_back(std::move(sharedModuleField));
         prog_->record_table.emplace(sharedModuleRecord.name, std::move(sharedModuleRecord));
     }
-}
-
-void Emitter::FillTypeInfoRecord(CompilerContext *context, bool typeFlag, int64_t typeSummaryIndex,
-    const std::string &recordName) const
-{
-    if (!context->IsMergeAbc()) {
-        TypeExtractorEmitter::GenTypeInfoRecord(prog_, typeFlag, typeSummaryIndex, recordName);
-    } else {
-        TypeExtractorEmitter::GenTypeInfoRecordForMergeABC(prog_, typeFlag, typeSummaryIndex, recordName);
-    }
-}
-
-void Emitter::FillTypeLiteralBuffers(const extractor::TypeRecorder *recorder) const
-{
-    TypeExtractorEmitter::GenTypeLiteralBuffers(prog_, recorder);
 }
 
 // static

@@ -48,10 +48,6 @@ def parse_args():
                         help='dump symbol table of base abc')
     parser.add_argument("--input-symbol-table",
                         help='input symbol table for patch abc')
-    parser.add_argument("--type-extractor", action='store_true',
-                        help='enable type extractor')
-    parser.add_argument("--type-dts-builtin", action='store_true',
-                        help='enable builtin type extractor')
     arguments = parser.parse_args()
     return arguments
 
@@ -92,12 +88,6 @@ def gen_abc_info(input_arguments):
         src_index = cmd.index(input_arguments.src_js)
         cmd.insert(src_index, '--generate-patch')
         # insert d.ts option to cmd later
-    if input_arguments.type_extractor:
-        src_index = cmd.index(input_arguments.src_js)
-        cmd.insert(src_index, '--type-extractor')
-    if input_arguments.type_dts_builtin:
-        src_index = cmd.index(input_arguments.src_js)
-        cmd.insert(src_index, '--type-dts-builtin')
     run_command(cmd, path)
 
 

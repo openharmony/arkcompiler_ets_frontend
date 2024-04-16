@@ -70,12 +70,6 @@ Label *RegAllocator::AllocLabel(std::string &&id)
     return Alloc<Label>(lastInsNode, std::move(id));
 }
 
-void RegAllocator::Run(IRNode *ins, int64_t typeIndex)
-{
-    Run(ins);
-    pg_->TypedInsns()[ins] = typeIndex;
-}
-
 void RegAllocator::Run(IRNode *ins)
 {
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};

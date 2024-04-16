@@ -52,7 +52,7 @@ Compiler::~Compiler()
 
 panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname, util::PatchFix *patchFixHelper)
 {
-    panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, false, true, false,
+    panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, true, false,
                                                        src, "", util::StringView(rname), patchFixHelper);
     context.GetEmitter()->GenRecordNameInfo();
     return context.GetEmitter()->Finalize(false, nullptr);

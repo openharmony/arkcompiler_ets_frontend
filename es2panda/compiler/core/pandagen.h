@@ -85,8 +85,6 @@ public:
           scope_(topScope_),
           rootNode_(scope->Node()),
           insns_(allocator_->Adapter()),
-          typedInsns_(allocator_->Adapter()),
-          typedVars_(allocator_->Adapter()),
           catchList_(allocator_->Adapter()),
           strings_(allocator_->Adapter()),
           buffStorage_(allocator_->Adapter()),
@@ -145,36 +143,6 @@ public:
     void SetInsns(ArenaList<IRNode *> &newInsns)
     {
         insns_.assign(newInsns.begin(), newInsns.end());
-    }
-
-    ArenaMap<const IRNode *, int64_t> &TypedInsns()
-    {
-        return typedInsns_;
-    }
-
-    const ArenaMap<const IRNode *, int64_t> &TypedInsns() const
-    {
-        return typedInsns_;
-    }
-
-    ArenaUnorderedSet<const binder::LocalVariable *> &TypedVars()
-    {
-        return typedVars_;
-    }
-
-    const ArenaUnorderedSet<const binder::LocalVariable *> &TypedVars() const
-    {
-        return typedVars_;
-    }
-
-    std::pair<int64_t, int64_t> &TypedFunc()
-    {
-        return typedFunc_;
-    }
-
-    const std::pair<int64_t, int64_t> &TypedFunc() const
-    {
-        return typedFunc_;
     }
 
     VReg AllocReg()
@@ -297,7 +265,6 @@ public:
     void StConstToGlobalRecord(const ir::AstNode *node, const util::StringView &name);
 
     void StoreAccumulator(const ir::AstNode *node, VReg vreg);
-    void StoreAccumulatorWithType(const ir::AstNode *node, int64_t typeIndex, VReg vreg);
     void LoadAccFromArgs(const ir::AstNode *node);
     void LoadObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
 
@@ -554,9 +521,6 @@ private:
     binder::Scope *scope_;
     const ir::AstNode *rootNode_;
     ArenaList<IRNode *> insns_;
-    ArenaMap<const IRNode *, int64_t> typedInsns_;
-    ArenaUnorderedSet<const binder::LocalVariable *> typedVars_;
-    std::pair<int64_t, int64_t> typedFunc_ {};
     ArenaVector<CatchTable *> catchList_;
     ArenaSet<util::StringView> strings_;
     ArenaVector<LiteralBuffer *> buffStorage_;

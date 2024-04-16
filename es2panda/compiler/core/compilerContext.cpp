@@ -16,31 +16,18 @@
 #include "compilerContext.h"
 
 #include <compiler/core/emitter/emitter.h>
-#include <typescript/extractor/typeRecorder.h>
 
 namespace panda::es2panda::compiler {
 
 CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                                 bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, 
+                                 bool isMergeAbc, bool isJsonInputFile,
                                  bool isRecordSource, const std::string &sourceFile, const std::string &pkgName,
                                  util::StringView recordName, util::PatchFix *patchFixHelper)
     : binder_(binder), isDebug_(isDebug), isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode),
-      isMergeAbc_(isMergeAbc), isTypeExtractorEnabled_(isTypeExtractorEnabled), isJsonInputFile_(isJsonInputFile),
+      isMergeAbc_(isMergeAbc), isJsonInputFile_(isJsonInputFile),
       isRecordSource_(isRecordSource), sourceFile_(sourceFile), pkgName_(pkgName), recordName_(recordName), 
       patchFixHelper_(patchFixHelper), emitter_(std::make_unique<class Emitter>(this))
 {
-}
-
-void CompilerContext::SetTypeRecorder(extractor::TypeRecorder *recorder)
-{
-    ASSERT(emitter_ != nullptr);
-    emitter_->FillTypeLiteralBuffers(recorder);
-    recorder_ = recorder;
-}
-
-void CompilerContext::SetTypeExtractor(extractor::TypeExtractor *extractor)
-{
-    extractor_ = extractor;
 }
 
 }  // namespace panda::es2panda::compiler
