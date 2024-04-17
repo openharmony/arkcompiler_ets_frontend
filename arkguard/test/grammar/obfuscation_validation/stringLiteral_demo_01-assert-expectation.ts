@@ -21,18 +21,18 @@ const filePath = path.join(__filename, '../stringLiteral_demo_01_use.ts');
 const actual = fs.readFileSync(filePath, 'utf-8').toString();
 
 const expectation = `const stringLiteralObj02 = {
-    "'": 1,
-    '"': 2,
-    '\\\\': 3,
-    '\\b': 4,
-    '\\f': 5,
-    '\\n': 6,
-    '\\r': 7,
-    '\\t': 8,
-    '\\v': 9,
-    '\\0': 10,
-    '\\u2028': 11,
-    '\\u2029': 12,
+    "'": 11,
+    '"': 22,
+    '\\\\': 33,
+    '\\b': 44,
+    '\\f': 55,
+    '\\n': 66,
+    '\\r': 77,
+    '\\t': 88,
+    '\\v': 99,
+    '\\0': 100,
+    '\\u2028': 111,
+    '\\u2029': 122,
 };`
 
 assert.strictEqual(actual.trim(), expectation.trim());

@@ -17,4 +17,4 @@ const assert = require('assert');
 
 const Dog = require('./export_demo_8');
 
-assert.strictEqual(Dog.default.getAge(), 2);
+assert.strictEqual(Dog.default.getAge(), 8);
