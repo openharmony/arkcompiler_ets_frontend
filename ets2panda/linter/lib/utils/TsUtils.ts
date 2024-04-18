@@ -2114,4 +2114,62 @@ export class TsUtils {
     const sym = type.symbol;
     return !!sym && sym.getName() === 'Map' && this.isGlobalSymbol(sym);
   }
+
+  hasGenericTypeParameter(type: ts.Type): boolean {
+    if (type.isUnionOrIntersection()) {
+      return type.types.some((x) => {
+        return this.hasGenericTypeParameter(x);
+      });
+    }
+    if (TsUtils.isTypeReference(type)) {
+      const typeArgs = this.tsTypeChecker.getTypeArguments(type);
+      return typeArgs.some((x) => {
+        return this.hasGenericTypeParameter(x);
+      });
+    }
+    return type.isTypeParameter();
+  }
+
+  static getEnclosingTopLevelStatement(node: ts.Node): ts.Node | undefined {
+    return ts.findAncestor(node, (ancestor) => {
+      return ts.isSourceFile(ancestor.parent);
+    });
+  }
+
+  static isDeclarationStatement(node: ts.Node): node is ts.DeclarationStatement {
+    const kind = node.kind;
+    return kind === ts.SyntaxKind.FunctionDeclaration ||
+      kind === ts.SyntaxKind.ModuleDeclaration ||
+      kind === ts.SyntaxKind.ClassDeclaration ||
+      kind === ts.SyntaxKind.StructDeclaration ||
+      kind === ts.SyntaxKind.TypeAliasDeclaration ||
+      kind === ts.SyntaxKind.InterfaceDeclaration ||
+      kind === ts.SyntaxKind.EnumDeclaration ||
+      kind === ts.SyntaxKind.MissingDeclaration ||
+      kind === ts.SyntaxKind.ImportEqualsDeclaration ||
+      kind === ts.SyntaxKind.ImportDeclaration ||
+      kind === ts.SyntaxKind.NamespaceExportDeclaration;
+  }
+
+  static declarationNameExists(srcFile: ts.SourceFile, name: string): boolean {
+    return srcFile.statements.some((stmt) => {
+      if (ts.isImportDeclaration(stmt)) {
+        if (!stmt.importClause) {
+          return false;
+        }
+        if (stmt.importClause.namedBindings) {
+          if (ts.isNamespaceImport(stmt.importClause.namedBindings)) {
+            return stmt.importClause.namedBindings.name.text === name;
+          }
+          return stmt.importClause.namedBindings.elements.some((x) => {
+            return x.name.text === name;
+          });
+        }
+        return stmt.importClause.name?.text === name;
+      }
+
+      return TsUtils.isDeclarationStatement(stmt) && stmt.name !== undefined &&
+        ts.isIdentifier(stmt.name) && stmt.name.text === name;
+    });
+  }
 }

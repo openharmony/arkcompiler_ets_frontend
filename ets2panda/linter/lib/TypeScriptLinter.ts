@@ -458,7 +458,8 @@ export class TypeScriptLinter {
       !this.tsUtils.isDynamicLiteralInitializer(objectLiteralExpr) &&
       !this.tsUtils.isObjectLiteralAssignable(objectLiteralType, objectLiteralExpr)
     ) {
-      this.incrementCounters(node, FaultID.ObjectLiteralNoContextType);
+      const autofix = this.autofixer?.fixUntypedObjectLiteral(objectLiteralExpr, objectLiteralType);
+      this.incrementCounters(node, FaultID.ObjectLiteralNoContextType, autofix);
     }
   }
 

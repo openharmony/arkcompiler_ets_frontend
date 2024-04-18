@@ -39,6 +39,18 @@
             "line": 26,
             "column": 18,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 610,
+                    "end": 610,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_1 {\n    name: string;\n    idx: number;\n    handler: string;\n}\n"
+                },
+                {
+                    "start": 829,
+                    "end": 829,
+                    "replacementText": ": GeneratedObjectLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -302,6 +314,18 @@
             "line": 124,
             "column": 13,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 2719,
+                    "end": 2719,
+                    "replacementText": "interface GeneratedObjectLiteralInterface_2 {\n    a: number;\n    b: string;\n}\n"
+                },
+                {
+                    "start": 2765,
+                    "end": 2765,
+                    "replacementText": ": GeneratedObjectLiteralInterface_2"
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },

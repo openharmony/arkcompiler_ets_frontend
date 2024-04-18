@@ -24,7 +24,6 @@ import * as path from 'node:path';
 const TS_EXT = '.ts';
 const TSX_EXT = '.tsx';
 const ETS_EXT = '.ets';
-const JSON_EXT = '.json';
 
 let inputFiles: string[];
 let responseFile = '';
@@ -96,9 +95,7 @@ export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions 
     option('--deveco-plugin-mode', 'run as IDE plugin').
     option('-p, --project <project_file>', 'path to TS project config file').
     option('--project-folder <project_folder>', 'path to folder containig TS files to verify', addProjectFolder, []).
-    option('--autofix [autofix.json]', 'fix errors specified by JSON file (all if file is omitted)', (val: string) => {
-      return val.endsWith(JSON_EXT) ? val : true;
-    }).
+    option('--autofix', 'automatically fix problems found by linter').
     addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true));
   program.argument('[srcFile...]', 'files to be verified', addSrcFile);
 
