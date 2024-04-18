@@ -17,6 +17,7 @@
 export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [1, 'Replace property name with identifier'],
   [3, 'Replace with \'private\' modifier'],
+  [16, 'Combine static block statements into one static block'],
   [25, 'Replace with field declaration'],
   [29, 'Replace with dot notation'],
   [46, 'Convert to arrow function'],
