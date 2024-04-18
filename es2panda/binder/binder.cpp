@@ -352,8 +352,9 @@ void Binder::StoreAndCheckSpecialFunctionName(std::string &internalNameStr, std:
                 internalNameStr, recordName);
             return;
         }
-        // else: must be coldfix or hotreload mode
-        ASSERT(program_->PatchFixHelper()->IsColdFix() || program_->PatchFixHelper()->IsHotReload());
+        // else: must be coldfix or hotreload mode or coldreload mode
+        ASSERT(program_->PatchFixHelper()->IsColdFix() || program_->PatchFixHelper()->IsHotReload() ||
+               program_->PatchFixHelper()->IsColdReload());
     }
 }
 

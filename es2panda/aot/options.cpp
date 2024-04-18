@@ -257,6 +257,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opGeneratePatch("generate-patch", false, "generate patch abc, default as hotfix mode unless "\
         "the cold-fix argument is set");
     panda::PandArg<bool> opHotReload("hot-reload", false, "compile as hot-reload mode");
+    panda::PandArg<bool> opColdReload("cold-reload", false, "compile as cold-reload mode");
     panda::PandArg<bool> opColdFix("cold-fix", false, "generate patch abc as cold-fix mode");
 
     // version
@@ -309,6 +310,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opInputSymbolTable);
     argparser_->Add(&opGeneratePatch);
     argparser_->Add(&opHotReload);
+    argparser_->Add(&opColdReload);
     argparser_->Add(&opColdFix);
 
     argparser_->Add(&bcVersion);
@@ -503,6 +505,7 @@ bool Options::Parse(int argc, const char **argv)
 
     bool generatePatch = opGeneratePatch.GetValue();
     bool hotReload = opHotReload.GetValue();
+    bool coldReload = opColdReload.GetValue();
     bool coldFix = opColdFix.GetValue();
     if (generatePatch && hotReload) {
         errorMsg_ = "--generate-patch and --hot-reload can not be used simultaneously";
@@ -514,6 +517,7 @@ bool Options::Parse(int argc, const char **argv)
     }
     compilerOptions_.patchFixOptions.generatePatch = generatePatch;
     compilerOptions_.patchFixOptions.hotReload = hotReload;
+    compilerOptions_.patchFixOptions.coldReload = coldReload;
     compilerOptions_.patchFixOptions.coldFix = coldFix;
 
     return true;

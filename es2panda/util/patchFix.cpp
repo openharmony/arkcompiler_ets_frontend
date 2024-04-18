@@ -432,7 +432,7 @@ void PatchFix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchF
 
 void PatchFix::Finalize(panda::pandasm::Program **prog)
 {
-    if (IsDumpSymbolTable()) {
+    if (IsDumpSymbolTable() || IsColdReload()) {
         return;
     }
 
@@ -643,6 +643,11 @@ bool PatchFix::IsColdFix() const
 bool PatchFix::IsHotReload() const
 {
     return patchFixKind_ == PatchFixKind::HOTRELOAD;
+}
+
+bool PatchFix::IsColdReload() const
+{
+    return patchFixKind_ == PatchFixKind::COLDRELOAD;
 }
 
 } // namespace panda::es2panda::util

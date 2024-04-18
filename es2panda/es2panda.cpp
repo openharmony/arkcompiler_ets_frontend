@@ -142,14 +142,18 @@ util::PatchFix *Compiler::InitPatchFixHelper(const SourceFile &input, const Comp
     bool needDumpSymbolFile = !options.patchFixOptions.dumpSymbolTable.empty();
     bool needGeneratePatch = options.patchFixOptions.generatePatch && !options.patchFixOptions.symbolTable.empty();
     bool isHotReload = options.patchFixOptions.hotReload;
+    bool isColdReload = options.patchFixOptions.coldReload;
     bool isColdFix = options.patchFixOptions.coldFix;
-    if (symbolTable && (needDumpSymbolFile || needGeneratePatch || isHotReload)) {
+    if (symbolTable && (needDumpSymbolFile || needGeneratePatch || isHotReload || isColdReload)) {
         util::PatchFixKind patchFixKind = util::PatchFixKind::DUMPSYMBOLTABLE;
         if (needGeneratePatch) {
             patchFixKind = isColdFix ? util::PatchFixKind::COLDFIX : util::PatchFixKind::HOTFIX;
         }
         if (isHotReload) {
             patchFixKind = util::PatchFixKind::HOTRELOAD;
+        }
+        if (isColdReload) {
+            patchFixKind = util::PatchFixKind::COLDRELOAD;
         }
         patchFixHelper = new util::PatchFix(needDumpSymbolFile, needGeneratePatch, patchFixKind, input.recordName,
             symbolTable);
