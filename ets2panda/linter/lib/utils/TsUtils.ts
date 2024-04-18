@@ -986,18 +986,13 @@ export class TsUtils {
     return !parentName || parentName === 'global';
   }
 
-  isStdSymbol(symbol: ts.Symbol): boolean {
-    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
-    return name === 'Symbol' || name === 'SymbolConstructor';
-  }
-
-  isStdSymbolAPI(symbol: ts.Symbol): boolean {
+  isSymbolAPI(symbol: ts.Symbol): boolean {
     const parentName = this.getParentSymbolName(symbol);
     return !!parentName && (parentName === 'Symbol' || parentName === 'SymbolConstructor');
   }
 
   isSymbolIterator(symbol: ts.Symbol): boolean {
-    return this.isStdSymbolAPI(symbol) && symbol.name === 'iterator';
+    return this.isSymbolAPI(symbol) && symbol.name === 'iterator';
   }
 
   static isDefaultImport(importSpec: ts.ImportSpecifier): boolean {
@@ -2095,5 +2090,28 @@ export class TsUtils {
     }
 
     return true;
+  }
+
+  static isIntrinsicObjectType(type: ts.Type): boolean {
+    return !!(type.flags & ts.TypeFlags.NonPrimitive);
+  }
+
+  isStringType(tsType: ts.Type): boolean {
+    if ((tsType.getFlags() & ts.TypeFlags.String) !== 0) {
+      return true;
+    }
+
+    if (!TsUtils.isTypeReference(tsType)) {
+      return false;
+    }
+
+    const symbol = tsType.symbol;
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
+    return name === 'String' && this.isGlobalSymbol(symbol);
+  }
+
+  isStdMapType(type: ts.Type): boolean {
+    const sym = type.symbol;
+    return !!sym && sym.getName() === 'Map' && this.isGlobalSymbol(sym);
   }
 }

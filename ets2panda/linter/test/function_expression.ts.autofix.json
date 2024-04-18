@@ -343,6 +343,14 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
+            "line": 104,
+            "column": 7,
+            "problem": "FunctionBind",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
+        },
+        {
             "line": 102,
             "column": 15,
             "problem": "FunctionExpression",
@@ -356,14 +364,6 @@
             ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
-        },
-        {
-            "line": 104,
-            "column": 7,
-            "problem": "FunctionBind",
-            "autofixable": false,
-            "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
         },
         {
             "line": 108,
