@@ -385,7 +385,8 @@ public:
     void CreateLambdaObjectForFunctionReference(ir::AstNode *refNode, Signature *signature,
                                                 ETSObjectType *functionalInterface);
     ir::AstNode *CreateLambdaImplicitField(varbinder::ClassScope *scope, const lexer::SourcePosition &pos);
-    ir::MethodDefinition *CreateLambdaImplicitCtor(const lexer::SourceRange &pos, bool isStaticReference);
+    ir::MethodDefinition *CreateLambdaImplicitCtor(const lexer::SourceRange &pos, bool isStaticReference,
+                                                   ETSObjectType *functionalInterface);
     ir::MethodDefinition *CreateLambdaImplicitCtor(ArenaVector<ir::AstNode *> &properties);
     ir::MethodDefinition *CreateProxyMethodForLambda(ir::ClassDefinition *klass, ir::ArrowFunctionExpression *lambda,
                                                      ArenaVector<ir::AstNode *> &captured, bool isStatic);

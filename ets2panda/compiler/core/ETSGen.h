@@ -339,7 +339,7 @@ public:
     {
         Sa().Emit<Ldai>(node, value ? 1 : 0);
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
-        ApplyConversion(node, nullptr);
+        ApplyConversion(node, Checker()->GlobalETSBooleanType());
     }
 
     void LoadAccumulatorString(const ir::AstNode *node, util::StringView str)
@@ -374,7 +374,7 @@ public:
     {
         Sa().Emit<Ldai>(node, value);
         SetAccumulatorType(Checker()->GlobalCharType());
-        ApplyConversion(node);
+        ApplyConversion(node, Checker()->GlobalCharType());
     }
 
     void LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import);

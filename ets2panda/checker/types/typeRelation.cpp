@@ -51,9 +51,12 @@ RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target,
 
 bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
 {
+    if (source == nullptr || target == nullptr) {
+        return Result(false);
+    }
+
     if (source == target) {
-        Result(true);
-        return true;
+        return Result(true);
     }
 
     result_ = CacheLookup(source, target, checker_->IdenticalResults(), RelationType::IDENTICAL);
@@ -65,7 +68,7 @@ bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
         checker_->IdenticalResults().cached.insert({{source->Id(), target->Id()}, {result_, RelationType::IDENTICAL}});
     }
 
-    return result_ == RelationResult::TRUE;
+    return IsTrue();
 }
 
 bool TypeRelation::IsCompatibleTo(Signature *source, Signature *target)

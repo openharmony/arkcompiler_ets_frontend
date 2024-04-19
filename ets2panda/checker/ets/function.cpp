@@ -2438,6 +2438,7 @@ ir::Statement *ETSChecker::CreateLambdaCtorFieldInit(util::StringView name, varb
     auto *initializer =
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         AllocNode<ir::AssignmentExpression>(leftHandSide, rightHandSide, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    initializer->SetTsType(var->TsType());
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     return AllocNode<ir::ExpressionStatement>(initializer);
 }
@@ -2470,7 +2471,7 @@ void ETSChecker::CreateLambdaObjectForFunctionReference(ir::AstNode *refNode, Si
     // Create the synthetic constructor node, where we will initialize the synthetic field (if present) to the
     // instance object
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *ctor = CreateLambdaImplicitCtor(refNode->Range(), isStaticReference);
+    auto *ctor = CreateLambdaImplicitCtor(refNode->Range(), isStaticReference, functionalInterface);
     properties.push_back(ctor);
 
     // Create the template for the synthetic invoke function which will propagate the function call to the saved
@@ -2534,7 +2535,8 @@ ir::AstNode *ETSChecker::CreateLambdaImplicitField(varbinder::ClassScope *scope,
     return field;
 }
 
-ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(const lexer::SourceRange &pos, bool isStaticReference)
+ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(const lexer::SourceRange &pos, bool isStaticReference,
+                                                           ETSObjectType *functionalInterface)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
@@ -2542,6 +2544,9 @@ ir::MethodDefinition *ETSChecker::CreateLambdaImplicitCtor(const lexer::SourceRa
     // Create the parameters for the synthetic constructor
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto [funcParamScope, var] = CreateLambdaCtorImplicitParam(params, pos, isStaticReference);
+    if (var != nullptr && var->TsType() == nullptr) {
+        var->SetTsType(functionalInterface);
+    }
 
     // Create the scopes
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);

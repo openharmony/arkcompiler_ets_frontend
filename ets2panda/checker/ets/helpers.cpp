@@ -2106,6 +2106,7 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
 
     auto *assignmentExpression = AllocNode<ir::AssignmentExpression>(
         memberExpression, paramExpression->Clone(Allocator(), nullptr), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    assignmentExpression->SetTsType(paramVar->TsType());
 
     assignmentExpression->SetRange({field->Start(), field->End()});
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)

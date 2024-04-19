@@ -269,20 +269,22 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSScript *node) const
 checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker->ThrowTypeError("Class literal is not yet supported.", expr->expr_->Start());
+    auto *const literal = expr->Expr();
 
-    expr->expr_->Check(checker);
-    auto *exprType = expr->expr_->GetType(checker);
+    checker->ThrowTypeError("Class literal is not yet supported.", literal->Start());
+
+    auto *exprType = literal->Check(checker);
 
     if (exprType->IsETSVoidType()) {
-        checker->ThrowTypeError("Invalid .class reference", expr->expr_->Start());
+        checker->ThrowTypeError("Invalid .class reference", literal->Start());
     }
 
     ArenaVector<checker::Type *> typeArgTypes(checker->Allocator()->Adapter());
     typeArgTypes.push_back(exprType);  // NOTE: Box it if it's a primitive type
 
-    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), typeArgTypes, expr->range_.start);
+    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), typeArgTypes, expr->Range().start);
     expr->SetTsType(ctx.Result());
+
     return expr->TsType();
 }
 
