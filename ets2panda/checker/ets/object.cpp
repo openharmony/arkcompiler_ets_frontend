@@ -699,11 +699,13 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
     SavedTypeRelationFlagsContext savedFlagsCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
     for (auto it = abstractsToBeImplemented.begin(); it != abstractsToBeImplemented.end();) {
         bool functionOverridden = false;
-        bool isGetterSetter = false;
+        bool isGetter = false;
+        bool isSetter = false;
         for (auto abstractSignature = (*it)->CallSignatures().begin();
              abstractSignature != (*it)->CallSignatures().end();) {
             bool foundSignature = false;
-            isGetterSetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::GETTER_OR_SETTER);
+            isGetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::GETTER);
+            isSetter = (*abstractSignature)->HasSignatureFlag(SignatureFlags::SETTER);
             for (auto *const implemented : implementedSignatures) {
                 Signature *substImplemented = AdjustForTypeParameters(*abstractSignature, implemented);
 
@@ -740,18 +742,16 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
             continue;
         }
 
-        if (!isGetterSetter) {
+        if (!isGetter && !isSetter) {
             it++;
             continue;
         }
 
         for (auto *field : classType->Fields()) {
             if (field->Name() == (*it)->Name()) {
-                if (!field->HasFlag(varbinder::VariableFlags::PUBLIC)) {
-                    ThrowTypeError("Interface property implementation cannot be generated as non-public",
-                                   field->Declaration()->Node()->Start());
-                }
-                field->Declaration()->Node()->AddModifier(ir::ModifierFlags::SETTER);
+                field->Declaration()->Node()->AddModifier(isGetter && isSetter ? ir::ModifierFlags::GETTER_SETTER
+                                                          : isGetter           ? ir::ModifierFlags::GETTER
+                                                                               : ir::ModifierFlags::SETTER);
                 it = abstractsToBeImplemented.erase(it);
                 functionOverridden = true;
                 break;
@@ -854,17 +854,25 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         return;
     }
 
-    if (!classDef->IsDeclare()) {
-        for (auto *it : classType->ConstructSignatures()) {
-            CheckCyclicConstructorCall(it);
-            CheckImplicitSuper(classType, it);
-        }
-    }
-
+    CheckConstructors(classDef, classType);
+    ValidateOverriding(classType, classDef->Start());
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    TransformProperties(classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);
     CheckGetterSetterProperties(classType);
     CheckInvokeMethodsLegitimacy(classType);
+}
+
+void ETSChecker::CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType *classType)
+{
+    if (!classDef->IsDeclare()) {
+        for (auto *it : classType->ConstructSignatures()) {
+            CheckCyclicConstructorCall(it);
+            CheckImplicitSuper(classType, it);
+            CheckThisOrSuperCallInConstructor(classType, it);
+        }
+    }
 }
 
 static bool IsAsyncMethod(ir::AstNode *node)
@@ -937,6 +945,104 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
 
         ctorSig->Function()->AddFlag(ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED);
     }
+}
+
+void ETSChecker::CheckThisOrSuperCallInConstructor(ETSObjectType *classType, Signature *ctorSig)
+{
+    if (classType == GlobalETSObjectType()) {
+        return;
+    }
+
+    for (auto it : ctorSig->Function()->Body()->AsBlockStatement()->Statements()) {
+        if (it->IsExpressionStatement() && it->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
+            (it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsThisExpression() ||
+             it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression())) {
+            ArenaVector<const ir::Expression *> expressions =
+                ArenaVector<const ir::Expression *>(Allocator()->Adapter());
+            expressions.insert(expressions.end(),
+                               it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Arguments().begin(),
+                               it->AsExpressionStatement()->GetExpression()->AsCallExpression()->Arguments().end());
+            CheckExpressionsInConstructor(expressions);
+        }
+    }
+}
+
+void ETSChecker::CheckExpressionsInConstructor(const ArenaVector<const ir::Expression *> &arguments)
+{
+    for (auto *arg : arguments) {
+        auto expressions = CheckMemberOrCallOrObjectExpressionInConstructor(arg);
+
+        if (arg->IsETSNewClassInstanceExpression()) {
+            expressions.insert(expressions.end(), arg->AsETSNewClassInstanceExpression()->GetArguments().begin(),
+                               arg->AsETSNewClassInstanceExpression()->GetArguments().end());
+        } else if (arg->IsArrayExpression()) {
+            expressions.insert(expressions.end(), arg->AsArrayExpression()->Elements().begin(),
+                               arg->AsArrayExpression()->Elements().end());
+        } else if (arg->IsBinaryExpression()) {
+            expressions.push_back(arg->AsBinaryExpression()->Left());
+            expressions.push_back(arg->AsBinaryExpression()->Right());
+        } else if (arg->IsAssignmentExpression()) {
+            expressions.push_back(arg->AsAssignmentExpression()->Left());
+            expressions.push_back(arg->AsAssignmentExpression()->Right());
+        } else if (arg->IsTSAsExpression()) {
+            expressions.push_back(arg->AsTSAsExpression()->Expr());
+        } else if (arg->IsConditionalExpression()) {
+            expressions.push_back(arg->AsConditionalExpression()->Test());
+            expressions.push_back(arg->AsConditionalExpression()->Consequent());
+            expressions.push_back(arg->AsConditionalExpression()->Alternate());
+        } else if (arg->IsTypeofExpression()) {
+            expressions.push_back(arg->AsTypeofExpression()->Argument());
+        } else if (arg->IsTSNonNullExpression()) {
+            expressions.push_back(arg->AsTSNonNullExpression()->Expr());
+        } else if (arg->IsUnaryExpression()) {
+            expressions.push_back(arg->AsUnaryExpression()->Argument());
+        } else if (arg->IsUpdateExpression()) {
+            expressions.push_back(arg->AsUpdateExpression()->Argument());
+        }
+
+        if (!expressions.empty()) {
+            CheckExpressionsInConstructor(expressions);
+        }
+    }
+}
+
+ArenaVector<const ir::Expression *> ETSChecker::CheckMemberOrCallOrObjectExpressionInConstructor(
+    const ir::Expression *arg)
+{
+    ArenaVector<const ir::Expression *> expressions = ArenaVector<const ir::Expression *>(Allocator()->Adapter());
+
+    if (arg->IsMemberExpression()) {
+        if ((arg->AsMemberExpression()->Object()->IsSuperExpression() ||
+             arg->AsMemberExpression()->Object()->IsThisExpression())) {
+            std::stringstream ss;
+            ss << "Using " << (arg->AsMemberExpression()->Object()->IsSuperExpression() ? "super" : "this")
+               << " is not allowed in constructor";
+            ThrowTypeError(ss.str(), arg->Start());
+        }
+
+        expressions.push_back(arg->AsMemberExpression()->Property());
+        expressions.push_back(arg->AsMemberExpression()->Object());
+    } else if (arg->IsCallExpression()) {
+        expressions.insert(expressions.end(), arg->AsCallExpression()->Arguments().begin(),
+                           arg->AsCallExpression()->Arguments().end());
+
+        if (arg->AsCallExpression()->Callee()->IsMemberExpression() &&
+            (arg->AsCallExpression()->Callee()->AsMemberExpression()->Object()->IsSuperExpression() ||
+             arg->AsCallExpression()->Callee()->AsMemberExpression()->Object()->IsThisExpression()) &&
+            !arg->AsCallExpression()->Callee()->AsMemberExpression()->Property()->IsStatic()) {
+            std::stringstream ss;
+            ss << "Using "
+               << (arg->AsCallExpression()->Callee()->AsMemberExpression()->IsSuperExpression() ? "super" : "this")
+               << " is not allowed in constructor";
+            ThrowTypeError(ss.str(), arg->Start());
+        }
+    } else if (arg->IsObjectExpression()) {
+        for (auto *prop : arg->AsObjectExpression()->Properties()) {
+            expressions.push_back(prop->AsProperty()->Value());
+        }
+    }
+
+    return expressions;
 }
 
 void ETSChecker::CheckConstFields(const ETSObjectType *classType)
@@ -1529,7 +1635,7 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
 void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
                                  varbinder::LocalVariable *found, ETSObjectType *interfaceFound)
 {
-    if (!IsSameDeclarationType(it, found) && !it->HasFlag(varbinder::VariableFlags::GETTER_SETTER)) {
+    if (!IsSameDeclarationType(it, found)) {
         if (IsVariableStatic(it) != IsVariableStatic(found)) {
             return;
         }
@@ -1568,15 +1674,20 @@ void ETSChecker::TransformProperties(ETSObjectType *classType)
         ASSERT(field->Declaration()->Node()->IsClassProperty());
         auto *const originalProp = field->Declaration()->Node()->AsClassProperty();
 
-        if ((originalProp->Modifiers() & ir::ModifierFlags::SETTER) == 0U) {
+        if ((originalProp->Modifiers() & ir::ModifierFlags::GETTER_SETTER) == 0U) {
             continue;
+        }
+
+        if (!field->HasFlag(varbinder::VariableFlags::PUBLIC)) {
+            ThrowTypeError("Interface property implementation cannot be generated as non-public",
+                           field->Declaration()->Node()->Start());
         }
         classType->RemoveProperty<checker::PropertyType::INSTANCE_FIELD>(field);
         GenerateGetterSetterPropertyAndMethod(originalProp, classType);
     }
 
     for (auto it = classDef->Body().begin(); it != classDef->Body().end(); ++it) {
-        if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::SETTER) != 0U) {
+        if ((*it)->IsClassProperty() && ((*it)->Modifiers() & ir::ModifierFlags::GETTER_SETTER) != 0U) {
             classDef->Body().erase(it);
         }
     }
@@ -1598,9 +1709,8 @@ void ETSChecker::CheckGetterSetterProperties(ETSObjectType *classType)
                 ThrowTypeError("Duplicate accessor definition", sig->Function()->Start());
             }
         }
-
-        if (((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
-             ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
+        if (sigSetter != nullptr && ((sigGetter->Function()->Modifiers() ^ sigSetter->Function()->Modifiers()) &
+                                     ir::ModifierFlags::ACCESSOR_MODIFIERS) != 0) {
             ThrowTypeError("Getter and setter methods must have the same accessor modifiers",
                            sigGetter->Function()->Start());
         }

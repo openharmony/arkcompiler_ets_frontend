@@ -276,10 +276,7 @@ void ETSBinder::BuildMethodDefinition(ir::MethodDefinition *methodDef)
     if (methodDef->Function()->TypeParams() != nullptr) {
         auto scopeCtx = LexicalScope<LocalScope>::Enter(this, methodDef->Function()->TypeParams()->Scope());
         ResolveReferences(methodDef->Function()->TypeParams());
-        ResolveMethodDefinition(methodDef);
-        return;
     }
-
     ResolveMethodDefinition(methodDef);
 }
 

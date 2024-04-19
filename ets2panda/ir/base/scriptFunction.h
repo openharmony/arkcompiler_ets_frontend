@@ -27,9 +27,6 @@ namespace ark::es2panda::checker {
 class Signature;
 
 }  // namespace ark::es2panda::checker
-namespace ark::es2panda::compiler {
-class ScopesInitPhase;
-}  // namespace ark::es2panda::compiler
 
 namespace ark::es2panda::ir {
 class TSTypeParameterDeclaration;

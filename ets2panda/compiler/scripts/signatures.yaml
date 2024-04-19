@@ -1141,6 +1141,12 @@ signatures:
     return_type: PRIMITIVE_BOOLEAN
     ref: BUILTIN_JSRUNTIME_INSTANCE_OF
 
+  - callee: BUILTIN_JSVALUE
+    method_name: toString
+    params: []
+    return_type: PRIMITIVE_STRING
+    ref: BUILTIN_JSVALUE_TO_STRING
+
   - callee: BUILTIN_BOX
     method_name: $CTOR
     params: []

@@ -1124,6 +1124,12 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
 
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
         ApplyBoxingConversion(node);
+
+        if (node->HasAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING)) {
+            CastToString(node);
+            node->RemoveAstNodeFlags(ir::AstNodeFlags::CONVERT_TO_STRING);
+        }
+
         return;
     }
 
@@ -1865,6 +1871,11 @@ void ETSGen::CastToReftype(const ir::AstNode *const node, const checker::Type *c
         CastToDynamic(node, targetType->AsETSDynamicType());
         return;
     }
+
+    if (targetType->IsETSStringType() && !sourceType->IsETSStringType()) {
+        CastToString(node);
+    }
+
     if (!unchecked) {
         CheckedReferenceNarrowing(node, targetType);
         return;
@@ -2706,6 +2717,11 @@ void ETSGen::LoadArrayLength(const ir::AstNode *node, VReg arrayReg)
 void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg objectReg)
 {
     auto *elementType = GetVRegType(objectReg)->AsETSArrayType()->ElementType();
+    if (elementType->IsETSReferenceType()) {
+        Ra().Emit<LdarrObj>(node, objectReg);
+        SetAccumulatorType(elementType);
+        return;
+    }
     switch (checker::ETSChecker::ETSType(elementType)) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {
@@ -2739,14 +2755,6 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg objectReg)
             Ra().Emit<FldarrWide>(node, objectReg);
             break;
         }
-        case checker::TypeFlag::ETS_ARRAY:
-        case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_TYPE_PARAMETER:
-        case checker::TypeFlag::ETS_UNION:
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            Ra().Emit<LdarrObj>(node, objectReg);
-            break;
-        }
 
         default: {
             UNREACHABLE();
@@ -2758,6 +2766,11 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg objectReg)
 
 void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg index, const checker::Type *elementType)
 {
+    if (elementType->IsETSReferenceType()) {
+        Ra().Emit<StarrObj>(node, objectReg, index);
+        SetAccumulatorType(elementType);
+        return;
+    }
     switch (checker::ETSChecker::ETSType(elementType)) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {
@@ -2786,14 +2799,6 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
         }
         case checker::TypeFlag::DOUBLE: {
             Ra().Emit<FstarrWide>(node, objectReg, index);
-            break;
-        }
-        case checker::TypeFlag::ETS_ARRAY:
-        case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_TYPE_PARAMETER:
-        case checker::TypeFlag::ETS_UNION:
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            Ra().Emit<StarrObj>(node, objectReg, index);
             break;
         }
 

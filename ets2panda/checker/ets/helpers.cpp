@@ -665,7 +665,6 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     if (annotationType != nullptr) {
         const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(annotationType);
         const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
-
         AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
                           {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
         if (isConst && initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) &&
@@ -2015,7 +2014,6 @@ ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *
     classProp->Key()->AsIdentifier()->SetVariable(fieldVar);
     fieldVar->SetTsType(classProp->TsType());
 
-    fieldVar->AddFlag(varbinder::VariableFlags::GETTER_SETTER);
     return classProp;
 }
 
@@ -2041,8 +2039,12 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     }
 
     auto *paramIdent = field->Key()->AsIdentifier()->Clone(Allocator(), nullptr);
-    auto *const typeAnnotation = field->TypeAnnotation()->Clone(Allocator(), paramIdent);
-    paramIdent->SetTsTypeAnnotation(typeAnnotation);
+    if (field->TypeAnnotation() != nullptr) {
+        auto *const typeAnnotation = field->TypeAnnotation()->Clone(Allocator(), paramIdent);
+        paramIdent->SetTsTypeAnnotation(typeAnnotation);
+    } else {
+        paramIdent->SetTsType(field->TsType());
+    }
 
     auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
     paramExpression->SetRange(paramIdent->Range());
@@ -2080,12 +2082,18 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
     auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
-    auto *const returnTypeAnn = isSetter ? nullptr : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
+    auto *const returnTypeAnn = isSetter || field->TypeAnnotation() == nullptr
+                                    ? nullptr
+                                    : field->TypeAnnotation()->Clone(checker->Allocator(), nullptr);
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *func = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
         ir::ScriptFunction::ScriptFunctionData {body, ir::FunctionSignature(nullptr, std::move(params), returnTypeAnn),
                                                 funcFlags, flags, true});
 
+    if (!isSetter) {
+        func->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
+    }
     func->SetRange(field->Range());
     func->SetScope(functionScope);
     body->SetScope(functionScope);
@@ -2125,8 +2133,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 {
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
     auto *interfaceProp = originalProp->Clone(Allocator(), originalProp->Parent());
-    interfaceProp->SetModifiers(
-        static_cast<ir::ModifierFlags>(interfaceProp->Modifiers() & ~(ir::ModifierFlags::SETTER)));
+    interfaceProp->ClearModifier(ir::ModifierFlags::GETTER_SETTER);
 
     ASSERT(Scope()->IsClassScope());
     auto *const scope = Scope()->AsClassScope();
@@ -2140,6 +2147,9 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ir::MethodDefinition *getter = GenerateDefaultGetterSetter(interfaceProp, classProp, scope, false, this);
+    if (((originalProp->Modifiers() & ir::ModifierFlags::GETTER) != 0U)) {
+        getter->Function()->AddModifier(ir::ModifierFlags::OVERRIDE);
+    }
     classDef->Body().push_back(getter);
     getter->SetParent(classDef);
     getter->TsType()->AddTypeFlag(TypeFlag::GETTER);
@@ -2150,13 +2160,15 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     auto name = getter->Key()->AsIdentifier()->Name();
 
     auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
-    auto *const var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
+    auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
 
     ir::MethodDefinition *setter = nullptr;
-    if (!classProp->IsReadonly()) {
+    if (!classProp->IsConst()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         setter = GenerateDefaultGetterSetter(interfaceProp, classProp, scope, true, this);
-
+        if (((originalProp->Modifiers() & ir::ModifierFlags::SETTER) != 0U)) {
+            setter->Function()->AddModifier(ir::ModifierFlags::OVERRIDE);
+        }
         setter->SetParent(classDef);
         setter->TsType()->AddTypeFlag(TypeFlag::SETTER);
         getter->Variable()->TsType()->AsETSFunctionType()->AddCallSignature(
@@ -2168,15 +2180,13 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 
     if (var == nullptr) {
         auto *const prevDecl = methodScope->FindDecl(name);
-        ASSERT(prevDecl->IsFunctionDecl());
         prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
 
         if (setter != nullptr) {
             prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
         }
 
-        getter->Function()->Id()->SetVariable(methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS));
-        return;
+        var = methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
     }
 
     var->AddFlag(varbinder::VariableFlags::METHOD);

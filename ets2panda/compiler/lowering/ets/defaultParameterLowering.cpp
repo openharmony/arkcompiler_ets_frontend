@@ -84,12 +84,6 @@ ir::TSTypeParameterDeclaration *DefaultParameterLowering::CreateParameterDeclara
                                 ? par->DefaultType()->Clone(checker->Allocator(), nullptr)->AsTypeNode()
                                 : nullptr;
         auto *typeParam = checker->AllocNode<ir::TSTypeParameter>(ident, constraint, defaultType);
-        if (ident != nullptr) {
-            ident->SetParent(typeParam);
-        }
-        if (constraint != nullptr) {
-            constraint->SetParent(typeParam);
-        }
         typeParams.push_back(typeParam);
     });
     return checker->AllocNode<ir::TSTypeParameterDeclaration>(std::move(typeParams), typeParams.size());
@@ -128,10 +122,8 @@ ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterI
         identRef->AsIdentifier()->SetReference();
 
         referencePart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef, nullptr, nullptr);
-        identRef->SetParent(referencePart);
 
         auto *typeReference = checker->AllocNode<ir::ETSTypeReference>(referencePart);
-        referencePart->SetParent(typeReference);
 
         selfParams.push_back(typeReference);
     }
@@ -139,8 +131,8 @@ ir::TSTypeParameterInstantiation *DefaultParameterLowering::CreateTypeParameterI
     return checker->AllocNode<ir::TSTypeParameterInstantiation>(std::move(selfParams));
 }
 
-ir::AstNode *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefinition *method, CompilerContext *ctx,
-                                                          ArenaVector<ir::Expression *> funcCallArgs)
+ir::BlockStatement *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefinition *method, CompilerContext *ctx,
+                                                                 ArenaVector<ir::Expression *> funcCallArgs)
 {
     auto *checker = ctx->Checker()->AsETSChecker();
     ArenaVector<ir::Statement *> funcStatements(checker->Allocator()->Adapter());
@@ -179,13 +171,11 @@ ir::AstNode *DefaultParameterLowering::CreateFunctionBody(ir::MethodDefinition *
             //       so we need to putu only explciit 'return this' to overload,
             //       but call parent function with default parameter before it.
             stmt = checker->AllocNode<ir::ExpressionStatement>(callExpression);
-            callExpression->SetParent(stmt);
             funcStatements.push_back(stmt);
 
             // build 'return this;' expression.
             auto *thisExpr = checker->AllocNode<ir::ThisExpression>();
             stmt = checker->AllocNode<ir::ReturnStatement>(thisExpr);
-            thisExpr->SetParent(stmt);
         } else {
             stmt = checker->AllocNode<ir::ReturnStatement>(callExpression);
         }
@@ -208,51 +198,45 @@ ir::FunctionExpression *DefaultParameterLowering::CreateFunctionExpression(
     auto *checker = ctx->Checker()->AsETSChecker();
     ir::Identifier *id = nullptr;
 
-    ir::AstNode *body = CreateFunctionBody(method, ctx, std::move(funcCallArgs));
-
+    ir::BlockStatement *body = nullptr;
+    if (!(method->IsNative() || method->IsDeclare() || method->IsAbstract())) {
+        body = CreateFunctionBody(method, ctx, std::move(funcCallArgs));
+    }
     auto *funcNode = checker->AllocNode<ir::ScriptFunction>(
         checker->Allocator(),
         ir::ScriptFunction::ScriptFunctionData {
             body, std::move(signature), method->Function()->Flags(), {}, false, method->Function()->Language()});
-
-    body->SetParent(funcNode);
     funcNode->AddModifier(method->Function()->Modifiers());
     funcNode->SetRange({startLoc, endLoc});
 
     id = method->Id()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
     funcNode->SetIdent(id);
-    id->SetParent(funcNode);
 
-    auto *func = checker->AllocNode<ir::FunctionExpression>(funcNode);
-    funcNode->SetParent(func);
-
-    return func;
+    return checker->AllocNode<ir::FunctionExpression>(funcNode);
 }
 
-void DefaultParameterLowering::CreateOverloadFunction(ir::AstNode *ast, ArenaVector<ir::Expression *> funcCallArgs,
+void DefaultParameterLowering::CreateOverloadFunction(ir::MethodDefinition *method,
+                                                      ArenaVector<ir::Expression *> funcCallArgs,
                                                       ArenaVector<ir::Expression *> funcDefinitionArgs,
                                                       CompilerContext *ctx)
 {
     auto *checker = ctx->Checker()->AsETSChecker();
-    auto *method = ast->AsMethodDefinition();
-    auto *funcExpression = CreateFunctionExpression(ast->AsMethodDefinition(), ctx, std::move(funcDefinitionArgs),
-                                                    std::move(funcCallArgs));
+    auto *funcExpression =
+        CreateFunctionExpression(method, ctx, std::move(funcDefinitionArgs), std::move(funcCallArgs));
     auto *ident = funcExpression->Function()->Id()->Clone(checker->Allocator(), nullptr);
     auto *const overloadMethod = checker->AllocNode<ir::MethodDefinition>(
-        ast->AsMethodDefinition()->Kind(), ident, funcExpression, method->Modifiers(), checker->Allocator(), false);
-    funcExpression->SetParent(overloadMethod);
-    ident->SetParent(overloadMethod);
+        method->Kind(), ident, funcExpression, method->Modifiers(), checker->Allocator(), false);
     ident->SetReference();
 
     overloadMethod->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     overloadMethod->SetRange(funcExpression->Range());
 
-    if (ast->Parent()->IsTSInterfaceBody()) {
+    if (method->Parent()->IsTSInterfaceBody()) {
         overloadMethod->Function()->Body()->AsBlockStatement()->Statements().clear();
     }
 
     method->AddOverload(overloadMethod);
-    overloadMethod->SetParent(method);
+    overloadMethod->SetParent(method);  // NOTE(aleksisch): It's incorrect and don't exist in class body
 }
 
 void DefaultParameterLowering::RemoveInitializers(ArenaVector<ir::Expression *> params)
@@ -264,10 +248,10 @@ void DefaultParameterLowering::RemoveInitializers(ArenaVector<ir::Expression *> 
     });
 }
 
-void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::AstNode *ast, CompilerContext *ctx)
+void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, CompilerContext *ctx)
 {
     auto *checker = ctx->Checker()->AsETSChecker();
-    auto params = ast->AsMethodDefinition()->Function()->Params();
+    auto params = method->Function()->Params();
 
     // go through default parameters list and create overloading for each combination of them
     // i.e. each new overload method has less actual paramaters than previous one and more
@@ -338,7 +322,6 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::AstNode *ast,
                 auto *ident =
                     expr->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
                 auto *funcParam = checker->AllocNode<ir::ETSParameterExpression>(ident->AsIdentifier(), nullptr);
-                ident->SetParent(funcParam);
 
                 ASSERT(ident->TypeAnnotation()->Parent() == ident);
                 // prepare args list for overloade method definition
@@ -348,7 +331,7 @@ void DefaultParameterLowering::ProcessGlobalFunctionDefinition(ir::AstNode *ast,
         // finally  append arguemnts list with hard-coded literals,
         // so eventually we have list of call expression arguments
         funcCallArgs.insert(funcCallArgs.end(), defaultArgs.begin(), defaultArgs.end());
-        CreateOverloadFunction(ast, std::move(funcCallArgs), std::move(funcDefinitionArgs), ctx);
+        CreateOverloadFunction(method, std::move(funcCallArgs), std::move(funcDefinitionArgs), ctx);
     }
 
     // done with overloads, now need  to cleanup all initializers,
@@ -366,8 +349,8 @@ bool DefaultParameterLowering::Perform(public_lib::Context *ctx, parser::Program
     }
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
-    ArenaVector<ir::AstNode *> foundNodes(checker->Allocator()->Adapter());
-    program->Ast()->TransformChildrenRecursively([&foundNodes, this, program](ir::AstNode *ast) -> ir::AstNode * {
+    ArenaVector<ir::MethodDefinition *> foundNodes(checker->Allocator()->Adapter());
+    program->Ast()->IterateRecursively([&foundNodes, this, program](ir::AstNode *ast) {
         if (ast->IsMethodDefinition()) {
             auto [hasDefaultParam, requiredParamsCount] =
                 HasDefaultParam(ast->AsMethodDefinition()->Function(), program);
@@ -375,18 +358,14 @@ bool DefaultParameterLowering::Perform(public_lib::Context *ctx, parser::Program
                 // store all nodes (which is function definition with default/optional parameters)
                 // to specific list, to process them later, as for now we can't modify AST in the
                 // middle of walking through it
-                foundNodes.push_back(ast);
+                foundNodes.push_back(ast->AsMethodDefinition());
             }
         }
-        return ast;
     });
 
-    if (!foundNodes.empty()) {
-        for (auto &it : foundNodes) {
-            ProcessGlobalFunctionDefinition(it, ctx->compilerContext);
-        }
+    for (auto &it : foundNodes) {
+        ProcessGlobalFunctionDefinition(it, ctx->compilerContext);
     }
-
     return true;
 }
 

@@ -924,15 +924,19 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
             auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
             CreateBuiltinArraySignature(arrayType, arrayType->Rank());
         } else {
-            auto const *const paramIdent = param->Ident();
+            auto *const paramIdent = param->Ident();
 
             varbinder::Variable *const paramVar = paramIdent->Variable();
             ASSERT(paramVar);
 
             auto *const paramTypeAnnotation = param->TypeAnnotation();
-            ASSERT(paramTypeAnnotation);
+            if (paramIdent->TsType() == nullptr) {
+                ASSERT(paramTypeAnnotation);
 
-            paramVar->SetTsType(paramTypeAnnotation->GetType(this));
+                paramVar->SetTsType(paramTypeAnnotation->GetType(this));
+            } else {
+                paramVar->SetTsType(paramIdent->TsType());
+            }
             signatureInfo->params.push_back(paramVar->AsLocalVariable());
             ++signatureInfo->minArgCount;
         }
@@ -1431,8 +1435,7 @@ static void HandleAsyncFuncInLambda(ETSChecker *checker, ir::ArrowFunctionExpres
     ir::ScriptFunction *asyncImplFunc = asyncImpl->Function();
     currentClassDef->Body().push_back(asyncImpl);
     asyncImpl->SetParent(currentClassDef);
-    checker->ReplaceIdentifierReferencesInProxyMethod(asyncImplFunc->Body(), asyncImplFunc->Params(),
-                                                      lambda->Function()->Params(), lambda->CapturedVars());
+    checker->ReplaceIdentifierReferencesInProxyMethod(asyncImplFunc->Body(), asyncImplFunc->Params(), lambda);
     Signature *implSig = checker->CreateSignature(proxyMethod->Function()->Signature()->GetSignatureInfo(),
                                                   checker->GlobalETSObjectType(), asyncImplFunc);
     asyncImplFunc->SetSignature(implSig);
@@ -1942,8 +1945,7 @@ void ETSChecker::ResolveProxyMethod(ir::ClassDefinition *const classDefinition, 
         classDefinition->Body().emplace_back(asyncImpl);
         asyncImpl->SetParent(classDefinition);
 
-        ReplaceIdentifierReferencesInProxyMethod(asyncImplFunc->Body(), asyncImplFunc->Params(),
-                                                 lambda->Function()->Params(), lambda->CapturedVars());
+        ReplaceIdentifierReferencesInProxyMethod(asyncImplFunc->Body(), asyncImplFunc->Params(), lambda);
         Signature *implSig = CreateSignature(proxyMethod->Function()->Signature()->GetSignatureInfo(),
                                              GlobalETSObjectType(), asyncImplFunc);
         asyncImplFunc->SetSignature(implSig);
@@ -2011,8 +2013,7 @@ ir::ScriptFunction *ETSChecker::CreateProxyFunc(ir::ArrowFunctionExpression *lam
     if (!func->IsAsyncFunc()) {
         // Replace the variable binding in the lambda body where an identifier refers to a lambda parameter or a
         // captured variable to the newly created proxy parameters
-        ReplaceIdentifierReferencesInProxyMethod(body, func->Params(), lambda->Function()->Params(),
-                                                 lambda->CapturedVars());
+        ReplaceIdentifierReferencesInProxyMethod(body, func->Params(), lambda);
     }
 
     for (auto param : func->Params()) {
@@ -2080,15 +2081,9 @@ ir::MethodDefinition *ETSChecker::CreateProxyMethodForLambda(ir::ClassDefinition
     return proxy;
 }
 
-void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body,
-                                                          const ArenaVector<ir::Expression *> &proxyParams,
-                                                          const ArenaVector<ir::Expression *> &lambdaParams,
-                                                          ArenaVector<varbinder::Variable *> &captured)
+static std::unordered_map<varbinder::Variable *, size_t> MergeTargetReferences(
+    const ArenaVector<ir::Expression *> &lambdaParams, const ArenaVector<varbinder::Variable *> &captured)
 {
-    if (proxyParams.empty()) {
-        return;
-    }
-
     // First, create a merged list of all of the potential references which we will replace. These references are
     // the original lambda expression parameters and the references to the captured variables inside the lambda
     // expression body. The order is crucial, thats why we save the index, because in the synthetic proxy method,
@@ -2108,13 +2103,44 @@ void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body,
         mergedTargetReferences.insert({it->AsETSParameterExpression()->Variable(), idx});
         idx++;
     }
+    return mergedTargetReferences;
+}
 
+static void PropagateParamsForTransitiveCapturedVars(
+    const ArenaVector<ir::Expression *> &proxyParams,
+    const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences,
+    ir::ArrowFunctionExpression *lambda)
+{
+    for (auto child : lambda->ChildLambdas()) {
+        auto &vars = child->CapturedVars();
+        for (auto &vp : vars) {
+            auto ref = mergedTargetReferences.find(vp);
+            if (ref != mergedTargetReferences.end()) {
+                vp = proxyParams[ref->second]->AsETSParameterExpression()->Variable();
+            }
+        }
+        PropagateParamsForTransitiveCapturedVars(proxyParams, mergedTargetReferences, child);
+    }
+}
+
+void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body,
+                                                          const ArenaVector<ir::Expression *> &proxyParams,
+                                                          ir::ArrowFunctionExpression *lambda)
+{
+    const auto lambdaParams = lambda->Function()->Params();
+    const auto captured = lambda->CapturedVars();
+    if (proxyParams.empty()) {
+        return;
+    }
+
+    const auto mergedTargetReferences = MergeTargetReferences(lambdaParams, captured);
+    PropagateParamsForTransitiveCapturedVars(proxyParams, mergedTargetReferences, lambda);
     ReplaceIdentifierReferencesInProxyMethod(body, proxyParams, mergedTargetReferences);
 }
 
 void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(
     ir::AstNode *node, const ArenaVector<ir::Expression *> &proxyParams,
-    std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences)
+    const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences)
 {
     if (node != nullptr) {
         if (node->IsMemberExpression()) {
@@ -2132,10 +2158,11 @@ void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(
 
 void ETSChecker::ReplaceIdentifierReferenceInProxyMethod(
     ir::AstNode *node, const ArenaVector<ir::Expression *> &proxyParams,
-    std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences)
+    const std::unordered_map<varbinder::Variable *, size_t> &mergedTargetReferences)
 {
-    // If we see an identifier reference
-    if (node->IsIdentifier()) {
+    // If we see an identifier reference that is not a type reference part (ETS is not a dependently typed language...
+    // yet)
+    if (node->IsIdentifier() && !node->Parent()->IsETSTypeReferencePart()) {
         auto *identNode = node->AsIdentifier();
         ASSERT(identNode->Variable());
 
@@ -3100,6 +3127,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
         } else {
             CreateLambdaFuncDecl(implMethod, classDef->Scope()->AsClassScope()->InstanceMethodScope());
         }
+        implMethod->Id()->SetVariable(implMethod->Function()->Id()->Variable());
     }
     VarBinder()->AsETSBinder()->BuildProxyMethod(implMethod->Function(), classDef->InternalName(), isStatic,
                                                  asyncFunc->IsExternal());

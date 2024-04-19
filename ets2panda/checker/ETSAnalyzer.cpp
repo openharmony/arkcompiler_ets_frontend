@@ -137,10 +137,6 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         return nullptr;
     }
 
-    if (node->Id()->Variable() == nullptr) {
-        node->Id()->SetVariable(scriptFunc->Id()->Variable());
-    }
-
     // NOTE: aszilagyi. make it correctly check for open function not have body
     if (!scriptFunc->HasBody() && !(node->IsAbstract() || node->IsNative() || node->IsDeclare() ||
                                     checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
@@ -646,6 +642,13 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
+
+    if (checker->HasStatus(checker::CheckerStatus::IN_LAMBDA)) {
+        ASSERT(checker->Context().ContainingLambda() != nullptr);
+        checker->Context().ContainingLambda()->AddChildLambda(expr);
+        expr->SetParentLambda(checker->Context().ContainingLambda());
+    }
+
     if (expr->TsType() != nullptr) {
         return expr->TsType();
     }
@@ -685,6 +688,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
                                               checker->Context().ContainingClass());
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
     checker->Context().SetContainingSignature(funcType->CallSignatures()[0]);
+    checker->Context().SetContainingLambda(expr);
 
     expr->Function()->Body()->Check(checker);
 
@@ -693,7 +697,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 
     for (auto [var, _] : checker->Context().CapturedVars()) {
         (void)_;
-        expr->CapturedVars().push_back(var);
+        expr->AddCapturedVar(var);
     }
 
     expr->SetTsType(funcType);
@@ -1705,18 +1709,16 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
     ETSChecker *checker = GetETSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    auto it = st->Statements().begin();
-    while (it != st->Statements().end()) {
-        (*it)->Check(checker);
+    for (size_t i = 0; i < st->Statements().size(); i++) {
+        auto el = st->Statements()[i];
+        el->Check(checker);
 
         //  NOTE! Processing of trailing blocks was moved here so that smart casts could be applied correctly
-        if (auto const tb = st->trailingBlocks_.find(*it); tb != st->trailingBlocks_.end()) {
+        if (auto const tb = st->trailingBlocks_.find(el); tb != st->trailingBlocks_.end()) {
             auto *const trailingBlock = tb->second;
             trailingBlock->Check(checker);
-            it = st->Statements().emplace(std::next(it), trailingBlock);
+            st->Statements().emplace(std::next(st->Statements().begin() + i), trailingBlock);
         }
-
-        ++it;
     }
 
     //  Remove possible smart casts for variables declared in inner scope:

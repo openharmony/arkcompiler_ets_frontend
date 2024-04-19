@@ -142,6 +142,15 @@ public:
     {
         capturedVars_.emplace(var, pos);
     }
+    [[nodiscard]] ir::ArrowFunctionExpression *ContainingLambda() const noexcept
+    {
+        return containingLambda_;
+    }
+
+    void SetContainingLambda(ir::ArrowFunctionExpression *containingLambda) noexcept
+    {
+        containingLambda_ = containingLambda;
+    }
 
     void ClearSmartCasts() noexcept
     {
@@ -222,6 +231,7 @@ private:
     CapturedVarsMap capturedVars_;
     SmartCastMap smartCasts_;
     const ETSObjectType *containingClass_ {nullptr};
+    ir::ArrowFunctionExpression *containingLambda_ {nullptr};
     Signature *containingSignature_ {nullptr};
 
     lexer::TokenType operatorType_ = lexer::TokenType::EOS;

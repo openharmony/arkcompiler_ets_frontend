@@ -35,15 +35,15 @@ class DefaultParameterLowering : public Phase {
                                                   CompilerContext *ctx);
     ir::TSTypeParameterInstantiation *CreateTypeParameterInstantiation(ir::MethodDefinition *method,
                                                                        CompilerContext *ctx);
-    ir::AstNode *CreateFunctionBody(ir::MethodDefinition *method, CompilerContext *ctx,
-                                    ArenaVector<ir::Expression *> funcCallArgs);
+    ir::BlockStatement *CreateFunctionBody(ir::MethodDefinition *method, CompilerContext *ctx,
+                                           ArenaVector<ir::Expression *> funcCallArgs);
     ir::FunctionExpression *CreateFunctionExpression(ir::MethodDefinition *method, CompilerContext *ctx,
                                                      ArenaVector<ir::Expression *> funcDefinitionArgs,
                                                      ArenaVector<ir::Expression *> funcCallArgs);
-    void CreateOverloadFunction(ir::AstNode *ast, ArenaVector<ir::Expression *> funcCallArgs,
+    void CreateOverloadFunction(ir::MethodDefinition *method, ArenaVector<ir::Expression *> funcCallArgs,
                                 ArenaVector<ir::Expression *> funcDefinitionArgs, CompilerContext *ctx);
     void RemoveInitializers(ArenaVector<ir::Expression *> params);
-    void ProcessGlobalFunctionDefinition(ir::AstNode *ast, CompilerContext *ctx);
+    void ProcessGlobalFunctionDefinition(ir::MethodDefinition *method, CompilerContext *ctx);
 
 public:
     std::string_view Name() const override

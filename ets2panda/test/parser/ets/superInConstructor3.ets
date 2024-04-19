@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,29 @@
  * limitations under the License.
  */
 
-export declare function foo(p: A): void;
-export declare function optional_foo(p?: A): void;
-export declare class A {
-    f1: string;
-    static f2: double;
+class A {
+    public x: int;
 
-    constructor(p1: double, p2: string);
+    public constructor() {
+        this.x = 1;
+    }
 
-    foo(p: double): string;
-    static bar(): double;
-    optional_foo(p?: double): string;
+    public constructor(arg: boolean) {
+    }
 }
-export declare interface I {
-    f1(p: string): double;
-    f2(p: double): string;
+
+class alma extends A {
+    public constructor() {
+        this([(((typeof ((new A(((new A(foo(foo({x: super.x})).x == 5)).x + 5 as int) == 3)) instanceof A ? 1 : 2)) == "number" ? 10 : null)!) ?? 10]);
+    }
+    public constructor(arg : A) {
+    }
+    public constructor(arg : int) {
+    }
+    public constructor(arg : Int[]) {
+    }
+}
+
+function foo(arg : A) {
+    return arg;
 }
