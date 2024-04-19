@@ -58,6 +58,13 @@
             "line": 32,
             "column": 16,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 969,
+                    "end": 1007,
+                    "replacementText": "interface Point {\n    x: number;\n    y: number;\n}\n"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -86,7 +93,6 @@
             "line": 43,
             "column": 3,
             "problem": "LocalFunction",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 1235,
@@ -115,6 +121,13 @@
             "line": 54,
             "column": 26,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1405,
+                    "end": 1570,
+                    "replacementText": "interface ComputedPropertyT {\n    a: string; // String-like name\n    5: string; // Number-like name\n    [c]: string; // String-like name\n    [d]: string; // Number-like name\n}\n"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -174,6 +187,13 @@
             "line": 71,
             "column": 19,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1710,
+                    "end": 1758,
+                    "replacementText": "interface Dictionary {\n    [key: string]: unknown;\n}\n"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -223,6 +243,13 @@
             "line": 94,
             "column": 28,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 1999,
+                    "end": 2083,
+                    "replacementText": "interface DescribableFunction {\n    description: string;\n    (someArg: number): boolean;\n}\n"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -237,6 +264,18 @@
             "line": 111,
             "column": 19,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2405,
+                    "end": 2405,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    x: 2;\n}\n"
+                },
+                {
+                    "start": 2423,
+                    "end": 2431,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -244,6 +283,18 @@
             "line": 112,
             "column": 12,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2436,
+                    "end": 2436,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_2 {\n    y: string;\n}\n"
+                },
+                {
+                    "start": 2447,
+                    "end": 2460,
+                    "replacementText": "GeneratedTypeLiteralInterface_2"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -251,6 +302,18 @@
             "line": 112,
             "column": 35,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2436,
+                    "end": 2436,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_3 {\n    y: 'constant';\n}\n"
+                },
+                {
+                    "start": 2470,
+                    "end": 2487,
+                    "replacementText": "GeneratedTypeLiteralInterface_3"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -258,6 +321,18 @@
             "line": 116,
             "column": 9,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 2543,
+                    "end": 2543,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_4 {\n    z: boolean;\n}\n"
+                },
+                {
+                    "start": 2551,
+                    "end": 2565,
+                    "replacementText": "GeneratedTypeLiteralInterface_4"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -354,7 +429,6 @@
             "line": 138,
             "column": 3,
             "problem": "LocalFunction",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 3075,

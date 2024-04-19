@@ -18,7 +18,6 @@
             "line": 18,
             "column": 5,
             "problem": "ParameterProperties",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 622,
@@ -53,7 +52,6 @@
             "line": 34,
             "column": 15,
             "problem": "ParameterProperties",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 870,
@@ -83,7 +81,6 @@
             "line": 43,
             "column": 15,
             "problem": "ParameterProperties",
-            "autofixable": false,
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
         },
@@ -91,7 +88,6 @@
             "line": 43,
             "column": 25,
             "problem": "AnyType",
-            "autofixable": false,
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
@@ -99,7 +95,6 @@
             "line": 47,
             "column": 15,
             "problem": "ParameterProperties",
-            "autofixable": false,
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
         },
@@ -107,7 +102,18 @@
             "line": 47,
             "column": 44,
             "problem": "ObjectTypeLiteral",
-            "autofixable": false,
+            "autofix": [
+                {
+                    "start": 1139,
+                    "end": 1139,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n    x: string;\n}\n"
+                },
+                {
+                    "start": 1192,
+                    "end": 1203,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         }

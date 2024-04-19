@@ -130,7 +130,6 @@ export class LinterConfig {
     [ts.SyntaxKind.UnknownKeyword, FaultID.UnknownType],
     [ts.SyntaxKind.CallSignature, FaultID.CallSignature],
     [ts.SyntaxKind.IntersectionType, FaultID.IntersectionType],
-    [ts.SyntaxKind.TypeLiteral, FaultID.ObjectTypeLiteral],
     [ts.SyntaxKind.ConstructorType, FaultID.ConstructorFuncs],
     [ts.SyntaxKind.ConditionalType, FaultID.ConditionalType],
     [ts.SyntaxKind.MappedType, FaultID.MappedType],

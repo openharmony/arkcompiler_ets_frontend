@@ -373,24 +373,66 @@
         },
         {
             "line": 130,
-            "column": 13,
+            "column": 14,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
             "line": 131,
-            "column": 13,
+            "column": 14,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
             "line": 132,
-            "column": 13,
+            "column": 14,
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 134,
+            "column": 22,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        },
+        {
+            "line": 135,
+            "column": 35,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 136,
+            "column": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 139,
+            "column": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 141,
+            "column": 14,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 141,
+            "column": 19,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         }
     ]
 }

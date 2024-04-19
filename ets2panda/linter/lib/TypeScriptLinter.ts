@@ -194,7 +194,8 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ComputedPropertyName, this.handleComputedPropertyName],
     [ts.SyntaxKind.Constructor, this.handleConstructorDeclaration],
     [ts.SyntaxKind.PrivateIdentifier, this.handlePrivateIdentifier],
-    [ts.SyntaxKind.IndexSignature, this.handleIndexSignature]
+    [ts.SyntaxKind.IndexSignature, this.handleIndexSignature],
+    [ts.SyntaxKind.TypeLiteral, this.handleTypeLiteral]
   ]);
 
   private getLineAndCharacterOfNode(node: ts.Node | ts.CommentRange): ts.LineAndCharacter {
@@ -2322,6 +2323,12 @@ export class TypeScriptLinter {
     if (!this.tsUtils.isAllowedIndexSignature(node as ts.IndexSignatureDeclaration)) {
       this.incrementCounters(node, FaultID.IndexMember);
     }
+  }
+
+  private handleTypeLiteral(node: ts.Node): void {
+    const typeLiteral = node as ts.TypeLiteralNode;
+    const autofix = this.autofixer?.fixTypeliteral(typeLiteral);
+    this.incrementCounters(node, FaultID.ObjectTypeLiteral, autofix);
   }
 
   lint(sourceFile: ts.SourceFile): void {

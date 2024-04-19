@@ -36,6 +36,7 @@ import {
   LANG_NAMESPACE,
   ISENDABLE_TYPE
 } from './consts/SupportedDetsIndexableTypes';
+import type { NameGenerator } from './functions/NameGenerator';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
 export class TsUtils {
@@ -1040,7 +1041,8 @@ export class TsUtils {
     [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange],
     [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange],
     [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
-    [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange]
+    [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange],
+    [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1162,6 +1164,10 @@ export class TsUtils {
       return [params[0].getStart(), params[params.length - 1].getEnd()];
     }
     return undefined;
+  }
+
+  static getObjectTypeLiteralHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, '{');
   }
 
   // highlight ranges for Sendable rules
@@ -2171,5 +2177,19 @@ export class TsUtils {
       return TsUtils.isDeclarationStatement(stmt) && stmt.name !== undefined &&
         ts.isIdentifier(stmt.name) && stmt.name.text === name;
     });
+  }
+
+  static generateUniqueName(nameGenerator: NameGenerator, srcFile: ts.SourceFile): string | undefined {
+    let newName: string | undefined;
+
+    do {
+      newName = nameGenerator.getName();
+      if (newName !== undefined && TsUtils.declarationNameExists(srcFile, newName)) {
+        continue;
+      }
+      break;
+    } while (newName !== undefined);
+
+    return newName;
   }
 }

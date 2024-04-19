@@ -56,6 +56,18 @@
             "line": 20,
             "column": 11,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 663,
+                    "end": 663,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_1 {\n}\n"
+                },
+                {
+                    "start": 673,
+                    "end": 675,
+                    "replacementText": "GeneratedTypeLiteralInterface_1"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -169,6 +181,18 @@
             "line": 150,
             "column": 12,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3096,
+                    "end": 3096,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_2 {\n    field: String;\n    field1: String;\n    field2: String;\n    field3: String;\n    field4: String;\n    field5: String;\n    field6: String;\n}\n"
+                },
+                {
+                    "start": 3107,
+                    "end": 3240,
+                    "replacementText": "GeneratedTypeLiteralInterface_2"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -183,6 +207,18 @@
             "line": 167,
             "column": 12,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3434,
+                    "end": 3434,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_3 {\n    field: number;\n    field1: number;\n    field2: number;\n    field3: number;\n    field4: number;\n    field5: number;\n    field6: number;\n}\n"
+                },
+                {
+                    "start": 3445,
+                    "end": 3578,
+                    "replacementText": "GeneratedTypeLiteralInterface_3"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
@@ -197,6 +233,18 @@
             "line": 184,
             "column": 12,
             "problem": "ObjectTypeLiteral",
+            "autofix": [
+                {
+                    "start": 3724,
+                    "end": 3724,
+                    "replacementText": "interface GeneratedTypeLiteralInterface_4 {\n    field: String;\n    field1: number;\n    field2: String;\n    field3: number;\n    field4: String;\n    field5: number;\n    field6: String;\n    field7: boolean;\n    field8: boolean;\n}\n"
+                },
+                {
+                    "start": 3735,
+                    "end": 3908,
+                    "replacementText": "GeneratedTypeLiteralInterface_4"
+                }
+            ],
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },

@@ -126,8 +126,17 @@ const o16 = { // Not fixable, property 'c' is initialized with non-fixable neste
 
 class X<K> {}
 class Y<Q extends X<Q>> {}
-function genericTypes<T>(t: T): void {
-    let a = {a: 1, b: '2', c: t}; // Not fixable, captured generic type parameter
-    let b = {a: 1, b: '2', c: new X<T>()}; // Not fixable, captured generic type parameter
-    let c = {a: 1, b: '2', c: new Y<X<T>>()}; // Not fixable, captured generic type parameter
+function captureFromLocalScope<T>(t: T): void {
+    let v1 = {a: 1, b: '2', c: t}; // Not fixable, `c` references local type parameter `T`
+    let v2 = {a: 1, b: '2', c: new X<T>()}; // Not fixable, `c` references local type parameter `T`
+    let v3 = {a: 1, b: '2', c: new Y<X<T>>()}; // Not fixable, `c` references local type parameter `T`
+  
+    type LocalType = {a: number, b: string};
+    let localTypeVar: LocalType = {a:1, b:'2'};
+    let v4 = { x: localTypeVar }; // Non-fixable, `x` references type `LocalType` declared in local scope
+  
+    class LocalClass {x: number = 1};
+    let v5 = { y: new LocalClass() }; // Non-fixable, `y` references type `LocalClass` declared in local scope
+  
+    let v6 = { z: LocalClass }; // Non-fixable, `z` references type `LocalClass` declared in local scope
 }
