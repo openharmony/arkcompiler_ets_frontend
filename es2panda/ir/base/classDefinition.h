@@ -252,8 +252,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
     void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
-    const ir::AstNode *GetDeclNodeFromIdentifier(const ir::Identifier *identifier,
-                                                 const ir::Identifier **variable) const;
+    const ir::AstNode *GetDeclNodeFromIdentifier(const ir::Identifier *identifier) const;
 
 private:
     compiler::VReg CompileHeritageClause(compiler::PandaGen *pg) const;
@@ -264,8 +263,9 @@ private:
     void StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void InstanceInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void CompileComputedKeys(compiler::PandaGen *pg) const;
-    void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation) const;
-    void AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType) const;
+    void AddFieldType(FieldType &fieldType, const Expression *typeAnnotation, compiler::PandaGen *pg) const;
+    void AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType,
+                                      compiler::PandaGen *pg) const;
     bool IsTypeParam(const util::StringView &propertyName) const;
     int32_t CreateFieldTypeBuffer(compiler::PandaGen *pg) const;
     void CompileSendableClass(compiler::PandaGen *pg) const;

@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-import { Country } from './test'
+import { Country } from './test1'
+import type { Color } from './test2'
 
 const enum City {
     BEIJING = 'beijing',
@@ -33,6 +34,7 @@ class Person {
     city: City;
     pos: Position;
     mix: Country | City | Position;
+    hair: Color;
     constructor() {
         "use sendable";
     }
