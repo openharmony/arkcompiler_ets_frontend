@@ -65,7 +65,7 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
 
 void CallExpression::Compile(compiler::PandaGen *pg) const
 {
-    ir::Expression *realCallee = callee_;
+    const ir::Expression *realCallee = callee_;
     while (realCallee->IsTSNonNullExpression() || realCallee->IsTSAsExpression() || realCallee->IsTSTypeAssertion()) {
         if (realCallee->IsTSNonNullExpression()) {
             realCallee = realCallee->AsTSNonNullExpression()->Expr();
@@ -146,7 +146,7 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
         compiler::RegScope mrs(pg);
         realCallee->AsMemberExpression()->Compile(pg, thisReg);
     } else if (realCallee->IsChainExpression()) {
-        hasThis = true;
+        hasThis = realCallee->AsChainExpression()->GetExpression()->IsMemberExpression();
         realCallee->AsChainExpression()->Compile(pg);
     } else {
         realCallee->Compile(pg);
