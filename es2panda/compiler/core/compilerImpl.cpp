@@ -39,22 +39,11 @@ CompilerImpl::~CompilerImpl()
 panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const es2panda::CompilerOptions &options,
     const std::string &debugInfoSourceFile, const std::string &pkgName)
 {
-    bool isTypeExtractorEnabled = ((program->Extension() == ScriptExtension::TS) && options.typeExtractor);
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-                            options.mergeAbc, isTypeExtractorEnabled, false, options.recordSource, debugInfoSourceFile,
+                            options.mergeAbc, false, options.recordSource, debugInfoSourceFile,
                             pkgName, program->RecordName(), patchFixHelper_);
 
     ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-
-    if (isTypeExtractorEnabled) {
-        auto rootNode = context.Binder()->TopScope()->Node()->AsBlockStatement();
-        extractor_ = std::make_unique<extractor::TypeExtractor>(rootNode, program->IsDtsFile(),
-            options.typeDtsBuiltin, &localAllocator, &context);
-        extractor_->StartTypeExtractor(program);
-
-        context.SetTypeRecorder(extractor_->Recorder());
-        context.SetTypeExtractor(extractor_.get());
-    }
 
     queue_ = new CompileFuncQueue(threadCount_, &context);
     queue_->Schedule();
@@ -63,18 +52,8 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     queue_->Consume();
     queue_->Wait();
 
-    // For Type Extractor
-    // Global record to show type extractor is enabled or not
-    if (!context.IsMergeAbc()) {
-        context.GetEmitter()->GenTypeInfoRecord();
-    } else {
+    if (context.IsMergeAbc()) {
         context.GetEmitter()->GenRecordNameInfo();
-    }
-
-    if (program->Extension() == ScriptExtension::TS) {
-        context.GetEmitter()->FillTypeInfoRecord(&context, options.typeExtractor,
-            options.typeExtractor ? extractor_->Recorder()->GetTypeSummaryIndex() : 0,
-            std::string(program->RecordName()));
     }
 
     return context.GetEmitter()->Finalize(options.dumpDebugInfo, patchFixHelper_);

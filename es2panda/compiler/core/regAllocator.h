@@ -68,13 +68,6 @@ public:
     }
 
     template <typename T, typename... Args>
-    void EmitWithType(const ir::AstNode *node, int64_t typeIndex, Args &&... args)
-    {
-        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
-        Run(ins, typeIndex);
-    }
-
-    template <typename T, typename... Args>
     void EmitRange(const ir::AstNode *node, size_t argCount, Args &&... args)
     {
         auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
@@ -121,7 +114,6 @@ private:
     void UpdateIcSlot(IRNode *node);
     void Run(IRNode *ins);
     void Run(IRNode *ins, size_t argCount);
-    void Run(IRNode *ins, int64_t typeIndex);
     void AdjustInsSpill(const Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
                         const std::vector<OperandKind> &regsKind);
     void AdjustRangeInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns);

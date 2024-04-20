@@ -21,7 +21,6 @@
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>
 #include <ir/expressions/identifier.h>
-#include <typescript/extractor/typeRecorder.h>
 
 namespace panda::es2panda::compiler {
 
@@ -132,26 +131,6 @@ static void ExpandStoreNormalVar(PandaGen *pg, const ir::AstNode *node, const bi
         CheckConstAssignment(pg, node, local);
     }
 
-    auto context = pg->Context();
-    if (context->IsTypeExtractorEnabled() && pg->TypedVars().count(local) == 0U) {
-        auto fn = [&pg, &node, &local, &localReg](auto typeIndex, const auto &tag) {
-            if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-                pg->StoreAccumulatorWithType(node, typeIndex, localReg);
-                pg->TypedVars().emplace(local);
-                DCOUT << "[LOG]Local vreg in " << tag << " has type index: " << local->Name() <<
-                    "@" << local << " | " << typeIndex << std::endl;
-                return true;
-            }
-            return false;
-        };
-        if (fn(context->TypeRecorder()->GetVariableTypeIndex(local), "variable")) {
-            return;
-        }
-        if (fn(context->TypeRecorder()->GetNodeTypeIndex(node), "declnode")) {
-            return;
-        }
-        DCOUT << "[WARNING]Local vreg lose type index: " << local->Name() << "@" << local << std::endl;
-    }
     pg->StoreAccumulator(node, localReg);
 }
 

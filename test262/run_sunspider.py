@@ -490,8 +490,6 @@ class ArkProgram():
             cmd_args.append("--compiler-opt-inlining=true")
             cmd_args.append("--compiler-max-inline-bytecodes=45")
             cmd_args.append("--compiler-opt-level=2")
-            cmd_args.append(
-                f"--builtins-dts={CODE_ROOT}/arkcompiler/ets_runtime/ecmascript/ts_types/lib_ark_builtins.d.abc")
             cmd_args.append(f'--compiler-pgo-profiler-path={file_name_pre}.ap')
             cmd_args.append(f'--aot-file={file_name_pre}')
             cmd_args.append(self.abc_file)

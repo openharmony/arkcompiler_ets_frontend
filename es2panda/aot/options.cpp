@@ -217,10 +217,6 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opRecordSource("record-source", false, "Record all functions' source codes to support the "\
         "using of [function].toString()");
 
-    // type extractor
-    panda::PandArg<bool> opTypeExtractor("type-extractor", false, "Enable type extractor for typescript");
-    panda::PandArg<bool> opTypeDtsBuiltin("type-dts-builtin", false, "Enable builtin type extractor for .d.ts file");
-
     // compiler
     panda::PandArg<bool> opEnableAbcInput("enable-abc-input", false, "Reserved");
     panda::PandArg<bool> opDumpAsmProgram("dump-asm-program", false, "Reserved");
@@ -277,8 +273,6 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opRecordSource);
     argparser_->Add(&opParseOnly);
     argparser_->Add(&opEnableTypeCheck);
-    argparser_->Add(&opTypeExtractor);
-    argparser_->Add(&opTypeDtsBuiltin);
     argparser_->Add(&opEnableAbcInput);
     argparser_->Add(&opDumpAsmProgram);
     argparser_->Add(&opDumpAssembly);
@@ -368,16 +362,6 @@ bool Options::Parse(int argc, const char **argv)
     } else {
         scriptKind_ = es2panda::parser::ScriptKind::SCRIPT;
     }
-
-    auto parseTypeExtractor = [&opTypeExtractor, &opTypeDtsBuiltin, this]() {
-        compilerOptions_.typeExtractor = opTypeExtractor.GetValue();
-        if (compilerOptions_.typeExtractor) {
-            compilerOptions_.typeDtsBuiltin = opTypeDtsBuiltin.GetValue();
-            DCOUT << "[LOG]TypeExtractor is enabled, type-dts-builtin: " <<
-                compilerOptions_.typeDtsBuiltin << std::endl;
-        }
-    };
-    parseTypeExtractor();  // Type Extractor is only enabled for TypeScript
 
     std::string extension = inputExtension.GetValue();
     if (!extension.empty()) {

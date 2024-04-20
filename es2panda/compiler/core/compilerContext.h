@@ -31,11 +31,6 @@ namespace panda::es2panda::binder {
 class Binder;
 }  // namespace panda::es2panda::binder
 
-namespace panda::es2panda::extractor {
-class TypeRecorder;
-class TypeExtractor;
-}  // namespace panda::es2panda::extractor
-
 namespace panda::es2panda::compiler {
 
 class DebugInfo;
@@ -44,7 +39,7 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, bool isRecordSource,
+                    bool isMergeAbc, bool isJsonInputFile, bool isRecordSource,
                     const std::string &sourceFile, const std::string &pkgName, util::StringView recordName,
                     util::PatchFix *patchFixHelper);
 
@@ -113,24 +108,6 @@ public:
         return recordName_;
     }
 
-    bool IsTypeExtractorEnabled() const
-    {
-        return isTypeExtractorEnabled_;
-    }
-
-    extractor::TypeRecorder *TypeRecorder() const
-    {
-        return recorder_;
-    }
-
-    extractor::TypeExtractor *TypeExtractor() const
-    {
-        return extractor_;
-    }
-
-    void SetTypeRecorder(extractor::TypeRecorder *recorder);
-    void SetTypeExtractor(extractor::TypeExtractor *extractor);
-
     bool IsJsonInputFile() const
     {
         return isJsonInputFile_;
@@ -149,13 +126,9 @@ private:
     bool isDebug_;
     bool isDebuggerEvaluateExpressionMode_;
     bool isMergeAbc_;
-    // For Type Extractor
-    bool isTypeExtractorEnabled_;
     // true when input file is json file
     bool isJsonInputFile_;
     bool isRecordSource_;
-    extractor::TypeRecorder *recorder_ {};
-    extractor::TypeExtractor *extractor_ {};
     std::string sourceFile_;
     std::string pkgName_;
     util::StringView recordName_;

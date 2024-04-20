@@ -41,7 +41,6 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/statement.h>
-#include <typescript/extractor/typeExtractor.h>
 #include <util/concurrent.h>
 #include <util/helpers.h>
 #include <util/patchFix.h>
@@ -271,27 +270,6 @@ void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
         }
         MoveVreg(node, param->Vreg(), targetReg++);
     }
-
-    auto fn = [this](const ir::AstNode *node) {
-        // For function type, node here is ScriptFunction or BlockStatement
-        if (node->IsScriptFunction()) {
-            typedFunc_.first = context_->TypeRecorder()->GetNodeTypeIndex(node);
-        }
-        // For method 'this' type, node's parent should be FunctionExpression
-        if (node->Parent() != nullptr && node->Parent()->Parent() != nullptr) {
-            auto method = node->Parent()->Parent();
-            if (method->IsMethodDefinition()) {
-                auto typeIndex = context_->TypeRecorder()->GetNodeTypeIndex(method->Parent());
-                if (!method->AsMethodDefinition()->IsStatic()) {
-                    typeIndex = context_->TypeRecorder()->GetClassInst(typeIndex);
-                }
-                typedFunc_.second = typeIndex;
-            }
-        }
-    };
-    if (context_->IsTypeExtractorEnabled()) {
-        fn(node);
-    }
 }
 
 LiteralBuffer *PandaGen::NewLiteralBuffer()
@@ -430,11 +408,6 @@ void PandaGen::StoreAccumulator(const ir::AstNode *node, VReg vreg)
     ra_.Emit<Sta>(node, vreg);
 }
 
-void PandaGen::StoreAccumulatorWithType(const ir::AstNode *node, int64_t typeIndex, VReg vreg)
-{
-    ra_.EmitWithType<Sta>(node, typeIndex, vreg);
-}
-
 void PandaGen::LoadAccFromArgs(const ir::AstNode *node)
 {
     const auto *varScope = scope_->AsVariableScope();
@@ -550,12 +523,7 @@ void PandaGen::TryLoadGlobalByName(const ir::AstNode *node, const util::StringVi
     if (isDebuggerEvaluateExpressionMode()) {
         LoadObjByNameViaDebugger(node, name, true);
     } else {
-        int64_t typeIndex = extractor::TypeExtractor::GetBuiltinTypeIndex(name);
-        if (context_->IsTypeExtractorEnabled() && typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            ra_.EmitWithType<Tryldglobalbyname>(node, typeIndex, 0, name);
-        } else {
-            ra_.Emit<Tryldglobalbyname>(node, 0, name);
-        }
+        ra_.Emit<Tryldglobalbyname>(node, 0, name);
     }
     strings_.insert(name);
 }
@@ -1797,16 +1765,6 @@ void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder:
         return;
     }
 
-    if (Context()->IsTypeExtractorEnabled()) {
-        const ir::Identifier *identifier = nullptr;
-        const ir::AstNode *declareNode = Context()->TypeExtractor()->GetDeclNodeFromIdentifier(node->AsIdentifier(), &identifier);
-        int64_t typeIndex = Context()->TypeRecorder()->GetNodeTypeIndex(declareNode);
-        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            index <= util::Helpers::MAX_INT8 ? ra_.EmitWithType<Ldexternalmodulevar>(node, typeIndex, index) :
-                                               ra_.EmitWithType<WideLdexternalmodulevar>(node, typeIndex, index);
-            return;
-        }
-    }
     index <= util::Helpers::MAX_INT8 ? ra_.Emit<Ldexternalmodulevar>(node, index) :
                                        ra_.Emit<WideLdexternalmodulevar>(node, index);
 }
@@ -1814,14 +1772,6 @@ void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder:
 void PandaGen::StoreModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
-    if (Context()->IsTypeExtractorEnabled()) {
-        int64_t typeIndex = Context()->TypeRecorder()->GetNodeTypeIndex(node);
-        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            index <= util::Helpers::MAX_INT8 ? ra_.EmitWithType<Stmodulevar>(node, typeIndex, index) :
-                                               ra_.EmitWithType<WideStmodulevar>(node, typeIndex, index);
-            return;
-        }
-    }
     index <= util::Helpers::MAX_INT8 ? ra_.Emit<Stmodulevar>(node, index) :
                                        ra_.Emit<WideStmodulevar>(node, index);
 }
@@ -1960,25 +1910,6 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
     }
     RegScope rs(this);
     VReg value = AllocReg();
-    if (context_->IsTypeExtractorEnabled()) {
-        auto fn = [&node, &level, &slot, &local, &value, this](auto typeIndex, const auto &tag) {
-            if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-                StoreAccumulatorWithType(node, typeIndex, value);
-                DCOUT << "[LOG]Lexical vreg in " << tag << " has type index: " << local->Name() <<
-                    "@" << local << " | " << typeIndex << std::endl;
-                StoreLexicalVar(node, level, slot, value);
-                return true;
-            }
-            return false;
-        };
-        if (fn(context_->TypeRecorder()->GetVariableTypeIndex(local), "variable")) {
-            return;
-        }
-        if (fn(context_->TypeRecorder()->GetNodeTypeIndex(node), "declnode")) {
-            return;
-        }
-        DCOUT << "[WARNING]Lexical vreg lose type index: " << local->Name() << "@" << local << std::endl;
-    }
     StoreAccumulator(node, value);
     StoreLexicalVar(node, level, slot, value);
 }
