@@ -101,6 +101,14 @@ void CompileFileJob::Run()
         return;
     }
 
+    if (!options_->aopTransform.empty()) {
+        std::string tempOutput = util::Helpers::AopTransform(prog, src_->fileName,  options_->aopTransform);
+        if (!tempOutput.empty()) {
+            //transformed ABC >> transformed program
+            prog =  compiler.AbcToAsmProgram(tempOutput, *options_);
+        }
+    }
+
     if (options_->optLevel != 0 && src_->isSourceMode) {
         util::Helpers::OptimizeProgram(prog, src_->fileName);
     }

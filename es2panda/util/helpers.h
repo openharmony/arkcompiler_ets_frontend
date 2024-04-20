@@ -106,6 +106,7 @@ public:
     static SignedNumberLiteral GetSignedNumberLiteral(const ir::Expression *expr);
 
     static void OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile);
+    static std::string AopTransform(panda::pandasm::Program *prog,  const std::string &inputFile, const std::string &aopTransformPath);
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);

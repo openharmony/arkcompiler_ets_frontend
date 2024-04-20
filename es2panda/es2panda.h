@@ -103,6 +103,7 @@ struct CompilerOptions {
     bool bcMinVersion {false};
     int targetApiVersion {0};
     std::unordered_map<std::string, std::string> cacheFiles;
+    std::string aopTransform {};
 };
 
 enum class ErrorType {
@@ -203,6 +204,8 @@ public:
     {
         return error_;
     }
+    
+    panda::pandasm::Program *AbcToAsmProgram(const std::string &fname, const CompilerOptions &options);
 
 private:
     util::PatchFix *InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,
@@ -211,7 +214,6 @@ private:
     void CheckCompilerOptionsForAbcInput(const std::string &fname, const CompilerOptions &options);
     void CheckUnsupportOptionsForAbcInput(const std::string &fname, const CompilerOptions &options);
     void ChecktargetApiVersionIsSupportedForAbcInput(const CompilerOptions &options);
-    panda::pandasm::Program *AbcToAsmProgram(const std::string &fname, const CompilerOptions &options);
 
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;

@@ -59,6 +59,7 @@
 #endif
 #include <fstream>
 #include <iostream>
+#include <dlfcn.h>
 
 namespace panda::es2panda::util {
 
@@ -665,6 +666,58 @@ void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string 
     }
 
     std::remove(tempOutput.c_str());
+#endif
+}
+
+std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::string &inputFile, const std::string &aopTransformPath)
+{
+    std::map<std::string, size_t> stat;
+    std::map<std::string, size_t> *statp = &stat;
+    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps{};
+    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = &maps;
+
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
+                                    panda::Logger::Component::BYTECODE_OPTIMIZER |
+                                    panda::Logger::Component::COMPILER;
+    panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
+
+    std::string pid;
+#ifdef PANDA_TARGET_WINDOWS
+    pid = std::to_string(GetCurrentProcessId());
+#else
+    pid = std::to_string(getpid());
+#endif
+    const std::string outputSuffix = ".unopt.abc";
+    std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
+
+    //step progam >> untransformed ABC
+     if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
+        std::remove(tempOutput.c_str());
+        return "";
+    }
+
+	//step dlopen
+    void *handler = dlopen(aopTransformPath.c_str(), RTLD_LAZY);
+    if(!handler){
+        std::string msg = "dlopen error : " + aopTransformPath;
+        std::cerr << msg << std::endl;
+        throw Error {ErrorType::GENERIC, msg};
+    }
+
+    //step dlsym
+    void *transform = dlsym(handler, "Transform");
+   if(!transform){
+        std::string msg = "dlsym error : " + aopTransformPath + " , Transform";
+        std::cerr << msg << std::endl;
+        throw Error {ErrorType::GENERIC, msg};
+    }
+    void (*transformPtr)(const char *) = reinterpret_cast<void (*)(const char *)>(transform); 
+
+    //step invoke, untransformed ABC >> transformed ABC
+    transformPtr(tempOutput.c_str());
+
+    return tempOutput;
 #endif
 }
 
