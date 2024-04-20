@@ -47,6 +47,11 @@ const minParametersNum: number = 3;
   let obfuscator: ArkObfuscator = new ArkObfuscator(fileList, configPath);
   performancePrinter?.iniPrinter?.startEvent(EventList.OBFUSCATION_INITIALIZATION);
   const initSuccess: boolean = obfuscator.init();
+  let inplace: boolean = program.opts()?.inplace;
+  if (inplace) {
+    obfuscator.setWriteOriginalFile(true);
+  }
+
   UnitTestUtil.initKeepPathConfig(obfuscator.customProfiles, obfuscator.configPath);
   performancePrinter?.iniPrinter?.endEvent(EventList.OBFUSCATION_INITIALIZATION);
   if (!initSuccess) {
@@ -63,6 +68,7 @@ function initOptionsSetting(): void {
     .description('A tool to obfuscate open harmony application written by Javascript or Typescript.')
     .usage('Usage: SecHarmony [input files] [options]')
     .option('-v, --version', 'show version information.')
+    .option('--inplace', 'write the ofuscated content to the original file')
     .option('-cp, --config-path <dir>', 'obfuscation configuration for open harmony application.')
     .parse();
 }

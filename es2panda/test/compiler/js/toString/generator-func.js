@@ -14,7 +14,7 @@
  */
 
 "use strict";
-function *a() {
+function* a() {
     "show source";
     print(111);
 }

@@ -68,7 +68,6 @@ def check_timeout(value):
             "%s is an invalid timeout value" % value)
     return ivalue
 
-
 def get_args():
     parser = argparse.ArgumentParser(description="Regression test runner")
     parser.add_argument(
@@ -167,6 +166,8 @@ def get_args():
         help='run debugger tests')
     parser.add_argument('--debug', dest='debug', action='store_true', default=False,
         help='run debug tests')
+    parser.add_argument('--enable-arkguard', action='store_true', dest='enable_arkguard', default=False,
+        help='enable arkguard for compiler tests')
 
     return parser.parse_args()
 
@@ -885,6 +886,31 @@ class CompilerTest(Test):
     def __init__(self, test_path, flags):
         Test.__init__(self, test_path, flags)
 
+    def execute_arkguard(self, runner):
+        input_file_path = self.path
+        arkguard_root_dir = os.path.join(runner.test_root, "../../arkguard")
+        arkgurad_entry_path = os.path.join(arkguard_root_dir, "lib/cli/SecHarmony.js")
+        config_path = os.path.join(arkguard_root_dir, "test/compilerTestConfig.json")
+        arkguard_cmd = [
+            'node',
+            '--no-warnings',
+            arkgurad_entry_path,
+            input_file_path,
+            '--config-path',
+            config_path,
+            '--inplace'
+        ]
+        self.log_cmd(arkguard_cmd)
+        process = subprocess.Popen(arkguard_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        process.wait()
+        success = True
+        if err or process.returncode != 0:
+            success = False
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+        return success
+
     def run(self, runner):
         test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
         test_abc_path = path.join(runner.build_dir, test_abc_name)
@@ -893,6 +919,12 @@ class CompilerTest(Test):
         es2abc_cmd.extend(["--output=" + test_abc_path])
         es2abc_cmd.append(self.path)
         self.log_cmd(es2abc_cmd)
+
+        enable_arkguard = runner.args.enable_arkguard
+        if enable_arkguard:
+            success = self.execute_arkguard(runner)
+            if not success:
+                return self
 
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
@@ -1364,6 +1396,30 @@ class BytecodeRunner(Runner):
     def test_path(self, src):
         return src
 
+class CompilerTestInfo(object):
+    def __init__(self, dir, extension, flags):
+        self.dir = dir;
+        self.extension = extension;
+        self.flags = flags;
+
+    def update_dir(self, prefiex_dir):
+        self.dir = os.path.sep.join([prefiex_dir, self.dir])
+
+# Copy compiler directory to test/.local directory, and do inplace obfuscation.
+def prepare_for_obfuscation(compiler_test_infos, test_root):
+    tmp_dir_name = ".local"
+    tmp_path = os.path.join(test_root, tmp_dir_name)
+    if not os.path.exists(tmp_path):
+        os.mkdir(tmp_path)
+    src_dir = os.path.join(test_root, "compiler")
+    target_dir = os.path.join(tmp_path, "compiler")
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
+    shutil.copytree(src_dir, target_dir)
+
+    for info in compiler_test_infos:
+        info.update_dir(tmp_dir_name)
+
 def main():
     args = get_args()
 
@@ -1436,15 +1492,22 @@ def main():
 
     if args.compiler:
         runner = CompilerRunner(args)
-        runner.add_directory("compiler/js", "js", [])
-        runner.add_directory("compiler/ts/cases", "ts", [])
-        runner.add_directory("compiler/ts/projects", "ts", ["--module"])
-        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
-        runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
-        runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
-        runner.add_directory("compiler/recordsource/with-on", "js", ["--record-source"])
-        runner.add_directory("compiler/recordsource/with-off", "js", [])
-        runner.add_directory("compiler/interpreter/lexicalEnv", "js", [])
+        compiler_test_infos = []
+        compiler_test_infos.append(CompilerTestInfo("compiler/js", "js", []))
+        compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
+        compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
+        compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
+        compiler_test_infos.append(CompilerTestInfo("compiler/dts", "d.ts", ["--module", "--opt-level=0"]))
+        compiler_test_infos.append(CompilerTestInfo("compiler/commonjs", "js", ["--commonjs"]))
+        compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
+        compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
+        compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
+
+        if args.enable_arkguard:
+            prepare_for_obfuscation(compiler_test_infos, runner.test_root)
+
+        for info in compiler_test_infos:
+            runner.add_directory(info.dir, info.extension, info.flags)
 
         runners.append(runner)
 

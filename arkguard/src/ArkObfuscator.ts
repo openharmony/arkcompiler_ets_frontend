@@ -86,6 +86,9 @@ type ObfuscationResultType = {
 
 const JSON_TEXT_INDENT_LENGTH: number = 2;
 export class ArkObfuscator {
+  // Used only for testing
+  private mWriteOriginalFile: boolean = false;
+
   // A text writer of Printer
   private mTextWriter: EmitTextWriter;
 
@@ -113,6 +116,10 @@ export class ArkObfuscator {
     this.mConfigPath = configPath;
     this.mCompilerOptions = {};
     this.mTransformers = [];
+  }
+
+  public setWriteOriginalFile(flag: boolean) {
+    this.mWriteOriginalFile = flag;
   }
 
   public addReservedProperties(newReservedProperties: string[]): void {
@@ -422,6 +429,11 @@ export class ArkObfuscator {
     const mixedInfo: ObfuscationResultType = await this.obfuscate(content, sourceFilePath);
     performancePrinter?.filesPrinter?.endEvent(sourceFilePath, undefined, true);
 
+    if (this.mWriteOriginalFile && mixedInfo) {
+      // Write the obfuscated content directly to orignal file.
+      fs.writeFileSync(sourceFilePath, mixedInfo.content);
+      return;
+    }
     if (outputDir && mixedInfo) {
       // the writing file is for the ut.
       const testCasesRootPath = path.join(__dirname, '../', 'test/grammar');

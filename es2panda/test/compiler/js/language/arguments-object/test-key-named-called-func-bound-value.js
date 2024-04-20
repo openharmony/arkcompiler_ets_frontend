@@ -14,84 +14,84 @@
  */
 
 var obj = {
-    2e3 : function() {
-        "show source"
+    2e3: function () {
+        "show source";
         return "Successfully called key 2e3";
     },
-    1000 : function() {
-        "show source"
+    1000: function () {
+        "show source";
         return "Successfully called key 1000";
     },
-    NaN : function() {
-        "show source"
+    NaN: function () {
+        "show source";
         return "Successfully called key NaN";
     },
-    0.0 : function() {
-        "show source"
+    0.0: function () {
+        "show source";
         return "Successfully called key 0.0";
     },
-    Infinity : function() {
-        "show source"
+    Infinity: function () {
+        "show source";
         return "Successfully called key Infinity";
     },
-    1e-6 : function() {
-        "show source"
+    1e-6: function () {
+        "show source";
         return "Successfully called key 1e-6";
     },
-    0.000002 : function() {
-        "show source"
+    0.000002: function () {
+        "show source";
         return "Successfully called key 0.000002";
     },
-    1e-7 : function() {
-        "show source"
+    1e-7: function () {
+        "show source";
         return "Successfully called key 1e-7";
     },
-    0.0000002 : function() {
-        "show source"
+    0.0000002: function () {
+        "show source";
         return "Successfully called key 0.0000002";
     },
-    0.1 : function() {
-        "show source"
+    0.1: function () {
+        "show source";
         return "Successfully called key 0.1";
     },
-    1.1 : function() {
-        "show source"
+    1.1: function () {
+        "show source";
         return "Successfully called key 1.1";
     },
-    1e20 : function() {
-        "show source"
+    1e20: function () {
+        "show source";
         return "Successfully called key 1e20";
     },
-    200000000000000000000 : function() {
-        "show source"
+    200000000000000000000: function () {
+        "show source";
         return "Successfully called key 200000000000000000000";
     },
-    1e21 : function() {
-        "show source"
+    1e21: function () {
+        "show source";
         return "Successfully called key 1e21";
     },
-    2000000000000000000000 : function() {
-        "show source"
+    2000000000000000000000: function () {
+        "show source";
         return "Successfully called key 2000000000000000000000";
     },
-    1234567890123456 : function() {
-        "show source"
+    1234567890123456: function () {
+        "show source";
         return "Successfully called key 1234567890123456";
     },
-    12345678901234567 : function() {
-        "show source"
+    12345678901234567: function () {
+        "show source";
         return "Successfully called key 12345678901234567";
     },
-    12345678901234567 : function() {
-        "show source"
+    12345678901234567: function () {
+        "show source";
         return "Successfully called key 12345678901234567";
     },
-    123456789012345678 : function() {
-        "show source"
+    123456789012345678: function () {
+        "show source";
         return "Successfully called key 123456789012345678";
     },
-    123456789012345678 : function() {
-        "show source"
+    123456789012345678: function () {
+        "show source";
         return "Successfully called key 123456789012345678";
     },
 };

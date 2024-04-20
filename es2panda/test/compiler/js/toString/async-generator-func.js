@@ -14,7 +14,7 @@
  */
 
 "use strict";
-async function *a() {
+async function* a() {
     "show source";
     print(111);
 }

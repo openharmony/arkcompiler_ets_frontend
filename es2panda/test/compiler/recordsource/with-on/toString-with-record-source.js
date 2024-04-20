@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function foo(){
+function foo() {
 }
 
 print(foo.toString())
