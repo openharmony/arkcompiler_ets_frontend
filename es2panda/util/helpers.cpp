@@ -676,49 +676,46 @@ std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::str
     panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps{};
     panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = &maps;
 
-#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-    const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
-                                    panda::Logger::Component::BYTECODE_OPTIMIZER |
-                                    panda::Logger::Component::COMPILER;
-    panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
-
     std::string pid;
 #ifdef PANDA_TARGET_WINDOWS
     pid = std::to_string(GetCurrentProcessId());
 #else
     pid = std::to_string(getpid());
 #endif
-    const std::string outputSuffix = ".unopt.abc";
+    const std::string outputSuffix = ".aop.abc";
     std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
 
     //step progam >> untransformed ABC
-     if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
+    if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
         std::remove(tempOutput.c_str());
+        std::string msg = "AsmEmitter::Emit error : " + aopTransformPath;
+        std::cerr << msg << std::endl;
         return "";
     }
 
 	//step dlopen
     void *handler = dlopen(aopTransformPath.c_str(), RTLD_LAZY);
     if(!handler){
-        std::string msg = "dlopen error : " + aopTransformPath;
+        std::string msg = "dlopen error : " + aopTransformPath + " , " + dlerror();
         std::cerr << msg << std::endl;
-        throw Error {ErrorType::GENERIC, msg};
+        return "";
     }
 
     //step dlsym
     void *transform = dlsym(handler, "Transform");
    if(!transform){
-        std::string msg = "dlsym error : " + aopTransformPath + " , Transform";
+        std::string msg = "dlsym error : " + aopTransformPath + " ,  Transform , " + dlerror() ;
         std::cerr << msg << std::endl;
-        throw Error {ErrorType::GENERIC, msg};
+        dlclose(handler);
+        return "";
     }
     void (*transformPtr)(const char *) = reinterpret_cast<void (*)(const char *)>(transform); 
 
     //step invoke, untransformed ABC >> transformed ABC
     transformPtr(tempOutput.c_str());
 
+    dlclose(handler);
     return tempOutput;
-#endif
 }
 
 bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
