@@ -520,7 +520,8 @@ void ClassDefinition::BuildClassEnvironment(bool useDefineSemantic)
     }
 }
 
-void ClassDefinition::AddFieldType(FieldType &fieldType, const Expression *typeAnnotation) const
+void ClassDefinition::AddFieldType(FieldType &fieldType, const Expression *typeAnnotation,
+    compiler::PandaGen *pg) const
 {
     switch (typeAnnotation->Type()) {
         case AstNodeType::TS_NUMBER_KEYWORD: {
@@ -536,7 +537,7 @@ void ClassDefinition::AddFieldType(FieldType &fieldType, const Expression *typeA
             break;
         }
         case AstNodeType::TS_TYPE_REFERENCE: {
-            AddFieldTypeForTypeReference(typeAnnotation->AsTSTypeReference(), fieldType);
+            AddFieldTypeForTypeReference(typeAnnotation->AsTSTypeReference(), fieldType, pg);
             break;
         }
         case AstNodeType::TS_BIGINT_KEYWORD: {
@@ -557,7 +558,8 @@ void ClassDefinition::AddFieldType(FieldType &fieldType, const Expression *typeA
     }
 }
 
-void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType) const
+void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeReference, FieldType &fieldType,
+    compiler::PandaGen *pg) const
 {
     auto typeName = typeReference->TypeName();
     ASSERT(typeName != nullptr);
@@ -566,13 +568,20 @@ void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeRe
         util::StringView propertyName = typeName->AsIdentifier()->Name();
         binder::ScopeFindResult result = scope_->Find(propertyName);
 
+        // identify import type
+        parser::SourceTextModuleRecord *moduleRecord = pg->Binder()->Program()->TypeModuleRecord();
+        const auto &regularImportEntries = moduleRecord->GetRegularImportEntries();
+        if (regularImportEntries.find(propertyName) != regularImportEntries.end()) {
+            fieldType |= FieldType::GENERIC;
+            return;
+        }
+
         if (IsTypeParam(propertyName) || (result.variable != nullptr && result.variable->IsModuleVariable())) {
             fieldType |= FieldType::GENERIC;
             return;
         }
 
-        const ir::Identifier *identifier = nullptr;
-        const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier(), &identifier);
+        const ir::AstNode *declNode = GetDeclNodeFromIdentifier(typeName->AsIdentifier());
 
         if (declNode != nullptr) {
             auto originalNode = declNode->Original();
@@ -587,8 +596,7 @@ void ClassDefinition::AddFieldTypeForTypeReference(const TSTypeReference *typeRe
     fieldType |= FieldType::TS_TYPE_REF;
 }
 
-const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifier *identifier,
-    const ir::Identifier **variable) const
+const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifier *identifier) const
 {
     if (identifier == nullptr) {
         return nullptr;
@@ -607,7 +615,6 @@ const ir::AstNode *ClassDefinition::GetDeclNodeFromIdentifier(const ir::Identifi
         }
 
         auto res = v->Declaration()->Node();
-        *variable = identifier;
         return res;
     }
     return nullptr;
@@ -653,10 +660,10 @@ int32_t ClassDefinition::CreateFieldTypeBuffer(compiler::PandaGen *pg) const
         }
         if (typeAnnotation->IsTSUnionType()) {
             for (const auto *type : typeAnnotation->AsTSUnionType()->Types()) {
-                AddFieldType(fieldType, type);
+                AddFieldType(fieldType, type, pg);
             }
         } else {
-            AddFieldType(fieldType, typeAnnotation);
+            AddFieldType(fieldType, typeAnnotation, pg);
         }
         buf->Add(pg->Allocator()->New<NumberLiteral>(static_cast<uint8_t>(fieldType)));
     }

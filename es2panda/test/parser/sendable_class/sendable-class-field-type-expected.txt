@@ -46,9 +46,9 @@ label_2:
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 
+	definefunc 0x0, .Test, 0x0
 	ldundefined
 	sta v0
-	definefunc 0x0, .Test, 0x0
 	definefunc 0x1, .#14695981039346656037#, 0x1
 	sta v1
 	lda v0
@@ -80,7 +80,7 @@ slot _0
 {
   index: 1
     tag: 5
-    val: ./test
+    val: ./test1
 },
 {
   index: 2
@@ -421,12 +421,32 @@ slot _3
 {
   index: 40
     tag: 0
-    val: 2
+    val: 5
 },
 {
   index: 41
+    tag: 5
+    val: hair
+},
+{
+  index: 42
+    tag: 0
+    val: 2
+},
+{
+  index: 43
     tag: 2
-    val: 10
+    val: 32
+},
+{
+  index: 44
+    tag: 0
+    val: 2
+},
+{
+  index: 45
+    tag: 2
+    val: 11
 },
 ------------------------------------
 slot _4
