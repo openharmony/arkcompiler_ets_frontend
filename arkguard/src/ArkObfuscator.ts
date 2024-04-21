@@ -68,6 +68,9 @@ import type { ProjectInfo } from './common/type';
 export {FileUtils} from './utils/FileUtils';
 export { MemoryUtils } from './utils/MemoryUtils';
 import {TypeUtils} from './utils/TypeUtils';
+import { handleReservedConfig } from './utils/TransformUtil';
+export { separateUniversalReservedItem, containWildcards, wildcardTransformer } from './utils/TransformUtil';
+export type { ReservedNameInfo } from './utils/TransformUtil';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
@@ -198,8 +201,13 @@ export class ArkObfuscator {
 
     if (this.mConfigPath) {
       config = FileUtils.readFileAsJson(this.mConfigPath);
+      // this.mConfigPath from Arkguard unit test
+      handleReservedConfig(config, 'mNameObfuscation', 'mReservedProperties', 'mUniversalReservedProperties');
     }
 
+    handleReservedConfig(config, 'mNameObfuscation', 'mReservedToplevelNames', 'mUniversalReservedToplevelNames');
+    handleReservedConfig(config, 'mRenameFileName', 'mReservedFileNames', 'mUniversalReservedFileNames');
+    handleReservedConfig(config, 'mRemoveDeclarationComments', 'mReservedComments', 'mUniversalReservedComments', 'mEnable');
     this.mCustomProfiles = config;
 
     if (this.mCustomProfiles.mCompact) {
@@ -366,7 +374,8 @@ export class ArkObfuscator {
     // set print options
     let printerOptions: PrinterOptions = {};
     let removeOption = this.mCustomProfiles.mRemoveDeclarationComments;
-    let keepDeclarationComments = !removeOption || !removeOption.mEnable || (removeOption.mReservedComments && removeOption.mReservedComments.length > 0);
+    let hasReservedList = removeOption?.mReservedComments?.length || removeOption?.mUniversalReservedComments?.length;
+    let keepDeclarationComments = hasReservedList || !(removeOption?.mEnable);
     
     if (isDeclarationFile && keepDeclarationComments) {
       printerOptions.removeComments = false;
@@ -518,14 +527,21 @@ export class ArkObfuscator {
       if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable) {
         //@ts-ignore
         ast.reservedComments = undefined;
+        //@ts-ignore
+        ast.universalReservedComments = undefined;
       } else {
         //@ts-ignore
         ast.reservedComments ??= this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments ? 
           this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments : [];
+        //@ts-ignore
+        ast.universalReservedComments =
+          this.mCustomProfiles.mRemoveDeclarationComments.mUniversalReservedComments ?? [];
       }
     } else {
       //@ts-ignore
-      ast.reservedComments = this.mCustomProfiles.mRemoveComments? [] : undefined;
+      ast.reservedComments = this.mCustomProfiles.mRemoveComments ? [] : undefined;
+      //@ts-ignore
+      ast.universalReservedComments = this.mCustomProfiles.mRemoveComments ? [] : undefined;
     }
 
     performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);

@@ -346,6 +346,114 @@ The path only supports relative paths, `./` and `../` are relative to the direct
 ```
 Note: This option does not affect the function of file name obfuscation `-enable-filename-obfuscation`
 
+### Keep options support wildcards
+#### Wildcards for name categories
+The following options support configuring wildcards for name categories:<br>
+`-keep-property-name`<br>
+`-keep-global-name`<br>
+`-keep-file-name`<br>
+`-keep-comments`<br>
+
+The usage of name categories wildcards is as follows:
+
+| Wildcard | Meaning                              | Example                                            |
+| -------- | ------------------------------------ | -------------------------------------------------- |
+| ?        | Matches any single character         | "AB?" can match "ABC", etc., but cannot match "AB" |
+| \*       | Matches any number of any characters | "*AB*" can match "AB", "aABb", "cAB", "ABc", etc.  |
+
+**Examples**：
+
+Retains all property names starting with 'a':
+```
+-keep-property-name
+a*
+```
+
+Retains all single-character property names:
+```
+-keep-property-name
+?
+```
+
+Retains all property names:
+
+```
+-keep-property-name
+*
+```
+
+
+#### Wildcards for path categories
+The following options support configuring wildcards for path categories:
+
+`-keep`
+
+The usage of path categories wildcards is as follows:
+
+| Wildcard | Meaning                                                                                                                                             | Example                                                       |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| ?        | Matches any single character except path separator '/'                                                                                              | "../a?" can match "../ab", etc., but cannot match "../a/"     |
+| \*       | Matches any number of any characters except path separator '/'                                                                                      | "../a*/c" can match "../ab/c", but cannot match "../ab/d/s/c" |
+| \*\*     | Matches any number of any characters                                                                                                                | "../a**/c" can match "../ab/c", and also "../ab/d/s/c"        |
+| !        | Represents negation and can only be written at the beginning of a path to exclude certain cases that already exist in the user-configured whitelist | "!../a/b/c.ets" means except "../a/b/c.ets"                   |
+
+**Examples**：
+
+Indicates that the c.ets files in all folders in ../a/b/ (excluding subfolders) will not be obfuscated:
+```
+-keep
+../a/b/*/c.ets
+```
+
+Indicates that the c.ets files in all folders in ../a/b/ (including subfolders) will not be obfuscated:
+```
+-keep
+../a/b/**/c.ets
+```
+
+Indicates that except for the c.ets file, all other files in ../a/b/ will not be obfuscated:
+
+```
+-keep
+../a/b/
+!../a/b/c.ets
+```
+
+Meaningless:
+
+```
+-keep
+!../a/b/c.ets
+```
+
+Indicates that all files will not be obfuscated:
+
+```
+-keep
+*
+```
+
+**Note**：
+
+(1)The above options do not support configuring wildcards '*', '?', '!' for other meanings.
+
+For example:
+```
+class A {
+  '*'= 1
+}
+-keep-property-name
+*
+```
+
+It becomes ineffective when you only want to retain the '\*' property.
+
+Here, \* indicates matching any number of any characters, resulting in all property names not being obfuscated, rather than only '\*' not being obfuscated.
+
+(2) The -keep option only allows the use of '/' as the path separator and does not support '\\' or '\\\\'.
+
+(3) The whitelist does not support configuring the following special characters: '\\', '\^', '\$', '\.', '\+', '\|', '\[', '\]', '\{', '\}', '\(', '\)'.
+
 ### Comments
 
 You can write comments in obfuscation rule file by using `#`. The line begins with `#` is treated as comment.
