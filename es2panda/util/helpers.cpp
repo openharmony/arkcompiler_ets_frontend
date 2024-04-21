@@ -671,11 +671,6 @@ void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string 
 
 std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::string &inputFile, const std::string &aopTransformPath)
 {
-    std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = &stat;
-    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps{};
-    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = &maps;
-
     std::string pid;
 #ifdef PANDA_TARGET_WINDOWS
     pid = std::to_string(GetCurrentProcessId());
@@ -686,7 +681,7 @@ std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::str
     std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
 
     //step progam >> untransformed ABC
-    if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
+    if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, nullptr, nullptr, true)) {
         std::remove(tempOutput.c_str());
         std::string msg = "AsmEmitter::Emit error : " + aopTransformPath;
         std::cerr << msg << std::endl;
