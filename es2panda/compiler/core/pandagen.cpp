@@ -1242,7 +1242,7 @@ void PandaGen::EmitAwait(const ir::AstNode *node)
 void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
     LoadAccumulator(node, startReg); // callee is load to acc
-    VReg thisReg = startReg + 1;
+    VReg thisReg = startReg + 1; // This dependency is used in other places, do not modify.
     switch (argCount) {
         case 1: { // no args
             ra_.Emit<Callthis0>(node, 0, thisReg);
