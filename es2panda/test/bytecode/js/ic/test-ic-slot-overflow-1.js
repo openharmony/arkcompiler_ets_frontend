@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+// This test case is to ensure that the 8-bit ic slot does not overflow
 class A {
     a1 = 1;
     a2 = 2;
