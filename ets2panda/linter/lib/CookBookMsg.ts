@@ -16,7 +16,7 @@
 export const cookBookMsg: string[] = [];
 export const cookBookTag: string[] = [];
 
-for (let i = 0; i <= 162; i++) {
+for (let i = 0; i <= 164; i++) {
   cookBookMsg[i] = '';
 }
 
@@ -187,4 +187,5 @@ cookBookTag[159] = 'Objects of "Sendable" type can not be initialized using obje
 cookBookTag[160] = 'Computed property names are not allowed in "Sendable" classes and interfaces (arkts-sendable-computed-prop-name)';
 cookBookTag[161] = 'Casting "Non-sendable" data to "Sendable" type is not allowed (arkts-sendable-as-expr)';
 cookBookTag[162] = 'Importing a module for side-effects only is not supported in shared module (arkts-no-side-effects-imports)';
-
+cookBookTag[163] = 'Only "Sendable" entities can be exported in shared module (arkts-shared-module-exports)';
+cookBookTag[164] = '"export * from ..." is not allowed in shared module (arkts-shared-module-no-wildcard-export)';
