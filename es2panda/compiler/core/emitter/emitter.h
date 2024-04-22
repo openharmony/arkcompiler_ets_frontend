@@ -121,6 +121,11 @@ public:
         return m_;
     };
 
+    const std::unordered_set<uint32_t> &GetConstantLocalExportSlots()
+    {
+        return constant_local_export_slots_;
+    }
+
 private:
     void SetCommonjsField(bool isCommonjs);
     void SetPkgNameField(const std::string &pkgName);
@@ -131,6 +136,11 @@ private:
     std::mutex m_;
     panda::pandasm::Program *prog_;
     panda::pandasm::Record *rec_;
+    // Constant local export module variable slots.
+    // Used by the branch elimination optimization to identify initial constants.
+    // Should be replaced by analyzing the stconstmodulevar instruction in the
+    // bytecode file after it is introduced
+    std::unordered_set<uint32_t> constant_local_export_slots_;
 };
 }  // namespace panda::es2panda::compiler
 

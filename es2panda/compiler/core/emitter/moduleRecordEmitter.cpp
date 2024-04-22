@@ -79,6 +79,7 @@ void ModuleRecordEmitter::GenLocalExportEntries()
     panda::pandasm::LiteralArray::Literal entrySize = {
         .tag_ = panda::panda_file::LiteralTag::INTEGER, .value_ = static_cast<uint32_t>(localExportEntries.size())};
     buffer_.emplace_back(entrySize);
+    std::unordered_set<std::string> local_export_local_names;
     for (auto it = localExportEntries.begin(); it != localExportEntries.end(); ++it) {
         auto *entry = it->second;
         panda::pandasm::LiteralArray::Literal localName = {
@@ -87,6 +88,15 @@ void ModuleRecordEmitter::GenLocalExportEntries()
         panda::pandasm::LiteralArray::Literal exportName = {
             .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->exportName_.Mutf8()};
         buffer_.emplace_back(exportName);
+        // Slot of stmodulevar/ldlocalmodulevar is the index of its local name, while
+        // one local name can match multiple external names with "export...as...".
+        // Local export entries are sorted by their local name, thus using an unrodered_set
+        // can get the correct index form (size - 1) (starts from 0).
+        // See SourceTextModuleRecord::AssignIndexToModuleVariable for more details
+        local_export_local_names.emplace(entry->localName_);
+        if (entry->isConstant_) {
+            constant_local_export_slots_.emplace(local_export_local_names.size() - 1);
+        }
     }
 }
 

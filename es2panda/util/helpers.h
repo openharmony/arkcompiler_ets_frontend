@@ -115,6 +115,8 @@ public:
     static bool IsObjectPropertyValue(const ArenaVector<ir::Expression *> &properties, const ir::AstNode *ident);
     static SignedNumberLiteral GetSignedNumberLiteral(const ir::Expression *expr);
 
+    static void SetConstantLocalExportSlots(const std::string &record, const std::unordered_set<uint32_t> &slots);
+    static void AnalysisProgram(panda::pandasm::Program *prog, const std::string &inputFile);
     static void OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile);
     static bool CheckAopTransformPath(const std::string &libPath);
     static AopTransformFuncDef LoadAopTransformLibFunc(const std::string &libPath,

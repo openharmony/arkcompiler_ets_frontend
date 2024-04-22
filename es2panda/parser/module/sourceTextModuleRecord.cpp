@@ -169,7 +169,13 @@ namespace panda::es2panda::parser {
         for (auto it = localExportEntries_.begin(); it != localExportEntries_.end();
              it = localExportEntries_.upper_bound(it->first))
         {
-            CheckAndAssignIndex(moduleScope, it->first, &index);
+            auto variable = CheckAndAssignIndex(moduleScope, it->first, &index);
+            if (variable != nullptr && variable->IsModuleVariable() && variable->Declaration()->IsConstDecl()) {
+                auto range = localExportEntries_.equal_range(it->first);
+                for (auto local_iter = range.first; local_iter != range.second; local_iter++) {
+                    local_iter->second->SetAsConstant();
+                }
+            }
         }
 
         index = 0;
@@ -178,14 +184,16 @@ namespace panda::es2panda::parser {
         }
     }
 
-    void SourceTextModuleRecord::CheckAndAssignIndex(binder::ModuleScope *moduleScope,
-                                                     util::StringView name,
-                                                     uint32_t *index) const
+    binder::Variable *SourceTextModuleRecord::CheckAndAssignIndex(binder::ModuleScope *moduleScope,
+                                                                  util::StringView name,
+                                                                  uint32_t *index) const
     {
-        if (moduleScope->FindLocal(name) != nullptr) {
+        auto modulevar = moduleScope->FindLocal(name);
+        if (modulevar != nullptr) {
             moduleScope->AssignIndexToModuleVariable(name, *index);
             (*index)++;
         }
+        return modulevar;
     }
 
     void SourceTextModuleRecord::RemoveDefaultLocalExportEntry()

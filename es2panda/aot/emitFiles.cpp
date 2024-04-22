@@ -21,6 +21,23 @@
 #include <protobufSnapshotGenerator.h>
 
 namespace panda::es2panda::aot {
+void EmitFileQueue::ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob)
+{
+    for (const auto &info: progsInfo_) {
+        // generate cache protoBins and set dependencies
+        if (!info.second->needUpdateCache) {
+            continue;
+        }
+        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
+        if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
+            auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
+            emitProtoJob->DependsOn(emitMergedAbcJob);
+            jobs_.push_back(emitProtoJob);
+            jobsCount_++;
+        }
+    }
+}
+
 void EmitFileQueue::Schedule()
 {
     ASSERT(jobsCount_ == 0);
@@ -31,18 +48,10 @@ void EmitFileQueue::Schedule()
         // generate merged abc
         auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(),
             options_->CompilerOptions().transformLib, progsInfo_, targetApi);
-        for (const auto &info: progsInfo_) {
-            // generate cache protoBins and set dependencies
-            if (!info.second->needUpdateCache) {
-                continue;
-            }
-            auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
-            if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
-                auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
-                emitProtoJob->DependsOn(emitMergedAbcJob);
-                jobs_.push_back(emitProtoJob);
-                jobsCount_++;
-            }
+        // Disable generating cached files when cross-program optimization is required, to prevent cached files from
+        // not being invalidated when their dependencies are changed
+        if (!options_->CompilerOptions().requireGlobalOptimization) {
+            ScheduleEmitCacheJobs(emitMergedAbcJob);
         }
         //  One job should be placed after those jobs which depend on it to prevent blocking
         jobs_.push_back(emitMergedAbcJob);
