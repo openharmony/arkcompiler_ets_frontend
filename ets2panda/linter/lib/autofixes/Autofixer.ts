@@ -172,6 +172,234 @@ export class Autofixer {
     return [{ start: funcExpr.getStart(), end: funcExpr.getEnd(), replacementText: text }];
   }
 
+  private static isNodeInWhileOrIf(node: ts.Node): boolean {
+    return node.kind === ts.SyntaxKind.WhileStatement ||
+      node.kind === ts.SyntaxKind.DoStatement ||
+      node.kind === ts.SyntaxKind.IfStatement;
+  }
+
+  private static isNodeInForLoop(node: ts.Node): boolean {
+    return node.kind === ts.SyntaxKind.ForInStatement ||
+      node.kind === ts.SyntaxKind.ForOfStatement ||
+      node.kind === ts.SyntaxKind.ForStatement;
+  }
+
+  private static parentInFor(node: ts.Node): ts.Node | undefined {
+    let parentNode = node.parent;
+    while (parentNode) {
+      if (Autofixer.isNodeInForLoop(parentNode)) {
+        return parentNode;
+      }
+      parentNode = parentNode.parent;
+    }
+    return undefined;
+  }
+
+  private static parentInCaseOrWhile(varDeclList: ts.VariableDeclarationList): boolean {
+    let parentNode: ts.Node = varDeclList.parent;
+    while (parentNode) {
+      if (parentNode.kind === ts.SyntaxKind.CaseClause || Autofixer.isNodeInWhileOrIf(parentNode)) {
+        return false;
+      }
+      parentNode = parentNode.parent;
+    }
+    return true;
+  }
+
+  private static isFunctionLikeDeclarationKind(node: ts.Node): boolean {
+    switch (node.kind) {
+      case ts.SyntaxKind.FunctionDeclaration:
+      case ts.SyntaxKind.MethodDeclaration:
+      case ts.SyntaxKind.Constructor:
+      case ts.SyntaxKind.GetAccessor:
+      case ts.SyntaxKind.SetAccessor:
+      case ts.SyntaxKind.FunctionExpression:
+      case ts.SyntaxKind.ArrowFunction:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  private static findVarScope(node: ts.Node): ts.Node {
+    while (node !== undefined) {
+      if (node.kind === ts.SyntaxKind.Block || node.kind === ts.SyntaxKind.SourceFile) {
+        break;
+      }
+      node = node.parent;
+    }
+    return node;
+  }
+
+  private static varHasScope(node: ts.Node, scope: ts.Node): boolean {
+    while (node !== undefined) {
+      if (node === scope) {
+        return true;
+      }
+      node = node.parent;
+    }
+    return false;
+  }
+
+  private static varInFunctionForScope(node: ts.Node, scope: ts.Node): boolean {
+    while (node !== undefined) {
+      if (Autofixer.isFunctionLikeDeclarationKind(node)) {
+        break;
+      }
+      node = node.parent;
+    }
+    // node now Function like declaration
+
+    // node need to check that function like declaration is in scope
+    if (Autofixer.varHasScope(node, scope)) {
+      // var use is in function scope, which is in for scope
+      return true;
+    }
+    return false;
+  }
+
+  private static selfDeclared(decl: ts.Node, ident: ts.Node): boolean {
+    // Do not check the same node
+    if (ident === decl) {
+      return false;
+    }
+
+    while (ident !== undefined) {
+      if (ident.kind === ts.SyntaxKind.VariableDeclaration) {
+        const declName = (ident as ts.VariableDeclaration).name;
+        if (declName === decl) {
+          return true;
+        }
+      }
+      ident = ident.parent;
+    }
+    return false;
+  }
+
+  private static analizeTDZ(decl: ts.VariableDeclaration, identifiers: ts.Node[]): boolean {
+    for (const ident of identifiers) {
+      if (Autofixer.selfDeclared(decl.name, ident)) {
+        return false;
+      }
+      if (ident.pos < decl.pos) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static analizeScope(decl: ts.VariableDeclaration, identifiers: ts.Node[]): boolean {
+    const scope = Autofixer.findVarScope(decl);
+    if (scope === undefined) {
+      return false;
+    } else if (scope.kind === ts.SyntaxKind.Block) {
+      for (const ident of identifiers) {
+        if (!Autofixer.varHasScope(ident, scope)) {
+          return false;
+        }
+      }
+    } else if (scope.kind === ts.SyntaxKind.SourceFile) {
+      // Do nothing
+    } else {
+      // Unreachable, but check it
+      return false;
+    }
+    return true;
+  }
+
+  private static analizeFor(decl: ts.VariableDeclaration, identifiers: ts.Node[]): boolean {
+    const forNode = Autofixer.parentInFor(decl);
+    if (forNode) {
+      // analize that var is initialized
+      if (forNode.kind === ts.SyntaxKind.ForInStatement || forNode.kind === ts.SyntaxKind.ForOfStatement) {
+        const typedForNode = forNode as ts.ForInOrOfStatement;
+        const forVarDeclarations = (typedForNode.initializer as ts.VariableDeclarationList).declarations;
+        if (forVarDeclarations.length !== 1) {
+          return false;
+        }
+        const forVarDecl = forVarDeclarations.at(0);
+
+        // our goal to skip declarations in for of/in initializer
+        if (forVarDecl !== decl && decl.initializer === undefined) {
+          return false;
+        }
+      } else if (decl.initializer === undefined) {
+        return false;
+      }
+
+      // analize that var uses are only in function block
+      for (const ident of identifiers) {
+        if (ident !== decl && !Autofixer.varHasScope(ident, forNode)) {
+          return false;
+        }
+      }
+
+      // analize that var is not in function
+      for (const ident of identifiers) {
+        if (ident !== decl && Autofixer.varInFunctionForScope(ident, forNode)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private checkVarDeclarations(varDeclList: ts.VariableDeclarationList): boolean {
+    for (const decl of varDeclList.declarations) {
+      const symbol = this.typeChecker.getSymbolAtLocation(decl.name);
+      if (!symbol) {
+        return false;
+      }
+
+      const identifiers = this.symbolCache.getReferences(symbol);
+
+      const declLength = symbol.declarations?.length;
+      if (!declLength || declLength >= 2) {
+        return false;
+      }
+
+      // Check for var use in tdz oe self declaration
+      if (!Autofixer.analizeTDZ(decl, identifiers)) {
+        return false;
+      }
+
+      // Has use outside scope of declaration?
+      if (!Autofixer.analizeScope(decl, identifiers)) {
+        return false;
+      }
+
+      // For analisys
+      if (!Autofixer.analizeFor(decl, identifiers)) {
+        return false;
+      }
+
+      if (symbol.getName() === 'let') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private canAutofixNoVar(varDeclList: ts.VariableDeclarationList): boolean {
+    if (!Autofixer.parentInCaseOrWhile(varDeclList)) {
+      return false;
+    }
+
+    if (!this.checkVarDeclarations(varDeclList)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  fixVarDeclaration(node: ts.VariableDeclarationList): Autofix[] | undefined {
+    const newNode = ts.factory.createVariableDeclarationList(node.declarations, ts.NodeFlags.Let);
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newNode, node.getSourceFile());
+    return this.canAutofixNoVar(node) ?
+      [{ start: node.getStart(), end: node.getEnd(), replacementText: text }] :
+      undefined;
+  }
+
   fixMissingReturnType(funcLikeDecl: ts.FunctionLikeDeclaration, typeNode: ts.TypeNode): Autofix[] {
     const text = ': ' + this.printer.printNode(ts.EmitHint.Unspecified, typeNode, funcLikeDecl.getSourceFile());
     const pos = Autofixer.getReturnTypePosition(funcLikeDecl);

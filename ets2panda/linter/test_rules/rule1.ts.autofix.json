@@ -18,6 +18,13 @@
             "line": 16,
             "column": 1,
             "problem": "VarDeclaration",
+            "autofix": [
+                {
+                    "start": 610,
+                    "end": 635,
+                    "replacementText": "let x = { \"name\": 1, 2: 3 }"
+                }
+            ],
             "suggest": "",
             "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
         },
