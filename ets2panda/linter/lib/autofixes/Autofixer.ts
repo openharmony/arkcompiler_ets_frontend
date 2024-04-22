@@ -317,7 +317,7 @@ export class Autofixer {
         if (forVarDeclarations.length !== 1) {
           return false;
         }
-        const forVarDecl = forVarDeclarations.at(0);
+        const forVarDecl = forVarDeclarations[0];
 
         // our goal to skip declarations in for of/in initializer
         if (forVarDecl !== decl && decl.initializer === undefined) {

@@ -33,10 +33,25 @@ function compile(cmdOptions: CommandLineOptions, overrideCompilerOptions: ts.Com
 }
 
 export function compileLintOptions(cmdOptions: CommandLineOptions): LintOptions {
-  const strict = compile(cmdOptions, TSCCompiledProgramWithDiagnostics.getOverrideCompilerOptions(true));
-  const nonStrict = compile(cmdOptions, TSCCompiledProgramWithDiagnostics.getOverrideCompilerOptions(false));
+  const strict = compile(cmdOptions, getOverrideCompilerOptions(true));
+  const nonStrict = compile(cmdOptions, getOverrideCompilerOptions(false));
   return {
     cmdOptions: cmdOptions,
     tscCompiledProgram: new TSCCompiledProgramWithDiagnostics(strict, nonStrict, cmdOptions.inputFiles)
+  };
+}
+
+function getOverrideCompilerOptions(strict: boolean): ts.CompilerOptions {
+  return {
+    strict: false,
+    alwaysStrict: false,
+    noImplicitAny: false,
+    noImplicitThis: false,
+    strictBindCallApply: false,
+    useUnknownInCatchVariables: false,
+    strictNullChecks: strict,
+    strictFunctionTypes: strict,
+    strictPropertyInitialization: strict,
+    noImplicitReturns: strict
   };
 }

@@ -13,31 +13,31 @@
  * limitations under the License.
  */
 
-import { Logger as LoggerInterface } from '../lib/Logger';
+import type { LoggerInterface } from '../lib/Logger';
 import Logger from '../utils/logger';
 
-export class LoggerImpl extends LoggerInterface {
-  doTrace(message: string): void {
+export class LoggerImpl implements LoggerInterface {
+  trace(message: string): void {
     void this;
     Logger.getLogger().trace(message);
   }
 
-  doDebug(message: string): void {
+  debug(message: string): void {
     void this;
     Logger.getLogger().debug(message);
   }
 
-  doInfo(message: string): void {
+  info(message: string): void {
     void this;
     Logger.getLogger().info(message);
   }
 
-  doWarn(message: string): void {
+  warn(message: string): void {
     void this;
     Logger.getLogger().warn(message);
   }
 
-  doError(message: string): void {
+  error(message: string): void {
     void this;
     Logger.getLogger().error(message);
   }

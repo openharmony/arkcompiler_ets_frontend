@@ -71,21 +71,6 @@ export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
     });
   }
 
-  static getOverrideCompilerOptions(strict: boolean): ts.CompilerOptions {
-    return {
-      strict: false,
-      alwaysStrict: false,
-      noImplicitAny: false,
-      noImplicitThis: false,
-      strictBindCallApply: false,
-      useUnknownInCatchVariables: false,
-      strictNullChecks: strict,
-      strictFunctionTypes: strict,
-      strictPropertyInitialization: strict,
-      noImplicitReturns: strict
-    };
-  }
-
   getProgram(): ts.Program {
     return this.program;
   }
