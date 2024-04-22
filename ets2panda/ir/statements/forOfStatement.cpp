@@ -161,10 +161,17 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
         checker->CheckThrowingStatements(this);
     }
 
+    CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position);
+
     // From here on we assume that '$_iterator()' function returns the valid 'Iterator<T>' implementation :)
     // Otherwise a plenty of checks required for each line of code below...
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
+
+    if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
+        checker->ThrowTypeError("Iterator object doesn't have proper next method.", position);
+    }
+
     auto &nextSignatures = checker->GetTypeOfVariable(nextMethod)->AsETSFunctionType()->CallSignatures();
 
     auto const *const nextSignature = checker->ValidateSignatures(nextSignatures, nullptr, arguments, position,
@@ -177,6 +184,41 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
     }
 
     return nullptr;
+}
+
+void ForOfStatement::CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
+                                                     checker::Signature *signature,
+                                                     const lexer::SourcePosition &position)
+{
+    if ((signature->ReturnType() == nullptr || signature->ReturnType() == checker->GlobalVoidType()) &&
+        signature->Function()->HasBody() && signature->Function()->Body()->IsBlockStatement()) {
+        for (auto *const it : signature->Function()->Body()->AsBlockStatement()->Statements()) {
+            if (it->IsReturnStatement()) {
+                checker::SavedCheckerContext savedContext(checker, checker::CheckerStatus::IN_CLASS, sourceType);
+                it->AsReturnStatement()->Check(checker);
+                break;
+            }
+        }
+    }
+
+    if (signature->ReturnType() != nullptr && signature->ReturnType()->IsETSObjectType() &&
+        ForOfStatement::CheckIteratorInterfaceForObject(checker, signature->ReturnType()->AsETSObjectType())) {
+        return;
+    }
+
+    checker->ThrowTypeError("Iterator method must return an object which implements Iterator<T>", position);
+}
+
+bool ForOfStatement::CheckIteratorInterfaceForObject(checker::ETSChecker *checker, checker::ETSObjectType *obj)
+{
+    for (auto *const it : obj->Interfaces()) {
+        if (it->Name().Is(ITERATOR_INTERFACE_NAME)) {
+            return true;
+        }
+    }
+
+    return obj->SuperType() != nullptr && obj->SuperType()->IsETSObjectType() &&
+           CheckIteratorInterfaceForObject(checker, obj->SuperType()->AsETSObjectType());
 }
 
 checker::Type *ForOfStatement::CheckIteratorMethod(checker::ETSChecker *const checker)
