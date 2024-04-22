@@ -1,0 +1,163 @@
+.language ECMAScript
+
+.function any .MyClass(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda a3
+	stobjbyname 0x0, name, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x0, .MyClass, _0, 0x1, v0
+	sta v0
+	ldobjbyname 0x1, prototype
+	lda v0
+	sttoglobalrecord 0x3, MyClass
+	tryldglobalbyname 0x4, MyClass
+	sta v0
+	lda.str World
+	sta v1
+	mov v2, v0
+	mov v3, v1
+	newobjrange 0x5, 0x2, v2
+	stconsttoglobalrecord 0x7, myObject
+	tryldglobalbyname 0x8, myObject
+	sta v0
+	ldobjbyname 0x9, sayHello
+	callthis0 0xb, v0
+	tryldglobalbyname 0xd, myObject
+	sta v0
+	ldobjbyname 0xe, sayHello
+	callthis0 0x10, v0
+	tryldglobalbyname 0x12, myObject
+	sta v0
+	ldobjbyname 0x13, sayHello
+	callthis0 0x15, v0
+	tryldglobalbyname 0x17, myObject
+	sta v0
+	ldobjbyname 0x18, sayHello
+	callthis0 0x1a, v0
+	tryldglobalbyname 0x1c, myObject
+	sta v0
+	ldobjbyname 0x1d, sayHello
+	callthis0 0x1f, v0
+	tryldglobalbyname 0x21, myObject
+	sta v0
+	ldobjbyname 0x22, sayHello
+	callthis0 0x24, v0
+	tryldglobalbyname 0x26, myObject
+	sta v0
+	ldobjbyname 0x27, sayHello
+	callthis0 0x29, v0
+	tryldglobalbyname 0x2b, myObject
+	sta v0
+	ldobjbyname 0x2c, sayHello
+	callthis0 0x2e, v0
+	tryldglobalbyname 0x30, myObject
+	sta v0
+	ldobjbyname 0x31, sayHello
+	callthis0 0x33, v0
+	tryldglobalbyname 0x35, myObject
+	sta v0
+	ldobjbyname 0x36, sayHello
+	callthis0 0x38, v0
+	tryldglobalbyname 0x3a, myObject
+	sta v0
+	ldobjbyname 0x3b, sayHello
+	callthis0 0x3d, v0
+	tryldglobalbyname 0x3f, myObject
+	sta v0
+	ldobjbyname 0x40, sayHello
+	callthis0 0x42, v0
+	tryldglobalbyname 0x44, myObject
+	sta v0
+	ldobjbyname 0x45, sayHello
+	callthis0 0x47, v0
+	tryldglobalbyname 0x49, myObject
+	sta v0
+	ldobjbyname 0x4a, sayHello
+	callthis0 0x4c, v0
+	tryldglobalbyname 0x4e, myObject
+	sta v0
+	ldobjbyname 0x4f, sayHello
+	callthis0 0x51, v0
+	tryldglobalbyname 0x53, myObject
+	sta v0
+	ldobjbyname 0x54, sayHello
+	callthis0 0x56, v0
+	tryldglobalbyname 0x58, myObject
+	sta v0
+	ldobjbyname 0x59, sayHello
+	callthis0 0x5b, v0
+	tryldglobalbyname 0x5d, myObject
+	sta v0
+	ldobjbyname 0x5e, sayHello
+	callthis0 0x60, v0
+	tryldglobalbyname 0x62, myObject
+	sta v0
+	ldobjbyname 0x63, sayHello
+	callthis0 0x65, v0
+	tryldglobalbyname 0x67, myObject
+	sta v0
+	ldobjbyname 0x68, sayHello
+	callthis0 0x6a, v0
+	tryldglobalbyname 0x6c, myObject
+	sta v0
+	ldobjbyname 0x6d, sayHello
+	callthis0 0x6f, v0
+	tryldglobalbyname 0x71, myObject
+	sta v0
+	ldobjbyname 0x72, sayHello
+	callthis0 0x74, v0
+	tryldglobalbyname 0x76, myObject
+	sta v0
+	ldobjbyname 0x77, sayHello
+	callthis0 0x79, v0
+	tryldglobalbyname 0x7b, myObject
+	sta v0
+	ldobjbyname 0x7c, sayHello
+	callthis0 0x7e, v0
+	tryldglobalbyname 0x80, myObject
+	sta v0
+	ldobjbyname 0x81, sayHello
+	callthis0 0x83, v0
+	tryldglobalbyname 0x85, myObject
+	sta v0
+	ldobjbyname 0x86, sayHello
+	callthis0 0x88, v0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .sayHello(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, console
+	sta v0
+	ldobjbyname 0x1, log
+	sta v1
+	lda.str Hello, 
+	sta v2
+	lda a2
+	ldobjbyname 0x3, name
+	add2 0x5, v2
+	sta v2
+	lda.str !
+	add2 0x6, v2
+	sta v2
+	lda v1
+	callthis1 0x7, v0, v2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
