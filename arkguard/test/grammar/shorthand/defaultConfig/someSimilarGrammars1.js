@@ -26,21 +26,21 @@ assert(reset1.age2 === 18, 'success');
 
 function funcLayer(){
   let [PropDemo3, PropDemo4] = ['akria3', 13];
-  let {...reset2} = {'name2': 'akria4', age2: 18};
+  let {...reset2} = {'name2': 'akria4', age2: 20};
 
   const {PropDemo5, PropDemo6 = 1} = {PropDemo5: 1, PropDemo6: 2};
   assert(PropDemo6 === 2, 'success');
   assert(PropDemo3 === 'akria3', 'success');
   assert(PropDemo4 === 13, 'success');
   assert(reset2.name2 === 'akria4', 'success');
-  assert(reset2.age2 === 18, 'success');
+  assert(reset2.age2 === 20, 'success');
 }
 funcLayer();
 
 // 新增变量
-let { newName, ...reset3 } = {'newName': 'akria5', newAge: 18};
+let { newName, ...reset3 } = {'newName': 'akria5', newAge: 20};
 assert(newName === 'akria5', 'success');
-assert(reset3.newAge === 18, 'success');
+assert(reset3.newAge === 20, 'success');
 
 function foo() {
   return { Propx1: 1, Propy1: 2 };
@@ -50,8 +50,8 @@ const { Propx1, Propy1 } = foo();
 assert(Propx1 === 1, 'success');
 assert(Propy1 === 2, 'success');
 
-let Propx2 =3;
-let Propy2 =4;
+let Propx2 = 13;
+let Propy2 = 14;
 const { Propx2: tempX2, Propy2: tempY2 } = {Propx2, Propy2}
-assert(tempX2 === 3, 'success');
-assert(tempY2 === 4, 'success');
+assert(tempX2 === 13, 'success');
+assert(tempY2 === 14, 'success');

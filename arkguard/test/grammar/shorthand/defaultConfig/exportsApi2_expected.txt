@@ -15,9 +15,9 @@
 // 导出常量和类
 module.exports = {
     codes2: {
-        ERR_INVALID_ARG_TYPE2: 1,
-        ERR_MISSING_ARGS2: 2,
-        ERROR_OUT_OF_RANGE2: 3,
+        ERR_INVALID_ARG_TYPE_2: 1,
+        ERR_MISSING_ARGS_2: 2,
+        ERROR_OUT_OF_RANGE_2: 3,
     },
     AbortError2: 4,
 };

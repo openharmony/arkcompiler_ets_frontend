@@ -16,10 +16,10 @@
 import assert from 'assert';
 
 const {
-    areaTest, 
-    circumferenceTest
+    areaTest1, 
+    circumferenceTest1
 } = require('./exportsApi4');
 
 const { PI } = Math;
-assert(areaTest(3) == 9 * PI, 'success');
-assert(circumferenceTest(2) == 4 * PI, 'success');
+assert(areaTest1(3) == 9 * PI, 'success');
+assert(circumferenceTest1(2) == 4 * PI, 'success');

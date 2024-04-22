@@ -17,13 +17,13 @@ import assert from 'assert';
 
 function functionRequireTest(){
   const {
-    codes2: { ERR_INVALID_ARG_TYPE2, ERR_MISSING_ARGS2, ERROR_OUT_OF_RANGE2 },
+    codes2: { ERR_INVALID_ARG_TYPE_2, ERR_MISSING_ARGS_2, ERROR_OUT_OF_RANGE_2 },
     AbortError2,
   } = require('./exportsApi2');
 
-  assert(ERR_INVALID_ARG_TYPE2 === 1, 'success');
-  assert(ERR_MISSING_ARGS2 === 2, 'success');
-  assert(ERROR_OUT_OF_RANGE2 === 3, 'success');
+  assert(ERR_INVALID_ARG_TYPE_2 === 1, 'success');
+  assert(ERR_MISSING_ARGS_2 === 2, 'success');
+  assert(ERROR_OUT_OF_RANGE_2 === 3, 'success');
   assert(AbortError2 === 4, 'success');
 }
 

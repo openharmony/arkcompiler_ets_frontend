@@ -14,8 +14,8 @@
  */
 
 declare module 'workercustomModule' {
-  const isMainThread1: boolean;
-  const parentPort1: number;
+  const isMainThread: boolean;
+  const parentPort: number;
 }
 
 declare module 'node:workercustomModule' {

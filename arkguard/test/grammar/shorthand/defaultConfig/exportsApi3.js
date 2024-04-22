@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-function addTest(a, b) {
+function addTest1(a, b) {
   return a + b;
 }
   
-function subtractTest(a, b) {
+function subtractTest1(a, b) {
   return a - b;
 }
   
 module.exports = {
-  addTest,
-  subtractTest
+  addTest1,
+  subtractTest1
 };

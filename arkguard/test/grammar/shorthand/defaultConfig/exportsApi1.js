@@ -14,12 +14,12 @@
  */
 
 // 定义一些常量
-const ERR_INVALID_ARG_TYPE1 = 'ERR_INVALID_ARG_TYPE';
-const ERR_MISSING_ARGS1 = 'ERR_MISSING_ARGS';
-const ERROR_OUT_OF_RANGE1 = 'ERROR_OUT_OF_RANGE';
+const ERR_INVALID_ARG_TYPE = 'ERR_INVALID_ARG_TYPE';
+const ERR_MISSING_ARGS = 'ERR_MISSING_ARGS';
+const ERROR_OUT_OF_RANGE = 'ERROR_OUT_OF_RANGE';
 
 // 定义一个异常类
-class AbortError1 extends Error {
+class AbortError extends Error {
   constructor(message) {
     super(message);
     this.name = 'AbortError';
@@ -28,10 +28,10 @@ class AbortError1 extends Error {
 
 // 导出常量和类
 module.exports = {
-  codes1: {
-    ERR_INVALID_ARG_TYPE1,
-    ERR_MISSING_ARGS1,
-    ERROR_OUT_OF_RANGE1,
+  codes: {
+    ERR_INVALID_ARG_TYPE,
+    ERR_MISSING_ARGS,
+    ERROR_OUT_OF_RANGE,
   },
-  AbortError1,
+  AbortError,
 };

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 import assert from 'assert';
-const { isMainThread1: isMainThread1, parentPort1: parentPort1 } = require('./workercustomModule');
+const { isMainThread: isMainThread, parentPort: parentPort } = require('./workercustomModule');
 const { PI: PI } = Math;
-assert(isMainThread1 == false, 'success');
-assert(parentPort1 === 2, 'success');
+assert(isMainThread == false, 'success');
+assert(parentPort === 2, 'success');

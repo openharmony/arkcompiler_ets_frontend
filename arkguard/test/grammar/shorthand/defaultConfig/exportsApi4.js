@@ -15,6 +15,6 @@
 
 const { PI } = Math;
   
-exports.areaTest = (r) => PI * r ** 2;
+exports.areaTest1 = (r) => PI * r ** 2;
 
-exports.circumferenceTest = (r) => 2 * PI * r;
+exports.circumferenceTest1 = (r) => 2 * PI * r;

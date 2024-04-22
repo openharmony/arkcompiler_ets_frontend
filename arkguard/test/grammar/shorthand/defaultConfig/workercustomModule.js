@@ -14,6 +14,6 @@
  */
 
 module.exports = {
-  isMainThread1 : false,
-  parentPort1 : 2
+  isMainThread : false,
+  parentPort : 2
 };

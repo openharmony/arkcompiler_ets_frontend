@@ -17,16 +17,16 @@
 const { Worker, isMainThread, parentPort, workerData, MessagePort} = require('worker_threads');
 
 // 非顶层作用域
-function functionTest1() {
+function functionTest() {
   const { resourceLimits, threadId, BroadcastChannel} = require('worker_threads');
   let var1 = resourceLimits;
   let var2 = threadId;
   let var3 = BroadcastChannel;
 }
-functionTest1();
+functionTest();
 
-function functionTest2(){
+function functionTest1(){
   let tempWorker= Worker;
   let tempWorkerData= workerData;
 }
-functionTest2();
+functionTest1();
