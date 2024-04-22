@@ -36,6 +36,7 @@ import {
   LANG_NAMESPACE,
   ISENDABLE_TYPE
 } from './consts/SupportedDetsIndexableTypes';
+import type { NameGenerator } from './functions/NameGenerator';
 
 export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
 export class TsUtils {
@@ -1040,7 +1041,8 @@ export class TsUtils {
     [FaultID.ClassExpression, TsUtils.getClassExpressionHighlightRange],
     [FaultID.MultipleStaticBlocks, TsUtils.getMultipleStaticBlocksHighlightRange],
     [FaultID.ParameterProperties, TsUtils.getParameterPropertiesHighlightRange],
-    [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange]
+    [FaultID.SendableDefiniteAssignment, TsUtils.getSendableDefiniteAssignmentHighlightRange],
+    [FaultID.ObjectTypeLiteral, TsUtils.getObjectTypeLiteralHighlightRange]
   ]);
 
   static getKeywordHighlightRange(nodeOrComment: ts.Node | ts.CommentRange, keyword: string): [number, number] {
@@ -1162,6 +1164,10 @@ export class TsUtils {
       return [params[0].getStart(), params[params.length - 1].getEnd()];
     }
     return undefined;
+  }
+
+  static getObjectTypeLiteralHighlightRange(nodeOrComment: ts.Node | ts.CommentRange): [number, number] | undefined {
+    return this.getKeywordHighlightRange(nodeOrComment, '{');
   }
 
   // highlight ranges for Sendable rules
@@ -2113,5 +2119,77 @@ export class TsUtils {
   isStdMapType(type: ts.Type): boolean {
     const sym = type.symbol;
     return !!sym && sym.getName() === 'Map' && this.isGlobalSymbol(sym);
+  }
+
+  hasGenericTypeParameter(type: ts.Type): boolean {
+    if (type.isUnionOrIntersection()) {
+      return type.types.some((x) => {
+        return this.hasGenericTypeParameter(x);
+      });
+    }
+    if (TsUtils.isTypeReference(type)) {
+      const typeArgs = this.tsTypeChecker.getTypeArguments(type);
+      return typeArgs.some((x) => {
+        return this.hasGenericTypeParameter(x);
+      });
+    }
+    return type.isTypeParameter();
+  }
+
+  static getEnclosingTopLevelStatement(node: ts.Node): ts.Node | undefined {
+    return ts.findAncestor(node, (ancestor) => {
+      return ts.isSourceFile(ancestor.parent);
+    });
+  }
+
+  static isDeclarationStatement(node: ts.Node): node is ts.DeclarationStatement {
+    const kind = node.kind;
+    return kind === ts.SyntaxKind.FunctionDeclaration ||
+      kind === ts.SyntaxKind.ModuleDeclaration ||
+      kind === ts.SyntaxKind.ClassDeclaration ||
+      kind === ts.SyntaxKind.StructDeclaration ||
+      kind === ts.SyntaxKind.TypeAliasDeclaration ||
+      kind === ts.SyntaxKind.InterfaceDeclaration ||
+      kind === ts.SyntaxKind.EnumDeclaration ||
+      kind === ts.SyntaxKind.MissingDeclaration ||
+      kind === ts.SyntaxKind.ImportEqualsDeclaration ||
+      kind === ts.SyntaxKind.ImportDeclaration ||
+      kind === ts.SyntaxKind.NamespaceExportDeclaration;
+  }
+
+  static declarationNameExists(srcFile: ts.SourceFile, name: string): boolean {
+    return srcFile.statements.some((stmt) => {
+      if (ts.isImportDeclaration(stmt)) {
+        if (!stmt.importClause) {
+          return false;
+        }
+        if (stmt.importClause.namedBindings) {
+          if (ts.isNamespaceImport(stmt.importClause.namedBindings)) {
+            return stmt.importClause.namedBindings.name.text === name;
+          }
+          return stmt.importClause.namedBindings.elements.some((x) => {
+            return x.name.text === name;
+          });
+        }
+        return stmt.importClause.name?.text === name;
+      }
+
+      return TsUtils.isDeclarationStatement(stmt) && stmt.name !== undefined &&
+        ts.isIdentifier(stmt.name) && stmt.name.text === name;
+    });
+  }
+
+  static generateUniqueName(nameGenerator: NameGenerator, srcFile: ts.SourceFile): string | undefined {
+    let newName: string | undefined;
+
+    do {
+      newName = nameGenerator.getName();
+      if (newName !== undefined && TsUtils.declarationNameExists(srcFile, newName)) {
+        continue;
+      }
+      break;
+    } while (newName !== undefined);
+
+    return newName;
   }
 }

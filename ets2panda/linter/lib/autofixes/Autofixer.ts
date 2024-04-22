@@ -18,6 +18,14 @@ import { isAssignmentOperator } from '../utils/functions/isAssignmentOperator';
 import { TsUtils } from '../utils/TsUtils';
 import { scopeContainsThis } from '../utils/functions/ContainsThis';
 import { SymbolCache } from './SymbolCache';
+import { NameGenerator } from '../utils/functions/NameGenerator';
+import { forEachNodeInSubtree } from '../utils/functions/ForEachNodeInSubtree';
+
+const GENERATED_OBJECT_LITERAL_INTERFACE_NAME = 'GeneratedObjectLiteralInterface_';
+const GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD = 1000;
+
+const GENERATED_TYPE_LITERAL_INTERFACE_NAME = 'GeneratedTypeLiteralInterface_';
+const GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD = 1000;
 
 export interface Autofix {
   replacementText: string;
@@ -789,6 +797,241 @@ export class Autofixer {
       oldDecl.body
     );
   }
+
+  fixUntypedObjectLiteral(
+    objectLiteralExpr: ts.ObjectLiteralExpression,
+    objectLiteralType: ts.Type | undefined
+  ): Autofix[] | undefined {
+    // Can't fix if object literal already has contextual type.
+    if (objectLiteralType) {
+      return undefined;
+    }
+
+    const enclosingStmt = TsUtils.getEnclosingTopLevelStatement(objectLiteralExpr);
+    if (!enclosingStmt) {
+      return undefined;
+    }
+
+    const newInterfaceProps = this.getInterfacePropertiesFromObjectLiteral(objectLiteralExpr, enclosingStmt);
+    if (!newInterfaceProps) {
+      return undefined;
+    }
+
+    const srcFile = objectLiteralExpr.getSourceFile();
+    const newInterfaceName = TsUtils.generateUniqueName(this.objectLiteralInterfaceNameGenerator, srcFile);
+    if (!newInterfaceName) {
+      return undefined;
+    }
+
+    return [
+      this.createNewInterface(srcFile, newInterfaceName, newInterfaceProps, enclosingStmt.getStart()),
+      this.fixObjectLiteralExpression(srcFile, newInterfaceName, objectLiteralExpr)
+    ];
+  }
+
+  private getInterfacePropertiesFromObjectLiteral(
+    objectLiteralExpr: ts.ObjectLiteralExpression,
+    enclosingStmt: ts.Node
+  ): ts.PropertySignature[] | undefined {
+    const interfaceProps: ts.PropertySignature[] = [];
+    for (const prop of objectLiteralExpr.properties) {
+      const interfaceProp = this.getInterfacePropertyFromObjectLiteralElement(prop, enclosingStmt);
+      if (!interfaceProp) {
+        return undefined;
+      }
+      interfaceProps.push(interfaceProp);
+    }
+    return interfaceProps;
+  }
+
+  private getInterfacePropertyFromObjectLiteralElement(
+    prop: ts.ObjectLiteralElementLike,
+    enclosingStmt: ts.Node
+  ): ts.PropertySignature | undefined {
+    // Can't fix if property is not a key-value pair, or the property name is a computed value.
+    if (!ts.isPropertyAssignment(prop) || ts.isComputedPropertyName(prop.name)) {
+      return undefined;
+    }
+
+    const propType = this.typeChecker.getTypeAtLocation(prop);
+
+    // Can't capture generic type parameters of enclosing declarations.
+    if (this.utils.hasGenericTypeParameter(propType)) {
+      return undefined;
+    }
+
+    if (Autofixer.propertyTypeIsCapturedFromEnclosingLocalScope(propType, enclosingStmt)) {
+      return undefined;
+    }
+
+    const propTypeNode = this.typeChecker.typeToTypeNode(propType, undefined, ts.NodeBuilderFlags.None);
+    if (!propTypeNode || !this.utils.isSupportedType(propTypeNode)) {
+      return undefined;
+    }
+
+    const newProp: ts.PropertySignature = ts.factory.createPropertySignature(
+      undefined, prop.name, undefined, propTypeNode
+    );
+    return newProp;
+  }
+
+  private static propertyTypeIsCapturedFromEnclosingLocalScope(
+    type: ts.Type,
+    enclosingStmt: ts.Node
+  ): boolean {
+    const sym = type.getSymbol();
+    let symNode: ts.Node | undefined = TsUtils.getDeclaration(sym);
+
+    while (symNode) {
+      if (symNode === enclosingStmt) {
+        return true;
+      }
+      symNode = symNode.parent;
+    }
+
+    return false;
+  }
+
+  private createNewInterface(
+    srcFile: ts.SourceFile,
+    interfaceName: string,
+    members: ts.TypeElement[],
+    pos: number
+  ): Autofix {
+    const newInterfaceDecl = ts.factory.createInterfaceDeclaration(
+      undefined, interfaceName, undefined, undefined, members
+    );
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newInterfaceDecl, srcFile) + '\n';
+    return { start: pos, end: pos, replacementText: text };
+  }
+
+  private fixObjectLiteralExpression(
+    srcFile: ts.SourceFile,
+    newInterfaceName: string,
+    objectLiteralExpr: ts.ObjectLiteralExpression
+  ): Autofix {
+
+    /*
+     * If object literal is initializing a variable or property,
+     * then simply add new 'contextual' type to the declaration.
+     * Otherwise, cast object literal to newly created interface type.
+     */
+    if ((ts.isVariableDeclaration(objectLiteralExpr.parent) ||
+      ts.isPropertyDeclaration(objectLiteralExpr.parent) ||
+      ts.isParameter(objectLiteralExpr.parent)) &&
+      !objectLiteralExpr.parent.type
+    ) {
+      const text = ': ' + newInterfaceName;
+      const pos = Autofixer.getDeclarationTypePositionForObjectLiteral(objectLiteralExpr.parent);
+      return { start: pos, end: pos, replacementText: text };
+    }
+
+    const newTypeRef = ts.factory.createTypeReferenceNode(newInterfaceName);
+    let newExpr: ts.Expression = ts.factory.createAsExpression(
+      ts.factory.createObjectLiteralExpression(objectLiteralExpr.properties),
+      newTypeRef
+    );
+    if (!ts.isParenthesizedExpression(objectLiteralExpr.parent)) {
+      newExpr = ts.factory.createParenthesizedExpression(newExpr);
+    }
+    const text = this.printer.printNode(ts.EmitHint.Unspecified, newExpr, srcFile);
+    return { start: objectLiteralExpr.getStart(), end: objectLiteralExpr.getEnd(), replacementText: text };
+  }
+
+  private static getDeclarationTypePositionForObjectLiteral(
+    decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
+  ): number {
+    if (ts.isPropertyDeclaration(decl)) {
+      return (decl.questionToken || decl.exclamationToken || decl.name).getEnd();
+    } else if (ts.isParameter(decl)) {
+      return (decl.questionToken || decl.name).getEnd();
+    }
+    return (decl.exclamationToken || decl.name).getEnd();
+  }
+
+  private readonly objectLiteralInterfaceNameGenerator = new NameGenerator(
+    GENERATED_OBJECT_LITERAL_INTERFACE_NAME,
+    GENERATED_OBJECT_LITERAL_INTERFACE_TRESHOLD
+  );
+
+  fixTypeliteral(typeLiteral: ts.TypeLiteralNode): Autofix[] | undefined {
+
+    /*
+     * In case of type alias initialized with type literal, replace
+     * entire type alias with identical interface declaration.
+     */
+    if (ts.isTypeAliasDeclaration(typeLiteral.parent)) {
+      const typeAlias = typeLiteral.parent;
+      const newInterfaceDecl = ts.factory.createInterfaceDeclaration(
+        typeAlias.modifiers, typeAlias.name, typeAlias.typeParameters, undefined, typeLiteral.members
+      );
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, newInterfaceDecl, typeLiteral.getSourceFile()) + '\n';
+      return [{ start: typeAlias.getStart(), end: typeAlias.getEnd(), replacementText: text }];
+    }
+
+    /*
+     * Create new interface declaration with members of type literal
+     * and put the interface name in place of the type literal.
+     */
+    const srcFile = typeLiteral.getSourceFile();
+    const enclosingStmt = TsUtils.getEnclosingTopLevelStatement(typeLiteral);
+    if (!enclosingStmt) {
+      return undefined;
+    }
+
+    if (this.typeLiteralCapturesTypeFromEnclosingLocalScope(typeLiteral, enclosingStmt)) {
+      return undefined;
+    }
+
+    const newInterfaceName = TsUtils.generateUniqueName(this.typeLiteralInterfaceNameGenerator, srcFile);
+    if (!newInterfaceName) {
+      return undefined;
+    }
+    const newInterfacePos = enclosingStmt.getStart();
+    const newInterfaceDecl = ts.factory.createInterfaceDeclaration(
+      undefined, newInterfaceName, undefined, undefined, typeLiteral.members
+    );
+    const interfaceText = this.printer.printNode(ts.EmitHint.Unspecified, newInterfaceDecl, srcFile) + '\n';
+
+    return [
+      { start: newInterfacePos, end: newInterfacePos, replacementText: interfaceText },
+      { start: typeLiteral.getStart(), end: typeLiteral.getEnd(), replacementText: newInterfaceName }
+    ];
+  }
+
+  typeLiteralCapturesTypeFromEnclosingLocalScope(typeLiteral: ts.TypeLiteralNode, enclosingStmt: ts.Node): boolean {
+    let found = false;
+
+    const callback = (node: ts.Node): void => {
+      if (ts.isIdentifier(node)) {
+        const sym = this.typeChecker.getSymbolAtLocation(node);
+        let symNode: ts.Node | undefined = TsUtils.getDeclaration(sym);
+        while (symNode) {
+          if (symNode === typeLiteral) {
+            return;
+          }
+          if (symNode === enclosingStmt) {
+            found = true;
+            return;
+          }
+          symNode = symNode.parent;
+        }
+      }
+    };
+
+    const stopCondition = (node: ts.Node): boolean => {
+      void node;
+      return found;
+    };
+
+    forEachNodeInSubtree(typeLiteral, callback, stopCondition);
+    return found;
+  }
+
+  private readonly typeLiteralInterfaceNameGenerator = new NameGenerator(
+    GENERATED_TYPE_LITERAL_INTERFACE_NAME,
+    GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD
+  );
 
   private readonly symbolCache: SymbolCache;
 }
