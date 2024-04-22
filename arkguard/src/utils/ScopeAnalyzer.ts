@@ -757,7 +757,14 @@ namespace secharmony {
       }
 
       addSymbolInScope(node);
-      if (node.symbol && current.parent && !current.parent.defs.has(node.symbol)) {
+      /**
+       * {
+       *   get name(): "INT";
+       *   set orignal(): 0;
+       * }
+       * // the above getaccessor and setaccessor were obfuscated as identifiers.
+       */
+      if (!(isGetAccessor(node) || isSetAccessor(node)) && node.symbol && current.parent && !current.parent.defs.has(node.symbol)) {
         current.parent.defs.add(node.symbol);
       }
 
