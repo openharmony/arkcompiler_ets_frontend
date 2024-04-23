@@ -101,12 +101,11 @@ void CompileFileJob::Run()
         return;
     }
 
-    if (!options_->aopTransform.empty()) {
-        std::string tempOutput = util::Helpers::AopTransform(prog, src_->fileName,  options_->aopTransform);
-        std::cerr << 11 << std::endl;
+    if (!options_->transformLib.empty()) {
+        std::string tempOutput = util::Helpers::AopTransform(prog, src_->fileName, options_->transformLib);
         if (!tempOutput.empty()) {
             // transform the transformed ABC file to program
-            prog =  compiler.AbcToAsmProgram(tempOutput, *options_);
+            prog = compiler.AbcToAsmProgram(tempOutput);
             std::remove(tempOutput.c_str());
         }
     }

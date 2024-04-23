@@ -102,6 +102,16 @@ panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, con
     return prog;
 }
 
+panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname)
+{
+    if (!abcToAsmCompiler_->OpenAbcFile(fname)) {
+        return nullptr;
+    }
+    panda::pandasm::Program *prog = new panda::pandasm::Program();
+    (void)abcToAsmCompiler_->FillProgramData(*prog);
+    return prog;
+}
+
 panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,
     util::SymbolTable *symbolTable)
 {

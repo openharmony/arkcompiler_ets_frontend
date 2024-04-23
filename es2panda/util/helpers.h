@@ -64,6 +64,12 @@ enum class SignedNumberLiteral {
     NEGATIVE = 2
 };
 
+class FileSuffix {
+public:
+    static constexpr std::string_view DLL = ".dll";
+    static constexpr std::string_view SO = ".so";
+};
+
 class Helpers {
 public:
     Helpers() = delete;

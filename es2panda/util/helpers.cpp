@@ -59,7 +59,7 @@
 #endif
 #include <fstream>
 #include <iostream>
-#include <dlfcn.h>
+#include "os/library_loader.h"
 
 namespace panda::es2panda::util {
 
@@ -672,44 +672,64 @@ void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string 
 std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::string &inputFile, const std::string &aopTransformPath)
 {
     std::string pid;
+    std::string_view supportSuffix;
 #ifdef PANDA_TARGET_WINDOWS
     pid = std::to_string(GetCurrentProcessId());
+    supportSuffix = FileSuffix::DLL;
 #else
     pid = std::to_string(getpid());
+    supportSuffix = FileSuffix::SO;
 #endif
+    //judge file suffix
+    if (!FileExtensionIs(aopTransformPath, supportSuffix)) {
+        std::string msg = "aop transform file suffix support " + std::string(supportSuffix) + ", error file: " + aopTransformPath;
+        std::cerr << msg << std::endl;
+        return "";
+    }
+
     const std::string outputSuffix = ".aop.abc";
     std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
 
     //step progam >> untransformed ABC
     if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, nullptr, nullptr, true)) {
         std::remove(tempOutput.c_str());
-        std::string msg = "AsmEmitter::Emit error : " + aopTransformPath;
+        std::string msg = "AsmEmitter::Emit error: " + aopTransformPath;
         std::cerr << msg << std::endl;
         return "";
     }
 
-	//step dlopen
-    void *handler = dlopen(aopTransformPath.c_str(), RTLD_LAZY);
-    if(!handler){
-        std::string msg = "dlopen error : " + aopTransformPath + " , " + dlerror();
+	//load .so|.dll
+    auto loadRes = os::library_loader::Load(aopTransformPath);
+    if (!loadRes.HasValue()) {
+        std::remove(tempOutput.c_str());
+        std::string msg = "os::library_loader::Load error: " + loadRes.Error().ToString();
         std::cerr << msg << std::endl;
         return "";
     }
+    os::library_loader::LibraryHandle handler = std::move(loadRes.Value());
 
-    //step dlsym
-    void *transform = dlsym(handler, "Transform");
-   if(!transform){
-        std::string msg = "dlsym error : " + aopTransformPath + " ,  Transform , " + dlerror() ;
+    //get function ptr
+    auto initRes = os::library_loader::ResolveSymbol(handler, "Transform");
+    if (!initRes.HasValue()) {
+        std::remove(tempOutput.c_str());
+        std::string msg = "os::library_loader::ResolveSymbol get func Transform error: " + initRes.Error().ToString();
         std::cerr << msg << std::endl;
-        dlclose(handler);
+        os::library_loader::CloseHandle(&handler);
         return "";
     }
-    void (*transformPtr)(const char *) = reinterpret_cast<void (*)(const char *)>(transform); 
 
-    //step invoke, untransformed ABC >> transformed ABC
-    transformPtr(tempOutput.c_str());
+    //invoke, untransformed ABC to transformed ABC
+    int (*transform)(const char *) = reinterpret_cast<int (*)(const char *)>(initRes.Value());
+    int res = transform(tempOutput.c_str());
+    os::library_loader::CloseHandle(&handler);
 
-    dlclose(handler);
+    //exec result define: 0:success, other:fail
+    if (res) {
+        std::remove(tempOutput.c_str());
+        std::string msg = "Transform exec fail: " + aopTransformPath;
+        std::cerr << msg << std::endl;
+        return "";
+    }
     return tempOutput;
 }
 
