@@ -13,43 +13,45 @@
  * limitations under the License.
  */
 
-export abstract class Logger {
-  static init(instance: Logger): void {
+export interface LoggerInterface {
+  trace: (message: string) => void;
+  debug: (message: string) => void;
+  info: (message: string) => void;
+  warn: (message: string) => void;
+  error: (message: string) => void;
+}
+
+export class Logger {
+  static init(instance: LoggerInterface): void {
     this.instance_ = instance;
   }
 
   static trace(message: string): void {
-    this.getInstance().doTrace(message);
+    this.getInstance().trace(message);
   }
 
   static debug(message: string): void {
-    this.getInstance().doDebug(message);
+    this.getInstance().debug(message);
   }
 
   static info(message: string): void {
-    this.getInstance().doInfo(message);
+    this.getInstance().info(message);
   }
 
   static warn(message: string): void {
-    this.getInstance().doWarn(message);
+    this.getInstance().warn(message);
   }
 
   static error(message: string): void {
-    this.getInstance().doError(message);
+    this.getInstance().error(message);
   }
 
-  protected abstract doTrace(message: string): void;
-  protected abstract doDebug(message: string): void;
-  protected abstract doInfo(message: string): void;
-  protected abstract doWarn(message: string): void;
-  protected abstract doError(message: string): void;
-
-  private static getInstance(): Logger {
+  private static getInstance(): LoggerInterface {
     if (!this.instance_) {
       throw new Error('Not initialized');
     }
     return this.instance_;
   }
 
-  private static instance_?: Logger;
+  private static instance_?: LoggerInterface;
 }
