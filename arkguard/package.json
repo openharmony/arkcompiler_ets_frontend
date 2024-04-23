@@ -11,7 +11,7 @@
     "clean": "rm -rf lib/*",
     "build": "npm run clean && node node_modules/typescript/lib/tsc.js",
     "test": "npm run test:ut && npm run test:grammar",
-    "test:ut": "node ./node_modules/mocha/bin/mocha --require ts-node/register ./test/ut/**/*.ts",
+    "test:ut": "node --expose-gc ./node_modules/mocha/bin/mocha --require ts-node/register --timeout=5000 ./test/ut/**/*.ts",
     "test:grammar": "rm -rf test/local && node --loader ts-node/esm ./scripts/obfuscate_script.js && node --loader ts-node/esm ./scripts/execute_result_statistics.js"
   },
   "repository": {
