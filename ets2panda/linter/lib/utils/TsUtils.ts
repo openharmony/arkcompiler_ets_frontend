@@ -54,6 +54,14 @@ export class TsUtils {
   }
 
   static isNumberLikeType(tsType: ts.Type): boolean {
+    if (tsType.isUnion()) {
+      for (const tsCompType of tsType.types) {
+        if ((tsCompType.flags & ts.TypeFlags.NumberLike) === 0) {
+          return false;
+        }
+      }
+      return true;
+    }
     return (tsType.getFlags() & ts.TypeFlags.NumberLike) !== 0;
   }
 
