@@ -16,6 +16,7 @@
 #include <abc2program/program_dump.h>
 #include <assembly-program.h>
 #include <assembly-emitter.h>
+#include <resolveDepsRelation.h>
 #include <emitFiles.h>
 #include <es2panda.h>
 #include <mem/arena_allocator.h>
@@ -212,6 +213,21 @@ static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::
     return true;
 }
 
+static bool ResolveDepsRelations(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
+                                 const std::unique_ptr<panda::es2panda::aot::Options> &options, 
+                                 std::unordered_map<std::string, std::unordered_set<std::string>> *resolveDepsRelation)
+{
+    panda::es2panda::aot::ResolveDepsRelation depsRelation(options, programsInfo, resolveDepsRelation);
+    bool res = true;
+    try {
+        depsRelation.Resolve();
+    } catch (const class Error &e) {
+        res = false;
+        std::cerr << e.Message() << std::endl;
+    }
+    return res;
+}
+
 int Run(int argc, const char **argv)
 {
     auto options = std::make_unique<Options>();
@@ -243,10 +259,29 @@ int Run(int argc, const char **argv)
         return ret;
     }
 
+    for(const auto &key : options->CompilerOptions().compileContextInfo.compileEntries) {
+        std::cout << "compileEntry" << key << std::endl; 
+    }
+
+    for(const auto &[key, value] : programsInfo) {
+        std::cout << "duanshiyi" << key << std::endl; 
+    }
+
     if (!options->NpmModuleEntryList().empty()) {
         es2panda::util::ModuleHelpers::CompileNpmModuleEntryList(options->NpmModuleEntryList(),
             options->CompilerOptions(), programsInfo, &allocator);
         expectedProgsCount++;
+    }
+
+    std::unordered_map<std::string, std::unordered_set<std::string>> resolveDepsRelation {};
+    if (!ResolveDepsRelations(programsInfo, options, &resolveDepsRelation)) {
+        return 1;
+    }
+    for (auto &[key, value] : resolveDepsRelation) {
+        std::cout << "compile Entry" << key << std::endl;
+        for (auto deps : value) {
+            std::cout << deps << std::endl;
+        }
     }
 
     if (!GenerateAbcFiles(programsInfo, options, expectedProgsCount)) {

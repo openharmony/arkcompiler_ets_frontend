@@ -259,6 +259,7 @@ es2panda_src = [
   "util/symbolTable.cpp",
   "util/ustring.cpp",
   "util/workerQueue.cpp",
+  "util/commonUtil.cpp",
 ]
 
 config("es2abc_config_src") {
@@ -453,6 +454,7 @@ ohos_executable("es2panda") {
   }
 
   sources = [
+    "aot/resolveDepsRelation.cpp",
     "aot/emitFiles.cpp",
     "aot/main.cpp",
     "aot/options.cpp",
