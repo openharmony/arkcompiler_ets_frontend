@@ -1173,10 +1173,10 @@ class PatchTest(Test):
         if 'record-name-with-dots' in os.path.basename(self.path):
             patch_test_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
         dump_assembly_testname = [
-            'modify-anon-content-keep-origin-name', 
-            'modify-class-memeber-function', 
-            'exist-lexenv-3', 
-            'lexenv-reduce', 
+            'modify-anon-content-keep-origin-name',
+            'modify-class-memeber-function',
+            'exist-lexenv-3',
+            'lexenv-reduce',
             'lexenv-increase']
         for name in dump_assembly_testname:
             if name in os.path.basename(self.path):
@@ -1279,7 +1279,7 @@ class DebuggerTest(Test):
             cmd.extend(['--debug-info'])
         cmd.extend([os.path.join(self.path, input_file_name)])
         cmd.extend(['--dump-assembly'])
-       
+
 
         self.log_cmd(cmd)
 
@@ -1338,6 +1338,17 @@ class Base64Test(Test):
                     cmd.extend(["--base64Input", base64_input])
             except Exception:
                 self.passed = False
+        elif self.input_type == "targetApiVersion":
+            # base64 test for all available target api version.
+            version = os.path.basename(self.path)
+            cmd.extend(['--target-api-version', version])
+            input_file = os.path.join(self.path, "input.txt")
+            try:
+                with open(input_file, 'r') as fp:
+                    base64_input = (''.join((fp.readlines()[12:]))).lstrip()  # ignore license description lines
+                    cmd.extend(["--base64Input", base64_input])
+            except Exception:
+                self.passed = False
         else:
             self.error = "Unsupported base64 input type"
             self.passed = False
@@ -1379,6 +1390,12 @@ class Base64Runner(Runner):
         self.tests = []
         self.tests.append(Base64Test(os.path.join(self.test_directory, "inputFile"), "file"))
         self.tests.append(Base64Test(os.path.join(self.test_directory, "inputString"), "string"))
+        # current target api version is 12, once a new version is addded, a new testcase should be added here.
+        current_version = 12
+        available_target_api_versions = [9, 10, 11, current_version]
+        for version in available_target_api_versions:
+            self.tests.append(Base64Test(os.path.join(self.test_directory, "availableTargetApiVersion", str(version)),
+                "targetApiVersion"))
 
     def test_path(self, src):
         return os.path.basename(src)
@@ -1454,7 +1471,7 @@ def main():
                                           "--check-transformed-ast-structure"])
 
         runners.append(transformer_runner)
-        
+
     if args.abc_to_asm:
         runner = AbcToAsmRunner(args)
         runner.add_directory("abc2asm/js", "js", [])
