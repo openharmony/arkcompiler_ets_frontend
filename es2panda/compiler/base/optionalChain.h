@@ -34,6 +34,8 @@ public:
     NO_MOVE_SEMANTIC(OptionalChain);
 
 private:
+    void InitThisVRegForCallExpression();
+
     PandaGen *pg_ {};
     const ir::AstNode *node_ {};
     Label *label_ {};

@@ -69,6 +69,17 @@ public:
         typeParams_ = typeParams;
     }
 
+    bool HasThisVReg() const
+    {
+        return thisVReg_ != std::nullopt;
+    }
+
+    compiler::VReg GetThisVReg() const
+    {
+        ASSERT(HasThisVReg());
+        return thisVReg_.value();
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
@@ -82,6 +93,7 @@ private:
     ArenaVector<Expression *> arguments_;
     TSTypeParameterInstantiation *typeParams_;
     bool optional_;
+    mutable std::optional<compiler::VReg> thisVReg_;
 };
 
 }  // namespace panda::es2panda::ir

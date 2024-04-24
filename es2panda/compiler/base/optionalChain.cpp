@@ -16,6 +16,7 @@
 #include "optionalChain.h"
 
 #include <compiler/core/pandagen.h>
+#include <ir/expressions/callExpression.h>
 
 namespace panda::es2panda::compiler {
 OptionalChain::OptionalChain(PandaGen *pg, const ir::AstNode *node) : pg_(pg), node_(node), prev_(pg->optionalChain_)
@@ -54,9 +55,27 @@ void OptionalChain::CheckNullish(bool optional, compiler::VReg obj)
     pg_->SetLabel(node_, nullish);
 
     pg_->LoadConst(node_, compiler::Constant::JS_UNDEFINED);
+    InitThisVRegForCallExpression();
     pg_->Branch(node_, label_);
     pg_->SetLabel(node_, notNullish);
     pg_->LoadAccumulator(node_, obj);
+}
+
+void OptionalChain::InitThisVRegForCallExpression()
+{
+    auto *iter = node_->Parent();
+    while (iter->IsTSNonNullExpression() || iter->IsTSAsExpression() || iter->IsTSTypeAssertion()) {
+        iter = iter->Parent();
+    }
+
+    if (!iter->IsCallExpression()) {
+        return;
+    }
+
+    auto callExpr = iter->AsCallExpression();
+    if (callExpr->HasThisVReg()) {
+        pg_->StoreAccumulator(node_, callExpr->GetThisVReg());
+    }
 }
 
 }   // namespace panda::es2panda::compiler

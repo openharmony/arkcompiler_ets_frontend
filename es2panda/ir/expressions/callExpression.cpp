@@ -147,6 +147,10 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
         realCallee->AsMemberExpression()->Compile(pg, thisReg);
     } else if (realCallee->IsChainExpression()) {
         hasThis = realCallee->AsChainExpression()->GetExpression()->IsMemberExpression();
+        if (hasThis) {
+            // Guaranteed by implementation in callThis, thisVReg is always the next register of callee.
+            thisVReg_ = callee + 1;
+        }
         realCallee->AsChainExpression()->Compile(pg);
     } else {
         realCallee->Compile(pg);
