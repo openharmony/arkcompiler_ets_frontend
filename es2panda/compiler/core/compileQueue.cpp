@@ -71,7 +71,7 @@ void CompileFileJob::Run()
 {
     std::stringstream ss;
     std::string buffer;
-    if (!src_->fileName.empty()) {
+    if (!src_->fileName.empty() && src_->isSourceMode) {
         if (!util::Helpers::ReadFileToBuffer(src_->fileName, ss)) {
             return;
         }
@@ -101,13 +101,13 @@ void CompileFileJob::Run()
         return;
     }
 
-    if (options_->optLevel != 0) {
+    if (options_->optLevel != 0 && src_->isSourceMode) {
         util::Helpers::OptimizeProgram(prog, src_->fileName);
     }
 
     {
         std::unique_lock<std::mutex> lock(global_m_);
-        auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), true);
+        auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), src_->isSourceMode);
         progsInfo_.insert({src_->fileName, cache});
     }
 }

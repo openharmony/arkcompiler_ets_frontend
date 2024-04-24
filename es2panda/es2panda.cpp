@@ -58,14 +58,44 @@ panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string r
     return context.GetEmitter()->Finalize(false, nullptr);
 }
 
+void Compiler::CheckCompilerOptionsForAbcInput(const std::string &fname, const CompilerOptions &options)
+{
+    CheckUnsupportOptionsForAbcInput(fname, options);
+    ChecktargetApiVersionIsSupportedForAbcInput(options);
+}
+
+void Compiler::CheckUnsupportOptionsForAbcInput(const std::string &fname, const CompilerOptions &options)
+{
+    if (!options.patchFixOptions.dumpSymbolTable.empty() ||
+        !options.patchFixOptions.symbolTable.empty() || options.patchFixOptions.generatePatch) {
+        throw Error(ErrorType::GENERIC, "When the abc file '" + fname +
+            "' is used as the input, the following option is not supported: " +
+            "{ dump-symbol-table | input-symbol-table | generate-patch }");
+    }
+}
+
+void Compiler::ChecktargetApiVersionIsSupportedForAbcInput(const CompilerOptions &options)
+{
+    if (options.targetApiVersion < util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION) {
+        throw Error(ErrorType::GENERIC, "Target api version '" + std::to_string(options.targetApiVersion) +
+                    "' should be greater than or equal to '" +
+                    std::to_string(util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION) + "'.");
+    }
+}
+
 panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, const CompilerOptions &options)
 {
     if (!options.enableAbcInput) {
         throw Error(ErrorType::GENERIC, "\"--enable-abc-input\" is not enabled, abc file " + fname +
             "could not be used as the input.");
     }
+    CheckCompilerOptionsForAbcInput(fname, options);
     if (!abcToAsmCompiler_->OpenAbcFile(fname)) {
-        return nullptr;
+        throw Error(ErrorType::GENERIC, "Open abc file " + fname + " failed.");
+    }
+    if (!abcToAsmCompiler_->CheckFileVersionIsSupported(util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION,
+                                                        options.targetApiVersion)) {
+        throw Error(ErrorType::GENERIC, "The input abc file " + fname + "'s version is not supported.");
     }
     panda::pandasm::Program *prog = new panda::pandasm::Program();
     (void)abcToAsmCompiler_->FillProgramData(*prog);

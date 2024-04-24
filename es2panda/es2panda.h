@@ -45,6 +45,7 @@ enum class ScriptExtension {
     JS,
     TS,
     AS,
+    ABC,
 };
 
 struct SourceFile {
@@ -62,6 +63,7 @@ struct SourceFile {
     std::string pkgName {};
     uint32_t hash {0};
     bool isSharedModule {false};
+    bool isSourceMode {true};
 };
 
 struct PatchFixOptions {
@@ -206,6 +208,9 @@ private:
     util::PatchFix *InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,
                                        util::SymbolTable *symbolTable);
     static void CleanPatchFixHelper(const util::PatchFix *patchFixHelper);
+    void CheckCompilerOptionsForAbcInput(const std::string &fname, const CompilerOptions &options);
+    void CheckUnsupportOptionsForAbcInput(const std::string &fname, const CompilerOptions &options);
+    void ChecktargetApiVersionIsSupportedForAbcInput(const CompilerOptions &options);
     panda::pandasm::Program *AbcToAsmProgram(const std::string &fname, const CompilerOptions &options);
 
     parser::ParserImpl *parser_;
