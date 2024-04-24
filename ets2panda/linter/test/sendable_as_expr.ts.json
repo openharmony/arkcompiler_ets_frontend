@@ -25,6 +25,12 @@
             "column": 10,
             "problem": "SendableAsExpr",
             "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 37,
+            "column": 17,
+            "problem": "AnyType",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         }
     ]
 }
