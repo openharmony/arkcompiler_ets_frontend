@@ -113,6 +113,20 @@
             "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
         {
+            "line": 30,
+            "column": 1,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
+        },
+        {
+            "line": 31,
+            "column": 1,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
+        },
+        {
             "line": 32,
             "column": 1,
             "problem": "DestructuringAssignment",
@@ -125,6 +139,13 @@
             "problem": "SpreadOperator",
             "suggest": "",
             "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)"
+        },
+        {
+            "line": 33,
+            "column": 1,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
         {
             "line": 34,
@@ -141,6 +162,13 @@
             "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)"
         },
         {
+            "line": 37,
+            "column": 1,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
+        },
+        {
             "line": 38,
             "column": 1,
             "problem": "DestructuringAssignment",
@@ -153,6 +181,13 @@
             "problem": "SpreadOperator",
             "suggest": "",
             "rule": "It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)"
+        },
+        {
+            "line": 41,
+            "column": 1,
+            "problem": "DestructuringAssignment",
+            "suggest": "",
+            "rule": "Destructuring assignment is not supported (arkts-no-destruct-assignment)"
         },
         {
             "line": 44,
