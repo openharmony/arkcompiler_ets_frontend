@@ -51,9 +51,10 @@ public:
     }
 };
 
-static void GenerateBase64Output(panda::pandasm::Program *prog)
+static void GenerateBase64Output(panda::pandasm::Program *prog,
+                                 const std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
-    auto pandaFile = panda::pandasm::AsmEmitter::Emit(*prog);
+    auto pandaFile = panda::pandasm::AsmEmitter::Emit(*prog, nullptr, options->CompilerOptions().targetApiVersion);
     const uint8_t *buffer = pandaFile->GetBase();
     size_t size = pandaFile->GetPtr().GetSize();
     std::string content(reinterpret_cast<const char*>(buffer), size);
@@ -142,7 +143,7 @@ static void DumpProgramInfos(const std::map<std::string, panda::es2panda::util::
                 panda::abc2program::PandasmProgramDumper dumper;
                 dumper.Dump(std::cout, progInfo.second->program);
             }
-            
+
             if (compilerOptions.dumpAsm) {
                 es2panda::Compiler::DumpAsm(&(progInfo.second->program));
             }
@@ -162,7 +163,7 @@ static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::P
     if (programsInfo.size() == 1) {
         auto *prog = &(programsInfo.begin()->second->program);
         if (options->OutputFiles().empty() && options->CompilerOutput().empty()) {
-            GenerateBase64Output(prog);
+            GenerateBase64Output(prog, options);
             return true;
         }
 
