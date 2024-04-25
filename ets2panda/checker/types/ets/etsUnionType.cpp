@@ -400,7 +400,7 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
     }
 
     if (auto const sourceId =
-            objectType != nullptr ? ETSObjectType::GetPrecedence(objectType) : Type::GetPrecedence(sourceType);
+            objectType != nullptr ? ETSObjectType::GetPrecedence(checker, objectType) : Type::GetPrecedence(sourceType);
         sourceId > 0U) {
         for (auto const [id, type] : numericTypes) {
             if (id >= sourceId) {
@@ -440,7 +440,7 @@ checker::Type *ETSUnionType::GetAssignableBuiltinType(
                 assignableType = constituentType;
                 break;
             }
-        } else if (auto const id = ETSObjectType::GetPrecedence(type); id > 0U) {
+        } else if (auto const id = ETSObjectType::GetPrecedence(checker, type); id > 0U) {
             numericTypes.emplace(id, constituentType);
         } else if (assignableType == nullptr && sourceType != nullptr &&
                    checker->Relation()->IsSupertypeOf(type, sourceType)) {
@@ -461,14 +461,10 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
     while (it != constituentTypes_.cend()) {
         auto *const constituentType = *it;
 
-        if (checker->Relation()->IsIdenticalTo(constituentType, sourceType) ||
-            //  NOTE: just a temporary solution because now Relation()->IsIdenticalTo(...) returns
-            //  'false' for the types like 'ArrayLike<T>'
-            constituentType->ToString() == static_cast<Type *>(sourceType)->ToString()) {
+        if (checker->Relation()->IsIdenticalTo(constituentType, sourceType)) {
             constituentTypes_.erase(it);
             return true;
         }
-
         if (checker->Relation()->IsSupertypeOf(constituentType, sourceType)) {
             return true;
         }
@@ -494,7 +490,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
                 constituentTypes_.erase(it);
                 return true;
             }
-            if (auto const id = ETSObjectType::GetPrecedence(objectType); id > 0U) {
+            if (auto const id = ETSObjectType::GetPrecedence(checker, objectType); id > 0U) {
                 numericTypes.emplace(id, it);
             }
         }
@@ -502,7 +498,7 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
         ++it;
     }
 
-    if (auto const sourceId = ETSObjectType::GetPrecedence(sourceType); sourceId > 0U) {
+    if (auto const sourceId = ETSObjectType::GetPrecedence(checker, sourceType); sourceId > 0U) {
         for (auto const [id, it1] : numericTypes) {
             if (id >= sourceId) {
                 constituentTypes_.erase(it1);
@@ -520,14 +516,10 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSArrayTy
     while (it != constituentTypes_.cend()) {
         auto *const constituentType = *it;
         if (constituentType != nullptr && constituentType->IsETSArrayType()) {
-            if (checker->Relation()->IsIdenticalTo(constituentType, sourceType) ||
-                //  NOTE: just a temporary solution because now Relation()->IsIdenticalTo(...) returns
-                //  'false' for the types like 'ArrayLike<T>'
-                constituentType->ToString() == static_cast<Type *>(sourceType)->ToString()) {
+            if (checker->Relation()->IsIdenticalTo(constituentType, sourceType)) {
                 constituentTypes_.erase(it);
                 return true;
             }
-
             if (checker->Relation()->IsSupertypeOf(constituentType, sourceType)) {
                 return true;
             }
