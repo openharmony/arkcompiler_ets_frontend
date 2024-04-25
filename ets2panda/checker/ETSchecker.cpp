@@ -213,7 +213,7 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
     for (auto &[_, extPrograms] : program->ExternalSources()) {
         (void)_;
         for (auto *extProg : extPrograms) {
-            CheckProgram(extProg);
+            CheckProgram(extProg, VarBinder()->IsGenStdLib());
         }
     }
 
