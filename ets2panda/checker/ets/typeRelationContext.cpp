@@ -156,7 +156,8 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParame
     }
 
     while (typeArgTypes.size() < type->TypeArguments().size()) {
-        typeArgTypes.push_back(type->TypeArguments().at(typeArgTypes.size()));
+        auto *defaultType = type->TypeArguments().at(typeArgTypes.size())->AsETSTypeParameter()->GetDefaultType();
+        typeArgTypes.push_back(defaultType);
     }
 
     InstantiateType(type, typeArgTypes, (typeArgs == nullptr) ? lexer::SourcePosition() : typeArgs->Range().start);
