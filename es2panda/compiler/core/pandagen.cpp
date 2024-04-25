@@ -2023,7 +2023,7 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool isComputed
     if (prop->IsStringLiteral()) {
         const util::StringView &str = prop->AsStringLiteral()->Str();
 
-        /* TODO(dbatyai): remove this when runtime handles __proto__ as property name correctly */
+        // remove this when runtime handles __proto__ as property name correctly
         if (str.Is("__proto__")) {
             return res;
         }
