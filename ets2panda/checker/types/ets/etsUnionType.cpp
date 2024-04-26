@@ -486,6 +486,14 @@ bool ETSUnionType::ExtractType(checker::ETSChecker *checker, checker::ETSObjectT
                 constituentTypes_.erase(it);
                 return true;
             }
+            //  Because 'instanceof' expression does not check for type parameters, then for generic types we should
+            //  consider that expressions like 'SomeType<U>' and 'SomeType<T>' are identical for smart casting.
+            if (objectType->HasTypeFlag(TypeFlag::GENERIC) && sourceType->HasTypeFlag(TypeFlag::GENERIC) &&
+                checker->Relation()->IsIdenticalTo(objectType->GetOriginalBaseType(),
+                                                   sourceType->GetOriginalBaseType())) {
+                constituentTypes_.erase(it);
+                return true;
+            }
             if (auto const id = ETSObjectType::GetPrecedence(objectType); id > 0U) {
                 numericTypes.emplace(id, it);
             }
