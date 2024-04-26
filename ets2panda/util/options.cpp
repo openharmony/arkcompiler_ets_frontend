@@ -173,7 +173,7 @@ bool Options::Parse(int argc, const char **argv)
     ark::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     ark::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
     ark::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
-    ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
+    ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)", 0, MAX_OPT_LEVEL);
     ark::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
 
     // ETS-warnings

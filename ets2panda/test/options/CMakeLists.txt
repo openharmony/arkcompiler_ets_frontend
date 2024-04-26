@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -34,3 +34,4 @@ check_option_help_otput(bco_opt "--help" "bco-optimizer:")
 check_option_help_otput(bco_opt_help "--bco-optimizer --help" "bytecode-opt-peepholes:")
 check_option_help_otput(comp_opt "--help" "bco-compiler:")
 check_option_help_otput(comp_opt_help "--bco-compiler --help" "compiler-disasm-dump:")
+check_option_help_otput(opt_level "--opt-level 7" "out of range parameter value \\\"7\\\"")
