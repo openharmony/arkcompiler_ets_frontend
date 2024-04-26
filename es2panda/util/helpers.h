@@ -70,6 +70,8 @@ public:
     static constexpr std::string_view SO = ".so";
 };
 
+using AopTransformFuncDef = int (*)(const char *);
+
 class Helpers {
 public:
     Helpers() = delete;

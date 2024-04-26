@@ -59,7 +59,7 @@
 #endif
 #include <fstream>
 #include <iostream>
-#include "os/library_loader.h"
+#include <os/library_loader.h>
 
 namespace panda::es2panda::util {
 
@@ -680,17 +680,35 @@ std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::str
     pid = std::to_string(getpid());
     supportSuffix = FileSuffix::SO;
 #endif
-    //judge file suffix
+    //check file suffix(.so|.dll)
     if (!FileExtensionIs(aopTransformPath, supportSuffix)) {
         std::string msg = "aop transform file suffix support " + std::string(supportSuffix) + ", error file: " + aopTransformPath;
         std::cerr << msg << std::endl;
         return "";
     }
 
+	//load aop transform file(.so|.dll)
+    auto loadRes = os::library_loader::Load(aopTransformPath);
+    if (!loadRes.HasValue()) {
+        std::string msg = "os::library_loader::Load error: " + loadRes.Error().ToString();
+        std::cerr << msg << std::endl;
+        return "";
+    }
+    os::library_loader::LibraryHandle handler = std::move(loadRes.Value());
+
+    //get func Transform ptr
+    auto initRes = os::library_loader::ResolveSymbol(handler, "Transform");
+    if (!initRes.HasValue()) {
+        std::string msg = "os::library_loader::ResolveSymbol get func Transform error: " + initRes.Error().ToString();
+        std::cerr << msg << std::endl;
+        os::library_loader::CloseHandle(&handler);
+        return "";
+    }
+   os::library_loader::CloseHandle(&handler);
+
+    //emit progam to untransformed ABC
     const std::string outputSuffix = ".aop.abc";
     std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
-
-    //step progam >> untransformed ABC
     if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, nullptr, nullptr, true)) {
         std::remove(tempOutput.c_str());
         std::string msg = "AsmEmitter::Emit error: " + aopTransformPath;
@@ -698,30 +716,9 @@ std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::str
         return "";
     }
 
-	//load .so|.dll
-    auto loadRes = os::library_loader::Load(aopTransformPath);
-    if (!loadRes.HasValue()) {
-        std::remove(tempOutput.c_str());
-        std::string msg = "os::library_loader::Load error: " + loadRes.Error().ToString();
-        std::cerr << msg << std::endl;
-        return "";
-    }
-    os::library_loader::LibraryHandle handler = std::move(loadRes.Value());
-
-    //get function ptr
-    auto initRes = os::library_loader::ResolveSymbol(handler, "Transform");
-    if (!initRes.HasValue()) {
-        std::remove(tempOutput.c_str());
-        std::string msg = "os::library_loader::ResolveSymbol get func Transform error: " + initRes.Error().ToString();
-        std::cerr << msg << std::endl;
-        os::library_loader::CloseHandle(&handler);
-        return "";
-    }
-
-    //invoke, untransformed ABC to transformed ABC
-    int (*transform)(const char *) = reinterpret_cast<int (*)(const char *)>(initRes.Value());
+    //invoke Transform, untransformed ABC to transformed ABC
+    AopTransformFuncDef transform = reinterpret_cast<AopTransformFuncDef>(initRes.Value());
     int res = transform(tempOutput.c_str());
-    os::library_loader::CloseHandle(&handler);
 
     //exec result define: 0:success, other:fail
     if (res) {

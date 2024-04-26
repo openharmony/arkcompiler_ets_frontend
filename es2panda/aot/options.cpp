@@ -544,11 +544,11 @@ bool Options::Parse(int argc, const char **argv)
 
     bool transformLibIsEmpty = transformLib.GetValue().empty();
     if (!transformLibIsEmpty) {
-        auto libValue = transformLib.GetValue();
-        // judge file exist or not
-        auto transformLibAbs = panda::os::file::File::GetAbsolutePath(libValue);
+        auto libName = transformLib.GetValue();
+        // check file exist or not
+        auto transformLibAbs = panda::os::file::File::GetAbsolutePath(libName);
         if (!transformLibAbs) {
-            std::cerr << "Failed to find file '" << libValue << "' during transformLib file resolution" << std::endl
+            std::cerr << "Failed to find file '" << libName << "' during transformLib file resolution" << std::endl
                       << "Please check if the file name is correct, the file exists at the specified path, "
                       << "and your project has the necessary permissions to access it." << std::endl;
             return false;
