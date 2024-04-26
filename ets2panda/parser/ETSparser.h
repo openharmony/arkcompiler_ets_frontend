@@ -19,6 +19,7 @@
 #include "util/arktsconfig.h"
 #include "util/importPathManager.h"
 #include "TypedParser.h"
+#include "ir/base/classDefinition.h"
 
 namespace ark::es2panda::ir {
 class ETSPackageDeclaration;
@@ -28,22 +29,9 @@ enum class PrimitiveType;
 
 namespace ark::es2panda::parser {
 
-// NOLINTBEGIN(modernize-avoid-c-arrays)
-inline constexpr char const FORMAT_SIGNATURE = '@';
-inline constexpr char const TYPE_FORMAT_NODE = 'T';
-inline constexpr char const STATEMENT_FORMAT_NODE = 'S';
-inline constexpr char const EXPRESSION_FORMAT_NODE = 'E';
-inline constexpr char const IDENTIFIER_FORMAT_NODE = 'I';
-inline constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
-// NOLINTEND(modernize-avoid-c-arrays)
-
 class ETSParser final : public TypedParser {
 public:
-    ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : TypedParser(program, options, status), globalProgram_(GetProgram())
-    {
-        importPathManager_ = std::make_unique<util::ImportPathManager>(Allocator(), ArkTSConfig(), GetOptions().stdLib);
-    }
+    ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS);
 
     ETSParser() = delete;
     NO_COPY_SEMANTIC(ETSParser);
@@ -51,67 +39,187 @@ public:
 
     ~ETSParser() final = default;
 
-    [[nodiscard]] bool IsETSParser() const noexcept override
+    [[nodiscard]] bool IsETSParser() const noexcept override;
+
+    const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &ModuleList() const;
+
+    ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
+
+public:
+    //============================================================================================//
+    // Methods to create AST node(s) from the specified string (part of valid ETS-code!)
+    // NOTE: ScopeInitPhase, SetParent should be called on created subtree after calling any of these methods,
+    //============================================================================================//
+
+    template <typename>
+    static constexpr bool STATIC_FALSE = false;
+
+    template <typename T>
+    void SetFormattingFileName(T &&fileName)
     {
-        return true;
+        GetContext().SetFormattingFileName(std::forward<T>(fileName));
     }
 
-    const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &ModuleList() const
+    template <typename T>
+    void ProcessFormattedArg(std::vector<ir::AstNode *> &nodes, T &&arg)
     {
-        return importPathManager_->ModuleList();
+        if constexpr (std::is_convertible_v<std::decay_t<T>, ir::AstNode *>) {
+            nodes.emplace_back(std::forward<T>(arg));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, util::StringView>) {
+            nodes.emplace_back(AllocNode<ir::Identifier>(std::forward<T>(arg), Allocator()));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, util::UString>) {
+            nodes.emplace_back(AllocNode<ir::Identifier>(arg.View(), Allocator()));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, std::string>) {
+            nodes.emplace_back(
+                AllocNode<ir::Identifier>(util::UString(std::forward<T>(arg), Allocator()).View(), Allocator()));
+        } else if constexpr (std::is_constructible_v<std::string, std::decay_t<T>>) {
+            nodes.emplace_back(AllocNode<ir::Identifier>(
+                util::UString(std::string {std::forward<T>(arg)}, Allocator()).View(), Allocator()));
+        } else if constexpr (std::is_convertible_v<std::decay_t<T>, checker::Type *>) {
+            nodes.emplace_back(AllocNode<ir::OpaqueTypeNode>(std::forward<T>(arg)));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<ir::AstNode *>>) {
+            nodes.emplace_back(AllocNode<ir::TSInterfaceBody>(std::forward<T>(arg)));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<ir::Expression *>>) {
+            nodes.emplace_back(AllocNode<ir::SequenceExpression>(std::forward<T>(arg)));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<ir::Statement *>>) {
+            nodes.emplace_back(AllocNode<ir::BlockExpression>(std::forward<T>(arg)));
+        } else {
+            static_assert(STATIC_FALSE<T>, "Format argument has invalid type.");
+        }
     }
 
-    //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
     ir::Expression *CreateExpression(std::string_view sourceCode,
-                                     ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
-                                     std::string_view fileName = DEFAULT_SOURCE_FILE);
+                                     ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
 
-    ir::Expression *CreateFormattedExpression(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes,
-                                              std::string_view fileName = DEFAULT_SOURCE_FILE);
+    ir::Expression *CreateFormattedExpression(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes);
 
     template <typename... Args>
-    ir::Expression *CreateFormattedExpression(std::string_view const sourceCode, std::string_view const fileName,
-                                              Args &&...args)
-    {
-        std::vector<ir::AstNode *> insertingNodes {args...};
-        return CreateFormattedExpression(sourceCode, insertingNodes, fileName);
-    }
-
-    ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes,
-                                            std::string_view fileName = DEFAULT_SOURCE_FILE);
-
-    template <typename... Args>
-    ir::Statement *CreateFormattedStatement(std::string_view const sourceCode, std::string_view const fileName,
-                                            Args &&...args)
+    ir::Expression *CreateFormattedExpression(std::string_view const sourceCode, Args &&...args)
     {
         std::vector<ir::AstNode *> insertingNodes {};
         insertingNodes.reserve(sizeof...(Args));
-        (insertingNodes.emplace_back(std::forward<Args>(args)), ...);
-        return CreateFormattedStatement(sourceCode, insertingNodes, fileName);
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedExpression(sourceCode, insertingNodes);
     }
 
-    ArenaVector<ir::Statement *> CreateStatements(std::string_view sourceCode,
-                                                  std::string_view fileName = DEFAULT_SOURCE_FILE);
-
-    ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view sourceCode,
-                                                           std::vector<ir::AstNode *> &insertingNodes,
-                                                           std::string_view fileName = DEFAULT_SOURCE_FILE);
+    ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes);
 
     template <typename... Args>
-    ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view const sourceCode,
-                                                           std::string_view const fileName, Args &&...args)
+    ir::Statement *CreateFormattedStatement(std::string_view const sourceCode, Args &&...args)
     {
-        std::vector<ir::AstNode *> insertingNodes {args...};
-        return CreateFormattedStatements(sourceCode, insertingNodes, fileName);
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedStatement(sourceCode, insertingNodes);
     }
 
-    ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
+    ArenaVector<ir::Statement *> CreateStatements(std::string_view sourceCode);
+
+    ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view sourceCode,
+                                                           std::vector<ir::AstNode *> &insertingNodes);
+
+    template <typename... Args>
+    ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view const sourceCode, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedStatements(sourceCode, insertingNodes);
+    }
+
+    ir::ClassDeclaration *CreateFormattedClassDeclaration(std::string_view sourceCode,
+                                                          std::vector<ir::AstNode *> &insertingNodes,
+                                                          bool allowStatic = false);
+
+    template <typename... Args>
+    ir::ClassDeclaration *CreateFormattedClassDeclaration(std::string_view sourceCode, bool allowStatic, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedClassDeclaration(sourceCode, insertingNodes, allowStatic);
+    }
+
+    ir::AstNode *CreateFormattedClassElement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes,
+                                             const ArenaVector<ir::AstNode *> &properties,
+                                             ir::ClassDefinitionModifiers modifiers);
+
+    template <typename... Args>
+    ir::AstNode *CreateFormattedClassElement(std::string_view sourceCode, const ArenaVector<ir::AstNode *> &properties,
+                                             ir::ClassDefinitionModifiers modifiers, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedClassElement(sourceCode, insertingNodes, properties, modifiers);
+    }
+
+    template <typename... Args>
+    ir::AstNode *CreateFormattedClassElement(std::string_view sourceCode, ir::ClassDefinition *classDefinition,
+                                             Args &&...args)
+    {
+        return CreateFormattedClassElement(sourceCode, classDefinition->Body(), classDefinition->Modifiers(),
+                                           std::forward<Args...>(args...));
+    }
+
+    ir::AstNode *CreateFormattedClassFieldDefinition(std::string_view sourceCode,
+                                                     std::vector<ir::AstNode *> &insertingNodes);
+
+    template <typename... Args>
+    ir::AstNode *CreateFormattedClassFieldDefinition(std::string_view const sourceCode, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedClassFieldDefinition(sourceCode, insertingNodes);
+    }
+
+    ir::AstNode *CreateFormattedClassMethodDefinition(std::string_view sourceCode,
+                                                      std::vector<ir::AstNode *> &insertingNodes);
+
+    template <typename... Args>
+    ir::AstNode *CreateFormattedClassMethodDefinition(std::string_view const sourceCode, Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (ProcessFormattedArg(insertingNodes, std::forward<Args>(args)), ...);
+        return CreateFormattedClassMethodDefinition(sourceCode, insertingNodes);
+    }
+
+private:
+    NodeFormatType GetFormatPlaceholderType() const;
+
+    ir::Statement *ParseStatementFormatPlaceholder() const override;
+    ir::Expression *ParseExpressionFormatPlaceholder();
+    ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) const override;
+    ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
+
+    ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() const override;
+    ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() const override;
+    ArenaVector<ir::Expression *> &ParseExpressionsArrayFormatPlaceholder() const override;
+
+    ir::Statement *CreateStatement(std::string_view sourceCode);
+
+    ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
+    ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
+
+    ir::ClassDeclaration *CreateClassDeclaration(std::string_view sourceCode, bool allowStatic = false);
+    ir::AstNode *CreateClassElement(std::string_view sourceCode, const ArenaVector<ir::AstNode *> &properties,
+                                    ir::ClassDefinitionModifiers modifiers);
+
+    ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view sourceCode);
+
+    //============================================================================================//
+    //  END: Methods to create AST node(s)...
+    //============================================================================================//
 
 private:
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
     ir::ETSPackageDeclaration *ParsePackageDeclaration();
     ArenaVector<ir::Statement *> ParseTopLevelStatements();
+
+    static bool IsClassMethodModifier(lexer::TokenType type) noexcept;
 
 #ifdef USE_FTW
     static int NFTWCallBack(const char *fpath, const struct stat * /*unused*/, int tflag, struct FTW * /*unused*/);
@@ -145,8 +253,7 @@ private:
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
     ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
-                                                     ir::Identifier *className = nullptr,
-                                                     ir::Identifier *identNode = nullptr);
+                                                     ir::Identifier *className = nullptr);
     ir::ScriptFunction *ParseFunction(ParserStatus newStatus, ir::Identifier *className = nullptr);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd) override;
@@ -236,17 +343,14 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ETSStructDeclaration *ParseStructStatement(StatementParsingFlags flags, ir::ClassDefinitionModifiers modifiers,
                                                    ir::ModifierFlags modFlags = ir::ModifierFlags::NONE) override;
-    // NOLINTNEXTLINE(google-default-arguments)
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE,
-                                   ir::Identifier *identNode = nullptr) override;
+                                   ir::ModifierFlags flags) override;
     ir::AstNode *ParseInnerTypeDeclaration(ir::ModifierFlags memberModifiers, lexer::LexerPosition savedPos,
                                            bool isStepToken, bool seenStatic);
     ir::AstNode *ParseInnerConstructorDeclaration(ir::ModifierFlags memberModifiers,
                                                   const lexer::SourcePosition &startLoc);
     ir::AstNode *ParseInnerRest(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                ir::ModifierFlags memberModifiers, ir::Identifier *identNode,
-                                const lexer::SourcePosition &startLoc);
+                                ir::ModifierFlags memberModifiers, const lexer::SourcePosition &startLoc);
 
     ir::ClassDefinition *CreateClassDefinitionForNewExpression(ArenaVector<ir::Expression *> &arguments,
                                                                ir::TypeNode *typeReference,
@@ -255,14 +359,6 @@ private:
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
-
-    NodeFormatType GetFormatPlaceholderIdent() const;
-    ir::AstNode *ParseFormatPlaceholder();
-    ir::Statement *ParseStatementFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
-    ir::Expression *ParseExpressionFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
-    // NOLINTNEXTLINE(google-default-arguments)
-    ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt) override;
-    ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
 
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst,
                                             bool isStatic) override;
@@ -329,21 +425,6 @@ private:
     void ParseTrailingBlock([[maybe_unused]] ir::CallExpression *callExpr) override;
 
     void CheckDeclare();
-
-    // Methods to create AST node(s) from the specified string (part of valid ETS-code!)
-    // NOTE: ScopeInitPhase, SetParent should be called on created subtree after calling any of these methods,
-    // NOLINTBEGIN(modernize-avoid-c-arrays)
-    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
-    // NOLINTEND(modernize-avoid-c-arrays)
-
-    ir::Statement *CreateStatement(std::string_view sourceCode, std::string_view fileName = DEFAULT_SOURCE_FILE);
-
-    ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode,
-                                                 std::string_view fileName = DEFAULT_SOURCE_FILE);
-    ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode,
-                                                      std::string_view fileName = DEFAULT_SOURCE_FILE);
-    ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view sourceCode,
-                                       std::string_view fileName = DEFAULT_SOURCE_FILE);
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;

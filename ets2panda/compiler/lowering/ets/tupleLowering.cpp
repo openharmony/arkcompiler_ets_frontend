@@ -219,19 +219,21 @@ bool TupleLowering::Perform(public_lib::Context *const ctx, parser::Program *con
 
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *const ast) -> ir::AstNode * {
-        // Check if node is an 'assignment expression', with a member expression on the left (potentially tuple)
-        if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression()) {
-            return ConvertTupleAssignment(checker, ast->AsAssignmentExpression());
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [checker](ir::AstNode *const ast) -> ir::AstNode * {
+            // Check if node is an 'assignment expression', with a member expression on the left (potentially tuple)
+            if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression()) {
+                return ConvertTupleAssignment(checker, ast->AsAssignmentExpression());
+            }
 
-        // Check if node is an 'update expression', with a member expression as an argument (potentially tuple)
-        if (ast->IsUpdateExpression() && ast->AsUpdateExpression()->Argument()->IsMemberExpression()) {
-            return ConvertTupleUpdate(checker, ast->AsUpdateExpression());
-        }
+            // Check if node is an 'update expression', with a member expression as an argument (potentially tuple)
+            if (ast->IsUpdateExpression() && ast->AsUpdateExpression()->Argument()->IsMemberExpression()) {
+                return ConvertTupleUpdate(checker, ast->AsUpdateExpression());
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

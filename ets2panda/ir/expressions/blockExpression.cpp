@@ -51,10 +51,13 @@ BlockExpression *BlockExpression::Clone(ArenaAllocator *const allocator, AstNode
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-void BlockExpression::TransformChildren(const NodeTransformer &cb)
+void BlockExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&node : statements_) {
-        node = cb(node)->AsStatement();
+        if (auto *transformedNode = cb(node); node != transformedNode) {
+            node->SetTransformedNode(transformationName, transformedNode);
+            node = transformedNode->AsStatement();
+        }
     }
 }
 

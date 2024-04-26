@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,12 +22,27 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void TSConditionalType::TransformChildren(const NodeTransformer &cb)
+void TSConditionalType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    checkType_ = cb(checkType_)->AsExpression();
-    extendsType_ = cb(extendsType_)->AsExpression();
-    trueType_ = cb(trueType_)->AsExpression();
-    falseType_ = cb(falseType_)->AsExpression();
+    if (auto *transformedNode = cb(checkType_); checkType_ != transformedNode) {
+        checkType_->SetTransformedNode(transformationName, transformedNode);
+        checkType_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(extendsType_); extendsType_ != transformedNode) {
+        extendsType_->SetTransformedNode(transformationName, transformedNode);
+        extendsType_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(trueType_); trueType_ != transformedNode) {
+        trueType_->SetTransformedNode(transformationName, transformedNode);
+        trueType_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(falseType_); falseType_ != transformedNode) {
+        falseType_->SetTransformedNode(transformationName, transformedNode);
+        falseType_ = transformedNode->AsExpression();
+    }
 }
 
 void TSConditionalType::Iterate(const NodeTraverser &cb) const

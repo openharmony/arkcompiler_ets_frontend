@@ -389,4 +389,3 @@
     }
   }
 }
-TypeError: Property 'foo' does not exist on type 're_export' [import_7.ets:20:7]

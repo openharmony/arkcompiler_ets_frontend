@@ -22,10 +22,13 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void TSInterfaceBody::TransformChildren(const NodeTransformer &cb)
+void TSInterfaceBody::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     for (auto *&it : body_) {
-        it = cb(it);
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode;
+        }
     }
 }
 

@@ -22,16 +22,25 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void CallExpression::TransformChildren(const NodeTransformer &cb)
+void CallExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    callee_ = cb(callee_)->AsExpression();
+    if (auto *transformedNode = cb(callee_); callee_ != transformedNode) {
+        callee_->SetTransformedNode(transformationName, transformedNode);
+        callee_ = transformedNode->AsExpression();
+    }
 
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+        }
     }
 
     for (auto *&it : arguments_) {
-        it = cb(it)->AsExpression();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsExpression();
+        }
     }
 }
 

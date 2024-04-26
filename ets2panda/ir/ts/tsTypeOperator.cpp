@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,9 +22,12 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void TSTypeOperator::TransformChildren(const NodeTransformer &cb)
+void TSTypeOperator::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    type_ = static_cast<TypeNode *>(cb(type_));
+    if (auto *transformedNode = cb(type_); type_ != transformedNode) {
+        type_->SetTransformedNode(transformationName, transformedNode);
+        type_ = static_cast<TypeNode *>(transformedNode);
+    }
 }
 
 void TSTypeOperator::Iterate(const NodeTraverser &cb) const

@@ -60,17 +60,15 @@ ir::Expression *ExpandBracketsPhase::ProcessNewArrayInstanceExpression(
     }
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
-    auto *ident = Gensym(checker->Allocator());
+    auto const identName = GenName(checker->Allocator());
     auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
     auto *const newInstanceParent = newInstanceExpression->Parent();
 
-    auto *blockExpression = parser->CreateFormattedExpression(
-        FORMAT_NEW_ARRAY_EXPRESSION, parser::DEFAULT_SOURCE_FILE, ident, exprType, dimension,
-        ident->Clone(checker->Allocator(), nullptr), newInstanceExpression);
+    auto *blockExpression = parser->CreateFormattedExpression(FORMAT_NEW_ARRAY_EXPRESSION, identName, exprType,
+                                                              dimension, identName, newInstanceExpression);
     blockExpression->SetParent(newInstanceParent);
 
-    auto *castedDimension = parser->CreateFormattedExpression(
-        CAST_NEW_DIMENSION_EXPRESSION, parser::DEFAULT_SOURCE_FILE, ident->Clone(checker->Allocator(), nullptr));
+    auto *castedDimension = parser->CreateFormattedExpression(CAST_NEW_DIMENSION_EXPRESSION, identName);
     newInstanceExpression->SetDimension(castedDimension);
 
     newInstanceExpression->SetTsType(nullptr);
@@ -105,21 +103,17 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
         }
 
         if (dimension->IsNumberLiteral()) {
-            auto *castedDimension = parser->CreateFormattedExpression(CAST_OLD_DIMENSION_EXPRESSION,
-                                                                      parser::DEFAULT_SOURCE_FILE, dimension);
+            auto *castedDimension = parser->CreateFormattedExpression(CAST_OLD_DIMENSION_EXPRESSION, dimension);
             castedDimension->SetParent(newInstanceExpression);
             newInstanceExpression->Dimensions()[i] = castedDimension;
         } else {
-            auto *ident = Gensym(checker->Allocator());
+            auto const identName = GenName(checker->Allocator());
             auto *exprType = checker->AllocNode<ir::OpaqueTypeNode>(dimType);
-            auto *identClone = ident->Clone(checker->Allocator(), nullptr);
-            identClone->SetReference();
 
-            auto *blockExpression =
-                parser
-                    ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, parser::DEFAULT_SOURCE_FILE,
-                                                ident, exprType, dimension, identClone)
-                    ->AsBlockExpression();
+            auto *blockExpression = parser
+                                        ->CreateFormattedExpression(FORMAT_NEW_MULTI_DIM_ARRAY_EXPRESSION, identName,
+                                                                    exprType, dimension, identName)
+                                        ->AsBlockExpression();
 
             if (returnExpression == nullptr) {
                 returnExpression = blockExpression;
@@ -127,9 +121,7 @@ ir::Expression *ExpandBracketsPhase::ProcessNewMultiDimArrayInstanceExpression(
                 returnExpression->AddStatements(blockExpression->Statements());
             }
 
-            auto *castedDimension =
-                parser->CreateFormattedExpression(CAST_NEW_DIMENSION_EXPRESSION, parser::DEFAULT_SOURCE_FILE,
-                                                  identClone->Clone(checker->Allocator(), nullptr));
+            auto *castedDimension = parser->CreateFormattedExpression(CAST_NEW_DIMENSION_EXPRESSION, identName);
             castedDimension->SetParent(newInstanceExpression);
             newInstanceExpression->Dimensions()[i] = castedDimension;
         }
@@ -165,18 +157,20 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
     auto *const checker = ctx->checker->AsETSChecker();
     ASSERT(checker != nullptr);
 
-    program->Ast()->TransformChildrenRecursively([this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
-        if (ast->IsETSNewArrayInstanceExpression()) {
-            return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
+            if (ast->IsETSNewArrayInstanceExpression()) {
+                return ProcessNewArrayInstanceExpression(parser, checker, ast->AsETSNewArrayInstanceExpression());
+            }
 
-        if (ast->IsETSNewMultiDimArrayInstanceExpression()) {
-            return ProcessNewMultiDimArrayInstanceExpression(parser, checker,
-                                                             ast->AsETSNewMultiDimArrayInstanceExpression());
-        }
+            if (ast->IsETSNewMultiDimArrayInstanceExpression()) {
+                return ProcessNewMultiDimArrayInstanceExpression(parser, checker,
+                                                                 ast->AsETSNewMultiDimArrayInstanceExpression());
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

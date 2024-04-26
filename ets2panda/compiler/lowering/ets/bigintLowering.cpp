@@ -15,14 +15,27 @@
 
 #include "bigintLowering.h"
 
-#include "checker/ETSchecker.h"
-#include "macros.h"
-
 namespace ark::es2panda::compiler {
 
 std::string_view BigIntLowering::Name() const
 {
     return "BigIntLowering";
+}
+
+void CreateBigInt(parser::ETSParser *parser, ir::ClassProperty *property)
+{
+    if (property != nullptr && property->Value() != nullptr && property->Value()->IsBigIntLiteral()) {
+        auto literal = property->Value()->AsBigIntLiteral();
+        auto value = literal->Str();
+
+        // This will change the bigint literal node into the new class instance expression.
+        std::string src {"new BigInt("};
+        src += value.Utf8();
+        src += ")";
+        auto newValue = parser->AsETSParser()->CreateExpression(src);
+        newValue->SetParent(property);
+        property->SetValue(newValue);
+    }
 }
 
 bool BigIntLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
@@ -34,24 +47,17 @@ bool BigIntLowering::Perform(public_lib::Context *const ctx, parser::Program *co
         }
     }
 
-    program->Ast()->TransformChildrenRecursively([ctx](ir::AstNode *const ast) -> ir::AstNode * {
-        if (ast != nullptr && ast->IsClassProperty()) {
-            auto property = ast->AsClassProperty();
-            if (property != nullptr && property->Value() != nullptr && property->Value()->IsBigIntLiteral()) {
-                auto literal = property->Value()->AsBigIntLiteral();
-                auto value = literal->Str();
+    auto *const parser = ctx->parser->AsETSParser();
 
-                // This will change the bigint literal node into the new class instance expression.
-                std::stringstream src;
-                src << "new BigInt(" << value << ")";
-                auto newValue = ctx->parser->AsETSParser()->CreateExpression(src.str());
-                newValue->SetParent(property);
-                property->SetValue(newValue);
+    program->Ast()->TransformChildrenRecursively(
+        [parser](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsClassProperty()) {
+                CreateBigInt(parser, ast->AsClassProperty());
             }
-        }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

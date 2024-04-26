@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,29 +19,35 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-class TSInterfaceBody : public Expression {
+class TSInterfaceBody final : public Expression {
 public:
+    TSInterfaceBody() = delete;
+    ~TSInterfaceBody() override = default;
+
+    NO_COPY_SEMANTIC(TSInterfaceBody);
+    NO_MOVE_SEMANTIC(TSInterfaceBody);
+
     explicit TSInterfaceBody(ArenaVector<AstNode *> &&body)
         : Expression(AstNodeType::TS_INTERFACE_BODY), body_(std::move(body))
     {
     }
 
-    ArenaVector<AstNode *> *BodyPtr()
+    [[nodiscard]] ArenaVector<AstNode *> *BodyPtr()
     {
         return &body_;
     }
 
-    ArenaVector<AstNode *> &Body()
+    [[nodiscard]] ArenaVector<AstNode *> &Body() noexcept
     {
         return body_;
     }
 
-    const ArenaVector<AstNode *> &Body() const
+    [[nodiscard]] ArenaVector<AstNode *> const &Body() const noexcept
     {
         return body_;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;

@@ -26,16 +26,25 @@
 #include "ir/statements/blockStatement.h"
 
 namespace ark::es2panda::ir {
-void TryStatement::TransformChildren(const NodeTransformer &cb)
+void TryStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    block_ = cb(block_)->AsBlockStatement();
+    if (auto *transformedNode = cb(block_); block_ != transformedNode) {
+        block_->SetTransformedNode(transformationName, transformedNode);
+        block_ = transformedNode->AsBlockStatement();
+    }
 
     for (auto *&it : catchClauses_) {
-        it = cb(it)->AsCatchClause();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsCatchClause();
+        }
     }
 
     if (finalizer_ != nullptr) {
-        finalizer_ = cb(finalizer_)->AsBlockStatement();
+        if (auto *transformedNode = cb(finalizer_); finalizer_ != transformedNode) {
+            finalizer_->SetTransformedNode(transformationName, transformedNode);
+            finalizer_ = transformedNode->AsBlockStatement();
+        }
     }
 }
 

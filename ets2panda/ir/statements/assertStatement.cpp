@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,12 +26,18 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void AssertStatement::TransformChildren(const NodeTransformer &cb)
+void AssertStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    test_ = cb(test_)->AsExpression();
+    if (auto *transformedNode = cb(test_); test_ != transformedNode) {
+        test_->SetTransformedNode(transformationName, transformedNode);
+        test_ = transformedNode->AsExpression();
+    }
 
     if (second_ != nullptr) {
-        second_ = cb(second_)->AsExpression();
+        if (auto *transformedNode = cb(second_); second_ != transformedNode) {
+            second_->SetTransformedNode(transformationName, transformedNode);
+            second_ = transformedNode->AsExpression();
+        }
     }
 }
 

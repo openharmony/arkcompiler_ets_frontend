@@ -23,10 +23,13 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void YieldExpression::TransformChildren(const NodeTransformer &cb)
+void YieldExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (argument_ != nullptr) {
-        argument_ = cb(argument_)->AsExpression();
+        if (auto *transformedNode = cb(argument_); argument_ != transformedNode) {
+            argument_->SetTransformedNode(transformationName, transformedNode);
+            argument_ = transformedNode->AsExpression();
+        }
     }
 }
 

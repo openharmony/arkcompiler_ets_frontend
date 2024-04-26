@@ -23,10 +23,13 @@
 #include "checker/ETSchecker.h"
 
 namespace ark::es2panda::ir {
-void BreakStatement::TransformChildren(const NodeTransformer &cb)
+void BreakStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (ident_ != nullptr) {
-        ident_ = cb(ident_)->AsIdentifier();
+        if (auto *transformedNode = cb(ident_); ident_ != transformedNode) {
+            ident_->SetTransformedNode(transformationName, transformedNode);
+            ident_ = transformedNode->AsIdentifier();
+        }
     }
 }
 

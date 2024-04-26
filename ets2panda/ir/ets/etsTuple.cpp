@@ -20,18 +20,24 @@
 
 namespace ark::es2panda::ir {
 
-void ETSTuple::TransformChildren([[maybe_unused]] const NodeTransformer &cb)
+void ETSTuple::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : GetTupleTypeAnnotationsList()) {
-        it = static_cast<TypeNode *>(cb(it));
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = static_cast<TypeNode *>(transformedNode);
+        }
     }
 
     if (HasSpreadType()) {
-        cb(spreadType_);
+        if (auto *transformedNode = cb(spreadType_); spreadType_ != transformedNode) {
+            spreadType_->SetTransformedNode(transformationName, transformedNode);
+            spreadType_ = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 
-void ETSTuple::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void ETSTuple::Iterate(const NodeTraverser &cb) const
 {
     for (auto *const it : GetTupleTypeAnnotationsList()) {
         cb(it);

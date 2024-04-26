@@ -138,7 +138,7 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
 
     GenerateNewStatements(checker, objExpr, ss, newStmts, nestedBlckExprs);
 
-    auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts, parser::DEFAULT_SOURCE_FILE);
+    auto *loweringResult = parser->CreateFormattedExpression(ss.str(), newStmts);
     loweringResult->SetParent(objExpr->Parent());
 
     auto scopeCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(varbinder, NearestScope(objExpr));
@@ -165,14 +165,17 @@ bool ObjectLiteralLowering::Perform(public_lib::Context *ctx, parser::Program *p
         }
     }
 
-    program->Ast()->TransformChildrenRecursively([ctx](ir::AstNode *ast) -> ir::AstNode * {
-        // Skip processing dynamic objects
-        if (ast->IsObjectExpression() && !ast->AsObjectExpression()->PreferredType()->AsETSObjectType()->HasObjectFlag(
-                                             checker::ETSObjectFlags::DYNAMIC)) {
-            return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
-        }
-        return ast;
-    });
+    program->Ast()->TransformChildrenRecursively(
+        [ctx](ir::AstNode *ast) -> ir::AstNode * {
+            // Skip processing dynamic objects
+            if (ast->IsObjectExpression() &&
+                !ast->AsObjectExpression()->PreferredType()->AsETSObjectType()->HasObjectFlag(
+                    checker::ETSObjectFlags::DYNAMIC)) {
+                return HandleObjectLiteralLowering(ctx, ast->AsObjectExpression());
+            }
+            return ast;
+        },
+        Name());
 
     return true;
 }

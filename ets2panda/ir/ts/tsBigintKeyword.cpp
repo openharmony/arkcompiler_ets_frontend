@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,11 @@
 #include "checker/TSchecker.h"
 
 namespace ark::es2panda::ir {
-void TSBigintKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void TSBigintKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                        [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void TSBigintKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void TSBigintKeyword::Dump(ir::AstDumper *dumper) const

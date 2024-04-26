@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,16 +24,25 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace ark::es2panda::ir {
-void TSImportType::TransformChildren(const NodeTransformer &cb)
+void TSImportType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    param_ = cb(param_)->AsExpression();
+    if (auto *transformedNode = cb(param_); param_ != transformedNode) {
+        param_->SetTransformedNode(transformationName, transformedNode);
+        param_ = transformedNode->AsExpression();
+    }
 
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+        }
     }
 
     if (qualifier_ != nullptr) {
-        qualifier_ = cb(qualifier_)->AsExpression();
+        if (auto *transformedNode = cb(qualifier_); qualifier_ != transformedNode) {
+            qualifier_->SetTransformedNode(transformationName, transformedNode);
+            qualifier_ = transformedNode->AsExpression();
+        }
     }
 }
 

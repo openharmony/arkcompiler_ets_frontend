@@ -44,7 +44,17 @@ public:
         expr_ = expr;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    checker::Type *OriginalType() const noexcept
+    {
+        return originalType_;
+    }
+
+    void SetOriginalType(checker::Type *type) noexcept
+    {
+        originalType_ = type;
+    }
+
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
@@ -62,6 +72,7 @@ public:
 
 private:
     Expression *expr_;
+    checker::Type *originalType_ = nullptr;
 };
 }  // namespace ark::es2panda::ir
 

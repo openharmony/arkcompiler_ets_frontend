@@ -107,17 +107,26 @@ util::StringView ETSParameterExpression::LexerSaved() const noexcept
     return savedLexer_;
 }
 
-void ETSParameterExpression::TransformChildren(const NodeTransformer &cb)
+void ETSParameterExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (IsRestParameter()) {
-        spread_ = cb(spread_)->AsRestElement();
+        if (auto *transformedNode = cb(spread_); spread_ != transformedNode) {
+            spread_->SetTransformedNode(transformationName, transformedNode);
+            spread_ = transformedNode->AsRestElement();
+        }
         ident_ = spread_->Argument()->AsIdentifier();
     } else {
-        ident_ = cb(ident_)->AsIdentifier();
+        if (auto *transformedNode = cb(ident_); ident_ != transformedNode) {
+            ident_->SetTransformedNode(transformationName, transformedNode);
+            ident_ = transformedNode->AsIdentifier();
+        }
     }
 
     if (IsDefault()) {
-        initializer_ = cb(initializer_)->AsExpression();
+        if (auto *transformedNode = cb(initializer_); initializer_ != transformedNode) {
+            initializer_->SetTransformedNode(transformationName, transformedNode);
+            initializer_ = transformedNode->AsExpression();
+        }
     }
 }
 

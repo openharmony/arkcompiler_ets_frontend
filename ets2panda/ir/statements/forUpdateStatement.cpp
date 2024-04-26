@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,35 +14,44 @@
  */
 
 #include "forUpdateStatement.h"
-#include <cstddef>
 
-#include "varbinder/scope.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/labelTarget.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/dynamicContext.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ForUpdateStatement::TransformChildren(const NodeTransformer &cb)
+void ForUpdateStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (init_ != nullptr) {
-        init_ = cb(init_);
+        if (auto *transformedNode = cb(init_); init_ != transformedNode) {
+            init_->SetTransformedNode(transformationName, transformedNode);
+            init_ = transformedNode;
+        }
     }
 
     if (test_ != nullptr) {
-        test_ = cb(test_)->AsExpression();
+        if (auto *transformedNode = cb(test_); test_ != transformedNode) {
+            test_->SetTransformedNode(transformationName, transformedNode);
+            test_ = transformedNode->AsExpression();
+        }
     }
 
     if (update_ != nullptr) {
-        update_ = cb(update_)->AsExpression();
+        if (auto *transformedNode = cb(update_); update_ != transformedNode) {
+            update_->SetTransformedNode(transformationName, transformedNode);
+            update_ = transformedNode->AsExpression();
+        }
     }
 
-    body_ = cb(body_)->AsStatement();
+    if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+        body_->SetTransformedNode(transformationName, transformedNode);
+        body_ = transformedNode->AsStatement();
+    }
 }
 
 void ForUpdateStatement::Iterate(const NodeTraverser &cb) const

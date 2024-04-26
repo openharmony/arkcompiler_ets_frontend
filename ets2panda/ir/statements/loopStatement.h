@@ -28,25 +28,28 @@ public:
     NO_COPY_SEMANTIC(LoopStatement);
     NO_MOVE_SEMANTIC(LoopStatement);
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::LoopScope *Scope() const override
+    [[nodiscard]] varbinder::LoopScope *Scope() const noexcept final
     {
         return scope_;
     }
 
     void SetScope(varbinder::LoopScope *scope)
     {
+        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
-    void TransformChildren([[maybe_unused]] const NodeTransformer &cb) override
+    void TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                           [[maybe_unused]] std::string_view const transformationName) override
     {
         UNREACHABLE();
     }
+
     void Iterate([[maybe_unused]] const NodeTraverser &cb) const override
     {
         UNREACHABLE();

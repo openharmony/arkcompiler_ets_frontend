@@ -379,25 +379,15 @@ public:
     bool DefaultObjectTypeChecks(const ETSChecker *etsChecker, TypeRelation *relation, Type *source);
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
     Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar) override;
-
-    void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
-    {
-        ss << assemblerName_;
-    }
-
+    void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override;
     static void DebugInfoTypeFromName(std::stringstream &ss, util::StringView asmName);
+    void ToDebugInfoType(std::stringstream &ss) const override;
+    void ToDebugInfoSignatureType(std::stringstream &ss) const;
 
-    void ToDebugInfoType(std::stringstream &ss) const override
-    {
-        DebugInfoTypeFromName(ss, assemblerName_);
-    }
-
-    void ToDebugInfoSignatureType(std::stringstream &ss) const
-    {
-        ss << compiler::Signatures::GENERIC_BEGIN;
-        ss << assemblerName_;
-        ss << compiler::Signatures::GENERIC_END;
-    }
+    void AddReExports(ETSObjectType *reExport);
+    void AddReExportAlias(util::StringView const &value, util::StringView const &key);
+    util::StringView GetReExportAliasValue(util::StringView const &key) const;
+    const ArenaVector<ETSObjectType *> &ReExports() const;
 
     ArenaAllocator *Allocator() const
     {
@@ -430,6 +420,8 @@ private:
           assemblerName_(assemblerName),
           declNode_(declNode),
           interfaces_(allocator->Adapter()),
+          reExports_(allocator->Adapter()),
+          reExportAlias_(allocator->Adapter()),
           flags_(flags),
           instantiationMap_(allocator->Adapter()),
           typeArguments_(allocator->Adapter()),
@@ -475,6 +467,8 @@ private:
     util::StringView assemblerName_;
     ir::AstNode *declNode_;
     ArenaVector<ETSObjectType *> interfaces_;
+    ArenaVector<ETSObjectType *> reExports_;
+    ArenaMap<util::StringView, util::StringView> reExportAlias_;
     ETSObjectFlags flags_;
     InstantiationMap instantiationMap_;
     ArenaVector<Type *> typeArguments_;

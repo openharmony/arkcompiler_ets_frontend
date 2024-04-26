@@ -37,10 +37,17 @@ bool MemberExpression::IsPrivateReference() const noexcept
     return property_->IsIdentifier() && property_->AsIdentifier()->IsPrivateIdent();
 }
 
-void MemberExpression::TransformChildren(const NodeTransformer &cb)
+void MemberExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    object_ = cb(object_)->AsExpression();
-    property_ = cb(property_)->AsExpression();
+    if (auto *transformedNode = cb(object_); object_ != transformedNode) {
+        object_->SetTransformedNode(transformationName, transformedNode);
+        object_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(property_); property_ != transformedNode) {
+        property_->SetTransformedNode(transformationName, transformedNode);
+        property_ = transformedNode->AsExpression();
+    }
 }
 
 void MemberExpression::Iterate(const NodeTraverser &cb) const

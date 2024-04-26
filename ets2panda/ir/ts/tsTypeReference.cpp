@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,13 +31,19 @@
 #include "ir/ts/tsQualifiedName.h"
 
 namespace ark::es2panda::ir {
-void TSTypeReference::TransformChildren(const NodeTransformer &cb)
+void TSTypeReference::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+        }
     }
 
-    typeName_ = cb(typeName_)->AsExpression();
+    if (auto *transformedNode = cb(typeName_); typeName_ != transformedNode) {
+        typeName_->SetTransformedNode(transformationName, transformedNode);
+        typeName_ = transformedNode->AsExpression();
+    }
 }
 
 void TSTypeReference::Iterate(const NodeTraverser &cb) const

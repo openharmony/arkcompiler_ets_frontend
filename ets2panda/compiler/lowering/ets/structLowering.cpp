@@ -92,15 +92,17 @@ bool StructLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> AstNodePtr {
-        if (ast->IsETSStructDeclaration()) {
-            auto *typeRef = CreateStructTypeReference(checker, ast->AsETSStructDeclaration());
-            ast->AsETSStructDeclaration()->Definition()->SetSuper(typeRef);
-            ast->AsETSStructDeclaration()->Definition()->AddModifier(ir::ModifierFlags::FINAL);
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [checker](ir::AstNode *ast) -> AstNodePtr {
+            if (ast->IsETSStructDeclaration()) {
+                auto *typeRef = CreateStructTypeReference(checker, ast->AsETSStructDeclaration());
+                ast->AsETSStructDeclaration()->Definition()->SetSuper(typeRef);
+                ast->AsETSStructDeclaration()->Definition()->AddModifier(ir::ModifierFlags::FINAL);
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

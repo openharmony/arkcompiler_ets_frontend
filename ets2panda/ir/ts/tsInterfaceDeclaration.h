@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,18 +50,19 @@ public:
         }
     }
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::LocalScope *Scope() const override
+    [[nodiscard]] varbinder::LocalScope *Scope() const noexcept override
     {
         return scope_;
     }
 
     void SetScope(varbinder::LocalScope *scope)
     {
+        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -145,7 +146,7 @@ public:
         return !inTs;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
     es2panda::Language Language() const
     {

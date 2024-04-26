@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -121,11 +121,10 @@ ir::Statement *ObjectIteratorLowering::ProcessObjectIterator(parser::ETSParser *
     whileStatement += "@@I7 = @@I8.next(); }";
 
     // Parse ArkTS code string and create corresponding AST nodes
-    auto *const loweringResult =
-        parser->CreateFormattedStatement(whileStatement, parser::DEFAULT_SOURCE_FILE, iterIdent,
-                                         forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
-                                         nextIdent->Clone(allocator, nullptr), nextIdent->Clone(allocator, nullptr),
-                                         nextIdent->Clone(allocator, nullptr), iterIdent->Clone(allocator, nullptr));
+    auto *const loweringResult = parser->CreateFormattedStatement(
+        whileStatement, iterIdent, forOfStatement->Right(), nextIdent, iterIdent->Clone(allocator, nullptr),
+        nextIdent->Clone(allocator, nullptr), nextIdent->Clone(allocator, nullptr),
+        nextIdent->Clone(allocator, nullptr), iterIdent->Clone(allocator, nullptr));
     loweringResult->SetParent(forOfStatement->Parent());
 
     TransferForOfLoopBody(forOfStatement->Body(),
@@ -160,16 +159,18 @@ bool ObjectIteratorLowering::Perform(public_lib::Context *ctx, parser::Program *
     auto *const varbinder = ctx->compilerContext->VarBinder()->AsETSBinder();
     ASSERT(varbinder != nullptr);
 
-    program->Ast()->TransformChildrenRecursively([this, parser, checker, varbinder](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsForOfStatement()) {
-            if (auto const *const exprType = ast->AsForOfStatement()->Right()->TsType();
-                exprType != nullptr && ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) ||
-                                        exprType->IsETSUnionType() || exprType->IsETSTypeParameter())) {
-                return ProcessObjectIterator(parser, checker, varbinder, ast->AsForOfStatement());
+    program->Ast()->TransformChildrenRecursively(
+        [this, parser, checker, varbinder](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsForOfStatement()) {
+                if (auto const *const exprType = ast->AsForOfStatement()->Right()->TsType();
+                    exprType != nullptr && ((exprType->IsETSObjectType() && !exprType->IsETSStringType()) ||
+                                            exprType->IsETSUnionType() || exprType->IsETSTypeParameter())) {
+                    return ProcessObjectIterator(parser, checker, varbinder, ast->AsForOfStatement());
+                }
             }
-        }
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

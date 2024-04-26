@@ -564,6 +564,37 @@ checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayEx
     return annotationType;
 }
 
+void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Expression *init)
+{
+    if (localTypeAnnotation != nullptr && localTypeAnnotation->IsETSTypeReference()) {
+        bool isAnnotationTypeAlias = true;
+        while (localTypeAnnotation->IsETSTypeReference() && isAnnotationTypeAlias) {
+            auto *node = localTypeAnnotation->AsETSTypeReference()
+                             ->Part()
+                             ->Name()
+                             ->AsIdentifier()
+                             ->Variable()
+                             ->Declaration()
+                             ->Node();
+
+            isAnnotationTypeAlias = node->IsTSTypeAliasDeclaration();
+            if (isAnnotationTypeAlias) {
+                localTypeAnnotation = node->AsTSTypeAliasDeclaration()->TypeAnnotation();
+            }
+        }
+    }
+
+    if (localTypeAnnotation != nullptr && localTypeAnnotation->IsETSFunctionType() &&
+        init->IsArrowFunctionExpression()) {
+        auto *const arrowFuncExpr = init->AsArrowFunctionExpression();
+        ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+        if (lambda->Params().size() == localTypeAnnotation->AsETSFunctionType()->Params().size() &&
+            NeedTypeInference(lambda)) {
+            InferTypesForLambda(lambda, localTypeAnnotation->AsETSFunctionType());
+        }
+    }
+}
+
 checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
@@ -633,14 +664,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         init->AsObjectExpression()->SetPreferredType(annotationType);
     }
 
-    if (typeAnnotation != nullptr && typeAnnotation->IsETSFunctionType() && init->IsArrowFunctionExpression()) {
-        auto *const arrowFuncExpr = init->AsArrowFunctionExpression();
-        ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
-        if (lambda->Params().size() == typeAnnotation->AsETSFunctionType()->Params().size() &&
-            NeedTypeInference(lambda)) {
-            InferTypesForLambda(lambda, typeAnnotation->AsETSFunctionType());
-        }
-    }
+    InferAliasLambdaType(typeAnnotation, init);
+
     checker::Type *initType = init->Check(this);
 
     if (initType == nullptr) {
@@ -1091,7 +1116,43 @@ std::vector<util::StringView> ETSChecker::GetNameForSynteticObjectType(const uti
     return syntheticName;
 }
 
-void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath)
+std::pair<bool, util::StringView> FindSpecifierForModuleObject(ir::ETSImportDeclaration *importDecl,
+                                                               util::StringView const &name)
+{
+    if (importDecl == nullptr) {
+        return std::make_pair(true, util::StringView());
+    }
+
+    for (auto item : importDecl->Specifiers()) {
+        if (item->IsImportSpecifier() && item->AsImportSpecifier()->Imported()->Name().Is(name.Mutf8())) {
+            if (!item->AsImportSpecifier()->Imported()->Name().Is(item->AsImportSpecifier()->Local()->Name().Mutf8())) {
+                return std::make_pair(true, item->AsImportSpecifier()->Local()->Name());
+            }
+            return std::make_pair(true, util::StringView());
+        }
+    }
+    return std::make_pair(false, util::StringView());
+}
+
+template <checker::PropertyType TYPE>
+void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleObjType,
+                                                 ir::ETSImportDeclaration *importDecl,
+                                                 const varbinder::Scope::VariableMap &bindings)
+{
+    for (auto [_, var] : bindings) {
+        (void)_;
+        auto [found, aliasedName] = FindSpecifierForModuleObject(importDecl, var->AsLocalVariable()->Name());
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported() && found) {
+            if (!aliasedName.Empty()) {
+                moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
+            }
+            moduleObjType->AddProperty<TYPE>(var->AsLocalVariable());
+        }
+    }
+}
+
+void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,
+                                              ir::ETSImportDeclaration *importDecl)
 {
     auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
@@ -1103,33 +1164,17 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
     // Check imported properties before assigning them to module object
     res->second.front()->Ast()->Check(this);
 
-    for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings()) {
-        (void)_;
-        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
-            moduleObjType->AddProperty<checker::PropertyType::STATIC_FIELD>(var->AsLocalVariable());
-        }
-    }
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
+        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings());
 
-    for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticMethodScope()->Bindings()) {
-        (void)_;
-        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
-            moduleObjType->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());
-        }
-    }
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
+        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
 
-    for (auto [_, var] : res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings()) {
-        (void)_;
-        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
-            moduleObjType->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
-        }
-    }
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
 
-    for (auto [_, var] : res->second.front()->GlobalClassScope()->TypeAliasScope()->Bindings()) {
-        (void)_;
-        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
-            moduleObjType->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
-        }
-    }
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->TypeAliasScope()->Bindings());
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)
@@ -2272,5 +2317,78 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
     }
 
     return true;
+}
+
+checker::ETSObjectType *ETSChecker::CreateSyntheticType(util::StringView const &syntheticName,
+                                                        checker::ETSObjectType *lastObjectType, ir::Identifier *id)
+{
+    auto *syntheticObjType = Allocator()->New<checker::ETSObjectType>(Allocator(), syntheticName, syntheticName, id,
+                                                                      checker::ETSObjectFlags::NO_OPTS);
+
+    auto *classDecl = Allocator()->New<varbinder::ClassDecl>(syntheticName);
+    varbinder::LocalVariable *var =
+        Allocator()->New<varbinder::LocalVariable>(classDecl, varbinder::VariableFlags::CLASS);
+    var->SetTsType(syntheticObjType);
+    lastObjectType->AddProperty<checker::PropertyType::STATIC_FIELD>(var);
+    syntheticObjType->SetEnclosingType(lastObjectType);
+    return syntheticObjType;
+}
+
+void ETSChecker::ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
+                                                          checker::ETSObjectType *lastObjectType, ir::Identifier *ident)
+{
+    for (auto item : VarBinder()->AsETSBinder()->ReExportImports()) {
+        if (!importDecl->ResolvedSource()->Str().Is(item->GetProgramPath().Mutf8())) {
+            continue;
+        }
+        auto *reExportType = GetImportSpecifierObjectType(item->GetETSImportDeclarations(), ident);
+        lastObjectType->AddReExports(reExportType);
+        for (auto node : importDecl->Specifiers()) {
+            if (node->IsImportSpecifier()) {
+                auto specifier = node->AsImportSpecifier();
+                lastObjectType->AddReExportAlias(specifier->Imported()->Name(), specifier->Local()->Name());
+            }
+        }
+    }
+}
+
+ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident)
+{
+    auto importPath = importDecl->ResolvedSource()->Str();
+
+    auto [moduleName, isPackageModule] = VarBinder()->AsETSBinder()->GetModuleInfo(importPath);
+
+    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(moduleName);
+
+    ASSERT(!syntheticNames.empty());
+
+    auto assemblerName = syntheticNames[0];
+    if (!isPackageModule) {
+        assemblerName =
+            util::UString(assemblerName.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL), Allocator())
+                .View();
+    }
+
+    auto *moduleObjectType = Allocator()->New<checker::ETSObjectType>(
+        Allocator(), syntheticNames[0], assemblerName, ident, checker::ETSObjectFlags::CLASS, Relation());
+
+    auto *rootDecl = Allocator()->New<varbinder::ClassDecl>(syntheticNames[0]);
+    varbinder::LocalVariable *rootVar =
+        Allocator()->New<varbinder::LocalVariable>(rootDecl, varbinder::VariableFlags::NONE);
+    rootVar->SetTsType(moduleObjectType);
+
+    syntheticNames.erase(syntheticNames.begin());
+    checker::ETSObjectType *lastObjectType(moduleObjectType);
+
+    for (const auto &syntheticName : syntheticNames) {
+        lastObjectType = CreateSyntheticType(syntheticName, lastObjectType, ident);
+    }
+
+    ImportNamespaceObjectTypeAddReExportType(importDecl, lastObjectType, ident);
+    SetPropertiesForModuleObject(lastObjectType, importPath,
+                                 importDecl->Specifiers()[0]->IsImportNamespaceSpecifier() ? nullptr : importDecl);
+    SetrModuleObjectTsType(ident, lastObjectType);
+
+    return moduleObjectType;
 }
 }  // namespace ark::es2panda::checker

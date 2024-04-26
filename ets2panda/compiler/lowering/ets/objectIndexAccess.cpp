@@ -37,9 +37,8 @@ ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *pa
 
     // Parse ArkTS code string and create and process corresponding AST node(s)
     auto *const memberExpression = assignmentExpression->Left()->AsMemberExpression();
-    auto *const loweringResult =
-        parser->CreateFormattedExpression(CALL_EXPRESSION, parser::DEFAULT_SOURCE_FILE, memberExpression->Object(),
-                                          memberExpression->Property(), assignmentExpression->Right());
+    auto *const loweringResult = parser->CreateFormattedExpression(
+        CALL_EXPRESSION, memberExpression->Object(), memberExpression->Property(), assignmentExpression->Right());
     loweringResult->SetParent(assignmentExpression->Parent());
 
     loweringResult->Check(checker);
@@ -55,8 +54,8 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
         std::string {"@@E1."} + std::string {compiler::Signatures::GET_INDEX_METHOD} + "(@@E2)";
 
     // Parse ArkTS code string and create and process corresponding AST node(s)
-    auto *const loweringResult = parser->CreateFormattedExpression(
-        CALL_EXPRESSION, parser::DEFAULT_SOURCE_FILE, memberExpression->Object(), memberExpression->Property());
+    auto *const loweringResult =
+        parser->CreateFormattedExpression(CALL_EXPRESSION, memberExpression->Object(), memberExpression->Property());
     loweringResult->SetParent(memberExpression->Parent());
 
     loweringResult->Check(checker);
@@ -80,28 +79,33 @@ bool ObjectIndexLowering::Perform(public_lib::Context *ctx, parser::Program *pro
     auto *const checker = ctx->checker->AsETSChecker();
     ASSERT(checker != nullptr);
 
-    program->Ast()->TransformChildrenRecursively([this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
-        if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression() &&
-            ast->AsAssignmentExpression()->Left()->AsMemberExpression()->Kind() ==
-                ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            if (auto const *const objectType = ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType();
-                objectType != nullptr && !objectType->IsETSDynamicType()) {
-                return ProcessIndexSetAccess(parser, checker, ast->AsAssignmentExpression());
+    program->Ast()->TransformChildrenRecursively(
+        [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
+            if (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->Left()->IsMemberExpression() &&
+                ast->AsAssignmentExpression()->Left()->AsMemberExpression()->Kind() ==
+                    ir::MemberExpressionKind::ELEMENT_ACCESS) {
+                if (auto const *const objectType =
+                        ast->AsAssignmentExpression()->Left()->AsMemberExpression()->ObjType();
+                    objectType != nullptr && !objectType->IsETSDynamicType()) {
+                    return ProcessIndexSetAccess(parser, checker, ast->AsAssignmentExpression());
+                }
             }
-        }
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
-    program->Ast()->TransformChildrenRecursively([this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
-        if (ast->IsMemberExpression() &&
-            ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            if (auto const *const objectType = ast->AsMemberExpression()->ObjType();
-                objectType != nullptr && !objectType->IsETSDynamicType()) {
-                return ProcessIndexGetAccess(parser, checker, ast->AsMemberExpression());
+    program->Ast()->TransformChildrenRecursively(
+        [this, parser, checker](ir::AstNode *const ast) -> ir::AstNode * {
+            if (ast->IsMemberExpression() &&
+                ast->AsMemberExpression()->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
+                if (auto const *const objectType = ast->AsMemberExpression()->ObjType();
+                    objectType != nullptr && !objectType->IsETSDynamicType()) {
+                    return ProcessIndexGetAccess(parser, checker, ast->AsMemberExpression());
+                }
             }
-        }
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

@@ -11,56 +11,15 @@
             "key": {
               "type": "Identifier",
               "name": "prop2",
-              "typeAnnotation": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "Object",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 17,
-                        "column": 10
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 16
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 17,
-                      "column": 10
-                    },
-                    "end": {
-                      "line": 17,
-                      "column": 17
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 10
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 17
-                  }
-                }
-              },
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 17,
-                  "column": 3
+                  "line": 1,
+                  "column": 1
                 },
                 "end": {
-                  "line": 17,
-                  "column": 8
+                  "line": 1,
+                  "column": 1
                 }
               }
             },
@@ -76,56 +35,15 @@
                 "id": {
                   "type": "Identifier",
                   "name": "prop2",
-                  "typeAnnotation": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "Object",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 17,
-                            "column": 10
-                          },
-                          "end": {
-                            "line": 17,
-                            "column": 16
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 10
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 17
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 17,
-                        "column": 10
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 17
-                      }
-                    }
-                  },
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 17,
-                      "column": 3
+                      "line": 1,
+                      "column": 1
                     },
                     "end": {
-                      "line": 17,
-                      "column": 8
+                      "line": 1,
+                      "column": 1
                     }
                   }
                 },
@@ -203,56 +121,15 @@
                 "key": {
                   "type": "Identifier",
                   "name": "prop2",
-                  "typeAnnotation": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "Object",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 17,
-                            "column": 10
-                          },
-                          "end": {
-                            "line": 17,
-                            "column": 16
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 10
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 17
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 17,
-                        "column": 10
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 17
-                      }
-                    }
-                  },
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 17,
-                      "column": 3
+                      "line": 1,
+                      "column": 1
                     },
                     "end": {
-                      "line": 17,
-                      "column": 8
+                      "line": 1,
+                      "column": 1
                     }
                   }
                 },
@@ -268,56 +145,15 @@
                     "id": {
                       "type": "Identifier",
                       "name": "prop2",
-                      "typeAnnotation": {
-                        "type": "ETSTypeReference",
-                        "part": {
-                          "type": "ETSTypeReferencePart",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "Object",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 17,
-                                "column": 10
-                              },
-                              "end": {
-                                "line": 17,
-                                "column": 16
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 17,
-                              "column": 10
-                            },
-                            "end": {
-                              "line": 17,
-                              "column": 17
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 17,
-                            "column": 10
-                          },
-                          "end": {
-                            "line": 17,
-                            "column": 17
-                          }
-                        }
-                      },
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 17,
-                          "column": 3
+                          "line": 1,
+                          "column": 1
                         },
                         "end": {
-                          "line": 17,
-                          "column": 8
+                          "line": 1,
+                          "column": 1
                         }
                       }
                     },
@@ -449,56 +285,15 @@
             "key": {
               "type": "Identifier",
               "name": "prop2",
-              "typeAnnotation": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "Object",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 17,
-                        "column": 10
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 16
-                      }
-                    }
-                  },
-                  "loc": {
-                    "start": {
-                      "line": 17,
-                      "column": 10
-                    },
-                    "end": {
-                      "line": 17,
-                      "column": 17
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 10
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 17
-                  }
-                }
-              },
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 17,
-                  "column": 3
+                  "line": 1,
+                  "column": 1
                 },
                 "end": {
-                  "line": 17,
-                  "column": 8
+                  "line": 1,
+                  "column": 1
                 }
               }
             },
@@ -514,56 +309,15 @@
                 "id": {
                   "type": "Identifier",
                   "name": "prop2",
-                  "typeAnnotation": {
-                    "type": "ETSTypeReference",
-                    "part": {
-                      "type": "ETSTypeReferencePart",
-                      "name": {
-                        "type": "Identifier",
-                        "name": "Object",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 17,
-                            "column": 10
-                          },
-                          "end": {
-                            "line": 17,
-                            "column": 16
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 10
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 17
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 17,
-                        "column": 10
-                      },
-                      "end": {
-                        "line": 17,
-                        "column": 17
-                      }
-                    }
-                  },
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 17,
-                      "column": 3
+                      "line": 1,
+                      "column": 1
                     },
                     "end": {
-                      "line": 17,
-                      "column": 8
+                      "line": 1,
+                      "column": 1
                     }
                   }
                 },

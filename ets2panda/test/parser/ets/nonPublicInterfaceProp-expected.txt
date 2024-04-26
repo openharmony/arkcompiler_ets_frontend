@@ -11,28 +11,15 @@
             "key": {
               "type": "Identifier",
               "name": "field",
-              "typeAnnotation": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 12
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 15
-                  }
-                }
-              },
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 18,
-                  "column": 5
+                  "line": 1,
+                  "column": 1
                 },
                 "end": {
-                  "line": 18,
-                  "column": 10
+                  "line": 1,
+                  "column": 1
                 }
               }
             },
@@ -48,28 +35,15 @@
                 "id": {
                   "type": "Identifier",
                   "name": "field",
-                  "typeAnnotation": {
-                    "type": "ETSPrimitiveType",
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 12
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 15
-                      }
-                    }
-                  },
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
-                      "column": 5
+                      "line": 1,
+                      "column": 1
                     },
                     "end": {
-                      "line": 18,
-                      "column": 10
+                      "line": 1,
+                      "column": 1
                     }
                   }
                 },
@@ -119,28 +93,15 @@
                 "key": {
                   "type": "Identifier",
                   "name": "field",
-                  "typeAnnotation": {
-                    "type": "ETSPrimitiveType",
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 12
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 15
-                      }
-                    }
-                  },
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
-                      "column": 5
+                      "line": 1,
+                      "column": 1
                     },
                     "end": {
-                      "line": 18,
-                      "column": 10
+                      "line": 1,
+                      "column": 1
                     }
                   }
                 },
@@ -156,28 +117,15 @@
                     "id": {
                       "type": "Identifier",
                       "name": "field",
-                      "typeAnnotation": {
-                        "type": "ETSPrimitiveType",
-                        "loc": {
-                          "start": {
-                            "line": 18,
-                            "column": 12
-                          },
-                          "end": {
-                            "line": 18,
-                            "column": 15
-                          }
-                        }
-                      },
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 18,
-                          "column": 5
+                          "line": 1,
+                          "column": 1
                         },
                         "end": {
-                          "line": 18,
-                          "column": 10
+                          "line": 1,
+                          "column": 1
                         }
                       }
                     },
@@ -281,28 +229,15 @@
             "key": {
               "type": "Identifier",
               "name": "field",
-              "typeAnnotation": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 12
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 15
-                  }
-                }
-              },
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 18,
-                  "column": 5
+                  "line": 1,
+                  "column": 1
                 },
                 "end": {
-                  "line": 18,
-                  "column": 10
+                  "line": 1,
+                  "column": 1
                 }
               }
             },
@@ -318,28 +253,15 @@
                 "id": {
                   "type": "Identifier",
                   "name": "field",
-                  "typeAnnotation": {
-                    "type": "ETSPrimitiveType",
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 12
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 15
-                      }
-                    }
-                  },
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
-                      "column": 5
+                      "line": 1,
+                      "column": 1
                     },
                     "end": {
-                      "line": 18,
-                      "column": 10
+                      "line": 1,
+                      "column": 1
                     }
                   }
                 },

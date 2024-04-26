@@ -22,7 +22,11 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void TemplateElement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void TemplateElement::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                        [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void TemplateElement::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void TemplateElement::Dump(ir::AstDumper *dumper) const

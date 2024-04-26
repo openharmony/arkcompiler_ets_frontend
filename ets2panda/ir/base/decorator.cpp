@@ -25,9 +25,12 @@
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
-void Decorator::TransformChildren(const NodeTransformer &cb)
+void Decorator::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    expr_ = cb(expr_)->AsExpression();
+    if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
+        expr_->SetTransformedNode(transformationName, transformedNode);
+        expr_ = transformedNode->AsExpression();
+    }
 }
 
 void Decorator::Iterate(const NodeTraverser &cb) const

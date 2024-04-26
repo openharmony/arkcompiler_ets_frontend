@@ -29,9 +29,12 @@
 #include "ir/statements/variableDeclarator.h"
 
 namespace ark::es2panda::ir {
-void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb)
+void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    func_ = cb(func_)->AsScriptFunction();
+    if (auto *transformedNode = cb(func_); func_ != transformedNode) {
+        func_->SetTransformedNode(transformationName, transformedNode);
+        func_ = transformedNode->AsScriptFunction();
+    }
 }
 
 void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const

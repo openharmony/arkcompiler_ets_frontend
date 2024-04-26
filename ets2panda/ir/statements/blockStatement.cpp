@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "blockStatement.h"
 
-#include "varbinder/scope.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/regScope.h"
 #include "compiler/core/ETSGen.h"
@@ -25,10 +24,13 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void BlockStatement::TransformChildren(const NodeTransformer &cb)
+void BlockStatement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : statements_) {
-        it = cb(it)->AsStatement();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsStatement();
+        }
     }
 }
 

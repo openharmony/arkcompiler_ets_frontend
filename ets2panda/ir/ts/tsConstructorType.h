@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,18 +36,19 @@ public:
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
 
-    bool IsScopeBearer() const override
+    [[nodiscard]] bool IsScopeBearer() const noexcept override
     {
         return true;
     }
 
-    varbinder::Scope *Scope() const override
+    [[nodiscard]] varbinder::Scope *Scope() const noexcept override
     {
         return scope_;
     }
 
     void SetScope(varbinder::Scope *scope)
     {
+        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 
@@ -80,7 +81,7 @@ public:
         return abstract_;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;

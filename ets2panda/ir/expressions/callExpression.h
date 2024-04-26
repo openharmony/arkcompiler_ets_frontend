@@ -17,7 +17,6 @@
 #define ES2PANDA_IR_EXPRESSION_CALL_EXPRESSION_H
 
 #include "varbinder/variable.h"
-#include "checker/types/ets/etsFunctionType.h"
 #include "ir/expression.h"
 
 namespace ark::es2panda::checker {
@@ -148,7 +147,7 @@ public:
 
     [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;

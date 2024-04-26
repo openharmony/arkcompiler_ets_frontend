@@ -24,10 +24,18 @@
 #include "ir/typeNode.h"
 
 namespace ark::es2panda::ir {
-void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
+void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb,
+                                                      std::string_view const transformationName)
 {
-    typeReference_ = static_cast<TypeNode *>(cb(typeReference_));
-    dimension_ = cb(dimension_)->AsExpression();
+    if (auto *transformedNode = cb(typeReference_); typeReference_ != transformedNode) {
+        typeReference_->SetTransformedNode(transformationName, transformedNode);
+        typeReference_ = static_cast<TypeNode *>(transformedNode);
+    }
+
+    if (auto *transformedNode = cb(dimension_); dimension_ != transformedNode) {
+        dimension_->SetTransformedNode(transformationName, transformedNode);
+        dimension_ = transformedNode->AsExpression();
+    }
 }
 
 void ETSNewArrayInstanceExpression::Iterate(const NodeTraverser &cb) const

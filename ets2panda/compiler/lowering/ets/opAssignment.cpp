@@ -193,10 +193,9 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     // Parse ArkTS code string and create and process corresponding AST node(s)
     auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
 
-    auto *loweringResult =
-        parser->CreateFormattedExpression(newAssignmentStatements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2,
-                                          property, GetClone(allocator, ident1), GetClone(allocator, ident2),
-                                          GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
+    auto *loweringResult = parser->CreateFormattedExpression(
+        newAssignmentStatements, ident1, object, ident2, property, GetClone(allocator, ident1),
+        GetClone(allocator, ident2), GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
     loweringResult->SetParent(assignment->Parent());
     InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 
@@ -222,14 +221,16 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
     auto *const parser = ctx->parser->AsETSParser();
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([ctx, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsAssignmentExpression() &&
-            ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-            return HandleOpAssignment(ctx, checker, parser, ast->AsAssignmentExpression());
-        }
+    program->Ast()->TransformChildrenRecursively(
+        [ctx, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsAssignmentExpression() &&
+                ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+                return HandleOpAssignment(ctx, checker, parser, ast->AsAssignmentExpression());
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

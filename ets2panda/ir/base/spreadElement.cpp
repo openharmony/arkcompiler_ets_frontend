@@ -106,16 +106,25 @@ bool SpreadElement::ConvertibleToRest(bool isDeclaration, bool allowPattern)
     return convResult;
 }
 
-void SpreadElement::TransformChildren(const NodeTransformer &cb)
+void SpreadElement::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
-    argument_ = cb(argument_)->AsExpression();
+    if (auto *transformedNode = cb(argument_); argument_ != transformedNode) {
+        argument_->SetTransformedNode(transformationName, transformedNode);
+        argument_ = transformedNode->AsExpression();
+    }
 
-    if (TypeAnnotation() != nullptr) {
-        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    if (auto *const typeAnnotation = TypeAnnotation(); typeAnnotation != nullptr) {
+        if (auto *transformedNode = cb(typeAnnotation); typeAnnotation != transformedNode) {
+            typeAnnotation->SetTransformedNode(transformationName, transformedNode);
+            SetTsTypeAnnotation(static_cast<TypeNode *>(transformedNode));
+        }
     }
 }
 

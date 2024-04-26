@@ -970,4 +970,47 @@ std::uint32_t ETSObjectType::GetPrecedence(ETSObjectType const *type) noexcept
     }
     return 0U;
 }
+void ETSObjectType::AddReExports(ETSObjectType *reExport)
+{
+    if (std::find(reExports_.begin(), reExports_.end(), reExport) == reExports_.end()) {
+        reExports_.push_back(reExport);
+    }
+}
+
+void ETSObjectType::AddReExportAlias(util::StringView const &value, util::StringView const &key)
+{
+    reExportAlias_.insert({key, value});
+}
+
+util::StringView ETSObjectType::GetReExportAliasValue(util::StringView const &key) const
+{
+    auto ret = reExportAlias_.find(key);
+    if (reExportAlias_.end() == ret) {
+        return key;
+    }
+    return ret->second;
+}
+
+const ArenaVector<ETSObjectType *> &ETSObjectType::ReExports() const
+{
+    return reExports_;
+}
+
+void ETSObjectType::ToAssemblerType([[maybe_unused]] std::stringstream &ss) const
+{
+    ss << assemblerName_;
+}
+
+void ETSObjectType::ToDebugInfoType(std::stringstream &ss) const
+{
+    DebugInfoTypeFromName(ss, assemblerName_);
+}
+
+void ETSObjectType::ToDebugInfoSignatureType(std::stringstream &ss) const
+{
+    ss << compiler::Signatures::GENERIC_BEGIN;
+    ss << assemblerName_;
+    ss << compiler::Signatures::GENERIC_END;
+}
+
 }  // namespace ark::es2panda::checker

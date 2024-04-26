@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,16 +16,19 @@
 #include "tsMethodSignature.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 
 namespace ark::es2panda::ir {
-void TSMethodSignature::TransformChildren(const NodeTransformer &cb)
+void TSMethodSignature::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    key_ = cb(key_)->AsExpression();
-    signature_.TransformChildren(cb);
+    if (auto *transformedNode = cb(key_); key_ != transformedNode) {
+        key_->SetTransformedNode(transformationName, transformedNode);
+        key_ = transformedNode->AsExpression();
+    }
+
+    signature_.TransformChildren(cb, transformationName);
 }
 
 void TSMethodSignature::Iterate(const NodeTraverser &cb) const

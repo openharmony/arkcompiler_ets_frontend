@@ -16,7 +16,6 @@
 #include "TypedParser.h"
 
 #include "varbinder/privateBinding.h"
-#include "varbinder/tsBinding.h"
 #include "lexer/lexer.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"
@@ -522,27 +521,12 @@ void TypedParser::CheckObjectTypeForDuplicatedProperties(ir::Expression *key, Ar
     }
 }
 
-ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
+ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
 {
-    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPLEMENTS) {
-        ThrowSyntaxError("Interface declaration cannot have 'implements' clause.");
-    }
-
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("Unexpected token, expected '{'");
-    }
-
-    Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
-
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_OVERRIDE) {
-        ThrowSyntaxError("'override' modifier cannot appear in interfaces");
-    }
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
-
         if (member->IsMethodDefinition() && member->AsMethodDefinition()->Function() != nullptr &&
             member->AsMethodDefinition()->Function()->IsOverload() &&
             member->AsMethodDefinition()->Function()->Body() != nullptr) {
@@ -576,6 +560,35 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
         }
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
+    }
+
+    return members;
+}
+
+ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
+{
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPLEMENTS) {
+        ThrowSyntaxError("Interface declaration cannot have 'implements' clause.");
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        ThrowSyntaxError("Unexpected token, expected '{'");
+    }
+
+    Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_OVERRIDE) {
+        ThrowSyntaxError("'override' modifier cannot appear in interfaces");
+    }
+
+    bool const formattedParsing = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+                                  Lexer()->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE);
+
+    ArenaVector<ir::AstNode *> members =
+        !formattedParsing ? ParseTypeLiteralOrInterfaceBody() : std::move(ParseAstNodesArrayFormatPlaceholder());
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        ThrowSyntaxError("Expected a '}'");
     }
 
     return members;
@@ -888,10 +901,8 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
     return classDefinition;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
-                                            ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
-                                            [[maybe_unused]] ir::Identifier *identNode)
+                                            ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
         Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
@@ -1128,7 +1139,7 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_FORMAT:
-            expr = ParseIdentifierFormatPlaceholder();
+            expr = ParseIdentifierFormatPlaceholder(std::nullopt);
             break;
         case lexer::TokenType::LITERAL_IDENT:
             expr = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
@@ -1162,7 +1173,7 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
             Lexer()->NextToken();  // eat '*'
             propName = AllocNode<ir::Identifier>(varbinder::VarBinder::STAR_IMPORT, Allocator());
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
-            propName = ParseIdentifierFormatPlaceholder();
+            propName = ParseIdentifierFormatPlaceholder(std::nullopt);
         } else if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             if ((flags & ExpressionParseFlags::POTENTIAL_CLASS_LITERAL) != 0) {
                 if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {

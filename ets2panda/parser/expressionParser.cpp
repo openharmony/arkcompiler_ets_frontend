@@ -1325,15 +1325,17 @@ ir::Expression *ParserImpl::ParseBinaryExpression(ir::Expression *left, Expressi
     return rightExpr;
 }
 
-ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool isOptionalChain, bool handleEval)
+ArenaVector<ir::Expression *> ParserImpl::ParseCallExpressionArguments(bool &trailingComma)
 {
-    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
-    bool trailingComma {};
+    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
 
-    while (true) {
-        lexer_->NextToken();
-        ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
-
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+        lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
+        arguments = std::move(ParseExpressionsArrayFormatPlaceholder());
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            ThrowSyntaxError("Expected a ')'");
+        }
+    } else {
         while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
             trailingComma = false;
             ir::Expression *argument {};
@@ -1352,7 +1354,19 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
                 ThrowSyntaxError("Expected a ')'");
             }
         }
+    }
 
+    return arguments;
+}
+
+ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool isOptionalChain, bool handleEval)
+{
+    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    bool trailingComma {};
+
+    while (true) {
+        lexer_->NextToken();
+        ArenaVector<ir::Expression *> arguments = ParseCallExpressionArguments(trailingComma);
         ir::CallExpression *callExpr {};
 
         if (!isOptionalChain && handleEval && callee->IsIdentifier() && callee->AsIdentifier()->Name().Is("eval")) {
@@ -1378,7 +1392,6 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
     }
 
     UNREACHABLE();
-    return nullptr;
 }
 
 ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)

@@ -28,9 +28,12 @@ ETSLaunchExpression::ETSLaunchExpression(CallExpression *expr)
 {
 }
 
-void ETSLaunchExpression::TransformChildren(const NodeTransformer &cb)
+void ETSLaunchExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    expr_ = cb(expr_)->AsCallExpression();
+    if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
+        expr_->SetTransformedNode(transformationName, transformedNode);
+        expr_ = transformedNode->AsCallExpression();
+    }
 }
 
 void ETSLaunchExpression::Iterate(const NodeTraverser &cb) const

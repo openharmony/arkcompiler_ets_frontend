@@ -62,7 +62,7 @@ public:
 
     [[nodiscard]] TSIndexSignature *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
-    void TransformChildren(const NodeTransformer &cb) override;
+    void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;

@@ -35,10 +35,19 @@ void TSAsExpression::SetExpr(Expression *expr) noexcept
     }
 }
 
-void TSAsExpression::TransformChildren(const NodeTransformer &cb)
+void TSAsExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    expression_ = cb(expression_)->AsExpression();
-    SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    if (auto *transformedNode = cb(expression_); expression_ != transformedNode) {
+        expression_->SetTransformedNode(transformationName, transformedNode);
+        expression_ = transformedNode->AsExpression();
+    }
+
+    if (auto *typeAnnotation = TypeAnnotation(); typeAnnotation != nullptr) {
+        if (auto *transformedNode = cb(typeAnnotation); typeAnnotation != transformedNode) {
+            typeAnnotation->SetTransformedNode(transformationName, transformedNode);
+            SetTsTypeAnnotation(static_cast<TypeNode *>(transformedNode));
+        }
+    }
 }
 
 void TSAsExpression::Iterate(const NodeTraverser &cb) const

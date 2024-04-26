@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "classStaticBlock.h"
 
-#include "varbinder/scope.h"
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -28,13 +27,13 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/functionExpression.h"
 
-#include <cstdint>
-#include <string>
-
 namespace ark::es2panda::ir {
-void ClassStaticBlock::TransformChildren(const NodeTransformer &cb)
+void ClassStaticBlock::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    value_ = cb(value_)->AsExpression();
+    if (auto *transformedNode = cb(value_); value_ != transformedNode) {
+        value_->SetTransformedNode(transformationName, transformedNode);
+        value_ = transformedNode->AsExpression();
+    }
 }
 
 void ClassStaticBlock::Iterate(const NodeTraverser &cb) const

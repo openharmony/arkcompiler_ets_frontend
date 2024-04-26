@@ -350,7 +350,9 @@ set(ES2PANDA_LIB_SRC
   parser/ASparser.cpp
   parser/JSparser.cpp
   parser/parserImpl.cpp
+  parser/ETSFormattedParser.cpp
   parser/ETSparser.cpp
+  parser/ETSNolintParser.cpp
   parser/TSparser.cpp
   parser/TypedParser.cpp
   parser/program/program.cpp
@@ -366,6 +368,7 @@ set(ES2PANDA_LIB_SRC
   checker/JSchecker.cpp
   checker/typeChecker/TypeChecker.cpp
   checker/ets/aliveAnalyzer.cpp
+  checker/ets/etsWarningAnalyzer.cpp
   checker/ets/arithmetic.cpp
   checker/ets/baseAnalyzer.cpp
   checker/ets/boxingConverter.cpp

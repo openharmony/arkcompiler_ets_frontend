@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,10 +24,13 @@
 #include "ir/ets/etsTypeReference.h"
 
 namespace ark::es2panda::ir {
-void ETSWildcardType::TransformChildren(const NodeTransformer &cb)
+void ETSWildcardType::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (typeReference_ != nullptr) {
-        typeReference_ = cb(typeReference_)->AsETSTypeReference();
+        if (auto *transformedNode = cb(typeReference_); typeReference_ != transformedNode) {
+            typeReference_->SetTransformedNode(transformationName, transformedNode);
+            typeReference_ = transformedNode->AsETSTypeReference();
+        }
     }
 }
 

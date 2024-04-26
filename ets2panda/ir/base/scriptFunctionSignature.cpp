@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,18 +34,27 @@ void FunctionSignature::Iterate(const NodeTraverser &cb) const
     }
 }
 
-void FunctionSignature::TransformChildren(const NodeTransformer &cb)
+void FunctionSignature::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterDeclaration();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterDeclaration();
+        }
     }
 
     for (auto *&it : params_) {
-        it = cb(it)->AsExpression();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsExpression();
+        }
     }
 
     if (returnTypeAnnotation_ != nullptr) {
-        returnTypeAnnotation_ = static_cast<TypeNode *>(cb(returnTypeAnnotation_));
+        if (auto *transformedNode = cb(returnTypeAnnotation_); returnTypeAnnotation_ != transformedNode) {
+            returnTypeAnnotation_->SetTransformedNode(transformationName, transformedNode);
+            returnTypeAnnotation_ = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 }  // namespace ark::es2panda::ir

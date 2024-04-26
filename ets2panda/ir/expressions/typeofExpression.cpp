@@ -23,10 +23,14 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void TypeofExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb)
+void TypeofExpression::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    argument_ = cb(argument_)->AsExpression();
+    if (auto *transformedNode = cb(argument_); argument_ != transformedNode) {
+        argument_->SetTransformedNode(transformationName, transformedNode);
+        argument_ = transformedNode->AsExpression();
+    }
 }
+
 void TypeofExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
     cb(argument_);

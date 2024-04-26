@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
 
 #include "whileStatement.h"
 
-#include "varbinder/scope.h"
 #include "compiler/base/condition.h"
 #include "compiler/core/labelTarget.h"
 #include "compiler/core/pandagen.h"
@@ -27,10 +26,17 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void WhileStatement::TransformChildren(const NodeTransformer &cb)
+void WhileStatement::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    test_ = cb(test_)->AsExpression();
-    body_ = cb(body_)->AsStatement();
+    if (auto *transformedNode = cb(test_); test_ != transformedNode) {
+        test_->SetTransformedNode(transformationName, transformedNode);
+        test_ = transformedNode->AsExpression();
+    }
+
+    if (auto *transformedNode = cb(body_); body_ != transformedNode) {
+        body_->SetTransformedNode(transformationName, transformedNode);
+        body_ = transformedNode->AsStatement();
+    }
 }
 
 void WhileStatement::Iterate(const NodeTraverser &cb) const

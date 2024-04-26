@@ -880,10 +880,8 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
             parentClassScope = parentClassScope->Parent();
         }
         auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
-        auto *classScope = classCtx.GetScope();
         util::UString anonymousName(util::StringView("#"), Allocator());
         anonymousName.Append(std::to_string(parentClassScope->AsClassScope()->GetAndIncrementAnonymousClassIdx()));
-        BindScopeNode(classScope, classDef);
         classDef->SetInternalName(anonymousName.View());
         classDef->Ident()->SetName(anonymousName.View());
         classDef->Ident()->SetReference();

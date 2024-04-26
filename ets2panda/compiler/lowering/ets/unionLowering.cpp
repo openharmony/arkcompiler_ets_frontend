@@ -176,25 +176,27 @@ bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
-        if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
-            auto *objType =
-                checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
-            if (objType->IsETSUnionType()) {
-                HandleUnionPropertyAccess(checker, checker->VarBinder(), ast->AsMemberExpression());
-                return ast;
+    program->Ast()->TransformChildrenRecursively(
+        [checker](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr) {
+                auto *objType =
+                    checker->GetApparentType(checker->GetNonNullishType(ast->AsMemberExpression()->Object()->TsType()));
+                if (objType->IsETSUnionType()) {
+                    HandleUnionPropertyAccess(checker, checker->VarBinder(), ast->AsMemberExpression());
+                    return ast;
+                }
             }
-        }
 
-        if (ast->IsTSAsExpression() && ast->AsTSAsExpression()->Expr()->TsType() != nullptr &&
-            ast->AsTSAsExpression()->Expr()->TsType()->IsETSUnionType() &&
-            ast->AsTSAsExpression()->TsType() != nullptr &&
-            ast->AsTSAsExpression()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-            return HandleUnionCastToPrimitive(checker, ast->AsTSAsExpression());
-        }
+            if (ast->IsTSAsExpression() && ast->AsTSAsExpression()->Expr()->TsType() != nullptr &&
+                ast->AsTSAsExpression()->Expr()->TsType()->IsETSUnionType() &&
+                ast->AsTSAsExpression()->TsType() != nullptr &&
+                ast->AsTSAsExpression()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+                return HandleUnionCastToPrimitive(checker, ast->AsTSAsExpression());
+            }
 
-        return ast;
-    });
+            return ast;
+        },
+        Name());
 
     return true;
 }

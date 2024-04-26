@@ -14,7 +14,6 @@
  */
 
 #include "numberLiteral.h"
-#include <string>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -23,7 +22,11 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void NumberLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void NumberLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                      [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void NumberLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void NumberLiteral::Dump(ir::AstDumper *dumper) const

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,13 +22,19 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ClassDeclaration::TransformChildren(const NodeTransformer &cb)
+void ClassDeclaration::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
     for (auto *&it : decorators_) {
-        it = cb(it)->AsDecorator();
+        if (auto *transformedNode = cb(it); it != transformedNode) {
+            it->SetTransformedNode(transformationName, transformedNode);
+            it = transformedNode->AsDecorator();
+        }
     }
 
-    def_ = cb(def_)->AsClassDefinition();
+    if (auto *transformedNode = cb(def_); def_ != transformedNode) {
+        def_->SetTransformedNode(transformationName, transformedNode);
+        def_ = transformedNode->AsClassDefinition();
+    }
 }
 
 void ClassDeclaration::Iterate(const NodeTraverser &cb) const

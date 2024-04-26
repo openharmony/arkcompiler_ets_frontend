@@ -23,6 +23,7 @@
 
 namespace ark::es2panda::parser {
 class ParserContext;
+class ETSNolintParser;
 }  // namespace ark::es2panda::parser
 
 namespace ark::es2panda::lexer {
@@ -297,6 +298,7 @@ protected:
 
     friend class KeywordsUtil;
     friend class TemplateLiteralParserContext;
+    friend class parser::ETSNolintParser;
 
     LexerPosition &Pos();
     const LexerPosition &Pos() const;

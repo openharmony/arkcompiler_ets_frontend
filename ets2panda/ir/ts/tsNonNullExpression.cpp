@@ -23,9 +23,12 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void TSNonNullExpression::TransformChildren(const NodeTransformer &cb)
+void TSNonNullExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    expr_ = cb(expr_)->AsExpression();
+    if (auto *transformedNode = cb(expr_); expr_ != transformedNode) {
+        expr_->SetTransformedNode(transformationName, transformedNode);
+        expr_ = transformedNode->AsExpression();
+    }
 }
 
 void TSNonNullExpression::Iterate(const NodeTraverser &cb) const

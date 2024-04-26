@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,11 +24,18 @@
 #include "ir/expression.h"
 
 namespace ark::es2panda::ir {
-void TSTypePredicate::TransformChildren(const NodeTransformer &cb)
+void TSTypePredicate::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    parameterName_ = cb(parameterName_)->AsExpression();
+    if (auto *transformedNode = cb(parameterName_); parameterName_ != transformedNode) {
+        parameterName_->SetTransformedNode(transformationName, transformedNode);
+        parameterName_ = transformedNode->AsExpression();
+    }
+
     if (typeAnnotation_ != nullptr) {
-        typeAnnotation_ = static_cast<TypeNode *>(cb(typeAnnotation_));
+        if (auto *transformedNode = cb(typeAnnotation_); typeAnnotation_ != transformedNode) {
+            typeAnnotation_->SetTransformedNode(transformationName, transformedNode);
+            typeAnnotation_ = static_cast<TypeNode *>(transformedNode);
+        }
     }
 }
 

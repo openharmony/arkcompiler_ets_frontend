@@ -22,19 +22,27 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/srcDump.h"
-#include "macros.h"
 
 namespace ark::es2panda::ir {
-void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb)
+void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb, std::string_view const transformationName)
 {
-    name_ = cb(name_)->AsExpression();
+    if (auto *transformedNode = cb(name_); name_ != transformedNode) {
+        name_->SetTransformedNode(transformationName, transformedNode);
+        name_ = transformedNode->AsExpression();
+    }
 
     if (typeParams_ != nullptr) {
-        typeParams_ = cb(typeParams_)->AsTSTypeParameterInstantiation();
+        if (auto *transformedNode = cb(typeParams_); typeParams_ != transformedNode) {
+            typeParams_->SetTransformedNode(transformationName, transformedNode);
+            typeParams_ = transformedNode->AsTSTypeParameterInstantiation();
+        }
     }
 
     if (prev_ != nullptr) {
-        prev_ = cb(prev_)->AsETSTypeReferencePart();
+        if (auto *transformedNode = cb(prev_); prev_ != transformedNode) {
+            prev_->SetTransformedNode(transformationName, transformedNode);
+            prev_ = transformedNode->AsETSTypeReferencePart();
+        }
     }
 }
 

@@ -16,12 +16,9 @@
 #ifndef ES2PANDA_PARSER_CORE_PARSER_PRIVATE_CONTEXT_H
 #define ES2PANDA_PARSER_CORE_PARSER_PRIVATE_CONTEXT_H
 
-#include "macros.h"
 #include "util/enumbitops.h"
 #include "util/language.h"
 #include "util/ustring.h"
-
-#include <vector>
 
 namespace ark::es2panda::parser {
 class Program;
@@ -70,6 +67,9 @@ DEFINE_BITOPS(ParserStatus)
 
 class ParserContext {
 public:
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
+
     explicit ParserContext(const Program *program, ParserStatus status);
 
     explicit ParserContext(ParserContext *current, ParserStatus newStatus, util::StringView label = "")
@@ -85,76 +85,89 @@ public:
     DEFAULT_COPY_SEMANTIC(ParserContext);
     DEFAULT_MOVE_SEMANTIC(ParserContext);
     ~ParserContext() = default;
+    ParserContext() = delete;
 
-    const Program *GetProgram() const
+    [[nodiscard]] const Program *GetProgram() const noexcept
     {
         return program_;
     }
 
-    void SetProgram(Program *program)
+    void SetProgram(Program *program) noexcept
     {
         program_ = program;
     }
 
-    Language GetLanguage() const
+    [[nodiscard]] Language GetLanguage() const noexcept
     {
         return lang_;
     }
 
-    Language SetLanguage(Language lang)
+    Language SetLanguage(Language lang) noexcept
     {
         auto res = lang_;
         lang_ = lang;
         return res;
     }
 
-    ParserContext *Prev() const
+    [[nodiscard]] ParserContext *Prev() const noexcept
     {
         return prev_;
     }
 
-    const ParserStatus &Status() const
+    [[nodiscard]] const ParserStatus &Status() const noexcept
     {
         return status_;
     }
 
-    ParserStatus &Status()
+    [[nodiscard]] ParserStatus &Status() noexcept
     {
         return status_;
     }
 
-    bool IsGenerator() const
+    [[nodiscard]] bool IsGenerator() const noexcept
     {
         return (status_ & ParserStatus::GENERATOR_FUNCTION) != 0;
     }
 
-    bool IsFunctionOrParam() const
+    [[nodiscard]] bool IsFunctionOrParam() const noexcept
     {
         return (status_ & (ParserStatus::FUNCTION | ParserStatus::FUNCTION_PARAM)) != 0;
     }
 
-    bool IsAsync() const
+    [[nodiscard]] bool IsAsync() const noexcept
     {
         return (status_ & ParserStatus::ASYNC_FUNCTION) != 0;
     }
 
-    bool IsModule() const
+    [[nodiscard]] bool IsModule() const noexcept
     {
         return (status_ & ParserStatus::MODULE) != 0;
     }
 
-    bool IsDynamic() const
+    [[nodiscard]] bool IsDynamic() const noexcept
     {
         return lang_.IsDynamic();
     }
 
     const ParserContext *FindLabel(const util::StringView &label) const;
 
+    [[nodiscard]] std::string_view FormattingFileName() const noexcept
+    {
+        return formattingFileName_;
+    }
+
+    template <typename T>
+    void SetFormattingFileName(T &&fileName)
+    {
+        formattingFileName_ = std::string_view {std::forward<T>(fileName)};
+    }
+
 private:
     const Program *program_;
     ParserContext *prev_ {};
     ParserStatus status_ {};
     util::StringView label_ {};
+    std::string_view formattingFileName_ {DEFAULT_SOURCE_FILE};
     Language lang_;
 };
 }  // namespace ark::es2panda::parser

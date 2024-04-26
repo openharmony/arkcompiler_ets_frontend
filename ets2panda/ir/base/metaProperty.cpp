@@ -22,7 +22,11 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void MetaProperty::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
+void MetaProperty::TransformChildren([[maybe_unused]] const NodeTransformer &cb,
+                                     [[maybe_unused]] std::string_view const transformationName)
+{
+}
+
 void MetaProperty::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void MetaProperty::Dump(ir::AstDumper *dumper) const

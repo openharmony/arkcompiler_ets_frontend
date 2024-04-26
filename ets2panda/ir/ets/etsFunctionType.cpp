@@ -15,7 +15,6 @@
 
 #include "etsFunctionType.h"
 
-#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -24,9 +23,9 @@
 #include "ir/srcDump.h"
 
 namespace ark::es2panda::ir {
-void ETSFunctionType::TransformChildren(const NodeTransformer &cb)
+void ETSFunctionType::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
 {
-    signature_.TransformChildren(cb);
+    signature_.TransformChildren(cb, transformationName);
 }
 
 void ETSFunctionType::Iterate(const NodeTraverser &cb) const

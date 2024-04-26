@@ -15,14 +15,12 @@
 
 #include "parser/parserFlags.h"
 #include "util/helpers.h"
-#include "varbinder/tsBinding.h"
 #include "ir/astNode.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expression.h"
 #include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/conditionalExpression.h"
 #include "ir/expressions/literals/stringLiteral.h"
@@ -60,13 +58,10 @@
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/whileStatement.h"
 #include "ir/ets/etsStructDeclaration.h"
-#include "lexer/keywordsBase.h"
 #include "lexer/lexer.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/sourceLocation.h"
 #include "util/ustring.h"
-
-#include <tuple>
 
 #include "parserImpl.h"
 
@@ -162,6 +157,12 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
         }
         case lexer::TokenType::KEYW_INTERFACE: {
             return ParseInterfaceDeclaration(false);
+        }
+        case lexer::TokenType::PUNCTUATOR_FORMAT: {
+            if (lexer_->Lookahead() == static_cast<char32_t>(STATEMENT_FORMAT_NODE)) {
+                return ParseStatementFormatPlaceholder();
+            }
+            [[fallthrough]];
         }
         default: {
             return ParseExpressionStatement(flags);
@@ -343,6 +344,11 @@ void ParserImpl::ConsumeSemicolon(ir::Statement *statement)
 
 ArenaVector<ir::Statement *> ParserImpl::ParseStatementList(StatementParsingFlags flags)
 {
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+        lexer_->Lookahead() == static_cast<char32_t>(ARRAY_FORMAT_NODE)) {
+        return std::move(ParseStatementsArrayFormatPlaceholder());
+    }
+
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
     ParseDirectivePrologue(&statements);
 
