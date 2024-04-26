@@ -25,7 +25,6 @@ import re
 import shutil
 import subprocess
 import sys
-import test262util
 
 
 def is_directory(parser, arg):
@@ -73,9 +72,6 @@ def get_args():
     parser.add_argument(
         'build_dir', type=lambda arg: is_directory(parser, arg),
         help='panda build directory')
-    parser.add_argument(
-        '--test262', '-t', action='store_true', dest='test262', default=False,
-        help='run test262 tests')
     parser.add_argument(
         '--error', action='store_true', dest='error', default=False,
         help='capture stderr')
@@ -218,159 +214,6 @@ class Test:
 
         if os.path.exists(test_abc_path):
             os.remove(test_abc_path)
-
-        return self
-
-
-class Test262Test(Test):
-    def __init__(self, test_path, flags, test_id, with_optimizer):
-        Test.__init__(self, test_path, flags)
-        self.test_id = test_id
-        self.fail_kind = None
-        self.with_optimizer = with_optimizer
-
-    class FailKind(Enum):
-        ES2PANDA_FAIL = 1
-        RUNTIME_FAIL = 2
-        AOT_FAIL = 3
-        ES2PANDA_TIMEOUT = 4
-        RUNTIME_TIMEOUT = 5
-        AOT_TIMEOUT = 6
-
-    def run(self, runner):
-        with open(self.path, 'r') as fp:
-            header = runner.util.get_header(fp.read())
-        desc = runner.util.parse_descriptor(header)
-
-        test_abc = path.join(runner.tmp_dir, "%s.abc" % self.test_id)
-        test_an = path.join(runner.tmp_dir, "%s.an" % self.test_id)
-
-        directory = path.dirname(test_abc)
-        os.makedirs(directory, exist_ok=True)
-
-        cmd = runner.cmd_prefix + [runner.es2panda]
-        if self.with_optimizer:
-            cmd.append('--opt-level=2')
-        cmd.extend(['--thread=0', '--output=%s' % (test_abc)])
-
-        if 'module' in desc['flags']:
-            cmd.append("--module")
-
-        if 'noStrict' in desc['flags']:
-            self.skipped = True
-            return self
-
-        cmd.append(self.path)
-
-        self.log_cmd(cmd)
-
-        if runner.args.verbose:
-            print('Run es2panda: %s' % ' '.join(cmd), file=sys.stderr)
-
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=runner.cmd_env)
-
-        try:
-            output_res, err = process.communicate(runner.args.es2panda_timeout)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            self.passed = False
-            self.fail_kind = self.FailKind.ES2PANDA_TIMEOUT
-            self.error = self.fail_kind.name
-            return self
-
-        out = output_res.decode("utf-8", errors="ignore")
-        err = err.decode("utf-8", errors="ignore")
-        self.passed, need_exec = runner.util.validate_parse_result(
-            process.returncode, err, desc, out)
-
-        if not self.passed:
-            self.fail_kind = self.FailKind.ES2PANDA_FAIL
-            self.error = "out:{}\nerr:{}\ncode:{}".format(
-                out, err, process.returncode)
-            print(self.error)
-            return self
-
-        if not need_exec:
-            self.passed = True
-            return self
-
-        if runner.args.aot:
-            cmd = runner.cmd_prefix + [runner.arkaot]
-            cmd.extend(runner.aot_args)
-            cmd.extend(['--paoc-panda-files', test_abc])
-            cmd.extend(['--paoc-output', test_an])
-
-            if os.path.isfile(test_an):
-                os.remove(test_an)
-
-            self.log_cmd(cmd)
-
-            if runner.args.verbose:
-                print('Run ark_aot: %s' % ' '.join(cmd), file=sys.stderr)
-
-            process = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=runner.cmd_env)
-
-            try:
-                out, err = process.communicate(runner.args.paoc_timeout)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                self.passed = False
-                self.fail_kind = self.FailKind.AOT_TIMEOUT
-                self.error = self.fail_kind.name
-                return self
-
-            if process.returncode != 0:
-                self.passed = False
-                self.fail_kind = self.FailKind.AOT_FAIL
-                self.error = err.decode("utf-8", errors="ignore")
-                return self
-
-        cmd = runner.cmd_prefix + [runner.runtime]
-
-        if runner.args.verbose:
-            print('Run aot for arm64: %s' % ' '.join(cmd), file=sys.stderr)
-
-        cmd.extend(runner.runtime_args)
-
-        if runner.args.aot:
-            cmd.extend(['--aot-files', test_an])
-
-        if runner.args.jit:
-            cmd.extend(['--compiler-enable-jit=true', '--compiler-hotness-threshold=0'])
-        else:
-            cmd.extend(['--compiler-enable-jit=false'])
-
-        cmd.extend([test_abc, "_GLOBAL::func_main_0"])
-
-        self.log_cmd(cmd)
-
-        if runner.args.verbose:
-            print('Run ark: %s' % ' '.join(cmd), file=sys.stderr)
-
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=runner.cmd_env)
-
-        try:
-            out, err = process.communicate(timeout=runner.args.timeout)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            self.passed = False
-            self.fail_kind = self.FailKind.RUNTIME_TIMEOUT
-            self.error = self.fail_kind.name
-            return self
-
-        out = out.decode("utf-8", errors="ignore")
-        err = err.decode("utf-8", errors="ignore")
-        self.passed = runner.util.validate_runtime_result(
-            process.returncode, err, desc, out)
-
-        if not self.passed:
-            self.fail_kind = self.FailKind.RUNTIME_FAIL
-            self.error = "out:{}\nerr:{}\ncode:{}".format(
-                out, err, process.returncode)
-            print(self.error)
 
         return self
 
@@ -616,197 +459,6 @@ class AbcToAsmTest(Test):
             print(abc_to_asm_output)
         os.remove(output_abc_file)
         return self
-
-class Test262Runner(Runner):
-    def __init__(self, args):
-        Runner.__init__(self, args, "Test262 ark"),
-
-        self.cmd_env = os.environ.copy()
-        for san in ["ASAN_OPTIONS", "TSAN_OPTIONS", "MSAN_OPTIONS", "LSAN_OPTIONS"]:
-            # we don't want to interpret asan failures as SyntaxErrors
-            self.cmd_env[san] = ":exitcode=255"
-
-        self.update = args.update
-        self.enable_skiplists = False if self.update else args.skip
-        self.normal_skiplist_file = "test262skiplist.txt"
-        self.long_flaky_skiplist_files = ["test262skiplist-long.txt", "test262skiplist-flaky.txt"]
-        self.normal_skiplist = set([])
-        self.runtime = path.join(args.build_dir, 'bin', 'ark')
-        if not path.isfile(self.runtime):
-            raise Exception("Cannot find runtime binary: %s" % self.runtime)
-
-        self.runtime_args = [
-            '--boot-panda-files=%s/pandastdlib/arkstdlib.abc'
-            % args.build_dir,
-            '--load-runtimes=ecmascript',
-            '--gc-type=%s' % args.gc_type,
-        ]
-
-        if not args.no_gip:
-            self.runtime_args += ['--run-gc-in-place']
-
-        if args.aot:
-            self.arkaot = path.join(args.build_dir, 'bin', 'ark_aot')
-            if not path.isfile(self.arkaot):
-                raise Exception("Cannot find aot binary: %s" % self.arkaot)
-
-            self.aot_args = [
-                '--boot-panda-files=%s/pandastdlib/arkstdlib.abc'
-                % args.build_dir,
-                '--load-runtimes=ecmascript',
-                '--gc-type=%s' % args.gc_type,
-            ]
-
-            if not args.no_gip:
-                self.aot_args += ['--run-gc-in-place']
-
-            self.aot_args += args.aot_args
-        else:
-            self.aot_args = []
-
-        self.skiplist_name_list = self.long_flaky_skiplist_files if self.update else []
-        self.skiplist_bco_name = ""
-
-        if self.enable_skiplists:
-            self.skiplist_name_list.append(self.normal_skiplist_file)
-            self.skiplist_name_list.extend(self.long_flaky_skiplist_files)
-
-            if args.bco:
-                self.skiplist_bco_name = "test262skiplist-bco.txt"
-            if args.arm64_compiler_skip:
-                self.skiplist_name_list.append("test262skiplist-compiler-arm64.txt")
-
-        self.tmp_dir = path.join(path.sep, 'tmp', 'panda', 'test262')
-        os.makedirs(self.tmp_dir, exist_ok=True)
-
-        self.util = test262util.Test262Util()
-        self.test262_dir = self.util.generate(
-            '281eb10b2844929a7c0ac04527f5b42ce56509fd',
-            args.build_dir,
-            path.join(self.test_root, "test262harness.js"),
-            args.progress)
-
-        self.add_directory(self.test262_dir, "js", args.test_list, [])
-
-    def add_directory(self, directory, extension, test_list_path, flags):
-        glob_expression = path.join(directory, "**/*.%s" % (extension))
-        files = glob(glob_expression, recursive=True)
-        files = fnmatch.filter(files, path.join(directory, self.args.filter))
-
-        def load_list(p):
-            with open(p, 'r') as fp:
-                return set(map(lambda e: path.join(directory, e.strip()), fp))
-
-        skiplist = set([])
-
-        for sl in self.skiplist_name_list:
-            skiplist.update(load_list(path.join(self.test_root, sl)))
-
-        if self.update:
-            self.normal_skiplist.update(load_list(path.join(self.test_root, self.normal_skiplist_file)))
-
-        skiplist_bco = set([])
-        if self.skiplist_bco_name != "":
-            skiplist_bco = load_list(path.join(self.test_root, self.skiplist_bco_name))
-
-        if test_list_path is not None:
-            test_list = load_list(path.abspath(test_list_path))
-            files = filter(lambda f: f in test_list, files)
-
-        def get_test_id(file):
-            return path.relpath(path.splitext(file)[0], self.test262_dir)
-
-        self.tests = list(map(lambda test: Test262Test(test, flags, get_test_id(test), test not in skiplist_bco),
-                              filter(lambda f: f not in skiplist, files)))
-
-    def test_path(self, src):
-        return path.relpath(src, self.test262_dir)
-
-    def run(self):
-        Runner.run(self)
-        self.update_skiplist()
-
-    def summarize(self):
-        print("")
-
-        fail_lists = {}
-        for kind in Test262Test.FailKind:
-            fail_lists[kind] = []
-
-        num_failed = 0
-        num_skipped = 0
-        for test in self.tests:
-            if test.skipped:
-                num_skipped += 1
-                continue
-
-            assert(test.passed is not None)
-            if not test.passed:
-                fail_lists[test.fail_kind].append(test)
-                num_failed += 1
-
-        def summarize_list(name, tests_list):
-            if len(tests_list):
-                tests_list.sort(key=lambda test: test.path)
-                print("# " + name)
-                for test in tests_list:
-                    print(self.test_path(test.path))
-                    if self.args.error:
-                        print("steps:", test.reproduce)
-                        print(test.error)
-                print("")
-
-        total_tests = len(self.tests) - num_skipped
-
-        if not self.update:
-            for kind in Test262Test.FailKind:
-                summarize_list(kind.name, fail_lists[kind])
-
-        print("Summary(%s):" % self.name)
-        print("\033[37mTotal:   %5d" % (total_tests))
-        print("\033[92mPassed:  %5d" % (total_tests - num_failed))
-        print("\033[91mFailed:  %5d" % (num_failed))
-        print("\033[0m")
-
-        return num_failed
-
-    def update_skiplist(self):
-        if not self.update:
-            return
-
-        skiplist_es2panda = list({x.test_id + ".js" for x in self.tests
-                                  if not x.skipped and not x.passed and
-                                  x.fail_kind == Test262Test.FailKind.ES2PANDA_FAIL})
-        skiplist_runtime = list({x.test_id + ".js" for x in self.tests
-                                 if not x.skipped and not x.passed and
-                                 x.fail_kind == Test262Test.FailKind.RUNTIME_FAIL})
-
-        skiplist_es2panda.sort()
-        skiplist_runtime.sort()
-
-        new_skiplist = skiplist_es2panda + skiplist_runtime
-
-        new_pass = list(filter(lambda x: len(x) and not x.startswith('#')
-                               and x not in new_skiplist, self.normal_skiplist))
-        new_fail = list(filter(lambda x: x not in self.normal_skiplist, new_skiplist))
-        new_pass.sort()
-        new_fail.sort()
-
-        if new_pass:
-            print("\033[92mRemoved from skiplist:")
-            print("\n".join(new_pass))
-            print("\033[0m")
-
-        if new_fail:
-            print("\033[91mNew tests on skiplist:")
-            print("\n".join(new_fail))
-            print("\033[0m")
-
-        fd = os.open(path.join(self.test_root, self.normal_skiplist_file), os.O_RDWR | os.O_CREAT | os.O_TRUNC)
-        file = os.fdopen(fd, "w+")
-        file.write("\n".join(["# ES2PANDA_FAIL"] + skiplist_es2panda + ["", "# RUNTIME_FAIL"] + skiplist_runtime))
-        file.write("\n")
-        file.close()
 
 
 class TSCRunner(Runner):
@@ -1143,7 +795,7 @@ class PatchTest(Test):
         Test.__init__(self, test_path, "")
         self.mode = mode_arg
 
-    def run(self, runner):
+    def gen_cmd(self, runner):
         symbol_table_file = 'base.map'
         origin_input_file = 'base.js'
         origin_output_abc = 'base.abc'
@@ -1182,6 +834,12 @@ class PatchTest(Test):
             if name in os.path.basename(self.path):
                 patch_test_cmd.extend(['--dump-assembly'])
         self.log_cmd(patch_test_cmd)
+
+        return gen_base_cmd, patch_test_cmd
+
+    def run(self, runner):
+        gen_base_cmd, patch_test_cmd = self.gen_cmd(runner)
+
         process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         stdout_base, stderr_base = process_base.communicate(timeout=runner.args.es2panda_timeout)
@@ -1399,6 +1057,8 @@ class Base64Runner(Runner):
 
     def test_path(self, src):
         return os.path.basename(src)
+
+
 class BytecodeRunner(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "Bytecode")
@@ -1413,14 +1073,16 @@ class BytecodeRunner(Runner):
     def test_path(self, src):
         return src
 
+
 class CompilerTestInfo(object):
     def __init__(self, dir, extension, flags):
-        self.dir = dir;
-        self.extension = extension;
-        self.flags = flags;
+        self.dir = dir
+        self.extension = extension
+        self.flags = flags
 
     def update_dir(self, prefiex_dir):
         self.dir = os.path.sep.join([prefiex_dir, self.dir])
+
 
 # Copy compiler directory to test/.local directory, and do inplace obfuscation.
 def prepare_for_obfuscation(compiler_test_infos, test_root):
@@ -1437,96 +1099,118 @@ def prepare_for_obfuscation(compiler_test_infos, test_root):
     for info in compiler_test_infos:
         info.update_dir(tmp_dir_name)
 
+def add_directory_for_regression(runners, args):
+    runner = RegressionRunner(args)
+    runner.add_directory("parser/concurrent", "js", ["--module", "--dump-ast"])
+    runner.add_directory("parser/js", "js", ["--parse-only", "--dump-ast"])
+    runner.add_directory("parser/script", "ts", ["--parse-only", "--dump-ast"])
+    runner.add_directory("parser/ts", "ts",
+                         ["--parse-only", "--module", "--dump-ast"])
+    runner.add_directory("parser/ts/type_checker", "ts",
+                         ["--parse-only", "--enable-type-check", "--module", "--dump-ast"])
+    runner.add_directory("parser/ts/cases/declaration", "d.ts",
+                         ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
+    runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
+    runner.add_directory("parser/binder", "js", ["--dump-assembly"])
+    runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
+    runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
+    runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
+    runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
+    runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
+    runner.add_directory("parser/unicode", "js", ["--parse-only"])
+    runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
+
+    runners.append(runner)
+
+    transformer_runner = TransformerRunner(args)
+    transformer_runner.add_directory("parser/ts/transformed_cases", "ts",
+                                     ["--parse-only", "--module", "--dump-transformed-ast",
+                                     "--check-transformed-ast-structure"])
+
+    runners.append(transformer_runner)
+
+def add_directory_for_asm(runners, args):
+    runner = AbcToAsmRunner(args)
+    runner.add_directory("abc2asm/js", "js", [])
+    runner.add_directory("abc2asm/ts", "ts", [])
+    runner.add_directory("compiler/js", "js", [])
+    runner.add_directory("compiler/ts/cases/compiler", "ts", [])
+    runner.add_directory("compiler/ts/projects", "ts", ["--module"])
+    runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
+    runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
+    runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
+    runner.add_directory("compiler/recordsource/with-on", "js", ["--record-source"])
+    runner.add_directory("compiler/recordsource/with-off", "js", [])
+    runner.add_directory("parser/concurrent", "js", ["--module"])
+    runner.add_directory("parser/js", "js", [])
+    runner.add_directory("parser/script", "ts", [])
+    runner.add_directory("parser/ts", "ts", ["--module"])
+    runner.add_directory("parser/ts/type_checker", "ts", ["--enable-type-check", "--module"])
+    runner.add_directory("parser/commonjs", "js", ["--commonjs"])
+    runner.add_directory("parser/binder", "js", [])
+    runner.add_directory("parser/js/emptySource", "js", [])
+    runner.add_directory("parser/js/language/arguments-object", "js", [])
+    runner.add_directory("parser/js/language/statements/for-statement", "js", [])
+    runner.add_directory("parser/js/language/expressions/optional-chain", "js", [])
+    runner.add_directory("parser/sendable_class", "ts", ["--module"])
+    runner.add_directory("parser/unicode", "js", [])
+    runner.add_directory("parser/ts/stack_overflow", "ts", [])
+
+    runners.append(runner)
+
+def add_directory_for_compiler(runners, args):
+    runner = CompilerRunner(args)
+    compiler_test_infos = []
+    compiler_test_infos.append(CompilerTestInfo("compiler/js", "js", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/dts", "d.ts", ["--module", "--opt-level=0"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/commonjs", "js", ["--commonjs"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
+
+    if args.enable_arkguard:
+        prepare_for_obfuscation(compiler_test_infos, runner.test_root)
+
+    for info in compiler_test_infos:
+        runner.add_directory(info.dir, info.extension, info.flags)
+
+    runners.append(runner)
+
+def add_directory_for_bytecode(runners, args):
+    runner = BytecodeRunner(args)
+    runner.add_directory("bytecode/commonjs", "js", ["--commonjs", "--dump-assembly"])
+    runner.add_directory("bytecode/js", "js", ["--dump-assembly"])
+    runner.add_directory("bytecode/ts/api11", "ts", ["--dump-assembly", "--module", "--target-api-version=11"])
+    runner.add_directory("bytecode/ts/api12", "ts", ["--dump-assembly", "--module", "--target-api-version=12"])
+    runner.add_directory("bytecode/watch-expression", "js", ["--debugger-evaluate-expression", "--dump-assembly"])
+
+    runners.append(runner)
+
+def add_directory_for_debug(runners, args):
+    runner = RegressionRunner(args)
+    runner.add_directory("debug/parser", "js", ["--parse-only", "--dump-ast"])
+
+    runners.append(runner)
+
 def main():
     args = get_args()
 
     runners = []
 
     if args.regression:
-        runner = RegressionRunner(args)
-        runner.add_directory("parser/concurrent", "js", ["--module", "--dump-ast"])
-        runner.add_directory("parser/js", "js", ["--parse-only", "--dump-ast"])
-        runner.add_directory("parser/script", "ts", ["--parse-only", "--dump-ast"])
-        runner.add_directory("parser/ts", "ts",
-                             ["--parse-only", "--module", "--dump-ast"])
-        runner.add_directory("parser/ts/type_checker", "ts",
-                             ["--parse-only", "--enable-type-check", "--module", "--dump-ast"])
-        runner.add_directory("parser/ts/cases/declaration", "d.ts",
-                             ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
-        runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
-        runner.add_directory("parser/binder", "js", ["--dump-assembly"])
-        runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
-        runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
-        runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
-        runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
-        runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
-        runner.add_directory("parser/unicode", "js", ["--parse-only"])
-        runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
-
-        runners.append(runner)
-
-        transformer_runner = TransformerRunner(args)
-        transformer_runner.add_directory("parser/ts/transformed_cases", "ts",
-                                         ["--parse-only", "--module", "--dump-transformed-ast",
-                                          "--check-transformed-ast-structure"])
-
-        runners.append(transformer_runner)
+        add_directory_for_regression(runners, args)
 
     if args.abc_to_asm:
-        runner = AbcToAsmRunner(args)
-        runner.add_directory("abc2asm/js", "js", [])
-        runner.add_directory("abc2asm/ts", "ts", [])
-        runner.add_directory("compiler/js", "js", [])
-        runner.add_directory("compiler/ts/cases/compiler", "ts", [])
-        runner.add_directory("compiler/ts/projects", "ts", ["--module"])
-        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
-        runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
-        runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
-        runner.add_directory("compiler/recordsource/with-on", "js", ["--record-source"])
-        runner.add_directory("compiler/recordsource/with-off", "js", [])
-        runner.add_directory("parser/concurrent", "js", ["--module"])
-        runner.add_directory("parser/js", "js", [])
-        runner.add_directory("parser/script", "ts", [])
-        runner.add_directory("parser/ts", "ts", ["--module"])
-        runner.add_directory("parser/ts/type_checker", "ts", ["--enable-type-check", "--module"])
-        runner.add_directory("parser/commonjs", "js", ["--commonjs"])
-        runner.add_directory("parser/binder", "js", [])
-        runner.add_directory("parser/js/emptySource", "js", [])
-        runner.add_directory("parser/js/language/arguments-object", "js", [])
-        runner.add_directory("parser/js/language/statements/for-statement", "js", [])
-        runner.add_directory("parser/js/language/expressions/optional-chain", "js", [])
-        runner.add_directory("parser/sendable_class", "ts", ["--module"])
-        runner.add_directory("parser/unicode", "js", [])
-        runner.add_directory("parser/ts/stack_overflow", "ts", [])
-
-        runners.append(runner)
-
-    if args.test262:
-        runners.append(Test262Runner(args))
+        add_directory_for_asm(runners, args)
 
     if args.tsc:
         runners.append(TSCRunner(args))
 
     if args.compiler:
-        runner = CompilerRunner(args)
-        compiler_test_infos = []
-        compiler_test_infos.append(CompilerTestInfo("compiler/js", "js", []))
-        compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
-        compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
-        compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
-        compiler_test_infos.append(CompilerTestInfo("compiler/dts", "d.ts", ["--module", "--opt-level=0"]))
-        compiler_test_infos.append(CompilerTestInfo("compiler/commonjs", "js", ["--commonjs"]))
-        compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
-        compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
-        compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
-
-        if args.enable_arkguard:
-            prepare_for_obfuscation(compiler_test_infos, runner.test_root)
-
-        for info in compiler_test_infos:
-            runner.add_directory(info.dir, info.extension, info.flags)
-
-        runners.append(runner)
+        add_directory_for_compiler(runners, args)
 
     if args.hotfix:
         runners.append(HotfixRunner(args))
@@ -1544,19 +1228,10 @@ def main():
         runners.append(Base64Runner(args))
 
     if args.bytecode:
-        runner = BytecodeRunner(args)
-        runner.add_directory("bytecode/commonjs", "js", ["--commonjs", "--dump-assembly"])
-        runner.add_directory("bytecode/js", "js", ["--dump-assembly"])
-        runner.add_directory("bytecode/ts/api11", "ts", ["--dump-assembly", "--module", "--target-api-version=11"])
-        runner.add_directory("bytecode/ts/api12", "ts", ["--dump-assembly", "--module", "--target-api-version=12"])
-        runner.add_directory("bytecode/watch-expression", "js", ["--debugger-evaluate-expression", "--dump-assembly"])
-
-        runners.append(runner)
+        add_directory_for_bytecode(runners, args)
 
     if args.debug:
-        runner = RegressionRunner(args)
-        runner.add_directory("debug/parser", "js", ["--parse-only", "--dump-ast"])
-        runners.append(runner)
+        add_directory_for_debug(runners, args)
 
     failed_tests = 0
 

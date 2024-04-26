@@ -34,6 +34,43 @@ WORKLOAD_URL = 'https://gitee.com/xliu-huanwei/ark-workload.git'
 BENCHMARK_PATH = '../benchmark'
 SKIP_TEST = 'skip_tests.json'
 DISCREPANCY_REPORT = 'discrepancy_report'
+HTML_CONTENT = \
+"""
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Instruction Discrepancy Report</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: auto;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid black;
+            white-space: nowrap;
+        }
+        th:nth-child(2), td:nth-child(2) {
+            text-align: left;
+        }
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Instruction Discrepancy Report</h1>
+    <table>
+        <tr>
+            <th>No</th>
+            <th>Case Path</th>
+            <th>es2abc Instruction Number</th>
+            <th>v8 Instruction Number</th>
+            <th>es2abc/v8 Ratio</th>
+        </tr>
+"""
 
 
 def is_file(parser, arg):
@@ -184,50 +221,14 @@ class CaseManager:
         
         self.case_list = [case for case in self.case_list if case not in skip_case_list]
 
+    def calculate_ratio_for_discrepancy_report(self, d8_instruction_number, es2abc_instruction_number):
+        if d8_instruction_number <= 0 or es2abc_instruction_number <= 0:
+            return 'Invalid Ratio'
+        ratio = (float(es2abc_instruction_number) / d8_instruction_number) * 100
+        return f'{ratio:.2f}%'
+
     def generate_discrepancy_report(self, d8_output, es2abc_output):
-        html_content = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Instruction Discrepancy Report</title>
-            <style>
-                table {
-                    width: 50%;
-                    border-collapse: collapse;
-                    margin: auto;
-                }
-                th, td {
-                    padding: 8px;
-                    text-align: center;
-                    border: 1px solid black;
-                    white-space: nowrap;
-                }
-                th:nth-child(2), td:nth-child(2) {
-                    text-align: left;
-                }
-                h1 {
-                    text-align: center;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Instruction Discrepancy Report</h1>
-            <table>
-                <tr>
-                    <th>No</th>
-                    <th>Case Path</th>
-                    <th>es2abc Instruction Number</th>
-                    <th>v8 Instruction Number</th>
-                    <th>es2abc/v8 Ratio</th>
-                </tr>
-        """
-
-        def calculate_ratio(d8_instruction_number, es2abc_instruction_number):
-            if d8_instruction_number <= 0 or es2abc_instruction_number <= 0:
-                return 'Invalid Ratio'
-            ratio = (float(es2abc_instruction_number) / d8_instruction_number) * 100
-            return f'{ratio:.2f}%'
-
+        global HTML_CONTENT
         case_number = 1
         for d8_item, es2abc_item in zip(d8_output, es2abc_output):
             d8_instruction_number = d8_item[1]
@@ -247,22 +248,25 @@ class CaseManager:
                 es2abc_instruction_number = \
                     "<span style='color:DarkRed; font-weight:bold;'>{}</span>".format(es2abc_item[1])
             case_path = os.path.relpath(d8_item[0], self.test_root)
-            html_content += f"""<tr>
+            html_content_of_case_info = f"""<tr>
                                     <td>{case_number}</td>
                                     <td>{case_path}</td>
                                     <td>{es2abc_instruction_number}</td>
                                     <td>{d8_instruction_number}</td>
-                                    <td>{calculate_ratio(int(d8_item[1]), int(es2abc_item[1]))}</td>
+                                    <td>{self.calculate_ratio_for_discrepancy_report(int(d8_item[1]),
+                                         int(es2abc_item[1]))}</td>
                                 </tr>"""
+            HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_case_info)
             case_number += 1
 
-        html_content += "</table></body></html>"
+        html_content_of_end_tag = "</table></body></html>"
+        HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_end_tag)
 
         flags = os.O_RDWR | os.O_CREAT
         mode = stat.S_IWUSR | stat.S_IRUSR
         with os.fdopen(os.open(self.report_path + '.html', flags, mode), 'w') as f:
             f.truncate()
-            f.write(html_content)
+            f.write(HTML_CONTENT)
 
 
 class Runner(ABC):

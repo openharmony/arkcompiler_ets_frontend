@@ -26,6 +26,63 @@ import sys
 WORKLOAD_PATH = 'test_cases/ark-workload/weekly_workload'
 PARSE_COMMAND_PATH = '../parse_command'
 SIZE_PERCENTAGE_REPORT = 'size_percentage_report.html'
+HTML_CONTENT = \
+"""
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Size Percentage Report</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: auto;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid black;
+            white-space: nowrap;
+        }
+        th:nth-child(2), td:nth-child(2) {
+            text-align: left;
+        }
+        th:last-child, td:last-child {
+            white-space: pre-wrap;
+            text-align: left;
+        }
+        h1 {
+            text-align: center;
+        }
+        .percentage_table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: -35px;
+        }
+        .percentage_table th, .percentage_table td {
+            padding: 4px;
+            border: none;
+        }
+        .percentage_table td {
+            padding-right: 10px;
+            line-height: 1;
+            padding-top: 0;
+        }
+        .percentage_table .item_section {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Size Percentage Report</h1>
+    <table>
+        <tr>
+            <th>No</th>
+            <th>Case Path</th>
+            <th>ABC Size</th>
+            <th>Percentage of Sections</th>
+        </tr>
+"""
 
 
 def is_directory(parser, arg):
@@ -138,96 +195,41 @@ class Runner:
 
         self.generate_size_percentage_report()
 
+    def format_sections_for_percentage_report(self, output, percentage_of_sections_list):
+        lines = output.split('\n')
+        start_flag = False
+        for line in lines:
+            if start_flag:
+                if 'percent' in line:
+                    [item_section_and_item_size, percentage] = line.split(',')
+                    [item_section, item_size] = item_section_and_item_size.split(':')
+                    percentage = percentage.split(':')[-1].strip()
+                    percentage_of_sections_list.append([item_section.strip(), item_size.strip(), \
+                                                        percentage.strip()])
+
+            if 'Panda file size statistic:' in line:
+                start_flag = True
+
     def generate_size_percentage_report(self):
-        html_content = """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Size Percentage Report</title>
-            <style>
-                table {
-                    width: 50%;
-                    border-collapse: collapse;
-                    margin: auto;
-                }
-                th, td {
-                    padding: 8px;
-                    text-align: center;
-                    border: 1px solid black;
-                    white-space: nowrap;
-                }
-                th:nth-child(2), td:nth-child(2) {
-                    text-align: left;
-                }
-                th:last-child, td:last-child {
-                    white-space: pre-wrap;
-                    text-align: left;
-                }
-                h1 {
-                    text-align: center;
-                }
-                .percentage_table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: -35px;
-                }
-                .percentage_table th, .percentage_table td {
-                    padding: 4px;
-                    border: none;
-                }
-                .percentage_table td {
-                    padding-right: 10px;
-                    line-height: 1;
-                    padding-top: 0;
-                }
-                .percentage_table .item_section {
-                    text-align: left;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Size Percentage Report</h1>
-            <table>
-                <tr>
-                    <th>No</th>
-                    <th>Case Path</th>
-                    <th>ABC Size</th>
-                    <th>Percentage of Sections</th>
-                </tr>
-        """
-
-        def format_sections(output, percentage_of_sections_list):
-            lines = output.split('\n')
-            start_flag = False
-            for line in lines:
-                if start_flag:
-                    if 'percent' in line:
-                        [item_section_and_item_size, percentage] = line.split(',')
-                        [item_section, item_size] = item_section_and_item_size.split(':')
-                        percentage = percentage.split(':')[-1].strip()
-                        percentage_of_sections_list.append([item_section.strip(), item_size.strip(), \
-                                                            percentage.strip()])
-
-                if 'Panda file size statistic:' in line:
-                    start_flag = True
-
+        global HTML_CONTENT
         for number, result in enumerate(self.results, 1):
             percentage_of_sections_list = []
-            format_sections(result.percentage_of_sections, percentage_of_sections_list)
+            self.format_sections_for_percentage_report(result.percentage_of_sections, percentage_of_sections_list)
             percentage_of_sections_list.sort(key=lambda percentage_of_section: int(percentage_of_section[1]), 
                                              reverse=True)
 
-            html_content += f"""
+            html_content_of_result = f"""
                 <tr>
                     <td>{number}</td>
                     <td>{result.test_case_name}</td>
                     <td>{result.abc_size}</td>
             """
+            HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_result)
 
             header = [''] * 3
             if len(percentage_of_sections_list):
                 header = ['section', 'size', 'percentage']
-                html_content += f"""
+                html_content_of_percentage = f"""
                     <td>
                         <table class='percentage_table'>
                         <tr>
@@ -236,36 +238,42 @@ class Runner:
                             <th>{header[2]}</th>
                         </tr>
                 """
-                
+                HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_percentage)
+
                 total_size = 0
                 for [item_section, item_size, percentage] in percentage_of_sections_list:
-                    html_content += f"""
+                    html_content_of_sections = f"""
                             <tr>
                                 <td class='item_section'>{item_section}</td>
                                 <td>{item_size}</td>
                                 <td>{percentage}</td>
                             </tr>
                     """
+                    HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_sections)
                     total_size += int(item_size)
-                
-                html_content += f"""
+
+                html_content_of_total_size = f"""
                             <tr>
                                 <td class='item_section'>total size</td>
                                 <td>{total_size}</td>
                                 <td></td>
                             </tr>
-                    """
-                html_content += "</table></td></tr>"
-            else:
-                html_content += f"<td>N/A</td></tr>"
+                """
+                HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_total_size)
 
-        html_content += "</table></body></html>"
+                HTML_CONTENT = "{}</table></td></tr>".format(HTML_CONTENT)
+            else:
+                html_content_of_not_available = f"<td>N/A</td></tr>"
+                HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_not_available)
+
+        html_content_of_end_tag = "</table></body></html>"
+        HTML_CONTENT = "{}{}".format(HTML_CONTENT, html_content_of_end_tag)
 
         flags = os.O_RDWR | os.O_CREAT
         mode = stat.S_IWUSR | stat.S_IRUSR
         with os.fdopen(os.open(self.size_percentage_statistics_file, flags, mode), 'w') as report:
             report.truncate()
-            report.write(html_content)
+            report.write(HTML_CONTENT)
 
 
 def main():
