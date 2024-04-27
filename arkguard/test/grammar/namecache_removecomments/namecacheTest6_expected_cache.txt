@@ -1,0 +1,36 @@
+{
+  "IdentifierCache": {
+    "#MyDataSource": "e1",
+    "#LazyForEach": "f1",
+    "#lazyforeach": "g1",
+    "#MyComponent": "h1",
+    "MyComponent#d1#$0#__function": "l1",
+    "MyComponent#d1#$0#$1#item": "m1",
+    "MyComponent#d1#$0#$1#index": "n1",
+    "MyComponent#d1#$0#$0#_item": "o1",
+    "MyComponent#d1#$0#$0#index": "p1",
+    "MyComponent#d1#$0#$0#item": "q1",
+    "MyComponent#d1#$0#$0#$0#__function": "s1",
+    "MyComponent#b1#params": "t1",
+    "MyComponent#$0#params": "u1",
+    "MyComponent#$0#__localStorage": "v1",
+    "LazyForEach#create#id": "w1",
+    "LazyForEach#create#component": "x1",
+    "LazyForEach#create#source": "y1",
+    "LazyForEach#create#itemGenFunction": "z1",
+    "LazyForEach#create#itemIdFunc": "a2",
+    "MyDataSource#getData#index": "b2",
+    "MyComponent#d1#$0#__lazyForEachItemGenFunction:49:56": "i1",
+    "MyComponent#d1#$0#$0#$0#observedDeepRender:52:53": "r1",
+    "MyComponent#d1#$0#__lazyForEachItemIdFunc:57:57": "j1"
+  },
+  "MemberMethodCache": {
+    "totalCount:19:21": "a1",
+    "getData:22:24": "getData",
+    "create:29:29": "create",
+    "MyComponent:35:38": "h1",
+    "setInitiallyProvidedValue:39:43": "b1",
+    "observeComponentCreation2:44:44": "c1",
+    "initialRender:46:60": "d1"
+  }
+}

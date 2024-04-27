@@ -88,16 +88,7 @@ function compareContent(filePath) {
   const hasExpectationFile = fs.existsSync(expectationPath);
   const hasExpectationCache = fs.existsSync(expectationCachePath);
   const hasResultCache = fs.existsSync(resultCachePath);
-  if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
-    let actual;
-    let expectation;
-    if (hasExpectationFile) {
-      actual = fs.readFileSync(filePath).toString();
-      expectation = fs.readFileSync(expectationPath).toString();
-    } else {
-      actual = fs.readFileSync(resultCachePath).toString();
-      expectation = fs.readFileSync(expectationCachePath).toString();
-    }
+  const compareExpected = function(filePath, actual, expectation) {
     if (actual.replace(/(\n|\r\n)/g, '') === expectation.replace(/(\n|\r\n)/g, '')) {
       contentcomparationSuccessCount++;
     } else {
@@ -108,6 +99,18 @@ function compareContent(filePath) {
         const color = part.added ? '\x1b[32m' : part.removed ? '\x1b[31m' : '\x1b[0m';
         console.log(color + part.value + '\x1b[0m');
       });
+    }
+  }
+  if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
+    if (hasExpectationFile) {
+      let actual = fs.readFileSync(filePath).toString();
+      let expectation = fs.readFileSync(expectationPath).toString();
+      compareExpected(filePath, actual, expectation);
+    }
+    if (hasExpectationCache) {
+      let actual = fs.readFileSync(resultCachePath).toString();
+      let expectation = fs.readFileSync(expectationCachePath).toString();
+      compareExpected(filePath, actual, expectation);
     }
   }
 }
