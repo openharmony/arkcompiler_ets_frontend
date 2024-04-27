@@ -101,19 +101,8 @@ void CompileFileJob::Run()
         return;
     }
 
-    if (!options_->transformLib.empty()) {
-        std::string tempOutput = util::Helpers::AopTransform(prog, src_->fileName, options_->transformLib);
-        if (!tempOutput.empty()) {
-            // transform the transformed ABC file to program
-            prog = compiler.AbcToAsmProgram(tempOutput);
-            std::remove(tempOutput.c_str());
-        }
-    }
-    if (prog == nullptr) {
-        return;
-    }
-
-    if (options_->optLevel != 0 && src_->isSourceMode) {
+    //todo
+    if (options_->optLevel != 0 && src_->isSourceMode && options_->transformLib.empty()) {
         util::Helpers::OptimizeProgram(prog, src_->fileName);
     }
 

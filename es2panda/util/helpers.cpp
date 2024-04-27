@@ -57,9 +57,9 @@
 #else
 #include <unistd.h>
 #endif
+#include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <os/library_loader.h>
 
 namespace panda::es2panda::util {
 
@@ -669,65 +669,69 @@ void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string 
 #endif
 }
 
-std::string Helpers::AopTransform(panda::pandasm::Program *prog,  const std::string &inputFile, const std::string &aopTransformPath)
+bool Helpers::CheckAopTransformPath(const std::string &libPath)
 {
-    std::string pid;
-    std::string_view supportSuffix;
+    std::string lowerLibPath = libPath;
+    std::transform(libPath.begin(), libPath.end(), lowerLibPath.begin(), ::tolower);
+    bool isValidSuffix = false;
 #ifdef PANDA_TARGET_WINDOWS
-    pid = std::to_string(GetCurrentProcessId());
-    supportSuffix = FileSuffix::DLL;
+    isValidSuffix = FileExtensionIs(lowerLibPath, FileSuffix::DLL);
+    std::string supportSuffix = std::string(FileSuffix::DLL);
 #else
-    pid = std::to_string(getpid());
-    supportSuffix = FileSuffix::SO;
+    isValidSuffix = FileExtensionIs(lowerLibPath, FileSuffix::SO) 
+        || FileExtensionIs(lowerLibPath, FileSuffix::DYLIB);
+    std::string supportSuffix = std::string(FileSuffix::SO) + "|" + std::string(FileSuffix::DYLIB);
 #endif
     //check file suffix(.so|.dll)
-    if (!FileExtensionIs(aopTransformPath, supportSuffix)) {
-        std::string msg = "aop transform file suffix support " + std::string(supportSuffix) + ", error file: " + aopTransformPath;
-        std::cerr << msg << std::endl;
-        return "";
+    if (!isValidSuffix) {
+        std::string msg = "aop transform file suffix support " + supportSuffix + ", error file: " + libPath;
+        std::cout << msg << std::endl;
+        return false;
     }
+    return true;
+}
 
-	//load aop transform file(.so|.dll)
-    auto loadRes = os::library_loader::Load(aopTransformPath);
+AopTransformFuncDef Helpers::LoadAopTransformLibFunc(const std::string &libPath,
+    const std::string &funcName, os::library_loader::LibraryHandle &handler)
+{
+    auto loadRes = os::library_loader::Load(libPath);
     if (!loadRes.HasValue()) {
         std::string msg = "os::library_loader::Load error: " + loadRes.Error().ToString();
-        std::cerr << msg << std::endl;
-        return "";
+        std::cout << msg << std::endl;
+        return nullptr;
     }
-    os::library_loader::LibraryHandle handler = std::move(loadRes.Value());
+    handler = std::move(loadRes.Value());
 
-    //get func Transform ptr
-    auto initRes = os::library_loader::ResolveSymbol(handler, "Transform");
+    auto initRes = os::library_loader::ResolveSymbol(handler, funcName);
     if (!initRes.HasValue()) {
         std::string msg = "os::library_loader::ResolveSymbol get func Transform error: " + initRes.Error().ToString();
-        std::cerr << msg << std::endl;
-        os::library_loader::CloseHandle(&handler);
-        return "";
+        std::cout << msg << std::endl;
+        return nullptr;
     }
-   os::library_loader::CloseHandle(&handler);
 
-    //emit progam to untransformed ABC
-    const std::string outputSuffix = ".aop.abc";
-    std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
-    if (!panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, nullptr, nullptr, true)) {
-        std::remove(tempOutput.c_str());
-        std::string msg = "AsmEmitter::Emit error: " + aopTransformPath;
-        std::cerr << msg << std::endl;
+    return reinterpret_cast<AopTransformFuncDef>(initRes.Value());
+}
+
+std::string Helpers::AopTransform(const std::string &inputFile, const std::string &libPath)
+{
+    if (!CheckAopTransformPath(libPath)) {
         return "";
     }
 
-    //invoke Transform, untransformed ABC to transformed ABC
-    AopTransformFuncDef transform = reinterpret_cast<AopTransformFuncDef>(initRes.Value());
-    int res = transform(tempOutput.c_str());
-
-    //exec result define: 0:success, other:fail
-    if (res) {
-        std::remove(tempOutput.c_str());
-        std::string msg = "Transform exec fail: " + aopTransformPath;
-        std::cerr << msg << std::endl;
+    os::library_loader::LibraryHandle handler(nullptr);
+    AopTransformFuncDef transform = LoadAopTransformLibFunc(libPath, "Transform", handler);
+    if (transform == nullptr) {
         return "";
     }
-    return tempOutput;
+
+    //invoke Transform, untransformed ABC to transformed ABC, result define: 0:success, other:fail
+    int res = transform(inputFile.c_str());
+    if (res != 0) {
+        std::string msg = "Transform exec fail: " + libPath;
+        std::cout << msg << std::endl;
+        return "";
+    }
+    return inputFile;
 }
 
 bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)

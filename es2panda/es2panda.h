@@ -204,8 +204,6 @@ public:
     {
         return error_;
     }
-    
-    panda::pandasm::Program *AbcToAsmProgram(const std::string &fname);
 
 private:
     util::PatchFix *InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,

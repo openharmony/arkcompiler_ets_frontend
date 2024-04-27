@@ -298,7 +298,7 @@ bool Options::Parse(int argc, const char **argv)
         "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
 
     // aop transform
-    panda::PandArg<std::string> transformLib("transformLib", "", "aop transform lib file path");
+    panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
     
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");

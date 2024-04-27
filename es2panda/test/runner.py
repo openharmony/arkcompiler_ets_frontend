@@ -164,6 +164,8 @@ def get_args():
         help='run debug tests')
     parser.add_argument('--enable-arkguard', action='store_true', dest='enable_arkguard', default=False,
         help='enable arkguard for compiler tests')
+    parser.add_argument('--aop-transform', dest='aop_transform', action='store_true', default=False,
+        help='run debug tests')
 
     return parser.parse_args()
 
@@ -275,6 +277,44 @@ class TSCTest(Test):
 
         return self
 
+class TestAop:
+    def __init__(self, cmd, compare_str, remove_file):
+        self.cmd = cmd
+        self.compare_str = compare_str
+        self.remove_file = remove_file
+        self.path = ''
+        self.output = None
+        self.error = None
+        self.passed = None
+        self.skipped = None
+        self.reproduce = ""
+
+    def log_cmd(self, cmd):
+        self.reproduce += ''.join(["\n", ' '.join(cmd)])
+
+    def run(self, runner):
+        cmd = self.cmd
+        self.log_cmd(cmd)
+
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+
+        if self.compare_str == '':
+            self.passed = True
+        else :
+            self.passed = self.output.startswith(self.compare_str) and process.returncode in [0, 1]
+            if self.remove_file != '' and os.path.exists(self.remove_file):
+                os.remove(self.remove_file)
+
+        if not self.passed:
+            self.error = err.decode("utf-8", errors="ignore")
+
+        abc_path = path.join(os.getcwd(), 'test_aop.abc')
+        if os.path.exists(abc_path):
+            os.remove(abc_path)
+
+        return self
 
 class Runner:
     def __init__(self, args, name):
@@ -1195,6 +1235,51 @@ def add_directory_for_debug(runners, args):
 
     runners.append(runner)
 
+def add_cmd_for_aop_transform(runners, args):
+    runner = AopTransform(args)
+
+    aop_file_path = path.join(runner.test_root + "/aop/")
+    lib_suffix = '.so'
+    msg_list = [
+        ["correct.cpp", "compile", "aop_transform_start"],
+        ["exec_error.cpp", "compile", "Transform exec fail"],
+        ["no_func_transform.cpp", "compile", "os::library_loader::ResolveSymbol get func Transform error"],
+        ["error_format.cpp", "copy_lib", "os::library_loader::Load error"],
+        ["".join(["no_exist", lib_suffix]), "dirct_use", "Failed to find file"],
+        ["error_suffix.xxx", "direct_use", "aop transform file suffix support"]
+    ]
+    for i in range(0, len(msg_list)):
+        cpp_file = ''.join([aop_file_path, msg_list[i][0]])
+        if msg_list[i][1] == 'compile':
+            lib_file = cpp_file.replace('.cpp', lib_suffix)
+            remove_file = lib_file
+            runner.add_cmd(["g++", "--share", "-o", lib_file, cpp_file], "", lib_file)
+        elif msg_list[i][1] == 'copy_lib':
+            lib_file = cpp_file.replace('.cpp', lib_suffix)
+            remove_file = lib_file
+            if not os.path.exists(lib_file):
+                with open(cpp_file, "rb") as source_file:
+                    with open(lib_file, "wb") as target_file:
+                        target_file.write(source_file.read())
+        elif msg_list[i][1] == 'direct_use':
+            lib_file = cpp_file
+            remove_file = ""
+
+        js_file = path.join(aop_file_path, "test_aop.js")
+        runner.add_cmd([runner.es2panda, "--merge-abc", "--transform-lib", lib_file, js_file], msg_list[i][2], remove_file)
+
+    runners.append(runner)
+
+class AopTransform(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "AopTransform")
+    
+    def add_cmd(self, cmd, compare_str, remove_file, func=TestAop):
+        self.tests += [func(cmd, compare_str, remove_file)]
+
+    def test_path(self, src):
+        return src
+
 def main():
     args = get_args()
 
@@ -1229,6 +1314,9 @@ def main():
 
     if args.bytecode:
         add_directory_for_bytecode(runners, args)
+
+    if args.aop_transform:
+        add_cmd_for_aop_transform(runners, args)
 
     if args.debug:
         add_directory_for_debug(runners, args)
