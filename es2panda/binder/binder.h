@@ -282,6 +282,9 @@ template <typename T, typename... Args>
 T *Binder::AddTsDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    if (decl == nullptr) {
+        throw Error(ErrorType::GENERIC, "Unsuccessful allocation in adding ts decl during binder");
+    }
     decl->SetDeclare(isDeclare);
 
     if (scope_->AddTsDecl(Allocator(), decl, program_->Extension())) {
@@ -296,6 +299,9 @@ template <typename T, typename... Args>
 T *Binder::AddTsDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    if (decl == nullptr) {
+        throw Error(ErrorType::GENERIC, "Unsuccessful allocation in adding ts decl during binder");
+    }
     decl->AddFlag(flag);
     decl->SetDeclare(isDeclare);
 
@@ -311,6 +317,9 @@ template <typename T, typename... Args>
 T *Binder::AddDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    if (decl == nullptr) {
+        throw Error(ErrorType::GENERIC, "Unsuccessful allocation in adding decl during binder");
+    }
     decl->SetDeclare(isDeclare);
 
     if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
@@ -325,6 +334,9 @@ template <typename T, typename... Args>
 T *Binder::AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    if (decl == nullptr) {
+        throw Error(ErrorType::GENERIC, "Unsuccessful allocation in adding decl during binder");
+    }
     decl->AddFlag(flag);
     decl->SetDeclare(isDeclare);
 

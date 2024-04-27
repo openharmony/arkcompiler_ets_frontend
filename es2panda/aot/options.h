@@ -31,7 +31,7 @@ class PandaArg;
 }  // namespace panda
 
 namespace panda::es2panda::aot {
-enum class OptionFlags {
+enum class OptionFlags : uint8_t {
     DEFAULT = 0,
     PARSE_ONLY = 1 << 1,
     SIZE_STAT = 1 << 2,

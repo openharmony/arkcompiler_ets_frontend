@@ -20,7 +20,7 @@
 
 namespace panda::es2panda::parser {
 
-enum class LexicalScopeType {
+enum class LexicalScopeType : uint8_t {
     BLOCK,
     STRICT_BLOCK,
     CATCH,
@@ -30,7 +30,7 @@ enum class LexicalScopeType {
 
 DEFINE_BITOPS(LexicalScopeType)
 
-enum class VariableParsingFlags {
+enum class VariableParsingFlags : uint32_t {
     NO_OPTS = 0,
     NO_SKIP_VAR_KIND = (1 << 0),
     ACCEPT_CONST_NO_INIT = (1 << 1),
@@ -46,7 +46,7 @@ enum class VariableParsingFlags {
 
 DEFINE_BITOPS(VariableParsingFlags)
 
-enum class ExpressionParseFlags {
+enum class ExpressionParseFlags : uint32_t {
     NO_OPTS = 0,
     ACCEPT_COMMA = 1 << 0,
     ACCEPT_REST = 1 << 1,
@@ -63,7 +63,7 @@ enum class ExpressionParseFlags {
 
 DEFINE_BITOPS(ExpressionParseFlags)
 
-enum class StatementParsingFlags {
+enum class StatementParsingFlags : uint8_t {
     NONE = 0,
     ALLOW_LEXICAL = 1 << 0,
     GLOBAL = 1 << 1,
@@ -76,7 +76,7 @@ enum class StatementParsingFlags {
 
 DEFINE_BITOPS(StatementParsingFlags)
 
-enum class ForStatementKind {
+enum class ForStatementKind : uint8_t {
     UPDATE,
     IN,
     OF,

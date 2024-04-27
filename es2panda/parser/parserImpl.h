@@ -156,7 +156,7 @@ public:
     ParserStatus newStatus;
 };
 
-enum class TypeAnnotationParsingOptions {
+enum class TypeAnnotationParsingOptions : uint8_t {
     NO_OPTS = 0,
     IN_UNION = 1 << 0,
     ALLOW_CONST = 1 << 1,
@@ -172,7 +172,7 @@ DEFINE_BITOPS(TypeAnnotationParsingOptions)
 
 class ArrowFunctionContext;
 
-enum class PrivateGetterSetterType {
+enum class PrivateGetterSetterType : uint8_t {
     GETTER = 0,
     SETTER = 1 << 0,
     STATIC = 1 << 1,
