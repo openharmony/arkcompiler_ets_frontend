@@ -34,7 +34,6 @@ namespace ark::es2panda::parser {
 inline constexpr char const FORMAT_SIGNATURE = '@';
 inline constexpr char const TYPE_FORMAT_NODE = 'T';
 inline constexpr char const GENERAL_FORMAT_NODE = 'N';
-inline constexpr char const EXPRESSION_FORMAT_NODE = 'E';
 inline constexpr char const IDENTIFIER_FORMAT_NODE = 'I';
 
 static constexpr char const INVALID_NUMBER_NODE[] = "Invalid node number in format expression.";
@@ -171,6 +170,28 @@ ir::Statement *ETSParser::ParseStatementFormatPlaceholder() const
 
     Lexer()->NextToken();
     return insertingNode->AsStatement();
+}
+
+ir::AstNode *ETSParser::ParseTypeParametersFormatPlaceholder() const
+{
+    ParserImpl::NodeFormatType nodeFormat = GetFormatPlaceholderType();
+    if (std::get<0>(nodeFormat) || std::get<1>(nodeFormat) != EXPRESSION_FORMAT_NODE) {
+        ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+    }
+
+    auto const placeholderNumber = std::get<2>(nodeFormat);
+    if (placeholderNumber >= insertingNodes_.size()) {
+        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+    }
+
+    auto *const insertingNode = insertingNodes_[placeholderNumber];
+    if (insertingNode != nullptr && !insertingNode->IsTSTypeParameterDeclaration() &&
+        !insertingNode->IsTSTypeParameterInstantiation()) {
+        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+    }
+
+    Lexer()->NextToken();
+    return insertingNode;
 }
 
 ArenaVector<ir::AstNode *> &ETSParser::ParseAstNodesArrayFormatPlaceholder() const

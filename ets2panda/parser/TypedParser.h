@@ -42,9 +42,13 @@ protected:
 
     ir::ArrowFunctionExpression *ParseGenericArrowFunction();
     ir::TSTypeAssertion *ParseTypeAssertion();
+
     ir::TSTypeParameterInstantiation *ParseTypeParameterInstantiation(TypeAnnotationParsingOptions *options);
+    ir::AstNode *ParseTypeParameterInstantiationImpl(TypeAnnotationParsingOptions *options);
 
     ir::TSTypeParameterDeclaration *ParseTypeParameterDeclaration(TypeAnnotationParsingOptions *options);
+    ir::AstNode *ParseTypeParameterDeclarationImpl(TypeAnnotationParsingOptions *options);
+
     ir::Expression *ParseQualifiedName(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::Expression *ParseQualifiedReference(ir::Expression *typeName,
                                             ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
