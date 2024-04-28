@@ -59,6 +59,7 @@ import esInfo from './configs/preset/es_reserved_properties.json';
 import {EventList, TimeSumPrinter, TimeTracker} from './utils/PrinterUtils';
 import type { ProjectInfo } from './common/type';
 export {FileUtils} from './utils/FileUtils';
+export { MemoryUtils } from './utils/MemoryUtils';
 import {TypeUtils} from './utils/TypeUtils';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
