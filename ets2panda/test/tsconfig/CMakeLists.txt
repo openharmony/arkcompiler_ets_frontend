@@ -11,6 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if(NOT PANDA_REGRESSION_TESTS)
+    return()
+endif()
+
 function(add_es2panda_tsconfig_test tsproject)
     set(TSPROJECT_TARGET_NAME es2panda-tsconfig-test-${tsproject})
     add_custom_target(${TSPROJECT_TARGET_NAME}

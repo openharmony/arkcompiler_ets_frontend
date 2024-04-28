@@ -43,7 +43,7 @@ public:
     void SetCurrentProgram(std::string_view src)
     {
         int argc = 1;
-        const char *argv = "../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
+        const char *argv = "../../../../bin/es2panda";  // NOLINT(modernize-avoid-c-arrays)
         static constexpr std::string_view FILE_NAME = "dummy.ets";
 
         program_ = GetProgram(argc, &argv, FILE_NAME, src);

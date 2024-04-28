@@ -42,11 +42,16 @@ function(ets2panda_add_gtest TARGET)
     )
 
     MESSAGE(${TARGET})
+
     panda_add_gtest(
             NAME ${TARGET}
-            SOURCES ${ARG_CPP_SOURCES}
+            SOURCES
+                ${ARG_CPP_SOURCES}
             LIBRARIES
-                es2panda-public es2panda-lib arkassembler arkbytecodeopt
+                es2panda-public
+                es2panda-lib
+                arkassembler
+                arkbytecodeopt
             INCLUDE_DIRS
                 ${ES2PANDA_PATH}
                 ${ES2PANDA_BINARY_ROOT}
@@ -64,53 +69,6 @@ if(PANDA_WITH_ETS)
     endif()
 endif()
 
-if(PANDA_REGRESSION_TESTS)
-    panda_add_gtest(
-        NAME es2panda_public_test
-        SOURCES
-            unit/public/es2panda_public_test.cpp
-        LIBRARIES
-            es2panda-public es2panda-lib arkassembler arkbytecodeopt
-        INCLUDE_DIRS
-            ${ES2PANDA_ROOT}
-        SANITIZERS
-            ${PANDA_SANITIZERS_LIST}
-          )
-
-    panda_add_library(e2p_test_plugin SHARED unit/public/e2p_test_plugin.c)
-    panda_target_include_directories(e2p_test_plugin PRIVATE  "${CMAKE_CURRENT_SOURCE_DIR}/..")
-    panda_target_link_libraries(e2p_test_plugin es2panda-public)
-
-    add_custom_target(es2panda-plugin-test
-      COMMENT "Test es2panda plugin functionality"
-      COMMAND ${CMAKE_COMMAND} -E env
-        LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${PANDA_RUN_PREFIX} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin
-        "${CMAKE_CURRENT_SOURCE_DIR}/unit/public/t.ets" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
-      COMMAND ${CMAKE_COMMAND} -E compare_files
-        "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out" "${CMAKE_CURRENT_SOURCE_DIR}/unit/public/plugin_test.expected.txt"
-    )
-    add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin)
-    add_dependencies(es2panda_tests es2panda-plugin-test)
-
-    ets2panda_add_gtest(es2panda_dynamic_call_test CPP_SOURCES unit/dynamic/dynamic_call_test.cpp)
-    ets2panda_add_gtest(es2panda_astverifier_tests CPP_SOURCES unit/public/ast_verifier_test.cpp)
-    ets2panda_add_gtest(scopes_initialization_test CPP_SOURCES unit/lowerings/scopes_initialization.cpp)
-    ets2panda_add_gtest(es2panda_checker_tests CPP_SOURCES unit/checker_test.cpp)
-    ets2panda_add_gtest(es2panda_astdumper_tests CPP_SOURCES unit/ast_dumper_test.cpp)
-    ets2panda_add_gtest(es2panda_union_normalization_tests CPP_SOURCES unit/union_normalization_test.cpp)
-
-    # NOTE: es2panda_rest_parameter_flag test runs a lot of time on qemu, so let's disable it
-    if (NOT PANDA_QEMU_BUILD)
-        panda_add_gtest(
-            NAME es2panda_rest_parameter_flag
-            SOURCES unit/rest_parameter_flag_test.cpp
-            LIBRARIES es2panda-public es2panda-lib arkassembler arkbytecodeopt
-            INCLUDE_DIRS ${ES2PANDA_PATH} ${ES2PANDA_BINARY_ROOT}
-            SANITIZERS ${PANDA_SANITIZERS_LIST}
-        )
-    endif()
-
-    add_subdirectory(tsconfig)
-endif()
-
+add_subdirectory(tsconfig)
 add_subdirectory(options)
+add_subdirectory(unit)
