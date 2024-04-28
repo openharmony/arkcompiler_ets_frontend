@@ -25,3 +25,15 @@ let v1 = new NonSendableClass4() as SendableClass6; // ERROR, non-sendable data 
 let tmp1 = new NonSendableClass4();
 
 let v2 = tmp1 as SendableClass6; // ERROR, non-sendable data can not be cast to "Sendable" data
+
+function foo(a: object) {
+  a as SendableClass6; // OK
+}
+
+function foo(a: Object) {
+  a as SendableClass6; // OK
+}
+
+function foo(a: any) {
+  a as SendableClass6; // OK, no arkts-sendable-as-expr error
+}
