@@ -24,18 +24,21 @@
             "line": 38,
             "column": 39,
             "problem": "SendableGenericTypes",
+            "suggest": "",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
             "line": 39,
             "column": 31,
             "problem": "SendableGenericTypes",
+            "suggest": "",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
             "line": 39,
             "column": 41,
             "problem": "SendableGenericTypes",
+            "suggest": "",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
@@ -63,6 +66,7 @@
             "line": 46,
             "column": 26,
             "problem": "SendableGenericTypes",
+            "suggest": "",
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {

@@ -18,36 +18,42 @@
             "line": 35,
             "column": 1,
             "problem": "SendableClassDecorator",
+            "suggest": "",
             "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" class (arkts-sendable-class-decorator)"
         },
         {
             "line": 38,
             "column": 5,
             "problem": "SendableClassDecorator",
+            "suggest": "",
             "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" class (arkts-sendable-class-decorator)"
         },
         {
             "line": 43,
             "column": 5,
             "problem": "SendableClassDecorator",
+            "suggest": "",
             "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" class (arkts-sendable-class-decorator)"
         },
         {
             "line": 46,
             "column": 15,
             "problem": "SendableClassDecorator",
+            "suggest": "",
             "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" class (arkts-sendable-class-decorator)"
         },
         {
             "line": 48,
             "column": 5,
             "problem": "SendableClassDecorator",
+            "suggest": "",
             "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" class (arkts-sendable-class-decorator)"
         },
         {
             "line": 52,
             "column": 5,
             "problem": "SendableClassDecorator",
+            "suggest": "",
             "rule": "Only \"@Sendable\" decorator can be used on \"Sendable\" class (arkts-sendable-class-decorator)"
         },
         {
