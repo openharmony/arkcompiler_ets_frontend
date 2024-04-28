@@ -15,15 +15,15 @@
 // 顶层作用域
 const { Worker: Worker, isMainThread: isMainThread, parentPort: parentPort, workerData: workerData, MessagePort: MessagePort } = require('worker_threads');
 // 非顶层作用域
-function functionTest1() {
+function functionTest() {
     const { resourceLimits: n, threadId: o, BroadcastChannel: p } = require('worker_threads');
     let q = n;
     let r = o;
     let s = p;
 }
-functionTest1();
-function functionTest2() {
+functionTest();
+function functionTest1() {
     let l = Worker;
     let m = workerData;
 }
-functionTest2();
+functionTest1();

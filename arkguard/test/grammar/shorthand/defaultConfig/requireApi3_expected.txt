@@ -13,6 +13,6 @@
  * limitations under the License.
  */
 import assert from 'assert';
-const { addTest: addTest, subtractTest: subtractTest } = require('./exportsApi3');
-assert(addTest(1, 2) == 3, 'success');
-assert(subtractTest(3, 1) == 2, 'success');
+const { addTest1: addTest1, subtractTest1: subtractTest1 } = require('./exportsApi3');
+assert(addTest1(1, 2) == 3, 'success');
+assert(subtractTest1(3, 1) == 2, 'success');

@@ -12,13 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function addTest(d, e) {
+function addTest1(d, e) {
     return d + e;
 }
-function subtractTest(b, c) {
+function subtractTest1(b, c) {
     return b - c;
 }
 module.exports = {
-    addTest: addTest,
-    subtractTest: subtractTest
+    addTest1: addTest1,
+    subtractTest1: subtractTest1
 };

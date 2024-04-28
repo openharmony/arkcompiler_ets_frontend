@@ -14,7 +14,7 @@
  */
 import assert from 'assert';
 function functionRequireTest() {
-    const { codes2: { ERR_INVALID_ARG_TYPE2: h, ERR_MISSING_ARGS2: i, ERROR_OUT_OF_RANGE2: j }, AbortError2: k, } = require('./exportsApi2');
+    const { codes2: { ERR_INVALID_ARG_TYPE_2: h, ERR_MISSING_ARGS_2: i, ERROR_OUT_OF_RANGE_2: j }, AbortError2: k, } = require('./exportsApi2');
     assert(h === 1, 'success');
     assert(i === 2, 'success');
     assert(j === 3, 'success');

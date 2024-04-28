@@ -26,19 +26,19 @@ assert(Propy1 === 2, 'success');
 // let Propx2 =3;
 // let Propy3 =4;
 // let Propy4 =5;
-const { Propx2, Obj: {Propy3, Propy4} } = {Propx2:2, Obj: {Propy3:3, Propy4:4}}
-assert(Propx2 === 2, 'success');
-assert(Propy3 === 3, 'success');
-assert(Propy4 === 4, 'success');
+const { Propx2, Obj: {Propy3, Propy4} } = {Propx2: 12, Obj: {Propy3: 13, Propy4: 14}}
+assert(Propx2 === 12, 'success');
+assert(Propy3 === 13, 'success');
+assert(Propy4 === 14, 'success');
 
 
-const {...rest1} = {prop1: 1, prop2: 2};
-assert(rest1.prop1 === 1, 'success');
-assert(rest1.prop2 === 2, 'success');
+const {...rest1} = {prop1: 11, prop2: 12};
+assert(rest1.prop1 === 11, 'success');
+assert(rest1.prop2 === 12, 'success');
 
-const { prop3, ...rest2} = {prop3: 3, prop4: 4};
-assert(prop3 === 3, 'success');
-assert(rest2.prop4 === 4, 'success');
+const { prop3, ...rest2} = {prop3: 13, prop4: 14};
+assert(prop3 === 13, 'success');
+assert(rest2.prop4 === 14, 'success');
 
 let name11 = 'hello';
 let info = {name11};

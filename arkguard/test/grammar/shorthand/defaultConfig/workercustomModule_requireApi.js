@@ -16,10 +16,10 @@
 import assert from 'assert';
 
 const {
-  isMainThread1,
-  parentPort1
+  isMainThread,
+  parentPort
 } = require('./workercustomModule');
 
 const { PI } = Math;
-assert(isMainThread1 == false, 'success');
-assert(parentPort1 === 2, 'success');
+assert(isMainThread == false, 'success');
+assert(parentPort === 2, 'success');

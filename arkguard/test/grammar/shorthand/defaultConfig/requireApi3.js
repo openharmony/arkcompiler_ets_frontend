@@ -15,7 +15,7 @@
 
 import assert from 'assert';
 
-const { addTest, subtractTest } = require('./exportsApi3');
+const { addTest1, subtractTest1 } = require('./exportsApi3');
 
-assert(addTest(1,2) == 3, 'success');
-assert(subtractTest(3,1) == 2, 'success');
+assert(addTest1(1,2) == 3, 'success');
+assert(subtractTest1(3,1) == 2, 'success');
