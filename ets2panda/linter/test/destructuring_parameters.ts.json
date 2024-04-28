@@ -106,6 +106,27 @@
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
+            "line": 51,
+            "column": 13,
+            "problem": "DestructuringParameter",
+            "suggest": "",
+            "rule": "Destructuring parameter declarations are not supported (arkts-no-destruct-params)"
+        },
+        {
+            "line": 56,
+            "column": 13,
+            "problem": "DestructuringParameter",
+            "suggest": "",
+            "rule": "Destructuring parameter declarations are not supported (arkts-no-destruct-params)"
+        },
+        {
+            "line": 61,
+            "column": 13,
+            "problem": "DestructuringParameter",
+            "suggest": "",
+            "rule": "Destructuring parameter declarations are not supported (arkts-no-destruct-params)"
+        },
+        {
             "line": 66,
             "column": 13,
             "problem": "DestructuringParameter",

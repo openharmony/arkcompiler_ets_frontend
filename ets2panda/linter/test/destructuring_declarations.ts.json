@@ -99,7 +99,21 @@
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
         {
+            "line": 28,
+            "column": 7,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        },
+        {
             "line": 29,
+            "column": 7,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        },
+        {
+            "line": 30,
             "column": 7,
             "problem": "DestructuringDeclaration",
             "suggest": "",
@@ -113,7 +127,21 @@
             "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
         },
         {
+            "line": 34,
+            "column": 5,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        },
+        {
             "line": 35,
+            "column": 5,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        },
+        {
+            "line": 38,
             "column": 5,
             "problem": "DestructuringDeclaration",
             "suggest": "",

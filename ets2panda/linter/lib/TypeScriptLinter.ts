@@ -95,6 +95,7 @@ export class TypeScriptLinter {
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
   static ideMode: boolean = false;
   static testMode: boolean = false;
+  static useRelaxedRules = false;
 
   static advancedClassChecks = false;
 
@@ -1073,7 +1074,7 @@ export class TypeScriptLinter {
         this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple);
       const hasNestedObjectDestructuring = TsUtils.hasNestedObjectDestructuring(tsLhsExpr);
 
-      if (!isArrayOrTuple || hasNestedObjectDestructuring ||
+      if (!TypeScriptLinter.useRelaxedRules || !isArrayOrTuple || hasNestedObjectDestructuring ||
         TsUtils.destructuringAssignmentHasSpreadOperator(tsLhsExpr)
       ) {
         this.incrementCounters(node, FaultID.DestructuringAssignment);
@@ -1183,7 +1184,7 @@ export class TypeScriptLinter {
       );
       const hasNestedObjectDestructuring = TsUtils.hasNestedObjectDestructuring(decl.name);
 
-      if (!isArrayOrTuple || hasNestedObjectDestructuring ||
+      if (!TypeScriptLinter.useRelaxedRules || !isArrayOrTuple || hasNestedObjectDestructuring ||
         TsUtils.destructuringDeclarationHasSpreadOperator(decl.name)
       ) {
         this.incrementCounters(decl, faultId);
@@ -1876,7 +1877,8 @@ export class TypeScriptLinter {
     }
     const lookup = TypeScriptLinter.LimitedApis.get(parName);
     if (lookup !== undefined && (lookup.arr === null || lookup.arr.includes(name)) &&
-      !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name)
+      (!TypeScriptLinter.useRelaxedRules ||
+       !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name))
     ) {
       this.incrementCounters(callExpr, lookup.fault);
     }
@@ -2039,7 +2041,10 @@ export class TypeScriptLinter {
      */
     if (ts.isSpreadElement(node)) {
       const spreadExprType = this.tsUtils.getTypeOrTypeConstraintAtLocation(node.expression);
-      if (spreadExprType && this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
+      if (spreadExprType &&
+        (TypeScriptLinter.useRelaxedRules ||
+         ts.isCallLikeExpression(node.parent) || ts.isArrayLiteralExpression(node.parent)) &&
+        this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
         return;
       }
     }
