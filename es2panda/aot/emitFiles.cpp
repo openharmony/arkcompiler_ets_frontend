@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +29,7 @@ void EmitFileQueue::Schedule()
 
     if (mergeAbc_) {
         // generate merged abc
-        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), 
+        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(),
             options_->CompilerOptions().transformLib, progsInfo_, targetApi);
         for (const auto &info: progsInfo_) {
             // generate cache protoBins and set dependencies
