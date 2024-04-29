@@ -114,4 +114,4 @@ faultsAttrs[FaultID.SendableClassDecorator] = new FaultAttributes(158);
 faultsAttrs[FaultID.SendableObjectInitialization] = new FaultAttributes(159);
 faultsAttrs[FaultID.SendableComputedPropName] = new FaultAttributes(160);
 faultsAttrs[FaultID.SendableAsExpr] = new FaultAttributes(161);
-
+faultsAttrs[FaultID.SharedNoSideEffectImport] = new FaultAttributes(162);

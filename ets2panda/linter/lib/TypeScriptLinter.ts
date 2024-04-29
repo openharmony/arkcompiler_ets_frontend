@@ -92,6 +92,7 @@ export class TypeScriptLinter {
   autofixer: Autofixer | undefined;
 
   private sourceFile?: ts.SourceFile;
+  private static sharedModulesCache: Map<string, boolean>;
   static filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>;
   static ideMode: boolean = false;
   static testMode: boolean = false;
@@ -101,6 +102,7 @@ export class TypeScriptLinter {
 
   static initGlobals(): void {
     TypeScriptLinter.filteredDiagnosticMessages = new Set<ts.DiagnosticMessageChain>();
+    TypeScriptLinter.sharedModulesCache = new Map<string, boolean>();
   }
 
   private initEtsHandlers(): void {
@@ -646,6 +648,28 @@ export class TypeScriptLinter {
         this.incrementCounters(importDeclNode.assertClause, FaultID.ImportAssertion);
       }
     }
+
+    // handle no side effect import in sendable module
+    this.handleSharedModuleNoSideEffectImport(importDeclNode);
+  }
+
+  private handleSharedModuleNoSideEffectImport(node : ts.ImportDeclaration):void {
+    // check 'use shared'
+    if (TypeScriptLinter.inSharedModule(node)) {
+      if (!node.importClause) {
+        this.incrementCounters(node, FaultID.SharedNoSideEffectImport);
+      }
+    }
+  }
+
+  private static inSharedModule(node: ts.Node): boolean {
+    const sourceFile: ts.SourceFile = node.getSourceFile();
+    if (TypeScriptLinter.sharedModulesCache.has(path.normalize(sourceFile.fileName))) {
+      return TypeScriptLinter.sharedModulesCache.get(path.normalize(sourceFile.fileName))!;
+    }
+    const isSharedModule: boolean = TsUtils.isSharedModule(sourceFile);
+    TypeScriptLinter.sharedModulesCache.set(path.normalize(sourceFile.fileName), isSharedModule);
+    return isSharedModule;
   }
 
   private handlePropertyAccessExpression(node: ts.Node): void {
