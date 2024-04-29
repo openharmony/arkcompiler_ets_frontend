@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,26 @@
  * limitations under the License.
  */
 
-#include <algorithm>
 #include "commonUtil.h"
 
+#include <algorithm>
+
 namespace panda::es2panda::util {
-std::vector<std::string> SplitNormalizedOhmurl(const std::string &ohmurl) 
+std::vector<std::string> Split(const std::string &str, const char delimiter)
 {
-    // format of ohmurl: "@normalized:N&<moduleName>&<bundleName>&normalizedImport&<version>"
     std::string normalizedImport {};
     std::string pkgName {};
     std::vector<std::string> items;
 
     size_t start = 0;
-    size_t pos = ohmurl.find(NORMALIZED_OHMURL_SEPARATOR);
+    size_t pos = str.find(delimiter);
     while (pos != std::string::npos) {
-        std::string item = ohmurl.substr(start, pos - start);
+        std::string item = str.substr(start, pos - start);
         items.emplace_back(item);
         start = pos + 1;
-        pos = ohmurl.find(NORMALIZED_OHMURL_SEPARATOR, start);
+        pos = str.find(delimiter, start);
     }
-    std::string tail = ohmurl.substr(start);
+    std::string tail = str.substr(start);
     items.emplace_back(tail);
 
     return items;
@@ -42,7 +42,7 @@ std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl)
 {
     std::string normalizedImport {};
     std::string pkgName {};
-    auto items = SplitNormalizedOhmurl(ohmurl);
+    auto items = Split(ohmurl, NORMALIZED_OHMURL_SEPARATOR);
 
     normalizedImport = items[NORMALIZED_IMPORT_POS];
     size_t pos = normalizedImport.find(SLASH_TAG);
@@ -62,7 +62,7 @@ std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl)
 {
     // format of recordName: "<bundleName>&normalizedImport&<version>"
     std::string recordName {};
-    auto items = SplitNormalizedOhmurl(ohmurl);
+    auto items = Split(ohmurl, NORMALIZED_OHMURL_SEPARATOR);
 
     recordName += items[BUNDLE_NAME_POS] + NORMALIZED_OHMURL_SEPARATOR + items[NORMALIZED_IMPORT_POS] +
         NORMALIZED_OHMURL_SEPARATOR + items[VERSION_POS];

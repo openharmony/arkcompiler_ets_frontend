@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,44 +15,52 @@
 
 #ifndef ES2PANDA_AOT_DEPEND_RELATION_H
 #define ES2PANDA_AOT_DEPEND_RELATION_H
-#include <aot/options.h>
-#include <es2panda.h>
+#include <map>
 #include <string>
 #include <queue>
-#include <util/workerQueue.h>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include <aot/options.h>
+#include <es2panda.h>
+#include <util/workerQueue.h>
+
 namespace panda::es2panda::aot {
 
-class ResolveDepsRelation {
+class DepsRelationResolver {
 public:
-    explicit ResolveDepsRelation(const std::unique_ptr<panda::es2panda::aot::Options> &options,
-                                 const std::map<std::string, panda::es2panda::util::ProgramCache *> &progsInfo,
-                                 std::unordered_map<std::string, std::unordered_set<std::string>> *resolveDepsRelation)
-        : progsInfo_(progsInfo), resolveDepsRelation_(resolveDepsRelation),
-        compileContextInfo_(options->CompilerOptions().compileContextInfo)
+    explicit DepsRelationResolver(const std::map<std::string, panda::es2panda::util::ProgramCache *> &progsInfo,
+                                  const std::unique_ptr<panda::es2panda::aot::Options> &options,
+                                  std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation,
+                                  std::unordered_set<std::string> &generatedRecords)
+        : progsInfo_(progsInfo), resolvedDepsRelation_(resolvedDepsRelation),
+        compileContextInfo_(options->CompilerOptions().compileContextInfo), generatedRecords_(generatedRecords),
+        dumpDepsInfo_(options->CompilerOptions().dumpDepsInfo)
     {
     }
 
-    ~ResolveDepsRelation() = default;
-    void CollectRecordDepsRelation(std::string recordName, const panda::pandasm::Program *program,
-                                   std::string compileEntryKey);
-    void CollectRecord(std::string recordName, std::string compileEntryKey);
-    std::string TransformRecordName(std::string ohmUrl);
-    bool CheckIsHspOHMUrl(std::string ohmUrl);
-    bool CheckShouldCollectDepsLiteralValue(std::string literalValue);
-    std::string RecordNameForliteralKey(std::string literalKey);
-
-    void Resolve();
+    ~DepsRelationResolver() = default;
+    void CollectStaticImportDepsRelation(const panda::pandasm::Program &program, const std::string &recordName);
+    void CollectDynamicImportDepsRelation(const panda::pandasm::Program &program, const std::string &recordName);
+    bool Resolve();
 
 private:
-    // const std::unique_ptr<panda::es2panda::aot::Options> &options_;
+    void FillRecord2ProgramMap(std::unordered_map<std::string, std::string> &record2ProgramMap);
+    bool CollectCommonjsRecords(const std::vector<panda::pandasm::Field> &fieldList,
+                                const std::string &progKey, const std::string &recordName);
+    bool CheckShouldCollectDepsLiteralValue(std::string ohmurl);
+    void CollectStaticImportDepsRelationWithLiteral(panda::pandasm::LiteralArray::Literal literal);
+    void ResolveDynamicImportDepsRelation(const panda::pandasm::Function &func, size_t regs_num);
+    void ResolveStaticImportDepsRelation(const panda::pandasm::Program &program, const std::string &literalArrayKey);
+    void DumpDepsRelations();
+
     const std::map<std::string, panda::es2panda::util::ProgramCache *> &progsInfo_;
-    std::unordered_map<std::string, std::unordered_set<std::string>> *resolveDepsRelation_;
-    CompileContextInfo compileContextInfo_;
-    std::queue<std::string> bfsQueue_ {};
+    std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation_;
+    CompileContextInfo &compileContextInfo_;
+    std::queue<std::string> depsToBeResolved_ {};
+    std::unordered_set<std::string> resolvedRecords_ {};
+    std::unordered_set<std::string> &generatedRecords_;
+    bool dumpDepsInfo_ {false};
 };
 } // namespace panda::es2panda::aot
 

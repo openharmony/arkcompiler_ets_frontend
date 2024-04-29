@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,129 +15,195 @@
 
 #include "resolveDepsRelation.h"
 
+#include <util/commonUtil.h>
+
 namespace panda::es2panda::aot {
 
-void ResolveDepsRelation::Resolve()
+bool DepsRelationResolver::CollectCommonjsRecords(const std::vector<panda::pandasm::Field> &fieldList,
+                                                  const std::string &progKey, const std::string &recordName)
 {
-    for (auto recordName : compileContextInfo_.compileEntries) {
-        for (auto &[key, value] : progsInfo_) {
-            for (auto &[recordKey, record] : value->program.record_table) {
-                if (recordKey == recordName) {
-                    if (resolveDepsRelation_->find(key) == resolveDepsRelation_->end()) {
-                        std::unordered_set<std::string> depsSet{};
-                        resolveDepsRelation_->insert(std::pair<std::string, std::unordered_set<std::string>>(key, depsSet));
-                    }
-                    CollectRecord(recordName, key);
-                    break;
-                }
-            }
+    for (const auto &field: fieldList) {
+        if (field.name.find(util::IS_COMMONJS) == std::string::npos) {
+            continue;
         }
-        // try {
-        //     CollectRecordKey(recordName);
-        // } catch (std::exception &error) {
-        //     throw Error(ErrorType::GENERIC, error.what());
-        // }
+        ASSERT(field.metadata->GetValue().has_value());
+        ASSERT(field.type.GetId() == panda_file::Type::TypeId::U8);
+        if (field.metadata->GetValue().value().GetValue<uint8_t>() > 0) {
+            resolvedDepsRelation_[progKey].insert(recordName);
+            return true;
+        }
+    }
+    return false;
+}
+
+void DepsRelationResolver::FillRecord2ProgramMap(std::unordered_map<std::string, std::string> &record2ProgramMap)
+{
+    for (const auto &progInfo : progsInfo_) {
+        for (const auto &record : progInfo.second->program.record_table) {
+            if (record.second.field_list.empty()) {
+                generatedRecords_.insert(record.second.name);
+                continue;
+            }
+            if (progInfo.first.find(util::NPM_ENTRIES) != std::string::npos) {
+                resolvedDepsRelation_[progInfo.first].insert(record.second.name);
+                continue;
+            }
+
+            // All commonjs files will be include as dependencies for compilation without resolve. Since commonjs files
+            // will only have commonjs as dependencies, there'll be no dependencies missing.
+            if (CollectCommonjsRecords(record.second.field_list, progInfo.first, record.second.name)) {
+                break;
+            }
+            record2ProgramMap[record.second.name] = progInfo.first;
+        }
     }
 }
 
-std::string ResolveDepsRelation::RecordNameForliteralKey(std::string literalKey)
+bool DepsRelationResolver::CheckShouldCollectDepsLiteralValue(std::string ohmurl)
 {
-    size_t pos = literalKey.rfind('_');
-    if (pos != std::string::npos) {
-        return literalKey.substr(0, pos);
-    } else {
-        std::cerr << "The literalKey format is error!" << std::endl;
-    }
-    return literalKey;
-}
-
-
-bool ResolveDepsRelation::CheckIsHspOHMUrl(std::string ohmUrl)
-{
-    size_t prev = 0;
-    constexpr int pos = 3;
-    for (int i = 0; i < pos; i++) {
-        prev = ohmUrl.find('&', prev) + 1;
-    }
-    size_t behindPos = ohmUrl.find('&', prev);
-    std::string normalizedPath =  ohmUrl.substr(prev, behindPos);
-    
-    size_t slashPos = normalizedPath.find('/', 0);
-    if (normalizedPath[0] == '@') {
-        slashPos = normalizedPath.find('/', slashPos + 1);
-    }
-    std::string pkgName =  normalizedPath.substr(0, slashPos);
-    auto it = std::find(compileContextInfo_.hspPkgNames.begin(), compileContextInfo_.hspPkgNames.end(), pkgName);
-    return it != compileContextInfo_.hspPkgNames.end();
-}
-
-bool ResolveDepsRelation::CheckShouldCollectDepsLiteralValue(std::string literalValue)
-{
-    const std::string normalizedPrefix = "@normalized:N";
-    if (literalValue.substr(0, normalizedPrefix.length()) == normalizedPrefix &&
-        !CheckIsHspOHMUrl(literalValue)) {
+    if (ohmurl.find(util::NORMALIZED_OHMURL_NOT_SO) != std::string::npos &&
+        !util::IsExternalPkgNames(ohmurl, compileContextInfo_.externalPkgNames)) {
         return true;
     }
     return false;
 }
 
-std::string ResolveDepsRelation::TransformRecordName(std::string ohmUrl)
+void DepsRelationResolver::DumpDepsRelations()
 {
-    size_t prev = 0;
-    constexpr int pos = 2;
-    for (int i = 0; i < pos; i++) {
-        prev = ohmUrl.find('&', prev) + 1;
+    auto &ss = std::cout;
+    ss << "All Dependency Files:" << std::endl;
+    for (auto dep : resolvedDepsRelation_) {
+        auto fileName = dep.first;
+        size_t pos = dep.first.rfind(util::SLASH_TAG);
+        if (pos != std::string::npos) {
+            fileName = dep.first.substr(pos + 1);
+        }
+        ss << "program_file: " << fileName << std::endl;
+        for (auto r : dep.second) {
+            ss << "record_name: " << r << std::endl;
+        }
     }
-    return ohmUrl.substr(prev, ohmUrl.length());
+    ss << std::endl;
 }
 
-void ResolveDepsRelation::CollectRecord(std::string recordName, std::string compileEntryKey) {
-    for (auto &[key, value] : progsInfo_) {
-        for (auto &[recordKey, record] : value->program.record_table) {
-            if (recordKey == recordName) {
-                CollectRecordDepsRelation(recordName, &value->program, compileEntryKey);
+bool DepsRelationResolver::Resolve()
+{
+    std::unordered_map<std::string, std::string> record2ProgramMap {};
+    FillRecord2ProgramMap(record2ProgramMap);
+
+    for (auto &entryRecord : compileContextInfo_.compileEntries) {
+        depsToBeResolved_.push(entryRecord);
+        resolvedRecords_.insert(entryRecord);
+
+        while (!depsToBeResolved_.empty()) {
+            auto record = depsToBeResolved_.front();
+            depsToBeResolved_.pop();
+            const auto progkeyItr = record2ProgramMap.find(record);
+            if (progkeyItr == record2ProgramMap.end()) {
+                std::cerr << "Failed to find compile record: " << record << std::endl;
+                return false;
+            }
+            const auto progItr = progsInfo_.find(progkeyItr->second);
+            if (progItr == progsInfo_.end()) {
+                std::cerr << "Failed to find program for file: " << progkeyItr->second << std::endl;
+                return false;
+            }
+            resolvedDepsRelation_[progkeyItr->second].insert(record);
+
+            CollectStaticImportDepsRelation(progItr->second->program, record);
+            CollectDynamicImportDepsRelation(progItr->second->program, record);
+        }
+    }
+    if (dumpDepsInfo_) {
+        DumpDepsRelations();
+    }
+    return true;
+}
+
+void DepsRelationResolver::CollectStaticImportDepsRelationWithLiteral(panda::pandasm::LiteralArray::Literal literal)
+{
+    std::visit([this](auto&& element) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(element)>, std::string>) {
+            std::string collectRecord = "";
+            if (this->CheckShouldCollectDepsLiteralValue(element)) {
+                collectRecord = util::GetRecordNameFromNormalizedOhmurl(element);
+            }
+            if (collectRecord.size() > 0 && !this->resolvedRecords_.count(collectRecord)) {
+                this->depsToBeResolved_.push(collectRecord);
+                this->resolvedRecords_.insert(collectRecord);
+            }
+        }
+    }, literal.value_);
+}
+
+void DepsRelationResolver::ResolveStaticImportDepsRelation(const panda::pandasm::Program &program,
+                                                           const std::string &literalArrayKey)
+{
+    auto itr = program.literalarray_table.find(literalArrayKey);
+    for (auto& literal : itr->second.literals_) {
+        CollectStaticImportDepsRelationWithLiteral(literal);
+    }
+}
+
+void DepsRelationResolver::CollectStaticImportDepsRelation(const panda::pandasm::Program &program,
+                                                           const std::string &recordName)
+{
+    auto &recordTable = program.record_table;
+    std::string literalArrayKey;
+    for (auto &pair : recordTable) {
+        if (pair.first.find(recordName) == std::string::npos) {
+            continue;
+        }
+        for (auto &field : pair.second.field_list) {
+            if (field.name == util::MODULE_RECORD_IDX) {
+                literalArrayKey = field.metadata->GetValue().value().GetValue<std::string>();
+                ResolveStaticImportDepsRelation(program, literalArrayKey);
                 break;
             }
         }
     }
 }
 
-void ResolveDepsRelation::CollectRecordDepsRelation(std::string recordName, const panda::pandasm::Program *program,
-                                                    std::string compileEntryKey)
+void DepsRelationResolver::CollectDynamicImportDepsRelation(const panda::pandasm::Program &program,
+                                                            const std::string &recordName)
 {
-    // resolve static deps
-    for (auto &literalarrayPair : program->literalarray_table) {
-        std::cout << "literalarrayKey:" << literalarrayPair.first << std::endl;
-        std::string literalKeyRecord = RecordNameForliteralKey(literalarrayPair.first);
-        if (literalKeyRecord != recordName) {
+    for (const auto &func: program.function_table) {
+        size_t regs_num = func.second.regs_num;
+        if (func.second.name.find(recordName) == std::string::npos) {
             continue;
         }
-        for (auto& literal : literalarrayPair.second.literals_) {
-            std::visit([this, &compileEntryKey](auto&& element) {
-                std::cout<< "literalValue:" << element <<std::endl;
-                if constexpr (std::is_same_v<std::decay_t<decltype(element)>, std::string>) {
-                    if (this->CheckShouldCollectDepsLiteralValue(element)) {
-                        auto recordSet = this->resolveDepsRelation_->find(compileEntryKey);
-                        auto collectRecord = this->TransformRecordName(element);
-                        std::cout << "collectRecord:" << collectRecord << std::endl;
-                        if (std::find(recordSet->second.begin(), recordSet->second.end(), collectRecord) ==
-                            recordSet->second.end()) {
-                            recordSet->second.insert(collectRecord);
-                            this->bfsQueue_.push(collectRecord);
-                        }
-                    }
-                }
-            }, literal.value_);
+        ResolveDynamicImportDepsRelation(func.second, regs_num);
+    }
+}
+
+void DepsRelationResolver::ResolveDynamicImportDepsRelation(const panda::pandasm::Function &func, size_t regs_num)
+{
+    for (uint32_t i = 0; i < func.ins.size(); i++) {
+        const auto inst = func.ins[i];
+        if (inst.opcode != pandasm::Opcode::DYNAMICIMPORT) {
+            continue;
+        }
+
+        std::string dynamicImportOhmurl {};
+        for (uint32_t j = i; j >= 0; j--) {
+            if (func.ins[j].opcode == pandasm::Opcode::LDA_STR) {
+                dynamicImportOhmurl = func.ins[j].ToString("", true, regs_num);
+                break;
+            }
+        }
+        // skip variable dynamicImport and native SO
+        if (dynamicImportOhmurl.find(util::NORMALIZED_OHMURL_NOT_SO) == std::string::npos) {
+            continue;
+        }
+        // skip HSP package
+        if (util::IsExternalPkgNames(dynamicImportOhmurl, compileContextInfo_.externalPkgNames)) {
+            continue;
+        }
+        auto dynamicImportRecord = util::GetRecordNameFromNormalizedOhmurl(dynamicImportOhmurl);
+        if (!resolvedRecords_.count(dynamicImportRecord)) {
+            depsToBeResolved_.push(dynamicImportRecord);
+            resolvedRecords_.insert(dynamicImportRecord);
         }
     }
-    // dynamic collection
-
-
-    while (!bfsQueue_.empty()) {
-        std::string targetRecord = bfsQueue_.front();
-        bfsQueue_.pop();
-        CollectRecord(targetRecord, compileEntryKey);
-    }
 }
-
-}
+} // namespace panda::es2panda::aot

@@ -3,10 +3,16 @@ program_file: bytecodehar1-abcinput.abc
 record_name: &bytecodehar1/bytecodehar1-file1&2.0.0
 program_file: bytecodehar2-abcinput.abc
 record_name: &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0
-program_file: hap-file-exec.ts
+program_file: commonjs-say.js
+record_name: commonjs-say
+program_file: hap-file-exec.js
 record_name: &myapp/hap-file-exec&
-program_file: sourcehar-file1.ts
+program_file: sourcehar-file1.js
 record_name: &sourcehar/sourcehar-file1&2.0.0
+program_file: sourcehar-file2.js
+record_name: &sourcehar/sourcehar-file2&2.0.0
+program_file: test-require.js
+record_name: &myapp/test-require&
 
 .language ECMAScript
 
@@ -92,6 +98,60 @@ record_name: &sourcehar/sourcehar-file1&2.0.0
 
 .language ECMAScript
 
+.function any commonjs-say.#*#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
+label_1: 
+label_0: 
+	definefunc 0x0, commonjs-say.#**#hi, 0x0
+	sta v0
+	lda a5
+	ldobjbyname 0x1, exports
+	sta v1
+	lda v0
+	stobjbyname 0x3, hi, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any commonjs-say.#**#hi(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda.str hello require
+	return
+label_2: 
+}
+
+.function any commonjs-say.func_main_0(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, Reflect
+	sta v0
+	ldobjbyname 0x1, apply
+	sta v1
+	definefunc 0x3, commonjs-say.#*#, 0x5
+	sta v2
+	createemptyarray 0x4
+	sta v3
+	lda a3
+	stownbyindex 0x5, v3, 0x0
+	lda a4
+	stownbyindex 0x7, v3, 0x1
+	lda a5
+	stownbyindex 0x9, v3, 0x2
+	lda a6
+	stownbyindex 0xb, v3, 0x3
+	lda a7
+	stownbyindex 0xd, v3, 0x4
+	lda v1
+	callthis3 0xf, v0, v2, a3, v3
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
+.language ECMAScript
+
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -100,6 +160,11 @@ label_0:
 	throw.undefinedifholewithname test
 	lda v0
 	callarg0 0x0
+	ldexternalmodulevar 0x1
+	sta v0
+	throw.undefinedifholewithname testRequire
+	lda v0
+	callarg0 0x2
 	ldundefined
 	returnundefined
 label_2: 
@@ -163,6 +228,53 @@ label_1:
 label_0: 
 	definefunc 0x0, &sourcehar/sourcehar-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
+.language ECMAScript
+
+.function any &myapp/test-require&.#*#testRequire(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, console
+	sta v0
+	ldobjbyname 0x1, log
+	sta v1
+	ldlexvar 0x0, 0x0
+	sta v2
+	ldobjbyname 0x3, hi
+	callthis0 0x5, v2
+	sta v2
+	lda v1
+	callthis1 0x7, v0, v2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any &myapp/test-require&.func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	newlexenv 0x1
+	definefunc 0x0, &myapp/test-require&.#*#testRequire, 0x0
+	sta v0
+	ldundefined
+	stlexvar 0x0, 0x0
+	tryldglobalbyname 0x1, require
+	sta v1
+	lda.str ./commonjs-say
+	sta v2
+	lda v1
+	callarg1 0x2, v2
+	stlexvar 0x0, 0x0
+	tryldglobalbyname 0x4, module
+	ldobjbyname 0x5, exports
+	sta v1
+	lda v0
+	stobjbyname 0x7, testRequire, v1
 	ldundefined
 	returnundefined
 label_2: 

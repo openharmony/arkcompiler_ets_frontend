@@ -454,10 +454,10 @@ ohos_executable("es2panda") {
   }
 
   sources = [
-    "aot/resolveDepsRelation.cpp",
     "aot/emitFiles.cpp",
     "aot/main.cpp",
     "aot/options.cpp",
+    "aot/resolveDepsRelation.cpp",
   ]
 
   include_dirs = [ "./aot" ]

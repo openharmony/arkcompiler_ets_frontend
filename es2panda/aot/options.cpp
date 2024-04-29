@@ -274,7 +274,7 @@ bool Options::NeedUpdatePkgVersionInRecordName()
     return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
 }
 
-// collect dependencies based on the compile entries and remove redundant record when the abc file as input.
+// Collect dependencies based on the compile entries and remove redundant content from the abc file as input.
 bool Options::NeedRemoveRedundantRecord()
 {
     return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.compileEntries.empty();
@@ -360,6 +360,8 @@ bool Options::Parse(int argc, const char **argv)
     // compile entries and pkg context info
     panda::PandArg<std::string> compileContextInfoPath("compile-context-info", "", "The path to compile context"\
         "info file");
+    panda::PandArg<bool> opDumpDepsInfo("dump-deps-info", false, "Dump all dependency files and records "\
+        "including source files and bytecode files");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -416,6 +418,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&targetBcVersion);
 
     argparser_->Add(&compileContextInfoPath);
+    argparser_->Add(&opDumpDepsInfo);
 
     argparser_->Add(&transformLib);
 
@@ -601,6 +604,7 @@ bool Options::Parse(int argc, const char **argv)
     if (!compileContextInfoPath.GetValue().empty()) {
         ParseCompileContextInfo(compileContextInfoPath.GetValue());
     }
+    compilerOptions_.dumpDepsInfo = opDumpDepsInfo.GetValue();
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();

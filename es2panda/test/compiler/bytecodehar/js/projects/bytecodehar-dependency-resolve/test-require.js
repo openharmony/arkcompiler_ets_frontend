@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
-export function test() {
-    print('bytecodehar2.file1.test');
+var say = require('./commonjs-say')
+
+function testRequire() {
+    console.log(say.hi());
 }
+
+module.exports.testRequire = testRequire

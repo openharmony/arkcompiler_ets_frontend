@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
-export function test() {
-    print('bytecodehar2.file1.test');
+function hi() {
+    return "hello require";
 }
+
+module.exports.hi = hi

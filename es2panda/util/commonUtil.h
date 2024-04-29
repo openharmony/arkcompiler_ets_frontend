@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,21 @@
 #include <string_view>
 
 namespace panda::es2panda::util {
-static const std::string NPM_ENTRIES = "npmEntries.txt";
-static const std::string IS_COMMONJS = "isCommonjs";
-static const std::string NORMALIZED_OHMURL_NOT_SO = "@normalized:N";
-static const std::string MODULE_RECORD_IDX = "moduleRecordIdx";
+const std::string NPM_ENTRIES = "npmEntries.txt";
+const std::string IS_COMMONJS = "isCommonjs";
+// The format of ohmurl for non-SO files are start with '@normalized:N'.
+const std::string NORMALIZED_OHMURL_NOT_SO = "@normalized:N";
+const std::string MODULE_RECORD_IDX = "moduleRecordIdx";
 
-static constexpr char NORMALIZED_OHMURL_SEPARATOR = '&';
-static constexpr char NORMALIZED_OHMURL_PREFIX = '@';
-static constexpr char SLASH_TAG = '/';
+constexpr char NORMALIZED_OHMURL_SEPARATOR = '&';
+constexpr char NORMALIZED_OHMURL_PREFIX = '@';
+constexpr char SLASH_TAG = '/';
 
-static constexpr size_t BUNDLE_NAME_POS = 2U;
-static constexpr size_t NORMALIZED_IMPORT_POS = 3U;
-static constexpr size_t VERSION_POS = 4U;
+constexpr size_t BUNDLE_NAME_POS = 2U;
+constexpr size_t NORMALIZED_IMPORT_POS = 3U;
+constexpr size_t VERSION_POS = 4U;
 
-std::vector<std::string> SplitNormalizedOhmurl(const std::string &ohmurl);
+std::vector<std::string> Split(const std::string &ohmurl, const char delimiter);
 bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &externalPkgNames);
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);

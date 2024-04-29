@@ -13,22 +13,22 @@
  * limitations under the License.
  */
 
+#include <iostream>
+
 #include <abc2program/program_dump.h>
 #include <assembly-program.h>
 #include <assembly-emitter.h>
-#include <resolveDepsRelation.h>
 #include <emitFiles.h>
 #include <es2panda.h>
 #include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
 #include <options.h>
 #include <protobufSnapshotGenerator.h>
+#include <resolveDepsRelation.h>
 #include <util/dumper.h>
 #include <util/moduleHelpers.h>
 #include <util/programCache.h>
 #include <util/workerQueue.h>
-
-#include <iostream>
 
 namespace panda::es2panda::aot {
 using mem::MemConfig;
@@ -213,19 +213,14 @@ static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::
     return true;
 }
 
-static bool ResolveDepsRelations(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
-                                 const std::unique_ptr<panda::es2panda::aot::Options> &options, 
-                                 std::unordered_map<std::string, std::unordered_set<std::string>> *resolveDepsRelation)
+static bool ResolveDepsRelations(const std::map<std::string, panda::es2panda::util::ProgramCache *> &programsInfo,
+                                 const std::unique_ptr<panda::es2panda::aot::Options> &options,
+                                 std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation,
+                                 std::unordered_set<std::string> &generatedRecords)
 {
-    panda::es2panda::aot::ResolveDepsRelation depsRelation(options, programsInfo, resolveDepsRelation);
-    bool res = true;
-    try {
-        depsRelation.Resolve();
-    } catch (const class Error &e) {
-        res = false;
-        std::cerr << e.Message() << std::endl;
-    }
-    return res;
+    panda::es2panda::aot::DepsRelationResolver depsRelationResolver(programsInfo, options, resolvedDepsRelation,
+                                                                    generatedRecords);
+    return depsRelationResolver.Resolve();
 }
 
 int Run(int argc, const char **argv)
@@ -259,29 +254,19 @@ int Run(int argc, const char **argv)
         return ret;
     }
 
-    for(const auto &key : options->CompilerOptions().compileContextInfo.compileEntries) {
-        std::cout << "compileEntry" << key << std::endl; 
-    }
-
-    for(const auto &[key, value] : programsInfo) {
-        std::cout << "duanshiyi" << key << std::endl; 
-    }
-
     if (!options->NpmModuleEntryList().empty()) {
         es2panda::util::ModuleHelpers::CompileNpmModuleEntryList(options->NpmModuleEntryList(),
             options->CompilerOptions(), programsInfo, &allocator);
         expectedProgsCount++;
     }
 
-    std::unordered_map<std::string, std::unordered_set<std::string>> resolveDepsRelation {};
-    if (!ResolveDepsRelations(programsInfo, options, &resolveDepsRelation)) {
+    // A mapping of pragram to its records which are resolved and collected as valid dependencies.
+    std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
+    std::unordered_set<std::string> generatedRecords {};
+
+    if (options->NeedRemoveRedundantRecord() &&
+        !ResolveDepsRelations(programsInfo, options, resolvedDepsRelation, generatedRecords)) {
         return 1;
-    }
-    for (auto &[key, value] : resolveDepsRelation) {
-        std::cout << "compile Entry" << key << std::endl;
-        for (auto deps : value) {
-            std::cout << deps << std::endl;
-        }
     }
 
     if (!GenerateAbcFiles(programsInfo, options, expectedProgsCount)) {
