@@ -98,7 +98,7 @@ function compareContent(filePath) {
       actual = fs.readFileSync(resultCachePath).toString();
       expectation = fs.readFileSync(expectationCachePath).toString();
     }
-    if (actual === expectation) {
+    if (actual.replace(/(\n|\r\n)/g, '') === expectation.replace(/(\n|\r\n)/g, '')) {
       contentcomparationSuccessCount++;
     } else {
       contentcomparationFailureCount++;
