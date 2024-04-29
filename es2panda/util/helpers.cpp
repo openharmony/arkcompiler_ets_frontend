@@ -678,7 +678,7 @@ bool Helpers::CheckAopTransformPath(const std::string &libPath)
     isValidSuffix = FileExtensionIs(lowerLibPath, FileSuffix::DLL);
     std::string supportSuffix = std::string(FileSuffix::DLL);
 #else
-    isValidSuffix = FileExtensionIs(lowerLibPath, FileSuffix::SO) 
+    isValidSuffix = FileExtensionIs(lowerLibPath, FileSuffix::SO)
         || FileExtensionIs(lowerLibPath, FileSuffix::DYLIB);
     std::string supportSuffix = std::string(FileSuffix::SO) + "|" + std::string(FileSuffix::DYLIB);
 #endif

@@ -278,9 +278,10 @@ class TSCTest(Test):
         return self
 
 class TestAop:
-    def __init__(self, cmd, compare_str, remove_file):
+    def __init__(self, cmd, compare_str, compare_abc_str, remove_file):
         self.cmd = cmd
         self.compare_str = compare_str
+        self.compare_abc_str = compare_abc_str
         self.remove_file = remove_file
         self.path = ''
         self.output = None
@@ -312,6 +313,9 @@ class TestAop:
 
         abc_path = path.join(os.getcwd(), 'test_aop.abc')
         if os.path.exists(abc_path):
+            if self.compare_abc_str != '':
+                with open(abc_path, "r") as abc_file:
+                    self.passed = self.passed and abc_file.read() == self.compare_abc_str
             os.remove(abc_path)
 
         return self
@@ -1240,20 +1244,22 @@ def add_cmd_for_aop_transform(runners, args):
 
     aop_file_path = path.join(runner.test_root + "/aop/")
     lib_suffix = '.so'
+    #cpp src, deal type, result compare str, abc compare str
     msg_list = [
-        ["correct.cpp", "compile", "aop_transform_start"],
-        ["exec_error.cpp", "compile", "Transform exec fail"],
-        ["no_func_transform.cpp", "compile", "os::library_loader::ResolveSymbol get func Transform error"],
-        ["error_format.cpp", "copy_lib", "os::library_loader::Load error"],
-        ["".join(["no_exist", lib_suffix]), "dirct_use", "Failed to find file"],
-        ["error_suffix.xxx", "direct_use", "aop transform file suffix support"]
+        ["correct_modify.cpp", "compile", "aop_transform_start", "new_abc_content"],
+        ["correct_no_modify.cpp", "compile", "aop_transform_start", ""],
+        ["exec_error.cpp", "compile", "Transform exec fail", ""],
+        ["no_func_transform.cpp", "compile", "os::library_loader::ResolveSymbol get func Transform error", ""],
+        ["error_format.cpp", "copy_lib", "os::library_loader::Load error", ""],
+        ["".join(["no_exist", lib_suffix]), "dirct_use", "Failed to find file", ""],
+        ["error_suffix.xxx", "direct_use", "aop transform file suffix support", ""]
     ]
     for i in range(0, len(msg_list)):
         cpp_file = ''.join([aop_file_path, msg_list[i][0]])
         if msg_list[i][1] == 'compile':
             lib_file = cpp_file.replace('.cpp', lib_suffix)
             remove_file = lib_file
-            runner.add_cmd(["g++", "--share", "-o", lib_file, cpp_file], "", lib_file)
+            runner.add_cmd(["g++", "--share", "-o", lib_file, cpp_file], "", "", "")
         elif msg_list[i][1] == 'copy_lib':
             lib_file = cpp_file.replace('.cpp', lib_suffix)
             remove_file = lib_file
@@ -1266,7 +1272,7 @@ def add_cmd_for_aop_transform(runners, args):
             remove_file = ""
 
         js_file = path.join(aop_file_path, "test_aop.js")
-        runner.add_cmd([runner.es2panda, "--merge-abc", "--transform-lib", lib_file, js_file], msg_list[i][2], remove_file)
+        runner.add_cmd([runner.es2panda, "--merge-abc", "--transform-lib", lib_file, js_file], msg_list[i][2], msg_list[i][3], remove_file)
 
     runners.append(runner)
 
@@ -1274,8 +1280,8 @@ class AopTransform(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "AopTransform")
     
-    def add_cmd(self, cmd, compare_str, remove_file, func=TestAop):
-        self.tests += [func(cmd, compare_str, remove_file)]
+    def add_cmd(self, cmd, compare_str, compare_abc_str, remove_file, func=TestAop):
+        self.tests += [func(cmd, compare_str, compare_abc_str, remove_file)]
 
     def test_path(self, src):
         return src
