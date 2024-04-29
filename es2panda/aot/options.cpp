@@ -297,6 +297,9 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<int> targetApiVersion("target-api-version", util::Helpers::DEFAULT_TARGET_API_VERSION,
         "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
 
+    // aop transform
+    panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
+    
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
 
@@ -344,6 +347,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&bcVersion);
     argparser_->Add(&bcMinVersion);
     argparser_->Add(&targetApiVersion);
+
+    argparser_->Add(&transformLib);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -536,6 +541,20 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.patchFixOptions.generatePatch = generatePatch;
     compilerOptions_.patchFixOptions.hotReload = hotReload;
     compilerOptions_.patchFixOptions.coldFix = coldFix;
+
+    bool transformLibIsEmpty = transformLib.GetValue().empty();
+    if (!transformLibIsEmpty) {
+        auto libName = transformLib.GetValue();
+        // check file exist or not
+        auto transformLibAbs = panda::os::file::File::GetAbsolutePath(libName);
+        if (!transformLibAbs) {
+            std::cerr << "Failed to find file '" << libName << "' during transformLib file resolution" << std::endl
+                      << "Please check if the file name is correct, the file exists at the specified path, "
+                      << "and your project has the necessary permissions to access it." << std::endl;
+            return false;
+        }
+        compilerOptions_.transformLib = transformLibAbs.Value();
+    }
 
     return true;
 }

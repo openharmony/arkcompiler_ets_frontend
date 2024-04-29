@@ -101,7 +101,7 @@ void CompileFileJob::Run()
         return;
     }
 
-    if (options_->optLevel != 0 && src_->isSourceMode) {
+    if (options_->optLevel != 0 && src_->isSourceMode && options_->transformLib.empty()) {
         util::Helpers::OptimizeProgram(prog, src_->fileName);
     }
 

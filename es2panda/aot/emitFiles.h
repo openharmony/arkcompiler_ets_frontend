@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,10 +41,11 @@ private:
 
 class EmitMergedAbcJob : public util::WorkerJob {
 public:
-    explicit EmitMergedAbcJob(const std::string &outputFileName,
+    explicit EmitMergedAbcJob(const std::string &outputFileName, const std::string &transformLib,
                               const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                               uint8_t targetApi)
-        : outputFileName_(outputFileName), progsInfo_(progsInfo), targetApiVersion_(targetApi) {};
+        : outputFileName_(outputFileName), transformLib_(transformLib),
+        progsInfo_(progsInfo), targetApiVersion_(targetApi) {};
     NO_COPY_SEMANTIC(EmitMergedAbcJob);
     NO_MOVE_SEMANTIC(EmitMergedAbcJob);
     ~EmitMergedAbcJob() override = default;
@@ -52,6 +53,7 @@ public:
     void Run() override;
 private:
     std::string outputFileName_;
+    std::string transformLib_;
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     uint8_t targetApiVersion_ = 0;
 };
