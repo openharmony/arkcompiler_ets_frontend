@@ -712,16 +712,16 @@ AopTransformFuncDef Helpers::LoadAopTransformLibFunc(const std::string &libPath,
     return reinterpret_cast<AopTransformFuncDef>(initRes.Value());
 }
 
-std::string Helpers::AopTransform(const std::string &inputFile, const std::string &libPath)
+bool Helpers::AopTransform(const std::string &inputFile, const std::string &libPath)
 {
     if (!CheckAopTransformPath(libPath)) {
-        return "";
+        return false;
     }
 
     os::library_loader::LibraryHandle handler(nullptr);
     AopTransformFuncDef transform = LoadAopTransformLibFunc(libPath, "Transform", handler);
     if (transform == nullptr) {
-        return "";
+        return false;
     }
 
     //invoke Transform, untransformed ABC to transformed ABC, result define: 0:success, other:fail
@@ -729,9 +729,9 @@ std::string Helpers::AopTransform(const std::string &inputFile, const std::strin
     if (res != 0) {
         std::string msg = "Transform exec fail: " + libPath;
         std::cout << msg << std::endl;
-        return "";
+        return false;
     }
-    return inputFile;
+    return true;
 }
 
 bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)

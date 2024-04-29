@@ -102,7 +102,7 @@ void EmitMergedAbcJob::Run()
     }
 
     if (!transformLib_.empty()) {
-        std::string tempOutput = util::Helpers::AopTransform(outputFileName_, transformLib_);
+        util::Helpers::AopTransform(outputFileName_, transformLib_);
     }
 }
 

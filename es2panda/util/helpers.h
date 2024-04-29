@@ -119,7 +119,7 @@ public:
     static bool CheckAopTransformPath(const std::string &libPath);
     static AopTransformFuncDef LoadAopTransformLibFunc(const std::string &libPath,
         const std::string &funcName, os::library_loader::LibraryHandle &handler);
-    static std::string AopTransform(const std::string &inputFile, const std::string &libPath);
+    static bool AopTransform(const std::string &inputFile, const std::string &libPath);
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
