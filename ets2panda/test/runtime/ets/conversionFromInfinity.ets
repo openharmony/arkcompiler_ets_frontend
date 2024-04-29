@@ -44,42 +44,54 @@ assert(b3 == -1)
 let l1 = Infinity as long
 let l2: double = Infinity
 let l3 = l2 as long
+let l4 = -Infinity as long
 
 assert(l1 == 9223372036854775807)
 assert(l3 == 9223372036854775807)
+assert(l4 == -9223372036854775808)
 
 let i1 = Infinity as int
 let i2: double = Infinity
 let i3 = i2 as int
+let i4 = -Infinity as int
 
 assert(i1 == 2147483647)
 assert(i3 == 2147483647)
+assert(i4 == -2147483648)
 
 let s1 = Infinity as short
 let s2: double = Infinity
 let s3 = s2 as short
+let s4 = -Infinity as short
 
 assert(s1 == -1)
 assert(s3 == -1)
+assert(s4 == 0)
 
 let c1 = Infinity as char
 let c2: double = Infinity
 let c3 = c2 as char
+let c4 = -Infinity as char
 
 assert(c1 == 65535)
 assert(c3 == 65535)
+assert(c4 == 0)
 
 let f1 = Infinity as float
 let f2: double = Infinity
 let f3 = f2 as float
+let f4 = -Infinity as float
 
 assert(f1 == Infinity)
 assert(f3 == Infinity)
+assert(f4 == -Infinity)
 
 let d1 = Infinity as double
 let d2: double = Infinity
 let d3 = d2 as double
+let d4 = -Infinity as double
 
 assert(d1 == Infinity)
 assert(d3 == Infinity)
+assert(d4 == -Infinity)
 }
