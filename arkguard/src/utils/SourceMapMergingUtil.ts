@@ -26,7 +26,10 @@ enum SegmentIndex {
   NAME_INDEX = 4
 }
 
-interface ExistingDecodedSourceMap {
+/**
+ * The sourcemap format with decoded mappings with number type.
+ */
+export interface ExistingDecodedSourceMap {
   file?: string;
   mappings: SourceMapSegment[][];
   names?: string[];
@@ -40,7 +43,10 @@ interface BaseSource {
   traceSegment(line: number, column: number, name: string): SourceMapSegmentObj | null;
 }
 
-class Source implements BaseSource {
+/**
+ * The source file info.
+ */
+export class Source implements BaseSource {
   readonly content: string | null;
   readonly filename: string;
   isOriginal = true;
@@ -55,7 +61,10 @@ class Source implements BaseSource {
   }
 }
 
-interface SourceMapSegmentObj {
+/**
+ * The interpreted sourcemap line and column info.
+ */
+export interface SourceMapSegmentObj {
   column: number;
   line: number;
   name: string;
@@ -65,7 +74,10 @@ interface SourceMapSegmentObj {
 type MappingsNameType =  { mappings: readonly SourceMapSegment[][]; names?: readonly string[] };
 type TracedMappingsType= { mappings: SourceMapSegment[][], names: string[], sources: string[] };
 
-class Link implements BaseSource {
+/**
+ * Provide api tools related to sourcemap.
+ */
+export class SourceMapLink implements BaseSource {
   readonly mappings: readonly SourceMapSegment[][];
   readonly names?: readonly string[];
   readonly sources: BaseSource[];
@@ -196,7 +208,12 @@ class Link implements BaseSource {
   }
 }
 
-function decodeSourcemap(map: RawSourceMap): ExistingDecodedSourceMap | null {
+/**
+ * Decode the sourcemap from string format to number format.
+ * @param map The sourcemap with raw string format, eg. mappings: IAGS,OAAO,GAAE,MAAM,CAAA;
+ * @returns The sourcemap with decoded number format, eg. mappings: [4,0,3,9], [7,0,0,7], [3,0,0,2], [6,0,0,6], [1,0,0,0]
+ */
+export function decodeSourcemap(map: RawSourceMap): ExistingDecodedSourceMap | null {
   if (!map) {
     return null;
   }
@@ -224,12 +241,12 @@ export function mergeSourceMap(previousMap: RawSourceMap, currentMap: RawSourceM
   const source: Source = new Source(sourceFileName, null);
   generateChain(sourcemapChain, previousMap);
   generateChain(sourcemapChain, currentMap);
-  const collapsedSourcemap: Link = sourcemapChain.reduce(
-    (source: BaseSource, map: ExistingDecodedSourceMap): Link => {
-      return new Link(map, [source]);
+  const collapsedSourcemap: SourceMapLink = sourcemapChain.reduce(
+    (source: BaseSource, map: ExistingDecodedSourceMap): SourceMapLink => {
+      return new SourceMapLink(map, [source]);
     },
     source
-  ) as Link;
+  ) as SourceMapLink;
   const tracedMappings: TracedMappingsType = collapsedSourcemap.traceMappings();
   const result: RawSourceMap = new SourceMap({ ...tracedMappings, file: previousMap.file }) as RawSourceMap;
   result.sourceRoot = previousMap.sourceRoot;
