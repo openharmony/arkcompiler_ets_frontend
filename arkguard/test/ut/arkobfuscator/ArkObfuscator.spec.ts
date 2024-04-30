@@ -15,7 +15,7 @@
 
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
-import { ArkObfuscator, FileUtils } from '../../../src/ArkObfuscator';
+import { ArkObfuscator, FileUtils, wildcardTransformer } from '../../../src/ArkObfuscator';
 import path from 'path';
 import { TransformerFactory, Node, SourceFile, createSourceFile, ScriptTarget, Printer, createTextWriter, RawSourceMap } from 'typescript';
 import { IOptions } from '../../../src/configs/IOptions';
@@ -158,6 +158,46 @@ class Demo{
       console.log(actualContent)
       assert.strictEqual(compareStringsIgnoreNewlines(actualContent, expectContent), true);
       console.log(actualContent);
+    });
+  });
+
+  describe('Tester Cases for <ArkObfuscator>.', function () {
+    it('Tester: test case for ArkObfuscator.ini: mConfigPath != ""', function (){
+      let configPath = "test/ut/arkobfuscator/iniTestObfConfig.json"
+      let obfuscator: ArkObfuscator = new ArkObfuscator(undefined, configPath);
+      let initSuccess = obfuscator.init();
+      let config = obfuscator.customProfiles;
+      let reservedTopelevelNames = config.mNameObfuscation?.mReservedToplevelNames;
+      let reservedProperty = config.mNameObfuscation?.mReservedProperties;
+      let universalReservedToplevelNames = config.mNameObfuscation?.mUniversalReservedToplevelNames as RegExp[];
+      let universalReservedProperties = config.mNameObfuscation?.mUniversalReservedProperties as RegExp[];
+      assert.isTrue(reservedTopelevelNames?.includes("func2"));
+      assert.isTrue(reservedProperty?.includes("prop"));
+      assert.equal(universalReservedToplevelNames[0].toString(), new RegExp(`^${wildcardTransformer("a*")}$`).toString());
+      assert.equal(universalReservedToplevelNames[1].toString(), new RegExp(`^${wildcardTransformer("*shoul?keep*")}$`).toString());
+      assert.equal(universalReservedProperties[0].toString(), new RegExp(`^${wildcardTransformer("prop?")}$`).toString());
+      assert.equal(universalReservedProperties[2].toString(), new RegExp(`^${wildcardTransformer("*pro?")}$`).toString());
+      assert.equal(universalReservedProperties[1].toString(), new RegExp(`^${wildcardTransformer("function*")}$`).toString());
+    });
+
+    it('Tester: test case for ArkObfuscator.ini: mConfigPath == ""', function (){
+      let configPath = "test/ut/arkobfuscator/iniTestObfConfig.json"
+      let obfuscator: ArkObfuscator = new ArkObfuscator();
+      let config = FileUtils.readFileAsJson(configPath) as IOptions;
+      let initSuccess = obfuscator.init(config);
+      let reservedTopelevelNames = config.mNameObfuscation?.mReservedToplevelNames;
+      let reservedProperty = config.mNameObfuscation?.mReservedProperties;
+      let universalReservedToplevelNames = config.mNameObfuscation?.mUniversalReservedToplevelNames;
+      let universalReservedProperties = config.mNameObfuscation?.mUniversalReservedProperties;
+      assert.isTrue(reservedTopelevelNames?.includes("func2"));
+      assert.isTrue(reservedTopelevelNames?.includes("a*"));
+      assert.isTrue(reservedTopelevelNames?.includes("*shoul?keep*"));
+      assert.isTrue(reservedProperty?.includes("prop"));
+      assert.isTrue(reservedProperty?.includes("prop?"));
+      assert.isTrue(reservedProperty?.includes("*pro?"));
+      assert.isTrue(reservedProperty?.includes("function*"));
+      assert.equal(universalReservedToplevelNames, undefined);
+      assert.equal(universalReservedProperties, undefined);
     });
   });
 });
