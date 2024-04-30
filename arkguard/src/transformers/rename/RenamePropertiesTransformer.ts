@@ -56,6 +56,7 @@ import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
+import { needToBeReserved } from '../../utils/TransformUtil';
 
 namespace secharmony {
   /**
@@ -68,6 +69,7 @@ namespace secharmony {
   export let historyMangledTable: Map<string, string> = undefined;
 
   export let reservedProperties: Set<string> = new Set();
+  export let universalReservedProperties: RegExp[] = [];
 
   /**
    * Rename Properties Transformer
@@ -95,6 +97,7 @@ namespace secharmony {
       tmpReservedProps.forEach(item => {
         reservedProperties.add(item);
       });
+      universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
 
       let currentConstructorParams: Set<string> = new Set<string>();
 
@@ -186,7 +189,7 @@ namespace secharmony {
         }
 
         let original: string = node.text;
-        if (reservedProperties.has(original)) {
+        if (needToBeReserved(reservedProperties, universalReservedProperties, original)) {
           return node;
         }
 
@@ -209,16 +212,13 @@ namespace secharmony {
       }
 
       function getPropertyName(original: string): string {
-        if (reservedProperties.has(original)) {
-          return original;
-        }
-
         const historyName: string = historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : globalMangledTable.get(original);
 
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (reservedProperties.has(tmpName) || tmpName === original) {
+          if (needToBeReserved(reservedProperties, universalReservedProperties, tmpName) ||
+            tmpName === original) {
             continue;
           }
 

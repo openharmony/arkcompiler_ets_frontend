@@ -27,6 +27,8 @@ export interface INameObfuscationOption {
 
   mReservedProperties: string[];
 
+  mUniversalReservedProperties?: RegExp[];
+
   readonly mDictionaryList?: string[];
 
   readonly mKeepStringProperty?: boolean;
@@ -34,6 +36,8 @@ export interface INameObfuscationOption {
   readonly mTopLevel?: boolean;
 
   mReservedToplevelNames: string[];
+
+  mUniversalReservedToplevelNames?: RegExp[];
 }
 
 export interface IFileNameObfuscationOption {
@@ -44,7 +48,18 @@ export interface IFileNameObfuscationOption {
 
   mReservedFileNames: string[];
 
+  mUniversalReservedFileNames?: RegExp[];
+
   readonly mOhmUrlStatus?: OhmUrlStatus;
+}
+
+export interface IDeclarationCommentOption {
+
+  readonly mEnable: boolean,
+
+  mReservedComments: string[],
+
+  mUniversalReservedComments?: RegExp[]
 }
 
 export enum OhmUrlStatus {

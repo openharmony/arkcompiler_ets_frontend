@@ -57,6 +57,7 @@ import { NodeUtils } from '../../utils/NodeUtils';
 import { orignalFilePathForSearching, performancePrinter, ArkObfuscator } from '../../ArkObfuscator';
 import type { PathAndExtension, ProjectInfo } from '../../common/type';
 import { EventList } from '../../utils/PrinterUtils';
+import { needToBeReserved } from '../../utils/TransformUtil';
 namespace secharmony {
 
   // global mangled file name table used by all files in a project
@@ -70,6 +71,7 @@ namespace secharmony {
   let reservedFileNames: Set<string> | undefined;
   let localPackageSet: Set<string> | undefined;
   let useNormalized: boolean = false;
+  let universalReservedFileNames: RegExp[] | undefined;
 
   /**
    * Rename Properties Transformer
@@ -112,6 +114,7 @@ namespace secharmony {
         }
       });
       reservedFileNames = new Set<string>(tempReservedFileName);
+      universalReservedFileNames = profile?.mUniversalReservedFileNames ?? [];
 
       return renameFileNameTransformer;
 
@@ -335,7 +338,7 @@ namespace secharmony {
   }
 
   function mangleFileNamePart(original: string): string {
-    if (reservedFileNames.has(original)) {
+    if (needToBeReserved(reservedFileNames, universalReservedFileNames, original)) {
       return original;
     }
 
@@ -344,7 +347,7 @@ namespace secharmony {
 
     while (!mangledName) {
       mangledName = generator.getName();
-      if (mangledName === original || reservedFileNames.has(mangledName)) {
+      if (mangledName === original || needToBeReserved(reservedFileNames, universalReservedFileNames, mangledName)) {
         mangledName = null;
         continue;
       }

@@ -81,14 +81,15 @@ import type { MangledSymbolInfo } from '../../common/type';
 import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
-import {collectIdentifiersAndStructs} from '../../utils/TransformUtil';
+import { needToBeReserved } from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {
   globalMangledTable,
   historyMangledTable,
   reservedProperties,
-  globalSwappedMangledTable
+  globalSwappedMangledTable,
+  universalReservedProperties
 } from './RenamePropertiesTransformer';
 import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
@@ -127,6 +128,7 @@ namespace secharmony {
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
       let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', '__global'];
       profile?.mReservedToplevelNames?.forEach(item => reservedProperties.add(item));
+      profile?.mUniversalReservedToplevelNames?.forEach(item => universalReservedProperties.push(item));
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       noSymbolIdentifier.clear();
@@ -265,7 +267,7 @@ namespace secharmony {
       }
 
       function getPropertyMangledName(original: string): string {
-        if (reservedProperties.has(original)) {
+        if (needToBeReserved(reservedProperties, universalReservedProperties, original)) {
           return original;
         }
 
@@ -274,7 +276,8 @@ namespace secharmony {
 
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (reservedProperties.has(tmpName) || tmpName === original) {
+          if (needToBeReserved(reservedProperties, universalReservedProperties, tmpName) ||
+            tmpName === original) {
             continue;
           }
 
