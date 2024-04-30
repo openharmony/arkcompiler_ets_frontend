@@ -40,6 +40,11 @@ public:
         return buffer_;
     }
 
+    std::unordered_set<uint32_t> &GetConstantLocalExportSlots()
+    {
+        return constant_local_export_slots_;
+    }
+
     void Generate();
 
 private:
@@ -53,6 +58,7 @@ private:
     parser::SourceTextModuleRecord *moduleRecord_;
     int32_t bufferIdx_ {};
     std::vector<panda::pandasm::LiteralArray::Literal> buffer_;
+    std::unordered_set<uint32_t> constant_local_export_slots_;
 };
 }  // namespace panda::es2panda::compiler
 

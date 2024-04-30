@@ -20,6 +20,7 @@
 
 namespace panda::es2panda::binder {
 class ModuleScope;
+class Variable;
 }
 
 namespace panda::es2panda::ir {
@@ -69,6 +70,7 @@ public:
         const ir::Identifier *exportId_;
         const ir::Identifier *localId_;
         const ir::Identifier *importId_;
+        bool isConstant_ {false};
 
         explicit ExportEntry(int moduleRequest) : moduleRequestIdx_(moduleRequest) {}
         ExportEntry(const util::StringView exportName, const util::StringView localName,
@@ -79,6 +81,11 @@ public:
                     const ir::Identifier *exportId, const ir::Identifier *importId)
             : moduleRequestIdx_(moduleRequest), exportName_(exportName), importName_(importName),
               exportId_(exportId), importId_(importId) {}
+
+        void SetAsConstant()
+        {
+            isConstant_ = true;
+        }
     };
 
     template <typename T, typename... Args>
@@ -152,7 +159,7 @@ public:
 private:
     bool HasDuplicateExport(util::StringView exportName) const;
     void ConvertLocalExportToIndirect(ImportEntry *importEntry, ExportEntry *exportEntry);
-    void CheckAndAssignIndex(binder::ModuleScope *moduleScope, util::StringView name, uint32_t *inde) const;
+    binder::Variable *CheckAndAssignIndex(binder::ModuleScope *moduleScope, util::StringView name, uint32_t *idx) const;
 
     ArenaAllocator *allocator_;
     ModuleRequestMap moduleRequestsMap_;

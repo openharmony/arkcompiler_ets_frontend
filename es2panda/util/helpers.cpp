@@ -44,6 +44,7 @@
 
 #ifdef ENABLE_BYTECODE_OPT
 #include <bytecode_optimizer/bytecodeopt_options.h>
+#include <bytecode_optimizer/bytecode_analysis_results.h>
 #include <bytecode_optimizer/optimize_bytecode.h>
 #else
 #include <assembly-type.h>
@@ -640,19 +641,15 @@ SignedNumberLiteral Helpers::GetSignedNumberLiteral(const ir::Expression *expr)
     return SignedNumberLiteral::UNRECOGNIZED;
 }
 
-void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string &inputFile)
+void Helpers::SetConstantLocalExportSlots(const std::string &record, const std::unordered_set<uint32_t> &slots)
 {
-    std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = &stat;
-    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps{};
-    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = &maps;
+    bool ignored;
+    auto &result = panda::bytecodeopt::BytecodeAnalysisResults::GetOrCreateBytecodeAnalysisResult(record, ignored);
+    result.SetConstantLocalExportSlots(slots);
+}
 
-#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-    const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
-                                    panda::Logger::Component::BYTECODE_OPTIMIZER |
-                                    panda::Logger::Component::COMPILER;
-    panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
-
+static std::string GetTempOutputName(const std::string &inputFile)
+{
     std::string pid;
 #ifdef PANDA_TARGET_WINDOWS
     pid = std::to_string(GetCurrentProcessId());
@@ -660,12 +657,56 @@ void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string 
     pid = std::to_string(getpid());
 #endif
     const std::string outputSuffix = ".unopt.abc";
-    std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
-    if (panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
-        panda::bytecodeopt::OptimizeBytecode(prog, mapsp, tempOutput, true, true);
-    }
+    return panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
+}
 
-    std::remove(tempOutput.c_str());
+void Helpers::AnalysisProgram(panda::pandasm::Program *prog, const std::string &inputFile)
+{
+    std::map<std::string, size_t> stat;
+    std::map<std::string, size_t> *statp = &stat;
+
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    auto tempOutput = GetTempOutputName(inputFile);
+    bool exists = false;
+    auto mapsp = &panda::bytecodeopt::BytecodeAnalysisResults::GetOrCreateBytecodeMaps(tempOutput, exists);
+    ASSERT(!exists);
+
+    const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
+                                    panda::Logger::Component::BYTECODE_OPTIMIZER |
+                                    panda::Logger::Component::COMPILER;
+    panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
+
+    if (panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
+        panda::bytecodeopt::AnalysisBytecode(prog, mapsp, tempOutput, true, true);
+    } else {
+        panda::bytecodeopt::BytecodeAnalysisResults::DeleteBytecodeMaps(tempOutput);
+    }
+#endif
+}
+
+void Helpers::OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile)
+{
+    std::map<std::string, size_t> stat;
+    std::map<std::string, size_t> *statp = &stat;
+    auto tempOutput = GetTempOutputName(inputFile);
+
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
+                                    panda::Logger::Component::BYTECODE_OPTIMIZER |
+                                    panda::Logger::Component::COMPILER;
+    panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
+
+    bool exists = false;
+    auto mapsp = &panda::bytecodeopt::BytecodeAnalysisResults::GetOrCreateBytecodeMaps(tempOutput, exists);
+    if (!exists) {
+        exists = panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true);
+    }
+    if (exists) {
+        panda::bytecodeopt::OptimizeBytecode(prog, mapsp, tempOutput, true, true);
+        std::remove(tempOutput.c_str());
+    }
+    panda::bytecodeopt::BytecodeAnalysisResults::DeleteBytecodeMaps(tempOutput);
+
 #endif
 }
 

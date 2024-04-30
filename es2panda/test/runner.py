@@ -624,6 +624,21 @@ class CompilerTest(Test):
 
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
+        if "--dump-assembly" in self.flags:
+            pa_expected_path = "".join([self.get_path_to_expected()[:self.get_path_to_expected().rfind(".txt")],
+                                       ".pa.txt"])
+            self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+            try:
+                with open(pa_expected_path, 'r') as fp:
+                    expected = fp.read()
+                self.passed = expected == self.output and process.returncode in [0, 1]
+            except Exception:
+                self.passed = False
+            if not self.passed:
+                self.error = err.decode("utf-8", errors="ignore")
+                if os.path.exists(test_abc_path):
+                    os.remove(test_abc_path)
+                return self
         if err:
             self.passed = False
             self.error = err.decode("utf-8", errors="ignore")
@@ -661,6 +676,9 @@ class CompilerProjectTest(Test):
         self.project = project
         self.test_paths = test_paths
         self.files_info_path = os.path.join(os.path.join(self.projects_path, self.project), 'filesInfo.txt')
+        # Skip execution if --dump-assembly exists in flags
+        self.requires_execution = "--dump-assembly" not in self.flags
+        self.file_record_mapping = None
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
@@ -699,11 +717,25 @@ class CompilerProjectTest(Test):
                 self.remove_project(runner)
                 return self
 
+    def gen_record_name(self, test_path):
+        record_name = os.path.relpath(test_path, os.path.dirname(self.files_info_path)).split('.')[0]
+        if (self.file_record_mapping != None and record_name in self.file_record_mapping):
+            record_name = self.file_record_mapping[record_name]
+        return record_name
+
     def gen_files_info(self, runner):
+        record_names_path = os.path.join(os.path.join(self.projects_path, self.project), 'recordnames.txt')
+        if path.exists(record_names_path):
+            with open(record_names_path) as mapping_fp:
+                mapping_lines = mapping_fp.readlines()
+                self.file_record_mapping = {}
+                for mapping_line in mapping_lines:
+                    cur_mapping = mapping_line[:-1].split(":")
+                    self.file_record_mapping[cur_mapping[0]] = cur_mapping[1]
         fd = os.open(self.files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
         f = os.fdopen(fd, "w")
         for test_path in self.test_paths:
-            record_name = os.path.relpath(test_path, os.path.dirname(self.files_info_path)).split('.')[0]
+            record_name = self.gen_record_name(test_path)
             module_kind = "esm"
             file_info = ('%s;%s;%s;%s;%s' % (test_path, record_name, module_kind, test_path, record_name))
             f.writelines(file_info + '\n')
@@ -724,8 +756,25 @@ class CompilerProjectTest(Test):
         es2abc_cmd.extend(['%s%s' % ("--output=", output_abc_name)])
         es2abc_cmd.append('@' + os.path.join(os.path.dirname(exec_file_path), "filesInfo.txt"))
         self.log_cmd(es2abc_cmd)
+        self.path = exec_file_path
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
+
+        if "--dump-assembly" in self.flags:
+            pa_expected_path = "".join([self.get_path_to_expected()[:self.get_path_to_expected().rfind(".txt")],
+                                        ".pa.txt"])
+            self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+            try:
+                with open(pa_expected_path, 'r') as fp:
+                    expected = fp.read()
+                self.passed = expected == self.output and process.returncode in [0, 1]
+            except Exception:
+                self.passed = False
+            if not self.passed:
+                self.error = err.decode("utf-8", errors="ignore")
+                self.remove_project(runner)
+                return self
+
         if err:
             self.passed = False
             self.error = err.decode("utf-8", errors="ignore")
@@ -739,6 +788,10 @@ class CompilerProjectTest(Test):
             self.gen_merged_abc(runner)
         else:
             self.gen_single_abc(runner)
+
+        if (not self.requires_execution):
+            self.remove_project(runner)
+            return self
 
         # Run test files that need to be executed in the project.
         for test_path in self.test_paths:
@@ -1214,6 +1267,13 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
+    compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",
+                                                ["--module", "--branch-elimination", "--dump-assembly"]))
+    # This directory of test cases is for dump-assembly comparison only, and is not executed.
+    # Check CompilerProjectTest for more details.
+    compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",
+                                                ["--module", "--branch-elimination", "--merge-abc", "--dump-assembly",
+                                                "--file-threads=8"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)

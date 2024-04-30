@@ -89,6 +89,7 @@ public:
     void Schedule() override;
 
 private:
+    void ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob);
     const std::unique_ptr<panda::es2panda::aot::Options> &options_;
     std::map<std::string, size_t> *statp_;
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;

@@ -74,8 +74,10 @@ class CompileFileJob : public util::WorkerJob {
 public:
     explicit CompileFileJob(es2panda::SourceFile *src, es2panda::CompilerOptions *options,
                             std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                            std::unordered_set<std::string> &optimizationPendingProgs,
                             util::SymbolTable *symbolTable, panda::ArenaAllocator *allocator)
-        : src_(src), options_(options), progsInfo_(progsInfo), symbolTable_(symbolTable), allocator_(allocator) {};
+        : src_(src), options_(options), progsInfo_(progsInfo), optimizationPendingProgs_(optimizationPendingProgs),
+          symbolTable_(symbolTable), allocator_(allocator) {};
     NO_COPY_SEMANTIC(CompileFileJob);
     NO_MOVE_SEMANTIC(CompileFileJob);
     ~CompileFileJob() override = default;
@@ -83,12 +85,30 @@ public:
     void Run() override;
 
 private:
+    bool RetrieveProgramFromCacheFiles(const std::string &buffer);
+
     static std::mutex global_m_;
     es2panda::SourceFile *src_;
     es2panda::CompilerOptions *options_;
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
+    std::unordered_set<std::string> &optimizationPendingProgs_;
     util::SymbolTable *symbolTable_;
     panda::ArenaAllocator *allocator_;
+};
+
+class PostAnalysisOptimizeFileJob : public util::WorkerJob {
+public:
+    explicit PostAnalysisOptimizeFileJob(const std::string &fileName, pandasm::Program *program)
+        : fileName_(std::move(fileName)), program_(program) {}
+    NO_COPY_SEMANTIC(PostAnalysisOptimizeFileJob);
+    NO_MOVE_SEMANTIC(PostAnalysisOptimizeFileJob);
+    ~PostAnalysisOptimizeFileJob() override = default;
+
+    void Run() override;
+
+private:
+    std::string fileName_;
+    pandasm::Program *program_;
 };
 
 class CompileFuncQueue : public util::WorkerQueue {
@@ -110,9 +130,11 @@ class CompileFileQueue : public util::WorkerQueue {
 public:
     explicit CompileFileQueue(size_t threadCount, es2panda::CompilerOptions *options,
                               std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                              std::unordered_set<std::string> &optimizationPendingProgs,
                               util::SymbolTable *symbolTable, panda::ArenaAllocator *allocator)
         : util::WorkerQueue(threadCount), options_(options), progsInfo_(progsInfo),
-        symbolTable_(symbolTable), allocator_(allocator) {}
+        optimizationPendingProgs_(optimizationPendingProgs), symbolTable_(symbolTable),
+        allocator_(allocator) {}
 
     NO_COPY_SEMANTIC(CompileFileQueue);
     NO_MOVE_SEMANTIC(CompileFileQueue);
@@ -123,8 +145,27 @@ public:
 private:
     es2panda::CompilerOptions *options_;
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
+    std::unordered_set<std::string> &optimizationPendingProgs_;
     util::SymbolTable *symbolTable_;
     panda::ArenaAllocator *allocator_;
+};
+
+class PostAnalysisOptimizeFileQueue : public util::WorkerQueue {
+public:
+    explicit PostAnalysisOptimizeFileQueue(size_t threadCount,
+                                           std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                                           std::unordered_set<std::string> &optimizationPendingProgs)
+        : util::WorkerQueue(threadCount), progsInfo_(progsInfo), optimizationPendingProgs_(optimizationPendingProgs) {}
+
+    NO_COPY_SEMANTIC(PostAnalysisOptimizeFileQueue);
+    NO_MOVE_SEMANTIC(PostAnalysisOptimizeFileQueue);
+    ~PostAnalysisOptimizeFileQueue() override = default;
+
+    void Schedule() override;
+
+private:
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
+    std::unordered_set<std::string> &optimizationPendingProgs_;
 };
 
 }  // namespace panda::es2panda::compiler

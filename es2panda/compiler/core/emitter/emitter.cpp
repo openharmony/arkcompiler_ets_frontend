@@ -459,6 +459,7 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
     auto &moduleLiteralsBuffer = module->Buffer();
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
     prog_->literalarray_table.emplace(static_cast<std::string_view>(moduleLiteral), std::move(literalArrayInstance));
+    constant_local_export_slots_ = module->GetConstantLocalExportSlots();
 }
 
 void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context)

@@ -67,6 +67,32 @@ void CompileModuleRecordJob::Run()
     }
 }
 
+bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer)
+{
+    if (options_->requireGlobalOptimization) {
+        return false;
+    }
+    auto cacheFileIter = options_->cacheFiles.find(src_->fileName);
+    // Disable the use of file caching when cross-program optimization is required, to prevent cached files from
+    // not being invalidated when their dependencies change, or from not being reanalyzed when their dependents
+    // are updated
+    if (cacheFileIter != options_->cacheFiles.end()) {
+        src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
+
+        ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+        auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
+                                                                                   &allocator);
+
+        if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
+            std::unique_lock<std::mutex> lock(global_m_);
+            auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
+            progsInfo_.insert({src_->fileName, cache});
+            return true;
+        }
+    }
+    return false;
+}
+
 void CompileFileJob::Run()
 {
     std::stringstream ss;
@@ -77,21 +103,8 @@ void CompileFileJob::Run()
         }
         buffer = ss.str();
         src_->source = buffer;
-
-        auto cacheFileIter = options_->cacheFiles.find(src_->fileName);
-        if (cacheFileIter != options_->cacheFiles.end()) {
-            src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
-
-            ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-            auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
-                &allocator);
-
-            if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
-                std::unique_lock<std::mutex> lock(global_m_);
-                auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
-                progsInfo_.insert({src_->fileName, cache});
-                return;
-            }
+        if (RetrieveProgramFromCacheFiles(buffer)) {
+            return;
         }
     }
 
@@ -101,15 +114,31 @@ void CompileFileJob::Run()
         return;
     }
 
-    if (options_->optLevel != 0 && src_->isSourceMode && options_->transformLib.empty()) {
-        util::Helpers::OptimizeProgram(prog, src_->fileName);
+    bool requireOptimizationAfterAnalysis = false;
+    // When cross-program optimizations are required, skip program-local optimization at this stage
+    // and perform it later after the analysis of all programs has been completed
+    if (src_->isSourceMode && options_->transformLib.empty()) {
+        if (options_->requireGlobalOptimization) {
+            util::Helpers::AnalysisProgram(prog, src_->fileName);
+            requireOptimizationAfterAnalysis = true;
+        } else if (options_->optLevel != 0) {
+            util::Helpers::OptimizeProgram(prog, src_->fileName);
+        }
     }
 
     {
         std::unique_lock<std::mutex> lock(global_m_);
         auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), src_->isSourceMode);
         progsInfo_.insert({src_->fileName, cache});
+        if (requireOptimizationAfterAnalysis) {
+            optimizationPendingProgs_.insert(src_->fileName);
+        }
     }
+}
+
+void PostAnalysisOptimizeFileJob::Run()
+{
+    util::Helpers::OptimizeProgram(program_, fileName_);
 }
 
 void CompileFuncQueue::Schedule()
@@ -141,13 +170,30 @@ void CompileFileQueue::Schedule()
     std::unique_lock<std::mutex> lock(m_);
 
     for (auto &input: options_->sourceFiles) {
-        auto *fileJob = new CompileFileJob(&input, options_, progsInfo_, symbolTable_, allocator_);
+        auto *fileJob = new CompileFileJob(&input, options_, progsInfo_, optimizationPendingProgs_,
+                                           symbolTable_, allocator_);
         jobs_.push_back(fileJob);
         jobsCount_++;
     }
 
     lock.unlock();
     jobsAvailable_.notify_all();
+}
+
+void PostAnalysisOptimizeFileQueue::Schedule()
+{
+    ASSERT(jobsCount_ == 0);
+    std::unique_lock<std::mutex> lock(m_);
+
+    for (const auto &optimizationPendingProgName : optimizationPendingProgs_) {
+        auto progInfo = progsInfo_.find(optimizationPendingProgName);
+        if (progInfo == progsInfo_.end()) {
+            continue;
+        }
+        auto *optimizeJob = new PostAnalysisOptimizeFileJob(progInfo->first, &progInfo->second->program);
+        jobs_.push_back(optimizeJob);
+        jobsCount_++;
+    }
 }
 
 }  // namespace panda::es2panda::compiler

@@ -1,0 +1,289 @@
+.language ECMAScript
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .testBool, 0x0
+	sta v0
+	definefunc 0x1, .testBBStruct, 0x0
+	sta v1
+	definefunc 0x2, .testFloatNumber, 0x0
+	sta v2
+	definefunc 0x3, .testIntNumber, 0x0
+	sta v3
+	definefunc 0x4, .testString, 0x0
+	sta v4
+	definefunc 0x5, .testTypeConvert, 0x0
+	callarg0 0x6
+	lda v3
+	callarg0 0x8
+	lda v2
+	callarg0 0xa
+	lda v0
+	callarg0 0xc
+	lda v4
+	callarg0 0xe
+	lda v1
+	callarg0 0x10
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .testBBStruct(any a0, any a1, any a2) {
+label_18: 
+label_1: 
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str good
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	ldundefined
+	returnundefined
+label_19: 
+}
+
+.function any .testBool(any a0, any a1, any a2) {
+label_19: 
+label_17: 
+	tryldglobalbyname 0x9, print
+	sta v0
+	lda.str good
+	sta v1
+	lda v0
+	callarg1 0xa, v1
+	ldundefined
+	returnundefined
+label_20: 
+}
+
+.function any .testFloatNumber(any a0, any a1, any a2) {
+label_25: 
+label_23: 
+	tryldglobalbyname 0xb, print
+	sta v0
+	lda.str good
+	sta v1
+	lda v0
+	callarg1 0xc, v1
+	ldundefined
+	returnundefined
+label_26: 
+}
+
+.function any .testIntNumber(any a0, any a1, any a2) {
+label_25: 
+label_23: 
+	tryldglobalbyname 0xb, print
+	sta v0
+	lda.str good
+	sta v1
+	lda v0
+	callarg1 0xc, v1
+	ldundefined
+	returnundefined
+label_26: 
+}
+
+.function any .testString(any a0, any a1, any a2) {
+label_23: 
+label_0: 
+	lda.str 0
+	sta v0
+	tryldglobalbyname 0x7, print
+	sta v1
+	lda.str good
+	sta v2
+	lda v1
+	callarg1 0x8, v2
+	lda.str 0
+	lesseq 0xa, v0
+	sta v1
+	istrue
+	jnez label_15
+label_14: 
+	lda.str 1
+	greatereq 0xb, v0
+	sta v1
+label_15: 
+	lda v1
+	istrue
+	jnez label_18
+label_17: 
+	lda.str 0
+	less 0xc, v0
+	sta v1
+label_18: 
+	lda v1
+	istrue
+	jnez label_19
+label_20: 
+	lda.str 1
+	greater 0xd, v0
+	isfalse
+	jnez label_21
+label_19: 
+	tryldglobalbyname 0xe, print
+	sta v0
+	lda.str good2
+	sta v1
+	lda v0
+	callarg1 0xf, v1
+	jmp label_22
+label_21: 
+	tryldglobalbyname 0x11, print
+	sta v0
+	lda.str good3
+	sta v1
+	lda v0
+	callarg1 0x12, v1
+label_22: 
+	ldundefined
+	returnundefined
+label_24: 
+}
+
+.function any .testTypeConvert(any a0, any a1, any a2) {
+label_35: 
+label_3: 
+	ldai 0x0
+	sta v0
+	tryldglobalbyname 0x2, print
+	sta v1
+	lda.str good
+	sta v2
+	lda v1
+	callarg1 0x3, v2
+	lda.str 0
+	eq 0x8, v0
+	sta v1
+	istrue
+	jnez label_7
+label_6: 
+	lda.str 0
+	stricteq 0x9, v0
+	sta v1
+label_7: 
+	lda v1
+	istrue
+	jnez label_10
+label_9: 
+	ldfalse
+	eq 0xa, v0
+	sta v1
+label_10: 
+	lda v1
+	istrue
+	jnez label_11
+label_12: 
+	ldfalse
+	stricteq 0xb, v0
+	isfalse
+	jnez label_13
+label_11: 
+	tryldglobalbyname 0xc, print
+	sta v1
+	lda.str good1
+	sta v2
+	lda v1
+	callarg1 0xd, v2
+	jmp label_14
+label_13: 
+	tryldglobalbyname 0xf, print
+	sta v1
+	lda.str good2
+	sta v2
+	lda v1
+	callarg1 0x10, v2
+label_14: 
+	lda.str 0
+	lesseq 0x12, v0
+	sta v1
+	istrue
+	jnez label_17
+label_16: 
+	lda.str 0
+	greatereq 0x13, v0
+	sta v1
+label_17: 
+	lda v1
+	istrue
+	jnez label_20
+label_19: 
+	ldfalse
+	lesseq 0x14, v0
+	sta v1
+label_20: 
+	lda v1
+	istrue
+	jnez label_21
+label_22: 
+	ldfalse
+	greatereq 0x15, v0
+	isfalse
+	jnez label_23
+label_21: 
+	tryldglobalbyname 0x16, print
+	sta v1
+	lda.str good3
+	sta v2
+	lda v1
+	callarg1 0x17, v2
+	jmp label_24
+label_23: 
+	tryldglobalbyname 0x19, print
+	sta v1
+	lda.str good4
+	sta v2
+	lda v1
+	callarg1 0x1a, v2
+label_24: 
+	lda.str 0
+	less 0x1c, v0
+	sta v1
+	istrue
+	jnez label_27
+label_26: 
+	lda.str 0
+	greater 0x1d, v0
+	sta v1
+label_27: 
+	lda v1
+	istrue
+	jnez label_30
+label_29: 
+	ldfalse
+	less 0x1e, v0
+	sta v1
+label_30: 
+	lda v1
+	istrue
+	jnez label_31
+label_32: 
+	ldfalse
+	greater 0x1f, v0
+	isfalse
+	jnez label_33
+label_31: 
+	tryldglobalbyname 0x20, print
+	sta v0
+	lda.str good5
+	sta v1
+	lda v0
+	callarg1 0x21, v1
+	jmp label_34
+label_33: 
+	tryldglobalbyname 0x23, print
+	sta v0
+	lda.str good6
+	sta v1
+	lda v0
+	callarg1 0x24, v1
+label_34: 
+	ldundefined
+	returnundefined
+label_36: 
+}
+
+

@@ -104,6 +104,8 @@ struct CompilerOptions {
     int targetApiVersion {0};
     std::unordered_map<std::string, std::string> cacheFiles;
     std::string transformLib {};
+    bool branchElimination {false};
+    bool requireGlobalOptimization {false};
 };
 
 enum class ErrorType {

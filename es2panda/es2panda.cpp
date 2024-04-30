@@ -216,7 +216,9 @@ int Compiler::CompileFiles(CompilerOptions &options,
     }
 
     bool failed = false;
-    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progsInfo, symbolTable, allocator);
+    std::unordered_set<std::string> optimizationPendingProgs;
+    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progsInfo,
+                                                optimizationPendingProgs, symbolTable, allocator);
 
     try {
         queue->Schedule();
@@ -232,6 +234,20 @@ int Compiler::CompileFiles(CompilerOptions &options,
     if (symbolTable) {
         delete symbolTable;
         symbolTable = nullptr;
+    }
+
+    if (options.requireGlobalOptimization) {
+        auto postAnalysisOptimizeQueue = new compiler::PostAnalysisOptimizeFileQueue(options.fileThreadCount,
+                                                                                     progsInfo,
+                                                                                     optimizationPendingProgs);
+        try {
+            postAnalysisOptimizeQueue->Schedule();
+            postAnalysisOptimizeQueue->Consume();
+            postAnalysisOptimizeQueue->Wait();
+        } catch (const class Error &e) {
+            // Optimization failed, but the program can still be used as unoptimized
+        }
+        delete postAnalysisOptimizeQueue;
     }
 
     return failed ? 1 : 0;

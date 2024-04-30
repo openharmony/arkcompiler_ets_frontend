@@ -56,6 +56,14 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
         context.GetEmitter()->GenRecordNameInfo();
     }
 
+    // For global optimization
+    // Constant local export module variable slot info is recorded in the emitter for now,
+    // emit it to the bytecode analysis result here.
+    if (options.requireGlobalOptimization) {
+        util::Helpers::SetConstantLocalExportSlots(std::string(program->RecordName()),
+            context.GetEmitter()->GetConstantLocalExportSlots());
+    }
+
     return context.GetEmitter()->Finalize(options.dumpDebugInfo, patchFixHelper_);
 }
 
