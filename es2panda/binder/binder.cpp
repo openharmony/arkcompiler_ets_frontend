@@ -314,7 +314,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     if (res.level != 0) {
         ASSERT(res.variable);
         if (!res.variable->Declaration()->IsDeclare() && !ident->Parent()->IsTSTypeReference() &&
-            !ident->Parent()->IsTSTypeQuery()) {
+            !ident->Parent()->IsTSTypeQuery() && !(bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM)) {
             util::Concurrent::ProcessConcurrent(Program()->GetLineIndex(), ident, res, program_);
             res.variable->SetLexical(res.scope, program_->PatchFixHelper());
         }
