@@ -64,7 +64,7 @@ import {needReadApiInfo, readProjectProperties, readProjectPropertiesByCollected
 import {ApiExtractor} from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
 import {EventList, TimeSumPrinter, TimeTracker} from './utils/PrinterUtils';
-import type { ProjectInfo } from './common/type';
+import { Extension, type ProjectInfo } from './common/type';
 export {FileUtils} from './utils/FileUtils';
 export { MemoryUtils } from './utils/MemoryUtils';
 import {TypeUtils} from './utils/TypeUtils';
@@ -150,6 +150,13 @@ export class ArkObfuscator {
 
   public setKeepSourceOfPaths(mKeepSourceOfPaths: Set<string>): void {
     this.mCustomProfiles.mKeepFileSourceCode.mKeepSourceOfPaths = mKeepSourceOfPaths;
+  }
+
+  public handleTsHarComments(sourceFile: SourceFile, originalPath: string | undefined): void {
+    if (ArkObfuscator.projectInfo?.useTsHar && (originalPath?.endsWith(Extension.ETS) && !originalPath?.endsWith(Extension.DETS))) {
+      // @ts-ignore
+      sourceFile.writeTsHarComments = true;
+    }
   }
 
   public get customProfiles(): IOptions {
@@ -542,7 +549,7 @@ export class ArkObfuscator {
     if (sourceFilePath.endsWith(".js")) {
       TypeUtils.tsToJs(ast);
     }
-
+    this.handleTsHarComments(ast, originalFilePath);
     performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
     this.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, this.mTextWriter, sourceMapGenerator);
     performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_PRINTER, performancePrinter.timeSumPrinter);
