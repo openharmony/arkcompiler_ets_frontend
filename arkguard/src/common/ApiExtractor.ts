@@ -85,6 +85,7 @@ export namespace ApiExtractor {
   export let mPropertySet: Set<string> = new Set<string>();
   export let mLibExportNameSet: Set<string> = new Set<string>();
   export let mConstructorPropertySet: Set<string> = undefined;
+  export let mSystemExportSet: Set<string> = new Set<string>();
   /**
    * filter classes or interfaces with export, default, etc
    */
@@ -478,6 +479,7 @@ export namespace ApiExtractor {
       case ApiType.API:
         mCurrentExportNameSet.clear();
         forEachChild(sourceFile, visitExport);
+        mCurrentExportNameSet.forEach(item => mSystemExportSet.add(item));
 
         forEachChild(sourceFile, visitPropertyAndName);
         mCurrentExportNameSet.clear();
