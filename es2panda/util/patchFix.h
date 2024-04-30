@@ -36,7 +36,7 @@ class PandaGen;
 
 namespace panda::es2panda::util {
 
-enum class PatchFixKind { DUMPSYMBOLTABLE, HOTFIX, COLDFIX, HOTRELOAD };
+enum class PatchFixKind { DUMPSYMBOLTABLE, HOTFIX, COLDFIX, HOTRELOAD, COLDRELOAD };
 
 class PatchFix {
     using LiteralBuffers = ArenaVector<std::pair<int32_t, std::vector<panda::pandasm::LiteralArray::Literal>>>;
@@ -79,6 +79,7 @@ public:
     bool IsHotFix() const;
     bool IsColdFix() const;
     bool IsHotReload() const;
+    bool IsColdReload() const;
 
 private:
     void DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);

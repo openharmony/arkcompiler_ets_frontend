@@ -154,6 +154,8 @@ def get_args():
         help='run hotreload tests')
     parser.add_argument('--coldfix', dest='coldfix', action='store_true', default=False,
         help='run coldfix tests')
+    parser.add_argument('--coldreload', dest='coldreload', action='store_true', default=False,
+        help='run coldreload tests')
     parser.add_argument('--base64', dest='base64', action='store_true', default=False,
         help='run base64 tests')
     parser.add_argument('--bytecode', dest='bytecode', action='store_true', default=False,
@@ -913,6 +915,8 @@ class PatchTest(Test):
             mode_arg = ["--hot-reload"]
         elif self.mode == 'coldfix':
             mode_arg = ["--generate-patch", "--cold-fix"]
+        elif self.mode == 'coldreload':
+            mode_arg = ["--cold-reload"]
 
         patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module']
         patch_test_cmd.extend(mode_arg)
@@ -1020,6 +1024,14 @@ class ColdfixRunner(PatchRunner):
             path.join(self.test_root, "coldfix", "coldfix-noerror")]
         self.add_directory()
         self.tests += list(map(lambda t: PatchTest(t, "coldfix"), self.tests_in_dirs))
+
+
+class ColdreloadRunner(PatchRunner):
+    def __init__(self, args):
+        PatchRunner.__init__(self, args, "Coldreload")
+        self.test_directory = [path.join(self.test_root, "coldreload")]
+        self.add_directory()
+        self.tests += list(map(lambda t: PatchTest(t, "coldreload"), self.tests_in_dirs))
 
 
 class DebuggerTest(Test):
@@ -1372,6 +1384,9 @@ def main():
 
     if args.coldfix:
         runners.append(ColdfixRunner(args))
+
+    if args.coldreload:
+        runners.append(ColdreloadRunner(args))
 
     if args.debugger:
         runners.append(DebuggerRunner(args))
