@@ -28,6 +28,7 @@ import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 import { FaultID } from '../Problems';
 import type { IsEtsFileCallback } from '../IsEtsFileCallback';
 import { SENDABLE_DECORATOR } from './consts/SendableAPI';
+import { USE_SHARED } from './consts/SharedModuleAPI';
 import {
   ARKTS_COLLECTIONS_D_ETS,
   ARKTS_COLLECTIONS_TYPES,
@@ -2199,5 +2200,21 @@ export class TsUtils {
     } while (newName !== undefined);
 
     return newName;
+  }
+
+  static isSharedModule(sourceFile: ts.SourceFile): boolean {
+    const statements = sourceFile.statements;
+    for (const statement of statements) {
+      if (ts.isImportDeclaration(statement)) {
+        continue;
+      }
+
+      return (
+        ts.isExpressionStatement(statement) &&
+        ts.isStringLiteral(statement.expression) &&
+        statement.expression.text === USE_SHARED
+      );
+    }
+    return false;
   }
 }

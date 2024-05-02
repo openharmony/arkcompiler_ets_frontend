@@ -107,4 +107,5 @@ faultDesc[FaultID.SendableObjectInitialization] = 'Object literal or array liter
                                                                    initialize a "Sendable" object';
 faultDesc[FaultID.SendableComputedPropName] = 'Sendable computed property name';
 faultDesc[FaultID.SendableAsExpr] = 'Sendable as expr';
+faultDesc[FaultID.SharedNoSideEffectImport] = 'Shared no side effect import';
 
