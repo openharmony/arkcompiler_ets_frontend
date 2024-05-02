@@ -558,9 +558,11 @@ checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayEx
     return annotationType;
 }
 
-void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Expression *init)
+void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
 {
-    if (localTypeAnnotation != nullptr && localTypeAnnotation->IsETSTypeReference()) {
+    ASSERT(localTypeAnnotation != nullptr);
+
+    if (localTypeAnnotation->IsETSTypeReference()) {
         bool isAnnotationTypeAlias = true;
         while (localTypeAnnotation->IsETSTypeReference() && isAnnotationTypeAlias) {
             auto *node = localTypeAnnotation->AsETSTypeReference()
@@ -578,9 +580,8 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Exp
         }
     }
 
-    if (localTypeAnnotation != nullptr && localTypeAnnotation->IsETSFunctionType() &&
-        init->IsArrowFunctionExpression()) {
-        auto *const arrowFuncExpr = init->AsArrowFunctionExpression();
+    if (localTypeAnnotation->IsETSFunctionType()) {
+        auto *const arrowFuncExpr = init;
         ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
         if (lambda->Params().size() == localTypeAnnotation->AsETSFunctionType()->Params().size() &&
             NeedTypeInference(lambda)) {
@@ -658,7 +659,9 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         init->AsObjectExpression()->SetPreferredType(annotationType);
     }
 
-    InferAliasLambdaType(typeAnnotation, init);
+    if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
+        InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
+    }
 
     checker::Type *initType = init->Check(this);
 
