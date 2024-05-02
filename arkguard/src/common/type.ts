@@ -33,7 +33,8 @@ export interface ProjectInfo {
   packageDir: string, 
   projectRootPath: string,
   localPackageSet: Set<string>,
-  useNormalized: boolean
+  useNormalized: boolean,
+  useTsHar: boolean,
 };
 
 /**
