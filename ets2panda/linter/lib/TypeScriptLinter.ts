@@ -2417,7 +2417,7 @@ export class TypeScriptLinter {
       const decl = declarations[0];
       const declPosition = decl.getStart();
       if (decl.getSourceFile().fileName !== node.getSourceFile().fileName ||
-          declPosition && declPosition >= scope.getStart() && declPosition < scope.getEnd()) {
+          declPosition !== undefined && declPosition >= scope.getStart() && declPosition < scope.getEnd()) {
         return;
       }
 
