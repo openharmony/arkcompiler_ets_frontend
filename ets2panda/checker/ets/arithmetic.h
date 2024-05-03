@@ -45,6 +45,9 @@ typename TargetType::UType ETSChecker::GetOperand(Type *type)
         case TypeFlag::DOUBLE: {
             return type->AsDoubleType()->GetValue();
         }
+        case TypeFlag::ETS_BOOLEAN: {
+            return type->AsETSBooleanType()->GetValue();
+        }
         default: {
             UNREACHABLE();
         }
