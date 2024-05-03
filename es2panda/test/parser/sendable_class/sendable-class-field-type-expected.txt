@@ -52,17 +52,17 @@ label_0:
 	definefunc 0x1, .#14695981039346656037#, 0x1
 	sta v1
 	lda v0
-	istrue
+	callruntime.istrue 0x2
 	jnez label_3
 label_2: 
 	createemptyobject
 	sta v0
 label_3: 
 	lda v1
-	callarg1 0x2, v0
+	callarg1 0x4, v0
 	ldhole
 	sta v0
-	callruntime.definesendableclass 0x4, .Person, _4, 0x0, v0
+	callruntime.definesendableclass 0x6, .Person, _4, 0x0, v0
 	ldundefined
 	returnundefined
 label_5: 

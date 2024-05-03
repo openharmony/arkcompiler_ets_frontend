@@ -21,16 +21,16 @@
 LABEL_0: 
 LABEL_4: 
 	lda v11
-	istrue
+	callruntime.istrue 0x5
 	jnez LABEL_9
 	lda v8
-	callthis0 0x5, v9
+	callthis0 0x7, v9
 	sta v10
 	throw.ifnotobject v10
 	lda v10
-	ldobjbyname 0x7, done
+	ldobjbyname 0x9, done
 	sta v11
-	isfalse
+	callruntime.isfalse 0xb
 	jnez LABEL_8
 	ldtrue
 	sta v11
@@ -38,7 +38,7 @@ LABEL_4:
 	jmp LABEL_9
 LABEL_8: 
 	lda v10
-	ldobjbyname 0x9, value
+	ldobjbyname 0xd, value
 	sta v12
 	jmp LABEL_7
 LABEL_9: 
@@ -52,19 +52,19 @@ LABEL_6:
 	lda v12
 	throw
 LABEL_7: 
-	sttoglobalrecord 0xb, a
+	sttoglobalrecord 0xf, a
 LABEL_10: 
 	lda v11
-	istrue
+	callruntime.istrue 0x10
 	jnez LABEL_15
 	lda v8
-	callthis0 0xc, v9
+	callthis0 0x12, v9
 	sta v10
 	throw.ifnotobject v10
 	lda v10
-	ldobjbyname 0xe, done
+	ldobjbyname 0x14, done
 	sta v11
-	isfalse
+	callruntime.isfalse 0x16
 	jnez LABEL_14
 	ldtrue
 	sta v11
@@ -72,7 +72,7 @@ LABEL_10:
 	jmp LABEL_15
 LABEL_14: 
 	lda v10
-	ldobjbyname 0x10, value
+	ldobjbyname 0x18, value
 	sta v12
 	jmp LABEL_13
 LABEL_15: 
@@ -86,14 +86,14 @@ LABEL_12:
 	lda v12
 	throw
 LABEL_13: 
-	sttoglobalrecord 0x12, b
+	sttoglobalrecord 0x1a, b
 LABEL_1: 
 	lda v11
-	istrue
+	callruntime.istrue 0x1b
 	jnez LABEL_3
 	sta v13
 	lda v7
-	istrue
+	callruntime.istrue 0x1d
 	jnez LABEL_16
 	ldtrue
 	sta v7
@@ -103,14 +103,14 @@ LABEL_1:
 	sta v15
 LABEL_17: 
 	lda v9
-	ldobjbyname 0x13, return
+	ldobjbyname 0x1f, return
 	sta v8
 	sta v16
 	ldundefined
-	eq 0x15, v16
+	eq 0x21, v16
 	jnez LABEL_16
 	lda v8
-	callthis0 0x16, v9
+	callthis0 0x22, v9
 	sta v14
 LABEL_18: 
 	jmp LABEL_20
@@ -122,7 +122,7 @@ LABEL_20:
 	ldhole
 	sta v17
 	lda v16
-	noteq 0x18, v17
+	noteq 0x24, v17
 	jeqz LABEL_21
 LABEL_22: 
 	lda v16
@@ -136,12 +136,12 @@ LABEL_16:
 LABEL_2: 
 	sta v12
 	lda v11
-	istrue
+	callruntime.istrue 0x25
 	jnez LABEL_23
 	lda v12
 	sta v13
 	lda v7
-	istrue
+	callruntime.istrue 0x27
 	jnez LABEL_24
 	ldtrue
 	sta v7
@@ -151,14 +151,14 @@ LABEL_2:
 	sta v15
 LABEL_25: 
 	lda v9
-	ldobjbyname 0x19, return
+	ldobjbyname 0x29, return
 	sta v8
 	sta v16
 	ldundefined
-	eq 0x1b, v16
+	eq 0x2b, v16
 	jnez LABEL_24
 	lda v8
-	callthis0 0x1c, v9
+	callthis0 0x2c, v9
 	sta v14
 LABEL_26: 
 	jmp LABEL_28
