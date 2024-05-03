@@ -575,7 +575,7 @@ void Transformer::VisitPrivateElement(ir::ClassDefinition *node)
 
 util::StringView Transformer::FindPrivateElementBindName(util::StringView name)
 {
-    for (size_t i = classList_.size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(classList_.size() - 1); i >= 0; i--) {
         auto res = classList_[i].bindNameMap->find(name);
         if (res != classList_[i].bindNameMap->end()) {
             return res->second;
@@ -906,10 +906,12 @@ ir::MethodDefinition* Transformer::AddMethodToClass(ir::ClassDefinition *classDe
     ASSERT((methodInfo.kind == ir::MethodDefinitionKind::GET) || (methodInfo.kind == ir::MethodDefinitionKind::SET));
 
     auto *paramScope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
+    ASSERT(paramScope != nullptr);
     for (auto &param : params) {
         paramScope->AddParamDecl(Allocator(), param);
     }
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
+    ASSERT(scope != nullptr);
     paramScope->BindFunctionScope(scope);
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
@@ -1407,12 +1409,12 @@ std::vector<ir::AstNode *> Transformer::CreateParamDecorators(util::StringView c
      *  Static method or constructor will use constructor function of the class instead of prototype of class
      */
     std::vector<ir::AstNode *> res;
-    int pos = variableDeclarations.size();
+    size_t pos = variableDeclarations.size();
     auto paramsDecorators = node->GetParamDecorators();
-    for (int i = paramsDecorators.size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(paramsDecorators.size() - 1); i >= 0; i--) {
         auto paramIndex = paramsDecorators[i].paramIndex;
         auto decorators = paramsDecorators[i].decorators;
-        for (int j = decorators.size() - 1; j >= 0; j--) {
+        for (int j = static_cast<int>(decorators.size() - 1); j >= 0; j--) {
             ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
             arguments.push_back(CreateDecoratorTarget(className, isConstructor || isStatic));
             arguments.push_back(isConstructor ?
@@ -1450,7 +1452,7 @@ std::vector<ir::AstNode *> Transformer::CreatePropertyDecorators(util::StringVie
      */
     std::vector<ir::AstNode *> res;
     auto decorators = node->Decorators();
-    for (int i = decorators.size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(decorators.size() - 1); i >= 0; i--) {
         ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
         arguments.push_back(CreateDecoratorTarget(className, isStatic));
         arguments.push_back(GetClassMemberName(node->Key(), node->IsComputed(), node));
@@ -1488,9 +1490,9 @@ std::vector<ir::AstNode *> Transformer::CreateMethodDecorators(util::StringView 
      *  If the decorator has a return value, it will be set as the new property of the method
      */
     std::vector<ir::AstNode *> res;
-    int pos = node->Decorators().size();
+    size_t pos = node->Decorators().size();
     auto decorators = node->Decorators();
-    for (int i = decorators.size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(decorators.size() - 1); i >= 0; i--) {
         ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
         arguments.push_back(CreateDecoratorTarget(className, isStatic));
         arguments.push_back(GetClassMemberName(node->Key(), node->Computed(), node));
@@ -1600,9 +1602,9 @@ std::vector<ir::AstNode *> Transformer::CreateClassDecorators(ir::ClassDeclarati
     auto name = node->Definition()->GetName();
     auto decorators = node->Decorators();
     auto size = decorators.size();
-    int pos = size;
+    size_t pos = size;
     std::vector<ir::AstNode *> res;
-    for (int i = size - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(size - 1); i >= 0; i--) {
         ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
         arguments.push_back(CreateReferenceIdentifier(name));
         auto *callExpr = AllocNode<ir::CallExpression>(

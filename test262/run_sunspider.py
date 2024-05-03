@@ -508,11 +508,15 @@ class ArkProgram():
 
         # generate abc file by script mode
         if not os.path.exists(out_proto):
-            self.gen_abc_for_script_mode(cmd_args, retcode)
+            retcode = self.gen_abc_for_script_mode(cmd_args, retcode)
+            if retcode == 1:
+                return retcode
 
         # generate abc file by script mode for dynamic-import
         if self.ark_frontend == ARK_FRONTEND_LIST[1]:
-            self.gen_abc_for_dynamic_import(js_file, retcode)
+            retcode = self.gen_abc_for_dynamic_import(js_file, retcode)
+            if retcode == 1:
+                return retcode
 
         # generate merged abc file
         if merge_abc_mode != "0":

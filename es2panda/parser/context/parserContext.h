@@ -24,7 +24,7 @@
 #include <vector>
 
 namespace panda::es2panda::parser {
-enum class ParserStatus {
+enum class ParserStatus : uint64_t {
     NO_OPTS = 0,
     STRICT = (1 << 0),
 

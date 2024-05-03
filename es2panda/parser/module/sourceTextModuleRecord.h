@@ -51,8 +51,8 @@ public:
         int moduleRequestIdx_;
         util::StringView localName_;
         util::StringView importName_;
-        const ir::Identifier *localId_;
-        const ir::Identifier *importId_;
+        const ir::Identifier *localId_ {nullptr};
+        const ir::Identifier *importId_ {nullptr};
 
         ImportEntry(const util::StringView localName, const util::StringView importName, int moduleRequestIdx,
                     const ir::Identifier *localId, const ir::Identifier *importId)
@@ -67,9 +67,9 @@ public:
         util::StringView exportName_;
         util::StringView localName_;
         util::StringView importName_;
-        const ir::Identifier *exportId_;
-        const ir::Identifier *localId_;
-        const ir::Identifier *importId_;
+        const ir::Identifier *exportId_ {nullptr};
+        const ir::Identifier *localId_ {nullptr};
+        const ir::Identifier *importId_ {nullptr};
         bool isConstant_ {false};
 
         explicit ExportEntry(int moduleRequest) : moduleRequestIdx_(moduleRequest) {}

@@ -23,7 +23,7 @@
 
 namespace panda::es2panda::lexer {
 
-enum class RegExpFlags {
+enum class RegExpFlags : uint8_t {
     EMPTY = 0,
     GLOBAL = 1 << 0,
     IGNORE_CASE = 1 << 1,

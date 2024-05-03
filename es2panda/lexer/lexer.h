@@ -27,7 +27,7 @@ class ParserContext;
 
 namespace panda::es2panda::lexer {
 
-enum class LexerNextTokenFlags {
+enum class LexerNextTokenFlags : uint8_t {
     NONE = 0,
     KEYWORD_TO_IDENT = 1 << 0,
     NUMERIC_SEPARATOR_ALLOWED = 1 << 1,

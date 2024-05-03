@@ -369,7 +369,7 @@ private:
             return originName;
         }
 
-        for (int i = classList_.size() - 1; i >= 0; i--) {
+        for (int i = static_cast<int>(classList_.size() - 1); i >= 0; i--) {
             if (classList_[i].node == node) {
                 return classList_[i].aliasName;
             }
