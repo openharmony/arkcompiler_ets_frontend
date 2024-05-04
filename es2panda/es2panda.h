@@ -188,8 +188,9 @@ public:
     NO_MOVE_SEMANTIC(Compiler);
 
     panda::pandasm::Program *Compile(const SourceFile &input, const CompilerOptions &options,
-        util::SymbolTable *symbolTable = nullptr);
-    panda::pandasm::Program *CompileFile(const CompilerOptions &options, SourceFile *src, util::SymbolTable *symbolTable);
+                                     util::SymbolTable *symbolTable = nullptr);
+    panda::pandasm::Program *CompileFile(const CompilerOptions &options, SourceFile *src,
+                                         util::SymbolTable *symbolTable);
 
     static int CompileFiles(CompilerOptions &options,
         std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator);

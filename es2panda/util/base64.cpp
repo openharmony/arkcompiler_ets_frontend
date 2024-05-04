@@ -25,6 +25,7 @@ std::string Base64Encode(const std::string &inputString)
     }
     std::string encodedRes = std::string(encodedStrLen, '\0');
     const char* base64CharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    // 2: the index do not exceed the range of encodedRes and form a complete four-character block
     for (size_t i = 0, j = 0; i < encodedRes.length() - 2; i += TRANSFORMED_CHAR_NUM, j += TO_TRANSFORM_CHAR_NUM) {
         // convert three 8bit into four 6bit; then add two 0 bit in each 6 bit
         // former 00 + first 6 bits of the first char
@@ -37,11 +38,14 @@ std::string Base64Encode(const std::string &inputString)
         encodedRes[i + 3] = base64CharSet[inputString[j + 2] & 0x3f];
     }
     switch (strLen % TO_TRANSFORM_CHAR_NUM) {
+        // the original string is less than three bytes, and the missing place is filled with '=' to patch four bytes
         case 1:
+            // 1,2: the original character is one, and two characters are missing after conversion
             encodedRes[encodedRes.length() - 2] = '=';
             encodedRes[encodedRes.length() - 1] = '=';
             break;
         case 2:
+            // 1: the original character is two, and a character are missing after conversion
             encodedRes[encodedRes.length() - 1] = '=';
             break;
         default:
@@ -81,7 +85,9 @@ std::string Base64Decode(const std::string &base64String)
     int secondChar = 0;
     int thirdChar = 0;
     int fourthChar = 0;
+    // 2: the index do not exceed the range of encodedRes and form a complete four-character block
     for (size_t i = 0, j = 0; i < strLen - 2; i += TRANSFORMED_CHAR_NUM, j += TO_TRANSFORM_CHAR_NUM) {
+        // 1,2,3 is the nth character after the current position
         firstChar = decodeTable[static_cast<unsigned char>(base64String[i])];
         secondChar = decodeTable[static_cast<unsigned char>(base64String[i + 1])];
         thirdChar = decodeTable[static_cast<unsigned char>(base64String[i + 2])];

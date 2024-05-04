@@ -119,7 +119,6 @@ static void CheckSimpleVariableDeclaration(checker::Checker *checker, const ir::
 checker::Type *VariableDeclarator::Check(checker::Checker *checker) const
 {
     auto found = checker->NodeCache().find(this);
-
     if (found != checker->NodeCache().end()) {
         return nullptr;
     }
