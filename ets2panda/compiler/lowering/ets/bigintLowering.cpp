@@ -15,6 +15,9 @@
 
 #include "bigintLowering.h"
 
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "compiler/lowering/util.h"
+
 namespace ark::es2panda::compiler {
 
 std::string_view BigIntLowering::Name() const
@@ -22,20 +25,67 @@ std::string_view BigIntLowering::Name() const
     return "BigIntLowering";
 }
 
-void CreateBigInt(parser::ETSParser *parser, ir::ClassProperty *property)
+ir::Expression *CreateBigInt(public_lib::Context *ctx, ir::BigIntLiteral *literal)
 {
-    if (property != nullptr && property->Value() != nullptr && property->Value()->IsBigIntLiteral()) {
-        auto literal = property->Value()->AsBigIntLiteral();
-        auto value = literal->Str();
+    auto parser = ctx->parser->AsETSParser();
+    auto checker = ctx->checker->AsETSChecker();
 
-        // This will change the bigint literal node into the new class instance expression.
-        std::string src {"new BigInt("};
-        src += value.Utf8();
-        src += ")";
-        auto newValue = parser->AsETSParser()->CreateExpression(src);
-        newValue->SetParent(property);
-        property->SetValue(newValue);
+    // This will change the bigint literal node into the new class instance expression:
+    // 123456n => new BigInt("123456")
+    std::string src {"new "};
+    src += Signatures::BUILTIN_BIGINT_CLASS;
+    src += "(\"";
+    src += literal->Str().Utf8();
+    src += "\")";
+
+    auto loweringResult = parser->CreateExpression(src);
+    loweringResult->SetParent(literal->Parent());
+
+    InitScopesPhaseETS::RunExternalNode(loweringResult, checker->VarBinder());
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, NearestScope(loweringResult));
+    loweringResult->Check(checker);
+
+    return loweringResult;
+}
+
+bool ReplaceStrictEqualByNormalEqual(ir::BinaryExpression *expr)
+{
+    auto left = expr->Left()->TsType();
+    auto isBigintLeft = (left != nullptr && left->IsETSBigIntType()) || expr->Left()->IsBigIntLiteral();
+    auto right = expr->Right()->TsType();
+    auto isBigintRight = (right != nullptr && right->IsETSBigIntType()) || expr->Right()->IsBigIntLiteral();
+    if (!isBigintLeft && !isBigintRight) {
+        return false;
     }
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_STRICT_EQUAL) {
+        expr->SetOperator(lexer::TokenType::PUNCTUATOR_EQUAL);
+    } else if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL) {
+        expr->SetOperator(lexer::TokenType::PUNCTUATOR_NOT_EQUAL);
+    } else {
+        return false;
+    }
+
+    return true;
+}
+
+// Currently there are no compile time operations for bigint.
+bool RemoveConst(ir::BinaryExpression *expr)
+{
+    bool isRemoved = false;
+    auto left = expr->Left()->TsType();
+    if (left != nullptr && left->IsETSBigIntType()) {
+        left->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+        isRemoved = true;
+    }
+
+    auto right = expr->Right()->TsType();
+    if (right != nullptr && right->IsETSBigIntType()) {
+        right->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+        isRemoved = true;
+    }
+
+    return isRemoved;
 }
 
 bool BigIntLowering::Perform(public_lib::Context *const ctx, parser::Program *const program)
@@ -47,12 +97,21 @@ bool BigIntLowering::Perform(public_lib::Context *const ctx, parser::Program *co
         }
     }
 
-    auto *const parser = ctx->parser->AsETSParser();
+    auto checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively(
-        [parser](ir::AstNode *ast) -> ir::AstNode * {
-            if (ast->IsClassProperty()) {
-                CreateBigInt(parser, ast->AsClassProperty());
+        [ctx, checker](ir::AstNode *ast) -> ir::AstNode * {
+            if (ast->IsBigIntLiteral() && ast->Parent() != nullptr && ast->Parent()->IsClassProperty()) {
+                return CreateBigInt(ctx, ast->AsBigIntLiteral());
+            }
+
+            if (ast->IsBinaryExpression()) {
+                auto expr = ast->AsBinaryExpression();
+                bool doCheck = ReplaceStrictEqualByNormalEqual(expr);
+                doCheck |= RemoveConst(expr);
+                if (doCheck) {
+                    expr->Check(checker);
+                }
             }
 
             return ast;

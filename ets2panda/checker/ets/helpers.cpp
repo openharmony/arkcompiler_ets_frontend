@@ -1348,7 +1348,8 @@ Type *ETSChecker::HandleStringConcatenation(Type *leftType, Type *rightType)
 {
     ASSERT(leftType->IsETSStringType() || rightType->IsETSStringType());
 
-    if (!leftType->HasTypeFlag(checker::TypeFlag::CONSTANT) || !rightType->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+    if (!leftType->HasTypeFlag(checker::TypeFlag::CONSTANT) || !rightType->HasTypeFlag(checker::TypeFlag::CONSTANT) ||
+        leftType->IsETSBigIntType() || rightType->IsETSBigIntType()) {
         return GlobalETSStringLiteralType();
     }
 

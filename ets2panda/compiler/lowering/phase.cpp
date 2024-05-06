@@ -86,11 +86,11 @@ static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser:
 
 std::vector<Phase *> GetETSPhaseList()
 {
+    // clang-format off
     return {
         &g_pluginsAfterParse,
         &g_topLevelStatements,
         &g_defaultParameterLowering,
-        &g_bigintLowering,
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
@@ -99,6 +99,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_interfacePropDeclPhase,
         &g_checkerPhase,
         &g_pluginsAfterCheck,
+        &g_bigintLowering,
         &g_opAssignmentLowering,
         &g_recordLowering,
         &g_objectIndexLowering,
@@ -110,6 +111,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_objectLiteralLowering,
         &g_pluginsAfterLowerings,
     };
+    // clang-format on
 }
 
 std::vector<Phase *> GetASPhaseList()

@@ -134,7 +134,7 @@ Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer:
     return PerformRelationOperationOnTypes<IntType>(left, right, operationType);
 }
 
-bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expression *expr, lexer::TokenType op)
+bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::TokenType op)
 {
     if ((left == nullptr) || (right == nullptr)) {
         return false;
@@ -148,26 +148,17 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expre
         return false;
     }
 
-    if (expr->IsBinaryExpression()) {
-        ir::BinaryExpression *be = expr->AsBinaryExpression();
-        if (be->OperatorType() == lexer::TokenType::PUNCTUATOR_STRICT_EQUAL) {
-            // Handle strict comparison as normal comparison for bigint objects
-            be->SetOperator(lexer::TokenType::PUNCTUATOR_EQUAL);
-        }
-    }
-
     switch (op) {
         case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::KEYW_INSTANCEOF:
             // This is handled in the main CheckBinaryOperator function
             return false;
         default:
             break;
     }
-
-    // Remove const flag - currently there are no compile time operations for bigint
-    left->RemoveTypeFlag(TypeFlag::CONSTANT);
-    right->RemoveTypeFlag(TypeFlag::CONSTANT);
 
     return true;
 }
@@ -683,7 +674,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
                       operationType < lexer::TokenType::PUNCTUATOR_ARROW) &&
                      !forcePromotion;
 
-    if (CheckBinaryOperatorForBigInt(leftType, rightType, expr, operationType)) {
+    if (CheckBinaryOperatorForBigInt(leftType, rightType, operationType)) {
         switch (operationType) {
             case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
             case lexer::TokenType::PUNCTUATOR_LESS_THAN:
@@ -693,7 +684,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
             default:
                 return {leftType, rightType};
         }
-    };
+    }
 
     auto checkMap = GetCheckMap();
     if (checkMap.find(operationType) != checkMap.end()) {

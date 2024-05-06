@@ -247,7 +247,7 @@ public:
     // Arithmetic
     Type *NegateNumericType(Type *type, ir::Expression *node);
     Type *BitwiseNegateNumericType(Type *type, ir::Expression *node);
-    bool CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expression *expr, lexer::TokenType op);
+    bool CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::TokenType op);
     void CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
                                                     const ir::Expression *left, const ir::Expression *right);
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
