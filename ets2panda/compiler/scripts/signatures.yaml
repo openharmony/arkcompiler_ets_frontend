@@ -132,6 +132,8 @@ defines:
     ref: READONLY_TYPE_NAME
   - name: 'Partial'
     ref: PARTIAL_TYPE_NAME
+  - name: 'Required'
+    ref: REQUIRED_TYPE_NAME
 
 packages:
   - name: 'std.core'

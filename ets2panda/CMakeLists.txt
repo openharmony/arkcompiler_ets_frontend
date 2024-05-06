@@ -397,6 +397,7 @@ set(ES2PANDA_LIB_SRC
   checker/ets/typeCreation.cpp
   checker/ets/typeRelationContext.cpp
   checker/ets/unboxingConverter.cpp
+  checker/ets/utilityTypeHandlers.cpp
   checker/ets/wideningConverter.cpp
   checker/ts/binaryLikeExpression.cpp
   checker/ts/destructuringContext.cpp

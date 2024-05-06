@@ -96,7 +96,8 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
 {
     const auto &name = ident->Name();
     if (name == compiler::Signatures::UNDEFINED || name == compiler::Signatures::NULL_LITERAL ||
-        name == compiler::Signatures::READONLY_TYPE_NAME || name == compiler::Signatures::PARTIAL_TYPE_NAME) {
+        name == compiler::Signatures::READONLY_TYPE_NAME || name == compiler::Signatures::PARTIAL_TYPE_NAME ||
+        name == compiler::Signatures::REQUIRED_TYPE_NAME) {
         return;
     }
     auto *iter = GetScope();

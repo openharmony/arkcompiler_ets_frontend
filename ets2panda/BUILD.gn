@@ -58,6 +58,7 @@ libes2panda_sources = [
   "checker/ets/typeCreation.cpp",
   "checker/ets/typeRelationContext.cpp",
   "checker/ets/unboxingConverter.cpp",
+  "checker/ets/utilityTypeHandlers.cpp",
   "checker/ets/validateHelpers.cpp",
   "checker/ets/wideningConverter.cpp",
   "checker/ts/binaryLikeExpression.cpp",

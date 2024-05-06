@@ -451,6 +451,12 @@ void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr,
     } else if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
         checker->ThrowTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
     }
+
+    if (calleeObj->HasObjectFlag(ETSObjectFlags::REQUIRED) &&
+        !expr->HasAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION)) {
+        checker->ThrowTypeError("Required type can be instantiated only with object literal",
+                                expr->GetTypeRef()->Start());
+    }
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
@@ -1418,6 +1424,10 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
         checker::AssignmentContext(
             checker->Relation(), value, valueType, propType, value->Start(),
             {"Type '", sourceType, "' is not compatible with type '", targetType, "' at property '", pname, "'"});
+    }
+
+    if (objType->HasObjectFlag(ETSObjectFlags::REQUIRED)) {
+        checker->ValidateObjectLiteralForRequiredType(objType, expr);
     }
 }
 

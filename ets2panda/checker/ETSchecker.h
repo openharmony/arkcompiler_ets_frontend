@@ -443,26 +443,7 @@ public:
     Type *GetTypeFromClassReference(varbinder::Variable *var);
     void ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *typeAliasNode,
                                                const ir::TSTypeParameterInstantiation *exactTypeParams);
-    void MakePropertiesReadonly(ETSObjectType *classType);
-    Type *HandleReadonlyType(const ir::TSTypeParameterInstantiation *typeParams);
-    void MakePropertiesNullish(ETSObjectType *classType);
-    ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
-    ir::ClassDefinition *CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition,
-                                                       const ir::ClassDefinition *classDef);
-    Type *HandlePartialTypeNode(ir::TypeNode *typeParamNode);
-    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
-                                         varbinder::RecordTable *recordTable);
-    ir::TypeNode *GetPartialTypeBaseTypeNode(const ir::TSTypeParameterInstantiation *typeParams);
-    ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
-    varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
-                                                       const std::set<util::StringView> &classNamesToFind);
-    util::StringView GetQualifiedClassName(const parser::Program *classDefProgram, util::StringView className);
-    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
-    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
-                                    const Type *typeToBePartial, varbinder::RecordTable *recordTableToUse);
-    Type *HandlePartialType(Type *typeToBePartial);
     Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *typeParams);
-    Type *GetReadonlyType(Type *type);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantTypeFromPrimitiveType(Type *type) const;
@@ -588,6 +569,43 @@ public:
                                                 checker::ETSObjectType *lastObjectType, ir::Identifier *id);
     void CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
 
+    // Utility type handler functions
+    ir::TypeNode *GetUtilityTypeTypeParamNode(const ir::TSTypeParameterInstantiation *typeParams,
+                                              const std::string_view &utilityTypeName);
+    Type *HandleUtilityTypeParameterNode(const ir::TSTypeParameterInstantiation *typeParams,
+                                         const std::string_view &utilityType);
+    // Partial
+    Type *HandlePartialType(Type *typeToBePartial);
+    Type *HandlePartialTypeNode(ir::TypeNode *typeParamNode);
+    ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
+    ir::ClassDefinition *CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition,
+                                                       const ir::ClassDefinition *classDef);
+    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
+                                         varbinder::RecordTable *recordTable);
+    ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
+    varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
+                                                       const std::set<util::StringView> &classNamesToFind);
+    util::StringView GetQualifiedClassName(const parser::Program *classDefProgram, util::StringView className);
+    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
+    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
+                                    const Type *typeToBePartial, varbinder::RecordTable *recordTableToUse);
+    std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunctionForConstructor(
+        varbinder::FunctionScope *scope);
+    ir::MethodDefinition *CreateNonStaticClassInitializer(varbinder::ClassScope *classScope,
+                                                          varbinder::RecordTable *recordTable);
+    // Readonly
+    Type *HandleReadonlyType(const ir::TSTypeParameterInstantiation *typeParams);
+    Type *GetReadonlyType(Type *type);
+    void MakePropertiesReadonly(ETSObjectType *classType);
+    // Required
+    Type *HandleRequiredType(Type *typeToBeRequired);
+    Type *HandleRequiredTypeNode(ir::TypeNode *typeParamNode);
+    void MakePropertiesNonNullish(ETSObjectType *classType);
+    template <PropertyType PROP_TYPE>
+    void MakePropertyNonNullish(ETSObjectType *classType, varbinder::LocalVariable *prop);
+    void ValidateObjectLiteralForRequiredType(const ETSObjectType *requiredType,
+                                              const ir::ObjectExpression *initObjExpr);
+
     // Smart cast support
     [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
     [[nodiscard]] std::pair<Type *, Type *> CheckTestNullishCondition(Type *testedType, Type *actualType, bool strict);
@@ -712,13 +730,6 @@ private:
 
     ir::MethodDefinition *CreateLambdaObjectClassInvokeMethod(Signature *invokeSignature,
                                                               ir::TypeNode *retTypeAnnotation);
-
-    ir::ETSParameterExpression *AddParamWithScope(varbinder::FunctionParamScope *paramScope, util::StringView name,
-                                                  checker::Type *type);
-    std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunctionForConstructor(
-        varbinder::FunctionScope *scope);
-    ir::MethodDefinition *CreateNonStaticClassInitializer(varbinder::ClassScope *classScope,
-                                                          varbinder::RecordTable *recordTable);
 
     void ClassInitializerFromImport(ir::ETSImportDeclaration *import, ArenaVector<ir::Statement *> *statements);
     void EmitDynamicModuleClassInitCall();

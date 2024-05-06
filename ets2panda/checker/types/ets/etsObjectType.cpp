@@ -321,6 +321,11 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         return;
     }
 
+    const bool isRequiredType = HasObjectFlag(ETSObjectFlags::REQUIRED);
+    if (isRequiredType) {
+        ss << "Required" << compiler::Signatures::GENERIC_BEGIN;
+    }
+
     if (precise) {
         ss << assemblerName_;  // NOTE(gogabr): need full qualified name
     } else {
@@ -336,6 +341,10 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
                 ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_COMMA);
             }
         }
+        ss << compiler::Signatures::GENERIC_END;
+    }
+
+    if (isRequiredType) {
         ss << compiler::Signatures::GENERIC_END;
     }
 }
@@ -780,12 +789,23 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     return copiedType;
 }
 
+static Type *SubstituteVariableType(TypeRelation *relation, const Substitution *substitution, Type *const varType)
+{
+    auto *substitutedType = varType->Substitute(relation, substitution);
+
+    if (varType->HasTypeFlag(TypeFlag::ETS_REQUIRED_TYPE_PARAMETER)) {
+        substitutedType = relation->GetChecker()->AsETSChecker()->HandleRequiredType(substitutedType);
+    }
+
+    return substitutedType;
+}
+
 static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalVariable *prop, TypeRelation *relation,
                                                                const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
-    auto *const copiedPropType = varType->Substitute(relation, substitution);
+    auto *const copiedPropType = SubstituteVariableType(relation, substitution, varType);
     auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
     copiedPropType->SetVariable(copiedProp);
     copiedProp->SetTsType(copiedPropType);

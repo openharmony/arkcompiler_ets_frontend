@@ -106,12 +106,10 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
                 SetTsType(checker->GlobalETSUndefinedType());
             } else if (ident->Name() == compiler::Signatures::NULL_LITERAL) {
                 SetTsType(checker->GlobalETSNullType());
-            } else if (ident->Name() == compiler::Signatures::READONLY_TYPE_NAME) {
-                SetTsType(checker->HandleReadonlyType(typeParams_));
-            } else if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME) {
-                // Handle 'Partial<T>' types
-                // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-                SetTsType(checker->HandlePartialTypeNode(checker->GetPartialTypeBaseTypeNode(typeParams_)));
+            } else if (ident->Name() == compiler::Signatures::PARTIAL_TYPE_NAME ||
+                       ident->Name() == compiler::Signatures::READONLY_TYPE_NAME ||
+                       ident->Name() == compiler::Signatures::REQUIRED_TYPE_NAME) {
+                SetTsType(checker->HandleUtilityTypeParameterNode(typeParams_, ident->Name().Utf8()));
             }
         }
         if (TsType() == nullptr) {
