@@ -2411,8 +2411,16 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
     auto importPath = Lexer()->GetToken().Ident();
 
     auto resolvedImportPath = importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath);
-    importPathManager_->AddToParseList(resolvedImportPath,
-                                       (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U);
+    if (globalProgram_->AbsoluteName() != resolvedImportPath) {
+        importPathManager_->AddToParseList(resolvedImportPath,
+                                           (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U);
+    } else {
+        if (!IsETSModule()) {
+            ThrowSyntaxError("Please compile `" + globalProgram_->FileName().Mutf8() + "." +
+                             globalProgram_->SourceFile().GetExtension().Mutf8() +
+                             "` with `--ets-module` option. It is being imported by another file.");
+        }
+    }
 
     auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);
     auto importData = importPathManager_->GetImportData(resolvedImportPath, Extension());
