@@ -18,7 +18,8 @@
             "line": 15,
             "column": 1,
             "problem": "SharedNoSideEffectImport",
-            "rule": "Shared module do not allow side effect import (arkts-no-side-effects-imports)"
+            "suggest": "",
+            "rule": "Importing a module for side-effects only is not supported in shared module (arkts-no-side-effects-imports)"
         }
     ]
 }

@@ -655,20 +655,19 @@ export class TypeScriptLinter {
 
   private handleSharedModuleNoSideEffectImport(node : ts.ImportDeclaration):void {
     // check 'use shared'
-    if (TypeScriptLinter.inSharedModule(node)) {
-      if (!node.importClause) {
-        this.incrementCounters(node, FaultID.SharedNoSideEffectImport);
-      }
+    if (TypeScriptLinter.inSharedModule(node) && !node.importClause) {
+      this.incrementCounters(node, FaultID.SharedNoSideEffectImport);
     }
   }
 
   private static inSharedModule(node: ts.Node): boolean {
     const sourceFile: ts.SourceFile = node.getSourceFile();
-    if (TypeScriptLinter.sharedModulesCache.has(path.normalize(sourceFile.fileName))) {
-      return TypeScriptLinter.sharedModulesCache.get(path.normalize(sourceFile.fileName))!;
+    const modulePath = path.normalize(sourceFile.fileName);
+    if (TypeScriptLinter.sharedModulesCache.has(modulePath)) {
+      return TypeScriptLinter.sharedModulesCache.get(modulePath)!;
     }
     const isSharedModule: boolean = TsUtils.isSharedModule(sourceFile);
-    TypeScriptLinter.sharedModulesCache.set(path.normalize(sourceFile.fileName), isSharedModule);
+    TypeScriptLinter.sharedModulesCache.set(modulePath, isSharedModule);
     return isSharedModule;
   }
 
@@ -2070,10 +2069,7 @@ export class TypeScriptLinter {
      */
     if (ts.isSpreadElement(node)) {
       const spreadExprType = this.tsUtils.getTypeOrTypeConstraintAtLocation(node.expression);
-      if (spreadExprType &&
-        (TypeScriptLinter.useRelaxedRules ||
-         ts.isCallLikeExpression(node.parent) || ts.isArrayLiteralExpression(node.parent)) &&
-        this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
+      if (spreadExprType && this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
         return;
       }
     }
