@@ -16,9 +16,11 @@
 #include "methodDefinition.h"
 
 #include <ir/astDump.h>
+#include <ir/base/annotation.h>
 #include <ir/base/decorator.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expression.h>
+#include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
 
 #include <utility>
@@ -45,6 +47,10 @@ void MethodDefinition::Iterate(const NodeTraverser &cb) const
     }
 
     for (auto *it : decorators_) {
+        cb(it);
+    }
+
+    for (auto *it : annotations_) {
         cb(it);
     }
 
@@ -92,7 +98,8 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"computed", isComputed_},
                  {"value", value_},
                  {"overloads", overloads_},
-                 {"decorators", decorators_}});
+                 {"decorators", decorators_},
+                 {"annotations", annotations_}});
 }
 
 void MethodDefinition::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

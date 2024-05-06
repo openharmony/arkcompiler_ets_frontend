@@ -1933,6 +1933,7 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/module-record/module-record-field-name-option.js", "js",
                          ["--module-record-field-name=abc", "--source-file=abc", "--module", "--dump-normalized-asm-program"])
+    runner.add_directory("parser/annotations", "ts", ["--module", "--dump-ast", "--enable-annotations"])
 
     runners.append(runner)
 
@@ -1992,6 +1993,7 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/annotations-projects", "ts", ["--module", "--enable-annotations"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/dts", "d.ts", ["--module", "--opt-level=0"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/commonjs", "js", ["--commonjs"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
@@ -2004,6 +2006,7 @@ def add_directory_for_compiler(runners, args):
                                                 ["--debug-info", "--dump-debug-info", "--source-file", "debug-info.js"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/js/module-record-field-name-option.js", "js",
                                                 ["--module", "--module-record-field-name=abc"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/annotations", "ts", ["--module", "--enable-annotations"]))
     # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",

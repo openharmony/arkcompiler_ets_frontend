@@ -43,7 +43,8 @@ class MethodDefinition : public Statement {
 public:
     explicit MethodDefinition(MethodDefinitionKind kind, Expression *key, FunctionExpression *value,
                               ModifierFlags modifiers, ArenaAllocator *allocator, ArenaVector<Decorator *> &&decorators,
-                              ArenaVector<ParamDecorators> &&paramDecorators, bool isComputed)
+                              ArenaVector<Annotation *> &&annotations, ArenaVector<ParamDecorators> &&paramDecorators,
+                              bool isComputed)
         : Statement(AstNodeType::METHOD_DEFINITION),
           kind_(kind),
           key_(key),
@@ -51,6 +52,7 @@ public:
           modifiers_(modifiers),
           overloads_(allocator->Adapter()),
           decorators_(std::move(decorators)),
+          annotations_(std::move(annotations)),
           paramDecorators_(std::move(paramDecorators)),
           isComputed_(isComputed)
     {
@@ -126,6 +128,16 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Annotation *> &Annotations() const
+    {
+        return annotations_;
+    }
+
+    void SetAnnotations(ArenaVector<Annotation *> &&annotations)
+    {
+        annotations_ = std::move(annotations);
+    }
+
     const ArenaVector<ParamDecorators> &GetParamDecorators() const
     {
         return paramDecorators_;
@@ -179,6 +191,7 @@ private:
     ModifierFlags modifiers_;
     ArenaVector<MethodDefinition *> overloads_;
     ArenaVector<Decorator *> decorators_;
+    ArenaVector<Annotation *> annotations_;
     ArenaVector<ParamDecorators> paramDecorators_;
     bool isComputed_;
 };

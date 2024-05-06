@@ -306,19 +306,21 @@ private:
         std::unordered_map<util::StringView, PrivateGetterSetterType> &unusedGetterSetterPairs);
     ir::MethodDefinition *ParseClassMethod(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd,
-                                           ArenaVector<ir::Decorator *> &&decorators, bool isDeclare);
+                                           ArenaVector<ir::Decorator *> &&decorators,
+                                           ArenaVector<ir::Annotation *> &&annotations, bool isDeclare);
     ir::ClassStaticBlock *ParseStaticBlock(ClassElmentDescriptor *desc);
     ir::Statement *ParseClassProperty(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                       ir::Expression *propName, ir::Expression *typeAnnotation,
-                                      ArenaVector<ir::Decorator *> &&decorators, bool isDeclare,
+                                      ArenaVector<ir::Decorator *> &&decorators,
+                                      ArenaVector<ir::Annotation *> &&annotations, bool isDeclare,
                                       std::pair<binder::FunctionScope *, binder::FunctionScope *> implicitScopes);
     void ParseClassKeyModifiers(ClassElmentDescriptor *desc);
     void CheckClassGeneratorMethod(ClassElmentDescriptor *desc);
     void CheckClassPrivateIdentifier(ClassElmentDescriptor *desc);
     void CheckFieldKey(ir::Expression *propName);
     ir::Expression *ParseClassKeyAnnotation();
-    ir::Decorator *ParseDecorator();
-    ArenaVector<ir::Decorator *> ParseDecorators();
+    ir::Statement *ParseDecoratorAndAnnotation();
+    std::pair<ArenaVector<ir::Decorator *>, ArenaVector<ir::Annotation *>> ParseDecoratorsAndAnnotations();
     ir::Statement *ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                      ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
                                      bool isDeclare, bool isAbstractClass, bool isExtendsFromNull,
@@ -461,11 +463,13 @@ private:
 
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 ArenaVector<ir::Decorator *> decorators,
+                                                                ArenaVector<ir::Annotation *> annotations,
                                                                 bool isExportEquals = false);
     ir::ExportAllDeclaration *ParseExportAllDeclaration(const lexer::SourcePosition &startLoc);
     ir::ExportNamedDeclaration *ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc, bool isType);
     ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc,
-                                                            ArenaVector<ir::Decorator *> &&decorators);
+                                                            ArenaVector<ir::Decorator *> &&decorators,
+                                                            ArenaVector<ir::Annotation *> &&annotations);
     ir::Identifier *ParseNamedExport(const lexer::Token &exportedToken);
     void CheckStrictReservedWord() const;
     ir::PrivateIdentifier *ParsePrivateIdentifier();
@@ -545,7 +549,8 @@ private:
                                                       bool isDeclare = false);
     void AddFunctionToBinder(ir::ScriptFunction *func, ParserStatus newStatus);
     void CheckOptionalBindingPatternParameter(ir::ScriptFunction *func) const;
-    ir::Statement *ParseExportDeclaration(StatementParsingFlags flags, ArenaVector<ir::Decorator *> &&decorators);
+    ir::Statement *ParseExportDeclaration(StatementParsingFlags flags, ArenaVector<ir::Decorator *> &&decorators,
+                                          ArenaVector<ir::Annotation *> &&annotations);
     std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> ParseForInOf(
         ir::Expression *leftNode, ExpressionParseFlags exprFlags, bool isAwait);
     std::tuple<ForStatementKind, ir::Expression *, ir::Expression *> ParseForInOf(ir::AstNode *initNode,
@@ -559,10 +564,12 @@ private:
     ir::LabelledStatement *ParseLabelledStatement(const lexer::LexerPosition &pos);
     ir::ReturnStatement *ParseReturnStatement();
     ir::ClassDeclaration *ParseClassStatement(StatementParsingFlags flags, bool isDeclare,
-                                              ArenaVector<ir::Decorator *> &&decorators, bool isAbstract = false);
+                                              ArenaVector<ir::Decorator *> &&decorators,
+                                              ArenaVector<ir::Annotation *> &&annotations, bool isAbstract = false);
     ir::ClassDeclaration *ParseClassDeclaration(bool idRequired, ArenaVector<ir::Decorator *> &&decorators,
-                                                bool isDeclare = false, bool isAbstract = false,
-                                                bool isExported = false);
+                                                ArenaVector<ir::Annotation *> &&annotations, bool isDeclare = false,
+                                                bool isAbstract = false, bool isExported = false,
+                                                bool isAnnotation = false);
     ir::TSTypeAliasDeclaration *ParseTsTypeAliasDeclaration(bool isDeclare);
     ir::Expression *ParseEnumComputedPropertyKey(binder::EnumDecl *&decl, const lexer::SourcePosition &keyStartLoc,
                                                  bool isDeclare);

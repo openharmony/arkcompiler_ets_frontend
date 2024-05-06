@@ -73,6 +73,16 @@ public:
         return literalBuffers_;
     }
 
+    auto &LiteralArrays()
+    {
+        return literalArrays_;
+    }
+
+    auto &ExternalAnnotationRecords()
+    {
+        return externalAnnotationRecords_;
+    }
+
     void Generate(util::PatchFix *patchFixHelper);
     const ArenaSet<util::StringView> &Strings() const;
 
@@ -86,6 +96,9 @@ private:
     void GenVariablesDebugInfo();
     void GenFunctionKind();
     void GenIcSize();
+    pandasm::AnnotationElement CreateAnnotationElement(const std::string &propName, const ir::Expression *initValue);
+    pandasm::AnnotationData CreateAnnotation(const ir::Annotation *anno);
+    void GenAnnotations();
     util::StringView SourceCode() const;
     lexer::LineIndex &GetLineIndex() const;
 
@@ -97,6 +110,9 @@ private:
     panda::pandasm::Function *func_ {};
     ArenaVector<std::pair<int32_t, std::vector<Literal>>> literalBuffers_;
     size_t offset_ {0};
+
+    ArenaVector<std::pair<std::string, std::vector<Literal>>> literalArrays_;
+    ArenaVector<panda::pandasm::Record> externalAnnotationRecords_;
 };
 
 class Emitter {
@@ -106,6 +122,7 @@ public:
     NO_COPY_SEMANTIC(Emitter);
     NO_MOVE_SEMANTIC(Emitter);
 
+    void AddAnnotationRecord(const std::string &annoName, const ir::ClassDeclaration *classDecl);
     void AddFunction(FunctionEmitter *func, CompilerContext *context);
     void AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context);
     void AddScopeNamesRecord(CompilerContext *context);
@@ -126,13 +143,24 @@ public:
         return constant_local_export_slots_;
     }
 
+    static std::vector<std::pair<std::string, std::vector<Literal>>> CreateLiteralArray(const ir::Expression *array,
+                                                                                        const std::string &baseName);
+
 private:
+    void CreateStringClass();
+    panda::pandasm::Type DeduceArrayEnumType(const ir::Expression *value, uint8_t rank, bool &needToCreateArrayValue);
+
     void SetCommonjsField(bool isCommonjs);
     void SetPkgNameField(const std::string &pkgName);
     void GenCommonjsRecord() const;
     void AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context);
     void AddSharedModuleRecord(const CompilerContext *context);
     void AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerContext *context);
+
+    void CreateEnumProp(const ir::ClassProperty *prop, const std::string &annoName, panda::pandasm::Field &annoProp);
+    void CreateLiteralArrayProp(const ir::ClassProperty *prop, const std::string &annoName,
+                                panda::pandasm::Field &annoProp);
+    panda::pandasm::Field CreateAnnotationProp(const ir::ClassProperty *prop, const std::string &annoName);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;

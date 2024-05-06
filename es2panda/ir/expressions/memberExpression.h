@@ -61,6 +61,11 @@ public:
         return property_;
     }
 
+    Expression *Property()
+    {
+        return property_;
+    }
+
     bool IsComputed() const
     {
         return computed_;

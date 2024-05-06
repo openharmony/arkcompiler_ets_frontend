@@ -16,6 +16,7 @@
 #include <util/helpers.h>
 #include <binder/tsBinding.h>
 #include <ir/astNode.h>
+#include <ir/base/annotation.h>
 #include <ir/base/catchClause.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/decorator.h>
@@ -198,11 +199,29 @@ bool ParserImpl::IsTsDeclarationStatement() const
 ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 {
     bool isDeclare = false;
-    auto decorators = ParseDecorators();
+    auto decoratorsAndAnnotations = ParseDecoratorsAndAnnotations();
+    auto decorators = decoratorsAndAnnotations.first;
+    auto annotations = decoratorsAndAnnotations.second;
 
     if (Extension() == ScriptExtension::TS) {
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
             isDeclare = CheckDeclare();
+        }
+
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_AT) {
+            lexer_->NextToken(); // eat @ symbol
+            if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_INTERFACE) {
+                ThrowSyntaxError("'interface' keyword expected.");
+            }
+            if (!decorators.empty()) {
+                ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
+            }
+            if (!annotations.empty()) {
+                ThrowSyntaxError("Annotations can not be used with annotation declaration",
+                                 annotations.front()->Start());
+            }
+            return ParseClassDeclaration(true, std::move(decorators), std::move(annotations), isDeclare, false,
+                                         false, true);
         }
 
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
@@ -217,10 +236,14 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
                 isDeclare = true;
             }
 
+            if (!annotations.empty()) {
+                ThrowSyntaxError("Annotations can not be used with abstract classes", annotations.front()->Start());
+            }
+
             if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
                 lexer_->Rewind(startPos);
             } else {
-                return ParseClassStatement(flags, isDeclare, std::move(decorators), true);
+                return ParseClassStatement(flags, isDeclare, std::move(decorators), std::move(annotations), true);
             }
         }
 
@@ -246,7 +269,7 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
             return ParseEmptyStatement();
         }
         case lexer::TokenType::KEYW_EXPORT: {
-            return ParseExportDeclaration(flags, std::move(decorators));
+            return ParseExportDeclaration(flags, std::move(decorators), std::move(annotations));
         }
         case lexer::TokenType::KEYW_IMPORT: {
             return ParseImportDeclaration(flags);
@@ -255,7 +278,7 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
             return ParseFunctionStatement(flags, isDeclare);
         }
         case lexer::TokenType::KEYW_CLASS: {
-            return ParseClassStatement(flags, isDeclare, std::move(decorators));
+            return ParseClassStatement(flags, isDeclare, std::move(decorators), std::move(annotations));
         }
         case lexer::TokenType::KEYW_VAR: {
             return ParseVarStatement(isDeclare);
@@ -663,17 +686,20 @@ ir::Statement *ParserImpl::ParsePotentialExpressionStatement(StatementParsingFla
 }
 
 ir::ClassDeclaration *ParserImpl::ParseClassStatement(StatementParsingFlags flags, bool isDeclare,
-                                                      ArenaVector<ir::Decorator *> &&decorators, bool isAbstract)
+                                                      ArenaVector<ir::Decorator *> &&decorators,
+                                                      ArenaVector<ir::Annotation *> &&annotations, bool isAbstract)
 {
     if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
         ThrowSyntaxError("Lexical 'class' declaration is not allowed in single statement context");
     }
 
-    return ParseClassDeclaration(true, std::move(decorators), isDeclare, isAbstract);
+    return ParseClassDeclaration(true, std::move(decorators), std::move(annotations), isDeclare, isAbstract, false,
+                                 false);
 }
 
 ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVector<ir::Decorator *> &&decorators,
-                                                        bool isDeclare, bool isAbstract, bool isExported)
+                                                        ArenaVector<ir::Annotation *> &&annotations, bool isDeclare,
+                                                        bool isAbstract, bool isExported, bool isAnnotation)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract);
@@ -695,7 +721,8 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
     decl->BindNode(classDefinition);
 
     lexer::SourcePosition endLoc = classDefinition->End();
-    auto *classDecl = AllocNode<ir::ClassDeclaration>(classDefinition, std::move(decorators));
+    auto *classDecl = AllocNode<ir::ClassDeclaration>(classDefinition, std::move(decorators), std::move(annotations),
+                                                      isAnnotation);
     classDecl->SetRange({startLoc, endLoc});
     return classDecl;
 }
@@ -2450,6 +2477,7 @@ void ParserImpl::AddTsTypeExportLocalEntryItem(const ir::Statement *declNode, bo
 
 ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                         ArenaVector<ir::Decorator *> decorators,
+                                                                        ArenaVector<ir::Annotation *> annotations,
                                                                         bool isExportEquals)
 {
     lexer_->NextToken();  // eat `default` keyword or `=`
@@ -2465,7 +2493,7 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION) {
         declNode = ParseFunctionDeclaration(true, ParserStatus::EXPORT_REACHED);
     } else if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {
-        declNode = ParseClassDeclaration(false, std::move(decorators), false, false, true);
+        declNode = ParseClassDeclaration(false, std::move(decorators), std::move(annotations), false, false, true);
     } else if (lexer_->GetToken().IsAsyncModifier()) {
         lexer_->NextToken();  // eat `async` keyword
         declNode = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION | ParserStatus::EXPORT_REACHED);
@@ -2478,7 +2506,12 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
         if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
             ThrowSyntaxError("Unexpected token, expected 'class'.");
         }
-        declNode = ParseClassDeclaration(false, std::move(decorators), false, true, true);
+
+        if (!annotations.empty()) {
+            ThrowSyntaxError("Annotations can not be used with abstract classes", annotations.front()->Start());
+        }
+
+        declNode = ParseClassDeclaration(false, std::move(decorators), std::move(annotations), false, true, true);
     } else {
         declNode = ParseExpression();
         Binder()->AddDecl<binder::LetDecl>(declNode->Start(), binder::DeclarationFlags::EXPORT,
@@ -2643,7 +2676,8 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
 }
 
 ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc,
-                                                                    ArenaVector<ir::Decorator *> &&decorators)
+                                                                    ArenaVector<ir::Decorator *> &&decorators,
+                                                                    ArenaVector<ir::Annotation *> &&annotations)
 {
     ir::Statement *decl = nullptr;
 
@@ -2659,6 +2693,11 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
         !(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
           (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT))) {
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
+    }
+
+    if (!annotations.empty() && lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS &&
+        (context_.Status() & ParserStatus::IN_CLASS_BODY) == 0) {
+        ThrowSyntaxError("Annotations can be used only with classes and class methods", annotations.front()->Start());
     }
 
     VariableParsingFlags flag = isTsModule ?
@@ -2683,7 +2722,26 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
             break;
         }
         case lexer::TokenType::KEYW_CLASS: {
-            decl = ParseClassDeclaration(true, std::move(decorators), isDeclare || IsDtsFile(), false, !isTsModule);
+            decl = ParseClassDeclaration(true, std::move(decorators), std::move(annotations), isDeclare || IsDtsFile(),
+                                         false, !isTsModule);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_AT: {
+            lexer_->NextToken(); // eat @ symbol
+            if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_INTERFACE) {
+                ThrowSyntaxError("'interface' keyword expected.");
+            }
+
+            if (!decorators.empty()) {
+                ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
+            }
+
+            if (!annotations.empty()) {
+                ThrowSyntaxError("Annotations can not be used with annotation declaration",
+                                 annotations.front()->Start());
+            }
+            decl = ParseClassDeclaration(true, std::move(decorators), std::move(annotations), isDeclare || IsDtsFile(),
+                                         false, !isTsModule, true);
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
@@ -2730,7 +2788,11 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
                         if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
                             ThrowSyntaxError("Unexpected token, expected 'class'.");
                         }
-                        decl = ParseClassDeclaration(true, std::move(decorators),
+                        if (!annotations.empty()) {
+                            ThrowSyntaxError("Annotations can not be used with abstract classes",
+                                             annotations.front()->Start());
+                        }
+                        decl = ParseClassDeclaration(true, std::move(decorators), std::move(annotations),
                                                      isDeclare || IsDtsFile(), true, !isTsModule);
                         break;
                     }
@@ -2771,7 +2833,8 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
 }
 
 ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
-                                                  ArenaVector<ir::Decorator *> &&decorators)
+                                                  ArenaVector<ir::Decorator *> &&decorators,
+                                                  ArenaVector<ir::Annotation *> &&annotations)
 {
     if (Extension() == ScriptExtension::JS || !context_.IsTsModule()) {
         if (!(flags & StatementParsingFlags::GLOBAL)) {
@@ -2801,7 +2864,7 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_DEFAULT: { // export default Id
-            return ParseExportDefaultDeclaration(startLoc, std::move(decorators));
+            return ParseExportDefaultDeclaration(startLoc, std::move(decorators), std::move(annotations));
         }
         case lexer::TokenType::PUNCTUATOR_MULTIPLY: { // export * ...
             return ParseExportAllDeclaration(startLoc);
@@ -2813,8 +2876,13 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
             return ParseTsImportEqualsDeclaration(startLoc, true);
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
+            if (!annotations.empty()) {
+                ThrowSyntaxError("Annotations can not be used with assignment expression",
+                                 annotations.front()->Start());
+            }
+
             if (Extension() == ScriptExtension::TS) {
-                return ParseExportDefaultDeclaration(startLoc, std::move(decorators), true);
+                return ParseExportDefaultDeclaration(startLoc, std::move(decorators), std::move(annotations), true);
             }
 
             [[fallthrough]];
@@ -2827,7 +2895,8 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
             [[fallthrough]];
         }
         default: { // export [var] id
-            ir::ExportNamedDeclaration *exportDecl = ParseNamedExportDeclaration(startLoc, std::move(decorators));
+            ir::ExportNamedDeclaration *exportDecl = ParseNamedExportDeclaration(startLoc, std::move(decorators),
+                                                                                 std::move(annotations));
 
             if (Extension() == ScriptExtension::TS && exportDecl->Decl()->IsVariableDeclaration() &&
                 !(flags & StatementParsingFlags::GLOBAL) && exportDecl->Parent() &&

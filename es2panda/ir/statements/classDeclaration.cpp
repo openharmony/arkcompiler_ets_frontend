@@ -16,10 +16,13 @@
 #include "classDeclaration.h"
 
 #include <compiler/base/lreference.h>
+#include <compiler/core/compilerContext.h>
+#include <compiler/core/emitter/emitter.h>
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/decorator.h>
+#include <ir/expressions/callExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/module/exportDefaultDeclaration.h>
 
@@ -36,7 +39,8 @@ void ClassDeclaration::Iterate(const NodeTraverser &cb) const
 
 void ClassDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ClassDeclaration"}, {"definition", def_}, {"decorators", decorators_}});
+    dumper->Add({{"type", "ClassDeclaration"}, {"definition", def_}, {"decorators", decorators_},
+                 {"isAnnotationDeclaration", isAnnotationDecl_}});
 }
 
 void ClassDeclaration::Compile(compiler::PandaGen *pg) const
@@ -45,6 +49,10 @@ void ClassDeclaration::Compile(compiler::PandaGen *pg) const
     // of [ExportDefaultDeclaration] during compiling phase. So we use
     // the parent node to create a lreference with boundName of [*default*].
     if (def_->Declare()) {
+        return;
+    }
+    if (isAnnotationDecl_) {
+        pg->Context()->GetEmitter()->AddAnnotationRecord(std::string(def_->GetName()), this);
         return;
     }
     const auto *node = def_->Ident() ? def_->Ident() : this->Parent();
