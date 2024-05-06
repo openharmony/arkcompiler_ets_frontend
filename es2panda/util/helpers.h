@@ -37,6 +37,7 @@ class Statement;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda {
+struct CompileContextInfo;
 struct CompilerOptions;
 enum class ErrorType;
 
@@ -147,6 +148,7 @@ public:
         const std::string_view &msg);
     static bool IsUseShared(const ir::Statement *statement);
     static const ir::ClassDefinition *GetContainingSendableClass(const ir::AstNode *node);
+    static std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const CompileContextInfo &info);
     static bool IsSpecialScopeName(const util::StringView &str);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;

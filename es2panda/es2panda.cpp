@@ -99,7 +99,41 @@ panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, con
     }
     panda::pandasm::Program *prog = new panda::pandasm::Program();
     (void)abcToAsmCompiler_->FillProgramData(*prog);
+    UpdatePackageVersion(prog, options);
     return prog;
+}
+
+void Compiler::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
+                                                 const panda::es2panda::CompilerOptions &options)
+{
+    for (auto &[name, function] : prog->function_table) {
+        for (auto iter = function.ins.begin(); iter != function.ins.end(); iter++) {
+            // Only replace package version for import("xxxx") expression, whose bytecode always is
+            // lda.str -> dynamicimport
+            // The dynamicimport bytecode should not have label, otherwise the dyanmicimport is a jump
+            // target, and the parameter of the dynamiter is a variable instead of a constant string
+            // expression. Check AbcCodeProcessor::AddJumpLabels for more details
+            if (iter->opcode != pandasm::Opcode::DYNAMICIMPORT || iter->set_label) {
+                continue;
+            }
+            auto prevIns = iter - 1;
+            if (prevIns->opcode != pandasm::Opcode::LDA_STR) {
+                continue;
+            }
+            ASSERT(prevIns->ids.size() == 1);
+            const auto &newOhmurl = util::Helpers::UpdatePackageVersionIfNeeded(prevIns->ids[0],
+                                                                                options.compileContextInfo);
+            prog->strings.insert(newOhmurl);
+            prevIns->ids[0] = newOhmurl;    // 0: index of the string in lda.str bytecode
+        }
+    }
+}
+
+void Compiler::UpdatePackageVersion(panda::pandasm::Program *prog, const panda::es2panda::CompilerOptions &options)
+{
+    // Replace for esm module import
+    // Replace for dynamic import
+    UpdateDynamicImportPackageVersion(prog, options);
 }
 
 panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,
