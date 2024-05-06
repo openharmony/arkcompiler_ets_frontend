@@ -9,11 +9,11 @@
         "loc": {
           "start": {
             "line": 18,
-            "column": 15
+            "column": 22
           },
           "end": {
             "line": 18,
-            "column": 64
+            "column": 71
           }
         }
       },
@@ -22,16 +22,16 @@
           "type": "ImportNamespaceSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "",
+            "name": "all",
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 18,
+                "column": 13
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 18,
+                "column": 16
               }
             }
           },
@@ -42,7 +42,7 @@
             },
             "end": {
               "line": 18,
-              "column": 14
+              "column": 16
             }
           }
         }
@@ -54,7 +54,7 @@
         },
         "end": {
           "line": 18,
-          "column": 64
+          "column": 71
         }
       }
     },
@@ -472,9 +472,39 @@
                         "right": {
                           "type": "CallExpression",
                           "callee": {
-                            "type": "Identifier",
-                            "name": "bar",
-                            "decorators": [],
+                            "type": "MemberExpression",
+                            "object": {
+                              "type": "Identifier",
+                              "name": "all",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 22,
+                                  "column": 19
+                                },
+                                "end": {
+                                  "line": 22,
+                                  "column": 22
+                                }
+                              }
+                            },
+                            "property": {
+                              "type": "Identifier",
+                              "name": "bar",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 22,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 22,
+                                  "column": 26
+                                }
+                              }
+                            },
+                            "computed": false,
+                            "optional": false,
                             "loc": {
                               "start": {
                                 "line": 22,
@@ -482,7 +512,7 @@
                               },
                               "end": {
                                 "line": 22,
-                                "column": 22
+                                "column": 26
                               }
                             }
                           },
@@ -495,7 +525,7 @@
                             },
                             "end": {
                               "line": 22,
-                              "column": 24
+                              "column": 28
                             }
                           }
                         },
@@ -506,7 +536,7 @@
                           },
                           "end": {
                             "line": 22,
-                            "column": 24
+                            "column": 28
                           }
                         }
                       },
@@ -518,7 +548,7 @@
                         },
                         "end": {
                           "line": 22,
-                          "column": 25
+                          "column": 29
                         }
                       }
                     },

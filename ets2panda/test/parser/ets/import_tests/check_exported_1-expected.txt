@@ -9,11 +9,11 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 15
+            "column": 22
           },
           "end": {
             "line": 16,
-            "column": 46
+            "column": 53
           }
         }
       },
@@ -22,16 +22,16 @@
           "type": "ImportNamespaceSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "",
+            "name": "all",
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 13
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 16
               }
             }
           },
@@ -42,7 +42,7 @@
             },
             "end": {
               "line": 16,
-              "column": 14
+              "column": 16
             }
           }
         }
@@ -54,7 +54,7 @@
         },
         "end": {
           "line": 16,
-          "column": 47
+          "column": 54
         }
       }
     },
@@ -239,9 +239,39 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "foo",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "all",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 5
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 8
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "foo",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 9
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 12
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 19,
@@ -249,7 +279,7 @@
                             },
                             "end": {
                               "line": 19,
-                              "column": 8
+                              "column": 12
                             }
                           }
                         },
@@ -262,7 +292,7 @@
                           },
                           "end": {
                             "line": 19,
-                            "column": 10
+                            "column": 14
                           }
                         }
                       },
@@ -273,7 +303,7 @@
                         },
                         "end": {
                           "line": 19,
-                          "column": 11
+                          "column": 15
                         }
                       }
                     },
@@ -282,9 +312,39 @@
                       "expression": {
                         "type": "CallExpression",
                         "callee": {
-                          "type": "Identifier",
-                          "name": "bar",
-                          "decorators": [],
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "all",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 5
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 8
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "bar",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 20,
+                                "column": 9
+                              },
+                              "end": {
+                                "line": 20,
+                                "column": 12
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
                           "loc": {
                             "start": {
                               "line": 20,
@@ -292,7 +352,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 8
+                              "column": 12
                             }
                           }
                         },
@@ -305,7 +365,7 @@
                           },
                           "end": {
                             "line": 20,
-                            "column": 10
+                            "column": 14
                           }
                         }
                       },
@@ -316,7 +376,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 11
+                          "column": 15
                         }
                       }
                     }
@@ -402,4 +462,4 @@
     }
   }
 }
-TypeError: Unresolved reference bar [check_exported_1.ets:20:5]
+TypeError: Property 'bar' does not exist on type 'check_exported_2' [check_exported_1.ets:20:9]

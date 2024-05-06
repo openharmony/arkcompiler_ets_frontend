@@ -238,6 +238,12 @@ bool ETSChecker::CheckOptionalLambdaFunction(ir::Expression *argument, Signature
     return false;
 }
 
+bool ETSChecker::ValidateArgumentAsIdentifier(const ir::Identifier *identifier)
+{
+    auto result = Scope()->Find(identifier->Name());
+    return result.variable != nullptr && (result.variable->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE));
+}
+
 bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                                                  const ArenaVector<ir::Expression *> &arguments, TypeRelationFlag flags,
                                                  const std::vector<bool> &argTypeInferenceRequired, bool throwError)
@@ -281,19 +287,49 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                 this, substitutedSig->Function()->Params()[index], flags);
         }
 
-        auto *argumentType = argument->Check(this);
-        auto *targetType = substitutedSig->Params()[index]->TsType();
-
-        auto const invocationCtx =
-            checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
-                                       {"Type '", argumentType, "' is not compatible with type '",
-                                        TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
-                                       flags);
-        if (!invocationCtx.IsInvocable()) {
-            if (!CheckOptionalLambdaFunction(argument, substitutedSig, index)) {
-                return false;
-            }
+        if (!CheckInvokable(substitutedSig, argument, index, flags)) {
+            return false;
         }
+
+        if (argument->IsIdentifier() && ValidateArgumentAsIdentifier(argument->AsIdentifier())) {
+            ThrowTypeError("Class name can't be the argument of function or method.", argument->Start());
+        }
+
+        // clang-format off
+        if (!ValidateSignatureInvocationContext(
+            substitutedSig, argument,
+            TryGettingFunctionTypeFromInvokeFunction(substitutedSig->Params()[index]->TsType()), index, flags)) {
+            // clang-format on
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool ETSChecker::CheckInvokable(Signature *substitutedSig, ir::Expression *argument, std::size_t index,
+                                TypeRelationFlag flags)
+{
+    auto *argumentType = argument->Check(this);
+    auto *targetType = substitutedSig->Params()[index]->TsType();
+
+    auto const invocationCtx =
+        checker::InvocationContext(Relation(), argument, argumentType, targetType, argument->Start(),
+                                   {"Type '", argumentType, "' is not compatible with type '",
+                                    TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
+                                   flags);
+    return invocationCtx.IsInvocable() || CheckOptionalLambdaFunction(argument, substitutedSig, index);
+}
+
+bool ETSChecker::ValidateSignatureInvocationContext(Signature *substitutedSig, ir::Expression *argument,
+                                                    const Type *targetType, std::size_t index, TypeRelationFlag flags)
+{
+    Type *argumentType = argument->Check(this);
+    auto const invocationCtx = checker::InvocationContext(
+        Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
+        {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
+    if (!invocationCtx.IsInvocable()) {
+        return CheckOptionalLambdaFunction(argument, substitutedSig, index);
     }
 
     return true;

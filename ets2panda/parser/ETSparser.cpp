@@ -1087,6 +1087,7 @@ ir::MethodDefinition *ETSParser::ParseInterfaceGetterSetterMethod(const ir::Modi
         method->Id()->SetMutator();
         method->Function()->AddFlag(ir::ScriptFunctionFlags::SETTER);
     }
+    method->AddModifier(ir::ModifierFlags::PUBLIC);
 
     method->Function()->SetIdent(method->Id()->Clone(Allocator(), nullptr));
     method->Function()->AddModifier(method->Modifiers());
@@ -2516,6 +2517,13 @@ void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, 
 
     if (!CheckModuleAsModifier()) {
         ThrowSyntaxError("Unexpected token.");
+    }
+
+    // Note (oeotvos) As a temporary solution we allow the stdlib to use namespace import without an alias, but this
+    // should be handled at some point.
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM && !isReExport &&
+        (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) == 0) {
+        ThrowSyntaxError("Unexpected token, expected 'as' but found 'from'");
     }
 
     auto *local = AllocNode<ir::Identifier>(util::StringView(""), Allocator());

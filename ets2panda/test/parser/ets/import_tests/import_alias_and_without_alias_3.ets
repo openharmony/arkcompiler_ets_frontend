@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,10 @@
 
 import {foo} from "import_tests/packages/aliasWithoutAlias/import2"
 import {foo as test1foo} from "import_tests/packages/aliasWithoutAlias/import1"
-import * from "import_tests/packages/aliasWithoutAlias/import1"
+import * as all from "import_tests/packages/aliasWithoutAlias/import1"
 
 function main():void{
     assert 100 == test1foo();
-    assert 200 == bar();
+    assert 200 == all.bar();
     assert 300 == foo();
 }

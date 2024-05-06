@@ -9,11 +9,11 @@
         "loc": {
           "start": {
             "line": 17,
-            "column": 15
+            "column": 22
           },
           "end": {
             "line": 17,
-            "column": 25
+            "column": 32
           }
         }
       },
@@ -22,16 +22,16 @@
           "type": "ImportNamespaceSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "",
+            "name": "all",
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 13
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 16
               }
             }
           },
@@ -42,7 +42,7 @@
             },
             "end": {
               "line": 17,
-              "column": 14
+              "column": 16
             }
           }
         }
@@ -54,7 +54,7 @@
         },
         "end": {
           "line": 17,
-          "column": 25
+          "column": 32
         }
       }
     },
@@ -329,9 +329,39 @@
                           "init": {
                             "type": "CallExpression",
                             "callee": {
-                              "type": "Identifier",
-                              "name": "sin",
-                              "decorators": [],
+                              "type": "MemberExpression",
+                              "object": {
+                                "type": "Identifier",
+                                "name": "all",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 20,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 20,
+                                    "column": 16
+                                  }
+                                }
+                              },
+                              "property": {
+                                "type": "Identifier",
+                                "name": "sin",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 20,
+                                    "column": 17
+                                  },
+                                  "end": {
+                                    "line": 20,
+                                    "column": 20
+                                  }
+                                }
+                              },
+                              "computed": false,
+                              "optional": false,
                               "loc": {
                                 "start": {
                                   "line": 20,
@@ -339,7 +369,7 @@
                                 },
                                 "end": {
                                   "line": 20,
-                                  "column": 16
+                                  "column": 20
                                 }
                               }
                             },
@@ -350,11 +380,11 @@
                                 "loc": {
                                   "start": {
                                     "line": 20,
-                                    "column": 17
+                                    "column": 21
                                   },
                                   "end": {
                                     "line": 20,
-                                    "column": 20
+                                    "column": 24
                                   }
                                 }
                               }
@@ -367,7 +397,7 @@
                               },
                               "end": {
                                 "line": 20,
-                                "column": 21
+                                "column": 25
                               }
                             }
                           },
@@ -378,7 +408,7 @@
                             },
                             "end": {
                               "line": 20,
-                              "column": 21
+                              "column": 25
                             }
                           }
                         }
@@ -391,7 +421,7 @@
                         },
                         "end": {
                           "line": 20,
-                          "column": 22
+                          "column": 26
                         }
                       }
                     }
@@ -477,4 +507,3 @@
     }
   }
 }
-TypeError: Unresolved reference sin [import_alias_and_without_alias_1.ets:20:13]

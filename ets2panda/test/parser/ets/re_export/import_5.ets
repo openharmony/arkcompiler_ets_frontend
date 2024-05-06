@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import * from "./re_export_5"
+import * as all from "./re_export_5"
 
 function main() : void
 {
-    foo();
+    //Note (oeotvos) This should be a CTE, because of ambiguous function call, but it is not properly checked, when namespace import and alias is being used together.
+    all.foo();
 }
