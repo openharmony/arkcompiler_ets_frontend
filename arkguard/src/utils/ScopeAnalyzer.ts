@@ -114,179 +114,110 @@ namespace secharmony {
   }
 
   /**
-   * Structure of a scope
+   * get a new scope.
+   * @param name - name of the scope.
+   * @param node - node of a current scope in ast.
+   * @param type - type of the scope.
+   * @param lexicalScope - indicates if the scope is a lexical scope.
+   * @param upper - parent scope of the current scope.
    */
-  export interface Scope {
-    /**
-     * name of a scope
-     */
+  export class Scope {
+    // scope name
     name: string;
-
-    /**
-     * kind of current scope
-     */
+    // kind of a scope, such as global ,function like, block ..
     kind: ScopeKind;
-
-    /**
-     * node of current scope in ast
-     */
+    // node of a current scope in ast.
     block: Node;
-
-    /**
-     * parent scope of current scope
-     */
+    // parent scope of current scope
     parent: Scope | undefined;
-
-    /**
-     * sub scopes of current scope,
-     */
+    // sub scopes of current scope
     children: Scope[];
 
-    /**
-     * symbols define in current scope
-     */
+    // symbols define in current scope
     defs: Set<Symbol>;
 
-    /**
-     * labels in current scope
-     */
+    // labels in current scope
     labels: Label[];
 
-    /**
-     * location path description of current scope,
-     */
+    importNames: Set<string>;
+    exportNames: Set<string>;
+    mangledNames: Set<string>;
+    constructorReservedParams: Set<string>;
+    // location path
     loc: string;
 
-    importNames?: Set<string>;
+    constructor(name: string, node: Node, type: ScopeKind, lexicalScope: boolean = false, upper?: Scope) {
+      this.name = name;
+      this.kind = type;
+      this.block = node; 
+      this.parent = upper;
+      this.children = [];
+      this.defs = new Set<Symbol>();
+      this.labels = [];
+      this.importNames = new Set<string>();
+      this.exportNames = new Set<string>();
+      this.mangledNames = new Set<string>();
+      this.constructorReservedParams = new Set<string>();
+      this.loc = this.parent?.loc ? this.parent.loc + '#' + this.name : this.name;
 
-    exportNames?: Set<string>;
-
-    mangledNames?: Set<string>;
-
-    constructorReservedParams?: Set<string>;
+      this.parent?.addChild(this);
+    }
 
     /**
      * add a sub scope to current scope
      *
      * @param child
      */
-    addChild(child: Scope): void;
+    addChild(child: Scope): void {
+      this.children.push(child);
+    }
 
     /**
      * add definition symbol into current scope
      *
      * @param def definition symbol
      */
-    addDefinition(def: Symbol, obfuscateAsProperty?: boolean): void;
+    addDefinition(def: Symbol, obfuscateAsProperty: boolean = false): void {
+      if (this.kind === ScopeKind.GLOBAL || obfuscateAsProperty) {
+        Reflect.set(def, 'obfuscateAsProperty', true);
+      }
+      this.defs.add(def);
+    }
 
     /**
      * add label to current scope
      *
      * @param label label statement
      */
-    addLabel(label: Label): void;
+    addLabel(label: Label): void {
+      this.labels.push(label);
+    }
 
     /**
      * get symbol location
      *
      * @param sym symbol
      */
-    getSymbolLocation(sym: Symbol): string;
+    getSymbolLocation(sym: Symbol): string {
+      if (!this.defs.has(sym)) {
+        return '';
+      }
+
+      return this.loc ? sym.name : this.loc + '#' + sym.name;
+    }
 
     /**
      * get label location
      *
      * @param label
      */
-    getLabelLocation(label: Label): string;
-  }
-
-  export function createScope(name: string, node: Node, type: ScopeKind, lexicalScope: boolean = false, upper ?: Scope): Scope {
-    // scope name
-    let scopeName: string = name;
-    // kind of a scope, such as global ,function like, block ..
-    let kind: ScopeKind = type;
-    // node of a current scope in ast.
-    let block: Node = node;
-    // parent scope of current scope
-    let parent: Scope | undefined = upper;
-    // sub scopes of current scope
-    let children: Scope[] = [];
-
-    //  symbols define in current scope
-    let defs: Set<Symbol> = new Set<Symbol>();
-
-    // labels in current scope
-    let labels: Label[] = [];
-
-    let importNames: Set<string> = new Set<string>();
-
-    let exportNames: Set<string> = new Set<string>();
-
-    let mangledNames: Set<string> = new Set<string>();
-
-    let constructorReservedParams: Set<string> = new Set<string>();
-
-    // location path
-    let loc: string = parent?.loc ? parent.loc + '#' + scopeName : scopeName;
-
-    // current scope
-    let current: Scope = {
-      'name': scopeName,
-      'kind': kind,
-      'block': block,
-      'parent': parent,
-      'children': children,
-      'defs': defs,
-      'labels': labels,
-      'loc': loc,
-      'importNames': importNames,
-      'exportNames': exportNames,
-      'mangledNames': mangledNames,
-      'constructorReservedParams': constructorReservedParams,
-      addChild,
-      addDefinition,
-      addLabel,
-      getSymbolLocation,
-      getLabelLocation,
-    };
-
-    current.parent?.addChild(current);
-    return current;
-
-    function addChild(child: Scope): void {
-      current.children.push(child);
-    }
-
-    function addDefinition(def: Symbol, obfuscateAsProperty: boolean = false): void {
-      if (current.kind === ScopeKind.GLOBAL || obfuscateAsProperty) {
-        Reflect.set(def, 'obfuscateAsProperty', true);
-      }
-      current.defs.add(def);
-    }
-
-    function addLabel(label: Label): void {
-      current.labels.push(label);
-    }
-
-    function getSymbolLocation(sym: Symbol): string {
-      if (!defs.has(sym)) {
+    getLabelLocation(label: Label): string {
+      if (!this.labels.includes(label)) {
         return '';
       }
 
-      return current.loc ? sym.name : current.loc + '#' + sym.name;
-    }
-
-    function getLabelLocation(label: Label): string {
-      if (!current.labels.includes(label)) {
-        return '';
-      }
-
-      let index: number = current.labels.findIndex((lb: Label) => {
-        return lb === label;
-      });
-
-      return current.loc ? label.name : current.loc + '#' + index + label.name;
+      let index: number = this.labels.findIndex((lb: Label) => lb === label);
+      return this.loc ? label.name : this.loc + '#' + index + label.name;
     }
   }
 
@@ -559,7 +490,7 @@ namespace secharmony {
 
     function analyzeObjectLiteralExpression(node: ObjectLiteralExpression): void {
       let scopeName: string = '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.OBJECT_LITERAL, false, current);
+      current = new Scope(scopeName, node, ScopeKind.OBJECT_LITERAL, false, current);
       scopes.push(current);
 
       addSymbolInScope(node);
@@ -611,7 +542,7 @@ namespace secharmony {
 
     function analyzeSourceFile(node: SourceFile): void {
       let scopeName: string = '';
-      root = createScope(scopeName, node, ScopeKind.GLOBAL, true);
+      root = new Scope(scopeName, node, ScopeKind.GLOBAL, true);
       current = root;
       scopes.push(current);
       // locals of a node(scope) is symbol that defines in current scope(node).
@@ -623,7 +554,7 @@ namespace secharmony {
 
     function analyzeCatchClause(node: CatchClause): void {
       let scopeName: string = '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.CATCH, false, current);
+      current = new Scope(scopeName, node, ScopeKind.CATCH, false, current);
       scopes.push(current);
       // add in catch declaration.
       addSymbolInScope(node);
@@ -652,7 +583,7 @@ namespace secharmony {
 
     function analyzeTypeAliasDeclaration(node: TypeAliasDeclaration): void {
       let scopeName: string = node.name.text ?? '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.INTERFACE, true, current);
+      current = new Scope(scopeName, node, ScopeKind.INTERFACE, true, current);
       scopes.push(current);
       addSymbolInScope(node);
       forEachChild(node, analyzeScope);
@@ -671,7 +602,7 @@ namespace secharmony {
        * which is based on the order of its child scopes in the upper scope
        */
       let scopeName: string = node.name.text ?? '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.MODULE, true, current);
+      current = new Scope(scopeName, node, ScopeKind.MODULE, true, current);
       scopes.push(current);
       addSymbolInScope(node);
       node.forEachChild((sub: Node) => {
@@ -742,7 +673,7 @@ namespace secharmony {
       }
 
       if (!overloading) {
-        current = createScope(scopeName, node, ScopeKind.FUNCTION, true, current);
+        current = new Scope(scopeName, node, ScopeKind.FUNCTION, true, current);
         scopes.push(current);
       }
 
@@ -788,7 +719,7 @@ namespace secharmony {
 
     function analyzeSwitch(node: CaseBlock): void {
       let scopeName: string = '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.SWITCH, false, current);
+      current = new Scope(scopeName, node, ScopeKind.SWITCH, false, current);
       scopes.push(current);
       addSymbolInScope(node);
       forEachChild(node, analyzeScope);
@@ -808,7 +739,7 @@ namespace secharmony {
 
       try {
         let scopeName: string = node?.name?.text ?? '$' + current.children.length;
-        current = createScope(scopeName, node, ScopeKind.CLASS, true, current);
+        current = new Scope(scopeName, node, ScopeKind.CLASS, true, current);
         scopes.push(current);
         addSymbolInScope(node);
         // Class members are seen as attribute names, and  the reference of external symbols can be renamed as the same
@@ -829,7 +760,7 @@ namespace secharmony {
 
     function analyzeForLike(node: ForLikeStatement): void {
       let scopeName: string = '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.FOR, false, current);
+      current = new Scope(scopeName, node, ScopeKind.FOR, false, current);
       scopes.push(current);
       addSymbolInScope(node);
       forEachChild(node, analyzeScope);
@@ -845,7 +776,7 @@ namespace secharmony {
       }
 
       let scopeName: string = '$' + current.children.length;
-      current = createScope(scopeName, node, ScopeKind.BLOCK, false, current);
+      current = new Scope(scopeName, node, ScopeKind.BLOCK, false, current);
       scopes.push(current);
       addSymbolInScope(node);
       forEachChild(node, analyzeScope);
@@ -854,7 +785,7 @@ namespace secharmony {
 
     function analyzeInterface(node: InterfaceDeclaration): void {
       let scopeName: string = node.name.text;
-      current = createScope(scopeName, node, ScopeKind.INTERFACE, true, current);
+      current = new Scope(scopeName, node, ScopeKind.INTERFACE, true, current);
       scopes.push(current);
       try {
         addSymbolInScope(node);
@@ -874,7 +805,7 @@ namespace secharmony {
 
     function analyzeEnum(node: EnumDeclaration): void {
       let scopeName: string = node.name.text;
-      current = createScope(scopeName, node, ScopeKind.ENUM, true, current);
+      current = new Scope(scopeName, node, ScopeKind.ENUM, true, current);
       scopes.push(current);
       for (const member of node.members) {
         if (member.symbol) {
