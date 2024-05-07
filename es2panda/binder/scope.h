@@ -35,6 +35,10 @@ class ScriptFunction;
 class Statement;
 } // namespace panda::es2panda::ir
 
+namespace panda::es2panda::parser {
+class Program;
+} // namespace panda::es2panda::parser
+
 namespace panda::es2panda::binder {
 
 #define DECLARE_CLASSES(type, className) class className;
@@ -145,10 +149,14 @@ private:
 class ScopeFindResult {
 public:
     ScopeFindResult() = default;
-    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, Variable *v) : ScopeFindResult(n, s, l, l, v, nullptr) {}
+    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, Variable *v)
+        : ScopeFindResult(n, s, l, l, l, v, nullptr)
+    {
+    }
     ScopeFindResult(Scope *s, uint32_t l, uint32_t ll, Variable *v) : scope(s), level(l), lexLevel(ll), variable(v) {}
-    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, uint32_t ll, Variable *v, ir::ScriptFunction *c)
-        : name(n), scope(s), level(l), lexLevel(ll), variable(v), concurrentFunc(c)
+    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, uint32_t ll, uint32_t sl,
+                    Variable *v, ir::ScriptFunction *c)
+        : name(n), scope(s), level(l), lexLevel(ll), sendableLevel(sl), variable(v), concurrentFunc(c)
     {
     }
 
@@ -156,6 +164,7 @@ public:
     Scope *scope {};
     uint32_t level {};
     uint32_t lexLevel {};
+    uint32_t sendableLevel {};
     Variable *variable {};
     ir::ScriptFunction *concurrentFunc {};
 };
@@ -203,7 +212,7 @@ public:
     SCOPE_TYPES(DECLARE_CHECKS_CASTS)
 #undef DECLARE_CHECKS_CASTS
 
-    bool IsVariableScope() const
+    virtual bool IsVariableScope() const
     {
         return Type() > ScopeType::LOCAL;
     }
@@ -353,7 +362,8 @@ public:
 
     bool HasVarDecl(const util::StringView &name) const;
 
-    bool HasLexEnvInCorrespondingFunctionScope(const FunctionParamScope *scope) const;
+    void CalculateLevelInCorrespondingFunctionScope(const FunctionParamScope *scope, uint32_t &lexLevel,
+                                                    uint32_t &sendableLevel) const;
 
     template <TSBindingType type>
     Variable *FindLocalTSVariable(const util::StringView &name) const
@@ -433,14 +443,29 @@ public:
         return slotIndex_++;
     }
 
+    uint32_t NextSendableSlot()
+    {
+        return sendableSlotIndex_++;
+    }
+
     uint32_t LexicalSlots() const
     {
         return slotIndex_;
     }
 
+    uint32_t SendableSlots() const
+    {
+        return sendableSlotIndex_;
+    }
+
     bool NeedLexEnv() const
     {
         return slotIndex_ != 0;
+    }
+
+    bool NeedSendableEnv() const
+    {
+        return sendableSlotIndex_ != 0;
     }
 
     void AddLexicalVarNameAndType(uint32_t slot, util::StringView name, int type)
@@ -480,6 +505,7 @@ protected:
 
     VariableScopeFlags flags_ {};
     uint32_t slotIndex_ {};
+    uint32_t sendableSlotIndex_ {};
     ArenaMap<uint32_t, std::pair<util::StringView, int>> lexicalVarNameAndTypes_; // for debuginfo and patchFix
 };
 
@@ -684,6 +710,8 @@ public:
 
     ~ClassScope() override = default;
 
+    bool IsVariableScope() const override;
+
     ScopeType Type() const override
     {
         return ScopeType::CLASS;
@@ -824,14 +852,20 @@ public:
 
 class ModuleScope : public FunctionScope {
 public:
-    explicit ModuleScope(ArenaAllocator *allocator) : FunctionScope(allocator, nullptr)
+    explicit ModuleScope(ArenaAllocator *allocator, parser::Program *program) : FunctionScope(allocator, nullptr)
     {
         paramScope_ = allocator->New<FunctionParamScope>(allocator, this);
+        program_ = program;
     }
 
     ScopeType Type() const override
     {
         return ScopeType::MODULE;
+    }
+
+    const parser::Program *Program() const
+    {
+        return program_;
     }
 
     void AssignIndexToModuleVariable(util::StringView name, uint32_t index);
@@ -840,6 +874,9 @@ public:
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
+
+private:
+    parser::Program *program_ {nullptr};
 };
 
 class TSModuleScope : public FunctionScope {

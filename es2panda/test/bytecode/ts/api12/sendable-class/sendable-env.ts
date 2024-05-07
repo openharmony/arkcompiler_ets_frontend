@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,17 +13,12 @@
  * limitations under the License.
  */
 
-"use strict";
-
-let b = 1;
-
-class test {
+class A {
   constructor () {
     "use sendable"
   }
-  getVal () {
-    let a = 2 + b;
-    print(a);
-    return a;
-  }
+}
+
+function foo () {
+  return A;
 }

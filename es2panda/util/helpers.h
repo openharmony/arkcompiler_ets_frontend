@@ -112,6 +112,7 @@ public:
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
     static bool IsChild(const ir::AstNode *parent, const ir::AstNode *child);
+    static bool IsChildScope(const binder::Scope *parent, const binder::Scope *child);
     static bool IsObjectPropertyValue(const ArenaVector<ir::Expression *> &properties, const ir::AstNode *ident);
     static SignedNumberLiteral GetSignedNumberLiteral(const ir::Expression *expr);
 
@@ -130,12 +131,10 @@ public:
     static std::wstring Utf8ToUtf16(const std::string &utf8);
     template <typename T, typename... Args>
     static T FileStream(const std::string &str, Args &&...args);
-    static bool ShouldCheckConcurrent(const binder::Scope *scope, const util::StringView name);
-    static void SendableCheckForClassStaticInitializer(const util::StringView name, const binder::Scope *&iter,
-        ir::ScriptFunction *&concurrentFunc);
     static void ThrowError(ErrorType type, const parser::Program *program, const lexer::SourcePosition &pos,
         const std::string_view &msg);
     static bool IsUseShared(const ir::Statement *statement);
+    static const ir::ClassDefinition *GetContainingSendableClass(const ir::AstNode *node);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;

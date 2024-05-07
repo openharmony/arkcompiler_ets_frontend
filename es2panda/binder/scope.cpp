@@ -90,20 +90,29 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
     return res->second;
 }
 
-bool Scope::HasLexEnvInCorrespondingFunctionScope(const FunctionParamScope *scope) const
+void Scope::CalculateLevelInCorrespondingFunctionScope(const FunctionParamScope *scope, uint32_t &lexLevel,
+                                                       uint32_t &sendableLevel) const
 {
     auto *funcVariableScope = scope->GetFunctionScope();
     // we may only have function param scope without function scope in TS here
-    if ((funcVariableScope != nullptr) && (funcVariableScope->NeedLexEnv())) {
-        return true;
+    if (funcVariableScope == nullptr) {
+        return;
     }
-    return false;
+
+    if (funcVariableScope->NeedLexEnv()) {
+        lexLevel++;
+    }
+
+    if (funcVariableScope->NeedSendableEnv()) {
+        sendableLevel++;
+    }
 }
 
 ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions options) const
 {
     uint32_t level = 0;
     uint32_t lexLevel = 0;
+    uint32_t sendableLevel = 0;
     const auto *iter = this;
     ir::ScriptFunction *concurrentFunc = nullptr;
     // If the first scope is functionParamScope, it means its corresponding functionScope is not
@@ -117,11 +126,17 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         Variable *v = iter->FindLocal(name, options);
 
         if (v != nullptr) {
-            return {name, const_cast<Scope *>(iter), level, lexLevel, v, concurrentFunc};
+            return {name, const_cast<Scope *>(iter), level, lexLevel, sendableLevel, v, concurrentFunc};
         }
 
         if (iter->IsFunctionVariableScope() && !lexical) {
             lexical = true;
+        }
+
+        if (iter->IsFunctionScope() && !concurrentFunc) {
+            if (iter->Node()->AsScriptFunction()->IsConcurrent()) {
+                concurrentFunc = const_cast<ir::ScriptFunction *>(iter->Node()->AsScriptFunction());
+            }
         }
 
         if (iter->IsVariableScope()) {
@@ -129,27 +144,23 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
                 level++;
             }
 
-            if (util::Helpers::ShouldCheckConcurrent(iter, name) && !concurrentFunc) {
-                concurrentFunc = const_cast<ir::ScriptFunction *>(iter->Node()->AsScriptFunction());
+            if (iter->AsVariableScope()->NeedLexEnv()) {
+                lexLevel++;
             }
 
-            if (iter->AsVariableScope()->NeedLexEnv() &&
-                (!iter->IsClassScope() || !iter->Node()->AsClassDefinition()->IsSendable())) {
-                lexLevel++;
+            if (iter->AsVariableScope()->NeedSendableEnv()) {
+                sendableLevel++;
             }
         } else if (functionScopeNotIterated) {
             level++;
-            if (HasLexEnvInCorrespondingFunctionScope(iter->AsFunctionParamScope())) {
-                lexLevel++;
-            }
+            CalculateLevelInCorrespondingFunctionScope(iter->AsFunctionParamScope(), lexLevel, sendableLevel);
         }
 
         prevScopeNotFunctionScope = !iter->IsFunctionVariableScope();
-        util::Helpers::SendableCheckForClassStaticInitializer(name, iter, concurrentFunc);
         iter = iter->Parent();
     }
 
-    return {name, nullptr, 0, 0, nullptr, concurrentFunc};
+    return {name, nullptr, 0, 0, 0, nullptr, concurrentFunc};
 }
 
 std::pair<uint32_t, uint32_t> Scope::Find(const ir::Expression *expr, bool onlyLevel) const
@@ -174,6 +185,12 @@ std::pair<uint32_t, uint32_t> Scope::Find(const ir::Expression *expr, bool onlyL
     }
 
     UNREACHABLE();
+}
+
+bool ClassScope::IsVariableScope() const
+{
+    // sendable class does not need a lexical env, handle it's scope as a non-variable scope
+    return !node_->AsClassDefinition()->IsSendable();
 }
 
 Result ClassScope::GetPrivateProperty(const util::StringView &name, bool isSetter) const

@@ -139,6 +139,7 @@ enum class VariableFlags {
     VAR = 1 << 28,
     INITIALIZED = 1 << 29,
     LEXICAL_BOUND = 1 << 30,
+    IN_SENDABLE_ENV = 1 << 31,
 
     HOIST_VAR = HOIST | VAR,
 };

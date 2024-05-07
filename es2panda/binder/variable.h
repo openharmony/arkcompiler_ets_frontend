@@ -115,6 +115,11 @@ public:
         return HasFlag(VariableFlags::LEXICAL_BOUND);
     }
 
+    bool InSendableEnv() const
+    {
+        return HasFlag(VariableFlags::IN_SENDABLE_ENV);
+    }
+
     const util::StringView &Name() const;
     virtual void SetLexical(Scope *scope, util::PatchFix *patchFixHelper = nullptr) = 0;
 
