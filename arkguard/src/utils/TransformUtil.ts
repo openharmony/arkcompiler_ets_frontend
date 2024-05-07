@@ -118,10 +118,10 @@ export function separateUniversalReservedItem(originalArray: string[]): Reserved
     specificReservedArray: []
   };
 
-  const specialRegex = /[\\\^\$\.\+\|\(\)\[\]\{\}]/;
+  const specialRegex = /[\\\^\$\+\|\(\)\[\]\{\}]/;
   originalArray.forEach(reservedItem => {
     // do not process elements containing special characters
-    // special characters: '\', '^', '$', '.', '+', '|', '[', ']', '{', '}', '(', ')'
+    // special characters: '\', '^', '$', '+', '|', '[', ']', '{', '}', '(', ')'
     if (specialRegex.test(reservedItem)) {
       return;
     }
@@ -155,14 +155,14 @@ export function wildcardTransformer(wildcard: string, isPath?: boolean): string 
   }
   // before: *a?
   // after: .*a.
-  return wildcard.replace(/\*/g, '.*').replace(/\?/g, '.');
+  return wildcard.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.');
 }
 
 /**
  * Determine whether the original name needs to be preserved.
  */
 export function needToBeReserved(reservedSet: Set<string>, universalArray: RegExp[], originalName: string): boolean {
-  return reservedSet.has(originalName) || isMatchWildcard(universalArray, originalName)
+  return reservedSet.has(originalName) || isMatchWildcard(universalArray, originalName);
 }
 
 /**
@@ -181,7 +181,7 @@ export function isMatchWildcard(wildcardArray: RegExp[], item: string): boolean 
  * Separate parts of an array that contain wildcard characters.
  */
 export function handleReservedConfig(config: IOptions, optionName: string, reservedListName: string,
-  universalLisName: string, enableRemove?: string) {
+  universalLisName: string, enableRemove?: string): void {
   const reservedConfig = config?.[optionName];
   let needSeparate: boolean = !!(reservedConfig?.[reservedListName]);
   if (enableRemove) {
