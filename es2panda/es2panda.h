@@ -103,6 +103,7 @@ struct CompilerOptions {
     bool bcVersion {false};
     bool bcMinVersion {false};
     int targetApiVersion {0};
+    bool targetBcVersion {false};
     std::unordered_map<std::string, std::string> cacheFiles;
     std::string transformLib {};
     bool branchElimination {false};

@@ -840,6 +840,62 @@ class TSDeclarationTest(Test):
         file_name = self.path[:self.path.find(".d.ts")]
         return "%s-expected.txt" % file_name
 
+class BcVersionRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Target bc version")
+        self.ts2abc = path.join(self.test_root, '..', 'scripts', 'ts2abc.js')
+
+    def add_cmd(self):
+        for apiVersion in range(8, 14):
+            cmd = self.cmd_prefix + [self.es2panda]
+            cmd += ["--target-bc-version"]
+            cmd += ["--target-api-version"]
+            cmd += [str(apiVersion)]
+            self.tests += [BcVersionTest(cmd, apiVersion)]
+            node_cmd = ["node"] + [self.ts2abc]
+            node_cmd += ["".join(["es2abc=", self.es2panda])]
+            node_cmd += ["--target-api-version"]
+            node_cmd += [str(apiVersion)]
+            self.tests += [BcVersionTest(node_cmd, apiVersion)]
+
+    def run(self):
+        for test in self.tests:
+            test.run()
+
+
+class BcVersionTest(Test):
+    def __init__(self, cmd, apiVersion):
+        Test.__init__(self, "", 0)
+        self.cmd = cmd
+        self.apiVersion = apiVersion
+        self.bcVersionsExpect = {
+            8: "12.0.1.0",
+            9: "9.0.0.0",
+            10: "9.0.0.0",
+            11: "11.0.2.0",
+            12: "12.0.1.0",
+            13: "12.0.1.0"
+        }
+        self.js2abcExpect = {
+            8: "0.0.0.2",
+            9: "9.0.0.0",
+            10: "9.0.0.0",
+            11: "11.0.2.0",
+            12: "12.0.1.0",
+            13: "12.0.1.0"
+        }
+    
+    def run(self):
+        process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+        if self.cmd[0] == "node":
+            self.passed = self.js2abcExpect[self.apiVersion] == self.output and process.returncode in [0, 1]
+        else:
+            self.passed = self.bcVersionsExpect[self.apiVersion] == self.output and process.returncode in [0, 1]
+        if not self.passed:
+            self.error = err.decode("utf-8", errors="ignore")
+        return self
 
 class TransformerRunner(Runner):
     def __init__(self, args):
@@ -1237,6 +1293,11 @@ def add_directory_for_regression(runners, args):
                                      "--check-transformed-ast-structure"])
 
     runners.append(transformer_runner)
+
+    bc_version_runner = BcVersionRunner(args)
+    bc_version_runner.add_cmd()
+
+    runners.append(bc_version_runner)
 
 def add_directory_for_asm(runners, args):
     runner = AbcToAsmRunner(args)
