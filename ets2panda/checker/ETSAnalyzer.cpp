@@ -2235,13 +2235,6 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
         //  Set smart type for identifier if it differs from annotated type
         //  Top-level and captured variables are not processed here!
         if (!checker->Relation()->IsIdenticalTo(variableType, smartType)) {
-            //  Add constness to the smart type if required (initializer type usually is not const)
-            if (ident->Variable()->Declaration()->IsConstDecl() && !smartType->HasTypeFlag(TypeFlag::CONSTANT) &&
-                !smartType->DefinitelyETSNullish()) {
-                smartType = smartType->Clone(checker);
-                smartType->AddTypeFlag(TypeFlag::CONSTANT);
-            }
-
             ident->SetTsType(smartType);
             checker->Context().SetSmartCast(ident->Variable(), smartType);
         }
