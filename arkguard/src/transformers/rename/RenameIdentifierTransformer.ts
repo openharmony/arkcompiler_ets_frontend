@@ -634,7 +634,7 @@ namespace secharmony {
 
   export let transformerPlugin: TransformPlugin = {
     'name': 'renameIdentifierPlugin',
-    'order': (1 << TransformerOrder.RENAME_IDENTIFIER_TRANSFORMER),
+    'order': TransformerOrder.RENAME_IDENTIFIER_TRANSFORMER,
     'createTransformerFactory': createRenameIdentifierFactory
   };
 

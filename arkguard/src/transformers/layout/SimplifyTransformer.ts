@@ -51,7 +51,7 @@ import { NodeUtils } from '../../utils/NodeUtils';
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
     'name': 'simplifyPlugin',
-    'order': (1 << TransformerOrder.SIMPLIFY_TRANSFORMER),
+    'order': TransformerOrder.SIMPLIFY_TRANSFORMER,
     'createTransformerFactory': createSimplifyFactory
   };
 
