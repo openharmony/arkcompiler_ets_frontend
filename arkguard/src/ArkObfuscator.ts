@@ -129,7 +129,7 @@ export class ArkObfuscator {
     this.mTransformers = [];
   }
 
-  public setWriteOriginalFile(flag: boolean) {
+  public setWriteOriginalFile(flag: boolean): void {
     this.mWriteOriginalFile = flag;
   }
 
@@ -419,13 +419,13 @@ export class ArkObfuscator {
       }
       const startPosition: SourceMapSegmentObj | null = sourceMapLink.traceSegment(
         // 1: The line number in originalCache starts from 1 while in source map starts from 0.
-        Number(oldStartLine) - 1, Number(oldStartColumn) - 1, ""); // Minus 1 to get the correct original position.
+        Number(oldStartLine) - 1, Number(oldStartColumn) - 1, ''); // Minus 1 to get the correct original position.
       if (!startPosition) {
         // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
         continue;
       }
       const endPosition: SourceMapSegmentObj | null = sourceMapLink.traceSegment(
-        Number(oldEndLine) - 1, Number(oldEndColumn) - 1, ""); // 1: Same as above.
+        Number(oldEndLine) - 1, Number(oldEndColumn) - 1, ''); // 1: Same as above.
       if (!endPosition) {
         // Do not save methods that do not exist in the source code, e.g. 'build' in ArkUI.
         continue;
