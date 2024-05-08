@@ -48,7 +48,7 @@ export class TypeUtils {
     return createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true);
   }
 
-  public static tsToJs(ast: SourceFile) {
+  public static tsToJs(ast: SourceFile): void {
     const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(ast.fileName);
     const fileSuffix = Extension.JS;
     const targetName: string = pathOrExtension.path + fileSuffix;

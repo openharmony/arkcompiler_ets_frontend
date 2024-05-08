@@ -256,7 +256,7 @@ export class ArkObfuscator {
     performancePrinter?.filesPrinter?.startEvent(EventList.ALL_FILES_OBFUSCATION);
     readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
     const propertyCachePath = path.join(this.mCustomProfiles.mOutputDir, 
-                                        path.basename(this.mSourceFiles[0])) // Get dir name
+                                        path.basename(this.mSourceFiles[0])); // Get dir name
     this.readPropertyCache(propertyCachePath);
 
     // support directory and file obfuscate
@@ -562,7 +562,7 @@ export class ArkObfuscator {
       sourceMapGenerator = getSourceMapGenerator(sourceFilePath);
     }
 
-    if (sourceFilePath.endsWith(".js")) {
+    if (sourceFilePath.endsWith('.js')) {
       TypeUtils.tsToJs(ast);
     }
     this.handleTsHarComments(ast, originalFilePath);
