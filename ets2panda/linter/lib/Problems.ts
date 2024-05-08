@@ -104,6 +104,8 @@ export enum FaultID {
   SendableComputedPropName,
   SendableAsExpr,
   SharedNoSideEffectImport,
+  SharedModuleExports,
+  SharedModuleNoWildcardExport,
   // this should always be last enum
   LAST_ID
 }

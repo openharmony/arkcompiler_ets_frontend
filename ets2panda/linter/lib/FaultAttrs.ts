@@ -115,3 +115,5 @@ faultsAttrs[FaultID.SendableObjectInitialization] = new FaultAttributes(159);
 faultsAttrs[FaultID.SendableComputedPropName] = new FaultAttributes(160);
 faultsAttrs[FaultID.SendableAsExpr] = new FaultAttributes(161);
 faultsAttrs[FaultID.SharedNoSideEffectImport] = new FaultAttributes(162);
+faultsAttrs[FaultID.SharedModuleExports] = new FaultAttributes(163);
+faultsAttrs[FaultID.SharedModuleNoWildcardExport] = new FaultAttributes(164);
