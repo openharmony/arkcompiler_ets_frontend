@@ -1,0 +1,2 @@
+Base constructor called with arguments: arg1 arg2
+Deviced constructor called

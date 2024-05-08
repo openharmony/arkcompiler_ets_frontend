@@ -88,7 +88,14 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     if (callee_->IsSuperExpression()) {
         if (containsSpread) {
             compiler::RegScope paramScope(pg);
-            compiler::VReg argsObj = CreateSpreadArguments(pg);
+            compiler::VReg argsObj {};
+            // arguments_ is only ...args
+            if (arguments_.size() == 1) {
+                argsObj = pg->AllocReg();
+                pg->StoreAccumulator(this, argsObj);
+            } else {
+                argsObj = CreateSpreadArguments(pg);
+            }
 
             pg->GetFunctionObject(this);
             pg->SuperCallSpread(this, argsObj);
