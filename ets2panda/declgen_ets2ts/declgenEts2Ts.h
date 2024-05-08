@@ -44,7 +44,7 @@ public:
 
 private:
     void ThrowError(std::string_view message, const lexer::SourcePosition &pos);
-    std::string GetKeyName(const ir::Expression *key);
+    const ir::Identifier *GetKeyIdent(const ir::Expression *key);
 
     void GenType(const checker::Type *checkerType);
     void GenFunctionType(const checker::ETSFunctionType *functionType, const ir::MethodDefinition *methodDef = nullptr);
@@ -67,7 +67,10 @@ private:
     template <class T>
     void GenModifier(const T *node);
     void GenTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
-    void GenExports(const std::string &name);
+    void GenExport(const ir::Identifier *symbol);
+    void GenExport(const ir::Identifier *symbol, const std::string &alias);
+    void GenDefaultExport(const ir::Identifier *symbol);
+    void ExportIfNeeded(const ir::Identifier *symbol);
 
     template <class T, class CB>
     void GenSeparated(const T &container, const CB &cb, const char *separator = ", ");

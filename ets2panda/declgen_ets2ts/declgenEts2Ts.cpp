@@ -19,13 +19,11 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ets/etsImportDeclaration.h"
-#include "ir/ets/etsPrimitiveType.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
-#include "ir/ts/tsClassImplements.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
@@ -109,13 +107,13 @@ void TSDeclGen::ThrowError(const std::string_view message, const lexer::SourcePo
                  loc.line, loc.col};
 }
 
-std::string TSDeclGen::GetKeyName(const ir::Expression *key)
+const ir::Identifier *TSDeclGen::GetKeyIdent(const ir::Expression *key)
 {
     if (!key->IsIdentifier()) {
         ThrowError("Not identifier keys are not supported", key->Start());
     }
 
-    return key->AsIdentifier()->Name().Mutf8();
+    return key->AsIdentifier();
 }
 
 static char const *GetDebugTypeName(const checker::Type *checkerType)
@@ -278,7 +276,7 @@ void TSDeclGen::GenEnumType(const checker::ETSEnumType *enumType)
         }
 
         const auto *enumMember = member->AsTSEnumMember();
-        Out(GetKeyName(enumMember->Key()));
+        Out(GetKeyIdent(enumMember->Key())->Name().Mutf8());
         const auto *init = enumMember->Init();
         if (init != nullptr) {
             Out(" = ");
@@ -355,12 +353,50 @@ void TSDeclGen::GenTypeParameters(const ir::TSTypeParameterDeclaration *typePara
     }
 }
 
-void TSDeclGen::GenExports(const std::string &name)
+void TSDeclGen::GenExport(const ir::Identifier *symbol)
 {
-    Out("export {", name, "};");
+    const auto symbolName = symbol->Name().Mutf8();
+    Out("export {", symbolName, "};");
     OutEndl();
-    Out("exports.", name, " = ", name, ";");
+    if (!symbol->Parent()->IsTSTypeAliasDeclaration() && !symbol->Parent()->IsTSInterfaceDeclaration()) {
+        Out("exports.", symbolName, " = ", symbolName, ";");
+    }
     OutEndl();
+}
+
+void TSDeclGen::GenExport(const ir::Identifier *symbol, const std::string &alias)
+{
+    const auto symbolName = symbol->Name().Mutf8();
+    Out("export {", symbolName, " as ", alias, "};");
+    OutEndl();
+    if (!symbol->Parent()->IsTSTypeAliasDeclaration() && !symbol->Parent()->IsTSInterfaceDeclaration()) {
+        Out("exports.", alias, " = ", symbolName, ";");
+    }
+    OutEndl();
+}
+
+void TSDeclGen::GenDefaultExport(const ir::Identifier *symbol)
+{
+    const auto symbolName = symbol->Name().Mutf8();
+    Out("export default ", symbolName, ";");
+    OutEndl();
+    if (!symbol->Parent()->IsTSTypeAliasDeclaration() && !symbol->Parent()->IsTSInterfaceDeclaration()) {
+        Out("exports.default = ", symbolName, ";");
+    }
+    OutEndl();
+}
+
+void TSDeclGen::ExportIfNeeded(const ir::Identifier *symbol)
+{
+    if (symbol->Parent()->IsExported()) {
+        GenExport(symbol);
+    }
+    if (symbol->Parent()->IsExportedType()) {
+        GenExport(symbol);
+    }
+    if (symbol->Parent()->IsDefaultExported()) {
+        GenDefaultExport(symbol);
+    }
 }
 
 template <class T>
@@ -420,24 +456,31 @@ void TSDeclGen::GenTypeAliasDeclaration(const ir::TSTypeAliasDeclaration *typeAl
     const auto name = typeAlias->Id()->Name().Mutf8();
     DebugPrint("GenTypeAliasDeclaration: " + name);
     const auto *aliasedType = typeAlias->TypeAnnotation()->GetType(checker_);
-    Out("export type ", name, " = ");
+    Out("type ", name, " = ");
     GenType(aliasedType);
     Out(";");
-    OutEndl(2U);
+    OutEndl();
+
+    ExportIfNeeded(typeAlias->Id());
+    OutEndl();
 }
 
 void TSDeclGen::GenEnumDeclaration(const ir::TSEnumDeclaration *enumDecl)
 {
-    const auto enumName = GetKeyName(enumDecl->Key());
+    const auto enumIdent = GetKeyIdent(enumDecl->Key());
+    const auto enumName = enumIdent->Name().Mutf8();
     DebugPrint("GenEnumDeclaration: " + enumName);
-    Out("export enum ", enumName, " {");
+    Out("enum ", enumName, " {");
     OutEndl();
 
     ASSERT(enumDecl->TsType()->IsETSEnumType());
     GenEnumType(enumDecl->TsType()->AsETSEnumType());
 
     Out("}");
-    OutEndl(2U);
+    OutEndl();
+
+    ExportIfNeeded(enumIdent);
+    OutEndl();
 }
 
 void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interfaceDecl)
@@ -445,7 +488,7 @@ void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interf
     state_.inInterface = true;
     const auto interfaceName = interfaceDecl->Id()->Name().Mutf8();
     DebugPrint("GenInterfaceDeclaration: " + interfaceName);
-    Out("export interface ", interfaceName);
+    Out("interface ", interfaceName);
 
     GenTypeParameters(interfaceDecl->TypeParams());
 
@@ -465,7 +508,10 @@ void TSDeclGen::GenInterfaceDeclaration(const ir::TSInterfaceDeclaration *interf
     }
 
     Out("}");
-    OutEndl(2U);
+    OutEndl();
+
+    ExportIfNeeded(interfaceDecl->Id());
+    OutEndl();
 }
 
 void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
@@ -522,7 +568,7 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
         OutEndl();
         Out("(", className, " as any) = (globalThis as any).Panda.getClass('", state_.currentClassDescriptor, "');");
         OutEndl();
-        GenExports(className);
+        ExportIfNeeded(classDef->Ident());
         OutEndl();
     }
 }
@@ -543,7 +589,8 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
         Out("set ");
     }
 
-    const auto methodName = GetKeyName(methodDef->Key());
+    const auto methodIdent = GetKeyIdent(methodDef->Key());
+    const auto methodName = methodIdent->Name().Mutf8();
     DebugPrint("  GenMethodDeclaration: " + methodName);
     Out(methodName);
 
@@ -560,7 +607,7 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
     if (state_.inGlobalClass) {
         Out("(", methodName, " as any) = ETSGLOBAL.", methodName, ";");
         OutEndl();
-        GenExports(methodName);
+        ExportIfNeeded(methodIdent);
         if (methodName == compiler::Signatures::INIT_METHOD) {
             Out(methodName, "();");
         }
@@ -575,7 +622,7 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *classProp)
         return;
     }
 
-    const auto propName = GetKeyName(classProp->Key());
+    const auto propName = GetKeyIdent(classProp->Key())->Name().Mutf8();
     DebugPrint("  GenPropDeclaration: " + propName);
 
     Out(INDENT);
@@ -597,7 +644,8 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
         return;
     }
 
-    const auto varName = GetKeyName(globalVar->Key());
+    const auto symbol = GetKeyIdent(globalVar->Key());
+    const auto varName = symbol->Name().Mutf8();
     DebugPrint("GenGlobalVarDeclaration: " + varName);
     if (!globalVar->IsConst()) {
         Warning("Not constant global variables are not supported, variable \"" + varName + "\" was skipped");
@@ -609,7 +657,7 @@ void TSDeclGen::GenGlobalVarDeclaration(const ir::ClassProperty *globalVar)
     Out(" = ETSGLOBAL.", varName, ';');
     OutEndl();
 
-    GenExports(varName);
+    GenExport(symbol);
     OutEndl();
 }
 
