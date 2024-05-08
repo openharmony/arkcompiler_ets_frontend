@@ -18,13 +18,13 @@
             "line": 20,
             "column": 5,
             "problem": "SendableDefiniteAssignment",
-            "rule": "Definite assignment assertion in not allowed in \"Sendable\" classes (arkts-sendable-definite-assignment)"
+            "rule": "Definite assignment assertion is not allowed in \"Sendable\" classes (arkts-sendable-definite-assignment)"
         },
         {
             "line": 21,
             "column": 5,
             "problem": "SendableDefiniteAssignment",
-            "rule": "Definite assignment assertion in not allowed in \"Sendable\" classes (arkts-sendable-definite-assignment)"
+            "rule": "Definite assignment assertion is not allowed in \"Sendable\" classes (arkts-sendable-definite-assignment)"
         },
         {
             "line": 28,

@@ -27,7 +27,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 26,
@@ -57,7 +57,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 27,
@@ -87,7 +87,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 30,
@@ -117,7 +117,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 30,
@@ -147,7 +147,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
@@ -177,7 +177,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
@@ -207,7 +207,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
@@ -237,7 +237,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
@@ -267,7 +267,7 @@
                 }
             ],
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         }
     ]
 }

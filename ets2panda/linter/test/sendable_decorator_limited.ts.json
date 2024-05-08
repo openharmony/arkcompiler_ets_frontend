@@ -18,37 +18,37 @@
             "line": 27,
             "column": 1,
             "problem": "SendableDecoratorLimited",
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 33,
             "column": 3,
             "problem": "SendableDecoratorLimited",
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 36,
             "column": 3,
             "problem": "SendableDecoratorLimited",
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 41,
             "column": 11,
             "problem": "SendableDecoratorLimited",
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 45,
             "column": 3,
             "problem": "SendableDecoratorLimited",
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 50,
             "column": 3,
             "problem": "SendableDecoratorLimited",
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         }
     ]
 }

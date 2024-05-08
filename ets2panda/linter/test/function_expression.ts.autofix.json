@@ -348,7 +348,7 @@
             "problem": "FunctionBind",
             "autofixable": false,
             "suggest": "",
-            "rule": "\"Function.bind\" is not supported (arkts-no-func-bind)"
+            "rule": "'Function.bind' is not supported (arkts-no-func-bind)"
         },
         {
             "line": 102,

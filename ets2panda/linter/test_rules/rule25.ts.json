@@ -34,6 +34,14 @@
             "problem": "ParameterProperties",
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 49,
+            "column": 17,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)",
+            "exclusive": "SDK"
         }
     ]
 }

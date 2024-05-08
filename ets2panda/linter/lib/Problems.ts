@@ -116,7 +116,7 @@ export enum FaultID {
   SendableTypeExported,
   NoTsReExportEts,
   NoNameSpaceImportEtsToTs,
-  NoSIdeEffectImportEtsToTs,
+  NoSideEffectImportEtsToTs,
   SendableExplicitFieldType,
   SendableFunctionImportedVariables,
   SendableFunctionDecorator,

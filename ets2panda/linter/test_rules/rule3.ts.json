@@ -19,63 +19,63 @@
             "column": 5,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 26,
             "column": 5,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 27,
             "column": 5,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 30,
             "column": 21,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 30,
             "column": 31,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
             "column": 21,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
             "column": 31,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
             "column": 41,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         },
         {
             "line": 34,
             "column": 51,
             "problem": "PrivateIdentifier",
             "suggest": "",
-            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+            "rule": "Private \"#\" identifiers are not supported (arkts-no-private-identifiers)"
         }
     ]
 }

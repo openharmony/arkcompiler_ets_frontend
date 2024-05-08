@@ -25,7 +25,7 @@
                     "replacementText": ""
                 }
             ],
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 33,
@@ -38,7 +38,7 @@
                     "replacementText": ""
                 }
             ],
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 36,
@@ -51,7 +51,7 @@
                     "replacementText": ""
                 }
             ],
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 41,
@@ -64,7 +64,7 @@
                     "replacementText": ""
                 }
             ],
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 45,
@@ -77,7 +77,7 @@
                     "replacementText": ""
                 }
             ],
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         },
         {
             "line": 50,
@@ -90,7 +90,7 @@
                     "replacementText": ""
                 }
             ],
-            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\", \"typeAlias\" (arkts-sendable-decorator-limited)"
+            "rule": "The \"@Sendable\" decorator can only be used on \"class\", \"function\" and \"typeAlias\" (arkts-sendable-decorator-limited)"
         }
     ]
 }

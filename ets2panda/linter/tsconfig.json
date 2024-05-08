@@ -12,5 +12,5 @@
     "strict": true
   },
 
-  "include": ["src/**/*", "lib/**/*", "utils/*"]
+  "include": ["src/**/*", "lib/**/*", "utils/*", "sdk/**/*"]
 }
