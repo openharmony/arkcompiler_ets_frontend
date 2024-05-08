@@ -21,27 +21,35 @@ const spawn = require('child_process').spawn;
 let isWin = !1;
 let isMac = !1;
 
-const arkDir = path.resolve(__dirname);
-
-if (fs.existsSync(path.join(arkDir, 'build-win'))) {
-    isWin = !0;
-} else if (fs.existsSync(path.join(arkDir, 'build-mac'))) {
-    isMac = !0;
-} else if (!fs.existsSync(path.join(arkDir, 'build'))) {
-    throw Error('find build fail').message;
-}
-
-let js2abc;
-if (isWin) {
-    js2abc = path.join(arkDir, 'build-win', 'bin', 'es2abc.exe');
-} else if (isMac) {
-    js2abc = path.join(arkDir, 'build-mac', 'bin', 'es2abc');
+let args = process.argv.splice(2);
+let es2abc;
+if (args[0].startsWith("es2abc=")) {
+    es2abc = args[0].replace("es2abc=", "");
+    args = args.splice(1);
 } else {
-    js2abc = path.join(arkDir, 'build', 'bin', 'es2abc');
+    const arkDir = path.resolve(__dirname);
+    if (fs.existsSync(path.join(arkDir, 'build-win'))) {
+        isWin = !0;
+    } else if (fs.existsSync(path.join(arkDir, 'build-mac'))) {
+        isMac = !0;
+    } else if (!fs.existsSync(path.join(arkDir, 'build'))) {
+        throw Error('find build fail').message;
+    }
+
+    if (isWin) {
+        es2abc = path.join(arkDir, 'build-win', 'bin', 'es2abc.exe');
+    } else if (isMac) {
+        es2abc = path.join(arkDir, 'build-mac', 'bin', 'es2abc');
+    } else {
+        es2abc = path.join(arkDir, 'build', 'bin', 'es2abc');
+    }
 }
 
 function callEs2abc(args) {
-    let proc = spawn(`${js2abc}`, args);
+    if (!fs.existsSync(es2abc)) {
+        throw Error('find arkcompiler fail').message;
+    }
+    let proc = spawn(`${es2abc}`, args);
 
     proc.stderr.on('data', (data) => {
         throw Error(`${data}`).message;
@@ -52,14 +60,12 @@ function callEs2abc(args) {
     });
 }
 
-let args = process.argv.splice(2);
 // keep bc-version to be compatible with old IDE versions
 if (args.length == 1 && args[0] == "--bc-version") {
     callEs2abc(args);
     return;
 }
 
-// hard-coded for now, will be modified later
 if (args[0] == "--target-api-version") {
     if (args[1] == "8") {
         process.stdout.write("0.0.0.2");
@@ -68,7 +74,7 @@ if (args[0] == "--target-api-version") {
     } else if (args[1] == "10") {
         process.stdout.write("9.0.0.0");
     } else {
-        args = ["--bc-version"];
+        args = ["--target-bc-version", "--target-api-version", args[1]];
         callEs2abc(args);
     }
 }

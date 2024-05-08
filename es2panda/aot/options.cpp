@@ -297,10 +297,14 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opColdFix("cold-fix", false, "generate patch abc as cold-fix mode");
 
     // version
-    panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version");
+    panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version. If both bc-version and"\
+        "bc-min-version are enabled, only bc-version will take effects");
     panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
     panda::PandArg<int> targetApiVersion("target-api-version", util::Helpers::DEFAULT_TARGET_API_VERSION,
         "Specify the targeting api version for es2abc to generated the corresponding version of bytecode");
+    panda::PandArg<bool> targetBcVersion("target-bc-version", false, "Print the corresponding ark bytecode version"\
+        "for target api version. If both target-bc-version and bc-version are enabled, only target-bc-version"\
+        "will take effects");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -354,6 +358,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&bcVersion);
     argparser_->Add(&bcMinVersion);
     argparser_->Add(&targetApiVersion);
+    argparser_->Add(&targetBcVersion);
 
     argparser_->Add(&transformLib);
 
@@ -362,6 +367,13 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->EnableRemainder();
 
     bool parseStatus = argparser_->Parse(argc, argv);
+
+    compilerOptions_.targetApiVersion = targetApiVersion.GetValue();
+    if (parseStatus && targetBcVersion.GetValue()) {
+        compilerOptions_.targetBcVersion = targetBcVersion.GetValue();
+        return true;
+    }
+
     if (parseStatus && (bcVersion.GetValue() || bcMinVersion.GetValue())) {
         compilerOptions_.bcVersion = bcVersion.GetValue();
         compilerOptions_.bcMinVersion = bcMinVersion.GetValue();
@@ -528,7 +540,6 @@ bool Options::Parse(int argc, const char **argv)
         base64Output.GetValue()) ? 0 : opOptLevel.GetValue();
     compilerOptions_.sourceFiles = sourceFiles_;
     compilerOptions_.mergeAbc = opMergeAbc.GetValue();
-    compilerOptions_.targetApiVersion = targetApiVersion.GetValue();
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();

@@ -220,6 +220,12 @@ int Run(int argc, const char **argv)
         return 1;
     }
 
+    if (options->CompilerOptions().targetBcVersion) {
+        auto bcVersionByApi = panda::panda_file::GetVersionByApi(options->CompilerOptions().targetApiVersion);
+        std::cout << panda::panda_file::GetVersion(bcVersionByApi.value());
+        return 0;
+    }
+
     if (options->CompilerOptions().bcVersion || options->CompilerOptions().bcMinVersion) {
         std::string version = options->CompilerOptions().bcVersion ?
             panda::panda_file::GetVersion(panda::panda_file::version) :
