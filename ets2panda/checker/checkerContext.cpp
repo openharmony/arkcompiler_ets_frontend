@@ -111,31 +111,6 @@ checker::Type *CheckerContext::CombineTypes(checker::Type *const typeOne, checke
     return checker->CreateETSUnionType({typeOne, typeTwo});
 }
 
-void CheckerContext::AddSmartCasts(SmartCastArray const &otherSmartCasts)
-{
-    auto *const checker = parent_->AsETSChecker();
-
-    for (auto [variable, type] : otherSmartCasts) {
-        auto const it = smartCasts_.find(variable);
-        if (it == smartCasts_.end()) {
-            SetSmartCast(variable, type);
-            continue;
-        }
-        // Smart cast presents in both sets
-        if (auto *const smartType = CombineTypes(it->second, type); smartType != nullptr) {
-            // Remove it or set to new combined value
-            if (checker->Relation()->IsIdenticalTo(it->first->TsType(), smartType)) {
-                smartCasts_.erase(it);
-            } else {
-                it->second = smartType;
-            }
-        }
-    }
-
-    // Remove smart casts that don't present in the other set.
-    RemoveSmartCasts(otherSmartCasts);
-}
-
 void CheckerContext::CombineSmartCasts(SmartCastArray const &otherSmartCasts)
 {
     auto *const checker = parent_->AsETSChecker();
@@ -160,35 +135,6 @@ void CheckerContext::CombineSmartCasts(SmartCastArray const &otherSmartCasts)
     RemoveSmartCasts(otherSmartCasts);
 }
 
-void CheckerContext::RemoveSmartCastsForAssignments(ir::AstNode const *node) noexcept
-{
-    if (node == nullptr) {  //  Just in case!
-        return;
-    }
-
-    if (!node->IsAssignmentExpression()) {
-        node->Iterate([this](ir::AstNode *childNode) { RemoveSmartCastsForAssignments(childNode); });
-        return;
-    }
-
-    auto const *assignment = node->AsAssignmentExpression();
-    if (assignment->Left()->IsIdentifier()) {
-        auto const *const ident = assignment->Left()->AsIdentifier();
-
-        auto const *variable = ident->Variable();
-        if (variable == nullptr) {
-            //  NOTE: we're interesting in the local variables ONLY!
-            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(ident->Name());
-        }
-
-        if (variable != nullptr) {
-            smartCasts_.erase(variable);
-        }
-    }
-
-    assignment->Right()->Iterate([this](ir::AstNode *childNode) { RemoveSmartCastsForAssignments(childNode); });
-}
-
 // Second return value shows if the 'IN_LOOP' flag should be cleared on exit from the loop (case of nested loops).
 std::pair<SmartCastArray, bool> CheckerContext::EnterLoop(ir::LoopStatement const &loop) noexcept
 {
@@ -198,7 +144,15 @@ std::pair<SmartCastArray, bool> CheckerContext::EnterLoop(ir::LoopStatement cons
     }
 
     auto smartCasts = CloneSmartCasts();
-    loop.Iterate([this](ir::AstNode *childNode) { RemoveSmartCastsForAssignments(childNode); });
+
+    SmartVariables changedVariables {};
+    loop.Iterate([this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+
+    if (!changedVariables.empty()) {
+        for (auto const *variable : changedVariables) {
+            smartCasts_.erase(variable);
+        }
+    }
 
     return {std::move(smartCasts), clearFlag};
 }
@@ -225,6 +179,57 @@ void CheckerContext::ExitLoop(SmartCastArray &prevSmartCasts, bool const clearFl
 
     //  Now we don't process smart casts inside the loops correctly, thus just combine them on exit from the loop.
     CombineSmartCasts(prevSmartCasts);
+}
+
+void CheckerContext::CheckAssignments(ir::AstNode const *node, SmartVariables &changedVariables) noexcept
+{
+    if (node == nullptr) {  //  Just in case!
+        return;
+    }
+
+    if (!node->IsAssignmentExpression()) {
+        node->Iterate(
+            [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+        return;
+    }
+
+    auto const *assignment = node->AsAssignmentExpression();
+    if (assignment->Left()->IsIdentifier()) {
+        auto const *const ident = assignment->Left()->AsIdentifier();
+
+        auto const *variable = ident->Variable();
+        if (variable == nullptr) {
+            //  NOTE: we're interesting in the local variables ONLY!
+            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(ident->Name());
+        }
+
+        if (variable != nullptr) {
+            changedVariables.insert(variable);
+        }
+    }
+
+    assignment->Right()->Iterate(
+        [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+}
+
+SmartCastArray CheckerContext::CheckTryBlock(ir::BlockStatement const &tryBlock) noexcept
+{
+    SmartVariables changedVariables {};
+    tryBlock.Iterate(
+        [this, &changedVariables](ir::AstNode *childNode) { CheckAssignments(childNode, changedVariables); });
+
+    SmartCastArray smartCasts {};
+    if (!smartCasts_.empty()) {
+        smartCasts.reserve(smartCasts_.size());
+
+        for (auto const [variable, type] : smartCasts_) {
+            if (changedVariables.find(variable) == changedVariables.end()) {
+                smartCasts.emplace_back(variable, type);
+            }
+        }
+    }
+
+    return smartCasts;
 }
 
 //  Check that the expression is a part of logical OR/AND or unary negation operators chain

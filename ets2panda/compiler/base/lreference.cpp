@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,17 +21,14 @@
 #include "compiler/core/function.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "checker/types/ets/etsUnionType.h"
 #include "checker/types/ets/etsTupleType.h"
 #include "ir/base/spreadElement.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/statements/variableDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::compiler {
@@ -275,7 +272,15 @@ void ETSLReference::GetValue() const
             break;
         }
         default: {
-            etsg_->LoadVar(Node()->AsIdentifier(), Variable());
+            ASSERT(Node()->IsIdentifier());
+            auto const *const ident = Node()->AsIdentifier();
+            auto const *const variable = Variable();
+            etsg_->LoadVar(ident, variable);
+            //  Process possible smart type of identifier.
+            if (auto const *const smartType = ident->TsType();
+                !etsg_->Checker()->Relation()->IsIdenticalTo(smartType, variable->TsType())) {
+                etsg_->SetAccumulatorType(smartType);
+            }
             break;
         }
     }
