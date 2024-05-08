@@ -47,6 +47,7 @@ char32_t Lexer::ScanUnicodeEscapeSequence()
         return ScanUnicodeCodePointEscape();
     }
 
+    // 4: a template parameter to the expected fixed length when scanning Unicode escape sequences
     return ScanHexEscape<4>();
 }
 
@@ -590,6 +591,7 @@ void Lexer::ScanStringUnicodePart(util::UString *str)
         }
         case LEX_CHAR_LOWERCASE_X: {
             Iterator().Forward(1);
+            // 2: a template parameter to the expected fixed length when scanning Unicode escape sequences
             str->Append(ScanHexEscape<2>());
             return;
         }
