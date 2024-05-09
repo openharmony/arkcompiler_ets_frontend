@@ -67,6 +67,7 @@ def check_timeout(value):
             "%s is an invalid timeout value" % value)
     return ivalue
 
+
 def get_args():
     parser = argparse.ArgumentParser(description="Regression test runner")
     parser.add_argument(
@@ -1240,13 +1241,13 @@ class BytecodeRunner(Runner):
 
 
 class CompilerTestInfo(object):
-    def __init__(self, dir, extension, flags):
-        self.dir = dir
+    def __init__(self, directory, extension, flags):
+        self.directory = directory
         self.extension = extension
         self.flags = flags
 
     def update_dir(self, prefiex_dir):
-        self.dir = os.path.sep.join([prefiex_dir, self.dir])
+        self.directory = os.path.sep.join([prefiex_dir, self.directory])
 
 
 # Copy compiler directory to test/.local directory, and do inplace obfuscation.
@@ -1255,11 +1256,18 @@ def prepare_for_obfuscation(compiler_test_infos, test_root):
     tmp_path = os.path.join(test_root, tmp_dir_name)
     if not os.path.exists(tmp_path):
         os.mkdir(tmp_path)
-    src_dir = os.path.join(test_root, "compiler")
-    target_dir = os.path.join(tmp_path, "compiler")
-    if os.path.exists(target_dir):
-        shutil.rmtree(target_dir)
-    shutil.copytree(src_dir, target_dir)
+
+    test_root_dirs = set()
+    for info in compiler_test_infos:
+        root_dir = info.directory.split("/")[0]
+        test_root_dirs.add(root_dir)
+
+    for test_dir in test_root_dirs:
+        src_dir = os.path.join(test_root, test_dir)
+        target_dir = os.path.join(tmp_path, test_dir)
+        if os.path.exists(target_dir):
+            shutil.rmtree(target_dir)
+        shutil.copytree(src_dir, target_dir)
 
     for info in compiler_test_infos:
         info.update_dir(tmp_dir_name)
@@ -1352,9 +1360,10 @@ def add_directory_for_compiler(runners, args):
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
 
     for info in compiler_test_infos:
-        runner.add_directory(info.dir, info.extension, info.flags)
+        runner.add_directory(info.directory, info.extension, info.flags)
 
     runners.append(runner)
+
 
 def add_directory_for_bytecode(runners, args):
     runner = BytecodeRunner(args)
@@ -1367,11 +1376,13 @@ def add_directory_for_bytecode(runners, args):
 
     runners.append(runner)
 
+
 def add_directory_for_debug(runners, args):
     runner = RegressionRunner(args)
     runner.add_directory("debug/parser", "js", ["--parse-only", "--dump-ast"])
 
     runners.append(runner)
+
 
 def add_cmd_for_aop_transform(runners, args):
     runner = AopTransform(args)
@@ -1410,6 +1421,7 @@ def add_cmd_for_aop_transform(runners, args):
 
     runners.append(runner)
 
+
 class AopTransform(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "AopTransform")
@@ -1419,6 +1431,7 @@ class AopTransform(Runner):
 
     def test_path(self, src):
         return src
+
 
 def main():
     args = get_args()
