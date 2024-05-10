@@ -51,7 +51,7 @@ class SendableClass {
   static hdr: string = libString;
   public p = localVar; // ERROR
   static ps = localVar; // ERROR
-  sc: SendableClass2 = new SendableClass2(); // ERROR
+  sc: SendableClass2 = new SendableClass2();
   csc: ConstRGB = ConstRGB.GREEN;
   arr: Array = new Array<number>();
 
@@ -70,7 +70,7 @@ class SendableClass {
   }
 
   baz(): SendableClass2 {
-    return new SendableClass2(); // ERROR
+    return new SendableClass2();
   }
   
   bazz(): void {
@@ -120,8 +120,8 @@ class C {
   static a: number = 1;
   f(p: number) {
     @Sendable
-    class D extends SendableClass2 implements B { // 2 ERRORS
-      b: number = C.a; // ERROR
+    class D extends SendableClass2 implements B { // ERROR
+      b: number = C.a;
       d: number = p; // ERROR
     }
   }
