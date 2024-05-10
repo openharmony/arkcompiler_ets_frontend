@@ -841,23 +841,24 @@ class TSDeclarationTest(Test):
         file_name = self.path[:self.path.find(".d.ts")]
         return "%s-expected.txt" % file_name
 
+
 class BcVersionRunner(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "Target bc version")
         self.ts2abc = path.join(self.test_root, '..', 'scripts', 'ts2abc.js')
 
     def add_cmd(self):
-        for apiVersion in range(8, 14):
+        for api_version in range(8, 14):
             cmd = self.cmd_prefix + [self.es2panda]
             cmd += ["--target-bc-version"]
             cmd += ["--target-api-version"]
-            cmd += [str(apiVersion)]
-            self.tests += [BcVersionTest(cmd, apiVersion)]
+            cmd += [str(api_version)]
+            self.tests += [BcVersionTest(cmd, api_version)]
             node_cmd = ["node"] + [self.ts2abc]
             node_cmd += ["".join(["es2abc=", self.es2panda])]
             node_cmd += ["--target-api-version"]
-            node_cmd += [str(apiVersion)]
-            self.tests += [BcVersionTest(node_cmd, apiVersion)]
+            node_cmd += [str(api_version)]
+            self.tests += [BcVersionTest(node_cmd, api_version)]
 
     def run(self):
         for test in self.tests:
@@ -865,11 +866,11 @@ class BcVersionRunner(Runner):
 
 
 class BcVersionTest(Test):
-    def __init__(self, cmd, apiVersion):
+    def __init__(self, cmd, api_version):
         Test.__init__(self, "", 0)
         self.cmd = cmd
-        self.apiVersion = apiVersion
-        self.bcVersionsExpect = {
+        self.api_version = api_version
+        self.bc_version_expect = {
             8: "12.0.1.0",
             9: "9.0.0.0",
             10: "9.0.0.0",
@@ -877,7 +878,7 @@ class BcVersionTest(Test):
             12: "12.0.1.0",
             13: "12.0.1.0"
         }
-        self.js2abcExpect = {
+        self.es2abc_script_expect = {
             8: "0.0.0.2",
             9: "9.0.0.0",
             10: "9.0.0.0",
@@ -891,12 +892,13 @@ class BcVersionTest(Test):
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
         if self.cmd[0] == "node":
-            self.passed = self.js2abcExpect[self.apiVersion] == self.output and process.returncode in [0, 1]
+            self.passed = self.es2abc_script_expect.get(self.api_version) == self.output and process.returncode in [0, 1]
         else:
-            self.passed = self.bcVersionsExpect[self.apiVersion] == self.output and process.returncode in [0, 1]
+            self.passed = self.bc_version_expect.get(self.api_version) == self.output and process.returncode in [0, 1]
         if not self.passed:
             self.error = err.decode("utf-8", errors="ignore")
         return self
+
 
 class TransformerRunner(Runner):
     def __init__(self, args):
