@@ -24,15 +24,15 @@
         },
         "@ohos/lib": {
             "packageName": "@ohos/lib",
-            "bundleName": "bundle",
+            "bundleName": "",
             "moduleName": "module",
             "version": "2.0.0",
             "entryPath": "",
             "isSo": false,
             "dependencyAlias": ""
         },
-        "sourcehar": {
-            "packageName": "sourcehar",
+        "lib2": {
+            "packageName": "lib2",
             "bundleName": "",
             "moduleName": "",
             "version": "",
@@ -40,8 +40,8 @@
             "isSo": false,
             "dependencyAlias": ""
         },
-        "@ohos/sourcehar": {
-            "packageName": "@ohos/sourcehar",
+        "@ohos/lib2": {
+            "packageName": "@ohos/lib2",
             "bundleName": "",
             "moduleName": "",
             "version": "",

@@ -1,63 +1,24 @@
 .language ECMAScript
 
-.function any &bytecodehar/bytecodehar-dynamic-import&.func_main_0(any a0, any a1, any a2) {
-	definefunc 0x0, &bytecodehar/bytecodehar-dynamic-import&.testNonConst, 0x0
-	definefunc 0x1, &bytecodehar/bytecodehar-dynamic-import&.testNonOhmurl, 0x0
-	definefunc 0x2, &bytecodehar/bytecodehar-dynamic-import&.testReplacementWithAt, 0x0
-	definefunc 0x3, &bytecodehar/bytecodehar-dynamic-import&.testReplacementWoAt, 0x0
-	lda.str test
-	stmodulevar 0x0
+.function any &bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst(any a0, any a1, any a2) {
+	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	dynamicimport
+	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	dynamicimport
+	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
+	dynamicimport
 	ldundefined
 	returnundefined
 }
 
-.function any &bytecodehar/bytecodehar-dynamic-import&.testNonConst(any a0, any a1, any a2) {
-	lda.str @normalized:N&&&lib/importfile1&2.0.0
-	dynamicimport
-	lda.str @normalized:N&&&harlib/entry&
-	dynamicimport
-	lda.str @normalized:N&&&lib/importfile1&2.0.0
-	dynamicimport
-	tryldglobalbyname 0x0, cond
-	isfalse
-	jnez label@11
-	lda.str @normalized:N&&&lib/importfile1&
-	jmp label@12
-label@11: lda.str @normalized:N&&&lib/importfile1&
-label@12: dynamicimport
-	lda.str @normalized:N&&&lib/importfile1&
-	sta v0
-	tryldglobalbyname 0x1, print
-	sta v1
-	lda.str @normalized:N&&&lib/importfile1&
-	sta v2
-	lda v1
-	callarg1 0x2, v2
-	lda v0
-	dynamicimport
-	tryldglobalbyname 0x4, cond
-	isfalse
-	jnez label@28
-	lda.str @normalized:N&&&lib/importfile1&
-	jmp label@29
-label@28: lda.str @normalized:N&&&lib/importfile1&
-label@29: dynamicimport
-	ldundefined
-	returnundefined
-}
-
-.function any &bytecodehar/bytecodehar-dynamic-import&.testNonOhmurl(any a0, any a1, any a2) {
+.function any &bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl(any a0, any a1, any a2) {
 	lda.str aaa
 	dynamicimport
 	ldundefined
 	returnundefined
 }
 
-.function any &bytecodehar/bytecodehar-dynamic-import&.testReplacementWithAt(any a0, any a1, any a2) {
-	lda.str @normalized:N&module&bundle&@ohos/lib/importfile2&2.0.0
-	dynamicimport
-	lda.str @normalized:N&module&bundle&@ohos/lib/importfile2&2.0.0
-	dynamicimport
+.function any &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
 	lda.str @normalized:N&module&&@ohos/lib/importfile2&2.0.0
@@ -66,32 +27,39 @@ label@29: dynamicimport
 	dynamicimport
 	lda.str @normalized:N&&&@ohos/lib/importfile2&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&&@ohos/sourcehar/sourcehar-file2&
+	lda.str @normalized:N&&&@ohos/lib2/importfile4&
 	dynamicimport
 	ldundefined
 	returnundefined
 }
 
-.function any &bytecodehar/bytecodehar-dynamic-import&.testReplacementWoAt(any a0, any a1, any a2) {
+.function any &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt(any a0, any a1, any a2) {
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
 	lda.str @normalized:N&module&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&module&&lib/importfile1&2.0.0
+	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&module&&lib/importfile1&2.0.0
+	lda.str @normalized:N&&bundle&lib/importfile1&2.0.0
 	dynamicimport
-	lda.str @normalized:N&&&lib/importfile1&2.0.0
-	dynamicimport
-	lda.str @normalized:N&&&lib/importfile1&2.0.0
-	dynamicimport
-	lda.str @normalized:N&&&sourcehar/sourcehar-file1&
+	lda.str @normalized:N&&&lib2/importfile3&
 	dynamicimport
 	ldundefined
 	returnundefined
 }
 
-.function any &bytecodehar/bytecodehar-static-import&.foo(any a0, any a1, any a2) {
+.function any &bytecodehar/bytecodehar-dynamic-import&.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst, 0x0
+	definefunc 0x1, &bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl, 0x0
+	definefunc 0x2, &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt, 0x0
+	definefunc 0x3, &bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt, 0x0
+	lda.str test
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+.function any &bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
 	createemptyarray 0x1
@@ -146,35 +114,15 @@ label@29: dynamicimport
 	throw.undefinedifholewithname j
 	lda v2
 	stownbyindex 0x14, v1, 0x9
-	ldlexvar 0x0, 0xa
-	sta v2
-	throw.undefinedifholewithname k
-	lda v2
-	stownbyindex 0x16, v1, 0xa
-	ldlexvar 0x0, 0xb
-	sta v2
-	throw.undefinedifholewithname l
-	lda v2
-	stownbyindex 0x18, v1, 0xb
-	ldlexvar 0x0, 0xc
-	sta v2
-	throw.undefinedifholewithname m
-	lda v2
-	stownbyindex 0x1a, v1, 0xc
-	ldlexvar 0x0, 0xd
-	sta v2
-	throw.undefinedifholewithname n
-	lda v2
-	stownbyindex 0x1c, v1, 0xd
 	lda v0
-	callarg1 0x1e, v1
+	callarg1 0x16, v1
 	ldundefined
 	returnundefined
 }
 
 .function any &bytecodehar/bytecodehar-static-import&.func_main_0(any a0, any a1, any a2) {
-	newlexenv 0xe
-	definefunc 0x0, &bytecodehar/bytecodehar-static-import&.foo, 0x0
+	newlexenv 0xa
+	definefunc 0x0, &bytecodehar/bytecodehar-static-import&.#*#foo, 0x0
 	getmodulenamespace 0x0
 	stlexvar 0x0, 0x0
 	getmodulenamespace 0x1
@@ -195,14 +143,6 @@ label@29: dynamicimport
 	stlexvar 0x0, 0x8
 	getmodulenamespace 0x9
 	stlexvar 0x0, 0x9
-	getmodulenamespace 0xa
-	stlexvar 0x0, 0xa
-	getmodulenamespace 0xb
-	stlexvar 0x0, 0xb
-	getmodulenamespace 0xc
-	stlexvar 0x0, 0xc
-	getmodulenamespace 0xd
-	stlexvar 0x0, 0xd
 	ldundefined
 	returnundefined
 }
@@ -210,7 +150,7 @@ label@29: dynamicimport
 
 ======> literal array buffer <======
 ------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_1944
+slot &bytecodehar/bytecodehar-dynamic-import&_1724
 {
   index: 0
     tag: 2
@@ -252,11 +192,11 @@ slot &bytecodehar/bytecodehar-dynamic-import&_1944
     val: 0
 },
 ------------------------------------
-slot &bytecodehar/bytecodehar-static-import&_2462
+slot &bytecodehar/bytecodehar-static-import&_2262
 {
   index: 0
     tag: 2
-    val: 14
+    val: 10
 },
 {
   index: 1
@@ -271,225 +211,165 @@ slot &bytecodehar/bytecodehar-static-import&_2462
 {
   index: 3
     tag: 5
-    val: @normalized:N&module&&lib/importfile1&2.0.0
+    val: @normalized:N&&bundle&lib/importfile1&2.0.0
 },
 {
   index: 4
     tag: 5
-    val: @normalized:N&module&&lib/importfile1&2.0.0
+    val: @normalized:N&&bundle&lib/importfile1&2.0.0
 },
 {
   index: 5
     tag: 5
-    val: @normalized:N&&&lib/importfile1&2.0.0
+    val: @normalized:N&&&lib2/importfile3&
 },
 {
   index: 6
     tag: 5
-    val: @normalized:N&&&lib/importfile1&2.0.0
+    val: @normalized:N&module&&@ohos/lib/importfile2&2.0.0
 },
 {
   index: 7
     tag: 5
-    val: @normalized:N&&&sourcehar/sourcehar-file1&
+    val: @normalized:N&module&&@ohos/lib/importfile2&2.0.0
 },
 {
   index: 8
     tag: 5
-    val: @normalized:N&module&bundle&@ohos/lib/importfile2&2.0.0
+    val: @normalized:N&&&@ohos/lib/importfile2&2.0.0
 },
 {
   index: 9
     tag: 5
-    val: @normalized:N&module&bundle&@ohos/lib/importfile2&2.0.0
+    val: @normalized:N&&&@ohos/lib/importfile2&2.0.0
 },
 {
   index: 10
     tag: 5
-    val: @normalized:N&module&&@ohos/lib/importfile2&2.0.0
+    val: @normalized:N&&&@ohos/lib2/importfile4&
 },
 {
   index: 11
-    tag: 5
-    val: @normalized:N&module&&@ohos/lib/importfile2&2.0.0
+    tag: 2
+    val: 0
 },
 {
   index: 12
-    tag: 5
-    val: @normalized:N&&&@ohos/lib/importfile2&2.0.0
+    tag: 2
+    val: 10
 },
 {
   index: 13
     tag: 5
-    val: @normalized:N&&&@ohos/lib/importfile2&2.0.0
-},
-{
-  index: 14
-    tag: 5
-    val: @normalized:N&&&@ohos/sourcehar/sourcehar-file2&
-},
-{
-  index: 15
-    tag: 2
-    val: 0
-},
-{
-  index: 16
-    tag: 2
-    val: 14
-},
-{
-  index: 17
-    tag: 5
     val: a
 },
 {
-  index: 18
+  index: 14
     tag: 9
     val: 0
 },
 {
-  index: 19
+  index: 15
     tag: 5
     val: b
 },
 {
-  index: 20
+  index: 16
     tag: 9
     val: 1
 },
 {
-  index: 21
+  index: 17
     tag: 5
     val: c
 },
 {
-  index: 22
+  index: 18
     tag: 9
     val: 2
 },
 {
-  index: 23
+  index: 19
     tag: 5
     val: d
 },
 {
-  index: 24
+  index: 20
     tag: 9
     val: 3
 },
 {
-  index: 25
+  index: 21
     tag: 5
     val: e
 },
 {
-  index: 26
+  index: 22
     tag: 9
     val: 4
 },
 {
-  index: 27
+  index: 23
     tag: 5
     val: f
 },
 {
-  index: 28
+  index: 24
     tag: 9
     val: 5
 },
 {
-  index: 29
+  index: 25
     tag: 5
     val: g
 },
 {
-  index: 30
+  index: 26
     tag: 9
     val: 6
 },
 {
-  index: 31
+  index: 27
     tag: 5
     val: h
 },
 {
-  index: 32
+  index: 28
     tag: 9
     val: 7
 },
 {
-  index: 33
+  index: 29
     tag: 5
     val: i
 },
 {
-  index: 34
+  index: 30
     tag: 9
     val: 8
 },
 {
-  index: 35
+  index: 31
     tag: 5
     val: j
 },
 {
-  index: 36
+  index: 32
     tag: 9
     val: 9
 },
 {
-  index: 37
-    tag: 5
-    val: k
-},
-{
-  index: 38
-    tag: 9
-    val: 10
-},
-{
-  index: 39
-    tag: 5
-    val: l
-},
-{
-  index: 40
-    tag: 9
-    val: 11
-},
-{
-  index: 41
-    tag: 5
-    val: m
-},
-{
-  index: 42
-    tag: 9
-    val: 12
-},
-{
-  index: 43
-    tag: 5
-    val: n
-},
-{
-  index: 44
-    tag: 9
-    val: 13
-},
-{
-  index: 45
+  index: 33
     tag: 2
     val: 0
 },
 {
-  index: 46
+  index: 34
     tag: 2
     val: 0
 },
 {
-  index: 47
+  index: 35
     tag: 2
     val: 0
 },
@@ -525,6 +405,8 @@ label_2:
 ======> literal array buffer <======
 ------------------------------------
 slot &myapp/hap-file-exec&_0
+------------------------------------
+slot &myapp/hap-file-exec&_1
 {
   index: 0
     tag: 2
@@ -587,7 +469,7 @@ slot &myapp/hap-file-exec&_0
 },
 .language ECMAScript
 
-.function any &lib/importfile1&2.0.0.func_main_0(any a0, any a1, any a2) {
+.function any bundle&lib/importfile1&2.0.0.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldtrue
@@ -600,7 +482,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
-slot &lib/importfile1&2.0.0_0
+slot bundle&lib/importfile1&2.0.0_0
+------------------------------------
+slot bundle&lib/importfile1&2.0.0_1
 {
   index: 0
     tag: 2
@@ -657,6 +541,8 @@ label_2:
 ======> literal array buffer <======
 ------------------------------------
 slot &@ohos/lib/importfile2&2.0.0_0
+------------------------------------
+slot &@ohos/lib/importfile2&2.0.0_1
 {
   index: 0
     tag: 2
@@ -699,28 +585,11 @@ slot &@ohos/lib/importfile2&2.0.0_0
 },
 .language ECMAScript
 
-.function any &sourcehar/sourcehar-file1&.foo(any a0, any a1, any a2) {
+.function any &lib2/importfile3&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	tryldglobalbyname 0x0, print
-	sta v0
-	ldlexvar 0x0, 0x0
-	sta v1
-	throw.undefinedifholewithname a
-	lda v0
-	callarg1 0x1, v1
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any &sourcehar/sourcehar-file1&.func_main_0(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	newlexenv 0x1
-	definefunc 0x0, &sourcehar/sourcehar-file1&.foo, 0x0
-	getmodulenamespace 0x0
-	stlexvar 0x0, 0x0
+	ldtrue
+	stmodulevar 0x0
 	ldundefined
 	returnundefined
 label_2: 
@@ -729,16 +598,18 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
-slot &sourcehar/sourcehar-file1&_0
+slot &lib2/importfile3&_0
+------------------------------------
+slot &lib2/importfile3&_1
 {
   index: 0
     tag: 2
-    val: 1
+    val: 0
 },
 {
   index: 1
-    tag: 5
-    val: @normalized:N&module&bundle&lib/importfile1&1.0.0
+    tag: 2
+    val: 0
 },
 {
   index: 2
@@ -753,12 +624,12 @@ slot &sourcehar/sourcehar-file1&_0
 {
   index: 4
     tag: 5
-    val: a
+    val: test3
 },
 {
   index: 5
-    tag: 9
-    val: 0
+    tag: 5
+    val: test3
 },
 {
   index: 6
@@ -770,27 +641,13 @@ slot &sourcehar/sourcehar-file1&_0
     tag: 2
     val: 0
 },
-{
-  index: 8
-    tag: 2
-    val: 0
-},
 .language ECMAScript
 
-.function any &@ohos/sourcehar/sourcehar-file2&.foo(any a0, any a1, any a2) {
+.function any &@ohos/lib2/importfile4&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	lda.str @normalized:N&module&bundle&lib/importfile1&1.0.0
-	dynamicimport
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any &@ohos/sourcehar/sourcehar-file2&.func_main_0(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	definefunc 0x0, &@ohos/sourcehar/sourcehar-file2&.foo, 0x0
+	ldtrue
+	stmodulevar 0x0
 	ldundefined
 	returnundefined
 label_2: 
@@ -799,7 +656,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
-slot &@ohos/sourcehar/sourcehar-file2&_0
+slot &@ohos/lib2/importfile4&_0
+------------------------------------
+slot &@ohos/lib2/importfile4&_1
 {
   index: 0
     tag: 2
@@ -818,15 +677,25 @@ slot &@ohos/sourcehar/sourcehar-file2&_0
 {
   index: 3
     tag: 2
-    val: 0
+    val: 1
 },
 {
   index: 4
+    tag: 5
+    val: test4
+},
+{
+  index: 5
+    tag: 5
+    val: test4
+},
+{
+  index: 6
     tag: 2
     val: 0
 },
 {
-  index: 5
+  index: 7
     tag: 2
     val: 0
 },

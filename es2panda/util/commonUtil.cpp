@@ -17,6 +17,8 @@
 
 #include <algorithm>
 
+#include "util/helpers.h"
+
 namespace panda::es2panda::util {
 std::vector<std::string> Split(const std::string &str, const char delimiter)
 {
@@ -76,6 +78,30 @@ bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &
         return true;
     }
     return false;
+}
+
+static bool StringStartsWith(const std::string &str, const std::string &prefix)
+{
+    return (str.size() >= prefix.size()) &&
+           std::equal(prefix.begin(), prefix.end(), str.begin());
+}
+
+std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const panda::es2panda::CompileContextInfo &info)
+{
+    // ohmurl: @normalized:N&<module name>&<bundle name>&[<package name>|<@package/name>]/<import_path>&version
+    // Replace version if the package name exists in the pkgContextInfo
+    if (!StringStartsWith(ohmurl, util::NORMALIZED_OHMURL_NOT_SO)) {
+        return ohmurl;
+    }
+    std::string package_name = util::GetPkgNameFromNormalizedOhmurl(ohmurl);
+    auto iter = info.pkgContextInfo.find(package_name);
+    if (iter == info.pkgContextInfo.end()) {
+        return ohmurl;
+    }
+    auto version_start = ohmurl.rfind(util::NORMALIZED_OHMURL_SEPARATOR);
+    ASSERT(version_start != std::string::npos);
+    auto ret =  ohmurl.substr(0, version_start + 1) + iter->second.version;
+    return ret;
 }
 
 } // namespace panda::es2panda::util

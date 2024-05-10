@@ -13,7 +13,4 @@
  * limitations under the License.
  */
 
-function foo() {
-    import("@normalized:N&module&bundle&lib/importfile1&1.0.0");
-
-}
+export const test4: boolean = true;

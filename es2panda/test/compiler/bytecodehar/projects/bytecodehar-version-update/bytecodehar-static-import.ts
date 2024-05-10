@@ -16,25 +16,21 @@
 // testReplacementWoAt
 import * as a from "@normalized:N&module&bundle&lib/importfile1&1.0.0";
 import * as b from "@normalized:N&module&bundle&lib/importfile1&";
-import * as c from "@normalized:N&module&&lib/importfile1&1.0.0";
-import * as d from "@normalized:N&module&&lib/importfile1&";
-import * as e from "@normalized:N&&&lib/importfile1&1.0.0";
-import * as f from "@normalized:N&&&lib/importfile1&";
+import * as c from "@normalized:N&&bundle&lib/importfile1&1.0.0";
+import * as d from "@normalized:N&&bundle&lib/importfile1&";
 
 // No-effect since no version info in compileContextInfo.json
-import * as g from "@normalized:N&&&sourcehar/sourcehar-file1&";
+import * as e from "@normalized:N&&&lib2/importfile3&";
 
 //testReplacementWithAt
-import * as h from "@normalized:N&module&bundle&@ohos/lib/importfile2&1.0.0";
-import * as i from "@normalized:N&module&bundle&@ohos/lib/importfile2&";
-import * as j from "@normalized:N&module&&@ohos/lib/importfile2&1.0.0";
-import * as k from "@normalized:N&module&&@ohos/lib/importfile2&";
-import * as l from "@normalized:N&&&@ohos/lib/importfile2&1.0.0";
-import * as m from "@normalized:N&&&@ohos/lib/importfile2&";
+import * as f from "@normalized:N&module&&@ohos/lib/importfile2&1.0.0";
+import * as g from "@normalized:N&module&&@ohos/lib/importfile2&";
+import * as h from "@normalized:N&&&@ohos/lib/importfile2&1.0.0";
+import * as i from "@normalized:N&&&@ohos/lib/importfile2&";
 
 // No-effect since no version info in compileContextInfo.json
-import * as n from "@normalized:N&&&@ohos/sourcehar/sourcehar-file2&";
+import * as j from "@normalized:N&&&@ohos/lib2/importfile4&";
 
 function foo() {
-    print([a, b, c, d, e, f, g, h, i, j, k ,l ,m ,n]);
+    print([a, b, c, d, e, f, g, h, i, j]);
 }

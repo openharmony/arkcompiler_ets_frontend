@@ -22,6 +22,10 @@
 #include <string>
 #include <string_view>
 
+namespace panda::es2panda {
+struct CompileContextInfo;
+};
+
 namespace panda::es2panda::util {
 const std::string NPM_ENTRIES = "npmEntries.txt";
 const std::string IS_COMMONJS = "isCommonjs";
@@ -41,7 +45,7 @@ std::vector<std::string> Split(const std::string &ohmurl, const char delimiter);
 bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &externalPkgNames);
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
-
+std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const CompileContextInfo &info);
 }  // namespace panda::es2panda::util
 
 #endif

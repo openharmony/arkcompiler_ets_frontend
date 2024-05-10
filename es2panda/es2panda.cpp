@@ -23,6 +23,7 @@
 #include <parser/program/program.h>
 #include <parser/transformer/transformer.h>
 #include <typescript/checker.h>
+#include <util/commonUtil.h>
 #include <util/helpers.h>
 
 #include <iostream>
@@ -121,10 +122,35 @@ void Compiler::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
                 continue;
             }
             ASSERT(prevIns->ids.size() == 1);
-            const auto &newOhmurl = util::Helpers::UpdatePackageVersionIfNeeded(prevIns->ids[0],
-                                                                                options.compileContextInfo);
+            const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(prevIns->ids[0],
+                                                                       options.compileContextInfo);
             prog->strings.insert(newOhmurl);
             prevIns->ids[0] = newOhmurl;    // 0: index of the string in lda.str bytecode
+        }
+    }
+}
+
+void Compiler::UpdateModuleImportPackageVersion(panda::pandasm::Program *prog,
+                                                const panda::es2panda::CompilerOptions &options)
+{
+    auto &recordTable = prog->record_table;
+    std::vector<std::string> literal_array_keys;
+    for (auto &pair : recordTable) {
+        for (auto &field : pair.second.field_list) {
+            if (field.name == util::MODULE_RECORD_IDX) {
+                literal_array_keys.emplace(literal_array_keys.begin(),
+                                           field.metadata->GetValue().value().GetValue<std::string>());
+            }
+        }
+    }
+    for (std::string literal_array_key : literal_array_keys) {
+        auto &array = prog->literalarray_table[literal_array_key];
+        uint32_t importSize = std::get<uint32_t>(array.literals_[0].value_);
+        for (size_t idx = 1; idx < importSize + 1; ++idx) {
+            std::string &importString = std::get<std::string>(array.literals_[idx].value_);
+            const std::string &newOhmurl = util::UpdatePackageVersionIfNeeded(importString,
+                                                                              options.compileContextInfo);
+            importString = newOhmurl;
         }
     }
 }
@@ -132,6 +158,7 @@ void Compiler::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
 void Compiler::UpdatePackageVersion(panda::pandasm::Program *prog, const panda::es2panda::CompilerOptions &options)
 {
     // Replace for esm module import
+    UpdateModuleImportPackageVersion(prog, options);
     // Replace for dynamic import
     UpdateDynamicImportPackageVersion(prog, options);
 }
