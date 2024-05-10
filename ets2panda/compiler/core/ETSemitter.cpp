@@ -348,7 +348,7 @@ void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *method
 void ETSEmitter::GenClassField(const ir::ClassProperty *field, pandasm::Record &classRecord, bool external)
 {
     GenField(field->TsType(), field->Id()->Name(), field->Value(), TranslateModifierFlags(field->Modifiers()),
-             classRecord, external);
+             classRecord, external || field->IsDeclare());
 }
 
 void ETSEmitter::GenField(const checker::Type *tsType, const util::StringView &name, const ir::Expression *value,

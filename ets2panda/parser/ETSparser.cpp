@@ -2832,7 +2832,7 @@ ir::VariableDeclarator *ETSParser::ParseVariableDeclarator(ir::Expression *init,
     }
 
     if ((flags & VariableParsingFlags::CONST) != 0 &&
-        static_cast<uint32_t>(flags & VariableParsingFlags::ACCEPT_CONST_NO_INIT) == 0U) {
+        static_cast<uint32_t>(flags & VariableParsingFlags::ACCEPT_CONST_NO_INIT) == 0U && !InAmbientContext()) {
         ThrowSyntaxError("Missing initializer in const declaration");
     }
 
