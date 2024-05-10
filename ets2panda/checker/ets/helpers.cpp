@@ -2125,12 +2125,18 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
                                           bool isSetter)
 {
     auto *classDef = field->Parent()->AsClassDefinition();
-    auto *thisExpression = Allocator()->New<ir::ThisExpression>();
-    thisExpression->SetParent(classDef);
-    thisExpression->SetTsType(classDef->TsType());
+
+    ir::Expression *baseExpression;
+    if ((field->Modifiers() & ir::ModifierFlags::SUPER_OWNER) != 0U) {
+        baseExpression = Allocator()->New<ir::SuperExpression>();
+    } else {
+        baseExpression = Allocator()->New<ir::ThisExpression>();
+    }
+    baseExpression->SetParent(classDef);
+    baseExpression->SetTsType(classDef->TsType());
 
     auto *memberExpression =
-        AllocNode<ir::MemberExpression>(thisExpression, field->Key()->AsIdentifier()->Clone(Allocator(), nullptr),
+        AllocNode<ir::MemberExpression>(baseExpression, field->Key()->AsIdentifier()->Clone(Allocator(), nullptr),
                                         ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     memberExpression->SetTsType(field->TsType());
     memberExpression->SetPropVar(field->Key()->Variable()->AsLocalVariable());
@@ -2207,6 +2213,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
         checker->Allocator(), property->Key()->AsIdentifier()->Name(),
         property->Key()->AsIdentifier()->Variable()->Declaration()->Node());
     auto *var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+    var->AddFlag(varbinder::VariableFlags::METHOD);
 
     methodIdent->SetVariable(var);
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
@@ -2226,15 +2233,37 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     paramScope->BindNode(func);
     functionScope->BindNode(func);
 
-    {
-        auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(checker->VarBinder(), classScope);
-        checker->VarBinder()->AsETSBinder()->ResolveMethodDefinition(method);
-    }
+    auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(checker->VarBinder(), classScope);
+    checker->VarBinder()->AsETSBinder()->ResolveMethodDefinition(method);
 
     functionScope->BindName(classScope->Node()->AsClassDefinition()->InternalName());
     method->Check(checker);
 
     return method;
+}
+
+ir::ClassProperty *GetImplementationClassProp(ETSChecker *checker, ir::ClassProperty *interfaceProp,
+                                              ir::ClassProperty *originalProp, ETSObjectType *classType)
+{
+    bool isSuperOwner = ((originalProp->Modifiers() & ir::ModifierFlags::SUPER_OWNER) != 0U);
+    if (!isSuperOwner) {
+        auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
+        auto *const scope = checker->Scope()->AsClassScope();
+        auto *const classProp = checker->ClassPropToImplementationProp(
+            interfaceProp->Clone(checker->Allocator(), originalProp->Parent()), scope);
+        classType->AddProperty<PropertyType::INSTANCE_FIELD>(classProp->Key()->Variable()->AsLocalVariable());
+        classDef->Body().push_back(classProp);
+        return classProp;
+    }
+
+    auto *const classProp = classType
+                                ->GetProperty(interfaceProp->Key()->AsIdentifier()->Name(),
+                                              PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE)
+                                ->Declaration()
+                                ->Node()
+                                ->AsClassProperty();
+    classProp->AddModifier(ir::ModifierFlags::SUPER_OWNER);
+    return classProp;
 }
 
 void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType)
@@ -2248,10 +2277,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     scope->InstanceFieldScope()->EraseBinding(interfaceProp->Key()->AsIdentifier()->Name());
     interfaceProp->SetRange(originalProp->Range());
 
-    auto *const classProp =
-        ClassPropToImplementationProp(interfaceProp->Clone(Allocator(), originalProp->Parent()), scope);
-    classType->AddProperty<PropertyType::INSTANCE_FIELD>(classProp->Key()->Variable()->AsLocalVariable());
-    classDef->Body().push_back(classProp);
+    auto *const classProp = GetImplementationClassProp(this, interfaceProp, originalProp, classType);
 
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     ir::MethodDefinition *getter = GenerateDefaultGetterSetter(interfaceProp, classProp, scope, false, this);

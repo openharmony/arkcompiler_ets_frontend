@@ -764,6 +764,41 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
             }
         }
 
+        if (functionOverridden) {
+            continue;
+        }
+
+        auto superClassType = classType->SuperType();
+        while (!functionOverridden && superClassType != nullptr) {
+            for (auto *field : superClassType->Fields()) {
+                if (field->Name() == (*it)->Name()) {
+                    auto *newProp =
+                        field->Declaration()->Node()->Clone(Allocator(), classType->GetDeclNode())->AsClassProperty();
+                    newProp->AddModifier(ir::ModifierFlags::SUPER_OWNER);
+                    newProp->AddModifier(isGetter && isSetter ? ir::ModifierFlags::GETTER_SETTER
+                                         : isGetter           ? ir::ModifierFlags::GETTER
+                                                              : ir::ModifierFlags::SETTER);
+                    auto *newFieldDecl = Allocator()->New<varbinder::LetDecl>(newProp->Key()->AsIdentifier()->Name());
+                    newFieldDecl->BindNode(newProp);
+
+                    auto newFieldVar = classType->GetDeclNode()
+                                           ->Scope()
+                                           ->AsClassScope()
+                                           ->InstanceFieldScope()
+                                           ->AddDecl(Allocator(), newFieldDecl, ScriptExtension::ETS)
+                                           ->AsLocalVariable();
+                    newFieldVar->AddFlag(varbinder::VariableFlags::PROPERTY);
+                    newFieldVar->AddFlag(varbinder::VariableFlags::PUBLIC);
+                    classType->AddProperty<PropertyType::INSTANCE_FIELD>(newFieldVar);
+                    it = abstractsToBeImplemented.erase(it);
+                    functionOverridden = true;
+                    break;
+                }
+            }
+
+            superClassType = superClassType->SuperType();
+        }
+
         if (!functionOverridden) {
             it++;
         }
@@ -771,9 +806,19 @@ void ETSChecker::ValidateOverriding(ETSObjectType *classType, const lexer::Sourc
 
     if (!abstractsToBeImplemented.empty() && throwError) {
         auto unimplementedSignature = abstractsToBeImplemented.front()->CallSignatures().front();
+        auto containingObjectName = GetContainingObjectNameFromSignature(unimplementedSignature);
+        if (unimplementedSignature->HasSignatureFlag(SignatureFlags::GETTER)) {
+            ThrowTypeError({classType->Name(), " is not abstract and does not implement getter for ",
+                            unimplementedSignature->Function()->Id()->Name(), " property in ", containingObjectName},
+                           pos);
+        } else if (unimplementedSignature->HasSignatureFlag(SignatureFlags::SETTER)) {
+            ThrowTypeError({classType->Name(), " is not abstract and does not implement setter for ",
+                            unimplementedSignature->Function()->Id()->Name(), " property in ", containingObjectName},
+                           pos);
+        }
         ThrowTypeError({classType->Name(), " is not abstract and does not override abstract method ",
                         unimplementedSignature->Function()->Id()->Name(), unimplementedSignature, " in ",
-                        GetContainingObjectNameFromSignature(unimplementedSignature)},
+                        containingObjectName},
                        pos);
     }
 
@@ -1530,15 +1575,12 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
 
     varbinder::Variable *globalFunctionVar = nullptr;
 
-    if (memberExpr->Parent()->IsCallExpression()) {
-        if (memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
-            globalFunctionVar = ResolveInstanceExtension(memberExpr);
-        }
+    if (memberExpr->Parent()->IsCallExpression() && memberExpr->Parent()->AsCallExpression()->Callee() == memberExpr) {
+        globalFunctionVar = ResolveInstanceExtension(memberExpr);
     } else if (target->GetDeclNode() != nullptr && target->GetDeclNode()->IsClassDefinition() &&
                !target->GetDeclNode()->AsClassDefinition()->IsClassDefinitionChecked()) {
         this->CheckClassDefinition(target->GetDeclNode()->AsClassDefinition());
     }
-
     const auto *const targetRef = GetTargetRef(memberExpr);
     auto searchFlag = GetSearchFlags(memberExpr, targetRef);
 
@@ -1630,17 +1672,18 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
         auto *found = classType->SuperType()->GetProperty(it->Name(), searchFlag);
 
         ETSObjectType *interfaceFound = nullptr;
-        if (found == nullptr) {
-            auto interfaceList = GetInterfacesOfClass(classType);
-            for (auto *interface : interfaceList) {
-                auto *propertyFound = interface->GetProperty(it->Name(), searchFlag);
-                if (propertyFound == nullptr) {
-                    continue;
-                }
-                found = propertyFound;
-                interfaceFound = interface;
-                break;
+        if (found != nullptr) {
+            CheckProperties(classType, classDef, it, found, interfaceFound);
+        }
+        auto interfaceList = GetInterfacesOfClass(classType);
+        for (auto *interface : interfaceList) {
+            auto *propertyFound = interface->GetProperty(it->Name(), searchFlag);
+            if (propertyFound == nullptr) {
+                continue;
             }
+            found = propertyFound;
+            interfaceFound = interface;
+            break;
         }
         if (found == nullptr) {
             continue;
@@ -1653,9 +1696,24 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *classType, ir::ClassDefini
 void ETSChecker::CheckProperties(ETSObjectType *classType, ir::ClassDefinition *classDef, varbinder::LocalVariable *it,
                                  varbinder::LocalVariable *found, ETSObjectType *interfaceFound)
 {
+    if (found->TsType() == nullptr) {
+        GetTypeOfVariable(found);
+    }
+
     if (!IsSameDeclarationType(it, found)) {
         if (IsVariableStatic(it) != IsVariableStatic(found)) {
             return;
+        }
+
+        if (it->TsType()->IsETSFunctionType()) {
+            auto getter = it->TsType()->AsETSFunctionType()->FindGetter();
+            if (getter != nullptr && getter->ReturnType() == found->TsType()) {
+                return;
+            }
+            auto setter = it->TsType()->AsETSFunctionType()->FindSetter();
+            if (setter != nullptr && setter->Params().front()->TsType() == found->TsType()) {
+                return;
+            }
         }
 
         const char *targetType {};
