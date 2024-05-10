@@ -89,12 +89,6 @@ export function collectIdentifiersAndStructs(sourceFile: SourceFile, context: Tr
   return {shadowIdentifiers: identifiers, shadowStructs: structs};
 }
 
-export enum OhPackType {
-  NONE,
-  JS_BUNDLE,
-  ES_MODULE
-}
-
 export function isCommentedNode(node: Node, sourceFile: SourceFile): boolean {
   const ranges: CommentRange[] = getLeadingCommentRangesOfNode(node, sourceFile);
   return ranges !== undefined;

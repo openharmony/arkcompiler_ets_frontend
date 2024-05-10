@@ -53,7 +53,6 @@ import type {
   TypeAliasDeclaration,
 } from 'typescript';
 
-import { OhPackType } from './TransformUtil';
 import { ApiExtractor } from '../common/ApiExtractor';
 
 export const stringPropsSet: Set<string> = new Set();
@@ -62,92 +61,6 @@ export const stringPropsSet: Set<string> = new Set();
  * So the whitelist of struct properties is collected during the project scanning process.
  */
 export const structPropsSet: Set<string> = new Set();
-
-/**
- * find openHarmony module import statement
- * example:
- *  jsbundle - var _ohos = _interopRequireDefault(requireModule('@ohos.hilog'));
- *  esmodule - var hilog = globalThis.requireNapi('hilog') || ...
- *
- * @param node
- * @param moduleName full name of imported module, must check format before called, example:
- *  - '@ohos.hilog'
- *  - '@ohos.application.Ability'
- */
-export function findOhImportStatement(node: Statement, moduleName: string): OhPackType {
-  if (!isVariableStatement(node) || node.declarationList.declarations.length !== 1) {
-    return OhPackType.NONE;
-  }
-
-  const initializer: Expression = node.declarationList.declarations[0].initializer;
-  if (initializer === undefined) {
-    return OhPackType.NONE;
-  }
-
-  /** esmodule */
-  if (isBinaryExpression(initializer)) {
-    if (initializer.operatorToken.kind !== SyntaxKind.BarBarToken) {
-      return OhPackType.NONE;
-    }
-
-    if (!isCallExpression(initializer.left)) {
-      return OhPackType.NONE;
-    }
-
-    if (!isPropertyAccessExpression(initializer.left.expression)) {
-      return OhPackType.NONE;
-    }
-
-    if (!isIdentifier(initializer.left.expression.expression) ||
-      initializer.left.expression.expression.text !== 'globalThis') {
-      return OhPackType.NONE;
-    }
-
-    if (!isIdentifier(initializer.left.expression.name) ||
-      initializer.left.expression.name.text !== 'requireNapi') {
-      return OhPackType.NONE;
-    }
-
-    if (initializer.left.arguments.length !== 1) {
-      return OhPackType.NONE;
-    }
-
-    const arg: Expression = initializer.left.arguments[0];
-    if (isStringLiteral(arg) && arg.text === moduleName.substring('@ohos.'.length)) {
-      return OhPackType.ES_MODULE;
-    }
-  }
-
-  /** jsbundle */
-  if (isCallExpression(initializer)) {
-    if (initializer.arguments.length !== 1) {
-      return OhPackType.NONE;
-    }
-
-    if (!isIdentifier(initializer.expression) ||
-      initializer.expression.text !== '_interopRequireDefault') {
-      return OhPackType.NONE;
-    }
-
-    const arg: Expression = initializer.arguments[0];
-    if (!isCallExpression(arg)) {
-      return OhPackType.NONE;
-    }
-
-    if (!isIdentifier(arg.expression) || arg.expression.text !== 'requireModule') {
-      return OhPackType.NONE;
-    }
-
-    const innerArg: Expression = arg.arguments[0];
-    if (!isStringLiteral(innerArg) || innerArg.text !== moduleName) {
-      return OhPackType.NONE;
-    }
-
-    return OhPackType.JS_BUNDLE;
-  }
-
-  return OhPackType.NONE;
-}
 
 function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
   if (!heritageClauses) {

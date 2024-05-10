@@ -34,9 +34,6 @@ export interface IOptions {
   // Whether to disable console output
   readonly mDisableConsole?: boolean;
 
-  // whether to disable hilog output
-  readonly mDisableHilog?: boolean;
-
   // Whether to do code simplification, includes variable declarations merging, expression merging...
   readonly mSimplify?: boolean;
 
