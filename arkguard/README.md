@@ -452,7 +452,7 @@ Here, \* indicates matching any number of any characters, resulting in all prope
 
 (2) The -keep option only allows the use of '/' as the path separator and does not support '\\' or '\\\\'.
 
-(3) The whitelist does not support configuring the following special characters: '\\', '\^', '\$', '\.', '\+', '\|', '\[', '\]', '\{', '\}', '\(', '\)'.
+(3) The whitelist does not support configuring the following special characters: '\\', '\^', '\$', '\+', '\|', '\[', '\]', '\{', '\}', '\(', '\)'.
 
 ### Comments
 

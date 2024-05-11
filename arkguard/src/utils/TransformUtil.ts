@@ -118,10 +118,10 @@ export function separateUniversalReservedItem(originalArray: string[]): Reserved
     specificReservedArray: []
   };
 
-  const specialRegex = /[\\\^\$\.\+\|\(\)\[\]\{\}]/;
+  const specialRegex = /[\\\^\$\+\|\(\)\[\]\{\}]/;
   originalArray.forEach(reservedItem => {
     // do not process elements containing special characters
-    // special characters: '\', '^', '$', '.', '+', '|', '[', ']', '{', '}', '(', ')'
+    // special characters: '\', '^', '$', '+', '|', '[', ']', '{', '}', '(', ')'
     if (specialRegex.test(reservedItem)) {
       return;
     }
@@ -155,7 +155,7 @@ export function wildcardTransformer(wildcard: string, isPath?: boolean): string 
   }
   // before: *a?
   // after: .*a.
-  return wildcard.replace(/\*/g, '.*').replace(/\?/g, '.');
+  return wildcard.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.');
 }
 
 /**
