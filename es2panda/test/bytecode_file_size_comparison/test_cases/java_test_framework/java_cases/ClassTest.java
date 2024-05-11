@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+/**
+ * Class Test
+ * 
+ * @since 2024/5/8
+ */
 public class ClassTest {
     public static void main(String[] args) {
         Rectangle rect = new Rectangle(5.0, 3.0);
@@ -26,11 +31,22 @@ class Rectangle {
     private double length;
     private double width;
 
+    /**
+     * Rectangle
+     * 
+     * @param length length of Rectangle
+     * @param width width of Rectangle
+     */
     public Rectangle(double length, double width) {
         this.length = length;
         this.width = width;
     }
 
+    /**
+     * getArea
+     * 
+     * @return double area
+     */
     public double getArea() {
         return length * width;
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,11 @@
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * Regex Test
+ * 
+ * @since 2024/5/8
+ */
 public class RegexTest {
     public static void main(String[] args) {
         String text = "Hello, World!";

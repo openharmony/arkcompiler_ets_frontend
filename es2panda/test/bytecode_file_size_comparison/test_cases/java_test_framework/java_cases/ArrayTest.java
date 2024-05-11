@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,15 @@
  * limitations under the License.
  */
 
+/**
+ * Array Test
+ * 
+ * @since 2024/5/8
+ */
 public class ArrayTest {
     public static void main(String[] args) {
         int[] numbers = {1, 2, 3, 4, 5};
-        
+
         for (int i = 0; i < numbers.length; i++) {
             System.out.println(numbers[i]);
         }

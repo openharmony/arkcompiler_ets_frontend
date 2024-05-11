@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,15 @@
  * limitations under the License.
  */
 
+/**
+ * String Test
+ * 
+ * @since 2024/5/8
+ */
 public class StringTest {
     public static void main(String[] args) {
         String text = "Hello, World!";
-        
+
         // Test the length of the string
         if (text.length() > 0) {
             System.out.println("The string length is greater than 0.");

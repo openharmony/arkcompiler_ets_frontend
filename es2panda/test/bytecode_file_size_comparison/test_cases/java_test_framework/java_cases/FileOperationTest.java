@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
-
+/**
+ * File Operation Test
+ * 
+ * @since 2024/5/8
+ */
 public class FileOperationTest {
     public static void main(String[] args) {
         // Write to a file
-        try {
-            FileWriter writer = new FileWriter("test.txt");
+        try (FileWriter writer = new FileWriter("test.txt")) {
             writer.write("Hello, World!");
             writer.close();
             System.out.println("Successfully wrote to the file.");
@@ -30,8 +33,7 @@ public class FileOperationTest {
         }
 
         // Read from a file
-        try {
-            FileReader reader = new FileReader("test.txt");
+        try (FileReader reader = new FileReader("test.txt")) {
             int data;
             while ((data = reader.read()) != -1) {
                 System.out.print((char) data);
