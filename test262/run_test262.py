@@ -591,6 +591,7 @@ def get_host_args_of_host_type(args, host_type, ark_tool, ark_aot_tool, libs_dir
 
     return host_args
 
+
 def get_host_args_of_ark_arch(args):
     host_args += f"--ark-arch={args.ark_arch} "
     host_args += f"--ark-arch-root={args.ark_arch_root} "

@@ -1274,6 +1274,7 @@ def prepare_for_obfuscation(compiler_test_infos, test_root):
     for info in compiler_test_infos:
         info.update_dir(tmp_dir_name)
 
+
 def add_directory_for_regression(runners, args):
     runner = RegressionRunner(args)
     runner.add_directory("parser/concurrent", "js", ["--module", "--dump-ast"])
@@ -1309,6 +1310,7 @@ def add_directory_for_regression(runners, args):
 
     runners.append(bc_version_runner)
 
+
 def add_directory_for_asm(runners, args):
     runner = AbcToAsmRunner(args)
     runner.add_directory("abc2asm/js", "js", [])
@@ -1337,6 +1339,7 @@ def add_directory_for_asm(runners, args):
     runner.add_directory("parser/ts/stack_overflow", "ts", [])
 
     runners.append(runner)
+
 
 def add_directory_for_compiler(runners, args):
     runner = CompilerRunner(args)
