@@ -18,10 +18,7 @@
 #include "parser/ETSparser.h"
 
 #include "checker/types/ets/etsTupleType.h"
-#include "checker/ets/narrowingWideningConverter.h"
 #include "checker/ets/typeRelationContext.h"
-#include "checker/ets/boxingConverter.h"
-#include "checker/ets/unboxingConverter.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/globalTypesHolder.h"
 

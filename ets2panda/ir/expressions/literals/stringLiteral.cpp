@@ -34,6 +34,8 @@ void StringLiteral::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "StringLiteral"}, {"value", str_}});
 }
 
+static unsigned int constexpr CHAR_UPPER_HALF = 128U;
+
 void StringLiteral::Dump(ir::SrcDumper *dumper) const
 {
     std::string str(str_);
@@ -44,7 +46,7 @@ void StringLiteral::Dump(ir::SrcDumper *dumper) const
         const char c = str_.Bytes()[i];
         // check if a given character is printable
         // the cast is necessary to avoid undefined behaviour
-        if (std::isprint(static_cast<unsigned char>(c)) != 0U) {
+        if (std::isprint(static_cast<unsigned char>(c)) != 0U || static_cast<unsigned char>(c) >= CHAR_UPPER_HALF) {
             escapedStr.push_back(c);
         } else {
             escapedStr.push_back('\\');

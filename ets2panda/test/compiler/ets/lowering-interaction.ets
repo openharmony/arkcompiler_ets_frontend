@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,18 +13,25 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_LOWERING_UTIL_H
-#define ES2PANDA_COMPILER_LOWERING_UTIL_H
+class C {}
 
-#include "ir/astNode.h"
+class IR {
+    value: C
+}
 
-namespace ark::es2panda::compiler {
+class CIterator {
 
-varbinder::Scope *NearestScope(const ir::AstNode *ast);
-ir::Identifier *Gensym(ArenaAllocator *allocator);
-util::UString GenName(ArenaAllocator *allocator);
-void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept;
+  private ind_: int = 0;
+  private base_: C[];
 
-}  // namespace ark::es2panda::compiler
+  constructor (base: C[]) {
+    this.base_ = base;
+  }
 
-#endif  // ES2PANDA_COMPILER_LOWERING_UTIL_H
+  next(): IR {
+    return {
+      value: this.base_[this.ind_ += 1]
+    }
+  }
+}
+

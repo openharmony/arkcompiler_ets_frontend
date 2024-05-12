@@ -63,6 +63,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     const Identifier *Key() const
     {
         return key_;

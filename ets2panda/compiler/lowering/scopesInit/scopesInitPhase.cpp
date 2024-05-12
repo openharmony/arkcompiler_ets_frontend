@@ -17,6 +17,27 @@
 #include "scopesInitPhase.h"
 
 namespace ark::es2panda::compiler {
+
+template <typename T>
+varbinder::LexicalScope<T> LexicalScopeCreateOrEnter(varbinder::VarBinder *varBinder, ir::AstNode *ast)
+{
+    if (ast != nullptr && ast->Scope() != nullptr) {
+        return varbinder::LexicalScope<T>::Enter(varBinder, reinterpret_cast<T *>(ast->Scope()));
+    }
+    return varbinder::LexicalScope<T>(varBinder);
+}
+
+template <typename T, typename... Args>
+T *AddOrGetDecl(varbinder::VarBinder *varBinder, util::StringView name, ir::AstNode *ast,
+                const lexer::SourcePosition &pos, Args &&...args)
+{
+    if (auto *var = varBinder->GetScope()->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
+        var != nullptr && var->Declaration() != nullptr && var->Declaration()->Node() == ast) {
+        return reinterpret_cast<T *>(var->Declaration());
+    }
+    return varBinder->AddDecl<T>(pos, args...);
+}
+
 bool ScopesInitPhase::Perform(PhaseContext *ctx, parser::Program *program)
 {
     Prepare(ctx, program);
@@ -33,7 +54,7 @@ void ScopesInitPhase::VisitScriptFunction(ir::ScriptFunction *scriptFunction)
 
 void ScopesInitPhase::VisitBlockStatement(ir::BlockStatement *blockStmt)
 {
-    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), blockStmt);
     HandleBlockStmt(blockStmt, GetScope());
 }
 
@@ -71,11 +92,13 @@ varbinder::FunctionParamScope *ScopesInitPhase::HandleFunctionSig(ir::TSTypePara
 void ScopesInitPhase::HandleFunction(ir::ScriptFunction *function)
 {
     CallNode(function->Id());
-    auto funcParamScope =
-        HandleFunctionSig(function->TypeParams(), function->Params(), function->ReturnTypeAnnotation());
+    // NOTE(gogabr): this will skip type/value parameters when they are added to an existing function sig
+    auto funcParamScope = (function->Scope() == nullptr) ? HandleFunctionSig(function->TypeParams(), function->Params(),
+                                                                             function->ReturnTypeAnnotation())
+                                                         : function->Scope()->ParamScope();
     auto paramCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
 
-    auto functionCtx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
+    auto functionCtx = LexicalScopeCreateOrEnter<varbinder::FunctionScope>(VarBinder(), function);
     auto *functionScope = functionCtx.GetScope();
     BindFunctionScopes(functionScope, funcParamScope);
 
@@ -90,14 +113,17 @@ void ScopesInitPhase::HandleFunction(ir::ScriptFunction *function)
 
 void ScopesInitPhase::HandleBlockStmt(ir::BlockStatement *block, varbinder::Scope *scope)
 {
-    BindScopeNode(scope, block);
+    if (block->Scope() == nullptr) {
+        BindScopeNode(scope, block);
+    }
     Iterate(block);
 }
 
 void ScopesInitPhase::VisitClassDefinition(ir::ClassDefinition *classDef)
 {
-    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-    VarBinder()->AddDecl<varbinder::ConstDecl>(classDef->Start(), classDef->PrivateId());
+    auto classCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), classDef);
+    AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), classDef->PrivateId(), classDef, classDef->Start(),
+                                       classDef->PrivateId());
     BindClassName(classDef);
 
     auto *classScope = classCtx.GetScope();
@@ -107,10 +133,13 @@ void ScopesInitPhase::VisitClassDefinition(ir::ClassDefinition *classDef)
 
 void ScopesInitPhase::VisitForUpdateStatement(ir::ForUpdateStatement *forUpdateStmt)
 {
-    auto declCtx = varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder());
+    auto declCtx = (forUpdateStmt->Scope() == nullptr)
+                       ? varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder())
+                       : varbinder::LexicalScope<varbinder::LoopDeclarationScope>::Enter(
+                             VarBinder(), forUpdateStmt->Scope()->DeclScope());
     CallNode(forUpdateStmt->Init());
 
-    varbinder::LexicalScope<varbinder::LoopScope> lexicalScope(VarBinder());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), forUpdateStmt);
     CallNode(forUpdateStmt->Test());
     CallNode(forUpdateStmt->Update());
     CallNode(forUpdateStmt->Body());
@@ -120,20 +149,26 @@ void ScopesInitPhase::VisitForUpdateStatement(ir::ForUpdateStatement *forUpdateS
 
 void ScopesInitPhase::VisitForInStatement(ir::ForInStatement *forInStmt)
 {
-    auto declCtx = varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder());
+    auto declCtx = (forInStmt->Scope() == nullptr)
+                       ? varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder())
+                       : varbinder::LexicalScope<varbinder::LoopDeclarationScope>::Enter(
+                             VarBinder(), forInStmt->Scope()->DeclScope());
     CallNode(forInStmt->Left());
 
-    varbinder::LexicalScope<varbinder::LoopScope> lexicalScope(VarBinder());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), forInStmt);
     CallNode(forInStmt->Right());
     CallNode(forInStmt->Body());
     HandleFor(declCtx.GetScope(), lexicalScope.GetScope(), forInStmt);
 }
 void ScopesInitPhase::VisitForOfStatement(ir::ForOfStatement *forOfStmt)
 {
-    auto declCtx = varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder());
+    auto declCtx = (forOfStmt->Scope() == nullptr)
+                       ? varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder())
+                       : varbinder::LexicalScope<varbinder::LoopDeclarationScope>::Enter(
+                             VarBinder(), forOfStmt->Scope()->DeclScope());
     CallNode(forOfStmt->Left());
 
-    varbinder::LexicalScope<varbinder::LoopScope> lexicalScope(VarBinder());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), forOfStmt);
     CallNode(forOfStmt->Right());
     CallNode(forOfStmt->Body());
     HandleFor(declCtx.GetScope(), lexicalScope.GetScope(), forOfStmt);
@@ -141,7 +176,10 @@ void ScopesInitPhase::VisitForOfStatement(ir::ForOfStatement *forOfStmt)
 
 void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
 {
-    auto catchParamCtx = varbinder::LexicalScope<varbinder::CatchParamScope>(VarBinder());
+    auto catchParamCtx = (catchClause->Scope() == nullptr)
+                             ? varbinder::LexicalScope<varbinder::CatchParamScope>(VarBinder())
+                             : varbinder::LexicalScope<varbinder::CatchParamScope>::Enter(
+                                   VarBinder(), catchClause->Scope()->ParamScope());
     auto *catchParamScope = catchParamCtx.GetScope();
     auto *param = catchClause->Param();
 
@@ -157,7 +195,7 @@ void ScopesInitPhase::VisitCatchClause(ir::CatchClause *catchClause)
     }
     catchParamScope->BindNode(param);
 
-    auto catchCtx = varbinder::LexicalScope<varbinder::CatchScope>(VarBinder());
+    auto catchCtx = LexicalScopeCreateOrEnter<varbinder::CatchScope>(VarBinder(), catchClause);
     auto *catchScope = catchCtx.GetScope();
 
     catchScope->AssignParamScope(catchParamScope);
@@ -172,7 +210,7 @@ void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
     auto init = varDecl->Id();
     std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(init);
     for (auto *binding : bindings) {
-        auto [decl, var] = AddVarDecl(varDecl->Flag(), varDecl->Start(), binding->Name());
+        auto [decl, var] = AddOrGetVarDecl(varDecl->Flag(), varDecl->Start(), binding);
         BindVarDecl(binding, init, decl, var);
     }
     Iterate(varDecl);
@@ -181,7 +219,7 @@ void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
 void ScopesInitPhase::VisitSwitchStatement(ir::SwitchStatement *switchStmt)
 {
     CallNode(switchStmt->Discriminant());
-    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), switchStmt);
     BindScopeNode(localCtx.GetScope(), switchStmt);
     CallNode(switchStmt->Cases());
 }
@@ -189,7 +227,7 @@ void ScopesInitPhase::VisitSwitchStatement(ir::SwitchStatement *switchStmt)
 void ScopesInitPhase::VisitWhileStatement(ir::WhileStatement *whileStmt)
 {
     CallNode(whileStmt->Test());
-    varbinder::LexicalScope<varbinder::LoopScope> lexicalScope(VarBinder());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), whileStmt);
     BindScopeNode(lexicalScope.GetScope(), whileStmt);
     CallNode(whileStmt->Body());
 }
@@ -208,7 +246,7 @@ void ScopesInitPhase::VisitClassDeclaration(ir::ClassDeclaration *classDecl)
 
 void ScopesInitPhase::VisitDoWhileStatement(ir::DoWhileStatement *doWhileStmt)
 {
-    varbinder::LexicalScope<varbinder::LoopScope> lexicalScope(VarBinder());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), doWhileStmt);
     BindScopeNode(lexicalScope.GetScope(), doWhileStmt);
     Iterate(doWhileStmt);
 }
@@ -226,29 +264,32 @@ void ScopesInitPhase::VisitExportAllDeclaration(ir::ExportAllDeclaration *export
 {
     Iterate(exportAllDecl);
     const auto name = exportAllDecl->Exported() != nullptr ? exportAllDecl->Exported()->Name() : "*";
-    auto *decl = VarBinder()->AddDecl<varbinder::ExportDecl>(exportAllDecl->Start(), name, "*");
+    auto *decl =
+        AddOrGetDecl<varbinder::ExportDecl>(VarBinder(), name, exportAllDecl, exportAllDecl->Start(), name, "*");
     VarBinder()->GetScope()->AsModuleScope()->AddExportDecl(exportAllDecl, decl);
 }
 
 void ScopesInitPhase::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecifier *importSpec)
 {
     Iterate(importSpec);
-    VarBinder()->AddDecl<varbinder::ImportDecl>(importSpec->Start(), "*", importSpec->Local()->Name(), importSpec);
+    AddOrGetDecl<varbinder::ImportDecl>(VarBinder(), importSpec->Local()->Name(), importSpec, importSpec->Start(), "*",
+                                        importSpec->Local()->Name(), importSpec);
 }
 
 void ScopesInitPhase::VisitImportSpecifier(ir::ImportSpecifier *importSpec)
 {
     Iterate(importSpec);
     const auto *imported = importSpec->Imported();
-    VarBinder()->AddDecl<varbinder::ImportDecl>(importSpec->Start(), imported->Name(), importSpec->Local()->Name(),
-                                                importSpec);
+    AddOrGetDecl<varbinder::ImportDecl>(VarBinder(), importSpec->Local()->Name(), importSpec, importSpec->Start(),
+                                        imported->Name(), importSpec->Local()->Name(), importSpec);
 }
 
 void ScopesInitPhase::VisitImportDefaultSpecifier(ir::ImportDefaultSpecifier *importSpec)
 {
     Iterate(importSpec);
     const auto *local = importSpec->Local();
-    VarBinder()->AddDecl<varbinder::ImportDecl>(local->Start(), "default", local->Name(), importSpec);
+    AddOrGetDecl<varbinder::ImportDecl>(VarBinder(), local->Name(), importSpec, local->Start(), "default",
+                                        local->Name(), importSpec);
 }
 
 void ScopesInitPhase::VisitExportDefaultDeclaration(ir::ExportDefaultDeclaration *exportDecl)
@@ -279,8 +320,9 @@ void ScopesInitPhase::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *ex
         varbinder::ModuleScope::ExportDeclList exportDecls(program_->Allocator()->Adapter());
 
         for (auto *spec : exportDecl->Specifiers()) {
-            auto *decl = VarBinder()->AddDecl<varbinder::ExportDecl>(exportDecl->Start(), spec->Exported()->Name(),
-                                                                     spec->Local()->Name(), spec);
+            auto *decl =
+                AddOrGetDecl<varbinder::ExportDecl>(VarBinder(), spec->Local()->Name(), spec, exportDecl->Start(),
+                                                    spec->Exported()->Name(), spec->Local()->Name(), spec);
             exportDecls.push_back(decl);
         }
         VarBinder()->GetScope()->AsModuleScope()->AddExportDecl(exportDecl, std::move(exportDecls));
@@ -289,7 +331,7 @@ void ScopesInitPhase::VisitExportNamedDeclaration(ir::ExportNamedDeclaration *ex
 
 void ScopesInitPhase::VisitTSFunctionType(ir::TSFunctionType *funcType)
 {
-    varbinder::LexicalScope<varbinder::FunctionParamScope> lexicalScope(VarBinder());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::FunctionParamScope>(VarBinder(), funcType);
     auto *funcParamScope = lexicalScope.GetScope();
     BindScopeNode(funcParamScope, funcType);
     Iterate(funcType);
@@ -327,7 +369,8 @@ void ScopesInitPhase::ThrowSyntaxError(std::string_view errorMessage, const lexe
 
 void ScopesInitPhase::CreateFuncDecl(ir::ScriptFunction *func)
 {
-    VarBinder()->AddDecl<varbinder::FunctionDecl>(func->Id()->Start(), Allocator(), func->Id()->Name(), func);
+    AddOrGetDecl<varbinder::FunctionDecl>(VarBinder(), func->Id()->Name(), func, func->Id()->Start(), Allocator(),
+                                          func->Id()->Name(), func);
 }
 
 util::StringView ScopesInitPhase::FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id)
@@ -342,7 +385,8 @@ varbinder::Decl *ScopesInitPhase::BindClassName(ir::ClassDefinition *classDef)
         return nullptr;
     }
 
-    auto identDecl = VarBinder()->AddDecl<varbinder::ConstDecl>(identNode->Start(), identNode->Name());
+    auto identDecl = AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), identNode->Name(), classDef, identNode->Start(),
+                                                        identNode->Name());
     if (identDecl != nullptr) {
         identDecl->BindNode(classDef);
     }
@@ -363,16 +407,20 @@ void ScopesInitPhase::BindClassDefinition(ir::ClassDefinition *classDef)
     const auto locStart = classDef->Ident()->Start();
     const auto &className = classDef->Ident()->Name();
     if ((classDef->Modifiers() & ir::ClassDefinitionModifiers::CLASS_DECL) != 0U) {
-        VarBinder()->AddDecl<varbinder::ClassDecl>(locStart, className, classDef);
+        AddOrGetDecl<varbinder::ClassDecl>(VarBinder(), className, classDef, locStart, className, classDef);
     } else {
-        VarBinder()->AddDecl<varbinder::LetDecl>(locStart, className, classDef);
+        AddOrGetDecl<varbinder::LetDecl>(VarBinder(), className, classDef, locStart, className, classDef);
     }
 }
 
-std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddVarDecl(ir::VariableDeclaratorFlag flag,
-                                                                                 lexer::SourcePosition startLoc,
-                                                                                 const util::StringView &name)
+std::tuple<varbinder::Decl *, varbinder::Variable *> ScopesInitPhase::AddOrGetVarDecl(ir::VariableDeclaratorFlag flag,
+                                                                                      lexer::SourcePosition startLoc,
+                                                                                      const ir::Identifier *id)
 {
+    if (auto var = id->Variable(); var != nullptr) {
+        return {var->Declaration(), var};
+    }
+    auto name = id->Name();
     switch (flag) {
         case ir::VariableDeclaratorFlag::LET:
             return VarBinder()->NewVarDecl<varbinder::LetDecl>(startLoc, name);
@@ -425,18 +473,18 @@ void ScopesInitPhase::AnalyzeExports()
 void ScopeInitTyped::VisitTSModuleDeclaration(ir::TSModuleDeclaration *moduleDecl)
 {
     if (!moduleDecl->IsExternalOrAmbient()) {
-        auto *decl = VarBinder()->AddDecl<varbinder::VarDecl>(moduleDecl->Name()->Start(),
-                                                              moduleDecl->Name()->AsIdentifier()->Name());
+        auto name = moduleDecl->Name()->AsIdentifier()->Name();
+        auto *decl = AddOrGetDecl<varbinder::VarDecl>(VarBinder(), name, moduleDecl, moduleDecl->Name()->Start(), name);
         decl->BindNode(moduleDecl);
     }
-    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), moduleDecl);
     BindScopeNode(localCtx.GetScope(), moduleDecl);
     Iterate(moduleDecl);
 }
 
 void ScopeInitTyped::VisitTSModuleBlock(ir::TSModuleBlock *block)
 {
-    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), block);
     Iterate(block);
     BindScopeNode(localCtx.GetScope(), block);
 }
@@ -446,7 +494,7 @@ void ScopeInitTyped::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typ
     const auto id = typeAliasDecl->Id();
     varbinder::TSBinding tsBinding(Allocator(), id->Name());
     auto *decl = VarBinder()->AddTsDecl<varbinder::TypeAliasDecl>(id->Start(), tsBinding.View());
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), typeAliasDecl->TypeParams());
     decl->BindNode(typeAliasDecl);
     Iterate(typeAliasDecl);
 }
@@ -479,12 +527,13 @@ void ScopeInitTyped::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *int
     }
 
     CallNode(ident);
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), interfDecl->TypeParams());
     CallNode(interfDecl->TypeParams());
     CallNode(interfDecl->Extends());
 
-    auto localScope = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-    auto *identDecl = VarBinder()->AddDecl<varbinder::ConstDecl>(ident->Start(), ident->Name());
+    auto localScope = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), interfDecl);
+    auto *identDecl =
+        AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), ident->Name(), interfDecl, ident->Start(), ident->Name());
     identDecl->BindNode(interfDecl);
     BindScopeNode(localScope.GetScope(), interfDecl);
 
@@ -506,7 +555,7 @@ void ScopeInitTyped::VisitTSEnumMember(ir::TSEnumMember *enumMember)
     } else {
         UNREACHABLE();
     }
-    auto *decl = VarBinder()->AddDecl<varbinder::EnumDecl>(key->Start(), name);
+    auto *decl = AddOrGetDecl<varbinder::EnumDecl>(VarBinder(), name, enumMember, key->Start(), name);
     decl->BindNode(enumMember);
 }
 
@@ -519,7 +568,7 @@ void ScopeInitTyped::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
     varbinder::EnumLiteralDecl *decl {};
     if (res == bindings.end()) {
         decl = VarBinder()->AddTsDecl<varbinder::EnumLiteralDecl>(enumDecl->Start(), ident, enumDecl->IsConst());
-        varbinder::LexicalScope enumCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+        varbinder::LexicalScope enumCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), enumDecl);
         decl->BindScope(enumCtx.GetScope());
         BindScopeNode(VarBinder()->GetScope()->AsLocalScope(), enumDecl);
     } else if (!res->second->Declaration()->IsEnumLiteralDecl() ||
@@ -538,7 +587,8 @@ void ScopeInitTyped::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 
 void ScopeInitTyped::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 {
-    auto decl = VarBinder()->AddDecl<varbinder::TypeParameterDecl>(typeParam->Start(), typeParam->Name()->Name());
+    auto name = typeParam->Name()->Name();
+    auto decl = AddOrGetDecl<varbinder::TypeParameterDecl>(VarBinder(), name, typeParam, typeParam->Start(), name);
     decl->BindNode(typeParam);
     Iterate(typeParam);
 }
@@ -551,12 +601,13 @@ void ScopeInitTyped::VisitTSTypeParameterDeclaration(ir::TSTypeParameterDeclarat
 
 void ScopeInitTyped::VisitClassDefinition(ir::ClassDefinition *classDef)
 {
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), classDef->TypeParams());
     CallNode(classDef->TypeParams());
 
-    auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto classCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), classDef);
     BindClassName(classDef);
-    VarBinder()->AddDecl<varbinder::ConstDecl>(classDef->Start(), classDef->PrivateId());
+    AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), classDef->PrivateId(), classDef, classDef->Start(),
+                                       classDef->PrivateId());
     BindScopeNode(classCtx.GetScope(), classDef);
     IterateNoTParams(classDef);
 }
@@ -581,7 +632,10 @@ void InitScopesPhaseTs::VisitImportDeclaration(ir::ImportDeclaration *importDecl
 
 void InitScopesPhaseTs::VisitTSFunctionType(ir::TSFunctionType *constrType)
 {
-    auto lexicalScope = HandleFunctionSig(constrType->TypeParams(), constrType->Params(), constrType->ReturnType());
+    auto lexicalScope =
+        (constrType->Scope() == nullptr)
+            ? HandleFunctionSig(constrType->TypeParams(), constrType->Params(), constrType->ReturnType())
+            : constrType->Scope();
     BindScopeNode(lexicalScope, constrType);
 }
 
@@ -598,6 +652,11 @@ void InitScopesPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
     } else {
         varbinder::Decl *currentDecl = res->second->Declaration();
 
+        auto &existing = currentDecl->AsFunctionDecl()->Decls();
+        if (std::find(existing.begin(), existing.end(), func) != existing.end()) {
+            return;
+        }
+
         if (!currentDecl->IsFunctionDecl() ||
             !currentDecl->AsFunctionDecl()->Node()->AsScriptFunction()->IsOverload()) {
             VarBinder()->ThrowRedeclaration(startLoc, currentDecl->Name());
@@ -610,27 +669,33 @@ void InitScopesPhaseTs::CreateFuncDecl(ir::ScriptFunction *func)
 
 void InitScopesPhaseTs::VisitTSConstructorType(ir::TSConstructorType *constrT)
 {
-    auto funcParamScope = HandleFunctionSig(constrT->TypeParams(), constrT->Params(), constrT->ReturnType());
+    auto funcParamScope = (constrT->Scope() == nullptr)
+                              ? HandleFunctionSig(constrT->TypeParams(), constrT->Params(), constrT->ReturnType())
+                              : constrT->Scope();
     BindScopeNode(funcParamScope, constrT);
 }
 
 void InitScopesPhaseTs::VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowFExpr)
 {
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto typeParamsCtx =
+        LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), arrowFExpr->Function()->TypeParams());
     Iterate(arrowFExpr);
 }
 
 void InitScopesPhaseTs::VisitTSSignatureDeclaration(ir::TSSignatureDeclaration *signDecl)
 {
-    auto funcParamScope =
-        HandleFunctionSig(signDecl->TypeParams(), signDecl->Params(), signDecl->ReturnTypeAnnotation());
+    auto funcParamScope = (signDecl->Scope() == nullptr) ? HandleFunctionSig(signDecl->TypeParams(), signDecl->Params(),
+                                                                             signDecl->ReturnTypeAnnotation())
+                                                         : signDecl->Scope();
     BindScopeNode(funcParamScope, signDecl);
 }
 
 void InitScopesPhaseTs::VisitTSMethodSignature(ir::TSMethodSignature *methodSign)
 {
     auto funcParamScope =
-        HandleFunctionSig(methodSign->TypeParams(), methodSign->Params(), methodSign->ReturnTypeAnnotation());
+        (methodSign->Scope() == nullptr)
+            ? HandleFunctionSig(methodSign->TypeParams(), methodSign->Params(), methodSign->ReturnTypeAnnotation())
+            : methodSign->Scope();
     BindScopeNode(funcParamScope, methodSign);
 }
 
@@ -698,8 +763,10 @@ void InitScopesPhaseETS::BindVarDecl(ir::Identifier *binding, ir::Expression *in
 
 void InitScopesPhaseETS::VisitBlockExpression(ir::BlockExpression *blockExpr)
 {
-    auto localCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-    BindScopeNode(GetScope(), blockExpr);
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), blockExpr);
+    if (blockExpr->Scope() == nullptr) {
+        BindScopeNode(GetScope(), blockExpr);
+    }
     Iterate(blockExpr);
 }
 
@@ -708,9 +775,12 @@ void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock
     const auto func = staticBlock->Function();
 
     {
-        auto funcParamCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder());
+        auto funcParamCtx = (func->Scope() == nullptr)
+                                ? varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder())
+                                : varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(
+                                      VarBinder(), func->Scope()->ParamScope());
         auto *funcParamScope = funcParamCtx.GetScope();
-        auto funcCtx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
+        auto funcCtx = LexicalScopeCreateOrEnter<varbinder::FunctionScope>(VarBinder(), func);
         auto *funcScope = funcCtx.GetScope();
 
         func->Body()->AsBlockStatement()->SetScope(funcScope);
@@ -722,6 +792,10 @@ void InitScopesPhaseETS::VisitClassStaticBlock(ir::ClassStaticBlock *staticBlock
 
     auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
         VarBinder(), VarBinder()->GetScope()->AsClassScope()->StaticMethodScope());
+
+    if (func->Id()->Variable() != nullptr) {
+        return;
+    }
 
     auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(staticBlock->Start(), Allocator(),
                                                                      func->Id()->Name(), staticBlock);
@@ -735,8 +809,8 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
     if (importSpec->Local()->Name().Empty()) {
         return;
     }
-    VarBinder()->AddDecl<varbinder::ImportDecl>(importSpec->Start(), importSpec->Local()->Name(),
-                                                importSpec->Local()->Name(), importSpec);
+    AddOrGetDecl<varbinder::ImportDecl>(VarBinder(), importSpec->Local()->Name(), importSpec, importSpec->Start(),
+                                        importSpec->Local()->Name(), importSpec->Local()->Name(), importSpec);
     Iterate(importSpec);
 }
 
@@ -793,11 +867,15 @@ void InitScopesPhaseETS::MaybeAddOverload(ir::MethodDefinition *method, ir::Iden
 {
     if (found == nullptr) {
         auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), targetScope);
-        [[maybe_unused]] auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(
-            methodName->Start(), Allocator(), methodName->Name(), method);
-        var->SetScope(clsScope);
-        var->AddFlag(varbinder::VariableFlags::METHOD);
-        methodName->SetVariable(var);
+
+        auto *var = methodName->Variable();
+        if (var == nullptr) {
+            var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(methodName->Start(), Allocator(),
+                                                                               methodName->Name(), method));
+            var->SetScope(clsScope);
+            var->AddFlag(varbinder::VariableFlags::METHOD);
+            methodName->SetVariable(var);
+        }
         for (auto *overload : method->Overloads()) {
             ASSERT((overload->Function()->Flags() & ir::ScriptFunctionFlags::OVERLOAD));
             overload->Id()->SetVariable(var);
@@ -847,6 +925,9 @@ void InitScopesPhaseETS::VisitETSImportDeclaration(ir::ETSImportDeclaration *imp
 void InitScopesPhaseETS::VisitTSEnumMember(ir::TSEnumMember *enumMember)
 {
     auto ident = enumMember->Key()->AsIdentifier();
+    if (ident->Variable() != nullptr) {
+        return;
+    }
     auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
     var->SetScope(VarBinder()->GetScope());
     var->AddFlag(varbinder::VariableFlags::STATIC);
@@ -871,8 +952,8 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 
 void InitScopesPhaseETS::VisitETSFunctionType(ir::ETSFunctionType *funcType)
 {
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-    varbinder::LexicalScope<varbinder::FunctionParamScope> lexicalScope(VarBinder());
+    auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), funcType->TypeParams());
+    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::FunctionParamScope>(VarBinder(), funcType);
     auto *funcParamScope = lexicalScope.GetScope();
     BindScopeNode(funcParamScope, funcType);
     Iterate(funcType);
@@ -889,7 +970,7 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
             ASSERT(parentClassScope->Parent());
             parentClassScope = parentClassScope->Parent();
         }
-        auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
+        auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), newClassExpr->ClassDefinition());
         util::UString anonymousName(util::StringView("#"), Allocator());
         anonymousName.Append(std::to_string(parentClassScope->AsClassScope()->GetAndIncrementAnonymousClassIdx()));
         classDef->SetInternalName(anonymousName.View());
@@ -901,6 +982,9 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
 
 void InitScopesPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 {
+    if (typeParam->Name()->Variable() != nullptr) {
+        return;
+    }
     auto [decl, var] =
         VarBinder()->NewVarDecl<varbinder::TypeParameterDecl>(typeParam->Name()->Start(), typeParam->Name()->Name());
     typeParam->Name()->SetVariable(var);
@@ -912,46 +996,50 @@ void InitScopesPhaseETS::VisitTSTypeParameter(ir::TSTypeParameter *typeParam)
 void InitScopesPhaseETS::VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     {
-        auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+        auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), interfaceDecl->TypeParams());
         CallNode(interfaceDecl->TypeParams());
         CallNode(interfaceDecl->Extends());
-        auto localScope = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
+        auto localScope = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), interfaceDecl);
         CallNode(interfaceDecl->Body());
         BindScopeNode(localScope.GetScope(), interfaceDecl);
     }
     auto name = FormInterfaceOrEnumDeclarationIdBinding(interfaceDecl->Id());
-    auto *decl =
-        VarBinder()->AddDecl<varbinder::InterfaceDecl>(interfaceDecl->Start(), Allocator(), name, interfaceDecl);
+    auto *decl = AddOrGetDecl<varbinder::InterfaceDecl>(VarBinder(), name, interfaceDecl, interfaceDecl->Start(),
+                                                        Allocator(), name, interfaceDecl);
     decl->AsInterfaceDecl()->Add(interfaceDecl);
 }
 
 void InitScopesPhaseETS::VisitTSEnumDeclaration(ir::TSEnumDeclaration *enumDecl)
 {
     {
-        const auto enumCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+        const auto enumCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), enumDecl);
         BindScopeNode(enumCtx.GetScope(), enumDecl);
         Iterate(enumDecl);
     }
     auto name = FormInterfaceOrEnumDeclarationIdBinding(enumDecl->Key());
-    auto *decl =
-        VarBinder()->AddDecl<varbinder::EnumLiteralDecl>(enumDecl->Start(), name, enumDecl, enumDecl->IsConst());
+    auto *decl = AddOrGetDecl<varbinder::EnumLiteralDecl>(VarBinder(), name, enumDecl, enumDecl->Start(), name,
+                                                          enumDecl, enumDecl->IsConst());
     decl->BindScope(enumDecl->Scope());
 }
 
 void InitScopesPhaseETS::VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAlias)
 {
-    VarBinder()->AddDecl<varbinder::TypeAliasDecl>(typeAlias->Id()->Start(), typeAlias->Id()->Name(), typeAlias);
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    AddOrGetDecl<varbinder::TypeAliasDecl>(VarBinder(), typeAlias->Id()->Name(), typeAlias, typeAlias->Id()->Start(),
+                                           typeAlias->Id()->Name(), typeAlias);
+    auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), typeAlias->TypeParams());
     Iterate(typeAlias);
 }
 
 void InitScopesPhaseETS::AddGlobalToBinder(parser::Program *program)
 {
     auto globalId = program->GlobalClass()->Ident();
+    if (globalId->Variable() != nullptr) {
+        return;
+    }
 
     auto [decl2, var] = program->VarBinder()->NewVarDecl<varbinder::ClassDecl>(globalId->Start(), globalId->Name());
 
-    auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(program->VarBinder());
+    auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(program->VarBinder(), program->GlobalClass());
     classCtx.GetScope()->BindNode(program->GlobalClass());
     program->GlobalClass()->SetScope(classCtx.GetScope());
 
@@ -984,9 +1072,9 @@ void InitScopesPhaseETS::VisitClassDefinition(ir::ClassDefinition *classDef)
         ParseGlobalClass(classDef);
         return;
     }
-    auto typeParamsCtx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), classDef->TypeParams());
     CallNode(classDef->TypeParams());
-    auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
+    auto classCtx = LexicalScopeCreateOrEnter<varbinder::ClassScope>(VarBinder(), classDef);
 
     IterateNoTParams(classDef);
     FilterOverloads(classDef->Body());
@@ -1027,13 +1115,16 @@ void InitScopesPhaseETS::FilterOverloads(ArenaVector<ir::AstNode *, false> &prop
 void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
 {
     auto curScope = VarBinder()->GetScope();
+    const auto name = classProp->Key()->AsIdentifier()->Name();
     if (classProp->IsClassStaticBlock()) {
         ASSERT(curScope->IsClassScope());
         auto classCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
             VarBinder(), curScope->AsClassScope()->StaticMethodScope());
-        auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(classProp->Start(), Allocator(),
-                                                                         classProp->Id()->Name(), classProp);
-        (void)_;
+        auto *var = classProp->Id()->Variable();
+        if (var == nullptr) {
+            var = std::get<1>(VarBinder()->NewVarDecl<varbinder::FunctionDecl>(classProp->Start(), Allocator(),
+                                                                               classProp->Id()->Name(), classProp));
+        }
         var->AddFlag(varbinder::VariableFlags::METHOD);
         classProp->AsClassStaticBlock()->Function()->Id()->SetVariable(var);
     } else if (classProp->IsConst()) {
@@ -1047,11 +1138,9 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
             }
             ThrowSyntaxError("Missing initializer in const declaration", pos);
         }
-        VarBinder()->AddDecl<varbinder::ConstDecl>(classProp->Key()->Start(), classProp->Key()->AsIdentifier()->Name(),
-                                                   classProp);
+        AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     } else {
-        VarBinder()->AddDecl<varbinder::LetDecl>(classProp->Key()->Start(), classProp->Key()->AsIdentifier()->Name(),
-                                                 classProp);
+        AddOrGetDecl<varbinder::LetDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     }
     Iterate(classProp);
 }

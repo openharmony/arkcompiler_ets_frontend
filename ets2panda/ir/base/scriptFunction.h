@@ -284,6 +284,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;

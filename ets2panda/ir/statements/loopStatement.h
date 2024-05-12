@@ -44,6 +44,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     void TransformChildren([[maybe_unused]] const NodeTransformer &cb,
                            [[maybe_unused]] std::string_view const transformationName) override
     {

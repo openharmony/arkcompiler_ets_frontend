@@ -63,7 +63,10 @@ void TSAsExpression::Dump(ir::AstDumper *dumper) const
 
 void TSAsExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("TSAsExpression");
+    dumper->Add("(");
+    expression_->Dump(dumper);
+    dumper->Add(") as ");
+    TypeAnnotation()->Dump(dumper);
 }
 
 void TSAsExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -20,6 +20,7 @@
 #include "ir/astNodeMapping.h"
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
+#include "macros.h"
 #include "util/enumbitops.h"
 
 namespace ark::es2panda::compiler {
@@ -476,6 +477,8 @@ public:
     {
         UNREACHABLE();
     }
+
+    virtual void ClearScope() noexcept;
 
     [[nodiscard]] ir::BlockStatement *GetTopStatement();
     [[nodiscard]] const ir::BlockStatement *GetTopStatement() const;

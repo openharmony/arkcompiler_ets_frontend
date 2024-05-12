@@ -66,6 +66,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     bool IsDefaultCatchClause() const;
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;

@@ -43,9 +43,12 @@ util::UString GenName(ArenaAllocator *const allocator)
 }
 
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
-void ClearTypesAndVariables(ir::AstNode *node) noexcept
+void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
     node->Iterate([](ir::AstNode *child) -> void {
+        if (child->IsScopeBearer()) {
+            child->ClearScope();
+        }
         if (child->IsExpression()) {
             auto *expression = child->AsExpression();
             if (!expression->IsTypeNode()) {
@@ -56,7 +59,7 @@ void ClearTypesAndVariables(ir::AstNode *node) noexcept
                 return;
             }
         }
-        ClearTypesAndVariables(child);
+        ClearTypesVariablesAndScopes(child);
     });
 }
 }  // namespace ark::es2panda::compiler

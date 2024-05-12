@@ -130,6 +130,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     [[nodiscard]] const Identifier *Ident() const noexcept
     {
         return ident_;
