@@ -63,7 +63,7 @@ namespace panda::es2panda::binder {
 void Binder::InitTopScope()
 {
     if (program_->Kind() == parser::ScriptKind::MODULE) {
-        topScope_ = Allocator()->New<ModuleScope>(Allocator());
+        topScope_ = Allocator()->New<ModuleScope>(Allocator(), program_);
     } else {
         topScope_ = Allocator()->New<GlobalScope>(Allocator());
     }

@@ -125,6 +125,10 @@ public:
         return isDeclare_;
     }
 
+    bool IsSendableClassDecl() const;
+
+    bool NeedSetInSendableEnv(Scope *scope) const;
+
 protected:
     explicit Decl(util::StringView name) : name_(name) {}
 

@@ -15,9 +15,31 @@
 
 #include "declaration.h"
 
-#include "ir/ts/tsModuleDeclaration.h"
+#include <binder/scope.h>
+#include <ir/base/classDefinition.h>
+#include <ir/ts/tsModuleDeclaration.h>
+#include <parser/program/program.h>
 
 namespace panda::es2panda::binder {
+
+bool Decl::IsSendableClassDecl() const
+{
+    return node_ && node_->IsClassDefinition() && node_->AsClassDefinition()->IsSendable();
+}
+
+bool Decl::NeedSetInSendableEnv(Scope *scope) const
+{
+    if (!scope->IsModuleScope()) {
+        return false;
+    }
+
+    // sendable env will not be effective before api 12
+    if (scope->AsModuleScope()->Program()->TargetApiVersion() < 12) {
+        return false;
+    }
+
+    return IsSendableClassDecl();
+}
 
 bool NamespaceDecl::IsInstantiated() const
 {

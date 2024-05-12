@@ -58,17 +58,8 @@ void PandaGen::SetFunctionKind()
 
     auto *func = rootNode_->AsScriptFunction();
     if (func->IsConcurrent()) {
-        if (func->IsMethod() || func->IsConstructor()) {
-            const auto *classDef = util::Helpers::GetClassDefiniton(func);
-            // The method/constructor of the sendable class does not set function kind to concurrent
-            if (!classDef->IsSendable()) {
-                funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
-                return;
-            }
-        } else {
-            funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
-            return;
-        }
+        funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+        return;
     }
 
     if (func->IsMethod()) {
@@ -255,6 +246,10 @@ void PandaGen::InitializeLexEnv(const ir::AstNode *node)
 
     if (topScope_->NeedLexEnv()) {
         NewLexicalEnv(node, topScope_->LexicalSlots(), topScope_);
+    }
+
+    if (topScope_->NeedSendableEnv()) {
+        NewSendableEnv(node, topScope_->SendableSlots());
     }
 }
 
@@ -1863,6 +1858,16 @@ void PandaGen::LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t 
     ra_.Emit<Ldlexvar>(node, level, slot);
 }
 
+void PandaGen::LoadSendableVar(const ir::AstNode *node, uint32_t level, uint32_t slot)
+{
+    if ((level > util::Helpers::MAX_INT8) || (slot > util::Helpers::MAX_INT8)) {
+        ra_.Emit<CallruntimeWideldsendablevar>(node, level, slot);
+        return;
+    }
+
+    ra_.Emit<CallruntimeLdsendablevar>(node, level, slot);
+}
+
 void PandaGen::LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const util::StringView &name)
 {
     if (context_->PatchFixHelper() && context_->PatchFixHelper()->IsAdditionalVarInPatch(slot)) {
@@ -1898,6 +1903,16 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
     }
 
     ra_.Emit<Stlexvar>(node, level, slot);
+}
+
+void PandaGen::StoreSendableVar(const ir::AstNode *node, uint32_t level, uint32_t slot)
+{
+    if ((level > util::Helpers::MAX_INT8) || (slot > util::Helpers::MAX_INT8)) {
+        ra_.Emit<CallruntimeWidestsendablevar>(node, level, slot);
+        return;
+    }
+
+    ra_.Emit<CallruntimeStsendablevar>(node, level, slot);
 }
 
 void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot,
@@ -1969,6 +1984,12 @@ void PandaGen::NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::Vari
 void PandaGen::NewLexEnv(const ir::AstNode *node, uint32_t num)
 {
     num <= util::Helpers::MAX_INT8 ? ra_.Emit<Newlexenv>(node, num) : ra_.Emit<WideNewlexenv>(node, num);
+}
+
+void PandaGen::NewSendableEnv(const ir::AstNode * node, uint32_t num)
+{
+    num <= util::Helpers::MAX_INT8 ? ra_.Emit<CallruntimeNewsendableenv>(node, num) :
+        ra_.Emit<CallruntimeWidenewsendableenv>(node, num);
 }
 
 void PandaGen::NewLexEnvWithScopeInfo(const ir::AstNode *node, uint32_t num, int32_t scopeInfoIdx)

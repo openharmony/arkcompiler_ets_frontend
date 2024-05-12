@@ -1341,7 +1341,7 @@ def add_directory_for_asm(runners, args):
 def add_directory_for_compiler(runners, args):
     runner = CompilerRunner(args)
     compiler_test_infos = []
-    compiler_test_infos.append(CompilerTestInfo("compiler/js", "js", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/js", "js", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/cases", "ts", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
@@ -1350,6 +1350,7 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
+    compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
     # This directory of test cases is for dump-assembly comparison only, and is not executed.

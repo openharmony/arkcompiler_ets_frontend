@@ -62,7 +62,12 @@ void LocalVariable::SetLexical(Scope *scope, util::PatchFix *patchFixHelper)
             varScope->RestoreFuncMain0LexEnv(patchFixHelper->GetEnvSizeOfFuncMain0());
         }
     } else {
-        slot = varScope->NextSlot();
+        if (decl_ && decl_->NeedSetInSendableEnv(varScope)) {
+            AddFlag(VariableFlags::IN_SENDABLE_ENV);
+            slot = varScope->NextSendableSlot();
+        } else {
+            slot = varScope->NextSlot();
+        }
     }
 
     BindLexEnvSlot(slot);

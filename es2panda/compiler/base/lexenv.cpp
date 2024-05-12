@@ -20,6 +20,7 @@
 #include <compiler/core/envScope.h>
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>
+#include <ir/base/scriptFunction.h>
 #include <ir/expressions/identifier.h>
 
 namespace panda::es2panda::compiler {
@@ -44,17 +45,27 @@ static void CheckConstAssignment(PandaGen *pg, const ir::AstNode *node, binder::
 
 static void ExpandLoadLexVar(PandaGen *pg, const ir::AstNode *node, const binder::ScopeFindResult &result)
 {
-    if (result.scope->IsClassScope()) {
-        auto classDef = result.scope->AsClassScope()->Node()->AsClassDefinition();
-        if (classDef->IsSendable()) {
-            ASSERT(classDef->Ident() != nullptr);
-            ASSERT(result.name == classDef->Ident()->Name());
+    /**
+     *  Instruction ldsendableclass is generated when use sendable class inside itself, except static initializer.
+     *  Because static initializer is not defined with instruction definesendableclass.
+     */
+    auto decl = result.variable->Declaration();
+    if (decl->IsSendableClassDecl()) {
+        auto classDef = decl->Node()->AsClassDefinition();
+        if (classDef == util::Helpers::GetContainingSendableClass(node) &&
+            !util::Helpers::IsChildScope(classDef->StaticInitializer()->Function()->Scope(), pg->TopScope())) {
             pg->LoadSendableClass(node, result.lexLevel);
             return;
         }
     }
-    pg->LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx(), result.variable->Name());
-    const auto *decl = result.variable->Declaration();
+
+    auto *local = result.variable->AsLocalVariable();
+    if (local->InSendableEnv()) {
+        pg->LoadSendableVar(node, result.sendableLevel, local->LexIdx());
+    } else {
+        pg->LoadLexicalVar(node, result.lexLevel, local->LexIdx(), result.variable->Name());
+    }
+
     if (decl->IsLetOrConstOrClassDecl()) {
         pg->ThrowUndefinedIfHole(node, result.variable->Name());
     }
@@ -85,15 +96,6 @@ void VirtualLoadVar::Expand(PandaGen *pg, const ir::AstNode *node, const binder:
 
 static void ExpandStoreLexVar(PandaGen *pg, const ir::AstNode *node, const binder::ScopeFindResult &result, bool isDecl)
 {
-    if (result.scope->IsClassScope()) {
-        auto classDef = result.scope->AsClassScope()->Node()->AsClassDefinition();
-        if (classDef->IsSendable()) {
-            ASSERT(classDef->Ident() != nullptr);
-            ASSERT(result.name == classDef->Ident()->Name());
-            return;
-        }
-    }
-
     binder::LocalVariable *local = result.variable->AsLocalVariable();
 
     const auto *decl = result.variable->Declaration();
@@ -113,6 +115,10 @@ static void ExpandStoreLexVar(PandaGen *pg, const ir::AstNode *node, const binde
         pg->LoadAccumulator(node, valueReg);
     }
 
+    if (local->InSendableEnv()) {
+        pg->StoreSendableVar(node, result.sendableLevel, local->LexIdx());
+        return;
+    }
     pg->StoreLexicalVar(node, result.lexLevel, local->LexIdx(), local);
 }
 
