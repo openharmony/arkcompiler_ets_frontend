@@ -898,8 +898,6 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
             it->Check(this);
         }
     }
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    CreateAsyncProxyMethods(classDef);
 
     if (classDef->IsGlobal()) {
         return;
@@ -926,7 +924,7 @@ void ETSChecker::CheckConstructors(ir::ClassDefinition *classDef, ETSObjectType 
     }
 }
 
-static bool IsAsyncMethod(ir::AstNode *node)
+bool IsAsyncMethod(ir::AstNode *node)
 {
     if (!node->IsMethodDefinition()) {
         return false;
@@ -938,24 +936,27 @@ static bool IsAsyncMethod(ir::AstNode *node)
 void ETSChecker::CreateAsyncProxyMethods(ir::ClassDefinition *classDef)
 {
     ArenaVector<ir::MethodDefinition *> asyncImpls(Allocator()->Adapter());
+
     for (auto *it : classDef->Body()) {
         if (!IsAsyncMethod(it)) {
             continue;
         }
-        auto *method = it->AsMethodDefinition();
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        asyncImpls.push_back(CreateAsyncProxy(method, classDef));
-        auto *proxy = asyncImpls.back();
-        for (auto *overload : method->Overloads()) {
-            if (!overload->IsAsync()) {
+
+        auto *asyncMethod = it->AsMethodDefinition();
+        auto *proxy = CreateAsyncProxy(asyncMethod, classDef);
+        asyncImpls.push_back(proxy);
+
+        for (auto *overload : asyncMethod->Overloads()) {
+            if (!IsAsyncMethod(overload)) {
                 continue;
             }
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+
             auto *impl = CreateAsyncProxy(overload, classDef, false);
             impl->Function()->Id()->SetVariable(proxy->Function()->Id()->Variable());
             proxy->AddOverload(impl);
         }
     }
+
     for (auto *it : asyncImpls) {
         it->SetParent(classDef);
         it->Check(this);

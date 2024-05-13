@@ -180,8 +180,10 @@ bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Progra
         const auto hasPromiseVoid = CheckForPromiseVoid(returnAnn);
 
         if (!hasReturnAnn) {
-            const auto &loc = genTypeLocation(function);
-            function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
+            if (!function->HasReturnStatement()) {
+                const auto &loc = genTypeLocation(function);
+                function->SetReturnTypeAnnotation(CreatePromiseVoidType(checker, loc));
+            }
 
             if (function->HasBody()) {
                 HandleAsyncScriptFunctionBody(checker, function->Body()->AsBlockStatement());

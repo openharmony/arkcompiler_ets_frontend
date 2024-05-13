@@ -33,6 +33,8 @@ void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETS
                                       ir::ScriptFunction *extensionFunc, checker::Signature *signature);
 void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::MethodDefinition *node);
 void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::ScriptFunction *scriptFunc);
+void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc);
+void ComposeAsyncImplMethod(ETSChecker *checker, ir::MethodDefinition *node);
 void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc);
 void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc,
                                    const lexer::SourcePosition &position, const std::string &methodName);
@@ -61,6 +63,7 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containingFunc, ch
                      ir::Expression *stArgument);
 void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containingFunc, checker::Type *&funcReturnType,
                              ir::ReturnStatement *st, ir::Expression *stArgument);
+bool IsAsyncMethod(ir::AstNode *node);
 }  // namespace ark::es2panda::checker
 
 #endif  // ES2PANDA_CHECKER_ETSANALYZERHELPERS_H

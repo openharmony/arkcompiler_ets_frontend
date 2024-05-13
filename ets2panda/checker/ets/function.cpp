@@ -3092,9 +3092,15 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     modifiers &= ~ir::ModifierFlags::ASYNC;
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
     ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::METHOD;
+
     if (asyncFunc->IsProxy()) {
         flags |= ir::ScriptFunctionFlags::PROXY;
     }
+
+    if (asyncFunc->HasReturnStatement()) {
+        flags |= ir::ScriptFunctionFlags::HAS_RETURN;
+    }
+
     asyncMethod->AddModifier(ir::ModifierFlags::NATIVE);
     asyncFunc->AddModifier(ir::ModifierFlags::NATIVE);
     // Create async_impl method copied from CreateInvokeFunction
@@ -3105,31 +3111,39 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     varbinder::FunctionParamScope *paramScope = CopyParams(asyncFunc->Params(), params);
 
-    // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
-    auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
-    objectId->SetReference();
-    VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
-    auto *returnTypeAnn =
-        AllocNode<ir::ETSTypeReference>(AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));
-    objectId->SetParent(returnTypeAnn->Part());
-    returnTypeAnn->Part()->SetParent(returnTypeAnn);
-    auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
-    auto *promiseType = [this](ir::TypeNode *type) {
-        if (type != nullptr) {
-            return type->GetType(this)->AsETSObjectType();
-        }
+    ir::ETSTypeReference *returnTypeAnn = nullptr;
 
-        return GlobalBuiltinPromiseType()->AsETSObjectType();
-    }(asyncFuncRetTypeAnn);
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
-    returnTypeAnn->SetTsType(retType);
+    if (!asyncFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
+        // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
+        auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
+        objectId->SetReference();
+        VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
+        returnTypeAnn =
+            AllocNode<ir::ETSTypeReference>(AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));
+        objectId->SetParent(returnTypeAnn->Part());
+        returnTypeAnn->Part()->SetParent(returnTypeAnn);
+        auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
+        auto *promiseType = [this](ir::TypeNode *type) {
+            if (type != nullptr) {
+                return type->GetType(this)->AsETSObjectType();
+            }
+
+            return GlobalBuiltinPromiseType()->AsETSObjectType();
+        }(asyncFuncRetTypeAnn);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
+        returnTypeAnn->SetTsType(retType);
+    }
 
     ir::MethodDefinition *implMethod =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         CreateMethod(implName.View(), modifiers, flags, std::move(params), paramScope, returnTypeAnn, body);
     asyncFunc->SetBody(nullptr);
-    returnTypeAnn->SetParent(implMethod->Function());
+
+    if (returnTypeAnn != nullptr) {
+        returnTypeAnn->SetParent(implMethod->Function());
+    }
+
+    implMethod->Function()->AddFlag(ir::ScriptFunctionFlags::ASYNC_IMPL);
     implMethod->SetParent(asyncMethod->Parent());
     return implMethod;
 }
