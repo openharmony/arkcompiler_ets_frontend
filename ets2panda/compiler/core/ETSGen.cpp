@@ -85,7 +85,7 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
     }
 
     auto const *const accType = GetAccumulatorType();
-    if (accType == expr->TsType()) {
+    if (accType == expr->TsType() || expr->TsType()->IsETSTypeParameter()) {
         return;
     }
 
