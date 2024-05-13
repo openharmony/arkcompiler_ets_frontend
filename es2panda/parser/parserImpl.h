@@ -253,8 +253,9 @@ private:
     ir::Expression *ParseTsTypeOperatorOrTypeReference(bool throwError);
     ir::Expression *ParseTsIdentifierReference(TypeAnnotationParsingOptions options);
     ir::Expression *ParseTsBasicType(TypeAnnotationParsingOptions options);
-    ir::TSIntersectionType *ParseTsIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends);
-    ir::TSUnionType *ParseTsUnionType(ir::Expression *type, bool restrictExtends);
+    ir::TSIntersectionType *ParseTsIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends,
+                                                    bool throwError);
+    ir::TSUnionType *ParseTsUnionType(ir::Expression *type, bool restrictExtends, bool throwError);
     ir::Expression *ParseTsParenthesizedOrFunctionType(ir::Expression *typeAnnotation, bool throwError);
     ir::TSArrayType *ParseTsArrayType(ir::Expression *elementType);
     bool IsTsFunctionType();

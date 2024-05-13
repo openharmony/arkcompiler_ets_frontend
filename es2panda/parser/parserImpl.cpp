@@ -548,7 +548,8 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
                 break;
             }
 
-            return ParseTsUnionType(typeAnnotation, *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
+            return ParseTsUnionType(typeAnnotation, *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS,
+                                    *options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
             if (*options & (TypeAnnotationParsingOptions::IN_MODIFIER |
@@ -557,7 +558,8 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
             }
 
             return ParseTsIntersectionType(typeAnnotation, *options & TypeAnnotationParsingOptions::IN_UNION,
-                                           *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
+                                           *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS,
+                                           *options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::LITERAL_NUMBER:
@@ -1704,13 +1706,15 @@ ir::TSArrayType *ParserImpl::ParseTsArrayType(ir::Expression *elementType)
     return arrayType;
 }
 
-ir::TSUnionType *ParserImpl::ParseTsUnionType(ir::Expression *type, bool restrictExtends)
+ir::TSUnionType *ParserImpl::ParseTsUnionType(ir::Expression *type, bool restrictExtends, bool throwError)
 {
     ArenaVector<ir::Expression *> types(Allocator()->Adapter());
     lexer::SourcePosition startLoc;
 
-    TypeAnnotationParsingOptions options =
-        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::IN_UNION;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::IN_UNION;
+    if (throwError) {
+        options |= TypeAnnotationParsingOptions::THROW_ERROR;
+    }
 
     if (restrictExtends) {
         options |= TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
@@ -1730,7 +1734,12 @@ ir::TSUnionType *ParserImpl::ParseTsUnionType(ir::Expression *type, bool restric
 
         lexer_->NextToken();  // eat '|'
 
-        types.push_back(ParseTsTypeAnnotation(&options));
+        ir::Expression* unionSuffixType = ParseTsTypeAnnotation(&options);
+        if (unionSuffixType == nullptr) {
+            return nullptr;
+        }
+
+        types.push_back(unionSuffixType);
     }
 
     lexer::SourcePosition endLoc = types.back()->End();
@@ -1743,13 +1752,16 @@ ir::TSUnionType *ParserImpl::ParseTsUnionType(ir::Expression *type, bool restric
     return unionType;
 }
 
-ir::TSIntersectionType *ParserImpl::ParseTsIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends)
+ir::TSIntersectionType *ParserImpl::ParseTsIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends,
+                                                            bool throwError)
 {
     ArenaVector<ir::Expression *> types(Allocator()->Adapter());
     lexer::SourcePosition startLoc;
 
-    TypeAnnotationParsingOptions options =
-        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::IN_INTERSECTION;
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::IN_INTERSECTION;
+    if (throwError) {
+        options |= TypeAnnotationParsingOptions::THROW_ERROR;
+    }
 
     if (restrictExtends) {
         options |= TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
@@ -1773,7 +1785,11 @@ ir::TSIntersectionType *ParserImpl::ParseTsIntersectionType(ir::Expression *type
 
         lexer_->NextToken();  // eat '&'
 
-        types.push_back(ParseTsTypeAnnotation(&options));
+        ir::Expression* suffixType = ParseTsTypeAnnotation(&options);
+        if (suffixType == nullptr) {
+            return nullptr;
+        }
+        types.push_back(suffixType);
     }
 
     lexer::SourcePosition endLoc = types.back()->End();
