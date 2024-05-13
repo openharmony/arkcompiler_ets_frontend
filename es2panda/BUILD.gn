@@ -469,7 +469,10 @@ ohos_executable("es2panda") {
     ":es2panda_lib",
     "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static",
   ]
-  external_deps = [ "zlib:libz" ]
+  external_deps = [
+    "json:nlohmann_json_static",
+    "zlib:libz",
+  ]
 
   ldflags = []
   if (is_linux) {

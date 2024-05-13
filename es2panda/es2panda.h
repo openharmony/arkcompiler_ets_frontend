@@ -31,6 +31,9 @@ struct Program;
 }  // namespace panda::pandasm
 
 namespace panda::es2panda {
+struct CompileContextInfo;
+struct PkgInfo;
+
 namespace parser {
 class ParserImpl;
 class Transformer;
@@ -108,6 +111,8 @@ struct CompilerOptions {
     std::string transformLib {};
     bool branchElimination {false};
     bool requireGlobalOptimization {false};
+    std::string compileContextInfoPath {};
+    CompileContextInfo compileContextInfo {};
 };
 
 enum class ErrorType {

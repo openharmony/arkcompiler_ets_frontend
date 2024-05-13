@@ -39,6 +39,17 @@ class Statement;
 namespace panda::es2panda {
 struct CompilerOptions;
 enum class ErrorType;
+
+struct PkgInfo {
+    std::string packageName {};
+    std::string version {};
+};
+
+struct CompileContextInfo {
+    std::vector<std::string> compileEntries;
+    std::set<std::string> externalPkgNames;
+    std::unordered_map<std::string, PkgInfo> pkgContextInfo;
+};
 }  // namespace panda::es2panda
 
 namespace panda::es2panda::binder {
