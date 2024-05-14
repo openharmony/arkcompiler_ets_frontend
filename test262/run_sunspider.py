@@ -376,6 +376,7 @@ class ArkProgram():
         if retcode == 1:
             return retcode
         self.abc_cmd = cmd_args
+        return retcode
 
     def gen_abc_for_dynamic_import(self, js_file, retcode):
         file_name_pre = os.path.splitext(js_file)[0]
@@ -393,6 +394,7 @@ class ArkProgram():
             if retcode == 1:
                 return retcode
             self.abc_cmd = cmd_args
+            return retcode
 
     def get_abc_from_import_statement(self, js_file):
         file_name_pre = os.path.splitext(js_file)[0]
