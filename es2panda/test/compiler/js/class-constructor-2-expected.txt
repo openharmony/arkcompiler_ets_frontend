@@ -1,0 +1,1 @@
+Base constructor called with arguments: arg1 arg2
