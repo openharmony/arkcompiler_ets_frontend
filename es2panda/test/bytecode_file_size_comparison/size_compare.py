@@ -155,8 +155,8 @@ def git_clone(git_url, code_dir, pull=False):
     return result
 
 
-def pull_repo(case_url, dir):
-    dir_path = os.path.join(TEST_ROOT, dir)
+def pull_repo(case_url, dir_name):
+    dir_path = os.path.join(TEST_ROOT, dir_name)
     pull = False
     if os.path.exists(dir_path):
         pull = True

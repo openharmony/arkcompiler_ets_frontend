@@ -59,7 +59,13 @@ class JavaD8Runner:
         self.output = {}
         self.case_list = []
         self.cmd_list = [[args.javac_path], [args.d8_path]] # Contain [cmd_java2class, cmd_class2dex]
-    
+
+    @staticmethod
+    def get_case_name(case_path):
+        filename = case_path.split('/')[-1]
+        case_name = filename[:filename.rfind('.')]
+        return case_name
+
     def add_case(self, case_path, extension):
         if not os.path.isabs(case_path):
             case_path = os.path.join(self.test_root, case_path)
@@ -74,12 +80,6 @@ class JavaD8Runner:
         cases = glob(glob_expression, recursive=True)
         for case in cases:
             self.add_case(case, extension)
-
-    @staticmethod
-    def get_case_name(case_path):
-        filename = case_path.split('/')[-1]
-        case_name = filename[:filename.rfind('.')]
-        return case_name
 
     def save_output_to_file(self):
         dex_size_data = os.path.join(self.test_root, DEX_SIZE_DATA)
@@ -124,7 +124,7 @@ class JavaD8Runner:
                     os.remove(dex_file)
                 self.output[self.get_case_name(file_path)] = dex_file_size
                 print(f'[INFO]: FINISH: {file_path}!')
-        
+
         self.save_output_to_file()
 
 

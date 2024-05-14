@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,11 @@
  */
 
 import java.lang.reflect.Method;
-
+/**
+ * Reflection Test
+ *
+ * @since 2024/5/8
+ */
 public class ReflectionTest {
     public static void main(String[] args) throws Exception {
         Class<?> clazz = ReflectionTest.class;
@@ -22,6 +26,9 @@ public class ReflectionTest {
         method.invoke(clazz.getDeclaredConstructor().newInstance());
     }
 
+    /**
+     * sayHello
+     */
     public void sayHello() {
         System.out.println("Hello World!");
     }

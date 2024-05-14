@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,17 @@
  * limitations under the License.
  */
 
+/**
+ * Function Test
+ * 
+ * @since 2024/5/8
+ */
 public class FunctionTest {
-    // Define a method to print a message
+    /**
+     * Define a method to print a message
+     * 
+     * @param message message to print
+     */
     public static void printMessage(String message) {
         System.out.println(message);
     }

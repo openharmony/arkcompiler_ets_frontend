@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,23 @@
  * limitations under the License.
  */
 
+/**
+ * Exception Handling Test
+ * 
+ * @since 2024/5/8
+ */
 public class ExceptionHandlingTest {
-    // Define a method that may throw an exception
-    public static int divide(int a, int b) throws Exception {
+    /**
+     * Define a method that may throw an exception
+     * 
+     * @param a int a
+     * @param b int b
+     * @return int a / b
+     * @throws ArithmeticException throw ArithmeticException
+     */
+    public static int divide(int a, int b) throws ArithmeticException {
         if (b == 0) {
-            throw new Exception("Division by zero is not allowed.");
+            throw new ArithmeticException("Division by zero is not allowed.");
         }
         return a / b;
     }
@@ -26,7 +38,7 @@ public class ExceptionHandlingTest {
         try {
             int result = divide(10, 0); // This will throw an Exception
             System.out.println("Result: " + result);
-        } catch (Exception e) {
+        } catch (ArithmeticException e) {
             System.out.println("Caught an Exception: " + e.getMessage());
         } finally {
             System.out.println("This is always executed.");

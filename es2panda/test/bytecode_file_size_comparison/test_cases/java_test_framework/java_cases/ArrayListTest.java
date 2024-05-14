@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,11 @@
  */
 
 import java.util.ArrayList;
-
+/**
+ * Array List Test
+ * 
+ * @since 2024/5/8
+ */
 public class ArrayListTest {
     public static void main(String[] args) {
         ArrayList<String> list = new ArrayList<>();

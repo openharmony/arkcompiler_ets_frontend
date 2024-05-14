@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,55 @@
  * limitations under the License.
  */
 
-// Base class Animal
+/**
+ * Base Class Animal
+ *
+ * @since 2024/5/8
+ */
 class Animal {
+    /**
+     * makeSound
+     */
     public void makeSound() {
         System.out.println("The animal makes a sound.");
     }
 }
 
-// Subclass Dog
+/**
+ * Subclass Dog
+ *
+ * @since 2024/5/8
+ */
 class Dog extends Animal {
+    /**
+     * makeSound
+     */
     @Override
     public void makeSound() {
         System.out.println("The dog barks.");
     }
 }
 
-// Subclass Cat
+/**
+ * Subclass Cat
+ *
+ * @since 2024/5/8
+ */
 class Cat extends Animal {
+    /**
+     * makeSound
+     */
     @Override
     public void makeSound() {
         System.out.println("The cat meows.");
     }
 }
 
+/**
+ * Polymorphism Test
+ *
+ * @since 2024/5/8
+ */
 public class PolymorphismTest {
     public static void main(String[] args) {
         // Create Animal references and test polymorphism

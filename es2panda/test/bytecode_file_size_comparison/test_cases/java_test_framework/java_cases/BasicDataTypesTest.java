@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,11 @@
  * limitations under the License.
  */
 
+/**
+ * Basic Data Types Test
+ * 
+ * @since 2024/5/8
+ */
 public class BasicDataTypesTest {
     public static void main(String[] args) {
         // Integer type
@@ -23,7 +28,7 @@ public class BasicDataTypesTest {
 
         // Floating-point types
         float floatValue = 123.456f;
-        double doubleValue = 123.456789;
+        double doubleValue = 123.456789d;
 
         // Boolean type
         boolean booleanValue = true;
