@@ -417,11 +417,8 @@ Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *leftType, Type *ri
     auto [resolveLeft, leftValue] = IsResolvedAndValue(expr->Left(), leftType);
     auto [resolveRight, rightValue] = IsResolvedAndValue(expr->Right(), rightType);
 
-    if (!resolveLeft && !resolveRight) {
-        if (IsTypeIdenticalTo(leftType, rightType)) {
-            return leftType;
-        }
-        return CreateETSUnionType({leftType, rightType});
+    if (!resolveLeft && !resolveRight && IsTypeIdenticalTo(leftType, rightType)) {
+        return leftType;
     }
 
     switch (expr->OperatorType()) {
