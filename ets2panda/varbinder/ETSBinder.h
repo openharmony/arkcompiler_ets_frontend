@@ -125,6 +125,8 @@ public:
                                           const ir::ETSImportDeclaration *import,
                                           const ArenaVector<parser::Program *> &recordRes,
                                           std::vector<ir::ETSImportDeclaration *> viewedReExport);
+    void ValidateImportVariable(varbinder::Variable *const var, const ir::ETSImportDeclaration *const import,
+                                const util::StringView &imported, const ir::StringLiteral *const importPath);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &globalBindings,
                                            const ArenaVector<parser::Program *> &recordRes);

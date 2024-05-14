@@ -404,6 +404,12 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
     ASSERT(GetScope()->Find(name, ResolveBindingOptions::DECLARATION).variable != nullptr);
     auto specDecl = GetScope()->Find(name, ResolveBindingOptions::DECLARATION);
     dynamicImportVars_.emplace(specDecl.variable, DynamicImportData {import, specifier, specDecl.variable});
+
+    if (specifier->IsImportSpecifier()) {
+        auto importSpecifier = specifier->AsImportSpecifier();
+        importSpecifier->Imported()->SetVariable(specDecl.variable);
+        importSpecifier->Local()->SetVariable(specDecl.variable);
+    }
 }
 
 void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
@@ -617,6 +623,23 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
     return implDecl;
 }
 
+void ETSBinder::ValidateImportVariable(varbinder::Variable *const var, const ir::ETSImportDeclaration *const import,
+                                       const util::StringView &imported, const ir::StringLiteral *const importPath)
+{
+    if (var->Declaration()->Node()->IsDefaultExported()) {
+        ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
+    }
+
+    if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
+        ThrowError(importPath->Start(),
+                   "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
+    }
+
+    if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
+        ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
+    }
+}
+
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                  const varbinder::Scope::VariableMap &globalBindings,
                                                  const ir::ETSImportDeclaration *const import,
@@ -628,8 +651,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     }
     const ir::StringLiteral *const importPath = import->Source();
 
-    const auto *const importSpecifier = specifier->AsImportSpecifier();
-
+    auto importSpecifier = specifier->AsImportSpecifier();
     if (!importSpecifier->Imported()->IsIdentifier()) {
         return true;
     }
@@ -644,6 +666,8 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     }
 
     auto *const var = FindImportSpecifiersVariable(imported, globalBindings, recordRes);
+    importSpecifier->Imported()->SetVariable(var);
+    importSpecifier->Local()->SetVariable(var);
 
     const auto &localName = [this, importSpecifier, &imported, &importPath]() {
         if (importSpecifier->Local() != nullptr) {
@@ -672,17 +696,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         ThrowError(importPath->Start(), "Cannot find imported element " + imported.Mutf8());
     }
 
-    if (var->Declaration()->Node()->IsDefaultExported()) {
-        ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
-    }
-    if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
-        ThrowError(importPath->Start(),
-                   "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
-    }
-
-    if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
-        ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
-    }
+    ValidateImportVariable(var, import, imported, importPath);
 
     auto variable = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
     if (variable != nullptr && var != variable) {
@@ -767,11 +781,13 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
 
     auto item = std::find_if(globalBindings.begin(), globalBindings.end(), predicateFunc);
     if (item == globalBindings.end()) {
-        InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(),
-                             FindStaticBinding(record, importPath));
+        auto var = FindStaticBinding(record, importPath);
+        specifier->AsImportDefaultSpecifier()->Local()->SetVariable(var);
+        InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), var);
         return;
     }
 
+    specifier->AsImportDefaultSpecifier()->Local()->SetVariable(item->second);
     InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
 }
 

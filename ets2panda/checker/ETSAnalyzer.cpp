@@ -2594,6 +2594,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         varbinder::Variable *prop =
             baseType->AsETSObjectType()->GetProperty(expr->Right()->Name(), checker::PropertySearchFlags::SEARCH_DECL);
 
+        expr->Right()->SetVariable(prop);
         if (prop != nullptr) {
             return checker->GetTypeOfVariable(prop);
         }

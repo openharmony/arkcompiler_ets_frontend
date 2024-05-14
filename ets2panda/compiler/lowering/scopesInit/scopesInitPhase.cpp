@@ -818,6 +818,9 @@ void InitScopesPhaseETS::VisitImportNamespaceSpecifier(ir::ImportNamespaceSpecif
     }
     AddOrGetDecl<varbinder::ImportDecl>(VarBinder(), importSpec->Local()->Name(), importSpec, importSpec->Start(),
                                         importSpec->Local()->Name(), importSpec->Local()->Name(), importSpec);
+    auto var =
+        VarBinder()->GetScope()->FindLocal(importSpec->Local()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+    importSpec->Local()->SetVariable(var);
     Iterate(importSpec);
 }
 
@@ -982,7 +985,6 @@ void InitScopesPhaseETS::VisitETSNewClassInstanceExpression(ir::ETSNewClassInsta
         anonymousName.Append(std::to_string(parentClassScope->AsClassScope()->GetAndIncrementAnonymousClassIdx()));
         classDef->SetInternalName(anonymousName.View());
         classDef->Ident()->SetName(anonymousName.View());
-        classDef->Ident()->SetReference();
         CallNode(classDef);
     }
 }
