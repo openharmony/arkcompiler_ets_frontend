@@ -682,6 +682,10 @@ class CompilerProjectTest(Test):
         # Skip execution if --dump-assembly exists in flags
         self.requires_execution = "--dump-assembly" not in self.flags
         self.file_record_mapping = None
+        self.generated_abc_inputs_path = os.path.join(os.path.join(self.projects_path, self.project), "abcinputs_gen")
+        self.abc_input_filenames = None
+        self.record_names_path = os.path.join(os.path.join(self.projects_path, self.project), 'recordnames.txt')
+        self.abc_inputs_path = os.path.join(os.path.join(self.projects_path, self.project), 'abcinputs')
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
@@ -689,6 +693,8 @@ class CompilerProjectTest(Test):
             shutil.rmtree(project_path)
         if path.exists(self.files_info_path):
             os.remove(self.files_info_path)
+        if path.exists(self.generated_abc_inputs_path):
+            shutil.rmtree(self.generated_abc_inputs_path)
 
     def get_file_absolute_path_and_name(self, runner):
         sub_path = self.path[len(self.projects_path):]
@@ -720,31 +726,116 @@ class CompilerProjectTest(Test):
                 self.remove_project(runner)
                 return self
 
-    def gen_record_name(self, test_path):
-        record_name = os.path.relpath(test_path, os.path.dirname(self.files_info_path)).split('.')[0]
-        if (self.file_record_mapping != None and record_name in self.file_record_mapping):
-            record_name = self.file_record_mapping[record_name]
-        return record_name
-
-    def gen_files_info(self, runner):
-        record_names_path = os.path.join(os.path.join(self.projects_path, self.project), 'recordnames.txt')
-        if path.exists(record_names_path):
-            with open(record_names_path) as mapping_fp:
+    def collect_record_mapping(self):
+        # Collect record mappings from recordnames.txt, file format:
+        # 'source_file_name:record_name\n' * n
+        if path.exists(self.record_names_path):
+            with open(self.record_names_path) as mapping_fp:
                 mapping_lines = mapping_fp.readlines()
                 self.file_record_mapping = {}
                 for mapping_line in mapping_lines:
                     cur_mapping = mapping_line[:-1].split(":")
                     self.file_record_mapping[cur_mapping[0]] = cur_mapping[1]
+
+    def get_record_name(self, test_path):
+        record_name = os.path.relpath(test_path, os.path.dirname(self.files_info_path)).split('.')[0]
+        if (self.file_record_mapping is not None and record_name in self.file_record_mapping):
+            record_name = self.file_record_mapping[record_name]
+        return record_name
+
+    def collect_abc_inputs(self, runner):
+        # Collect abc input information from the 'abcinputs' directory. Each txt file in the directory
+        # will generate a merged abc file with the same filename and serve as the final abc input.
+        # file format: 'source_file_name.ts\n' * n
+        if not path.exists(self.abc_inputs_path):
+            return
+        if not path.exists(self.generated_abc_inputs_path):
+            os.makedirs(self.generated_abc_inputs_path)
+        self.abc_input_filenames = {}
+        filenames = os.listdir(self.abc_inputs_path)
+        for filename in filenames:
+            if not filename.endswith('.txt'):
+                self.remove_project(runner)
+                raise Exception("Invalid abc input file: %s, only txt files are allowed in abcinputs directory: %s"
+                                %(filename, self.abc_inputs_path))
+            with open(path.join(self.abc_inputs_path, filename)) as abc_inputs_fp:
+                abc_inputs_lines = abc_inputs_fp.readlines()
+                for abc_input_line in abc_inputs_lines:
+                    # filename is 'xxx.txt', remove '.txt' here
+                    self.abc_input_filenames[abc_input_line[:-1]] = filename[:-len('.txt')]
+
+    def get_belonging_abc_input(self, test_path):
+        filename = os.path.relpath(test_path, os.path.dirname(self.files_info_path))
+        if (self.abc_input_filenames is not None and filename in self.abc_input_filenames):
+            return self.abc_input_filenames[filename]
+        return None
+
+    def gen_abc_input_files_infos(self, runner, abc_files_infos, final_file_info_f):
+        for abc_files_info_name in abc_files_infos:
+            abc_files_info = abc_files_infos[abc_files_info_name]
+            if len(abc_files_info) != 0:
+                abc_input_path = path.join(self.generated_abc_inputs_path, abc_files_info_name)
+                abc_files_info_path = ("%s-filesInfo.txt" %(abc_input_path))
+                abc_files_info_fd = os.open(abc_files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
+                abc_files_info_f = os.fdopen(abc_files_info_fd, 'w')
+                abc_files_info_f.writelines(abc_files_info)
+                final_file_info_f.writelines('%s-abcinput.abc;;;;\n' %(abc_input_path))
+
+    def gen_files_info(self, runner):
+        # After collect_record_mapping, self.file_record_mapping stores {'source file name' : 'source file record name'}
+        self.collect_record_mapping()
+        # After collect_abc_inputs, self.abc_input_filenames stores {'source file name' : 'belonging abc input name'}
+        self.collect_abc_inputs(runner)
+
         fd = os.open(self.files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
-        f = os.fdopen(fd, "w")
+        f = os.fdopen(fd, 'w')
+        abc_files_infos = {}
         for test_path in self.test_paths:
-            record_name = self.gen_record_name(test_path)
-            module_kind = "esm"
-            file_info = ('%s;%s;%s;%s;%s' % (test_path, record_name, module_kind, test_path, record_name))
-            f.writelines(file_info + '\n')
+            record_name = self.get_record_name(test_path)
+            module_kind = 'esm'
+            file_info = ('%s;%s;%s;%s;%s\n' % (test_path, record_name, module_kind, test_path, record_name))
+            belonging_abc_input = self.get_belonging_abc_input(test_path)
+            if belonging_abc_input is not None:
+                if not belonging_abc_input in abc_files_infos:
+                    abc_files_infos[belonging_abc_input] = []
+                abc_files_infos[belonging_abc_input].append(file_info)
+            else:
+                f.writelines(file_info)
+        self.gen_abc_input_files_infos(runner, abc_files_infos, f)
         f.close()
 
+    def gen_es2abc_cmd(self, runner, input, output):
+        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        es2abc_cmd.extend(self.flags)
+        es2abc_cmd.extend(['%s%s' % ("--output=", output)])
+        es2abc_cmd.append('@' + input)
+        return es2abc_cmd
+
+    def gen_merged_abc_for_abc_input(self, runner, files_info_name):
+        self.passed = True
+        if not files_info_name.endswith(".txt"):
+            return
+        abc_input_files_info_path = path.join(self.generated_abc_inputs_path, files_info_name)
+        abc_input_merged_abc_path = path.join(self.generated_abc_inputs_path,
+                                              '%s-abcinput.abc' %(files_info_name[:-len('-filesInfo.txt')]))
+        es2abc_cmd = self.gen_es2abc_cmd(runner, abc_input_files_info_path, abc_input_merged_abc_path)
+        self.log_cmd(es2abc_cmd)
+        process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        if err:
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+
     def gen_merged_abc(self, runner):
+        # Generate abc inputs
+        if (os.path.exists(self.generated_abc_inputs_path)):
+            filesInfo_names = os.listdir(self.generated_abc_inputs_path)
+            for filename in filesInfo_names:
+                self.gen_merged_abc_for_abc_input(runner, filename)
+                if (not self.passed):
+                    self.remove_project(runner)
+                    return self
+        # Generate the abc to be tested
         for test_path in self.test_paths:
             self.path = test_path
             if (self.path.endswith("-exec.ts")):
@@ -754,15 +845,17 @@ class CompilerProjectTest(Test):
                     os.makedirs(file_absolute_path)
                 test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
                 output_abc_name = path.join(file_absolute_path, test_abc_name)
-        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
-        es2abc_cmd.extend(self.flags)
-        es2abc_cmd.extend(['%s%s' % ("--output=", output_abc_name)])
-        es2abc_cmd.append('@' + os.path.join(os.path.dirname(exec_file_path), "filesInfo.txt"))
+
+        es2abc_cmd = self.gen_es2abc_cmd(runner, self.files_info_path, output_abc_name)
+        compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
+        if path.exists(compile_context_info_path):
+            es2abc_cmd.append("%s%s" %("--compile-context-info=", compile_context_info_path))
         self.log_cmd(es2abc_cmd)
         self.path = exec_file_path
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
 
+        # Check dump-assembly outputs when required
         if "--dump-assembly" in self.flags:
             pa_expected_path = "".join([self.get_path_to_expected()[:self.get_path_to_expected().rfind(".txt")],
                                         ".pa.txt"])
@@ -1356,11 +1449,13 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
-    # This directory of test cases is for dump-assembly comparison only, and is not executed.
+    # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",
                                                 ["--module", "--branch-elimination", "--merge-abc", "--dump-assembly",
                                                 "--file-threads=8"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
