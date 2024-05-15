@@ -163,11 +163,8 @@ checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker 
 
     CheckReturnTypeOfIteratorMethod(checker, sourceType, signature, position);
 
-    // From here on we assume that '$_iterator()' function returns the valid 'Iterator<T>' implementation :)
-    // Otherwise a plenty of checks required for each line of code below...
     auto *const nextMethod =
         signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
-
     if (nextMethod == nullptr || !nextMethod->HasFlag(varbinder::VariableFlags::METHOD)) {
         checker->ThrowTypeError("Iterator object doesn't have proper next method.", position);
     }
