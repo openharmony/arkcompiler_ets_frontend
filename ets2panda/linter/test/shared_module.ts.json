@@ -16,80 +16,93 @@
     "nodes": [
         {
             "line": 21,
-            "column": 1,
+            "column": 13,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 23,
             "column": 12,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 25,
-            "column": 1,
+            "column": 14,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 28,
             "column": 12,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 30,
-            "column": 1,
+            "column": 18,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 35,
             "column": 9,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 38,
             "column": 9,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 41,
             "column": 13,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 42,
             "column": 1,
             "problem": "SharedModuleNoWildcardExport",
+            "suggest": "",
             "rule": "\"export * from ...\" is not allowed in shared module (arkts-shared-module-no-wildcard-export)"
         },
         {
             "line": 45,
             "column": 14,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 46,
             "column": 12,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 47,
             "column": 12,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         },
         {
             "line": 57,
             "column": 9,
             "problem": "SharedModuleExports",
+            "suggest": "",
             "rule": "Only \"Sendable\" entities can be exported in shared module (arkts-shared-module-exports)"
         }
     ]
