@@ -112,7 +112,7 @@ function main(): void {
     let tup_12: [number, ...number[]] = [1, 2, 3, 4];
     try {
         tup_12[4];
-    } catch (e: ArrayIndexOutOfBoundsException) {
+    } catch (e: ArrayIndexOutOfBoundsError) {
     } catch (f) {
         assert(false);
     }

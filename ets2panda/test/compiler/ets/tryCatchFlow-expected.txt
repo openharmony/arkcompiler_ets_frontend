@@ -244,7 +244,7 @@
                             "loc": {
                               "start": {
                                 "line": 21,
-                                "column": 37
+                                "column": 33
                               },
                               "end": {
                                 "line": 23,
@@ -261,7 +261,7 @@
                                 "type": "ETSTypeReferencePart",
                                 "name": {
                                   "type": "Identifier",
-                                  "name": "NullPointerException",
+                                  "name": "NullPointerError",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -270,7 +270,7 @@
                                     },
                                     "end": {
                                       "line": 21,
-                                      "column": 35
+                                      "column": 31
                                     }
                                   }
                                 },
@@ -281,7 +281,7 @@
                                   },
                                   "end": {
                                     "line": 21,
-                                    "column": 36
+                                    "column": 32
                                   }
                                 }
                               },
@@ -292,7 +292,7 @@
                                 },
                                 "end": {
                                   "line": 21,
-                                  "column": 36
+                                  "column": 32
                                 }
                               }
                             },

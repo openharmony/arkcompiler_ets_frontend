@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,14 +29,14 @@ struct cls2 {
 }
 
 function main(): void {
-    // TODO: catch NullPointerException if exception handling is implemented
+    // TODO: catch NullPointerError if exception handling is implemented
     // let x : cls;
     // x.member_cls;
 
     let y : cls = new cls(null, 2);
     assert (y.member_cls == null && y.member_int == 2)
 
-    // TODO: catch NullPointerException if exception handling is implemented
+    // TODO: catch NullPointerError if exception handling is implemented
     // y = null;
     // y.member_cls;
 

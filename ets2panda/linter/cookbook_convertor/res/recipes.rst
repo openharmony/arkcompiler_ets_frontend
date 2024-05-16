@@ -1,4 +1,4 @@
-..  Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+..  Copyright (c) 2021-2024 Huawei Device Co., Ltd.
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
@@ -1652,7 +1652,7 @@ Use proper types to check property existence during compilation.
 ~~~~~~~~~
 
 |LANG| supports ``as`` keyword as the only syntax for type casts.
-Incorrect cast causes a compile-time error or runtime ``ClassCastException``.
+Incorrect cast causes a compile-time error or runtime ``ClassCastError``.
 ``<type>`` syntax for type casts is not supported.
 
 |CB_BAD|
@@ -1692,7 +1692,7 @@ Incorrect cast causes a compile-time error or runtime ``ClassCastException``.
 
     let c2 = createShape() as Circle
 
-    // ClassCastException during runtime is thrown:
+    // ClassCastError during runtime is thrown:
     let c3 = createShape() as Square
 
 .. _R054:

@@ -34,7 +34,7 @@ function foo(a: funcType | null) {
     let test = false;
     try {
         fruit = a!();
-    } catch (e: NullPointerException) {
+    } catch (e: NullPointerError) {
         test = true;
     }
 

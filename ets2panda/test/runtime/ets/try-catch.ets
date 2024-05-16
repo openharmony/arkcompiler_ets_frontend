@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,10 @@ let catchCode = 0;
 
 function main(): void {
   try {
-    throw new NullPointerException();
-  } catch (e: NullPointerException) {
+    throw new NullPointerError();
+  } catch (e: NullPointerError) {
     catchCode = 1;
-  } catch (e: Exception) {
+  } catch (e: Error) {
     assert(false);
   } catch (e) {
     assert(false);
@@ -31,10 +31,10 @@ function main(): void {
   assert(catchCode == 1);
 
   try {
-    throw new NullPointerException();
-  } catch (e: Exception) {
+    throw new NullPointerError();
+  } catch (e: Error) {
     catchCode = 2;
-  } catch (e: NullPointerException) {
+  } catch (e: NullPointerError) {
     assert(false);
   } catch (e) {
     assert(false);

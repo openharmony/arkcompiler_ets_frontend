@@ -101,7 +101,7 @@ function testNPE() : void {
     try {
         (o as Object | null)!;
         assert false : "this must not be executed";
-    } catch (ex: NullPointerException) {
+    } catch (ex: NullPointerError) {
         npe_caught = true;
     }
 
@@ -110,7 +110,7 @@ function testNPE() : void {
     try {
         baz()!;
         assert false : "this must not be executed";
-    } catch (ex: NullPointerException) {
+    } catch (ex: NullPointerError) {
         npe_caught = true;
     }
 

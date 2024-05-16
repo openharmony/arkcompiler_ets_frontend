@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,7 +32,7 @@ function main() {
     // Element type in array in accumulator is of incompatible type 'A'.
     // Instruction 'checkcast' will always throw an exception here. It may be a sign of possible error here.
     let Bs: B[] = Is as B[];
-  } catch (e: ClassCastException) {
+  } catch (e: ClassCastError) {
     caught = true;
   } catch (e) {
     assert false;

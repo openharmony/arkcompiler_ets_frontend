@@ -5,7 +5,7 @@ Rule ``arkts-as-casts``
 **Severity: error**
 
 ArkTS supports the keyword ``as`` as the only syntax for type casts.
-Incorrect cast causes a compile-time error or runtime ``ClassCastException``.
+Incorrect cast causes a compile-time error or runtime ``ClassCastError``.
 ``<type>`` syntax for type casts is not supported.
 
 Use the expression ``new ...`` instead of ``as`` if a **primitive** type
@@ -59,7 +59,7 @@ Use the expression ``new ...`` instead of ``as`` if a **primitive** type
 
     let c2 = createShape() as Circle
 
-    // ClassCastException during runtime is thrown:
+    // ClassCastError during runtime is thrown:
     let c3 = createShape() as Square
 
     // Number object is created and instanceof works as expected:
