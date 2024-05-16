@@ -337,6 +337,8 @@ bool Options::Parse(int argc, const char **argv)
 
     // optimizer
     panda::PandArg<bool> opBranchElimination("branch-elimination", false, "Enable branch elimination optimization");
+    panda::PandArg<bool> opOptTryCatchFunc("opt-try-catch-func", true, "Enable optimizations for functions with "\
+        "try-catch blocks");
 
     // patchfix && hotreload
     panda::PandArg<std::string> opDumpSymbolTable("dump-symbol-table", "", "dump symbol table to file");
@@ -402,6 +404,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opMergeAbc);
     argparser_->Add(&opuseDefineSemantic);
     argparser_->Add(&opBranchElimination);
+    argparser_->Add(&opOptTryCatchFunc);
 
     argparser_->Add(&opDumpSymbolTable);
     argparser_->Add(&opInputSymbolTable);
@@ -637,10 +640,12 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     compilerOptions_.branchElimination = opBranchElimination.GetValue();
+    compilerOptions_.optTryCatchFunc = opOptTryCatchFunc.GetValue();
     compilerOptions_.requireGlobalOptimization = compilerOptions_.optLevel > 0 &&
                                                  compilerOptions_.branchElimination &&
                                                  compilerOptions_.mergeAbc;
     panda::compiler::options.SetCompilerBranchElimination(compilerOptions_.branchElimination);
+    panda::compiler::options.SetCompilerOptTryCatchFunc(compilerOptions_.optTryCatchFunc);
 
     return true;
 }

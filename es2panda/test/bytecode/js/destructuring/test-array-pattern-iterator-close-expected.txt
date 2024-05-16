@@ -1,22 +1,29 @@
 .language ECMAScript
 
 .function any .func_main_0(any a0, any a1, any a2) {
+<<<<<<< HEAD
 	mov v0, a0
 	mov v1, a1
 	mov v2, a2
 	createarraywithbuffer 0x0, _1
 	sta v6
 	sta v6
-	getiterator 0x1
-	sta v9
-	lda v9
-	ldobjbyname 0x3, next
-	sta v8
-	ldfalse
-	sta v7
-	ldfalse
-	sta v11
+=======
 	ldundefined
+label_49: 
+label_0: 
+	createarraywithbuffer 0x0, _0
+>>>>>>> f3e802f7f... Add --opt-try-catch-func flag and fix test cases
+	getiterator 0x1
+	sta v0
+	ldobjbyname 0x3, next
+	sta v1
+	ldfalse
+	sta v2
+	ldfalse
+	sta v3
+	ldundefined
+<<<<<<< HEAD
 	sta v12
 LABEL_0: 
 LABEL_4: 
@@ -32,9 +39,34 @@ LABEL_4:
 	sta v11
 	callruntime.isfalse 0xb
 	jnez LABEL_8
+=======
+label_33: 
+label_25: 
+label_35: 
+	mov v6, v3
+	mov v4, v3
+	lda v3
+	istrue
+	jnez label_1
+label_2: 
+	lda v1
+	callthis0 0x5, v0
+	sta v8
+	throw.ifnotobject v8
+	ldobjbyname 0x7, done
+	sta v3
+	mov v6, v3
+	mov v4, v3
+	isfalse
+	jnez label_3
+label_4: 
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
 	ldtrue
-	sta v11
+	sta v3
+	mov v6, v3
+	mov v4, v3
 	ldundefined
+<<<<<<< HEAD
 	jmp LABEL_9
 LABEL_8: 
 	lda v10
@@ -42,15 +74,32 @@ LABEL_8:
 	sta v12
 	jmp LABEL_7
 LABEL_9: 
+=======
+	jmp label_1
+label_3: 
+	lda v8
+	ldobjbyname 0x9, value
+	sta v8
+	jmp label_5
+label_1: 
+	mov v6, v3
+	mov v4, v3
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
 	ldundefined
-LABEL_5: 
-	jmp LABEL_7
-LABEL_6: 
-	sta v12
+	sta v8
+label_26: 
+end_label_26: 
+	jmp label_5
+label_51: 
+	sta v7
+label_44: 
+	mov v4, v6
 	ldtrue
-	sta v11
-	lda v12
+	sta v1
+	mov v4, v1
+	lda v7
 	throw
+<<<<<<< HEAD
 LABEL_7: 
 	sttoglobalrecord 0xf, a
 LABEL_10: 
@@ -66,9 +115,36 @@ LABEL_10:
 	sta v11
 	callruntime.isfalse 0x16
 	jnez LABEL_14
+=======
+label_5: 
+	mov v4, v3
+	lda v8
+	sttoglobalrecord 0xb, a
+label_27: 
+label_38: 
+	mov v6, v3
+	lda v3
+	istrue
+	jnez label_6
+label_7: 
+	lda v1
+	callthis0 0xc, v0
+	sta v1
+	throw.ifnotobject v1
+	ldobjbyname 0xe, done
+	sta v3
+	mov v6, v3
+	mov v4, v3
+	isfalse
+	jnez label_8
+label_9: 
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
 	ldtrue
-	sta v11
+	sta v3
+	mov v6, v3
+	mov v4, v3
 	ldundefined
+<<<<<<< HEAD
 	jmp LABEL_15
 LABEL_14: 
 	lda v10
@@ -76,15 +152,32 @@ LABEL_14:
 	sta v12
 	jmp LABEL_13
 LABEL_15: 
+=======
+	jmp label_6
+label_8: 
+	lda v1
+	ldobjbyname 0x10, value
+	sta v1
+	jmp label_10
+label_6: 
+	mov v6, v3
+	mov v4, v3
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
 	ldundefined
-LABEL_11: 
-	jmp LABEL_13
-LABEL_12: 
-	sta v12
+	sta v1
+label_28: 
+end_label_28: 
+	jmp label_10
+label_52: 
+	sta v7
+label_45: 
+	mov v4, v6
 	ldtrue
-	sta v11
-	lda v12
+	sta v1
+	mov v4, v1
+	lda v7
 	throw
+<<<<<<< HEAD
 LABEL_13: 
 	sttoglobalrecord 0x1a, b
 LABEL_1: 
@@ -95,11 +188,28 @@ LABEL_1:
 	lda v7
 	callruntime.istrue 0x1d
 	jnez LABEL_16
+=======
+label_10: 
+	mov v4, v3
+	lda v1
+	sttoglobalrecord 0x12, b
+label_34: 
+end_label_34: 
+label_36: 
+	lda v3
+	istrue
+	jnez label_11
+label_12: 
+	lda v2
+	istrue
+	jnez label_11
+label_14: 
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
 	ldtrue
-	sta v7
 	ldundefined
-	sta v14
+	sta v1
 	ldhole
+<<<<<<< HEAD
 	sta v15
 LABEL_17: 
 	lda v9
@@ -143,11 +253,57 @@ LABEL_2:
 	lda v7
 	callruntime.istrue 0x27
 	jnez LABEL_24
-	ldtrue
-	sta v7
+=======
+	sta v2
+label_29: 
+label_40: 
+	lda v0
+	ldobjbyname 0x13, return
+	sta v6
 	ldundefined
-	sta v14
+	eq 0x15, v6
+	jnez label_11
+label_15: 
+	lda v6
+	callthis0 0x16, v0
+	sta v0
+label_30: 
+end_label_30: 
+	jmp label_56
+label_53: 
+	sta v3
+	mov v2, v3
+	jmp label_16
+label_56: 
+	mov v1, v0
+label_16: 
 	ldhole
+	sta v0
+	lda v2
+	noteq 0x18, v0
+	jeqz label_17
+label_18: 
+	lda v2
+	throw
+label_17: 
+	throw.ifnotobject v1
+	jmp label_11
+label_54: 
+	sta v5
+label_47: 
+	lda v4
+	istrue
+	jnez label_19
+label_20: 
+	lda v2
+	istrue
+	jnez label_21
+label_22: 
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
+	ldtrue
+	ldundefined
+	ldhole
+<<<<<<< HEAD
 	sta v15
 LABEL_25: 
 	lda v9
@@ -166,29 +322,46 @@ LABEL_27:
 	sta v15
 LABEL_28: 
 	lda v13
+=======
+label_31: 
+label_42: 
+	lda v0
+	ldobjbyname 0x19, return
+	sta v1
+	ldundefined
+	eq 0x1b, v1
+	jnez label_21
+label_23: 
+	lda v1
+	callthis0 0x1c, v0
+label_32: 
+end_label_32: 
+	jmp label_24
+label_55: 
+label_24: 
+	lda v5
+>>>>>>> ecfa0d44a... Add --opt-try-catch-func flag in es2abc, and fix es2abc test cases for try-catch optimization
 	throw
-	lda v14
-	throw.ifnotobject v14
-LABEL_24: 
-	lda v13
+label_21: 
+	lda v5
 	throw
-LABEL_23: 
-	lda v12
+label_19: 
+	lda v5
 	throw
-LABEL_3: 
-	lda v6
+label_11: 
 	ldundefined
 	returnundefined
+label_50: 
 }
 
-.catchall LABEL_4, LABEL_5, LABEL_6
+.catchall label_25, end_label_26, label_51
 
-.catchall LABEL_10, LABEL_11, LABEL_12
+.catchall label_27, end_label_28, label_52
 
-.catchall LABEL_17, LABEL_18, LABEL_19
+.catchall label_29, end_label_30, label_53
 
-.catchall LABEL_25, LABEL_26, LABEL_27
+.catchall label_31, end_label_32, label_55
 
-.catchall LABEL_0, LABEL_1, LABEL_2
+.catchall label_33, end_label_34, label_54
 
 

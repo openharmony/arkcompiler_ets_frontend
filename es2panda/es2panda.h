@@ -110,6 +110,7 @@ struct CompilerOptions {
     std::unordered_map<std::string, std::string> cacheFiles;
     std::string transformLib {};
     bool branchElimination {false};
+    bool optTryCatchFunc {true};
     bool requireGlobalOptimization {false};
     std::string compileContextInfoPath {};
     CompileContextInfo compileContextInfo {};
