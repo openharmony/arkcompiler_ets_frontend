@@ -176,4 +176,30 @@ describe('Tester Cases for <FileUtils>.', function () {
 
     assert.strictEqual(renameFileNameModule.isInOhModules(projectInfo, originalPath), true);
   });
+
+  it('Tester: test API collectPathReservedString', function () {
+    let filePath1 = 'D:\\workplace\\Obfuscation\\TestForFilename\\entry';
+    let reservedNames = [];
+    FileUtils.collectPathReservedString(filePath1, reservedNames);
+    let filePath2 = '/OpenHarmony/arkcompiler/ets_frontend/arkguard/test/grammar/test.ts';
+    FileUtils.collectPathReservedString(filePath2, reservedNames);
+    let filePath3 = '../../test.ts.ts';
+    FileUtils.collectPathReservedString(filePath3, reservedNames);
+    assert.strictEqual(reservedNames[0], 'D:');
+    assert.strictEqual(reservedNames[1], 'workplace');
+    assert.strictEqual(reservedNames[2], 'Obfuscation');
+    assert.strictEqual(reservedNames[3], 'TestForFilename');
+    assert.strictEqual(reservedNames[4], 'entry');
+    assert.strictEqual(reservedNames[5], '');
+    assert.strictEqual(reservedNames[6], 'OpenHarmony');
+    assert.strictEqual(reservedNames[7], 'arkcompiler');
+    assert.strictEqual(reservedNames[8], 'ets_frontend');
+    assert.strictEqual(reservedNames[9], 'arkguard');
+    assert.strictEqual(reservedNames[10], 'test');
+    assert.strictEqual(reservedNames[11], 'grammar');
+    assert.strictEqual(reservedNames[12], 'test.ts');
+    assert.strictEqual(reservedNames[13], '..');
+    assert.strictEqual(reservedNames[14], '..');
+    assert.strictEqual(reservedNames[15], 'test.ts.ts');
+  });
 });
