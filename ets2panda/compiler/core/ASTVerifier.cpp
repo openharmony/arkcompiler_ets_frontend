@@ -421,6 +421,23 @@ public:
     }
 };
 
+class ReferenceTypeAnnotationIsNull {
+public:
+    explicit ReferenceTypeAnnotationIsNull([[maybe_unused]] ArenaAllocator &allocator) {}
+
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
+        if (ast->IsIdentifier()) {
+            if (ast->AsIdentifier()->IsReference() && ast->AsIdentifier()->TypeAnnotation() != nullptr) {
+                ctx.AddCheckMessage("TYPE_ANNOTATION_NOT_NULLPTR", *ast, ast->Start());
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+        }
+        return result;
+    }
+};
+
 class NodeHasSourceRange {
 public:
     explicit NodeHasSourceRange([[maybe_unused]] ArenaAllocator &allocator) {}
@@ -1141,6 +1158,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<ImportExportAccessValid>(allocator, "ImportExportAccessValid");
     AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
     AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
+    AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

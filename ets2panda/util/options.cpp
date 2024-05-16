@@ -212,18 +212,21 @@ bool Options::Parse(int argc, const char **argv)
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
-        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll");
+        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
+        "ReferenceTypeAnnotationIsNullForAll");
     ark::PandArg<std::string> verifierErrors(
         "verifier-errors",
         "ForLoopCorrectlyInitializedForAll,SequenceExpressionHasLastTypeForAll,NodeHasTypeForAll,NodeHasParentForAll,"
         "EveryChildHasValidParentForAll,ModifierAccessValidForAll,ArithmeticOperationValidForAll,"
-        "VariableHasScopeForAll,IdentifierHasVariableForAll,VariableHasEnclosingScopeForAll",
+        "VariableHasScopeForAll,IdentifierHasVariableForAll,VariableHasEnclosingScopeForAll,"
+        "ReferenceTypeAnnotationIsNullForAll",
         "Print errors and stop compilation if AST tree is incorrect. "
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
-        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll");
+        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
+        "ReferenceTypeAnnotationIsNullForAll");
     ark::PandArg<bool> verifierAllChecks(
         "verifier-all-checks", false,
         "Run verifier checks on every phase, monotonically expanding them on every phase");

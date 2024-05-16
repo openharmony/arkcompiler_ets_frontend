@@ -43,6 +43,10 @@ ets2panda_add_gtest(ast_verifier_protected_access_negative_test_4_6
     CPP_SOURCES ast_verifier_protected_access_negative_test_4_6.cpp
 )
 
+ets2panda_add_gtest(ast_verifier_reference_typeannotation_test
+    CPP_SOURCES ast_verifier_reference_typeannotation_test.cpp
+)
+
 panda_add_library(e2p_test_plugin SHARED e2p_test_plugin.c)
 panda_target_include_directories(e2p_test_plugin PRIVATE  "${ES2PANDA_PATH}")
 panda_target_link_libraries(e2p_test_plugin es2panda-public)
