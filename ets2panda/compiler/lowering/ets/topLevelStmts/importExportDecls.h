@@ -56,6 +56,7 @@ public:
      * @param global_stmts program global statements
      */
     void HandleGlobalStmts(const ArenaVector<parser::Program *> &programs);
+    void VerifyTypeExports(const ArenaVector<parser::Program *> &programs);
 
     void VerifySingleExportDefault(const ArenaVector<parser::Program *> &programs);
 
@@ -68,6 +69,7 @@ private:
     varbinder::ETSBinder *varbinder_ {nullptr};
     std::map<util::StringView, ir::AstNode *> fieldMap_;
     std::map<util::StringView, lexer::SourcePosition> exportNameMap_;
+    std::set<util::StringView> exportedTypes_;
     parser::ETSParser *parser_ {nullptr};
 };
 }  // namespace ark::es2panda::compiler

@@ -61,6 +61,7 @@ private:
     void GenClassDeclaration(const ir::ClassDeclaration *classDecl);
     void GenMethodDeclaration(const ir::MethodDefinition *methodDef);
     void GenPropDeclaration(const ir::ClassProperty *classProp);
+    void GenGlobalVarDeclaration(const ir::ClassProperty *globalVar);
     void GenLiteral(const ir::Literal *literal);
 
     template <class T>

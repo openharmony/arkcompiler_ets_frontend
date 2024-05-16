@@ -30,6 +30,15 @@ AstNode::AstNode(AstNode const &other)
     // boxing_unboxing_flags_ {};  leave default value!
 }
 
+[[nodiscard]] bool ir::AstNode::IsExportedType() const noexcept
+{
+    if (UNLIKELY(IsClassDefinition())) {
+        return this->parent_->IsExportedType();
+    }
+
+    return (flags_ & ModifierFlags::EXPORT_TYPE) != 0;
+}
+
 template <typename R, typename T>
 static R GetTopStatementImpl(T *self)
 {
@@ -110,6 +119,14 @@ AstNode *AstNode::FindChild(const NodePredicate &cb) const
     AstNode *found = nullptr;
     Iterate([&found, cb](AstNode *child) { FindChildHelper(found, cb, child); });
     return found;
+}
+
+varbinder::Scope *AstNode::EnclosingScope(const ir::AstNode *expr)
+{
+    while (expr != nullptr && !expr->IsScopeBearer()) {
+        expr = expr->Parent();
+    }
+    return expr != nullptr ? expr->Scope() : nullptr;
 }
 
 std::string AstNode::DumpJSON() const

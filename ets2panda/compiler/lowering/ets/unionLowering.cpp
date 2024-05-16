@@ -161,8 +161,11 @@ static ir::TSAsExpression *HandleUnionCastToPrimitive(checker::ETSChecker *check
     }
     auto *const unboxableUnionType = sourceType != nullptr ? sourceType : unionType->FindUnboxableType();
     auto *const unboxedUnionType = checker->ETSBuiltinTypeAsPrimitiveType(unboxableUnionType);
-    expr->SetExpr(UnionCastToPrimitive(checker, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr()));
-    return expr;
+    auto *const node =
+        UnionCastToPrimitive(checker, unboxableUnionType->AsETSObjectType(), unboxedUnionType, expr->Expr());
+    node->SetParent(expr->Parent());
+
+    return node;
 }
 
 bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)

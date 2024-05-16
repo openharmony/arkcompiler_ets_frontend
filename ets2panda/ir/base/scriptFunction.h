@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
 #include "ir/statements/returnStatement.h"
+#include "checker/types/signature.h"
 #include "ir/astNode.h"
 #include "varbinder/scope.h"
 #include "util/enumbitops.h"
@@ -212,6 +213,11 @@ public:
     [[nodiscard]] bool HasBody() const noexcept
     {
         return body_ != nullptr;
+    }
+
+    [[nodiscard]] bool HasRestParameter() const noexcept
+    {
+        return signature_->RestVar() != nullptr;
     }
 
     [[nodiscard]] bool IsThrowing() const noexcept

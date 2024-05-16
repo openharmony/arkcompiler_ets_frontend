@@ -547,6 +547,9 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterfaceBody()
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
             Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+                ThrowSyntaxError("Interface member initialization is prohibited");
+            }
             if (!Lexer()->GetToken().NewLine()) {
                 ThrowSyntaxError("',' expected");
             }
@@ -704,15 +707,12 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
     return typeParam;
 }
 
-ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeAnnotationParsingOptions *options)
+//  Auxiliary method to reduce the size of functions.
+ir::AstNode *TypedParser::ParseTypeParameterDeclarationImpl(TypeAnnotationParsingOptions *options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
-
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     ArenaVector<ir::TSTypeParameter *> params(Allocator()->Adapter());
     bool seenDefault = false;
-    size_t requiredParams = 0;
-    Lexer()->NextToken();  // eat '<'
+    size_t requiredParams = 0U;
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
         auto newOptions = *options | TypeAnnotationParsingOptions::ADD_TYPE_PARAMETER_BINDING;
@@ -733,31 +733,52 @@ ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeA
 
         params.push_back(currentParam);
 
-        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-            Lexer()->NextToken();
-            continue;
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
+            break;
         }
 
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
-            if ((newOptions & TypeAnnotationParsingOptions::THROW_ERROR) == 0) {
-                return nullptr;
-            }
-
-            ThrowSyntaxError("'>' expected");
-        }
+        Lexer()->NextToken();
     }
 
     if (params.empty()) {
         ThrowSyntaxError("Type parameter list cannot be empty.");
     }
 
+    return AllocNode<ir::TSTypeParameterDeclaration>(std::move(params), requiredParams);
+}
+
+ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeAnnotationParsingOptions *options)
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+    Lexer()->NextToken();  // eat '<'
+
+    ir::AstNode *typeParamDecl;
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+        Lexer()->Lookahead() == static_cast<char32_t>(EXPRESSION_FORMAT_NODE)) {
+        typeParamDecl = ParseTypeParametersFormatPlaceholder();
+    } else {
+        typeParamDecl = ParseTypeParameterDeclarationImpl(options);
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
+        if ((*options & TypeAnnotationParsingOptions::THROW_ERROR) == 0) {
+            return nullptr;
+        }
+        ThrowSyntaxError("Expected closing '>'.");
+    }
+
     lexer::SourcePosition endLoc = Lexer()->GetToken().End();
     Lexer()->NextToken();  // eat '>'
 
-    auto *typeParamDecl = AllocNode<ir::TSTypeParameterDeclaration>(std::move(params), requiredParams);
-    typeParamDecl->SetRange({startLoc, endLoc});
+    if (typeParamDecl != nullptr) {
+        typeParamDecl->SetRange({startLoc, endLoc});
+        return typeParamDecl->AsTSTypeParameterDeclaration();
+    }
 
-    return typeParamDecl;
+    return nullptr;
 }
 
 ir::Expression *TypedParser::ParseSuperClassReference()
@@ -1207,19 +1228,14 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
     return typeName;
 }
 
-ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(TypeAnnotationParsingOptions *options)
+//  Auxiliary method to reduce the size of functions.
+ir::AstNode *TypedParser::ParseTypeParameterInstantiationImpl(TypeAnnotationParsingOptions *options)
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
-    bool throwError = ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0;
-    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
     ArenaVector<ir::TypeNode *> params(Allocator()->Adapter());
-    Lexer()->NextToken();  // eat '<'
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
-        TypeAnnotationParsingOptions tmp = *options;
-        *options &= ~TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
-        ir::TypeNode *currentParam = ParseTypeAnnotation(options);
-        *options = tmp;
+        TypeAnnotationParsingOptions tmpOptions = *options &= ~TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
+        ir::TypeNode *currentParam = ParseTypeAnnotation(&tmpOptions);
 
         if (currentParam == nullptr) {
             return nullptr;
@@ -1244,23 +1260,45 @@ ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(T
                 break;
             }
             default: {
-                if (throwError) {
-                    ThrowSyntaxError("'>' expected");
-                }
-
                 return nullptr;
             }
         }
     }
 
+    return AllocNode<ir::TSTypeParameterInstantiation>(std::move(params));
+}
+
+ir::TSTypeParameterInstantiation *TypedParser::ParseTypeParameterInstantiation(TypeAnnotationParsingOptions *options)
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
+
+    lexer::SourcePosition startLoc = Lexer()->GetToken().Start();
+    Lexer()->NextToken();  // eat '<'
+
+    ir::AstNode *typeParamInst;
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT &&
+        Lexer()->Lookahead() == static_cast<char32_t>(EXPRESSION_FORMAT_NODE)) {
+        typeParamInst = ParseTypeParametersFormatPlaceholder();
+    } else {
+        typeParamInst = ParseTypeParameterInstantiationImpl(options);
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
+        if ((*options & TypeAnnotationParsingOptions::THROW_ERROR) == 0) {
+            return nullptr;
+        }
+        ThrowSyntaxError("Expected closing '>'.");
+    }
+
     lexer::SourcePosition endLoc = Lexer()->GetToken().End();
-    Lexer()->NextToken();
+    Lexer()->NextToken();  // eat '>'
 
-    auto *typeParamInst = AllocNode<ir::TSTypeParameterInstantiation>(std::move(params));
+    if (typeParamInst != nullptr) {
+        typeParamInst->SetRange({startLoc, endLoc});
+        return typeParamInst->AsTSTypeParameterInstantiation();
+    }
 
-    typeParamInst->SetRange({startLoc, endLoc});
-
-    return typeParamInst;
+    return nullptr;
 }
 
 ir::Statement *TypedParser::ParseDeclareAndDecorators(StatementParsingFlags flags)

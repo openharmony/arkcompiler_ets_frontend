@@ -1092,12 +1092,17 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
 ir::Identifier *ParserImpl::ParseIdentifierFormatPlaceholder(
     [[maybe_unused]] std::optional<NodeFormatType> nodeFormat) const
 {
-    ThrowSyntaxError("Identifier expected");
+    ThrowSyntaxError("Identifier expected.");
 }
 
 ir::Statement *ParserImpl::ParseStatementFormatPlaceholder() const
 {
-    ThrowSyntaxError("Statement expected");
+    ThrowSyntaxError("Statement expected.");
+}
+
+ir::AstNode *ParserImpl::ParseTypeParametersFormatPlaceholder() const
+{
+    ThrowSyntaxError("Type parameter(s) expected.");
 }
 
 ArenaVector<ir::Statement *> &ParserImpl::ParseStatementsArrayFormatPlaceholder() const

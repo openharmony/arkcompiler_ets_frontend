@@ -1,0 +1,1 @@
+TypeError: Bad operand type, the types of the operands must be same type. [instanceof_object_long.ets:21:12]

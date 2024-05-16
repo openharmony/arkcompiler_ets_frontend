@@ -295,7 +295,7 @@ ArenaVector<ir::Statement *> ETSParser::ParseTopLevelStatements()
 ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags)
 {
     auto [memberModifiers, startLoc] = ParseMemberModifiers();
-    if ((memberModifiers & (ir::ModifierFlags::EXPORT | ir::ModifierFlags::DEFAULT_EXPORT)) != 0U &&
+    if ((memberModifiers & (ir::ModifierFlags::EXPORTED)) != 0U &&
         (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
          Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE)) {
         return ParseExport(startLoc, memberModifiers);
@@ -332,10 +332,14 @@ ir::Statement *ETSParser::ParseTopLevelDeclStatement(StatementParsingFlags flags
             break;
         }
         default: {
-            break;
         }
     }
     if (result != nullptr) {
+        if ((memberModifiers & ir::ModifierFlags::EXPORT_TYPE) != 0U &&
+            !(result->IsClassDeclaration() || result->IsTSInterfaceDeclaration() ||
+              result->IsTSTypeAliasDeclaration())) {
+            ThrowSyntaxError("Can only type export class or interface!");
+        }
         result->AddModifier(memberModifiers);
     }
     return result;
@@ -2333,7 +2337,7 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
     ir::ImportSource *reExportSource = ParseSourceFromClause(true);
 
     lexer::SourcePosition endLoc = reExportSource->Source()->End();
-    auto *reExportDeclaration = AllocNode<ir::ETSImportDeclaration>(reExportSource, specifiers);
+    auto *reExportDeclaration = AllocNode<ir::ETSImportDeclaration>(reExportSource, std::move(specifiers));
     reExportDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(reExportDeclaration);
@@ -2429,9 +2433,15 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
         auto startLoc = Lexer()->GetToken().Start();
         Lexer()->NextToken();  // eat import
 
+        ir::ImportKinds importKind =
+            Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_TYPE) ? ir::ImportKinds::TYPE : ir::ImportKinds::VALUE;
+
         ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
+            if (importKind == ir::ImportKinds::TYPE) {
+                ThrowSyntaxError("Type import requires selective binding to define the required imported elements.");
+            }
             ParseNameSpaceSpecifier(&specifiers);
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
             auto specs = ParseNamedSpecifiers();
@@ -2443,7 +2453,7 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
         ir::ImportSource *importSource = ParseSourceFromClause(true);
 
         lexer::SourcePosition endLoc = importSource->Source()->End();
-        auto *importDeclaration = AllocNode<ir::ETSImportDeclaration>(importSource, std::move(specifiers));
+        auto *importDeclaration = AllocNode<ir::ETSImportDeclaration>(importSource, std::move(specifiers), importKind);
         importDeclaration->SetRange({startLoc, endLoc});
 
         ConsumeSemicolon(importDeclaration);
@@ -4136,8 +4146,14 @@ std::pair<ir::ModifierFlags, lexer::SourcePosition> ETSParser::ParseMemberModifi
     auto memberModifiers = ir::ModifierFlags::STATIC | ir::ModifierFlags::PUBLIC;
 
     if (Lexer()->TryEatTokenType(lexer::TokenType::KEYW_EXPORT)) {
+        const auto savedPos = Lexer()->Save();
         if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_DEFAULT)) {
             memberModifiers |= ir::ModifierFlags::DEFAULT_EXPORT;
+        } else if (Lexer()->TryEatTokenKeyword(lexer::TokenType::KEYW_TYPE)) {
+            if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+                Lexer()->Rewind(savedPos);
+            }
+            memberModifiers |= ir::ModifierFlags::EXPORT_TYPE;
         } else {
             memberModifiers |= ir::ModifierFlags::EXPORT;
         }

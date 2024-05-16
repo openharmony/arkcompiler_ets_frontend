@@ -23,6 +23,8 @@
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ts/tsQualifiedName.h"
+#include "util/helpers.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "util/language.h"
 #include "parser/ETSparser.h"
 
@@ -77,13 +79,16 @@ public:
     void AddDynImport(const char *specifierName, varbinder::ETSBinder *varbinder, ir::Identifier *node)
     {
         auto aIdent = Allocator()->New<ir::Identifier>(specifierName, Allocator());
+        ArenaVector<ir::AstNode *> specifiers {Allocator()->Adapter()};
         auto specifier = Allocator()->New<ir::ImportSpecifier>(aIdent, aIdent);
-        auto importSrc = Allocator()->New<ir::ImportSource>(Allocator()->New<ir::StringLiteral>(),
+        specifiers.emplace_back(specifier);
+        auto importSrc = Allocator()->New<ir::ImportSource>(Allocator()->New<ir::StringLiteral>("/tmp"),
                                                             Allocator()->New<ir::StringLiteral>(),
-                                                            Language::FromString("ets").value(), false);
+                                                            Language::FromString("js").value(), false);
         auto importDecl =
-            Allocator()->New<ir::ETSImportDeclaration>(importSrc, ArenaVector<ir::AstNode *> {Allocator()->Adapter()});
-        varbinder->AddDynamicSpecifiersToTopBindings(specifier, importDecl);
+            util::NodeAllocator::Alloc<ir::ETSImportDeclaration>(Allocator(), importSrc, std::move(specifiers));
+        compiler::InitScopesPhaseETS::RunExternalNode(importDecl, varbinder);
+        varbinder->BuildImportDeclaration(importDecl);
         auto var = varbinder->TopScope()->Find(specifierName);
         node->SetVariable(var.variable);
     }

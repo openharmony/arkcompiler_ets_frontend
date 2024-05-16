@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_BINARY_EXPRESSION_H
 
 #include "checker/checkerContext.h"
+#include "compiler/core/vReg.h"
 #include "ir/expression.h"
 
 namespace ark::es2panda::checker {
@@ -157,6 +158,7 @@ public:
     void Dump(ir::SrcDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
+    void CompileOperands(compiler::ETSGen *etsg, compiler::VReg lhs) const;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 

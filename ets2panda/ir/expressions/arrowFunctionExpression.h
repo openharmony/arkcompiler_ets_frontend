@@ -116,6 +116,7 @@ public:
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
     ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *returnType);
     void AddChildLambda(ArrowFunctionExpression *childLambda);
+    bool IsVarFromSubscope(const varbinder::Variable *var) const;
 
     void Accept(ASTVisitorT *v) override
     {

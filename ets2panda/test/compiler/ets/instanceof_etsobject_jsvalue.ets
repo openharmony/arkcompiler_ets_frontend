@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,20 +17,8 @@
 flags: [dynamic-ast]
 ---*/
 
-import { A, B, jsfunc } from "dynamic_js_import_tests"
+class A {}
 
-function foo(): int {
-  let a = new A();
-  if (a instanceof A) {
-    return 1;
-  } else {
-    let x = jsfunc();
-    let b = x instanceof B;
-    if (b) {
-      return 2;
-    } else {
-      return 3;
-    }
-  }
+function fn(o: A): boolean {
+    return o instanceof JSValue;
 }
-

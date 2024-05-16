@@ -193,6 +193,7 @@ private:
     ir::Expression *ParseExpressionFormatPlaceholder();
     ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> nodeFormat) const override;
     ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> nodeFormat = std::nullopt);
+    ir::AstNode *ParseTypeParametersFormatPlaceholder() const override;
 
     ArenaVector<ir::AstNode *> &ParseAstNodesArrayFormatPlaceholder() const override;
     ArenaVector<ir::Statement *> &ParseStatementsArrayFormatPlaceholder() const override;

@@ -260,6 +260,8 @@ public:
 
     virtual Variable *FindLocal(const util::StringView &name, ResolveBindingOptions options) const;
 
+    bool IsSuperscopeOf(const varbinder::Scope *subscope) const;
+
     ConstScopeFindResult Find(const util::StringView &name,
                               ResolveBindingOptions options = ResolveBindingOptions::BINDINGS) const;
 

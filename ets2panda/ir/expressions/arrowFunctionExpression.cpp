@@ -149,10 +149,25 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
 
 void ArrowFunctionExpression::AddCapturedVar(varbinder::Variable *var)
 {
+    if (IsVarFromSubscope(var)) {
+        return;
+    }
+    // Not using an ArenaSet for now, simpler to do it this way.
+    if (std::find(capturedVars_.begin(), capturedVars_.end(), var) != capturedVars_.end()) {
+        return;
+    }
     capturedVars_.push_back(var);
     if (parentLambda_ != nullptr) {
         parentLambda_->AddCapturedVar(var);
     }
+}
+
+bool ArrowFunctionExpression::IsVarFromSubscope(const varbinder::Variable *var) const
+{
+    // The parameter scope's and the function scope's common ancestor lives outside the function, so we have to check
+    // them separetely.
+    return Function()->Scope()->IsSuperscopeOf(var->GetScope()) ||
+           Function()->Scope()->ParamScope()->IsSuperscopeOf(var->GetScope());
 }
 
 void ArrowFunctionExpression::AddChildLambda(ArrowFunctionExpression *childLambda)

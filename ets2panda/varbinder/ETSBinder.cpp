@@ -438,13 +438,9 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
         return specifier->AsImportSpecifier()->Local()->Name();
     }();
 
-    auto *const decl = Allocator()->New<varbinder::LetDecl>(name, specifier);
-    auto *const var = Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::STATIC);
-    var->AddFlag(VariableFlags::INITIALIZED);
-
-    dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
-
-    TopScope()->InsertDynamicBinding(name, var);
+    ASSERT(GetScope()->Find(name, ResolveBindingOptions::DECLARATION).variable != nullptr);
+    auto specDecl = GetScope()->Find(name, ResolveBindingOptions::DECLARATION);
+    dynamicImportVars_.emplace(specDecl.variable, DynamicImportData {import, specifier, specDecl.variable});
 }
 
 void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
@@ -512,7 +508,7 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
         }
 
         for (auto it : item->GetETSImportDeclarations()->Specifiers()) {
-            if (it->IsImportNamespaceSpecifier() && !specifier->AsImportNamespaceSpecifier()->Local()->Name().Empty()) {
+            if (it->IsImportNamespaceSpecifier() && !namespaceSpecifier->Local()->Name().Empty()) {
                 continue;
             }
 
@@ -604,13 +600,6 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         return false;
     }
     const ir::StringLiteral *const importPath = import->Source();
-    auto insertForeignBinding = [this, specifier, import](const util::StringView &name, Variable *var) {
-        if (import->Language().IsDynamic()) {
-            dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
-        }
-
-        TopScope()->InsertForeignBinding(name, var);
-    };
 
     const auto *const importSpecifier = specifier->AsImportSpecifier();
 
@@ -659,12 +648,16 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     if (var->Declaration()->Node()->IsDefaultExported()) {
         ThrowError(importPath->Start(), "Use the default import syntax to import a default exported element");
     }
+    if (import->IsTypeKind() && !var->Declaration()->Node()->IsExportedType()) {
+        ThrowError(importPath->Start(),
+                   "Cannot import '" + imported.Mutf8() + "', imported type imports only exported types.");
+    }
 
-    if (!var->Declaration()->Node()->IsExported()) {
+    if (!var->Declaration()->Node()->IsExported() && !var->Declaration()->Node()->IsExportedType()) {
         ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
     }
 
-    insertForeignBinding(localName, var);
+    InsertForeignBinding(specifier, import, localName, var);
     return true;
 }
 
@@ -716,14 +709,6 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     const auto *const importGlobalScope = importProgram->GlobalScope();
     const auto &globalBindings = importGlobalScope->Bindings();
 
-    auto insertForeignBinding = [this, specifier, import](const util::StringView &name, Variable *var) {
-        if (import->Language().IsDynamic()) {
-            dynamicImportVars_.emplace(var, DynamicImportData {import, specifier, var});
-        }
-
-        TopScope()->InsertForeignBinding(name, var);
-    };
-
     if (AddImportNamespaceSpecifiersToTopBindings(specifier, globalBindings, importProgram, importGlobalScope,
                                                   import)) {
         return;
@@ -738,12 +723,12 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
 
     auto item = std::find_if(globalBindings.begin(), globalBindings.end(), predicateFunc);
     if (item == globalBindings.end()) {
-        insertForeignBinding(specifier->AsImportDefaultSpecifier()->Local()->Name(),
+        InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(),
                              FindStaticBinding(record, importPath));
         return;
     }
 
-    insertForeignBinding(specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
+    InsertForeignBinding(specifier, import, specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
 }
 
 void ETSBinder::HandleCustomNodes(ir::AstNode *childNode)

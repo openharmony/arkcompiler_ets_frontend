@@ -104,37 +104,28 @@ private:
     }
 
     template <typename SType>
-    int CalculateIntValue(Type *target, SType value)
+    int CalculateIntValue(SType value)
     {
-        switch (ETSChecker::ETSChecker::ETSType(target)) {
-            case TypeFlag::BYTE:
-            case TypeFlag::CHAR:
-            case TypeFlag::SHORT: {
-                if (std::isinf(value)) {
-                    return std::numeric_limits<int32_t>::max();
-                }
-                if (std::signbit(std::isinf(value))) {
-                    return std::numeric_limits<int32_t>::min();
-                }
-                if (std::isnan(value)) {
-                    return 0;
-                }
-                return static_cast<int32_t>(value);
+        if (std::isinf(value)) {
+            if (std::signbit(value)) {
+                return std::numeric_limits<int32_t>::min();
             }
-            default: {
-                return 0;
-            }
+            return std::numeric_limits<int32_t>::max();
         }
+        if (std::isnan(value)) {
+            return 0;
+        }
+        return static_cast<int32_t>(value);
     }
 
     template <typename From, typename To>
     To CastFloatingPointToIntOrLong(From value)
     {
         if (std::isinf(value)) {
+            if (std::signbit(value)) {
+                return std::numeric_limits<To>::min();
+            }
             return std::numeric_limits<To>::max();
-        }
-        if (std::signbit(std::isinf(value))) {
-            return std::numeric_limits<To>::min();
         }
         ASSERT(std::is_floating_point_v<From>);
         ASSERT(std::is_integral_v<To>);
@@ -162,7 +153,7 @@ private:
             case TypeFlag::BYTE:
             case TypeFlag::CHAR:
             case TypeFlag::SHORT: {
-                return CalculateIntValue<SType>(target, value);
+                return CalculateIntValue<SType>(value);
             }
             case TypeFlag::INT:
             case TypeFlag::LONG: {

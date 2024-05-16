@@ -74,6 +74,20 @@ void BinaryExpression::Compile(compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
+void BinaryExpression::CompileOperands(compiler::ETSGen *etsg, compiler::VReg lhs) const
+{
+    left_->Compile(etsg);
+
+    if (operator_ == lexer::TokenType::KEYW_INSTANCEOF) {
+        etsg->StoreAccumulator(left_, lhs);
+    } else {
+        etsg->ApplyConversionAndStoreAccumulator(left_, lhs, operationType_);
+    }
+
+    right_->Compile(etsg);
+    etsg->ApplyConversion(right_, operationType_);
+}
+
 checker::Type *BinaryExpression::Check(checker::TSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);

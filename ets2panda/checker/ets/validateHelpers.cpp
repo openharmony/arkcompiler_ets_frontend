@@ -88,6 +88,11 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, T
     if (ident->Parent()->AsCallExpression()->Callee() != ident) {
         return;
     }
+    if (ident->Variable() != nullptr &&  // It should always be true!
+        ident->Variable()->Declaration()->Node() != nullptr &&
+        ident->Variable()->Declaration()->Node()->IsImportNamespaceSpecifier()) {
+        ThrowTypeError({"Namespace style identifier ", ident->Name(), " is not callable."}, ident->Start());
+    }
     if (type->IsETSFunctionType() || type->IsETSDynamicType() ||
         (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
         return;

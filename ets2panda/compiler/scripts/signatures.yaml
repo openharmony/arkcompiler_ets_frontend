@@ -1136,10 +1136,18 @@ signatures:
     ref: BUILTIN_JSRUNTIME_STRICT_EQUAL
 
   - callee: BUILTIN_JSRUNTIME
-    method_name: instanceOf
+    method_name: instanceOfDynamic
     params: [BUILTIN_JSVALUE, BUILTIN_JSVALUE]
     return_type: PRIMITIVE_BOOLEAN
-    ref: BUILTIN_JSRUNTIME_INSTANCE_OF
+    ref: BUILTIN_JSRUNTIME_INSTANCE_OF_DYNAMIC
+
+  - callee: BUILTIN_JSRUNTIME
+    method_name: instanceOfStatic
+    # NOTE(v.cherkashin):
+    #  Replace BUILTIN_OBJECT by BUILTIN_TYPE when issue #15273 was resolved
+    params: [BUILTIN_JSVALUE, BUILTIN_OBJECT] # 2nd argument is ClassClass
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_JSRUNTIME_INSTANCE_OF_STATIC
 
   - callee: BUILTIN_JSVALUE
     method_name: toString

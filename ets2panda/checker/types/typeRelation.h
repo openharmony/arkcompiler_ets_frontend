@@ -21,11 +21,6 @@
 #include "util/ustring.h"
 #include "util/enumbitops.h"
 
-#include "macros.h"
-
-#include <unordered_map>
-#include <variant>
-
 namespace ark::es2panda::ir {
 class Expression;
 }  // namespace ark::es2panda::ir
@@ -275,6 +270,13 @@ public:
         instantiationRecursionMap_.erase(type);
     }
 
+    //  NOTE: special overloading to be used mainly in ETSCompiler where types and nodes are 'const'.
+    //  Unfortunately now we cannot have only a single method with 'const Types *' because it affects
+    //  a lot of non-const references... :(((
+    bool IsIdenticalTo(Type const *source, Type const *target)
+    {
+        return IsIdenticalTo(const_cast<Type *>(source), const_cast<Type *>(target));
+    }
     bool IsIdenticalTo(Type *source, Type *target);
     bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
     bool IsCompatibleTo(Signature *source, Signature *target);

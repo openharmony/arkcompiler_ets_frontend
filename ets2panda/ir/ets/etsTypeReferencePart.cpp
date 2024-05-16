@@ -99,32 +99,31 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 {
     if (prev_ == nullptr) {
         if (name_->IsIdentifier()) {
-            if ((name_->AsIdentifier()->Variable() != nullptr) &&
-                (name_->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl())) {
-                return checker->HandleTypeAlias(name_, typeParams_);
-            }
-            if (name_->AsIdentifier()->Name() == compiler::Signatures::UNDEFINED) {
-                return checker->GlobalETSUndefinedType();
-            }
-
-            if (name_->AsIdentifier()->Name() == compiler::Signatures::NULL_LITERAL) {
-                return checker->GlobalETSNullType();
+            const auto ident = name_->AsIdentifier();
+            if ((ident->Variable() != nullptr) && (ident->Variable()->Declaration()->IsTypeAliasDecl())) {
+                SetTsType(checker->HandleTypeAlias(name_, typeParams_));
+            } else if (ident->Name() == compiler::Signatures::UNDEFINED) {
+                SetTsType(checker->GlobalETSUndefinedType());
+            } else if (ident->Name() == compiler::Signatures::NULL_LITERAL) {
+                SetTsType(checker->GlobalETSNullType());
             }
         }
+        if (TsType() == nullptr) {
+            checker::Type *baseType = checker->GetReferencedTypeBase(name_);
 
-        checker::Type *baseType = checker->GetReferencedTypeBase(name_);
-
-        ASSERT(baseType != nullptr);
-        if (baseType->IsETSObjectType()) {
-            checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
-            return ctx.Result();
+            ASSERT(baseType != nullptr);
+            if (baseType->IsETSObjectType()) {
+                checker::InstantiationContext ctx(checker, baseType->AsETSObjectType(), typeParams_, Start());
+                SetTsType(ctx.Result());
+            } else {
+                SetTsType(baseType);
+            }
         }
-
-        return baseType;
+    } else {
+        checker::Type *baseType = prev_->GetType(checker);
+        SetTsType(checker->GetReferencedTypeFromBase(baseType, name_));
     }
-
-    checker::Type *baseType = prev_->GetType(checker);
-    return checker->GetReferencedTypeFromBase(baseType, name_);
+    return TsType();
 }
 
 ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)

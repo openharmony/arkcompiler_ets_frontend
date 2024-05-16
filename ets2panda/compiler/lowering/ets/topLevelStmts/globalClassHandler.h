@@ -23,12 +23,11 @@
 namespace ark::es2panda::compiler {
 
 class GlobalClassHandler {
+public:
     struct GlobalStmts {
         parser::Program *program;
         ArenaVector<ir::Statement *> statements;
     };
-
-public:
     explicit GlobalClassHandler(ArenaAllocator *allocator) : allocator_(allocator) {};
 
     /**
@@ -44,7 +43,8 @@ private:
      * @param program program of module
      * @param init_statements statements which should be executed
      */
-    void InitCallToCCTOR(parser::Program *program, const ArenaVector<GlobalStmts> &initStatements);
+    void InitCallToCCTOR(parser::Program *program, const ArenaVector<GlobalStmts> &initStatements,
+                         bool mainExists = false, bool topLevelStatementsExist = false);
 
 private:
     void InitGlobalClass(ir::ClassDefinition *classDef, parser::ScriptKind scriptKind);
@@ -62,8 +62,6 @@ private:
     ArenaVector<ir::Statement *> MakeGlobalStatements(ir::BlockStatement *globalStmts, ir::ClassDefinition *classDef,
                                                       bool isPackage);
 
-    ir::MethodDefinition *CreateAndFillInitMethod(const ArenaVector<GlobalStmts> &initStatements);
-    ir::MethodDefinition *CreateInitMethod();
     void AddInitCall(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
 
     ir::Identifier *RefIdent(const util::StringView &name);

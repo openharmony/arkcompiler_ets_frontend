@@ -381,6 +381,8 @@ public:
         return (flags_ & ModifierFlags::DEFAULT_EXPORT) != 0;
     }
 
+    [[nodiscard]] bool IsExportedType() const noexcept;
+
     [[nodiscard]] bool IsDeclare() const noexcept
     {
         return (flags_ & ModifierFlags::DECLARE) != 0;
@@ -462,6 +464,8 @@ public:
         ASSERT(IsMethodDefinition() || IsClassProperty() || IsClassStaticBlock());
         return reinterpret_cast<const ir::ClassElement *>(this);
     }
+
+    static varbinder::Scope *EnclosingScope(const ir::AstNode *expr);
 
     [[nodiscard]] virtual bool IsScopeBearer() const noexcept
     {

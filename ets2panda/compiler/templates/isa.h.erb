@@ -126,9 +126,17 @@ private:
 class <%= class_name %> : public <%= base_class %>
 {
 public:
-    explicit <%= class_name %>(<%= ctor_args %>) : <%= base_class %>(node)<%= ops %> {}
+    explicit <%= class_name %>(<%= ctor_args %>) : <%= base_class %>(node)<%= ops %>
+    {
+% insn.operands.each do |operand|
+%   if operand.id? && operand.name != :string_id
+        ASSERT(!string_id.Empty());
+%   end
+% end
+    }
 
-    Formats GetFormats() const override {
+    Formats GetFormats() const override
+    {
         return Span<const Format>(<%= get_format_name(insn.mnemonic) %>);
     }
 

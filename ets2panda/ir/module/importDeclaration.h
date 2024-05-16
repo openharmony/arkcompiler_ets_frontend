@@ -21,10 +21,13 @@
 namespace ark::es2panda::ir {
 class StringLiteral;
 
+enum class ImportKinds { VALUE, TYPE };
+
 class ImportDeclaration : public Statement {
 public:
-    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> const &specifiers)
-        : Statement(AstNodeType::IMPORT_DECLARATION), source_(source), specifiers_(specifiers)
+    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> const &specifiers,
+                               const ImportKinds importKind = ImportKinds::VALUE)
+        : Statement(AstNodeType::IMPORT_DECLARATION), source_(source), specifiers_(specifiers), importKind_(importKind)
     {
     }
 
@@ -57,9 +60,15 @@ public:
         v->Accept(this);
     }
 
+    bool IsTypeKind() const
+    {
+        return importKind_ == ImportKinds::TYPE;
+    }
+
 private:
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;
+    ImportKinds importKind_;
 };
 }  // namespace ark::es2panda::ir
 

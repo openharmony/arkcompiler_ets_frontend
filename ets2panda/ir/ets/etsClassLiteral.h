@@ -40,9 +40,10 @@ public:
 
     [[nodiscard]] ETSClassLiteral *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
-    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
-    friend class compiler::ETSCompiler;
+    [[nodiscard]] ir::TypeNode *Expr() const noexcept
+    {
+        return expr_;
+    }
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
     void Iterate(const NodeTraverser &cb) const override;

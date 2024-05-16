@@ -94,6 +94,7 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
             allocator_, ident, initializer->Clone(allocator_, nullptr)->AsExpression(),
             lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
         assignmentExpression->SetRange({ident->Start(), initializer->End()});
+        assignmentExpression->SetTsType(initializer->TsType());
 
         auto expressionStatement =
             util::NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, assignmentExpression);
