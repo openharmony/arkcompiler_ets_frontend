@@ -144,6 +144,9 @@ private:
     ArenaAllocator *allocator_;
     std::pair<std::vector<binder::Variable *>, size_t> mergedTypeParams_ {};
     std::vector<Type *> typeParamTypes_ {};
+
+    bool IsPropertiesIdentical(TypeRelation *relation, InterfaceType *other);
+    bool IsIndexInfoIdentical(TypeRelation *relation, InterfaceType *other);
 };
 
 }  // namespace panda::es2panda::checker

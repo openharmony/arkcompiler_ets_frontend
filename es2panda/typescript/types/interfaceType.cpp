@@ -43,20 +43,13 @@ void InterfaceType::ToString(std::stringstream &ss) const
     }
 }
 
-void InterfaceType::Identical(TypeRelation *relation, Type *other)
+bool InterfaceType::IsPropertiesIdentical(TypeRelation *relation, InterfaceType *other)
 {
-    if (!other->IsObjectType() || !other->AsObjectType()->IsInterfaceType()) {
-        return;
-    }
-
-    InterfaceType *otherInterface = other->AsObjectType()->AsInterfaceType();
-
     const ArenaVector<binder::LocalVariable *> &targetProperties = Properties();
-    const ArenaVector<binder::LocalVariable *> &sourceProperties = otherInterface->Properties();
-
+    const ArenaVector<binder::LocalVariable *> &sourceProperties = other->Properties();
     if (targetProperties.size() != sourceProperties.size()) {
         relation->Result(false);
-        return;
+        return false;
     }
 
     for (auto *targetProp : targetProperties) {
@@ -73,13 +66,52 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
                         });
         if (!foundProp) {
             relation->Result(false);
-            return;
+            return false;
         }
+    }
+
+    return true;
+}
+
+bool InterfaceType::IsIndexInfoIdentical(TypeRelation *relation, InterfaceType *other)
+{
+    IndexInfo *targetNumberInfo = NumberIndexInfo();
+    IndexInfo *sourceNumberInfo = other->NumberIndexInfo();
+    if ((targetNumberInfo && !sourceNumberInfo) || (!targetNumberInfo && sourceNumberInfo)) {
+        relation->Result(false);
+        return false;
+    }
+
+    relation->IsIdenticalTo(targetNumberInfo, sourceNumberInfo);
+
+    if (relation->IsTrue()) {
+        IndexInfo *targetStringInfo = StringIndexInfo();
+        IndexInfo *sourceStringInfo = other->StringIndexInfo();
+
+        if ((targetStringInfo && !sourceStringInfo) || (!targetStringInfo && sourceStringInfo)) {
+            relation->Result(false);
+            return false;
+        }
+
+        relation->IsIdenticalTo(targetStringInfo, sourceStringInfo);
+    }
+
+    return true;
+}
+
+void InterfaceType::Identical(TypeRelation *relation, Type *other)
+{
+    if (!other->IsObjectType() || !other->AsObjectType()->IsInterfaceType()) {
+        return;
+    }
+
+    InterfaceType *otherInterface = other->AsObjectType()->AsInterfaceType();
+    if (!IsPropertiesIdentical(relation, otherInterface)) {
+        return;
     }
 
     const ArenaVector<Signature *> &targetCallSignatures = CallSignatures();
     const ArenaVector<Signature *> &sourceCallSignatures = otherInterface->CallSignatures();
-
     if (targetCallSignatures.size() != sourceCallSignatures.size()) {
         relation->Result(false);
         return;
@@ -92,7 +124,6 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
 
     const ArenaVector<Signature *> &targetConstructSignatures = ConstructSignatures();
     const ArenaVector<Signature *> &sourceConstructSignatures = otherInterface->ConstructSignatures();
-
     if (targetConstructSignatures.size() != sourceConstructSignatures.size()) {
         relation->Result(false);
         return;
@@ -103,26 +134,8 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    IndexInfo *targetNumberInfo = NumberIndexInfo();
-    IndexInfo *sourceNumberInfo = otherInterface->NumberIndexInfo();
-
-    if ((targetNumberInfo && !sourceNumberInfo) || (!targetNumberInfo && sourceNumberInfo)) {
-        relation->Result(false);
+    if (!IsIndexInfoIdentical(relation, otherInterface)) {
         return;
-    }
-
-    relation->IsIdenticalTo(targetNumberInfo, sourceNumberInfo);
-
-    if (relation->IsTrue()) {
-        IndexInfo *targetStringInfo = StringIndexInfo();
-        IndexInfo *sourceStringInfo = otherInterface->StringIndexInfo();
-
-        if ((targetStringInfo && !sourceStringInfo) || (!targetStringInfo && sourceStringInfo)) {
-            relation->Result(false);
-            return;
-        }
-
-        relation->IsIdenticalTo(targetStringInfo, sourceStringInfo);
     }
 }
 
