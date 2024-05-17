@@ -1582,8 +1582,7 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
     }
     const auto *const targetRef = GetTargetRef(memberExpr);
     auto searchFlag = GetSearchFlags(memberExpr, targetRef);
-
-    if (target->HasTypeFlag(TypeFlag::GENERIC)) {
+    if (target->HasTypeFlag(TypeFlag::GENERIC) && (searchFlag & PropertySearchFlags::SEARCH_STATIC) != 0) {
         searchFlag |= PropertySearchFlags::SEARCH_ALL;
     }
 
