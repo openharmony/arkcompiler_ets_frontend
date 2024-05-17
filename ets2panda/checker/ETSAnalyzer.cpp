@@ -16,7 +16,6 @@
 #include "ETSAnalyzer.h"
 
 #include "util/helpers.h"
-#include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
@@ -2166,8 +2165,9 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
     ETSChecker *checker = GetETSChecker();
     std::vector<checker::ETSObjectType *> exceptions {};
 
+    std::vector<SmartCastArray> casts {};
+    auto smartCasts = checker->Context().CheckTryBlock(*st->Block());
     st->Block()->Check(checker);
-    auto smartCasts = checker->Context().CloneSmartCasts(true);
 
     bool defaultCatchFound = false;
     for (auto *catchClause : st->CatchClauses()) {
@@ -2175,6 +2175,8 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
             checker->ThrowTypeError("Default catch clause should be the last in the try statement",
                                     catchClause->Start());
         }
+
+        checker->Context().RestoreSmartCasts(smartCasts);
 
         if (auto const exceptionType = catchClause->Check(checker);
             exceptionType != nullptr && catchClause->Param() != nullptr) {
@@ -2185,12 +2187,18 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
 
         defaultCatchFound = catchClause->IsDefaultCatchClause();
 
-        checker->Context().CombineSmartCasts(smartCasts);
-        smartCasts = checker->Context().CloneSmartCasts(true);
+        casts.emplace_back(checker->Context().CloneSmartCasts());
+    }
+
+    checker->Context().RestoreSmartCasts(smartCasts);
+    if (!casts.empty()) {
+        for (auto const &cast : casts) {
+            checker->Context().CombineSmartCasts(cast);
+        }
     }
 
     if (st->HasFinalizer()) {
-        st->finalizer_->Check(checker);
+        st->FinallyBlock()->Check(checker);
     }
 
     return nullptr;

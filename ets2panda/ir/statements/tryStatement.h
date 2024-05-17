@@ -53,7 +53,7 @@ public:
     friend class compiler::JSCompiler;
     friend class compiler::ETSCompiler;
 
-    const BlockStatement *FinallyBlock() const
+    BlockStatement *FinallyBlock() const
     {
         return finalizer_;
     }

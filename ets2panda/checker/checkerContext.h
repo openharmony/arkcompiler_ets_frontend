@@ -62,6 +62,7 @@ using SmartCastTestMap = ArenaMap<varbinder::Variable const *, std::pair<checker
 using SmartCastTuple = std::tuple<varbinder::Variable const *, checker::Type *, checker::Type *>;
 using SmartCastTestArray = std::vector<SmartCastTuple>;
 using PreservedSmartCastsMap = ArenaMultiMap<ir::AstNode const *, SmartCastArray>;
+using SmartVariables = std::unordered_set<varbinder::Variable const *>;
 
 struct SmartCastCondition final {
     SmartCastCondition() = default;
@@ -171,7 +172,6 @@ public:
     [[nodiscard]] SmartCastArray CloneSmartCasts(bool clearData = false) noexcept;
     void RestoreSmartCasts(SmartCastArray const &otherSmartCasts);
     void CombineSmartCasts(SmartCastArray const &otherSmartCasts);
-    void AddSmartCasts(SmartCastArray const &otherSmartCasts);
 
     [[nodiscard]] SmartCastArray EnterTestExpression() noexcept
     {
@@ -216,6 +216,8 @@ public:
         return rc;
     }
 
+    [[nodiscard]] SmartCastArray CheckTryBlock(ir::BlockStatement const &tryBlock) noexcept;
+
     void CheckTestSmartCastCondition(lexer::TokenType operatorType);
     void CheckIdentifierSmartCastCondition(ir::Identifier const *identifier) noexcept;
     void CheckUnarySmartCastCondition(ir::UnaryExpression const *unaryExpression) noexcept;
@@ -248,7 +250,7 @@ private:
     void ClearTestSmartCasts() noexcept;
     [[nodiscard]] std::optional<SmartCastTuple> ResolveSmartCastTypes();
     [[nodiscard]] bool CheckTestOrSmartCastCondition(SmartCastTuple const &types);
-    void RemoveSmartCastsForAssignments(ir::AstNode const *node) noexcept;
+    void CheckAssignments(ir::AstNode const *node, SmartVariables &changedVariables) noexcept;
 };
 }  // namespace ark::es2panda::checker
 
