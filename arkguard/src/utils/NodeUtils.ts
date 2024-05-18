@@ -43,6 +43,7 @@ import {
   isVariableDeclaration
 } from 'typescript';
 import { isParameterPropertyModifier } from './OhsUtil';
+import { Extension } from '../common/type';
 
 export class NodeUtils {
   public static isPropertyDeclarationNode(node: Node): boolean {
@@ -209,8 +210,8 @@ export class NodeUtils {
     return <SourceFile>node;
   }
 
-  public static isInETSFile(node: Node | undefined): boolean {
-    return !!node && NodeUtils.getSourceFileOfNode(node).fileName.endsWith('.ets');
+  public static isDETSFile(node: Node | undefined): boolean {
+    return !!node && NodeUtils.getSourceFileOfNode(node).fileName.endsWith(Extension.DETS);
   }
 
   public static isNewTargetNode(node: Identifier): boolean {

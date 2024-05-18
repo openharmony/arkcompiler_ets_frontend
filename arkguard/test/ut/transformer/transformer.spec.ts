@@ -28,7 +28,7 @@ describe('Tester Cases for <FileUtils>.', function () {
     let mTransformers: TransformerFactory<Node>[] = [];
     if (mCustomProfiles) {
       mTransformers = new TransformerManager(mCustomProfiles).getTransformers();
-      assert.strictEqual(mTransformers.length, 2);
+      assert.strictEqual(mTransformers.length, 3);
       assert.strictEqual(mTransformers.toString().includes('shorthandPropertyTransformFactory'), true);
       assert.strictEqual(mTransformers.toString().includes('renameIdentifierFactory'), true);
       assert.strictEqual(mTransformers.toString().includes('renamePropertiesFactory'), false);
@@ -38,7 +38,7 @@ describe('Tester Cases for <FileUtils>.', function () {
     assert.strictEqual(mCustomProfiles !== undefined, true);
     if (mCustomProfiles) {
       mTransformers = new TransformerManager(mCustomProfiles).getTransformers();
-      assert.strictEqual(mTransformers.length, 3);
+      assert.strictEqual(mTransformers.length, 4);
       assert.strictEqual(mTransformers.toString().includes('shorthandPropertyTransformFactory'), true);
       assert.strictEqual(mTransformers.toString().includes('renameIdentifierFactory'), true);
       assert.strictEqual(mTransformers.toString().includes('renamePropertiesFactory'), true);
