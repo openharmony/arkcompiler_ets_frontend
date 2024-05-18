@@ -1,7 +1,8 @@
 All Dependency Files:
 program_file: bytecodehar-abcinput.abc
-record_name: &bytecodehar/bytecodehar-static-import&
 record_name: &bytecodehar/bytecodehar-dynamic-import&
+program_file: bytecodehar-abcinput.abc
+record_name: &bytecodehar/bytecodehar-static-import&
 program_file: hap-file-exec.ts
 record_name: &myapp/hap-file-exec&
 program_file: importfile1.ts
@@ -73,6 +74,54 @@ record_name: &@ohos/lib2/importfile4&
 	ldundefined
 	returnundefined
 }
+
+
+======> literal array buffer <======
+------------------------------------
+slot &bytecodehar/bytecodehar-dynamic-import&_1612
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 5
+    val: test
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 0
+},
+======> strings <======
+"&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&&@ohos/lib2/importfile4&"; "@normalized:N&&&lib2/importfile3&"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "test"; 
+.language ECMAScript
 
 .function any &bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
@@ -164,48 +213,6 @@ record_name: &@ohos/lib2/importfile4&
 
 
 ======> literal array buffer <======
-------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_1612
-{
-  index: 0
-    tag: 2
-    val: 0
-},
-{
-  index: 1
-    tag: 2
-    val: 0
-},
-{
-  index: 2
-    tag: 2
-    val: 0
-},
-{
-  index: 3
-    tag: 2
-    val: 1
-},
-{
-  index: 4
-    tag: 5
-    val: test
-},
-{
-  index: 5
-    tag: 5
-    val: test
-},
-{
-  index: 6
-    tag: 2
-    val: 0
-},
-{
-  index: 7
-    tag: 2
-    val: 0
-},
 ------------------------------------
 slot &bytecodehar/bytecodehar-static-import&_2038
 {
@@ -389,7 +396,19 @@ slot &bytecodehar/bytecodehar-static-import&_2038
     val: 0
 },
 ======> strings <======
-"&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "&bytecodehar/bytecodehar-static-import&.#*#foo"; "@normalized:N&&&@ohos/lib/importfile2&"; "@normalized:N&&&@ohos/lib/importfile2&1.0.0"; "@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&&@ohos/lib2/importfile4&"; "@normalized:N&&&lib2/importfile3&"; "@normalized:N&&bundle&lib/importfile1&"; "@normalized:N&&bundle&lib/importfile1&1.0.0"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&"; "@normalized:N&module&&@ohos/lib/importfile2&1.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&"; "@normalized:N&module&bundle&lib/importfile1&1.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "a"; "aaa"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; "test"; 
+"&bytecodehar/bytecodehar-static-import&.#*#foo"; "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
 .language ECMAScript
 
 .function any &myapp/hap-file-exec&.func_main_0(any a0, any a1, any a2) {
@@ -787,6 +806,54 @@ slot &@ohos/lib2/importfile4&_1
 	returnundefined
 }
 
+
+======> literal array buffer <======
+------------------------------------
+slot &bytecodehar/bytecodehar-dynamic-import&_1612
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 5
+    val: test
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 0
+},
+======> strings <======
+"&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&&@ohos/lib2/importfile4&"; "@normalized:N&&&lib2/importfile3&"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "aaa"; "test"; 
+.language ECMAScript
+
 .function any &bytecodehar/bytecodehar-static-import&.#*#foo(any a0, any a1, any a2) {
 	tryldglobalbyname 0x0, print
 	sta v0
@@ -877,48 +944,6 @@ slot &@ohos/lib2/importfile4&_1
 
 
 ======> literal array buffer <======
-------------------------------------
-slot &bytecodehar/bytecodehar-dynamic-import&_1612
-{
-  index: 0
-    tag: 2
-    val: 0
-},
-{
-  index: 1
-    tag: 2
-    val: 0
-},
-{
-  index: 2
-    tag: 2
-    val: 0
-},
-{
-  index: 3
-    tag: 2
-    val: 1
-},
-{
-  index: 4
-    tag: 5
-    val: test
-},
-{
-  index: 5
-    tag: 5
-    val: test
-},
-{
-  index: 6
-    tag: 2
-    val: 0
-},
-{
-  index: 7
-    tag: 2
-    val: 0
-},
 ------------------------------------
 slot &bytecodehar/bytecodehar-static-import&_2038
 {
@@ -1102,7 +1127,7 @@ slot &bytecodehar/bytecodehar-static-import&_2038
     val: 0
 },
 ======> strings <======
-"&bytecodehar/bytecodehar-dynamic-import&.#*#testNonConst"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testNonOhmurl"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWithAt"; "&bytecodehar/bytecodehar-dynamic-import&.#*#testReplacementWoAt"; "&bytecodehar/bytecodehar-static-import&.#*#foo"; "@normalized:N&&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&&&@ohos/lib2/importfile4&"; "@normalized:N&&&lib2/importfile3&"; "@normalized:N&&bundle&lib/importfile1&2.0.0"; "@normalized:N&module&&@ohos/lib/importfile2&2.0.0"; "@normalized:N&module&bundle&lib/importfile1&2.0.0"; "a"; "aaa"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; "test"; 
+"&bytecodehar/bytecodehar-static-import&.#*#foo"; "a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"; "i"; "j"; "print"; 
 .language ECMAScript
 
 .function any &myapp/hap-file-exec&.func_main_0(any a0, any a1, any a2) {

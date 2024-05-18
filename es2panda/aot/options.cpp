@@ -317,6 +317,8 @@ bool Options::Parse(int argc, const char **argv)
         "Compiler optimization level (options: 0 | 1 | 2). In debug and base64Input mode, optimizer is disabled");
     panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function");
     panda::PandArg<int> opFileThreadCount("file-threads", 0, "Number of worker threads to compile file");
+    panda::PandArg<int> opAbcClassThreadCount("abc-class-threads", 4,
+        "Number of worker threads to compile classes of abc file");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opSizePctStat("dump-file-item-size", false, "Dump the size of each kind of file item "\
         "of the abc file");
@@ -398,6 +400,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opOptLevel);
     argparser_->Add(&opFunctionThreadCount);
     argparser_->Add(&opFileThreadCount);
+    argparser_->Add(&opAbcClassThreadCount);
     argparser_->Add(&opSizeStat);
     argparser_->Add(&opSizePctStat);
     argparser_->Add(&opDumpLiteralBuffer);
@@ -571,6 +574,7 @@ bool Options::Parse(int argc, const char **argv)
     optLevel_ = opOptLevel.GetValue();
     functionThreadCount_ = opFunctionThreadCount.GetValue();
     fileThreadCount_ = opFileThreadCount.GetValue();
+    abcClassThreadCount_ = opAbcClassThreadCount.GetValue();
     npmModuleEntryList_ = opNpmModuleEntryList.GetValue();
 
     if (!opCacheFile.GetValue().empty()) {
@@ -605,6 +609,7 @@ bool Options::Parse(int argc, const char **argv)
 
     compilerOptions_.functionThreadCount = functionThreadCount_;
     compilerOptions_.fileThreadCount = fileThreadCount_;
+    compilerOptions_.abcClassThreadCount = abcClassThreadCount_;
     compilerOptions_.output = compilerOutput_;
     compilerOptions_.debugInfoSourceFile = sourceFile.GetValue();
     compilerOptions_.optLevel = (compilerOptions_.isDebug || !base64Input.GetValue().empty() ||

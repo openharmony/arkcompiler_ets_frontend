@@ -1487,11 +1487,11 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--dump-deps-info", "--remove-redundant-file",
-                                                 "--dump-literal-buffer", "--dump-string"]))
+                                                 "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--dump-deps-info", "--remove-redundant-file",
-                                                 "--dump-literal-buffer", "--dump-string"]))
+                                                 "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)

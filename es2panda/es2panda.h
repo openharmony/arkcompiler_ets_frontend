@@ -98,6 +98,7 @@ struct CompilerOptions {
     bool recordSource {false};
     int fileThreadCount {0};
     int functionThreadCount {0};
+    int abcClassThreadCount {0};
     int optLevel {0};
     std::string output {};
     std::string debugInfoSourceFile {};
@@ -219,7 +220,19 @@ public:
         return error_;
     }
 
-    void UpdatePackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
+    void AbcToAsmProgram(const std::string &fname, const CompilerOptions &options,
+                         std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                         panda::ArenaAllocator *allocator);
+    
+    static size_t GetExpectedProgsCount()
+    {
+        return expectedProgsCount_;
+    }
+
+    static void SetExpectedProgsCount(size_t count)
+    {
+        expectedProgsCount_ = count;
+    }
 
 private:
     util::PatchFix *InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,
@@ -227,10 +240,8 @@ private:
     static void CleanPatchFixHelper(const util::PatchFix *patchFixHelper);
     void CheckCompilerOptionsForAbcInput(const std::string &fname, const CompilerOptions &options);
     void ChecktargetApiVersionIsSupportedForAbcInput(const CompilerOptions &options);
-    panda::pandasm::Program *AbcToAsmProgram(const std::string &fname, const CompilerOptions &options);
-    void UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
-    void UpdateStaticImportPackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
 
+    static size_t expectedProgsCount_;
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;
     panda::abc2program::Abc2ProgramCompiler *abcToAsmCompiler_;

@@ -22,10 +22,13 @@ from utils import *
 
 
 class MixCompiler:
-    def __init__(self, out_file, files_info_list, opt_level, function_threads, frontend_tool) -> None:
+    def __init__(self, out_file, files_info_list, opt_level, file_threads, 
+                 abc_class_threads, function_threads, frontend_tool) -> None:
         self.out_file = out_file
         self.files_info_list = files_info_list
         self.opt_level = opt_level
+        self.file_threads = file_threads
+        self.abc_class_threads = abc_class_threads
         self.function_threads = function_threads
         self.frontend_tool = frontend_tool
         self.abc_outputs = []
@@ -49,6 +52,7 @@ class MixCompiler:
             with open(temp_files_info_path, 'w') as f:
                 f.write("".join(selected_file))
             cmd = [self.frontend_tool, '--opt-level', str(self.opt_level),
+                   '--file-threads', str(self.file_threads),
                    '--function-threads', str(self.function_threads),
                    '--output', temp_abc, '--merge-abc', f'@{temp_files_info_path}']
             return_code = exec_command(cmd)
@@ -62,6 +66,8 @@ class MixCompiler:
             with open(files_info_path, 'w') as f:
                 f.write("".join(remained_file))
             cmd = [self.frontend_tool, '--opt-level', str(self.opt_level),
+                   '--file-threads', str(self.file_threads),
+                   '--abc-class-threads', str(self.abc_class_threads),
                    '--function-threads', str(self.function_threads),
                    '--output', abc, '--merge-abc', '--enable-abc-input', f'@{files_info_path}']
             return_code = exec_command(cmd)

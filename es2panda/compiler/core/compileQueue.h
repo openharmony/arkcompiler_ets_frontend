@@ -25,6 +25,8 @@
 #include <condition_variable>
 #include <mutex>
 
+#include <abc2program/abc2program_compiler.h>
+
 namespace panda::es2panda::binder {
 class FunctionScope;
 }  // namespace panda::es2panda::binder
@@ -85,6 +87,7 @@ public:
     void Run() override;
 
 private:
+    friend class CompileAbcClassJob;
     bool RetrieveProgramFromCacheFiles(const std::string &buffer);
 
     static std::mutex global_m_;
@@ -93,6 +96,33 @@ private:
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     std::unordered_set<std::string> &optimizationPendingProgs_;
     util::SymbolTable *symbolTable_;
+    panda::ArenaAllocator *allocator_;
+};
+
+class CompileAbcClassJob : public util::WorkerJob {
+public:
+    explicit CompileAbcClassJob(const uint32_t classId,
+                                const es2panda::CompilerOptions &options,
+                                abc2program::Abc2ProgramCompiler &compiler,
+                                std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                                panda::ArenaAllocator *allocator)
+        : classId_(classId), options_(options), compiler_(compiler), progsInfo_(progsInfo),
+          allocator_(allocator) {};
+    NO_COPY_SEMANTIC(CompileAbcClassJob);
+    NO_MOVE_SEMANTIC(CompileAbcClassJob);
+    ~CompileAbcClassJob() override = default;
+
+    void Run() override;
+
+private:
+    void UpdatePackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
+    void UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
+    void UpdateStaticImportPackageVersion(panda::pandasm::Program *prog, const CompilerOptions &options);
+
+    const uint32_t classId_;
+    const es2panda::CompilerOptions &options_;
+    abc2program::Abc2ProgramCompiler &compiler_;
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     panda::ArenaAllocator *allocator_;
 };
 
@@ -147,6 +177,30 @@ private:
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     std::unordered_set<std::string> &optimizationPendingProgs_;
     util::SymbolTable *symbolTable_;
+    panda::ArenaAllocator *allocator_;
+};
+
+class CompileAbcClassQueue : public util::WorkerQueue {
+public:
+    explicit CompileAbcClassQueue(size_t threadCount,
+                                  const es2panda::CompilerOptions &options,
+                                  abc2program::Abc2ProgramCompiler &compiler,
+                                  std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                                  panda::ArenaAllocator *allocator)
+        : util::WorkerQueue(threadCount), options_(options), compiler_(compiler), progsInfo_(progsInfo),
+          allocator_(allocator) {}
+
+    NO_COPY_SEMANTIC(CompileAbcClassQueue);
+    NO_MOVE_SEMANTIC(CompileAbcClassQueue);
+    ~CompileAbcClassQueue() override = default;
+
+    void Schedule() override;
+
+private:
+    static std::mutex global_m_;
+    const es2panda::CompilerOptions &options_;
+    abc2program::Abc2ProgramCompiler &compiler_;
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     panda::ArenaAllocator *allocator_;
 };
 
