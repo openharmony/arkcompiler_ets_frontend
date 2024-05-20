@@ -17,8 +17,7 @@ import {before} from 'mocha';
 import {assert} from 'chai';
 import {createSourceFile, ScriptTarget, SourceFile} from 'typescript';
 
-import {collectExistNames, OhPackType} from '../../../src/utils/TransformUtil';
-import {findOhImportStatement} from '../../../src/utils/OhsUtil';
+import {collectExistNames} from '../../../src/utils/TransformUtil';
 
 describe('test for TransformUtil', function () {
   let sourceFile: SourceFile;
@@ -46,31 +45,6 @@ describe('test for TransformUtil', function () {
       targetNames.forEach((value) => {
         assert.isTrue(nameSets.has(value));
       });
-    });
-  });
-
-  describe('test for function findOhImportStatement', function () {
-    it('find oh import in esmodule', function () {
-      const fileContent = `var hilog = globalThis.requireNapi('hilog') ||
-     (isSystemplugin('hilog', 'ohos') ?
-     globalThis.ohosplugin.hilog : isSystemplugin('hilog', 'system') ?
-      globalThis.systemplugin.hilog : undefined);
-    `;
-
-      const source = createSourceFile('demo2.js', fileContent, ScriptTarget.ES2015, true);
-      const statement = source.statements[0];
-      const ohPackType = findOhImportStatement(statement, '@ohos.hilog');
-
-      assert.strictEqual(ohPackType, OhPackType.ES_MODULE);
-    });
-
-    it('find oh import in jsbundle', function () {
-      const fileContent = `var _ohos = _interopRequireDefault(requireModule('@ohos.hilog'))`;
-      const source = createSourceFile('demo2.js', fileContent, ScriptTarget.ES2015, true);
-      const statement = source.statements[0];
-      const ohPackType = findOhImportStatement(statement, '@ohos.hilog');
-
-      assert.strictEqual(ohPackType, OhPackType.JS_BUNDLE);
     });
   });
 });

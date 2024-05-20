@@ -39,7 +39,6 @@ action("build_arkguard") {
     "src/transformers/TransformPlugin.ts",
     "src/transformers/TransformerManager.ts",
     "src/transformers/layout/DisableConsoleTransformer.ts",
-    "src/transformers/layout/DisableHilogTransformer.ts",
     "src/transformers/layout/SimplifyTransformer.ts",
     "src/transformers/rename/RenameFileNameTransformer.ts",
     "src/transformers/rename/RenameIdentifierTransformer.ts",
