@@ -17,11 +17,7 @@ let obj2 = {
   get foo2() {
     return {
       get foo2() {
-        return {
-          get foo2() {
-            return 1;
-          }
-        }
+        return 1;
       }
     }
   }
@@ -31,11 +27,7 @@ class X2 {
   get foo2() {
     return {
       get foo2() {
-        return {
-          get foo2() {
-            return 1;
-          }
-        }
+        return 1;
       }
     }
   }
@@ -44,9 +36,7 @@ class X2 {
 interface Y2 {
   get foo2(): {
     get foo2(): {
-      get foo2(): {
-        get foo2(): {}
-      }
+      get foo2(): {}
     }  
   }
 }
