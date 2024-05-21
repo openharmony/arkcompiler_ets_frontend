@@ -484,6 +484,8 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
         return nullptr;
     }
 
+    fflush(stdout);
+
     auto const hasRestParameter = substitutedSig->RestVar() != nullptr;
     std::size_t const argumentCount = arguments.size();
     std::size_t const parameterCount = substitutedSig->MinArgCount();
@@ -864,7 +866,6 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
                                                               const TypeRelationFlag throwFlag)
 {
     Signature *sig = nullptr;
-
     if (callExpr->TrailingBlock() == nullptr) {
         sig = ValidateSignatures(signatures, callExpr->TypeParams(), callExpr->Arguments(), pos, "call", throwFlag);
         return sig;

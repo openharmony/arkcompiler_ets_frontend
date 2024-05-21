@@ -212,6 +212,9 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
+    ETSEnumType *CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSStringEnumType *CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
     Type *CreateETSUnionType(Type *const (&arr)[N])  // NOLINT(modernize-avoid-c-arrays)
@@ -232,8 +235,6 @@ public:
     ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
-    ETSEnumType *CreateETSEnumType(ir::TSEnumDeclaration const *enumDecl);
-    ETSStringEnumType *CreateETSStringEnumType(ir::TSEnumDeclaration const *enumDecl);
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType, size_t dim);
     Signature *CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim);
     IntType *CreateIntTypeFromType(Type *type);
@@ -582,24 +583,6 @@ public:
 
     static Type *TryToInstantiate(Type *type, ArenaAllocator *allocator, TypeRelation *relation,
                                   GlobalTypesHolder *globalTypes);
-    // Enum
-    [[nodiscard]] ir::Identifier *CreateEnumNamesArray(ETSEnumInterface const *enumType);
-    [[nodiscard]] ir::Identifier *CreateEnumValuesArray(ETSEnumType *enumType);
-    [[nodiscard]] ir::Identifier *CreateEnumStringValuesArray(ETSEnumInterface *enumType);
-    [[nodiscard]] ir::Identifier *CreateEnumItemsArray(ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumFromIntMethod(ir::Identifier *namesArrayIdent,
-                                                              ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumGetValueMethod(ir::Identifier *valuesArrayIdent, ETSEnumType *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumToStringMethod(ir::Identifier *stringValuesArrayIdent,
-                                                               ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumGetNameMethod(ir::Identifier *namesArrayIdent,
-                                                              ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumValueOfMethod(ir::Identifier *namesArrayIdent,
-                                                              ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumValuesMethod(ir::Identifier *itemsArrayIdent,
-                                                             ETSEnumInterface *enumType);
-    [[nodiscard]] ir::StringLiteral *CreateEnumStringLiteral(ETSEnumInterface *const enumType,
-                                                             const ir::TSEnumMember *const member);
 
     // Dynamic interop
     template <typename T>
@@ -647,11 +630,16 @@ public:
 
     ir::ETSParameterExpression *AddParam(util::StringView name, ir::TypeNode *type);
 
+    [[nodiscard]] ir::ScriptFunction *FindFunction(const util::UString &name);
+
 private:
     using ClassBuilder = std::function<void(ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder =
         std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *)>;
     using MethodBuilder = std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *, Type **)>;
+
+    ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
+                                   bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     [[noreturn]] void ThrowError(ir::Identifier *ident);

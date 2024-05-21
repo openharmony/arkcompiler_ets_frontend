@@ -977,6 +977,8 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                         isUnionTypeWithFunctionalInterface);
     // Remove static signatures if the callee is a member expression and the object is initialized
     if (expr->Callee()->IsMemberExpression() &&
+        !(expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
+          expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType()) &&
         (expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression() ||
          (expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
           expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
@@ -2425,11 +2427,11 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
     ASSERT(enumVar != nullptr);
 
     if (enumVar->TsType() == nullptr) {
-        checker::Type *etsEnumType;
+        checker::Type *etsEnumType = nullptr;
         if (auto *const itemInit = st->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
-            etsEnumType = checker->CreateETSEnumType(st);
+            etsEnumType = checker->CreateEnumIntClassFromEnumDeclaration(st);
         } else if (itemInit->IsStringLiteral()) {
-            etsEnumType = checker->CreateETSStringEnumType(st);
+            etsEnumType = checker->CreateEnumStringClassFromEnumDeclaration(st);
         } else {
             checker->ThrowTypeError("Invalid enumeration value type.", st->Start());
         }

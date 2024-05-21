@@ -542,6 +542,9 @@ checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayEx
                 type = GlobalDoubleType();
             } else if (IsTypeIdenticalTo(type, eType)) {
                 continue;
+            } else if (type->IsETSEnumType() && eType->IsETSEnumType() &&
+                       type->AsETSEnumType()->IsSameEnumType(eType->AsETSEnumType())) {
+                continue;
             } else {
                 // NOTE: Create union type when implemented here
                 ThrowTypeError({"Union type is not implemented yet!"}, ident->Start());

@@ -565,13 +565,13 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable 
         return var->TsType();
     }
 
-    auto const *const enumDecl = var->Declaration()->Node()->AsTSEnumDeclaration();
+    auto *const enumDecl = var->Declaration()->Node()->AsTSEnumDeclaration();
     if (auto *const itemInit = enumDecl->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return CreateETSEnumType(enumDecl);
+        return CreateEnumIntClassFromEnumDeclaration(enumDecl);
     } else if (itemInit->IsStringLiteral()) {  // NOLINT(readability-else-after-return)
         // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        return CreateETSStringEnumType(enumDecl);
+        return CreateEnumStringClassFromEnumDeclaration(enumDecl);
     } else {  // NOLINT(readability-else-after-return)
         ThrowTypeError("Invalid enumeration value type.", enumDecl->Start());
     }

@@ -153,10 +153,8 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
         case checker::TypeFlag::ETS_TYPE_PARAMETER:
         case checker::TypeFlag::ETS_NONNULLISH:
         case checker::TypeFlag::ETS_READONLY:
-            Out(checkerType->ToString());
-            return;
         case checker::TypeFlag::ETS_ENUM:
-            GenEnumType(checkerType->AsETSEnumType());
+            Out(checkerType->ToString());
             return;
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_DYNAMIC_TYPE:
@@ -576,6 +574,12 @@ void TSDeclGen::GenClassDeclaration(const ir::ClassDeclaration *classDecl)
 
 void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
 {
+    const auto methodIdent = GetKeyIdent(methodDef->Key());
+    const auto methodName = methodIdent->Name().Mutf8();
+    if (methodName.find('#') != std::string::npos) {
+        return;
+    }
+
     if (state_.inGlobalClass) {
         Out("function ");
     } else {
@@ -590,8 +594,6 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *methodDef)
         Out("set ");
     }
 
-    const auto methodIdent = GetKeyIdent(methodDef->Key());
-    const auto methodName = methodIdent->Name().Mutf8();
     DebugPrint("  GenMethodDeclaration: " + methodName);
     Out(methodName);
 

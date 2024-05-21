@@ -24,6 +24,7 @@
 #include "checker/types/ets/etsStringType.h"
 #include "checker/types/ets/etsUnionType.h"
 #include "checker/types/ets/shortType.h"
+#include "compiler/lowering/ets/enumLowering.h"
 #include "generated/signatures.h"
 #include "ir/base/classDefinition.h"
 #include "ir/statements/classDeclaration.h"
@@ -133,6 +134,178 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
     }
 
     return arrayType;
+}
+
+namespace {
+[[nodiscard]] checker::ETSFunctionType *MakeProxyFunctionType(
+    checker::ETSChecker *const checker, const util::StringView &name,
+    const std::initializer_list<varbinder::LocalVariable *> &params, ir::ScriptFunction *const globalFunction,
+    checker::Type *const returnType)
+{
+    auto *const signatureInfo = checker->CreateSignatureInfo();
+    signatureInfo->params.insert(signatureInfo->params.end(), params);
+    signatureInfo->minArgCount = signatureInfo->params.size();
+
+    auto *const signature = checker->CreateSignature(signatureInfo, returnType, name);
+    signature->SetFunction(globalFunction);
+    signature->AddSignatureFlag(checker::SignatureFlags::PROXY);
+
+    return checker->CreateETSFunctionType(signature, name);
+}
+
+[[nodiscard]] checker::Signature *MakeGlobalSignature(checker::ETSChecker *const checker,
+                                                      ir::ScriptFunction *const function,
+                                                      checker::Type *const returnType)
+{
+    auto *const signatureInfo = checker->CreateSignatureInfo();
+    signatureInfo->params.reserve(function->Params().size());
+    for (const auto *const param : function->Params()) {
+        signatureInfo->params.push_back(param->AsETSParameterExpression()->Variable()->AsLocalVariable());
+    }
+    signatureInfo->minArgCount = signatureInfo->params.size();
+
+    auto *const signature = checker->CreateSignature(signatureInfo, returnType, function);
+    signature->AddSignatureFlag(checker::SignatureFlags::PUBLIC | checker::SignatureFlags::STATIC);
+    function->SetSignature(signature);
+
+    return signature;
+}
+
+void SetTypesForScriptFunction(checker::ETSChecker *const checker, ir::ScriptFunction *function)
+{
+    for (auto param : function->Params()) {
+        ASSERT(param->IsETSParameterExpression());
+        auto paramType = param->AsETSParameterExpression()->TypeAnnotation()->Check(checker);
+        param->AsETSParameterExpression()->Ident()->SetTsType(paramType);
+        param->AsETSParameterExpression()->Ident()->Variable()->SetTsType(paramType);
+        param->SetTsType(paramType);
+    }
+}
+
+}  // namespace
+
+ETSEnumType::Method ETSChecker::MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
+                                           bool buildPorxyParam, Type *returnType, bool buildProxy)
+{
+    auto function = FindFunction(compiler::EnumLoweringPhase::GetQualifiedName(this, enumDecl, name));
+    if (function == nullptr) {
+        return {};
+    }
+
+    SetTypesForScriptFunction(this, function);
+
+    if (buildPorxyParam) {
+        return {MakeGlobalSignature(this, function, returnType),
+                MakeProxyFunctionType(
+                    this, name, {function->Params()[0]->AsETSParameterExpression()->Variable()->AsLocalVariable()},
+                    function, returnType)};
+    }
+    return {MakeGlobalSignature(this, function, returnType),
+            buildProxy ? MakeProxyFunctionType(this, name, {}, function, returnType) : nullptr};
+}
+
+[[nodiscard]] ir::ScriptFunction *ETSChecker::FindFunction(const util::UString &name)
+{
+    auto globalClass = Program()->GlobalClass();
+    for (auto m : globalClass->Body()) {  // NOTE: Temporal solution until the methods are moved to separate classes.
+        if (m->IsMethodDefinition()) {
+            if (m->AsMethodDefinition()->Id()->Name() == name.View()) {
+                return m->AsMethodDefinition()->Function();
+            }
+        }
+    }
+    return nullptr;
+}
+
+ETSEnumType *ETSChecker::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+{
+    SavedCheckerContext savedContext(this, Context().Status(), Context().ContainingClass(),
+                                     Context().ContainingSignature());
+
+    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
+    ASSERT(enumVar != nullptr);
+
+    checker::ETSEnumType::UType ordinal = -1;
+    auto *const enumType = Allocator()->New<checker::ETSEnumType>(enumDecl, ordinal++);
+    enumType->SetVariable(enumVar);
+    enumVar->SetTsType(enumType);
+
+    auto const getNameMethod =
+        MakeMethod(enumDecl, ETSEnumType::GET_NAME_METHOD_NAME, false, GlobalETSStringLiteralType());
+    enumType->SetGetNameMethod(getNameMethod);
+
+    auto valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, true, enumType);
+    enumType->SetValueOfMethod(valueOfMethod);
+
+    auto const fromIntMethod = MakeMethod(enumDecl, ETSEnumType::FROM_INT_METHOD_NAME, false, enumType, false);
+    enumType->SetFromIntMethod(fromIntMethod);
+
+    auto const getValueMethod = MakeMethod(enumDecl, ETSEnumType::GET_VALUE_METHOD_NAME, false, GlobalIntType());
+    enumType->SetGetValueMethod(getValueMethod);
+
+    auto const toStringMethod =
+        MakeMethod(enumDecl, ETSEnumType::TO_STRING_METHOD_NAME, false, GlobalETSStringLiteralType());
+    enumType->SetToStringMethod(toStringMethod);
+
+    auto const valuesMethod =
+        MakeMethod(enumDecl, ETSEnumType::VALUES_METHOD_NAME, false, CreateETSArrayType(enumType));
+    enumType->SetValuesMethod(valuesMethod);
+
+    for (auto *const member : enumType->GetMembers()) {
+        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
+        auto *const enumLiteralType =
+            Allocator()->New<checker::ETSEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
+        enumLiteralType->SetVariable(memberVar);
+        memberVar->SetTsType(enumLiteralType);
+
+        enumLiteralType->SetGetValueMethod(getValueMethod);
+        enumLiteralType->SetGetNameMethod(getNameMethod);
+        enumLiteralType->SetToStringMethod(toStringMethod);
+    }
+    return enumType;
+}
+
+ETSStringEnumType *ETSChecker::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl)
+{
+    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
+    ASSERT(enumVar != nullptr);
+
+    checker::ETSEnumType::UType ordinal = -1;
+    auto *const enumType = Allocator()->New<checker::ETSStringEnumType>(enumDecl, ordinal++);
+    enumType->SetVariable(enumVar);
+    enumVar->SetTsType(enumType);
+
+    auto const getNameMethod =
+        MakeMethod(enumDecl, ETSEnumType::GET_NAME_METHOD_NAME, false, GlobalETSStringLiteralType());
+    enumType->SetGetNameMethod(getNameMethod);
+
+    auto valueOfMethod = MakeMethod(enumDecl, ETSEnumType::VALUE_OF_METHOD_NAME, true, enumType);
+    enumType->SetValueOfMethod(valueOfMethod);
+
+    auto const fromIntMethod = MakeMethod(enumDecl, ETSEnumType::FROM_INT_METHOD_NAME, false, enumType, false);
+    enumType->SetFromIntMethod(fromIntMethod);
+
+    auto const toStringMethod =
+        MakeMethod(enumDecl, ETSEnumType::TO_STRING_METHOD_NAME, false, GlobalETSStringLiteralType());
+    enumType->SetGetValueMethod(toStringMethod);
+    enumType->SetToStringMethod(toStringMethod);
+
+    auto const valuesMethod =
+        MakeMethod(enumDecl, ETSEnumType::VALUES_METHOD_NAME, false, CreateETSArrayType(enumType));
+    enumType->SetValuesMethod(valuesMethod);
+
+    for (auto *const member : enumType->GetMembers()) {
+        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
+        auto *const enumLiteralType =
+            Allocator()->New<checker::ETSStringEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
+        enumLiteralType->SetVariable(memberVar);
+        memberVar->SetTsType(enumLiteralType);
+
+        enumLiteralType->SetGetValueMethod(toStringMethod);
+        enumLiteralType->SetGetNameMethod(getNameMethod);
+        enumLiteralType->SetToStringMethod(toStringMethod);
+    }
+    return enumType;
 }
 
 Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
@@ -364,150 +537,6 @@ ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNod
     auto *objType = CreateNewETSObjectType(name, declNode, flags | res->second.second);
     primitiveWrappers_.Wrappers().at(name).first = objType;
     return objType;
-}
-
-ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const enumDecl)
-{
-    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
-    ASSERT(enumVar != nullptr);
-
-    ETSEnumType::UType ordinal = -1;
-    auto *const enumType = Allocator()->New<ETSEnumType>(enumDecl, ordinal++);
-    enumType->SetVariable(enumVar);
-    enumVar->SetTsType(enumType);
-
-    for (auto *const member : enumType->GetMembers()) {
-        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enumLiteralType = Allocator()->New<ETSEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
-        enumLiteralType->SetVariable(memberVar);
-        memberVar->SetTsType(enumLiteralType);
-    }
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const namesArrayIdent = CreateEnumNamesArray(enumType);
-
-    auto *identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(namesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const getNameMethod = CreateEnumGetNameMethod(identClone, enumType);
-    enumType->SetGetNameMethod(getNameMethod);
-
-    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(namesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const valueOfMethod = CreateEnumValueOfMethod(identClone, enumType);
-    enumType->SetValueOfMethod(valueOfMethod);
-
-    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(namesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const fromIntMethod = CreateEnumFromIntMethod(identClone, enumType);
-    enumType->SetFromIntMethod(fromIntMethod);
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const valuesArrayIdent = CreateEnumValuesArray(enumType);
-
-    identClone = valuesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(valuesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const getValueMethod = CreateEnumGetValueMethod(identClone, enumType);
-    enumType->SetGetValueMethod(getValueMethod);
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumType);
-
-    identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(stringValuesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const toStringMethod = CreateEnumToStringMethod(identClone, enumType);
-    enumType->SetToStringMethod(toStringMethod);
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const itemsArrayIdent = CreateEnumItemsArray(enumType);
-
-    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(itemsArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const valuesMethod = CreateEnumValuesMethod(identClone, enumType);
-    enumType->SetValuesMethod(valuesMethod);
-
-    for (auto *const member : enumType->GetMembers()) {
-        auto *const enumLiteralType =
-            member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType()->AsETSEnumType();
-        enumLiteralType->SetGetValueMethod(getValueMethod);
-        enumLiteralType->SetGetNameMethod(getNameMethod);
-        enumLiteralType->SetToStringMethod(toStringMethod);
-    }
-
-    return enumType;
-}
-
-ETSStringEnumType *ETSChecker::CreateETSStringEnumType(ir::TSEnumDeclaration const *const enumDecl)
-{
-    varbinder::Variable *enumVar = enumDecl->Key()->Variable();
-    ASSERT(enumVar != nullptr);
-
-    ETSEnumType::UType ordinal = -1;
-    auto *const enumType = Allocator()->New<ETSStringEnumType>(enumDecl, ordinal++);
-    enumType->SetVariable(enumVar);
-    enumVar->SetTsType(enumType);
-
-    for (auto *const member : enumType->GetMembers()) {
-        auto *const memberVar = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
-        auto *const enumLiteralType =
-            Allocator()->New<ETSStringEnumType>(enumDecl, ordinal++, member->AsTSEnumMember());
-        enumLiteralType->SetVariable(memberVar);
-        memberVar->SetTsType(enumLiteralType);
-    }
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const namesArrayIdent = CreateEnumNamesArray(enumType);
-
-    auto *identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(namesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const getNameMethod = CreateEnumGetNameMethod(identClone, enumType);
-    enumType->SetGetNameMethod(getNameMethod);
-
-    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(namesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const valueOfMethod = CreateEnumValueOfMethod(identClone, enumType);
-    enumType->SetValueOfMethod(valueOfMethod);
-
-    identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(namesArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const fromIntMethod = CreateEnumFromIntMethod(identClone, enumType);
-    enumType->SetFromIntMethod(fromIntMethod);
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const stringValuesArrayIdent = CreateEnumStringValuesArray(enumType);
-
-    identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(stringValuesArrayIdent->TsType());
-    auto const toStringMethod = CreateEnumToStringMethod(identClone, enumType);
-    enumType->SetToStringMethod(toStringMethod);
-    enumType->SetGetValueMethod(toStringMethod);
-
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *const itemsArrayIdent = CreateEnumItemsArray(enumType);
-
-    identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
-    identClone->SetTsType(itemsArrayIdent->TsType());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto const valuesMethod = CreateEnumValuesMethod(identClone, enumType);
-    enumType->SetValuesMethod(valuesMethod);
-
-    for (auto *const member : enumType->GetMembers()) {
-        auto *const enumLiteralType =
-            member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType()->AsETSStringEnumType();
-        enumLiteralType->SetGetValueMethod(toStringMethod);
-        enumLiteralType->SetGetNameMethod(getNameMethod);
-        enumLiteralType->SetToStringMethod(toStringMethod);
-    }
-
-    return enumType;
 }
 
 ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags)
