@@ -51,18 +51,19 @@ enum class DeclType {
 };
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define SCOPE_TYPES(_)                    \
-    _(PARAM, ParamScope)                  \
-    _(CATCH_PARAM, CatchParamScope)       \
-    _(FUNCTION_PARAM, FunctionParamScope) \
-    _(CATCH, CatchScope)                  \
-    _(CLASS, ClassScope)                  \
-    _(LOCAL, LocalScope)                  \
-    /* Variable Scopes */                 \
-    _(LOOP, LoopScope)                    \
-    _(LOOP_DECL, LoopDeclarationScope)    \
-    _(FUNCTION, FunctionScope)            \
-    _(GLOBAL, GlobalScope)                \
+#define SCOPE_TYPES(_)                           \
+    _(PARAM, ParamScope)                         \
+    _(CATCH_PARAM, CatchParamScope)              \
+    _(FUNCTION_PARAM, FunctionParamScope)        \
+    _(CATCH, CatchScope)                         \
+    _(CLASS, ClassScope)                         \
+    _(LOCAL, LocalScope)                         \
+    _(LOCAL_WITH_ALIAS, LocalScopeWithTypeAlias) \
+    /* Variable Scopes */                        \
+    _(LOOP, LoopScope)                           \
+    _(LOOP_DECL, LoopDeclarationScope)           \
+    _(FUNCTION, FunctionScope)                   \
+    _(GLOBAL, GlobalScope)                       \
     _(MODULE, ModuleScope)
 
 enum class ScopeType {
@@ -90,6 +91,7 @@ enum class ResolveBindingOptions : uint32_t {
 
     LAST = TYPE_ALIASES,
     ALL = (LAST << 1U) - 1U,
+    ALL_NON_TYPE = ALL - TYPE_ALIASES,
 };
 
 DEFINE_BITOPS(ResolveBindingOptions)

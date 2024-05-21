@@ -509,10 +509,12 @@ public:
     void CheckIdentifierSwitchCase(ir::Expression *currentCase, ir::Expression *compareCase,
                                    const lexer::SourcePosition &pos);
     std::string GetStringFromLiteral(ir::Expression *caseTest) const;
-    varbinder::Variable *FindVariableInFunctionScope(util::StringView name);
+    varbinder::Variable *FindVariableInFunctionScope(util::StringView name,
+                                                     const varbinder::ResolveBindingOptions options);
     std::pair<const varbinder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
         util::StringView name, const ETSObjectType *classType);
-    varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier);
+    varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier,
+                                              const varbinder::ResolveBindingOptions options);
     void ExtraCheckForResolvedError(ir::Identifier *ident);
     void ValidateResolvedIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
     static bool IsVariableStatic(const varbinder::Variable *var);

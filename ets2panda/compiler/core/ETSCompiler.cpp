@@ -2262,10 +2262,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSTupleType *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const
-{
-    UNREACHABLE();
-}
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const {}
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAssertion *expr) const
 {

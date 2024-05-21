@@ -441,6 +441,8 @@ Variable *FunctionParamScope::AddBinding([[maybe_unused]] ArenaAllocator *alloca
 Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                                     [[maybe_unused]] ScriptExtension extension)
 {
+    ir::Identifier *ident {};
+    Variable *var {};
     switch (newDecl->Type()) {
         case DeclType::VAR: {
             return AddVar<LocalVariable>(allocator, currentVariable, newDecl);
@@ -456,43 +458,33 @@ Variable *FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *current
         }
         // NOTE(psiket):Duplication
         case DeclType::INTERFACE: {
-            ir::Identifier *ident {};
             ident = newDecl->Node()->AsTSInterfaceDeclaration()->Id();
-
-            auto *var = InsertBinding(newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE))
-                            .first->second;
-
-            if (var == nullptr) {
-                return nullptr;
-            }
-
-            var->SetScope(this);
-            if (ident != nullptr) {
-                ident->SetVariable(var);
-            }
-            return var;
+            auto interfaceVar = allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE);
+            var = InsertBinding(newDecl->Name(), interfaceVar).first->second;
+            break;
         }
         case DeclType::CLASS: {
-            ir::Identifier *ident {};
             ident = newDecl->Node()->AsClassDefinition()->Ident();
-
-            auto *var = InsertBinding(newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS))
-                            .first->second;
-
-            if (var == nullptr) {
-                return nullptr;
-            }
-
-            var->SetScope(this);
-            if (ident != nullptr) {
-                ident->SetVariable(var);
-            }
-            return var;
+            auto classVar = allocator->New<LocalVariable>(newDecl, VariableFlags::CLASS);
+            var = InsertBinding(newDecl->Name(), classVar).first->second;
+            break;
+        }
+        case DeclType::TYPE_ALIAS: {
+            ident = newDecl->Node()->AsTSTypeAliasDeclaration()->Id();
+            var = typeAliasScope_->AddBinding(allocator, currentVariable, newDecl, extension);
+            break;
         }
         default: {
             return AddLexical<LocalVariable>(allocator, currentVariable, newDecl);
         }
     }
+    if (var != nullptr) {
+        var->SetScope(this);
+        if (ident != nullptr) {
+            ident->SetVariable(var);
+        }
+    }
+    return var;
 }
 
 Variable *GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -719,6 +711,41 @@ bool ModuleScope::ExportAnalysis()
     return true;
 }
 
+Variable *FunctionScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
+{
+    if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
+        auto found = typeAliasScope_->Bindings().find(name);
+        if (found != typeAliasScope_->Bindings().end()) {
+            return found->second;
+        }
+    }
+
+    if ((options & ResolveBindingOptions::ALL_NON_TYPE) == 0) {
+        return nullptr;
+    }
+
+    if ((options & ResolveBindingOptions::INTERFACES) != 0) {
+        std::string tsBindingName = varbinder::TSBinding::ToTSBinding(name);
+        util::StringView interfaceNameView(tsBindingName);
+
+        auto res = Bindings().find(interfaceNameView);
+        if (res != Bindings().end()) {
+            return res->second;
+        }
+
+        if ((options & ResolveBindingOptions::BINDINGS) == 0) {
+            return nullptr;
+        }
+    }
+
+    auto res = Bindings().find(name);
+    if (res == Bindings().end()) {
+        return nullptr;
+    }
+
+    return res->second;
+}
+
 // LocalScope
 
 Variable *LocalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -727,11 +754,63 @@ Variable *LocalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
     return AddLocal(allocator, currentVariable, newDecl, extension);
 }
 
-Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
+Variable *LocalScopeWithTypeAlias::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                                              [[maybe_unused]] ScriptExtension extension)
+{
+    if (newDecl->IsTypeAliasDecl()) {
+        auto *ident = newDecl->Node()->AsTSTypeAliasDeclaration()->Id();
+        auto *var = typeAliasScope_->AddBinding(allocator, currentVariable, newDecl, extension);
+        if (var != nullptr) {
+            var->SetScope(this);
+            if (ident != nullptr) {
+                ident->SetVariable(var);
+            }
+        }
+        return var;
+    }
+    return AddLocal(allocator, currentVariable, newDecl, extension);
+}
+
+Variable *LocalScopeWithTypeAlias::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
         auto found = typeAliasScope_->Bindings().find(name);
         if (found != typeAliasScope_->Bindings().end()) {
+            return found->second;
+        }
+    }
+
+    if ((options & ResolveBindingOptions::ALL_NON_TYPE) == 0) {
+        return nullptr;
+    }
+
+    if ((options & ResolveBindingOptions::INTERFACES) != 0) {
+        std::string tsBindingName = varbinder::TSBinding::ToTSBinding(name);
+        util::StringView interfaceNameView(tsBindingName);
+
+        auto res = Bindings().find(interfaceNameView);
+        if (res != Bindings().end()) {
+            return res->second;
+        }
+
+        if ((options & ResolveBindingOptions::BINDINGS) == 0) {
+            return nullptr;
+        }
+    }
+
+    auto res = Bindings().find(name);
+    if (res == Bindings().end()) {
+        return nullptr;
+    }
+
+    return res->second;
+}
+
+Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
+{
+    if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
+        auto found = TypeAliasScope()->Bindings().find(name);
+        if (found != TypeAliasScope()->Bindings().end()) {
             return found->second;
         }
     }
@@ -807,7 +886,7 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
         }
         case DeclType::TYPE_ALIAS: {
             props->SetBindingProps(VariableFlags::TYPE_ALIAS, newDecl->Node()->AsTSTypeAliasDeclaration()->Id(),
-                                   typeAliasScope_);
+                                   TypeAliasScope());
             break;
         }
         default: {
@@ -829,7 +908,10 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
 
     SetBindingProps(newDecl, &props, isStatic);
 
-    const auto *foundVar = FindLocal(newDecl->Name(), ResolveBindingOptions::ALL);
+    auto options = newDecl->Type() != DeclType::TYPE_ALIAS ? ResolveBindingOptions::ALL_NON_TYPE
+                                                           : ResolveBindingOptions::TYPE_ALIASES;
+
+    const auto *foundVar = FindLocal(newDecl->Name(), options);
     if (foundVar != nullptr) {
         if (!newDecl->IsLetOrConstDecl()) {
             return nullptr;
@@ -930,6 +1012,18 @@ Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *currentVar
     if (!newDecl->IsVarDecl() &&
         (paramScope_->FindLocal(newDecl->Name(), varbinder::ResolveBindingOptions::BINDINGS) != nullptr)) {
         return nullptr;
+    }
+
+    if (newDecl->IsTypeAliasDecl()) {
+        auto *ident = newDecl->Node()->AsTSTypeAliasDeclaration()->Id();
+        auto *var = TypeAliasScope()->AddBinding(allocator, currentVariable, newDecl, extension);
+        if (var != nullptr) {
+            var->SetScope(this);
+            if (ident != nullptr) {
+                ident->SetVariable(var);
+            }
+        }
+        return var;
     }
 
     return AddLocal(allocator, currentVariable, newDecl, extension);

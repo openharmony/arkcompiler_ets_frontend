@@ -1492,11 +1492,12 @@ void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Varia
             const auto *resolved = identNode->Variable();
 
             if (resolved == nullptr) {
-                resolved = FindVariableInFunctionScope(identNode->Name());
+                resolved =
+                    FindVariableInFunctionScope(identNode->Name(), varbinder::ResolveBindingOptions::ALL_NON_TYPE);
             }
 
             if (resolved == nullptr) {
-                resolved = FindVariableInGlobal(identNode);
+                resolved = FindVariableInGlobal(identNode, varbinder::ResolveBindingOptions::ALL_NON_TYPE);
             }
 
             if (resolved == var) {

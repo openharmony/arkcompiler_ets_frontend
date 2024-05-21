@@ -1230,10 +1230,6 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 {
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
 
-    if ((GetContext().Status() & parser::ParserStatus::FUNCTION) != 0U) {
-        ThrowSyntaxError("Type alias is allowed only as top-level declaration");
-    }
-
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword
 

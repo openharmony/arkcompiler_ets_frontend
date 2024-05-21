@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-class A {
-  fn(): void {
-    type Matrix = int[][]
-  }
+function main(): void {
+    type a = Double;
 }
+
+let outA : a;

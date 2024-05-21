@@ -497,7 +497,8 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     // Just to avoid extra nested level(s)
     auto const getIterType = [checker, elemType](ir::VariableDeclarator *const declarator) -> checker::Type * {
         if (declarator->TsType() == nullptr) {
-            if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name());
+            if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name(),
+                                                                      varbinder::ResolveBindingOptions::ALL_NON_TYPE);
                 resolved != nullptr) {
                 resolved->SetTsType(elemType);
                 return elemType;
