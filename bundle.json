@@ -18,6 +18,7 @@
         "ram": "",
         "deps": {
             "components": [
+                "json",
                 "runtime_core",
                 "zlib"
             ],

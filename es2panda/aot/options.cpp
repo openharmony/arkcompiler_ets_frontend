@@ -16,6 +16,7 @@
 #include "options.h"
 
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -229,6 +230,56 @@ void Options::ParseCacheFileOption(const std::string &cacheInput)
     }
 }
 
+void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
+{
+    std::ifstream ifs;
+    ifs.open(panda::os::file::File::GetExtendedFilePath(compileContextInfoPath));
+    if (!ifs.is_open()) {
+        std::cerr << "Failed to open compile context info file from the provided path: '" <<
+                     compileContextInfoPath << "'." << std::endl <<
+                     "Please verify the file's existence, check the correctness of the path, " <<
+                     "and ensure you have the necessary permissions to access the file. " << std::endl;
+        return;
+    }
+    // Parser compile context info base on the input json file.
+    nlohmann::json compileContextInfoJson = nlohmann::json::parse(ifs);
+    if (!compileContextInfoJson.contains("compileEntries") || !compileContextInfoJson.contains("hspPkgNames") ||
+        !compileContextInfoJson.contains("pkgContextInfo")) {
+        std::cerr << "The input json file '" << compileContextInfoPath << "' content format is incorrect" << std::endl;
+        return;
+    }
+    compilerOptions_.compileContextInfo.compileEntries = compileContextInfoJson["compileEntries"];
+    compilerOptions_.compileContextInfo.externalPkgNames = compileContextInfoJson["hspPkgNames"];
+
+    std::unordered_map<std::string, PkgInfo> pkgContextMap;
+    for (const auto& [key, value] : compileContextInfoJson["pkgContextInfo"].items()) {
+        PkgInfo pkgInfo;
+        if (value.contains("version")) {
+            pkgInfo.version = value["version"];
+        } else {
+            std::cerr << "Failed to get version from pkgContextInfo."  << std::endl;
+        }
+        if (value.contains("packageName")) {
+            pkgInfo.packageName = value["packageName"];
+        } else {
+            std::cerr << "Failed to get package name from pkgContextInfo."  << std::endl;
+        }
+        pkgContextMap[key] = pkgInfo;
+    }
+    compilerOptions_.compileContextInfo.pkgContextInfo = pkgContextMap;
+}
+
+bool Options::NeedUpdatePkgVersionInRecordName()
+{
+    return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
+}
+
+// collect dependencies based on the compile entries and remove redundant record when the abc file as input.
+bool Options::NeedRemoveRedundantRecord()
+{
+    return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.compileEntries.empty();
+}
+
 Options::Options() : argparser_(new panda::PandArgParser()) {}
 
 Options::~Options()
@@ -255,7 +306,7 @@ bool Options::Parse(int argc, const char **argv)
         "using of [function].toString()");
 
     // compiler
-    panda::PandArg<bool> opEnableAbcInput("enable-abc-input", false, "Reserved");
+    panda::PandArg<bool> opEnableAbcInput("enable-abc-input", false, "Allow abc file as input");
     panda::PandArg<bool> opDumpAsmProgram("dump-asm-program", false, "Reserved");
     panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
@@ -305,6 +356,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> targetBcVersion("target-bc-version", false, "Print the corresponding ark bytecode version"\
         "for target api version. If both target-bc-version and bc-version are enabled, only target-bc-version"\
         "will take effects");
+
+    // compile entries and pkg context info
+    panda::PandArg<std::string> compileContextInfoPath("compile-context-info", "", "The path to compile context"\
+        "info file");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -359,6 +414,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&bcMinVersion);
     argparser_->Add(&targetApiVersion);
     argparser_->Add(&targetBcVersion);
+
+    argparser_->Add(&compileContextInfoPath);
 
     argparser_->Add(&transformLib);
 
@@ -540,6 +597,10 @@ bool Options::Parse(int argc, const char **argv)
         base64Output.GetValue()) ? 0 : opOptLevel.GetValue();
     compilerOptions_.sourceFiles = sourceFiles_;
     compilerOptions_.mergeAbc = opMergeAbc.GetValue();
+    compilerOptions_.compileContextInfoPath = compileContextInfoPath.GetValue();
+    if (!compileContextInfoPath.GetValue().empty()) {
+        ParseCompileContextInfo(compileContextInfoPath.GetValue());
+    }
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();

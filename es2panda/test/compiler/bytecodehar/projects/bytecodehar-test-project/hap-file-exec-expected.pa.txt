@@ -1,0 +1,161 @@
+.language ECMAScript
+
+.function any &bytecodehar1/bytecodehar1-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &bytecodehar1/bytecodehar1-file1&2.0.0.test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+.function any &bytecodehar1/bytecodehar1-file1&2.0.0.test(any a0, any a1, any a2) {
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str bytecodehar1.file1.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	lda.str @normalized:N&&&sourcehar/sourcehar-file1&1.0.0
+	dynamicimport
+	ldundefined
+	returnundefined
+}
+
+.function any &bytecodehar1/bytecodehar1-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &bytecodehar1/bytecodehar1-file2&2.0.0.test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+.function any &bytecodehar1/bytecodehar1-file2&2.0.0.test(any a0, any a1, any a2) {
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str bytecodehar1.file2.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	lda.str @normalized:N&&&sourcehar/sourcehar-file2&1.0.0
+	dynamicimport
+	ldundefined
+	returnundefined
+}
+
+
+.language ECMAScript
+
+.function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+.function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.test(any a0, any a1, any a2) {
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str bytecodehar2.file1.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	ldundefined
+	returnundefined
+}
+
+.function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+.function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.test(any a0, any a1, any a2) {
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str bytecodehar2.file2.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	ldundefined
+	returnundefined
+}
+
+
+.language ECMAScript
+
+.function any hap-file-exec.func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, hap-file-exec.main, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any hap-file-exec.main(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldexternalmodulevar 0x0
+	sta v0
+	throw.undefinedifholewithname test
+	lda v0
+	callarg0 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
+.language ECMAScript
+
+.function any &sourcehar/sourcehar-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, &sourcehar/sourcehar-file1&2.0.0.test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any &sourcehar/sourcehar-file1&2.0.0.test(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str sourcehar.file1.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
+.language ECMAScript
+
+.function any &sourcehar/sourcehar-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, &sourcehar/sourcehar-file2&2.0.0.test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any &sourcehar/sourcehar-file2&2.0.0.test(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str sourcehar.file2.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
