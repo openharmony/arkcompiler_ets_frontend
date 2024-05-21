@@ -318,7 +318,6 @@ public:
         return Allocator()->New<Substitution>(*src);
     }
     static void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
-    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
@@ -327,6 +326,14 @@ public:
                                                    Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForArray(const ArenaVector<Type *> &typeParams, ETSArrayType *paramType,
                                                    Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
+                                                         const Type *paramType, Substitution *substitution);
+    ArenaVector<Type *> GetSourceParameters(const ETSObjectType *object, const Type *paramType,
+                                            const ArenaVector<Type *> &requiredOrder);
+    [[nodiscard]] static bool HasTypeArgsOfObject(Type *argType, Type *paramType);
+    [[nodiscard]] bool InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParams, const Type *typeParam,
+                                                  const size_t index, Substitution *substitution, Type *objectParam);
+    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
     Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                 TypeRelationFlag flags);
     Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
