@@ -176,6 +176,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/optionalLowering.cpp",
   "compiler/lowering/ets/promiseVoid.cpp",
   "compiler/lowering/ets/recordLowering.cpp",
+  "compiler/lowering/ets/stringComparison.cpp",
   "compiler/lowering/ets/structLowering.cpp",
   "compiler/lowering/ets/topLevelStmts/globalClassHandler.cpp",
   "compiler/lowering/ets/topLevelStmts/globalDeclTransformer.cpp",
