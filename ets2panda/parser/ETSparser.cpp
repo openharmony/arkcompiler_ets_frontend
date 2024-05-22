@@ -665,8 +665,12 @@ ir::ModifierFlags ETSParser::ParseClassMethodModifiers(bool seenStatic)
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
         flags |= currentFlag;
-        if ((flags & ir::ModifierFlags::ASYNC) != 0 && (flags & ir::ModifierFlags::NATIVE) != 0) {
-            ThrowSyntaxError("Native method cannot be async");
+        if ((flags & ir::ModifierFlags::ASYNC) != 0) {
+            if ((flags & ir::ModifierFlags::NATIVE) != 0) {
+                ThrowSyntaxError("Native method cannot be async");
+            } else if ((flags & ir::ModifierFlags::ABSTRACT) != 0) {
+                ThrowSyntaxError("Abstract method cannot be async");
+            }
         }
     }
 
