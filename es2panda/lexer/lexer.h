@@ -97,6 +97,7 @@ private:
     ArenaAllocator *Allocator();
     bool IsLineTerminatorOrEos() const;
     void ScanRegExpPattern();
+    bool GetRegExpFlag(char32_t cp, RegExpFlags &flag);
     RegExpFlags ScanRegExpFlags();
 
     void ThrowError(std::string_view message);

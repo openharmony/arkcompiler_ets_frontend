@@ -113,10 +113,9 @@ void Function::Serialize(const panda::pandasm::Function &function, protoPanda::F
     }
 }
 
-void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
-                           panda::ArenaAllocator *allocator)
+void Function::DeserializeLabels(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
+                                 panda::ArenaAllocator *allocator)
 {
-    FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, allocator);
     function.label_table.reserve(protoFunction.labeltable_size());
     for (const auto &labelUnit : protoFunction.labeltable()) {
         auto &name = labelUnit.key();
@@ -125,20 +124,38 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
         Label::Deserialize(protoLabel, label);
         function.label_table.insert({name, label});
     }
+}
 
+void Function::DeserializeProtoIns(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
+                                   panda::ArenaAllocator *allocator)
+{
     function.ins.reserve(protoFunction.ins_size());
     for (const auto &protoIns : protoFunction.ins()) {
         panda::pandasm::Ins ins;
         Ins::Deserialize(protoIns, ins);
         function.ins.emplace_back(std::move(ins));
     }
+}
 
+void Function::DeserializeProtoLocalVariable(const protoPanda::Function &protoFunction,
+                                             panda::pandasm::Function &function,
+                                             panda::ArenaAllocator *allocator)
+{
     function.local_variable_debug.reserve(protoFunction.localvariabledebug_size());
     for (const auto &protoLocalVariable : protoFunction.localvariabledebug()) {
         panda::pandasm::debuginfo::LocalVariable localVariable;
         LocalVariable::Deserialize(protoLocalVariable, localVariable);
         function.local_variable_debug.emplace_back(std::move(localVariable));
     }
+}
+
+void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
+                           panda::ArenaAllocator *allocator)
+{
+    FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, allocator);
+    DeserializeLabels(protoFunction, function, allocator);
+    DeserializeProtoIns(protoFunction, function, allocator);
+    DeserializeProtoLocalVariable(protoFunction, function, allocator);
 
     function.source_file = protoFunction.sourcefile();
     function.source_code = protoFunction.sourcecode();

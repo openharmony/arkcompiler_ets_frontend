@@ -2940,6 +2940,29 @@ static bool IsConstructor(ir::Statement *stmt)
     return def->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR;
 }
 
+ir::Identifier *ParserImpl::GetKeyByFuncFlag(ir::ScriptFunctionFlags funcFlag)
+{
+    ir::Identifier *key = nullptr;
+    switch (funcFlag) {
+        case ir::ScriptFunctionFlags::CONSTRUCTOR: {
+            key = AllocNode<ir::Identifier>("constructor");
+            break;
+        }
+        case ir::ScriptFunctionFlags::STATIC_INITIALIZER: {
+            key = AllocNode<ir::Identifier>("static_initializer");
+            break;
+        }
+        case ir::ScriptFunctionFlags::INSTANCE_INITIALIZER: {
+            key = AllocNode<ir::Identifier>("instance_initializer");
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+    return key;
+}
+
 ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClass, bool hasSuperClass,
                                                        ir::ScriptFunctionFlags funcFlag, bool isDeclare)
 {
@@ -2978,24 +3001,7 @@ ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClas
     paramScope->BindFunctionScope(scope);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
-    ir::Identifier *key = nullptr;
-    switch (funcFlag) {
-        case ir::ScriptFunctionFlags::CONSTRUCTOR: {
-            key = AllocNode<ir::Identifier>("constructor");
-            break;
-        }
-        case ir::ScriptFunctionFlags::STATIC_INITIALIZER: {
-            key = AllocNode<ir::Identifier>("static_initializer");
-            break;
-        }
-        case ir::ScriptFunctionFlags::INSTANCE_INITIALIZER: {
-            key = AllocNode<ir::Identifier>("instance_initializer");
-            break;
-        }
-        default: {
-            UNREACHABLE();
-        }
-    }
+    ir::Identifier *key = GetKeyByFuncFlag(funcFlag);
     auto methodKind = isConstructor ? ir::MethodDefinitionKind::CONSTRUCTOR : ir::MethodDefinitionKind::METHOD;
 
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
@@ -3665,13 +3671,8 @@ bool ParserImpl::CheckOutIsIdentInTypeParameter()
     return false;
 }
 
-ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addBinding, bool isAllowInOut)
+void ParserImpl::ParseTypeModifier(bool &isTypeIn, bool &isTypeOut, bool &isAllowInOut)
 {
-    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-
-    bool isTypeIn = false;
-    bool isTypeOut = false;
-
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IN) {
         if (!isAllowInOut) {
             ThrowSyntaxError("'in' modifier can only appear on a type parameter of a class, interface or type alias");
@@ -3705,6 +3706,15 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
             ThrowSyntaxError("'out' modifier already seen.");
         }
     }
+}
+
+ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addBinding, bool isAllowInOut)
+{
+    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
+
+    bool isTypeIn = false;
+    bool isTypeOut = false;
+    ParseTypeModifier(isTypeIn, isTypeOut, isAllowInOut);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         if (!throwError) {

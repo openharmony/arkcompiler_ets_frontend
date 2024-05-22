@@ -44,6 +44,13 @@ public:
 class Function {
 public:
     static void Serialize(const panda::pandasm::Function &function, protoPanda::Function &protoFunction);
+    static void DeserializeLabels(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
+                                  panda::ArenaAllocator *allocator);
+    static void DeserializeProtoIns(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
+                                    panda::ArenaAllocator *allocator);
+    static void DeserializeProtoLocalVariable(const protoPanda::Function &protoFunction,
+                                              panda::pandasm::Function &function,
+                                              panda::ArenaAllocator *allocator);
     static void Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
                             panda::ArenaAllocator *allocator);
 };

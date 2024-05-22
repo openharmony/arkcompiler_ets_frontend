@@ -79,15 +79,9 @@ def get_table_style():
             .commit-table tr:nth-child(even) {{
                 background-color: #f9f9f9;
             }}
-            .commit-table td:hover {{
-                background-color: #BBFFFF;
-            }}
             .commit-table a {{
                 color: #0066cc;
                 text-decoration: none;
-            }}
-            .commit-table a:hover {{
-                text-decoration: underline;
             }}
             caption {{
                 font-size: 1.4em;
