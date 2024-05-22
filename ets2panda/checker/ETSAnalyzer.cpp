@@ -1227,19 +1227,30 @@ checker::Type *ETSAnalyzer::SetAndAdjustType(ETSChecker *checker, ir::MemberExpr
     return expr->AdjustType(checker, resType);
 }
 
-std::pair<checker::Type *, util::StringView> SearchReExportsType(Type *baseType, ir::MemberExpression *expr,
-                                                                 util::StringView aliasName)
+std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *baseType, ir::MemberExpression *expr,
+                                                                 util::StringView &aliasName, ETSChecker *checker)
 {
-    for (auto item : baseType->AsETSObjectType()->ReExports()) {
-        auto name = item->AsETSObjectType()->GetReExportAliasValue(aliasName);
-        if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
-            return std::make_pair(item, name);
+    std::pair<ETSObjectType *, util::StringView> ret {};
+
+    for (auto *const item : baseType->ReExports()) {
+        auto name = item->GetReExportAliasValue(aliasName);
+        if (name == aliasName && item->IsReExportHaveAliasValue(name)) {
+            break;
         }
-        if (auto reExportType = SearchReExportsType(item, expr, name); reExportType.first != nullptr) {
+
+        if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
+            if (ret.first != nullptr) {
+                checker->ThrowTypeError({"Ambiguous reference to '", aliasName, "'"}, expr->Start());
+            }
+            ret = {item, name};
+        }
+
+        if (auto reExportType = SearchReExportsType(item, expr, name, checker); reExportType.first != nullptr) {
             return reExportType;
         }
     }
-    return std::make_pair(nullptr, util::StringView());
+
+    return ret;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
@@ -1260,7 +1271,8 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (baseType->IsETSObjectType() && !baseType->AsETSObjectType()->ReExports().empty() &&
         baseType->AsETSObjectType()->GetProperty(expr->Property()->AsIdentifier()->Name(),
                                                  PropertySearchFlags::SEARCH_ALL) == nullptr) {
-        if (auto reExportType = SearchReExportsType(baseType, expr, expr->Property()->AsIdentifier()->Name());
+        if (auto reExportType = SearchReExportsType(baseType->AsETSObjectType(), expr,
+                                                    expr->Property()->AsIdentifier()->Name(), checker);
             reExportType.first != nullptr) {
             baseType = reExportType.first;
             expr->object_->AsIdentifier()->SetTsType(baseType);

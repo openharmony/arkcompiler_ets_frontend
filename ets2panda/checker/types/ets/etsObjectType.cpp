@@ -1108,6 +1108,12 @@ util::StringView ETSObjectType::GetReExportAliasValue(util::StringView const &ke
     return ret->second;
 }
 
+bool ETSObjectType::IsReExportHaveAliasValue(util::StringView const &key) const
+{
+    return std::any_of(reExportAlias_.begin(), reExportAlias_.end(),
+                       [&](const auto &val) { return val.second == key; });
+}
+
 const ArenaVector<ETSObjectType *> &ETSObjectType::ReExports() const
 {
     return reExports_;

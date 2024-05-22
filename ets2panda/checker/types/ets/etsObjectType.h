@@ -387,6 +387,7 @@ public:
     void AddReExports(ETSObjectType *reExport);
     void AddReExportAlias(util::StringView const &value, util::StringView const &key);
     util::StringView GetReExportAliasValue(util::StringView const &key) const;
+    bool IsReExportHaveAliasValue(util::StringView const &key) const;
     const ArenaVector<ETSObjectType *> &ReExports() const;
 
     ArenaAllocator *Allocator() const
