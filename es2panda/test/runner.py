@@ -1467,6 +1467,8 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
+    compiler_test_infos.append(CompilerTestInfo("optimizer/js/opt-try-catch-func", "js",
+                                                ["--module", "--dump-assembly"]))
     # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",

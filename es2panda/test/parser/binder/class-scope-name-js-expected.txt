@@ -126,70 +126,61 @@ label_2:
 }
 
 .function any .func_main_0(any a0, any a1, any a2) {
-	mov v0, a0
-	mov v1, a1
-	mov v2, a2
+	nop
+label_13: 
+label_0: 
 	newlexenv 0x1
-LABEL_2: 
+label_3: 
+label_7: 
 	ldhole
-	sta v9
-	defineclasswithbuffer 0x0, .#~A=#A, _4, 0x0, v9
-	sta v7
-	sta v8
-	lda v7
+	sta v1
+	defineclasswithbuffer 0x0, .#~A=#A, _4, 0x0, v1
 	ldobjbyname 0x1, prototype
-	sta v10
-	sta v10
 	definemethod 0x3, .#~A>#instance_initializer, 0x0
 	stlexvar 0x0, 0x0
-	lda v7
-LABEL_3: 
-	jmp LABEL_5
-LABEL_4: 
+label_4: 
+end_label_4: 
+	jmp label_1
+label_15: 
+	sta v0
+label_11: 
 	poplexenv
+	lda v0
 	throw
-LABEL_5: 
+label_1: 
 	poplexenv
-	sta v5
 	ldhole
-	sta v9
-	defineclasswithbuffer 0x4, .#~B=#B, _5, 0x0, v9
-	sta v7
-	sta v8
-	lda v7
+	sta v0
+	defineclasswithbuffer 0x4, .#~B=#B, _5, 0x0, v0
 	ldobjbyname 0x5, prototype
-	sta v10
-	lda v7
-	sta v3
 	newlexenv 0x1
-LABEL_10: 
+label_5: 
+label_9: 
 	ldhole
-	sta v9
-	defineclasswithbuffer 0x7, .#~C=#C, _6, 0x0, v9
-	sta v7
-	sta v8
-	lda v7
+	sta v1
+	defineclasswithbuffer 0x7, .#~C=#C, _6, 0x0, v1
 	ldobjbyname 0x8, prototype
-	sta v10
-	sta v10
 	definemethod 0xa, .#~C>#instance_initializer, 0x0
 	stlexvar 0x0, 0x0
-	lda v7
-LABEL_11: 
-	jmp LABEL_13
-LABEL_12: 
+label_6: 
+end_label_6: 
+	jmp label_2
+label_16: 
+	sta v0
+label_12: 
 	poplexenv
+	lda v0
 	throw
-LABEL_13: 
+label_2: 
 	poplexenv
-	sta v4
 	ldundefined
 	returnundefined
+label_14: 
 }
 
-.catchall LABEL_2, LABEL_3, LABEL_4
+.catchall label_3, end_label_4, label_15
 
-.catchall LABEL_10, LABEL_11, LABEL_12
+.catchall label_5, end_label_6, label_16
 
 
 ======> literal array buffer <======

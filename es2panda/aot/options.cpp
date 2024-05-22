@@ -27,6 +27,7 @@
 #include <dirent.h>
 #endif
 
+#include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler_options.h"
 #include "os/file.h"
 
@@ -640,12 +641,11 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     compilerOptions_.branchElimination = opBranchElimination.GetValue();
-    compilerOptions_.optTryCatchFunc = opOptTryCatchFunc.GetValue();
     compilerOptions_.requireGlobalOptimization = compilerOptions_.optLevel > 0 &&
                                                  compilerOptions_.branchElimination &&
                                                  compilerOptions_.mergeAbc;
     panda::compiler::options.SetCompilerBranchElimination(compilerOptions_.branchElimination);
-    panda::compiler::options.SetCompilerOptTryCatchFunc(compilerOptions_.optTryCatchFunc);
+    panda::bytecodeopt::options.SetSkipMethodsWithEh(!opOptTryCatchFunc.GetValue());
 
     return true;
 }
