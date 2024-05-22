@@ -19,7 +19,10 @@
 #include "type.h"
 
 #include "varbinder/variable.h"
-#include "compiler/core/compilerContext.h"
+
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
 
 namespace ark::es2panda::checker {
 // For use in Signature::ToAssemblerType
@@ -230,23 +233,7 @@ public:
         return HasSignatureFlag(SignatureFlags::FINAL);
     }
 
-    void ToAssemblerType(compiler::CompilerContext *context, std::stringstream &ss) const
-    {
-        ss << compiler::Signatures::MANGLE_BEGIN;
-
-        for (const auto *param : signatureInfo_->params) {
-            MaybeBoxedType(context->Checker(), param)->ToAssemblerTypeWithRank(ss);
-            ss << compiler::Signatures::MANGLE_SEPARATOR;
-        }
-
-        if (signatureInfo_->restVar != nullptr) {
-            MaybeBoxedType(context->Checker(), signatureInfo_->restVar)->ToAssemblerTypeWithRank(ss);
-            ss << compiler::Signatures::MANGLE_SEPARATOR;
-        }
-
-        returnType_->ToAssemblerTypeWithRank(ss);
-        ss << compiler::Signatures::MANGLE_SEPARATOR;
-    }
+    void ToAssemblerType(public_lib::Context *context, std::stringstream &ss) const;
 
     util::StringView InternalName() const;
 

@@ -20,7 +20,6 @@
 #include "util/helpers.h"
 #include "varbinder/scope.h"
 #include "varbinder/tsBinding.h"
-#include "compiler/core/compilerContext.h"
 #include "es2panda.h"
 #include "ir/astNode.h"
 #include "ir/base/catchClause.h"
@@ -59,6 +58,7 @@
 #include "ir/ets/etsTypeReference.h"
 #include "ir/base/tsSignatureDeclaration.h"
 #include "ir/base/tsMethodSignature.h"
+#include "public/public.h"
 
 namespace ark::es2panda::varbinder {
 void VarBinder::InitTopScope()
@@ -146,7 +146,7 @@ void VarBinder::IdentifierAnalysis()
     topScope_->BindName(MAIN);
     topScope_->BindInternalName(BuildFunctionName(MAIN, 0));
 
-    topScope_->CheckDirectEval(compilerCtx_);
+    topScope_->CheckDirectEval(context_);
 
     ResolveReferences(program_->Ast());
     AddMandatoryParams();
@@ -678,14 +678,15 @@ void VarBinder::AddMandatoryParams()
 
     ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
 
-    if (compilerCtx_->IsDirectEval()) {
+    const auto &options = context_->config->options->CompilerOptions();
+    if (options.isDirectEval) {
         AddMandatoryParams(EVAL_SCRIPT_MANDATORY_PARAMS);
         topScope_->ParamScope()->Params().back()->SetLexical(topScope_);
     } else {
         AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
     }
 
-    if (compilerCtx_->IsFunctionEval()) {
+    if (options.isFunctionEval) {
         ASSERT(iter != functionScopes_.end());
         funcScope = *iter++;
         auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);

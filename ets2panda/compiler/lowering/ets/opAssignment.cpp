@@ -197,7 +197,7 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
         newAssignmentStatements, ident1, object, ident2, property, GetClone(allocator, ident1),
         GetClone(allocator, ident2), GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
     loweringResult->SetParent(assignment->Parent());
-    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
+    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->parserProgram->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, NearestScope(loweringResult));
     loweringResult->Check(checker);
@@ -209,7 +209,7 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
 
 bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : ext_programs) {
@@ -237,7 +237,7 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
 
 bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *extProg : ext_programs) {

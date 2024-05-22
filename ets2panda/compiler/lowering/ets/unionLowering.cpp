@@ -21,7 +21,6 @@
 #include "checker/ets/conversion.h"
 #include "checker/ets/boxingConverter.h"
 #include "checker/ets/unboxingConverter.h"
-#include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/base/classDefinition.h"
@@ -39,6 +38,7 @@
 #include "ir/statements/variableDeclaration.h"
 #include "ir/ts/tsAsExpression.h"
 #include "type_helper.h"
+#include "public/public.h"
 
 namespace ark::es2panda::compiler {
 static ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
@@ -219,7 +219,7 @@ bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Progra
         }
         return objType->IsETSUnionType() && ast->AsMemberExpression()->PropVar() == nullptr;
     });
-    if (!current || ctx->compilerContext->Options()->compilationMode != CompilationMode::GEN_STD_LIB) {
+    if (!current || ctx->config->options->CompilerOptions().compilationMode != CompilationMode::GEN_STD_LIB) {
         return current;
     }
 

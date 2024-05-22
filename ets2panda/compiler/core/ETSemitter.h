@@ -63,7 +63,7 @@ protected:
 
 class ETSEmitter : public Emitter {
 public:
-    explicit ETSEmitter(const CompilerContext *context) : Emitter(context) {}
+    explicit ETSEmitter(const public_lib::Context *context) : Emitter(context) {}
     ~ETSEmitter() override = default;
     NO_COPY_SEMANTIC(ETSEmitter);
     NO_MOVE_SEMANTIC(ETSEmitter);

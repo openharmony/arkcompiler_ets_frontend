@@ -147,7 +147,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     block->SetParent(expr->Parent());
 
     // Run checks
-    InitScopesPhaseETS::RunExternalNode(block, ctx->compilerContext->VarBinder());
+    InitScopesPhaseETS::RunExternalNode(block, ctx->checker->VarBinder());
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(block, NearestScope(block));
     block->Check(checker);
 

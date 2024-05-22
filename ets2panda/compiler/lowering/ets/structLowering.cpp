@@ -15,7 +15,6 @@
 
 #include "structLowering.h"
 #include "checker/ETSchecker.h"
-#include "compiler/core/compilerContext.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/astNode.h"

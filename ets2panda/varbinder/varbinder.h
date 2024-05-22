@@ -43,6 +43,10 @@ class MemberExpression;
 class ClassStaticBlock;
 }  // namespace ark::es2panda::ir
 
+namespace ark::es2panda::public_lib {
+struct Context;
+}  // namespace ark::es2panda::public_lib
+
 namespace ark::es2panda::varbinder {
 class ETSBinder;
 
@@ -84,16 +88,16 @@ public:
         return program_;
     }
 
-    void SetCompilerContext(compiler::CompilerContext *compilerContext)
+    void SetContext(public_lib::Context *context)
     {
-        ASSERT(!compilerCtx_);
-        compilerCtx_ = compilerContext;
+        ASSERT(!context_);
+        context_ = context;
     }
 
-    compiler::CompilerContext *GetCompilerContext() const
+    public_lib::Context *GetContext() const
     {
-        ASSERT(compilerCtx_);
-        return compilerCtx_;
+        ASSERT(context_);
+        return context_;
     }
 
     void SetGenStdLib(bool genStdLib)
@@ -253,7 +257,7 @@ protected:
 private:
     parser::Program *program_ {};
     ArenaAllocator *allocator_ {};
-    compiler::CompilerContext *compilerCtx_ {};
+    public_lib::Context *context_ {};
     GlobalScope *topScope_ {};
     Scope *scope_ {};
     VariableScope *varScope_ {};
@@ -295,22 +299,22 @@ public:
         // NOLINTNEXTLINE(readability-braces-around-statements)
         if constexpr (std::is_same_v<T, FunctionParamScope>) {
             varbinder->varScope_ = scope->GetFunctionScope();
-            varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
+            varbinder->varScope_->CheckDirectEval(varbinder->context_);
             // NOLINTNEXTLINE(readability-braces-around-statements,readability-misleading-indentation)
         } else if constexpr (std::is_same_v<T, FunctionScope>) {
             varbinder->varScope_ = scope;
-            varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
+            varbinder->varScope_->CheckDirectEval(varbinder->context_);
             // NOLINTNEXTLINE(readability-braces-around-statements,readability-misleading-indentation)
         } else if constexpr (std::is_same_v<T, LoopScope>) {
             if (scope->IsLoopScope()) {
                 varbinder->varScope_ = scope;
-                varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
+                varbinder->varScope_->CheckDirectEval(varbinder->context_);
             }
             // NOLINTNEXTLINE(readability-braces-around-statements,readability-misleading-indentation)
         } else if constexpr (std::is_same_v<T, LoopDeclarationScope>) {
             if (scope->IsLoopDeclarationScope()) {
                 varbinder->varScope_ = scope;
-                varbinder->varScope_->CheckDirectEval(varbinder->compilerCtx_);
+                varbinder->varScope_->CheckDirectEval(varbinder->context_);
             }
         }
 

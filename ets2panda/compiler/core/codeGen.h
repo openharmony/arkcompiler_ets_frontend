@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,19 +69,19 @@ class CodeGen {
 public:
     using TypeMap = ArenaUnorderedMap<VReg, const checker::Type *>;
 
-    explicit CodeGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                     varbinder::FunctionScope *scope, ProgramElement *programElement, AstCompiler *astcompiler) noexcept
-        : astCompiler_(astcompiler),
+    explicit CodeGen(ArenaAllocator *allocator, RegSpiller *spiller, public_lib::Context *context,
+                     std::tuple<varbinder::FunctionScope *, ProgramElement *, AstCompiler *> toCompile) noexcept
+        : astCompiler_(std::get<AstCompiler *>(toCompile)),
           allocator_(allocator),
           context_(context),
           debugInfo_(allocator_),
-          topScope_(scope),
+          topScope_(std::get<varbinder::FunctionScope *>(toCompile)),
           scope_(topScope_),
-          rootNode_(scope->Node()),
+          rootNode_(scope_->Node()),
           insns_(allocator_->Adapter()),
           catchList_(allocator_->Adapter()),
           typeMap_(allocator_->Adapter()),
-          programElement_(programElement),
+          programElement_(std::get<ProgramElement *>(toCompile)),
           sa_(this),
           ra_(this, spiller),
           rra_(this, spiller)
@@ -148,7 +148,7 @@ public:
 
     [[nodiscard]] virtual const checker::Type *GetVRegType(VReg vreg) const;
 
-    [[nodiscard]] CompilerContext *Context() const noexcept;
+    [[nodiscard]] public_lib::Context *Context() const noexcept;
 
     [[nodiscard]] virtual checker::Type const *TypeForVar(varbinder::Variable const *var) const noexcept;
 
@@ -168,7 +168,7 @@ protected:
 private:
     AstCompiler *astCompiler_;
     ArenaAllocator *allocator_ {};
-    CompilerContext *context_ {};
+    public_lib::Context *context_ {};
     DebugInfo debugInfo_;
     varbinder::FunctionScope *topScope_ {};
     varbinder::Scope *scope_ {};

@@ -20,7 +20,6 @@
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "compiler/base/literals.h"
-#include "compiler/core/compilerContext.h"
 #include "compiler/core/codeGen.h"
 #include "compiler/core/regSpiller.h"
 #include "compiler/debugger/debuginfoDumper.h"
@@ -29,6 +28,13 @@
 #include "parser/program/program.h"
 #include "checker/types/type.h"
 #include "generated/isa.h"
+#include "macros.h"
+#include "public/public.h"
+
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
 
 namespace ark::es2panda::compiler {
 using LiteralPair = std::pair<pandasm::LiteralArray::Literal, pandasm::LiteralArray::Literal>;
@@ -339,7 +345,7 @@ void FunctionEmitter::GenVariablesDebugInfo(pandasm::Function *func)
 
 // Emitter
 
-Emitter::Emitter(const CompilerContext *context) : context_(context)
+Emitter::Emitter(const public_lib::Context *context) : context_(context)
 {
     prog_ = new pandasm::Program();
 }
@@ -463,7 +469,7 @@ pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, std::string_view globalC
         dumper.Dump();
     }
 
-    if (context_->VarBinder()->IsGenStdLib()) {
+    if (context_->parserProgram->VarBinder()->IsGenStdLib()) {
         auto it = prog_->recordTable.find(std::string(globalClass));
         if (it != prog_->recordTable.end()) {
             prog_->recordTable.erase(it);

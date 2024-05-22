@@ -15,7 +15,6 @@
 
 #include "lexer/token/tokenType.h"
 #include "parser/parserFlags.h"
-#include "compiler/core/compilerContext.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"

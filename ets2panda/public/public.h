@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,10 +34,13 @@ class Phase;
 
 namespace ark::es2panda::public_lib {
 struct ConfigImpl {
-    util::Options *options;
+    const util::Options *options;
 };
 
 struct Context {
+    using CodeGenCb =
+        std::function<void(public_lib::Context *context, varbinder::FunctionScope *, compiler::ProgramElement *)>;
+
     ConfigImpl *config = nullptr;
     std::string sourceFileName;
     std::string input;
@@ -46,13 +49,14 @@ struct Context {
     compiler::CompileQueue *queue = nullptr;
     std::vector<util::Plugin> const *plugins = nullptr;
     std::vector<compiler::Phase *> phases;
+    std::vector<compiler::LiteralBuffer> contextLiterals;
+    CodeGenCb codeGenCb;
     size_t currentPhase = 0;
 
     parser::Program *parserProgram = nullptr;
     parser::ParserImpl *parser = nullptr;
     checker::Checker *checker = nullptr;
     checker::SemanticAnalyzer *analyzer = nullptr;
-    compiler::CompilerContext *compilerContext = nullptr;
     compiler::Emitter *emitter = nullptr;
     pandasm::Program *program = nullptr;
 

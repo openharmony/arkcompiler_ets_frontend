@@ -402,13 +402,13 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     delete cfg;
 }
 
-static void CompileJob(compiler::CompilerContext *context, varbinder::FunctionScope *scope,
+static void CompileJob(public_lib::Context *context, varbinder::FunctionScope *scope,
                        compiler::ProgramElement *programElement)
 {
     compiler::StaticRegSpiller regSpiller;
     ArenaAllocator allocator {SpaceType::SPACE_TYPE_COMPILER, nullptr, true};
     compiler::ETSCompiler astCompiler {};
-    compiler::ETSGen cg {&allocator, &regSpiller, context, scope, programElement, &astCompiler};
+    compiler::ETSGen cg {&allocator, &regSpiller, context, std::make_tuple(scope, programElement, &astCompiler)};
     compiler::ETSFunctionEmitter funcEmitter {&cg, programElement};
     funcEmitter.Generate();
 }
@@ -420,6 +420,7 @@ static es2panda_Context *CreateContext(es2panda_Config *config, std::string cons
     auto *res = new Context;
     res->input = source;
     res->sourceFileName = fileName;
+    res->config = cfg;
 
     try {
         res->sourceFile = new SourceFile(res->sourceFileName, res->input, cfg->options->ParseModule());
@@ -437,14 +438,11 @@ static es2panda_Context *CreateContext(es2panda_Config *config, std::string cons
 
         varbinder->SetProgram(res->parserProgram);
 
-        res->compilerContext =
-            new compiler::CompilerContext(varbinder, res->checker, cfg->options->CompilerOptions(), CompileJob);
-        varbinder->SetCompilerContext(res->compilerContext);
+        varbinder->SetContext(res);
+        res->codeGenCb = CompileJob;
         res->phases = compiler::GetPhaseList(ScriptExtension::ETS);
         res->currentPhase = 0;
-        res->emitter = new compiler::ETSEmitter(res->compilerContext);
-        res->compilerContext->SetEmitter(res->emitter);
-        res->compilerContext->SetParser(res->parser);
+        res->emitter = new compiler::ETSEmitter(res);
         res->program = nullptr;
         res->state = ES2PANDA_STATE_NEW;
     } catch (Error &e) {
@@ -491,9 +489,8 @@ static Context *Parse(Context *ctx)
         return ctx;
     }
     try {
-        ctx->parser->ParseScript(*ctx->sourceFile,
-                                 ctx->compilerContext->Options()->compilationMode == CompilationMode::GEN_STD_LIB);
-        ctx->parserProgram = ctx->compilerContext->VarBinder()->Program();
+        ctx->parser->ParseScript(*ctx->sourceFile, ctx->config->options->CompilerOptions().compilationMode ==
+                                                       CompilationMode::GEN_STD_LIB);
         ctx->state = ES2PANDA_STATE_PARSED;
     } catch (Error &e) {
         std::stringstream ss;
@@ -606,25 +603,26 @@ static Context *GenerateAsm(Context *ctx)
 
     ASSERT(ctx->state == ES2PANDA_STATE_LOWERED);
 
-    auto *emitter = ctx->compilerContext->GetEmitter();
+    auto *emitter = ctx->emitter;
     try {
         emitter->GenAnnotation();
 
         // Handle context literals.
         uint32_t index = 0;
-        for (const auto &buff : ctx->compilerContext->ContextLiterals()) {
+        for (const auto &buff : ctx->contextLiterals) {
             emitter->AddLiteralBuffer(buff, index++);
         }
 
-        emitter->LiteralBufferIndex() += ctx->compilerContext->ContextLiterals().size();
+        emitter->LiteralBufferIndex() += ctx->contextLiterals.size();
 
         /* Main thread can also be used instead of idling */
-        ctx->queue->Schedule(ctx->compilerContext);
+        ctx->queue->Schedule(ctx);
         ctx->queue->Consume();
         ctx->queue->Wait(
             [emitter](compiler::CompileJob *job) { emitter->AddProgramElement(job->GetProgramElement()); });
         ASSERT(ctx->program == nullptr);
-        ctx->program = emitter->Finalize(ctx->compilerContext->DumpDebugInfo(), compiler::Signatures::ETS_GLOBAL);
+        ctx->program =
+            emitter->Finalize(ctx->config->options->CompilerOptions().dumpDebugInfo, compiler::Signatures::ETS_GLOBAL);
 
         ctx->state = ES2PANDA_STATE_ASM_GENERATED;
     } catch (Error &e) {
@@ -700,7 +698,6 @@ extern "C" void DestroyContext(es2panda_Context *context)
     auto *ctx = reinterpret_cast<Context *>(context);
     delete ctx->program;
     delete ctx->emitter;
-    delete ctx->compilerContext;
     delete ctx->analyzer;
     delete ctx->checker;
     delete ctx->parser;
@@ -726,7 +723,7 @@ extern "C" char const *ContextErrorMessage(es2panda_Context *context)
 extern "C" es2panda_Program *ContextProgram(es2panda_Context *context)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
-    return reinterpret_cast<es2panda_Program *>(ctx->compilerContext->VarBinder()->Program());
+    return reinterpret_cast<es2panda_Program *>(ctx->parserProgram);
 }
 
 extern "C" es2panda_AstNode *ProgramAst(es2panda_Program *program)

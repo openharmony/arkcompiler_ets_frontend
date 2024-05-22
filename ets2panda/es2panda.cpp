@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -71,7 +71,7 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options, uint32_t parseStatus)
+pandasm::Program *Compiler::Compile(const SourceFile &input, const util::Options &options, uint32_t parseStatus)
 {
     try {
         return compiler_->Compile(compiler::CompilationUnit {input, options, parseStatus, ext_});

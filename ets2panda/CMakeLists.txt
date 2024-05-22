@@ -117,7 +117,6 @@ set(ES2PANDA_LIB_SRC
   compiler/core/codeGen.cpp
   compiler/core/compileJob.cpp
   compiler/core/compileQueue.cpp
-  compiler/core/compilerContext.cpp
   compiler/core/compilerImpl.cpp
   compiler/core/dynamicContext.cpp
   compiler/core/emitter.cpp
