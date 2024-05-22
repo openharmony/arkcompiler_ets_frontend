@@ -356,10 +356,18 @@ checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
     // Launch expression returns a Promise<T> type, so we need to insert the expression's type
     // as type parameter for the Promise class.
 
-    auto *exprType =
-        expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) && !expr->expr_->TsType()->IsETSVoidType()
-            ? checker->PrimitiveTypeAsETSBuiltinType(expr->expr_->TsType())
-            : expr->expr_->TsType();
+    auto exprType = [&checker](auto *tsType) {
+        if (tsType->IsETSVoidType()) {
+            return checker->GlobalETSUndefinedType();
+        }
+
+        if (tsType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+            return checker->PrimitiveTypeAsETSBuiltinType(tsType);
+        }
+
+        return tsType;
+    }(expr->expr_->TsType());
+
     checker::Substitution *substitution = checker->NewSubstitution();
     ASSERT(launchPromiseType->TypeArguments().size() == 1);
     checker::ETSChecker::EmplaceSubstituted(
