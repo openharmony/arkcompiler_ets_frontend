@@ -98,22 +98,17 @@ namespace secharmony {
       }
 
       generator = getNameGenerator(profile.mNameGeneratorType, options);
-      let tempReservedFileNameOrPath: string[] = profile?.mReservedFileNames ?? [];
-      let tempReservedFileName: string[] = ['.', '..', ''];
-      tempReservedFileNameOrPath.map(fileNameOrPath => {
-        if (fileNameOrPath && fileNameOrPath.length > 0) {
-          const directories = FileUtils.splitFilePath(fileNameOrPath);
-          directories.forEach(directory => {
-            tempReservedFileName.push(directory);
-            const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(directory);
-            if (pathOrExtension.ext) {
-              tempReservedFileName.push(pathOrExtension.ext);
-              tempReservedFileName.push(pathOrExtension.path);
-            }
-          });
+      let configReservedFileName: string[] = profile?.mReservedFileNames ?? [];
+      const tempReservedName: string[] = ['.', '..', ''];
+      configReservedFileName.forEach(directory => {
+        tempReservedName.push(directory);
+        const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(directory);
+        if (pathOrExtension.ext) {
+          tempReservedName.push(pathOrExtension.ext);
+          tempReservedName.push(pathOrExtension.path);
         }
       });
-      reservedFileNames = new Set<string>(tempReservedFileName);
+      reservedFileNames = new Set<string>(tempReservedName);
       universalReservedFileNames = profile?.mUniversalReservedFileNames ?? [];
 
       return renameFileNameTransformer;
