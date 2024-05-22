@@ -508,21 +508,13 @@ export class ArkObfuscator {
     projectInfo?: ProjectInfo,
   ): Promise<ObfuscationResultType> {
     ArkObfuscator.projectInfo = projectInfo;
-    let ast: SourceFile;
     let result: ObfuscationResultType = { content: undefined };
     if (this.isObfsIgnoreFile(sourceFilePath)) {
       // need add return value
       return result;
     }
 
-    performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter, sourceFilePath);
-    if (typeof content === 'string') {
-      ast = TypeUtils.createObfSourceFile(sourceFilePath, content);
-    } else {
-      ast = content;
-    }
-    performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
-
+    let ast: SourceFile = this.createAst(content, sourceFilePath);
     if (ast.statements.length === 0) {
       return result;
     }
@@ -536,6 +528,38 @@ export class ArkObfuscator {
     }
     ArkObfuscator.isKeptCurrentFile = this.isCurrentFileInKeepPaths(this.mCustomProfiles, originalFilePath);
 
+    this.handleDeclarationFile(ast);
+
+    ast = this.obfuscateAst(ast);
+
+    this.writeObfuscationResult(ast, sourceFilePath, result, previousStageSourceMap, originalFilePath);
+
+    this.clearCaches();
+    return result;
+  }
+
+  private createAst(content: SourceFile | string, sourceFilePath: string): SourceFile {
+    performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter, sourceFilePath);
+    let ast: SourceFile;
+    if (typeof content === 'string') {
+      ast = TypeUtils.createObfSourceFile(sourceFilePath, content);
+    } else {
+      ast = content;
+    }
+    performancePrinter?.singleFilePrinter?.endEvent(EventList.CREATE_AST, performancePrinter.timeSumPrinter);
+
+    return ast;
+  }
+
+  private obfuscateAst(ast: SourceFile): SourceFile {
+    performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
+    let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
+    performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
+    ast = transformedResult.transformed[0] as SourceFile;
+    return ast;
+  }
+
+  private handleDeclarationFile(ast: SourceFile): void {
     if (ast.isDeclarationFile) {
       if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable) {
         //@ts-ignore
@@ -555,12 +579,13 @@ export class ArkObfuscator {
       //@ts-ignore
       ast.universalReservedComments = this.mCustomProfiles.mRemoveComments ? [] : undefined;
     }
+  }
 
-    performancePrinter?.singleFilePrinter?.startEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
-    let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
-    performancePrinter?.singleFilePrinter?.endEvent(EventList.OBFUSCATE_AST, performancePrinter.timeSumPrinter);
-    ast = transformedResult.transformed[0] as SourceFile;
-
+  /**
+   * write obfuscated code, sourcemap and namecache
+   */
+  private writeObfuscationResult(ast: SourceFile, sourceFilePath: string, result: ObfuscationResultType,
+    previousStageSourceMap?: RawSourceMap, originalFilePath?: string): void {
     // convert ast to output source file and generate sourcemap if needed.
     let sourceMapGenerator: SourceMapGenerator = undefined;
     if (this.mCustomProfiles.mEnableSourceMap) {
@@ -579,37 +604,44 @@ export class ArkObfuscator {
     result.content = this.mTextWriter.getText();
 
     if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
-      let sourceMapJson: RawSourceMap = sourceMapGenerator.toJSON();
-      sourceMapJson.sourceRoot = '';
-      sourceMapJson.file = path.basename(sourceFilePath);
-      if (previousStageSourceMap) {
-        sourceMapJson = mergeSourceMap(previousStageSourceMap as RawSourceMap, sourceMapJson);
-      }
-      result.sourceMap = sourceMapJson;
-      let nameCache = renameIdentifierModule.nameCache;
-      if (this.mCustomProfiles.mEnableNameCache) {
-        let newIdentifierCache!: Object;
-        let newMemberMethodCache!: Object;
-        if (previousStageSourceMap) {
-          // The process in sdk, need to use sourcemap mapping.
-          // 1: Only one file in the source map; 0: The first and the only one.
-          const sourceFileName = previousStageSourceMap.sources?.length === 1 ? previousStageSourceMap.sources[0] : '';
-          const source: Source = new Source(sourceFileName, null);
-          const decodedSourceMap: ExistingDecodedSourceMap = decodeSourcemap(previousStageSourceMap);
-          let sourceMapLink: SourceMapLink = new SourceMapLink(decodedSourceMap, [source]);
-          newIdentifierCache = this.convertLineBasedOnSourceMap(IDENTIFIER_CACHE, sourceMapLink);
-          newMemberMethodCache = this.convertLineBasedOnSourceMap(MEM_METHOD_CACHE, sourceMapLink);
-        } else {
-          // The process in Arkguard.
-          newIdentifierCache = this.convertLineBasedOnSourceMap(IDENTIFIER_CACHE);
-          newMemberMethodCache = this.convertLineBasedOnSourceMap(MEM_METHOD_CACHE);
-        }
-        nameCache.set(IDENTIFIER_CACHE, newIdentifierCache);
-        nameCache.set(MEM_METHOD_CACHE, newMemberMethodCache);
-        result.nameCache = { [IDENTIFIER_CACHE]: newIdentifierCache, [MEM_METHOD_CACHE]: newMemberMethodCache };
-      }
+      this.handleSourceMapAndNameCache(sourceMapGenerator, sourceFilePath, result, previousStageSourceMap);
     }
+  }
 
+  private handleSourceMapAndNameCache(sourceMapGenerator: SourceMapGenerator, sourceFilePath: string,
+    result: ObfuscationResultType, previousStageSourceMap?: RawSourceMap): void {
+    let sourceMapJson: RawSourceMap = sourceMapGenerator.toJSON();
+    sourceMapJson.sourceRoot = '';
+    sourceMapJson.file = path.basename(sourceFilePath);
+    if (previousStageSourceMap) {
+      sourceMapJson = mergeSourceMap(previousStageSourceMap as RawSourceMap, sourceMapJson);
+    }
+    result.sourceMap = sourceMapJson;
+    let nameCache = renameIdentifierModule.nameCache;
+    if (this.mCustomProfiles.mEnableNameCache) {
+      let newIdentifierCache!: Object;
+      let newMemberMethodCache!: Object;
+      if (previousStageSourceMap) {
+        // The process in sdk, need to use sourcemap mapping.
+        // 1: Only one file in the source map; 0: The first and the only one.
+        const sourceFileName = previousStageSourceMap.sources?.length === 1 ? previousStageSourceMap.sources[0] : '';
+        const source: Source = new Source(sourceFileName, null);
+        const decodedSourceMap: ExistingDecodedSourceMap = decodeSourcemap(previousStageSourceMap);
+        let sourceMapLink: SourceMapLink = new SourceMapLink(decodedSourceMap, [source]);
+        newIdentifierCache = this.convertLineBasedOnSourceMap(IDENTIFIER_CACHE, sourceMapLink);
+        newMemberMethodCache = this.convertLineBasedOnSourceMap(MEM_METHOD_CACHE, sourceMapLink);
+      } else {
+        // The process in Arkguard.
+        newIdentifierCache = this.convertLineBasedOnSourceMap(IDENTIFIER_CACHE);
+        newMemberMethodCache = this.convertLineBasedOnSourceMap(MEM_METHOD_CACHE);
+      }
+      nameCache.set(IDENTIFIER_CACHE, newIdentifierCache);
+      nameCache.set(MEM_METHOD_CACHE, newMemberMethodCache);
+      result.nameCache = { [IDENTIFIER_CACHE]: newIdentifierCache, [MEM_METHOD_CACHE]: newMemberMethodCache };
+    }
+  }
+
+  private clearCaches(): void {
     // clear cache of text writer
     this.mTextWriter.clear();
     if (renameIdentifierModule.nameCache) {
@@ -619,7 +651,6 @@ export class ArkObfuscator {
     }
 
     renameIdentifierModule.historyNameCache = undefined;
-    return result;
   }
 }
 
