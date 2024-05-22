@@ -877,8 +877,38 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
         checker->ThrowTypeError("'await' expressions require Promise object as argument.", expr->Argument()->Start());
     }
 
-    expr->SetTsType(argType->AsETSObjectType()->TypeArguments().at(0));
+    Type *type = argType->AsETSObjectType()->TypeArguments().at(0);
+    expr->SetTsType(UnwrapPromiseType(type));
     return expr->TsType();
+}
+
+checker::Type *ETSAnalyzer::UnwrapPromiseType(checker::Type *type) const
+{
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *promiseType = checker->GlobalBuiltinPromiseType();
+    while (type->IsETSObjectType() && type->AsETSObjectType()->GetOriginalBaseType() == promiseType) {
+        type = type->AsETSObjectType()->TypeArguments().at(0);
+    }
+    if (!type->IsETSUnionType()) {
+        return type;
+    }
+    const auto &ctypes = type->AsETSUnionType()->ConstituentTypes();
+    auto it = std::find_if(ctypes.begin(), ctypes.end(), [promiseType](checker::Type *t) {
+        return t == promiseType || (t->IsETSObjectType() && t->AsETSObjectType()->GetBaseType() == promiseType);
+    });
+    if (it == ctypes.end()) {
+        return type;
+    }
+    ArenaVector<Type *> newCTypes(ctypes);
+    do {
+        size_t index = it - ctypes.begin();
+        newCTypes[index] = UnwrapPromiseType(ctypes[index]);
+        ++it;
+        it = std::find_if(it, ctypes.end(), [promiseType](checker::Type *t) {
+            return t == promiseType || t->AsETSObjectType()->GetBaseType() == promiseType;
+        });
+    } while (it != ctypes.end());
+    return checker->CreateETSUnionType(std::move(newCTypes));
 }
 
 checker::Type *ETSAnalyzer::Check(ir::BinaryExpression *expr) const
