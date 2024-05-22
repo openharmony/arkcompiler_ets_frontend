@@ -32,7 +32,11 @@
             "sub_component": [
                 "//arkcompiler/ets_frontend:ets_frontend_build"
             ],
-            "inner_kits": [],
+            "inner_kits": [
+                {
+                    "name": "//arkcompiler/ets_frontend/ets2panda/aot:es2panda"
+                }
+            ],
             "test": [
                 "//arkcompiler/ets_frontend/es2panda:es2abc_tests"
             ]
