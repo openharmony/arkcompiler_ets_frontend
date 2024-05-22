@@ -28,6 +28,7 @@ import {
 import type {
   BindingElement,
   ClassElement,
+  Expression,
   Identifier,
   Node,
   SourceFile,
@@ -79,8 +80,14 @@ namespace secharmony {
          * `let info = {name1: name1};`
          */
         if (isShorthandPropertyAssignment((node))) {
-          // update parent
-          return factory.createPropertyAssignment(factory.createIdentifier(node.name.text), node.name);
+          let initializer = node.objectAssignmentInitializer;
+          let expression: Expression = node.name;
+          if (initializer) {
+            expression = factory.createBinaryExpression(node.name, node.equalsToken, initializer);
+          }
+
+          let identifier = factory.createIdentifier(node.name.escapedText.toString());
+          return factory.createPropertyAssignment(identifier, expression);
         }
 
         /**
