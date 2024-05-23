@@ -195,18 +195,27 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
     }
 }
 
-void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc,
-                                   const lexer::SourcePosition &position, const std::string &methodName)
+static bool HasIteratorInterface(ETSObjectType const *const objectType)
 {
-    const auto hasIteratorInterface = [](ETSObjectType const *const objectType) -> bool {
-        for (const auto *const interface : objectType->Interfaces()) {
-            if (interface->Name().Is(ir::ITERATOR_INTERFACE_NAME)) {
+    auto const hasIteratorInterfaceImpl = [](ETSObjectType const *const checkType,
+                                             auto &&iteratorInterfaceImpl) -> bool {
+        if (checkType->Name().Is(ir::ITERATOR_INTERFACE_NAME)) {
+            return true;
+        }
+        for (const auto *const interface : checkType->Interfaces()) {
+            if (iteratorInterfaceImpl(interface, iteratorInterfaceImpl)) {
                 return true;
             }
         }
         return false;
     };
 
+    return hasIteratorInterfaceImpl(objectType, hasIteratorInterfaceImpl);
+}
+
+void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc,
+                                   const lexer::SourcePosition &position, const std::string &methodName)
+{
     const auto *returnType = scriptFunc->Signature()->ReturnType();
 
     if (returnType == nullptr) {
@@ -217,13 +226,13 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
         returnType = checker->GetApparentType(returnType->AsETSTypeParameter()->GetConstraintType());
     }
 
-    if (returnType->IsETSObjectType() && hasIteratorInterface(returnType->AsETSObjectType())) {
+    if (returnType->IsETSObjectType() && HasIteratorInterface(returnType->AsETSObjectType())) {
         return;
     }
 
     while (returnType->IsETSObjectType() && returnType->AsETSObjectType()->SuperType() != nullptr) {
         returnType = returnType->AsETSObjectType()->SuperType();
-        if (returnType->IsETSObjectType() && hasIteratorInterface(returnType->AsETSObjectType())) {
+        if (returnType->IsETSObjectType() && HasIteratorInterface(returnType->AsETSObjectType())) {
             return;
         }
     }
