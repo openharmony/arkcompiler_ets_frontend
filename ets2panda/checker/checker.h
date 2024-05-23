@@ -203,11 +203,11 @@ private:
     parser::Program *program_ {};
     varbinder::Scope *scope_ {};
 
-    RelationHolder identicalResults_;
-    RelationHolder assignableResults_;
-    RelationHolder comparableResults_;
-    RelationHolder uncheckedCastableResults_;
-    RelationHolder supertypeResults_;
+    RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
+    RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};
+    RelationHolder comparableResults_ {{}, RelationType::COMPARABLE};
+    RelationHolder uncheckedCastableResults_ {{}, RelationType::UNCHECKED_CASTABLE};
+    RelationHolder supertypeResults_ {{}, RelationType::SUPERTYPE};
 
     std::unordered_set<const void *> typeStack_;
 };

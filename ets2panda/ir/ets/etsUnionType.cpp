@@ -59,7 +59,7 @@ checker::Type *ETSUnionType::Check([[maybe_unused]] checker::TSChecker *checker)
     return nullptr;
 }
 
-checker::Type *ETSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ETSUnionType::Check(checker::ETSChecker *checker)
 {
     for (auto *it : types_) {
         it->Check(checker);
@@ -68,7 +68,7 @@ checker::Type *ETSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker
     return GetType(checker);
 }
 
-checker::Type *ETSUnionType::GetType([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ETSUnionType::GetType(checker::ETSChecker *checker)
 {
     if (TsType() != nullptr) {
         return TsType();

@@ -476,7 +476,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
 
     checker::Type *tsType {};
     auto [promotedType, bothConst] =
-        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_NUMERIC, !isEqualOp);
+        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_PRIMITIVE, !isEqualOp);
 
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
@@ -485,8 +485,13 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
         return {GlobalETSBooleanType(), CreateETSUnionType({MaybeBoxExpression(left), MaybeBoxExpression(right)})};
     }
 
+    if (unboxedL->IsETSBooleanType() ^ unboxedR->IsETSBooleanType()) {
+        ThrowTypeError(
+            {"Operator '", operationType, "' cannot be applied to types '", leftType, "' and '", rightType, "'."}, pos);
+    }
+
     if (promotedType == nullptr && !bothConst) {
-        ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        ThrowTypeError("Bad operand type, the types of the operands must be numeric or boolean type.", pos);
     }
 
     if (bothConst) {

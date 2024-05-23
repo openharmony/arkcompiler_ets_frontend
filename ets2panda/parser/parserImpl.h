@@ -301,6 +301,7 @@ protected:
         return false;
     }
 
+    util::StringView ParseSymbolIteratorIdentifier() const noexcept;
     ir::Identifier *ExpectIdentifier(bool isReference = false, bool isUserDefinedType = false);
     void ExpectToken(lexer::TokenType tokenType, bool consumeToken = true);
 

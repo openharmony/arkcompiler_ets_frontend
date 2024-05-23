@@ -19,7 +19,7 @@ function assert_ccexc(f: () => void) {
         f();
         assert false : "exception expected";
     } catch (e) {
-        assert(e instanceof ClassCastException);
+        assert(e instanceof ClassCastError);
     }
 }
 

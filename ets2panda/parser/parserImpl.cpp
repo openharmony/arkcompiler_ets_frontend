@@ -1120,23 +1120,67 @@ ArenaVector<ir::Expression *> &ParserImpl::ParseExpressionsArrayFormatPlaceholde
     ThrowSyntaxError("ArenaVector of ir::Expression *'s expected.");
 }
 
+util::StringView ParserImpl::ParseSymbolIteratorIdentifier() const noexcept
+{
+    // Duplicate check - just in case of improper call!
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+        return util::StringView {};
+    }
+
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT || !lexer_->GetToken().Ident().Is("Symbol")) {
+        return util::StringView {};
+    }
+
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_PERIOD) {
+        return util::StringView {};
+    }
+
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT || !lexer_->GetToken().Ident().Is("iterator")) {
+        return util::StringView {};
+    }
+
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+        return util::StringView {};
+    }
+
+    //  Just replace '[Symbol.iterator]` identifier with the standard '$_iterator' name.
+    return util::StringView {compiler::Signatures::ITERATOR_METHOD};
+}
+
 ir::Identifier *ParserImpl::ExpectIdentifier(bool isReference, bool isUserDefinedType)
 {
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
+    auto const &token = lexer_->GetToken();
+    auto const tokenType = token.Type();
+    if (tokenType == lexer::TokenType::PUNCTUATOR_FORMAT) {
         return ParseIdentifierFormatPlaceholder(std::nullopt);
     }
 
-    if (lexer_->GetToken().IsDefinableTypeName() && isUserDefinedType) {
+    if (token.IsDefinableTypeName() && isUserDefinedType) {
         ThrowSyntaxError("Cannot be used as user-defined type.");
     }
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Identifier expected.");
+    auto const &tokenStart = token.Start();
+    util::StringView tokenName {};
+
+    if (tokenType == lexer::TokenType::LITERAL_IDENT) {
+        tokenName = token.Ident();
+    } else if (tokenType == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+        // Special case for processing of special '[Symbol.iterator]` identifier using in stdlib.
+        tokenName = ParseSymbolIteratorIdentifier();
     }
 
-    auto *ident = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    if (tokenName.Empty()) {
+        ThrowSyntaxError("Identifier expected.", tokenStart);
+    }
+
+    auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
     ident->SetReference(isReference);
-    ident->SetRange(lexer_->GetToken().Loc());
+    //  NOTE: here actual token can be changed!
+    ident->SetRange({tokenStart, lexer_->GetToken().End()});
 
     lexer_->NextToken();
 

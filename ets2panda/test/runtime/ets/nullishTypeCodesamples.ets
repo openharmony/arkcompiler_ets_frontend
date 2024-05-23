@@ -116,12 +116,12 @@ function main() {
     try {
         new DTree<string | number>().up();
         assert(false);
-    } catch (e: NullPointerException) { }
+    } catch (e: NullPointerError) { }
     testb();
     try {
         testf(123);
         assert(false);
-    } catch (e: NullPointerException) { }
+    } catch (e: NullPointerError) { }
     assert((testcond() instanceof Int) && (testcond() == 1));
 
     foo(123);

@@ -44,7 +44,7 @@ function main(): void {
 
     try {
         let residence = (john as Person).residence;
-    } catch (e: ClassCastException) {
+    } catch (e: ClassCastError) {
         test = true;
     }
     assert(test == true);
@@ -54,7 +54,7 @@ function main(): void {
 
     try {
         let numbers: int = john!.residence.numberOfRooms;
-    } catch (e: NullPointerException) {
+    } catch (e: NullPointerError) {
         test = true;
     }
     assert(test == true);
@@ -63,7 +63,7 @@ function main(): void {
     assert(test == false);
     try {
         let numbers: int = foo() + bar() + john!.residence.numberOfRooms;
-    } catch (e: NullPointerException) {
+    } catch (e: NullPointerError) {
         test = true;
     }
     assert(test == true);

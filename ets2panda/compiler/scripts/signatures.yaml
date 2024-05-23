@@ -218,12 +218,12 @@ builtins:
   - name: Throwable
     package: PKG_STD_CORE
     ref: BUILTIN_THROWABLE
-  - name: NullPointerException
+  - name: NullPointerError
     package: PKG_STD_CORE
-    ref: BUILTIN_NULLPOINTER_EXCEPTION
-  - name: ClassCastException
+    ref: BUILTIN_NULLPOINTER_ERROR
+  - name: ClassCastError
     package: PKG_STD_CORE
-    ref: BUILTIN_CLASS_CAST_EXCEPTION
+    ref: BUILTIN_CLASS_CAST_ERROR
   - name: StringBuilder
     package: PKG_STD_CORE
     ref: BUILTIN_STRING_BUILDER
@@ -418,7 +418,7 @@ signatures:
   - callee: BUILTIN_RUNTIME
     method_name: failedTypeCastException
     params: [BUILTIN_OBJECT, BUILTIN_STRING]
-    return_type: BUILTIN_CLASS_CAST_EXCEPTION
+    return_type: BUILTIN_CLASS_CAST_ERROR
     ref: BUILTIN_RUNTIME_FAILED_TYPE_CAST_EXCEPTION
 
   - callee: BUILTIN_ERROR
@@ -571,17 +571,17 @@ signatures:
     return_type: BUILTIN_STRING
     ref: BUILTIN_RUNTIME_TYPEOF
 
-  - callee: BUILTIN_NULLPOINTER_EXCEPTION
+  - callee: BUILTIN_NULLPOINTER_ERROR
     method_name: $CTOR
     params: []
     return_type: PRIMITIVE_VOID
-    ref: BUILTIN_NULLPOINTER_EXCEPTION_CTOR
+    ref: BUILTIN_NULLPOINTER_ERROR_CTOR
 
-  - callee: BUILTIN_CLASS_CAST_EXCEPTION
+  - callee: BUILTIN_CLASS_CAST_ERROR
     method_name: $CTOR
     params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
-    ref: BUILTIN_CLASS_CAST_EXCEPTION_CTOR
+    ref: BUILTIN_CLASS_CAST_ERROR_CTOR
 
   - callee: BUILTIN_STRING_BUILDER
     method_name: $CTOR

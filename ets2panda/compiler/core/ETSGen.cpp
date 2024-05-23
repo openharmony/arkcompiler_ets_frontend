@@ -85,7 +85,7 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
     }
 
     auto const *const accType = GetAccumulatorType();
-    if (accType == expr->TsType()) {
+    if (accType == expr->TsType() || expr->TsType()->IsETSTypeParameter()) {
         return;
     }
 
@@ -2330,8 +2330,8 @@ void ETSGen::EmitNullishException(const ir::AstNode *node)
 {
     RegScope ra(this);
     VReg exception = AllocReg();
-    NewObject(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION);
-    CallThisStatic0(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION_CTOR);
+    NewObject(node, exception, Signatures::BUILTIN_NULLPOINTER_ERROR);
+    CallThisStatic0(node, exception, Signatures::BUILTIN_NULLPOINTER_ERROR_CTOR);
     EmitThrow(node, exception);
     SetAccumulatorType(nullptr);
 }

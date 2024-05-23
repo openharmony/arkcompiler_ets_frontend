@@ -17,7 +17,6 @@
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "checker/ETSchecker.h"
-#include "checker/ets/conversion.h"
 
 namespace ark::es2panda::checker {
 
@@ -30,7 +29,7 @@ void ETSTypeParameter::ToString(std::stringstream &ss, bool precise) const
     ss << declNode_->Name()->Name();
 }
 
-void ETSTypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
+void ETSTypeParameter::Identical(TypeRelation *relation, Type *other)
 {
     relation->Result(false);
     if (other->IsETSTypeParameter() && other->AsETSTypeParameter()->GetOriginal() == GetOriginal()) {
@@ -38,12 +37,12 @@ void ETSTypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[mayb
     }
 }
 
-bool ETSTypeParameter::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
+bool ETSTypeParameter::AssignmentSource(TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     return relation->IsAssignableTo(this->GetConstraintType(), target);
 }
 
-void ETSTypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
+void ETSTypeParameter::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsETSTypeParameter() && source->AsETSTypeParameter()->GetOriginal() == GetOriginal()) {
         relation->Result(true);

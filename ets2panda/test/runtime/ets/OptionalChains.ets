@@ -19,7 +19,7 @@ function assert_o(v: Object | null | undefined) { assert(v !== null && v !== und
 function assert_npe(f: () => void) {
     try {
         f();
-    } catch (e: NullPointerException) {
+    } catch (e: NullPointerError) {
         return;
     }
     assert("npe was not thrown");

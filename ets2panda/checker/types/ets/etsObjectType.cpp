@@ -21,7 +21,6 @@
 #include "checker/types/typeFlag.h"
 #include "checker/types/typeRelation.h"
 #include "checker/types/globalTypesHolder.h"
-#include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
 
@@ -941,7 +940,7 @@ void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringVie
     ss << compiler::Signatures::MANGLE_SEPARATOR;
 }
 
-std::uint32_t ETSObjectType::GetPrecedence(ETSObjectType const *type) noexcept
+std::uint32_t ETSObjectType::GetPrecedence(checker::ETSChecker *checker, ETSObjectType const *type) noexcept
 {
     ASSERT(type != nullptr);
     if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
@@ -959,10 +958,18 @@ std::uint32_t ETSObjectType::GetPrecedence(ETSObjectType const *type) noexcept
     if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
         return 5U;
     }
+    if (checker->Relation()->IsIdenticalTo(const_cast<ETSObjectType *>(type),
+                                           checker->GetGlobalTypesHolder()->GlobalIntegralBuiltinType())) {
+        return 5U;
+    }
     if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
         return 6U;
     }
     if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
+        return 7U;
+    }
+    if (checker->Relation()->IsIdenticalTo(const_cast<ETSObjectType *>(type),
+                                           checker->GetGlobalTypesHolder()->GlobalFloatingBuiltinType())) {
         return 7U;
     }
     if (type->HasObjectFlag(ETSObjectFlags::BUILTIN_BIGINT)) {

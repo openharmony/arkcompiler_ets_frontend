@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_FOR_OF_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_FOR_OF_STATEMENT_H
 
+#include <checker/types/signature.h>
 #include "ir/statements/loopStatement.h"
 
 namespace ark::es2panda::varbinder {
@@ -107,6 +108,9 @@ protected:
     [[nodiscard]] checker::Type *CheckIteratorMethod(checker::ETSChecker *checker);
     [[nodiscard]] checker::Type *CheckIteratorMethodForObject(checker::ETSChecker *checker,
                                                               checker::ETSObjectType *sourceType);
+    static void CheckReturnTypeOfIteratorMethod(checker::ETSChecker *checker, checker::ETSObjectType *sourceType,
+                                                checker::Signature *signature, const lexer::SourcePosition &position);
+    static bool CheckIteratorInterfaceForObject(checker::ETSChecker *checker, checker::ETSObjectType *obj);
 
 private:
     AstNode *left_;

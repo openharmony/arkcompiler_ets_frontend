@@ -16,7 +16,6 @@
 #include "ETSAnalyzerHelpers.h"
 
 namespace ark::es2panda::checker {
-
 void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker, checker::ETSObjectType *objType,
                                                        ir::ScriptFunction *extensionFunc, checker::Signature *signature)
 {
@@ -125,15 +124,6 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
 {
     auto const &position = scriptFunc->Start();
 
-    auto const hasIteratorInterface = [](ETSObjectType const *const objectType) -> bool {
-        for (auto const *const interface : objectType->Interfaces()) {
-            if (interface->Name().Is(ir::ITERATOR_INTERFACE_NAME)) {
-                return true;
-            }
-        }
-        return false;
-    };
-
     if (scriptFunc->IsSetter() && (scriptFunc->Signature()->ReturnType() != checker->GlobalVoidType())) {
         checker->ThrowTypeError("Setter must have void return type", position);
     }
@@ -154,31 +144,44 @@ void CheckPredefinedMethodReturnType(ETSChecker *checker, ir::ScriptFunction *sc
             checker->ThrowTypeError(methodName + "' should have void return type.", position);
         }
     } else if (name.Is(compiler::Signatures::ITERATOR_METHOD)) {
-        auto const *returnType = scriptFunc->Signature()->ReturnType();
+        CheckIteratorMethodReturnType(checker, scriptFunc, position, methodName);
+    }
+}
 
-        if (returnType == nullptr) {
-            checker->ThrowTypeError(methodName + "' doesn't have return type.", position);
+void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scriptFunc,
+                                   const lexer::SourcePosition &position, const std::string &methodName)
+{
+    const auto hasIteratorInterface = [](ETSObjectType const *const objectType) -> bool {
+        for (const auto *const interface : objectType->Interfaces()) {
+            if (interface->Name().Is(ir::ITERATOR_INTERFACE_NAME)) {
+                return true;
+            }
         }
+        return false;
+    };
 
-        if (returnType->IsETSTypeParameter()) {
-            returnType = checker->GetApparentType(returnType->AsETSTypeParameter()->GetConstraintType());
-        }
+    const auto *returnType = scriptFunc->Signature()->ReturnType();
 
-        if (returnType->IsETSUnionType() &&
-            returnType->AsETSUnionType()->AllOfConstituentTypes(
-                [hasIteratorInterface](checker::Type const *const constituentType) -> bool {
-                    return constituentType->IsETSObjectType() &&
-                           hasIteratorInterface(constituentType->AsETSObjectType());
-                })) {
-            return;
-        }
+    if (returnType == nullptr) {
+        checker->ThrowTypeError(methodName + "' doesn't have return type.", position);
+    }
 
+    if (returnType->IsETSTypeParameter()) {
+        returnType = checker->GetApparentType(returnType->AsETSTypeParameter()->GetConstraintType());
+    }
+
+    if (returnType->IsETSObjectType() && hasIteratorInterface(returnType->AsETSObjectType())) {
+        return;
+    }
+
+    while (returnType->IsETSObjectType() && returnType->AsETSObjectType()->SuperType() != nullptr) {
+        returnType = returnType->AsETSObjectType()->SuperType();
         if (returnType->IsETSObjectType() && hasIteratorInterface(returnType->AsETSObjectType())) {
             return;
         }
-
-        checker->ThrowTypeError(methodName + "' has invalid return type.", position);
     }
+
+    checker->ThrowTypeError(methodName + "' has invalid return type.", position);
 }
 
 checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expression *callee,

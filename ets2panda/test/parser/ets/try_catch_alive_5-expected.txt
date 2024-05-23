@@ -316,7 +316,7 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 38
+                                "column": 34
                               },
                               "end": {
                                 "line": 22,
@@ -333,7 +333,7 @@
                                 "type": "ETSTypeReferencePart",
                                 "name": {
                                   "type": "Identifier",
-                                  "name": "ArithmeticException",
+                                  "name": "ArithmeticError",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -342,7 +342,7 @@
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 36
+                                      "column": 32
                                     }
                                   }
                                 },
@@ -353,7 +353,7 @@
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 37
+                                    "column": 33
                                   }
                                 }
                               },
@@ -364,7 +364,7 @@
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 37
+                                  "column": 33
                                 }
                               }
                             },
@@ -427,7 +427,7 @@
                             "loc": {
                               "start": {
                                 "line": 22,
-                                "column": 37
+                                "column": 33
                               },
                               "end": {
                                 "line": 24,
@@ -444,7 +444,7 @@
                                 "type": "ETSTypeReferencePart",
                                 "name": {
                                   "type": "Identifier",
-                                  "name": "ClassCastException",
+                                  "name": "ClassCastError",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -453,7 +453,7 @@
                                     },
                                     "end": {
                                       "line": 22,
-                                      "column": 35
+                                      "column": 31
                                     }
                                   }
                                 },
@@ -464,7 +464,7 @@
                                   },
                                   "end": {
                                     "line": 22,
-                                    "column": 36
+                                    "column": 32
                                   }
                                 }
                               },
@@ -475,7 +475,7 @@
                                 },
                                 "end": {
                                   "line": 22,
-                                  "column": 36
+                                  "column": 32
                                 }
                               }
                             },

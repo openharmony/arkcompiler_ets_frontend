@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,28 +18,28 @@ function main() : void {
 
     try {
         let result : int = 1 / 0;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 1;
 
     try {
         let result : long = 1 / 0;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 2;
 
     try {
         let result : int = 1 % 0;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 3;
 
     try {
         let result : long = 1 % 0;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 4;
@@ -51,28 +51,28 @@ function main() : void {
 
     try {
         let result : int = INT_ONE / INT_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 5;
 
     try {
         let result : long = LONG_ONE / LONG_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 6;
 
     try {
         let result : int = INT_ONE % INT_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 7;
 
     try {
         let result : long = LONG_ONE % LONG_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         caught_counter++;
     }
     assert caught_counter == 8;
@@ -82,37 +82,37 @@ function main() : void {
 
     try {
         let result : double = DOUBLE_ONE / DOUBLE_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         assert false;
     }
 
     try {
         let result = INT_ONE / DOUBLE_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         assert false;
     }
 
     try {
         let result = DOUBLE_ONE / INT_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         assert false;
     }
 
     try {
         let result : double = DOUBLE_ONE % DOUBLE_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         assert false;
     }
 
     try {
         let result = INT_ONE % DOUBLE_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         assert false;
     }
 
     try {
         let result = DOUBLE_ONE % INT_ZERO;
-    } catch (error: ArithmeticException) {
+    } catch (error: ArithmeticError) {
         assert false;
     }
 }

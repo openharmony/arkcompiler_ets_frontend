@@ -931,8 +931,8 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             typeAnn = DerefETSTypeReference(typeAnn);
         }
 
-        ASSERT(typeAnn->IsETSFunctionType());
-        InferTypesForLambda(lambda, typeAnn->AsETSFunctionType());
+        HandleLambdaTypeInfer(typeAnn, lambda);
+
         Type *const argumentType = GetApparentType(arrowFuncExpr->Check(this));
         Type *const parameterType = GetApparentType(signature->Params()[index]->TsType());
         const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(parameterType);
@@ -945,6 +945,23 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
         invocable &= invokationCtx.IsInvocable();
     }
     return invocable;
+}
+
+void ETSChecker::HandleLambdaTypeInfer(ir::AstNode *typeAnn, ir::ScriptFunction *const lambda)
+{
+    ASSERT(typeAnn->IsETSFunctionType() || typeAnn->IsETSUnionType());
+
+    if (typeAnn->IsETSFunctionType()) {
+        InferTypesForLambda(lambda, typeAnn->AsETSFunctionType());
+        return;
+    }
+
+    for (auto type : typeAnn->AsETSUnionType()->Types()) {
+        if (type->IsETSFunctionType()) {
+            InferTypesForLambda(lambda, type->AsETSFunctionType());
+            return;
+        }
+    }
 }
 
 bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)
