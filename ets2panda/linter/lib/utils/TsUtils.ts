@@ -517,8 +517,11 @@ export class TsUtils {
     if (!typeA.symbol?.declarations) {
       return false;
     }
-
+    const isBISendable = TsUtils.isISendableInterface(typeB);
     for (const typeADecl of typeA.symbol.declarations) {
+      if (isBISendable && ts.isClassDeclaration(typeADecl) && TsUtils.hasSendableDecorator(typeADecl)) {
+        return true;
+      }
       if (!ts.isClassDeclaration(typeADecl) && !ts.isInterfaceDeclaration(typeADecl) || !typeADecl.heritageClauses) {
         continue;
       }
