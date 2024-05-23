@@ -1,0 +1,164 @@
+.language ECMAScript
+
+.function any .#%#A(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	newlexenv 0x2
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+	lda.str b
+	sta v0
+	definefunc 0x0, .#%A*#, 0x0
+	callarg0 0x1
+	sta v1
+	stobjbyvalue 0x3, a3, v0
+	lda.str b
+	stobjbyvalue 0x5, a3, v1
+	lda.str c
+	sta v0
+	definefunc 0x7, .#%A*#^1, 0x0
+	callarg0 0x8
+	sta v1
+	stobjbyvalue 0xa, a3, v0
+	lda.str c
+	stobjbyvalue 0xc, a3, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#%#A^1(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	newlexenv 0x2
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+	lda.str d
+	sta v0
+	definefunc 0x0, .#%A^1*#, 0x0
+	callarg0 0x1
+	sta v1
+	stobjbyvalue 0x3, a3, v0
+	lda.str d
+	stobjbyvalue 0x5, a3, v1
+	lda.str e
+	sta v0
+	definefunc 0x7, .#%A^1*#^1, 0x0
+	callarg0 0x8
+	sta v1
+	stobjbyvalue 0xa, a3, v0
+	lda.str e
+	stobjbyvalue 0xc, a3, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#%A*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x1
+	return
+label_2: 
+}
+
+.function any .#%A*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x2
+	return
+label_2: 
+}
+
+.function any .#%A^1*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x1
+	return
+label_2: 
+}
+
+.function any .#%A^1*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x2
+	return
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_7: 
+label_0: 
+	ldundefined
+	sta v0
+	definefunc 0x0, .#%#A, 0x1
+	sta v1
+	lda v0
+	callruntime.istrue 0x1
+	jnez label_9
+label_2: 
+	createemptyobject
+	sta v0
+	mov v2, v0
+	jmp label_3
+label_9: 
+	mov v2, v0
+label_3: 
+	lda v1
+	callarg1 0x3, v2
+	definefunc 0x5, .#%#A^1, 0x1
+	sta v1
+	lda v0
+	callruntime.istrue 0x6
+	jnez label_6
+label_5: 
+	createemptyobject
+	sta v0
+label_6: 
+	lda v1
+	callarg1 0x8, v0
+	ldundefined
+	returnundefined
+label_8: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},

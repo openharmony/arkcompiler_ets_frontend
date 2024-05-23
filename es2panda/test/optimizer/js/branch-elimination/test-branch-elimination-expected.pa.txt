@@ -1,36 +1,6 @@
 .language ECMAScript
 
-.function any .func_main_0(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	definefunc 0x0, .testBool, 0x0
-	sta v0
-	definefunc 0x1, .testBBStruct, 0x0
-	sta v1
-	definefunc 0x2, .testFloatNumber, 0x0
-	sta v2
-	definefunc 0x3, .testIntNumber, 0x0
-	sta v3
-	definefunc 0x4, .testString, 0x0
-	sta v4
-	definefunc 0x5, .testTypeConvert, 0x0
-	callarg0 0x6
-	lda v3
-	callarg0 0x8
-	lda v2
-	callarg0 0xa
-	lda v0
-	callarg0 0xc
-	lda v4
-	callarg0 0xe
-	lda v1
-	callarg0 0x10
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any .testBBStruct(any a0, any a1, any a2) {
+.function any .#*#testBBStruct(any a0, any a1, any a2) {
 label_18: 
 label_1: 
 	tryldglobalbyname 0x4, print
@@ -44,7 +14,7 @@ label_1:
 label_19: 
 }
 
-.function any .testBool(any a0, any a1, any a2) {
+.function any .#*#testBool(any a0, any a1, any a2) {
 label_19: 
 label_17: 
 	tryldglobalbyname 0x17, print
@@ -58,7 +28,7 @@ label_17:
 label_20: 
 }
 
-.function any .testFloatNumber(any a0, any a1, any a2) {
+.function any .#*#testFloatNumber(any a0, any a1, any a2) {
 label_25: 
 label_23: 
 	tryldglobalbyname 0x1d, print
@@ -72,7 +42,7 @@ label_23:
 label_26: 
 }
 
-.function any .testIntNumber(any a0, any a1, any a2) {
+.function any .#*#testIntNumber(any a0, any a1, any a2) {
 label_25: 
 label_23: 
 	tryldglobalbyname 0x1d, print
@@ -86,7 +56,7 @@ label_23:
 label_26: 
 }
 
-.function any .testString(any a0, any a1, any a2) {
+.function any .#*#testString(any a0, any a1, any a2) {
 label_23: 
 label_0: 
 	lda.str 0
@@ -144,7 +114,7 @@ label_22:
 label_24: 
 }
 
-.function any .testTypeConvert(any a0, any a1, any a2) {
+.function any .#*#testTypeConvert(any a0, any a1, any a2) {
 label_35: 
 label_3: 
 	ldai 0x0
@@ -284,6 +254,36 @@ label_34:
 	ldundefined
 	returnundefined
 label_36: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#*#testBool, 0x0
+	sta v0
+	definefunc 0x1, .#*#testBBStruct, 0x0
+	sta v1
+	definefunc 0x2, .#*#testFloatNumber, 0x0
+	sta v2
+	definefunc 0x3, .#*#testIntNumber, 0x0
+	sta v3
+	definefunc 0x4, .#*#testString, 0x0
+	sta v4
+	definefunc 0x5, .#*#testTypeConvert, 0x0
+	callarg0 0x6
+	lda v3
+	callarg0 0x8
+	lda v2
+	callarg0 0xa
+	lda v0
+	callarg0 0xc
+	lda v4
+	callarg0 0xe
+	lda v1
+	callarg0 0x10
+	ldundefined
+	returnundefined
+label_2: 
 }
 
 

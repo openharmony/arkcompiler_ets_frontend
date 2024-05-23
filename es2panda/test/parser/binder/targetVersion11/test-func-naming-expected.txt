@@ -66,13 +66,13 @@ label_0:
 	createobjectwithbuffer 0x7, _0
 	sta v0
 	definefunc 0x8, .#1471473088249306135#, 0x0
-	definepropertybyname 0x9, index.js, v0
+	definefieldbyname 0x9, index.js, v0
 	lda v0
 	sttoglobalrecord 0xb, obj
 	createobjectwithbuffer 0xc, _1
 	sta v0
 	definefunc 0xd, .#5496465400387880830#, 0x0
-	definepropertybyname 0xe, \testcase, v0
+	definefieldbyname 0xe, \testcase, v0
 	lda v0
 	sttoglobalrecord 0x10, objBackslash
 	ldundefined

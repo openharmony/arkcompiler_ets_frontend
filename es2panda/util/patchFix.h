@@ -43,7 +43,7 @@ class PatchFix {
 
 public:
     PatchFix(bool generateSymbolFile, bool generatePatch, PatchFixKind patchFixKind, const std::string &recordName,
-        util::SymbolTable *symbolTable)
+        util::SymbolTable *symbolTable, int targetApiVersion)
         : generateSymbolFile_(generateSymbolFile), generatePatch_(generatePatch), patchFixKind_(patchFixKind),
         recordName_(recordName),
         symbolTable_(symbolTable),
@@ -54,7 +54,8 @@ public:
         funcDefineIns_(allocator_.Adapter()),
         modifiedClassNames_(allocator_.Adapter()),
         classMemberFunctions_(allocator_.Adapter()),
-        funcDefinedClasses_(allocator_.Adapter()) {
+        funcDefinedClasses_(allocator_.Adapter()),
+        targetApiVersion_(targetApiVersion) {
             originFunctionInfo_ = symbolTable_->GetOriginFunctionInfo();
             originModuleInfo_ = symbolTable_->GetOriginModuleInfo();
             originRecordHashFunctionNames_ = symbolTable_->GetOriginRecordHashFunctionNames();
@@ -136,6 +137,7 @@ private:
     ArenaSet<std::string> modifiedClassNames_;
     ArenaUnorderedMap<std::string, std::vector<std::string>> classMemberFunctions_;
     ArenaUnorderedMap<std::string, std::vector<std::string>> funcDefinedClasses_;
+    int targetApiVersion_ {0};
 };
 
 } // namespace panda::es2panda::util

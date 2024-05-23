@@ -1,0 +1,756 @@
+.language ECMAScript
+
+.function any .#~A=#A(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	callruntime.callinit 0x0, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>#instance_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x0, .#~A>@0~BB=#BB, _2, 0x0, v0
+	sta v0
+	ldobjbyname 0x1, prototype
+	lda v0
+	definepropertybyname 0x3, BB, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x5, .#~A>@0~@1=#CCC, _3, 0x0, v0
+	sta v0
+	ldobjbyname 0x6, prototype
+	lda v0
+	definepropertybyname 0x8, CCC, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0xa, .#~A>@0~@2=#DDD, _4, 0x0, v0
+	sta v0
+	ldobjbyname 0xb, prototype
+	lda v0
+	definepropertybyname 0xd, DDD, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0xf, .#~A>@0~@3=#EEE, _5, 0x0, v0
+	sta v0
+	ldobjbyname 0x10, prototype
+	lda v0
+	definepropertybyname 0x12, EEE, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x14, .#~A>@0~@4=#FFF, _6, 0x0, v0
+	sta v0
+	ldobjbyname 0x15, prototype
+	lda v0
+	definepropertybyname 0x17, FFF, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x19, .#~A>@0~@5=#GGG, _7, 0x0, v0
+	sta v0
+	ldobjbyname 0x1a, prototype
+	lda v0
+	definepropertybyname 0x1c, GGG, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x1e, .#~A>@0~@6=#HHH, _8, 0x0, v0
+	sta v0
+	ldobjbyname 0x1f, prototype
+	lda v0
+	definepropertybyname 0x21, HHH, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x23, .#~A>@0~@7=#III, _9, 0x0, v0
+	sta v0
+	ldobjbyname 0x24, prototype
+	lda v0
+	definepropertybyname 0x26, III, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x28, .#~A>@0~@8=#JJJ, _10, 0x0, v0
+	sta v0
+	ldobjbyname 0x29, prototype
+	lda v0
+	definepropertybyname 0x2b, JJJ, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x2d, .#~A>@0~@9=#KKK, _11, 0x0, v0
+	sta v0
+	ldobjbyname 0x2e, prototype
+	lda v0
+	definepropertybyname 0x30, KKK, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x32, .#~A>@0~@a=#LLL, _12, 0x0, v0
+	sta v0
+	ldobjbyname 0x33, prototype
+	lda v0
+	definepropertybyname 0x35, LLL, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x37, .#~A>@0~@b=#MMM, _13, 0x0, v0
+	sta v0
+	ldobjbyname 0x38, prototype
+	lda v0
+	definepropertybyname 0x3a, MMM, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x3c, .#~A>@0~@c=#NNN, _14, 0x0, v0
+	sta v0
+	ldobjbyname 0x3d, prototype
+	lda v0
+	definepropertybyname 0x3f, NNN, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x41, .#~A>@0~@d=#OOO, _15, 0x0, v0
+	sta v0
+	ldobjbyname 0x42, prototype
+	lda v0
+	definepropertybyname 0x44, OOO, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x46, .#~A>@0~@e=#PPP, _16, 0x0, v0
+	sta v0
+	ldobjbyname 0x47, prototype
+	lda v0
+	definepropertybyname 0x49, PPP, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x4b, .#~A>@0~@f=#QQQ, _17, 0x0, v0
+	sta v0
+	ldobjbyname 0x4c, prototype
+	lda v0
+	definepropertybyname 0x4e, QQQ, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x50, .#~A>@0~RRR=#RRR, _18, 0x0, v0
+	sta v0
+	ldobjbyname 0x51, prototype
+	lda v0
+	definepropertybyname 0x53, RRR, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x55, .#~A>@0~@10=#SSSS, _19, 0x0, v0
+	sta v0
+	ldobjbyname 0x56, prototype
+	lda v0
+	definepropertybyname 0x58, SSSS, a2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~A>@0~@10=#SSSS(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@1=#CCC(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@2=#DDD(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@3=#EEE(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@4=#FFF(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@5=#GGG(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@6=#HHH(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@7=#III(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@8=#JJJ(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@9=#KKK(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@a=#LLL(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@b=#MMM(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@c=#NNN(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@d=#OOO(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@e=#PPP(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~@f=#QQQ(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~BB=#BB(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~RRR=#RRR(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	newlexenv 0x1
+LABEL_2: 
+	ldhole
+	sta v7
+	defineclasswithbuffer 0x0, .#~A=#A, _20, 0x0, v7
+	sta v5
+	sta v6
+	lda v5
+	ldobjbyname 0x1, prototype
+	sta v8
+	sta v8
+	definemethod 0x3, .#~A>#instance_initializer, 0x0
+	stlexvar 0x0, 0x0
+	lda v5
+LABEL_3: 
+	jmp LABEL_5
+LABEL_4: 
+	poplexenv
+	throw
+LABEL_5: 
+	poplexenv
+	sta v3
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_2, LABEL_3, LABEL_4
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: QQQ
+},
+{
+  index: 2
+    tag: 0
+    val: 5
+},
+{
+  index: 3
+    tag: 5
+    val: OOO
+},
+{
+  index: 4
+    tag: 0
+    val: 5
+},
+{
+  index: 5
+    tag: 5
+    val: instance_initializer
+},
+{
+  index: 6
+    tag: 0
+    val: 5
+},
+{
+  index: 7
+    tag: 5
+    val: DDD
+},
+{
+  index: 8
+    tag: 0
+    val: 5
+},
+{
+  index: 9
+    tag: 5
+    val: MMM
+},
+{
+  index: 10
+    tag: 0
+    val: 5
+},
+{
+  index: 11
+    tag: 5
+    val: CCC
+},
+{
+  index: 12
+    tag: 0
+    val: 5
+},
+{
+  index: 13
+    tag: 5
+    val: EEE
+},
+{
+  index: 14
+    tag: 0
+    val: 5
+},
+{
+  index: 15
+    tag: 5
+    val: LLL
+},
+{
+  index: 16
+    tag: 0
+    val: 5
+},
+{
+  index: 17
+    tag: 5
+    val: SSSS
+},
+{
+  index: 18
+    tag: 0
+    val: 5
+},
+{
+  index: 19
+    tag: 5
+    val: FFF
+},
+{
+  index: 20
+    tag: 0
+    val: 5
+},
+{
+  index: 21
+    tag: 5
+    val: JJJ
+},
+{
+  index: 22
+    tag: 0
+    val: 5
+},
+{
+  index: 23
+    tag: 5
+    val: GGG
+},
+{
+  index: 24
+    tag: 0
+    val: 5
+},
+{
+  index: 25
+    tag: 5
+    val: III
+},
+{
+  index: 26
+    tag: 0
+    val: 5
+},
+{
+  index: 27
+    tag: 5
+    val: HHH
+},
+{
+  index: 28
+    tag: 0
+    val: 5
+},
+{
+  index: 29
+    tag: 5
+    val: KKK
+},
+{
+  index: 30
+    tag: 0
+    val: 5
+},
+{
+  index: 31
+    tag: 5
+    val: PPP
+},
+{
+  index: 32
+    tag: 0
+    val: 5
+},
+{
+  index: 33
+    tag: 5
+    val: NNN
+},
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _10
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _11
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _12
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _13
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _14
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _15
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _16
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _17
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _18
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _19
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _20
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _3
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _4
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _5
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _6
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _7
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _8
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _9
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},

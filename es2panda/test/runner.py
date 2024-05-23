@@ -964,20 +964,20 @@ class BcVersionTest(Test):
         self.cmd = cmd
         self.api_version = api_version
         self.bc_version_expect = {
-            8: "12.0.3.0",
+            8: "12.0.4.0",
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
-            12: "12.0.3.0",
-            13: "12.0.3.0"
+            12: "12.0.4.0",
+            13: "12.0.4.0"
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
-            12: "12.0.3.0",
-            13: "12.0.3.0"
+            12: "12.0.4.0",
+            13: "12.0.4.0"
         }
     
     def run(self):
@@ -1058,22 +1058,27 @@ class TransformerTest(Test):
 
 
 class PatchTest(Test):
-    def __init__(self, test_path, mode_arg):
+    def __init__(self, test_path, mode_arg, target_version, preserve_files):
         Test.__init__(self, test_path, "")
         self.mode = mode_arg
+        self.target_version = target_version
+        self.preserve_files = preserve_files
 
     def gen_cmd(self, runner):
-        symbol_table_file = 'base.map'
+        symbol_table_file = os.path.join(self.path, 'base.map')
         origin_input_file = 'base.js'
-        origin_output_abc = 'base.abc'
+        origin_output_abc = os.path.join(self.path, 'base.abc')
         modified_input_file = 'base_mod.js'
-        modified_output_abc = 'patch.abc'
+        modified_output_abc = os.path.join(self.path, 'patch.abc')
+        target_version_cmd = ""
+        if self.target_version > 0:
+            target_version_cmd = "--target-api-version=" + str(self.target_version)
 
-        gen_base_cmd = runner.cmd_prefix + [runner.es2panda, '--module']
+        gen_base_cmd = runner.cmd_prefix + [runner.es2panda, '--module', target_version_cmd]
         if 'record-name-with-dots' in os.path.basename(self.path):
             gen_base_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
-        gen_base_cmd.extend(['--dump-symbol-table', os.path.join(self.path, symbol_table_file)])
-        gen_base_cmd.extend(['--output', os.path.join(self.path, origin_output_abc)])
+        gen_base_cmd.extend(['--dump-symbol-table', symbol_table_file])
+        gen_base_cmd.extend(['--output', origin_output_abc])
         gen_base_cmd.extend([os.path.join(self.path, origin_input_file)])
         self.log_cmd(gen_base_cmd)
 
@@ -1086,10 +1091,10 @@ class PatchTest(Test):
         elif self.mode == 'coldreload':
             mode_arg = ["--cold-reload"]
 
-        patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module']
+        patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module', target_version_cmd]
         patch_test_cmd.extend(mode_arg)
-        patch_test_cmd.extend(['--input-symbol-table', os.path.join(self.path, symbol_table_file)])
-        patch_test_cmd.extend(['--output', os.path.join(self.path, modified_output_abc)])
+        patch_test_cmd.extend(['--input-symbol-table', symbol_table_file])
+        patch_test_cmd.extend(['--output', modified_output_abc])
         patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
         if 'record-name-with-dots' in os.path.basename(self.path):
             patch_test_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
@@ -1104,11 +1109,10 @@ class PatchTest(Test):
                 patch_test_cmd.extend(['--dump-assembly'])
         self.log_cmd(patch_test_cmd)
 
-        return gen_base_cmd, patch_test_cmd
+        return gen_base_cmd, patch_test_cmd, symbol_table_file, origin_output_abc, modified_output_abc
 
     def run(self, runner):
-        gen_base_cmd, patch_test_cmd = self.gen_cmd(runner)
-
+        gen_base_cmd, patch_test_cmd, symbol_table_file, origin_output_abc, modified_output_abc = self.gen_cmd(runner)
         process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         stdout_base, stderr_base = process_base.communicate(timeout=runner.args.es2panda_timeout)
@@ -1137,7 +1141,11 @@ class PatchTest(Test):
         if not self.passed:
             self.error = "expected output:" + os.linesep + expected + os.linesep + "actual output:" + os.linesep +\
                 self.output
-
+        if not self.preserve_files:
+            os.remove(symbol_table_file)
+            os.remove(origin_output_abc)
+            if (os.path.exists(modified_output_abc)):
+                os.remove(modified_output_abc)
         return self
 
 
@@ -1145,23 +1153,27 @@ class PatchRunner(Runner):
     def __init__(self, args, name):
         Runner.__init__(self, args, name)
         self.preserve_files = args.error
-
-    def __del__(self):
-        if not self.preserve_files:
-            self.clear_directory()
-
-    def add_directory(self):
         self.tests_in_dirs = []
-        for item in self.test_directory:
-            glob_expression = path.join(item, "*")
-            self.tests_in_dirs += glob(glob_expression, recursive=False)
+        dirs = os.listdir(path.join(self.test_root, "patch"))
+        for sub_dir in dirs:
+            target_version = 0
+            if sub_dir.isdigit():
+                target_version = int(sub_dir)
+            self.add_tests(sub_dir, name)
 
-    def clear_directory(self):
-        for test in self.tests_in_dirs:
-            files_in_dir = os.listdir(test)
-            filtered_files = [file for file in files_in_dir if file.endswith(".map") or file.endswith(".abc")]
-            for file in filtered_files:
-                os.remove(os.path.join(test, file))
+    def add_tests(self, path, name):
+        name_dir = os.path.join(self.test_root, "patch", path, name)
+        if not os.path.exists(name_dir):
+            return
+        target_version = 0
+        if path.isdigit():
+            target_version = int(path)
+        for sub_path in os.listdir(name_dir):
+            test_base_path = os.path.join(name_dir, sub_path)
+            for test_dir in os.listdir(test_base_path):
+                test_path = os.path.join(test_base_path, test_dir)
+                self.tests_in_dirs.append(test_path)
+                self.tests.append(PatchTest(test_path, name, target_version, self.preserve_files))
 
     def test_path(self, src):
         return os.path.basename(src)
@@ -1169,38 +1181,19 @@ class PatchRunner(Runner):
 
 class HotfixRunner(PatchRunner):
     def __init__(self, args):
-        PatchRunner.__init__(self, args, "Hotfix")
-        self.test_directory = [path.join(self.test_root, "hotfix", "hotfix-throwerror"),
-            path.join(self.test_root, "hotfix", "hotfix-noerror")]
-        self.add_directory()
-        self.tests += list(map(lambda t: PatchTest(t, "hotfix"), self.tests_in_dirs))
-
+        PatchRunner.__init__(self, args, "hotfix")
 
 class HotreloadRunner(PatchRunner):
     def __init__(self, args):
-        PatchRunner.__init__(self, args, "Hotreload")
-        self.test_directory = [path.join(self.test_root, "hotreload", "hotreload-throwerror"),
-            path.join(self.test_root, "hotreload", "hotreload-noerror")]
-        self.add_directory()
-        self.tests += list(map(lambda t: PatchTest(t, "hotreload"), self.tests_in_dirs))
-
+        PatchRunner.__init__(self, args, "hotreload")
 
 class ColdfixRunner(PatchRunner):
     def __init__(self, args):
-        PatchRunner.__init__(self, args, "Coldfix")
-        self.test_directory = [path.join(self.test_root, "coldfix", "coldfix-throwerror"),
-            path.join(self.test_root, "coldfix", "coldfix-noerror")]
-        self.add_directory()
-        self.tests += list(map(lambda t: PatchTest(t, "coldfix"), self.tests_in_dirs))
-
+        PatchRunner.__init__(self, args, "coldfix")
 
 class ColdreloadRunner(PatchRunner):
     def __init__(self, args):
-        PatchRunner.__init__(self, args, "Coldreload")
-        self.test_directory = [path.join(self.test_root, "coldreload")]
-        self.add_directory()
-        self.tests += list(map(lambda t: PatchTest(t, "coldreload"), self.tests_in_dirs))
-
+        PatchRunner.__init__(self, args, "coldreload")
 
 class DebuggerTest(Test):
     def __init__(self, test_path, mode):
@@ -1396,7 +1389,9 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/ts/cases/declaration", "d.ts",
                          ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
     runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
-    runner.add_directory("parser/binder", "js", ["--dump-assembly"])
+    runner.add_directory("parser/binder", "js", ["--dump-assembly", "--dump-literal-buffer", "--module"])
+    runner.add_directory("parser/binder", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
+    runner.add_directory("parser/binder/targetVersion11", "js", ["--dump-assembly", "--target-api-version=11"])
     runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
@@ -1444,7 +1439,8 @@ def add_directory_for_asm(runners, args):
     runner.add_directory("parser/ts", "ts", ["--module"])
     runner.add_directory("parser/ts/type_checker", "ts", ["--enable-type-check", "--module"])
     runner.add_directory("parser/commonjs", "js", ["--commonjs"])
-    runner.add_directory("parser/binder", "js", [])
+    runner.add_directory("parser/binder", "js", ["--dump-assembly", "--dump-literal-buffer", "--module"])
+    runner.add_directory("parser/binder", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
     runner.add_directory("parser/js/emptySource", "js", [])
     runner.add_directory("parser/js/language/arguments-object", "js", [])
     runner.add_directory("parser/js/language/statements/for-statement", "js", [])

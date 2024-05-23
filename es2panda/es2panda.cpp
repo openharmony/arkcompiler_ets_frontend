@@ -186,7 +186,7 @@ util::PatchFix *Compiler::InitPatchFixHelper(const SourceFile &input, const Comp
             patchFixKind = util::PatchFixKind::COLDRELOAD;
         }
         patchFixHelper = new util::PatchFix(needDumpSymbolFile, needGeneratePatch, patchFixKind, input.recordName,
-            symbolTable);
+            symbolTable, options.targetApiVersion);
         parser_->AddPatchFixHelper(patchFixHelper);
         compiler_->AddPatchFixHelper(patchFixHelper);
     }
@@ -213,7 +213,7 @@ int Compiler::CompileFiles(CompilerOptions &options,
     if (!options.patchFixOptions.symbolTable.empty() || !options.patchFixOptions.dumpSymbolTable.empty()) {
         symbolTable = new util::SymbolTable(options.patchFixOptions.symbolTable,
             options.patchFixOptions.dumpSymbolTable);
-        if (!symbolTable->Initialize()) {
+        if (!symbolTable->Initialize(options.targetApiVersion)) {
             std::cerr << "Failed to initialize for Hotfix." << std::endl;
             return 1;
         }

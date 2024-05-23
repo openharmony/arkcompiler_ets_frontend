@@ -1,0 +1,218 @@
+.language ECMAScript
+
+.function any .#*#(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	ldfalse
+	return
+label_2: 
+}
+
+.function any .#*#enumerable(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	newlexenv 0x1
+	lda a3
+	stlexvar 0x0, 0x0
+	definefunc 0x0, .#*@0*#, 0x3
+	return
+label_2: 
+}
+
+.function any .#*@0*#(any a0, any a1, any a2, any a3, any a4, any a5) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	sta v0
+	lda.str xxx
+	sta v1
+	lda v0
+	callarg1 0x0, v1
+	stobjbyname 0x2, enumerable, a5
+	tryldglobalbyname 0x4, print
+	sta v0
+	lda.str Hello
+	sta v1
+	lda v0
+	callarg1 0x5, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~@1=#Greeter(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda a3
+	stobjbyname 0x0, greeting, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~@1>#greet(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda.str Hello, 
+	sta v0
+	lda a2
+	ldobjbyname 0x0, greeting
+	add2 0x2, v0
+	return
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_4: 
+label_0: 
+	definefunc 0x0, .#*#enumerable, 0x1
+	sta v0
+	ldhole
+	sta v1
+	defineclasswithbuffer 0x1, .#~@1=#Greeter, _2, 0x1, v1
+	sta v1
+	ldobjbyname 0x2, prototype
+	definefunc 0x4, .#*#, 0x1
+	sta v2
+	lda v0
+	callarg1 0x5, v2
+	sta v0
+	tryldglobalbyname 0x7, Object
+	sta v2
+	ldobjbyname 0x8, getOwnPropertyDescriptor
+	sta v3
+	lda v1
+	ldobjbyname 0xa, prototype
+	sta v4
+	lda.str greet
+	sta v5
+	lda v3
+	callthis2 0xc, v2, v4, v5
+	sta v2
+	tryldglobalbyname 0xe, Object
+	sta v3
+	ldobjbyname 0xf, defineProperty
+	sta v4
+	lda v1
+	ldobjbyname 0x11, prototype
+	sta v5
+	lda.str greet
+	sta v6
+	lda v1
+	ldobjbyname 0x13, prototype
+	sta v1
+	lda.str greet
+	sta v7
+	lda v0
+	callargs3 0x15, v1, v7, v2
+	sta v0
+	callruntime.istrue 0x17
+	jeqz label_3
+label_6: 
+	mov v2, v0
+label_3: 
+	lda v4
+	callthis3 0x19, v3, v5, v6, v2
+	ldundefined
+	returnundefined
+label_5: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: Greeter
+},
+{
+  index: 2
+    tag: 0
+    val: 5
+},
+{
+  index: 3
+    tag: 5
+    val: enumerable
+},
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: greet
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#~@1>#greet
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},

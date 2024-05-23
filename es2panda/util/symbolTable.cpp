@@ -24,8 +24,9 @@ const std::string SymbolTable::SECOND_LEVEL_SEPERATOR = ";";
 const size_t FUNCTION_ITEM_NUMBER = 3;
 const size_t MODULE_ITEM_NUMBER = 1;
 
-bool SymbolTable::Initialize()
+bool SymbolTable::Initialize(int targetApiVersion)
 {
+    targetApiVersion_ = targetApiVersion;
     if (!symbolTable_.empty() && !ReadSymbolTable(symbolTable_)) {
         std::cerr << "Failed to open the symbol table file'" << std::endl;
         return false;
@@ -48,8 +49,8 @@ bool SymbolTable::Initialize()
     return true;
 }
 
-void SymbolTable::ReadRecordHashFunctionNames(std::string recordName, std::string funcInternalName,
-                                              std::string specialFuncIndex)
+void SymbolTable::ReadRecordHashFunctionNames(const std::string &recordName, const std::string &funcInternalName,
+                                              const std::string &specialFuncIndex)
 {
     auto recordHashFunctionNames = originRecordHashFunctionNames_.find(recordName);
     if (specialFuncIndex == "0") {
@@ -95,8 +96,7 @@ bool SymbolTable::ReadSymbolTable(const std::string &symbolTable)
             info.funcInternalName = funcItems[1];
             // 2: use the third element of the function as the hash of the function
             info.funcHash = funcItems[2];
-            // index of function in its record's special function array
-            std::string specialFuncIndex{funcItems[3]};
+
             // 2 is to process each class name and its corresponding hash value
             for (size_t i = 0; i < classItems.size(); i = i + 2) {
                 info.classHash.insert(std::pair<std::string, std::string>(classItems[i], classItems[i + 1]));
@@ -110,7 +110,11 @@ bool SymbolTable::ReadSymbolTable(const std::string &symbolTable)
             }
 
             originFunctionInfo_.insert(std::pair<std::string, OriginFunctionInfo>(info.funcInternalName, info));
-            ReadRecordHashFunctionNames(info.recordName, info.funcInternalName, specialFuncIndex);
+            if (targetApiVersion_ < 12) {
+                // index of function in its record's special function array
+                std::string specialFuncIndex{funcItems[3]};
+                ReadRecordHashFunctionNames(info.recordName, info.funcInternalName, specialFuncIndex);
+            }
         } else if (itemList.size() == MODULE_ITEM_NUMBER) {
             // read module info
             auto moduleItems = GetStringItems(itemList[0], SECOND_LEVEL_SEPERATOR);

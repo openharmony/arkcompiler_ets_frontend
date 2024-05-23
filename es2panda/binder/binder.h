@@ -127,6 +127,11 @@ public:
         program_ = program;
     }
 
+    ArenaUnorderedMap<util::StringView, int32_t> &GetScopeNames()
+    {
+        return topScope_->GetScopeNames();
+    }
+
     const ArenaUnorderedMap<const ir::ScriptFunction *, util::StringView> &AnonymousFunctionNames() const
     {
         return anonymousFunctionNames_;
@@ -198,6 +203,7 @@ private:
     void AddMandatoryParams();
     void AssignIndexToModuleVariable();
     void BuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func = nullptr);
+    void LegacyBuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func = nullptr);
     void BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *scriptFunc);
     void BuildClassDefinition(ir::ClassDefinition *classDef);
     void LookupReference(const util::StringView &name);

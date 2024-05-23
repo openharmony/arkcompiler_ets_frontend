@@ -41,15 +41,7 @@ label_2:
 
 .language ECMAScript
 
-.function any &myapp/test-export-syntax&.C1(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	lda a2
-	return
-label_2: 
-}
-
-.function any &myapp/test-export-syntax&.f1(any a0, any a1, any a2) {
+.function any &myapp/test-export-syntax&.#*#f1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldundefined
@@ -57,10 +49,18 @@ label_0:
 label_2: 
 }
 
+.function any &myapp/test-export-syntax&.#~C1=#C1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
 .function any &myapp/test-export-syntax&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	definefunc 0x0, &myapp/test-export-syntax&.f1, 0x0
+	definefunc 0x0, &myapp/test-export-syntax&.#*#f1, 0x0
 	stmodulevar 0x2
 	ldundefined
 	stmodulevar 0x6
@@ -76,12 +76,12 @@ label_0:
 	stmodulevar 0x6
 	ldhole
 	sta v0
-	defineclasswithbuffer 0x1, &myapp/test-export-syntax&.C1, &myapp/test-export-syntax&_1, 0x0, v0
+	defineclasswithbuffer 0x1, &myapp/test-export-syntax&.#~C1=#C1, &myapp/test-export-syntax&_2, 0x0, v0
 	sta v0
 	ldobjbyname 0x2, prototype
 	lda v0
 	stmodulevar 0x1
-	createobjectwithbuffer 0x4, &myapp/test-export-syntax&_2
+	createobjectwithbuffer 0x4, &myapp/test-export-syntax&_3
 	sta v0
 	ldobjbyname 0x5, v5
 	stmodulevar 0x7
@@ -235,7 +235,7 @@ label_30:
 
 .language ECMAScript
 
-.function any &myapp/test-local-export&.foo(any a0, any a1, any a2) {
+.function any &myapp/test-local-export&.#*#foo(any a0, any a1, any a2) {
 label_10: 
 label_1: 
 	ldlocalmodulevar 0x1
@@ -268,7 +268,7 @@ label_11:
 .function any &myapp/test-local-export&.func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	definefunc 0x0, &myapp/test-local-export&.foo, 0x0
+	definefunc 0x0, &myapp/test-local-export&.#*#foo, 0x0
 	ldai 0x1
 	stmodulevar 0x0
 	ldai 0x2
@@ -285,7 +285,7 @@ label_2:
 
 .language ECMAScript
 
-.function any test-ts-namespace-exports.#14695981039346656037#(any a0, any a1, any a2, any a3) {
+.function any test-ts-namespace-exports.#&#ns(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	ldai 0x1
@@ -297,7 +297,7 @@ label_0:
 label_2: 
 }
 
-.function any test-ts-namespace-exports.foo(any a0, any a1, any a2) {
+.function any test-ts-namespace-exports.#*#foo(any a0, any a1, any a2) {
 label_9: 
 label_0: 
 	ldlexvar 0x0, 0x0
@@ -339,8 +339,8 @@ label_0:
 	newlexenv 0x1
 	ldundefined
 	stlexvar 0x0, 0x0
-	definefunc 0x0, test-ts-namespace-exports.foo, 0x0
-	definefunc 0x1, test-ts-namespace-exports.#14695981039346656037#, 0x1
+	definefunc 0x0, test-ts-namespace-exports.#*#foo, 0x0
+	definefunc 0x1, test-ts-namespace-exports.#&#ns, 0x1
 	sta v0
 	ldlexvar 0x0, 0x0
 	sta v1

@@ -1,0 +1,109 @@
+.language ECMAScript
+
+.function any .#*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldtrue
+	return
+label_2: 
+}
+
+.function any .#*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldtrue
+	return
+label_2: 
+}
+
+.function any .#*#foo(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo^2(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_6: 
+label_0: 
+	newlexenv 0x2
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+	definefunc 0x0, .#*#, 0x0
+	callarg0 0x1
+	callruntime.isfalse 0x3
+	jnez label_1
+label_2: 
+	definefunc 0x5, .#*#foo, 0x0
+	jmp label_3
+label_1: 
+	definefunc 0x6, .#*#^1, 0x0
+	callarg0 0x7
+	callruntime.isfalse 0x9
+	jnez label_4
+label_5: 
+	definefunc 0xb, .#*#foo^1, 0x0
+	jmp label_3
+label_4: 
+	definefunc 0xc, .#*#foo^2, 0x0
+label_3: 
+	ldundefined
+	returnundefined
+label_7: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},

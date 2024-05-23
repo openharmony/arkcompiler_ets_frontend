@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,24 +14,15 @@
  */
 
 
-let name1 = function () {};
+var empty = Object.create(null);
+var C, value;
 
-() => {};
-
-function aa() {};
-
-() => {};
-
-{
-    function aa() {};
+for (C = class { get ['x' in empty]() { return 'via get'; } }; ; ) {
+  value = C.prototype.false;
+  break;
 }
 
-// function with special name
-let obj = {
-    "index.js": function() {}
-}
-
-// function with special name
-let objBackslash = {
-    "\\testcase": function() {}
+for (C = class { set ['x' in empty](param) { value = param; } }; ; ) {
+  C.prototype.false = 'via set';
+  break;
 }

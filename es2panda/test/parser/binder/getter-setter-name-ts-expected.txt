@@ -1,0 +1,165 @@
+.language ECMAScript
+
+.function any .#~C=#C(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~C>#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda.str via get
+	return
+label_2: 
+}
+
+.function any .#~C^1=#C(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~C^1>#(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda a3
+	stlexvar 0x0, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_5: 
+label_0: 
+	newlexenv 0x1
+	ldundefined
+	stlexvar 0x0, 0x0
+	ldundefined
+	ldundefined
+	tryldglobalbyname 0x0, Object
+	sta v0
+	ldobjbyname 0x1, create
+	sta v1
+	ldnull
+	sta v2
+	lda v1
+	callthis1 0x3, v0, v2
+	sta v0
+	ldhole
+	sta v1
+	lda.str x
+	sta v2
+	lda v0
+	isin 0x5, v2
+	callruntime.topropertykey
+	sta v2
+	defineclasswithbuffer 0x6, .#~C=#C, _2, 0x0, v1
+	sta v1
+	ldobjbyname 0x7, prototype
+	sta v3
+	ldundefined
+	sta v4
+	lda v3
+	definemethod 0x9, .#~C>#, 0x0
+	sta v5
+	ldtrue
+	definegettersetterbyvalue v3, v2, v5, v4
+	lda v1
+	ldobjbyname 0xa, prototype
+	ldobjbyname 0xc, false
+	stlexvar 0x0, 0x0
+	ldhole
+	sta v1
+	lda.str x
+	sta v2
+	lda v0
+	isin 0xe, v2
+	callruntime.topropertykey
+	sta v0
+	defineclasswithbuffer 0xf, .#~C^1=#C, _3, 0x0, v1
+	sta v1
+	ldobjbyname 0x10, prototype
+	sta v2
+	ldundefined
+	sta v3
+	lda v2
+	definemethod 0x12, .#~C^1>#, 0x1
+	sta v4
+	ldtrue
+	definegettersetterbyvalue v2, v0, v3, v4
+	lda v1
+	ldobjbyname 0x13, prototype
+	sta v0
+	lda.str via set
+	stobjbyname 0x15, false, v0
+	ldundefined
+	returnundefined
+label_6: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _3
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
