@@ -1478,6 +1478,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/dump-literal-buffer-projects", "ts",
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-literal-buffer"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
