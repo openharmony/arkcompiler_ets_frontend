@@ -75,7 +75,7 @@ Type *ETSUnionType::ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un)
     Type *lub = nullptr;
     for (auto *t : un->ConstituentTypes()) {
         ASSERT(t->IsETSReferenceType());
-        if (t->IsETSNullType()) {
+        if (t->IsETSNullType() || lub == t) {
             continue;
         }
         if (t->IsETSUndefinedType()) {
@@ -120,129 +120,97 @@ static void AmbiguousUnionOperation(TypeRelation *relation)
 }
 
 template <typename RelFN>
-void ETSUnionType::RelationSource(TypeRelation *relation, Type *target, RelFN const &relFn)
-{
-    auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const refTarget = checker->MaybePromotedBuiltinType(target);
-
-    if (target != refTarget && !relation->ApplyUnboxing()) {
-        relation->Result(false);
-        return;
-    }
-    if (relation->IsSupertypeOf(refTarget, this)) {
-        if (refTarget != target) {
-            relation->GetNode()->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(refTarget));
-        }
-        return;
-    }
-    if (target == refTarget) {
-        relation->Result(false);
-        return;
-    }
-
-    int related = 0;
-    for (auto *ct : ConstituentTypes()) {  // NOTE(vpukhov): just test if union is supertype of any numeric
-        if (!ct->IsETSUnboxableObject()) {
-            continue;
-        }
-        if (!relFn(relation, checker->MaybePrimitiveBuiltinType(ct), target)) {
-            continue;
-        }
-        relation->GetNode()->SetBoxingUnboxingFlags(checker->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(ct)));
-        related++;
-    }
-    if (related > 1) {
-        AmbiguousUnionOperation(relation);
-    }
-    relation->Result(related == 1);
-}
-
-template <typename RelFN>
 void ETSUnionType::RelationTarget(TypeRelation *relation, Type *source, RelFN const &relFn)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *const refSource = checker->MaybePromotedBuiltinType(source);
+    auto *const refsource = checker->MaybePromotedBuiltinType(source);
 
-    if (source != refSource && !relation->ApplyBoxing()) {
-        relation->Result(false);
-        return;
-    }
-    if (relation->IsSupertypeOf(this, refSource)) {
-        if (refSource != source) {
-            relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(refSource));
-        }
+    relation->Result(false);
+
+    if (refsource != source && !relation->ApplyBoxing()) {
         return;
     }
 
-    /* #16160: for ETSFunctionType and functional interfaces, need to check assignability apart from
-       plain subtyping
-    */
-    int related = 0;
-    for (auto *ct : ConstituentTypes()) {
-        if (!relFn(relation, ct, source)) {
-            continue;
+    if (std::any_of(constituentTypes_.begin(), constituentTypes_.end(),
+                    [relation, refsource, relFn](auto *t) { return relFn(relation, refsource, t); })) {
+        if (refsource != source) {
+            relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(refsource));
         }
-        related++;
-    }
-    if (related > 1) {
-        AmbiguousUnionOperation(relation);
-    }
-    if (related == 1) {
         relation->Result(true);
         return;
     }
 
-    if (source == refSource) {
-        relation->Result(false);
+    if (refsource == source) {
+        relation->IsSupertypeOf(this, refsource);
         return;
     }
 
-    related = 0;
-    for (auto *ct : ConstituentTypes()) {  // NOTE(vpukhov): just test if union is supertype of any numeric
-        if (!relFn(relation, checker->MaybePrimitiveBuiltinType(ct), source)) {
-            continue;
+    bool related = false;
+    for (auto *ct : ConstituentTypes()) {
+        if (relFn(relation, source, checker->MaybePrimitiveBuiltinType(ct))) {
+            if (related) {
+                AmbiguousUnionOperation(relation);
+            }
+            relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(ct));
+            related = true;
         }
-        relation->GetNode()->SetBoxingUnboxingFlags(checker->GetBoxingFlag(ct));
-        related++;
     }
-    if (related > 1) {
-        AmbiguousUnionOperation(relation);
-    }
-    relation->Result(related == 1);
+
+    relation->Result(related);
 }
 
 bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    auto const relFn = []([[maybe_unused]] TypeRelation *rel, [[maybe_unused]] Type *ct, [[maybe_unused]] Type *tgt) {
-        return false;
-    };
-    RelationSource(relation, target, relFn);
-    return relation->IsTrue();
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    if (target->HasTypeFlag(TypeFlag::PRIMITIVE)) {
+        if (!relation->ApplyUnboxing()) {
+            return relation->Result(false);
+        }
+        relation->GetNode()->SetBoxingUnboxingFlags(
+            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(target)));
+    }
+
+    return relation->Result(std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
+                                        [relation, target](auto *t) { return relation->IsAssignableTo(t, target); }));
 }
 
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    auto const relFn = [](TypeRelation *rel, Type *ct, Type *src) { return rel->IsAssignableTo(src, ct); };
+    auto const relFn = []([[maybe_unused]] TypeRelation *rel, [[maybe_unused]] Type *src, [[maybe_unused]] Type *tgt) {
+        return rel->IsAssignableTo(src, tgt);
+    };
     RelationTarget(relation, source, relFn);
 }
 
 void ETSUnionType::Cast(TypeRelation *relation, Type *target)
 {
-    if (relation->InCastingContext() && target->IsETSReferenceType()) {
-        relation->Result(true);  // NOTE(vpukhov): check if types intersect at least
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+
+    if (target->HasTypeFlag(TypeFlag::PRIMITIVE)) {
+        if (!relation->ApplyUnboxing()) {
+            relation->Result(false);
+            return;
+        }
+
+        relation->GetNode()->SetBoxingUnboxingFlags(
+            relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(target)));
+    }
+
+    if (relation->InCastingContext()) {
+        relation->Result(std::any_of(constituentTypes_.begin(), constituentTypes_.end(),
+                                     [relation, target](auto *t) { return relation->IsCastableTo(t, target); }));
         return;
     }
-    auto const relFn = [](TypeRelation *rel, Type *ct, Type *tgt) { return rel->IsCastableTo(ct, tgt); };
-    RelationSource(relation, target, relFn);
+
+    relation->Result(std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
+                                 [relation, target](auto *t) { return relation->IsCastableTo(t, target); }));
 }
 
 void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)
 {
-    if (relation->InCastingContext() && source->IsETSReferenceType()) {
-        relation->Result(true);  // NOTE(vpukhov): check if types intersect at least
-        return;
-    }
-    auto const relFn = [](TypeRelation *rel, Type *ct, Type *src) { return rel->IsCastableTo(src, ct); };
+    auto const relFn = []([[maybe_unused]] TypeRelation *rel, [[maybe_unused]] Type *src, [[maybe_unused]] Type *tgt) {
+        return rel->IsCastableTo(src, tgt);
+    };
     RelationTarget(relation, source, relFn);
 }
 
@@ -280,6 +248,8 @@ static std::optional<Type *> TryMergeTypes(TypeRelation *relation, Type *const t
 void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &types)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
+    ASSERT(std::none_of(types.begin(), types.end(), [](auto *t) { return t->IsETSFunctionType(); }));
+
     // Linearize
     size_t const initialSz = types.size();
     for (size_t i = 0; i < initialSz; ++i) {

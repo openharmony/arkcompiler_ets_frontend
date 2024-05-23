@@ -78,8 +78,6 @@ private:
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);
 
     template <typename RelFN>
-    void RelationSource(TypeRelation *relation, Type *target, RelFN const &relFn);
-    template <typename RelFN>
     void RelationTarget(TypeRelation *relation, Type *source, RelFN const &relFn);
 
     static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &types);

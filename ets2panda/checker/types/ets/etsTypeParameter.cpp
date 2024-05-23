@@ -40,7 +40,7 @@ void ETSTypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[mayb
 
 bool ETSTypeParameter::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
 {
-    return relation->Result(false);
+    return relation->IsAssignableTo(this->GetConstraintType(), target);
 }
 
 void ETSTypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)

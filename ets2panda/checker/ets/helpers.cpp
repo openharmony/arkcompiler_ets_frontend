@@ -1510,6 +1510,7 @@ Type *ETSChecker::MaybeBoxExpression(ir::Expression *expr)
     if (promoted != expr->TsType()) {
         expr->AddBoxingUnboxingFlags(GetBoxingFlag(promoted));
     }
+    Relation()->SetNode(expr);
     return promoted;
 }
 
