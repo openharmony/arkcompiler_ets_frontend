@@ -100,7 +100,7 @@ function compareContent(filePath) {
         console.log(color + part.value + '\x1b[0m');
       });
     }
-  }
+  };
   if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
     if (hasExpectationFile) {
       let actual = fs.readFileSync(filePath).toString();
