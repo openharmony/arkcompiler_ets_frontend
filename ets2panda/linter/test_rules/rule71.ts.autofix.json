@@ -71,7 +71,7 @@
                 {
                     "start": 1219,
                     "end": 1227,
-                    "replacementText": "// Error, autofix\nx++;\nx--;"
+                    "replacementText": "x++;\nx--;"
                 }
             ],
             "suggest": "",
@@ -86,7 +86,7 @@
                 {
                     "start": 1247,
                     "end": 1268,
-                    "replacementText": "// Error, autofix\nx++;\nx--;\n++x;\n--x;\nx;"
+                    "replacementText": "x++;\nx--;\n++x;\n--x;\nx;"
                 }
             ],
             "suggest": "",
@@ -109,7 +109,7 @@
                 {
                     "start": 1337,
                     "end": 1358,
-                    "replacementText": "// Error, autofix\nx++;\nx--;\n++x;\n--x;\nx;"
+                    "replacementText": "x++;\nx--;\n++x;\n--x;\nx;"
                 }
             ],
             "suggest": "",
@@ -124,7 +124,7 @@
                 {
                     "start": 1380,
                     "end": 1400,
-                    "replacementText": "// Error, autofix\nx++ + x--;\n++x;\n--x;"
+                    "replacementText": "x++ + x--;\n++x;\n--x;"
                 }
             ],
             "suggest": "",
@@ -139,7 +139,7 @@
                 {
                     "start": 1420,
                     "end": 1439,
-                    "replacementText": "// Error, autofix\n++x;\nx-- + x++;\n--x;"
+                    "replacementText": "++x;\nx-- + x++;\n--x;"
                 }
             ],
             "suggest": "",
@@ -154,7 +154,7 @@
                 {
                     "start": 1459,
                     "end": 1479,
-                    "replacementText": "// Error, autofix\n++x;\n--x;\nx-- + x++;"
+                    "replacementText": "++x;\n--x;\nx-- + x++;"
                 }
             ],
             "suggest": "",
@@ -169,7 +169,7 @@
                 {
                     "start": 1499,
                     "end": 1534,
-                    "replacementText": "// Error, autofix\nx === x;\n--x;\nx === x;\nx++;\nx === x;"
+                    "replacementText": "x === x;\n--x;\nx === x;\nx++;\nx === x;"
                 }
             ],
             "suggest": "",
@@ -184,7 +184,7 @@
                 {
                     "start": 1554,
                     "end": 1626,
-                    "replacementText": "// Error, autofix\nx instanceof number;\n--x;\nx instanceof number;\nx++;\nx instanceof number;"
+                    "replacementText": "x instanceof number;\n--x;\nx instanceof number;\nx++;\nx instanceof number;"
                 }
             ],
             "suggest": "",
@@ -223,7 +223,7 @@
                 {
                     "start": 1646,
                     "end": 1678,
-                    "replacementText": "// Error, autofix\nx in x;\n--x;\nx in x;\nx++;\nx in x;"
+                    "replacementText": "x in x;\n--x;\nx in x;\nx++;\nx in x;"
                 }
             ],
             "suggest": "",
