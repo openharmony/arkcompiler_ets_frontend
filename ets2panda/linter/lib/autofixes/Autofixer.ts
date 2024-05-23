@@ -408,7 +408,28 @@ export class Autofixer {
       undefined;
   }
 
+  private getFixReturnTypeArrowFunction(funcLikeDecl: ts.FunctionLikeDeclaration, typeNode: ts.TypeNode): string {
+    if (!funcLikeDecl.body) {
+      return '';
+    }
+    const node = ts.factory.createArrowFunction(
+      undefined,
+      funcLikeDecl.typeParameters,
+      funcLikeDecl.parameters,
+      typeNode,
+      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+      funcLikeDecl.body
+    );
+    return this.printer.printNode(ts.EmitHint.Unspecified, node, funcLikeDecl.getSourceFile());
+  }
+
   fixMissingReturnType(funcLikeDecl: ts.FunctionLikeDeclaration, typeNode: ts.TypeNode): Autofix[] {
+    if (ts.isArrowFunction(funcLikeDecl)) {
+      const text = this.getFixReturnTypeArrowFunction(funcLikeDecl, typeNode);
+      const startPos = funcLikeDecl.getStart();
+      const endPos = funcLikeDecl.getEnd();
+      return [{ start: startPos, end: endPos, replacementText: text }];
+    }
     const text = ': ' + this.printer.printNode(ts.EmitHint.Unspecified, typeNode, funcLikeDecl.getSourceFile());
     const pos = Autofixer.getReturnTypePosition(funcLikeDecl);
     return [{ start: pos, end: pos, replacementText: text }];
