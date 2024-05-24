@@ -60,7 +60,7 @@ label_12:
 	createobjectwithbuffer 0x17, _1
 	sta v1
 	lda v0
-	definefieldbyname 0x18, fa, v1
+	definepropertybyname 0x18, fa, v1
 	lda v1
 	ldobjbyname 0x1a, fa
 	sta v1

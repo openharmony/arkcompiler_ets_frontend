@@ -8,7 +8,7 @@ label_0:
 	createobjectwithbuffer 0x0, _0
 	sta v1
 	lda v0
-	definefieldbyname 0x1, a, v1
+	definepropertybyname 0x1, a, v1
 	ldundefined
 	returnundefined
 label_2: 
