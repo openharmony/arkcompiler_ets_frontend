@@ -48,6 +48,42 @@ bool ObjectType::SignatureRelatedToSomeSignature(TypeRelation *relation, Signatu
     return false;
 }
 
+bool ObjectType::IsPropertiesIdentical(TypeRelation *relation, ObjectType *otherObj)
+{
+    for (auto *it : desc_->properties) {
+        binder::LocalVariable *found = otherObj->Desc()->FindProperty(it->Name());
+        if (!found) {
+            relation->Result(false);
+            return false;
+        }
+
+        relation->IsIdenticalTo(it->TsType(), found->TsType());
+
+        if (!relation->IsTrue()) {
+            return false;
+        }
+
+        if (it->Flags() != found->Flags()) {
+            relation->Result(false);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool ObjectType::IsIndexInfosIdentical(TypeRelation *relation, IndexInfo *descIndexInfo, IndexInfo *otherIndexInfo)
+{
+    if (descIndexInfo) {
+        relation->IsIdenticalTo(descIndexInfo, otherIndexInfo);
+        if (!relation->IsTrue()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void ObjectType::Identical(TypeRelation *relation, Type *other)
 {
     if (!other->IsObjectType() || kind_ != other->AsObjectType()->Kind()) {
@@ -55,7 +91,6 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
     }
 
     ObjectType *otherObj = other->AsObjectType();
-
     if (desc_->properties.size() != otherObj->Properties().size() ||
         CallSignatures().size() != otherObj->CallSignatures().size() ||
         ConstructSignatures().size() != otherObj->ConstructSignatures().size() ||
@@ -67,23 +102,8 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    for (auto *it : desc_->properties) {
-        binder::LocalVariable *found = otherObj->Desc()->FindProperty(it->Name());
-        if (!found) {
-            relation->Result(false);
-            return;
-        }
-
-        relation->IsIdenticalTo(it->TsType(), found->TsType());
-
-        if (!relation->IsTrue()) {
-            return;
-        }
-
-        if (it->Flags() != found->Flags()) {
-            relation->Result(false);
-            return;
-        }
+    if (!IsPropertiesIdentical(relation, otherObj)) {
+        return;
     }
 
     if (!EachSignatureRelatedToSomeSignature(relation, CallSignatures(), otherObj->CallSignatures()) ||
@@ -96,18 +116,9 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    if (desc_->numberIndexInfo) {
-        relation->IsIdenticalTo(desc_->numberIndexInfo, otherObj->NumberIndexInfo());
-        if (!relation->IsTrue()) {
-            return;
-        }
-    }
-
-    if (desc_->stringIndexInfo) {
-        relation->IsIdenticalTo(desc_->stringIndexInfo, otherObj->StringIndexInfo());
-        if (!relation->IsTrue()) {
-            return;
-        }
+    if (!IsIndexInfosIdentical(relation, desc_->numberIndexInfo, otherObj->NumberIndexInfo())||
+        !IsIndexInfosIdentical(relation, desc_->stringIndexInfo, otherObj->StringIndexInfo())) {
+        return;
     }
 }
 

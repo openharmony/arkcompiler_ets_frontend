@@ -199,6 +199,10 @@ protected:
     ObjectTypeKind kind_;
     ObjectDescriptor *desc_;
     ObjectFlags objFlag_;
+
+private:
+    bool IsPropertiesIdentical(TypeRelation *relation, ObjectType *otherObj);
+    bool IsIndexInfosIdentical(TypeRelation *relation, IndexInfo *descIndexInfo, IndexInfo *otherIndexInfo);
 };
 
 }  // namespace panda::es2panda::checker
