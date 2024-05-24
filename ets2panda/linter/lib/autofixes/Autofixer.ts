@@ -457,21 +457,25 @@ export class Autofixer {
     let text = '';
     if (tsExprNode.operatorToken.kind !== ts.SyntaxKind.CommaToken) {
       const midExpr = ts.factory.createExpressionStatement(tsExprNode);
-      return this.printer.printNode(ts.EmitHint.Unspecified, midExpr, tsExprNode.getSourceFile());
+      return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, midExpr, tsExprNode.getSourceFile());
     }
 
     if (tsExprNode.left.kind === ts.SyntaxKind.BinaryExpression) {
       text += this.recursiveCommaOperator(tsExprNode.left as ts.BinaryExpression);
 
       const rightExpr = ts.factory.createExpressionStatement(tsExprNode.right);
-      const rightText = this.printer.printNode(ts.EmitHint.Unspecified, rightExpr, tsExprNode.getSourceFile());
+      const rightText = this.nonCommentPrinter.printNode(
+        ts.EmitHint.Unspecified, rightExpr, tsExprNode.getSourceFile()
+      );
       text += '\n' + rightText;
     } else {
       const leftExpr = ts.factory.createExpressionStatement(tsExprNode.left);
       const rightExpr = ts.factory.createExpressionStatement(tsExprNode.right);
 
-      const leftText = this.printer.printNode(ts.EmitHint.Unspecified, leftExpr, tsExprNode.getSourceFile());
-      const rightText = this.printer.printNode(ts.EmitHint.Unspecified, rightExpr, tsExprNode.getSourceFile());
+      const leftText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, leftExpr, tsExprNode.getSourceFile());
+      const rightText = this.nonCommentPrinter.printNode(
+        ts.EmitHint.Unspecified, rightExpr, tsExprNode.getSourceFile()
+      );
       text = leftText + '\n' + rightText;
     }
 
@@ -531,6 +535,12 @@ export class Autofixer {
   private readonly printer: ts.Printer = ts.createPrinter({
     omitTrailingSemicolon: false,
     removeComments: false,
+    newLine: ts.NewLineKind.LineFeed
+  });
+
+  private readonly nonCommentPrinter: ts.Printer = ts.createPrinter({
+    omitTrailingSemicolon: false,
+    removeComments: true,
     newLine: ts.NewLineKind.LineFeed
   });
 
