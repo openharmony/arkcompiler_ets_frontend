@@ -24,6 +24,7 @@
 #include <typescript/types/type.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
+#include <ir/base/spreadElement.h>
 #include <ir/expressions/chainExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/ts/tsAsExpression.h>
@@ -63,6 +64,64 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
     return argsObj;
 }
 
+void CallExpression::CompileSuperCall(compiler::PandaGen *pg, bool containsSpread) const
+{
+    if (containsSpread) {
+        compiler::RegScope paramScope(pg);
+        compiler::VReg argsObj {};
+        // arguments_ is only ...args
+        if (arguments_.size() == 1) {
+            argsObj = pg->AllocReg();
+            arguments_[0]->AsSpreadElement()->Argument()->Compile(pg);
+            pg->StoreAccumulator(this, argsObj);
+        } else {
+            argsObj = CreateSpreadArguments(pg);
+        }
+
+        pg->GetFunctionObject(this);
+        pg->SuperCallSpread(this, argsObj);
+    } else {
+        compiler::RegScope paramScope(pg);
+        compiler::VReg argStart {};
+
+        if (arguments_.empty()) {
+            argStart = pg->AllocReg();
+            pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
+            pg->StoreAccumulator(this, argStart);
+        } else {
+            argStart = pg->NextReg();
+        }
+
+        for (const auto *it : arguments_) {
+            compiler::VReg arg = pg->AllocReg();
+            it->Compile(pg);
+            pg->StoreAccumulator(it, arg);
+        }
+
+        pg->SuperCall(this, argStart, arguments_.size());
+    }
+
+    compiler::VReg newThis = pg->AllocReg();
+    pg->StoreAccumulator(this, newThis);
+
+    pg->GetThis(this);
+    pg->ThrowIfSuperNotCorrectCall(this, 1);
+
+    pg->LoadAccumulator(this, newThis);
+    pg->SetThis(this);
+
+    const auto *classDef = util::Helpers::GetClassDefiniton(util::Helpers::GetContainingConstructor(this));
+    if (classDef->NeedInstanceInitializer()) {
+        auto thisReg = pg->AllocReg();
+        pg->MoveVreg(this, thisReg, newThis);
+
+        auto [level, slot] = pg->Scope()->Find(classDef->InstanceInitializer()->Key());
+        pg->LoadLexicalVar(this, level, slot);
+
+        pg->CallInit(this, thisReg);
+    }
+}
+
 void CallExpression::Compile(compiler::PandaGen *pg) const
 {
     const ir::Expression *realCallee = callee_;
@@ -86,59 +145,7 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     bool containsSpread = util::Helpers::ContainSpreadElement(arguments_);
 
     if (callee_->IsSuperExpression()) {
-        if (containsSpread) {
-            compiler::RegScope paramScope(pg);
-            compiler::VReg argsObj {};
-            // arguments_ is only ...args
-            if (arguments_.size() == 1) {
-                argsObj = pg->AllocReg();
-                pg->StoreAccumulator(this, argsObj);
-            } else {
-                argsObj = CreateSpreadArguments(pg);
-            }
-
-            pg->GetFunctionObject(this);
-            pg->SuperCallSpread(this, argsObj);
-        } else {
-            compiler::RegScope paramScope(pg);
-            compiler::VReg argStart {};
-
-            if (arguments_.empty()) {
-                argStart = pg->AllocReg();
-                pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-                pg->StoreAccumulator(this, argStart);
-            } else {
-                argStart = pg->NextReg();
-            }
-
-            for (const auto *it : arguments_) {
-                compiler::VReg arg = pg->AllocReg();
-                it->Compile(pg);
-                pg->StoreAccumulator(it, arg);
-            }
-
-            pg->SuperCall(this, argStart, arguments_.size());
-        }
-
-        compiler::VReg newThis = pg->AllocReg();
-        pg->StoreAccumulator(this, newThis);
-
-        pg->GetThis(this);
-        pg->ThrowIfSuperNotCorrectCall(this, 1);
-
-        pg->LoadAccumulator(this, newThis);
-        pg->SetThis(this);
-
-        const auto *classDef = util::Helpers::GetClassDefiniton(util::Helpers::GetContainingConstructor(this));
-        if (classDef->NeedInstanceInitializer()) {
-            auto thisReg = pg->AllocReg();
-            pg->MoveVreg(this, thisReg, newThis);
-
-            auto [level, slot] = pg->Scope()->Find(classDef->InstanceInitializer()->Key());
-            pg->LoadLexicalVar(this, level, slot);
-
-            pg->CallInit(this, thisReg);
-        }
+        CompileSuperCall(pg, containsSpread);
         return;
     }
 
