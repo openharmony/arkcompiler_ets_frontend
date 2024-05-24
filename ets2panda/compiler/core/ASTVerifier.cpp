@@ -165,7 +165,7 @@ static bool IsValidTypeForBinaryOp(const ir::AstNode *ast, bool isBitwise)
                !typedAst->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_BOOLEAN);
     }
 
-    return typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC) ||
+    return typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::NUMBER_LITERAL) ||
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::BIGINT) ||
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL);

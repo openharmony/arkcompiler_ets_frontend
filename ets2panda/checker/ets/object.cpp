@@ -1226,7 +1226,7 @@ void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
 
 int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type, const lexer::SourcePosition &pos)
 {
-    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     switch (ETSType(type)) {
         case TypeFlag::BYTE: {

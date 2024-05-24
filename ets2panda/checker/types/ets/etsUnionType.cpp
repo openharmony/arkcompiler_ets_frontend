@@ -214,7 +214,7 @@ void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)
     RelationTarget(relation, source, relFn);
 }
 
-static auto constexpr ETS_NORMALIZABLE_NUMERIC = TypeFlag(TypeFlag::ETS_NUMERIC & ~TypeFlag::CHAR);
+static auto constexpr ETS_NORMALIZABLE_NUMERIC = TypeFlag(TypeFlag::ETS_NUMERIC);
 
 static Type *LargestNumeric(Type *t1, Type *t2)
 {

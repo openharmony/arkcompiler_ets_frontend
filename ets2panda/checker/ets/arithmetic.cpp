@@ -23,7 +23,7 @@ namespace ark::es2panda::checker {
 
 Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
 {
-    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     TypeFlag typeKind = ETSType(type);
     Type *result = nullptr;
@@ -116,8 +116,8 @@ Type *ETSChecker::BitwiseNegateNumericType(Type *type, ir::Expression *node)
 
 Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return PerformRelationOperationOnTypes<DoubleType>(left, right, operationType);
@@ -188,7 +188,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(ir::Expression *left, ir
 {
     checker::Type *tsType {};
     auto [promotedType, bothConst] =
-        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_NUMERIC, !isEqualOp);
+        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC, !isEqualOp);
 
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
@@ -224,7 +224,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(ir::Expression *left, ir::Exp
     CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right);
 
     auto [promotedType, bothConst] =
-        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_NUMERIC, !isEqualOp);
+        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC, !isEqualOp);
 
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
@@ -255,8 +255,9 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(ir::Expression *left, ir::Ex
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
-    if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC) ||
-        promotedRightType == nullptr || !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+    if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
+        promotedRightType == nullptr ||
+        !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
         ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
     }
 
@@ -319,7 +320,7 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(ir::Expression *left, ir::
     }
 
     auto [promotedType, bothConst] =
-        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_NUMERIC, !isEqualOp);
+        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC, !isEqualOp);
 
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
@@ -704,8 +705,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
 
 Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return PerformArithmeticOperationOnTypes<DoubleType>(left, right, operationType);
@@ -724,8 +725,8 @@ Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexe
 
 Type *ETSChecker::HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
 {
-    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC) &&
-           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
 
     if (left->IsDoubleType() || right->IsDoubleType()) {
         return HandleBitWiseArithmetic<DoubleType, LongType>(left, right, operationType);
