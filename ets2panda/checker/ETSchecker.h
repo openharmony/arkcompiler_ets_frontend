@@ -509,6 +509,7 @@ public:
     Type *GetNonNullishType(Type *type);
     Type *RemoveNullType(Type *type);
     Type *RemoveUndefinedType(Type *type);
+    std::pair<Type *, Type *> RemoveNullishTypes(Type *type);
 
     void ConcatConstantString(util::UString &target, Type *type);
     Type *HandleStringConcatenation(Type *leftType, Type *rightType);

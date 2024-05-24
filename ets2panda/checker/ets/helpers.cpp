@@ -800,7 +800,7 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
 std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType, Type *actualType, bool const strict)
 {
     if (!strict) {
-        return {GlobalETSNullishType(), GetNonNullishType(actualType)};
+        return RemoveNullishTypes(actualType);
     }
 
     if (testedType->IsETSNullType()) {
