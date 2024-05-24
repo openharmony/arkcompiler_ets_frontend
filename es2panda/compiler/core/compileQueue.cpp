@@ -77,7 +77,9 @@ bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer)
     // not being invalidated when their dependencies change, or from not being reanalyzed when their dependents
     // are updated
     if (cacheFileIter != options_->cacheFiles.end()) {
-        src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
+        // cache is invalid when any one of source file infos being changed
+        auto bufToHash = buffer + src_->fileName + src_->recordName + src_->sourcefile + src_->pkgName;
+        src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(bufToHash.c_str()));
 
         ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
