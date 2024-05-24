@@ -611,6 +611,44 @@ function test_bitwise(): void {
     /* Testing bitwise OR (|) */
 }
 
+function test_scientific(): void {
+    assert new BigInt(0.0e0).toString() == "0" : "BigInt(0.0e0)"
+    assert new BigInt(0.0e+0).toString() == "0" : "BigInt(0.0e+0)"
+    assert new BigInt(0.0e-0).toString() == "0" : "BigInt(0.0e-0).toString()"
+    assert new BigInt(-0.0e0).toString() == "0" : "BigInt(-0.0e0).toString()"
+    assert new BigInt(1e23).toString() == "100000000000000000000000" : "BigInt(1e23)"
+    assert new BigInt(1e+23).toString() == "100000000000000000000000" : "BigInt(1e+23)"
+    assert new BigInt(1e-23).toString() == "0" : "BigInt(1e-23)"
+    assert new BigInt(-1e23).toString() == "-100000000000000000000000" : "BigInt(-1e23)"
+    assert new BigInt(-1e+23).toString() == "-100000000000000000000000" : "BigInt(-1e+23)"
+    assert new BigInt(-1e-23).toString() == "0" : "BigInt(-1e-23)"
+
+    assert new BigInt(1.234567e10).toString() == "12345670000" : "BigInt(1.234567e10).toString()"
+    assert new BigInt(1.234567e20).toString() == "123456700000000000000" : "BigInt(1.234567e20).toString()"
+    assert new BigInt(1.88e-20).toString() == "0" : "BigInt(1.88e-20)"
+
+    assert new BigInt(1.2345678912e21).toString() == "1234567891200000000000" : "BigInt(1.2345678912e21)"
+    assert new BigInt(1.2345678912e+21).toString() == "1234567891200000000000" : "BigInt(1.2345678912e+21)"
+    assert new BigInt(1.2345678912e-21).toString() == "0" : "BigInt(1.2345678912e-21)"
+    assert new BigInt(-1.2345678912e21).toString() == "-1234567891200000000000" : "BigInt(-1.2345678912e21)"
+}
+
+function test_double(): void {
+    let bigIntFromDouble = (x: number): boolean => { 
+        try {
+            let b = new BigInt(x);
+        } catch (e) {
+            return e instanceof Error;
+        }
+        return false;
+    };
+
+    assert bigIntFromDouble(0.1) : "BigInt(0.1)"
+    assert bigIntFromDouble(-0.1) : "BigInt(-0.1)"
+    assert bigIntFromDouble(42.1234567) : "BigInt(42.1234567)"
+    assert bigIntFromDouble(1.234567e2) : "BigInt(1.234567e2)"
+}
+
 function main() : void {
     test_create_empty_bigint();
     test_bigint_as_string();
@@ -640,4 +678,6 @@ function main() : void {
     test_inc_dec();
     test_shift();
     test_bitwise();
+    test_double();
+    test_scientific();
 }
