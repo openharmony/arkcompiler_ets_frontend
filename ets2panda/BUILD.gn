@@ -412,7 +412,6 @@ config("libes2panda_config") {
 }
 
 libes2panda_configs = [
-  sdk_libc_secshared_config,
   "$ark_root:ark_config",
   ":libes2panda_public_config",
   ":libes2panda_config",
@@ -422,7 +421,6 @@ libes2panda_configs = [
 ]
 
 libes2panda_public_configs = [
-  sdk_libc_secshared_config,
   "$ark_root:ark_config",
   ":libes2panda_public_config",
   ":libes2panda_config",
