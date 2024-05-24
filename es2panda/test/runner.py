@@ -1009,6 +1009,22 @@ class TransformerRunner(Runner):
         return src
 
 
+class TransformerInTargetApiVersion10Runner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "TransformerInTargetApiVersion10")
+
+    def add_directory(self, directory, extension, flags):
+        glob_expression = path.join(
+            self.test_root, directory, "**/*.%s" % (extension))
+        files = glob(glob_expression, recursive=True)
+        files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+
+        self.tests += list(map(lambda f: TransformerTest(f, flags), files))
+
+    def test_path(self, src):
+        return src
+
+
 class TransformerTest(Test):
     def __init__(self, test_path, flags):
         Test.__init__(self, test_path, flags)
@@ -1403,6 +1419,12 @@ def add_directory_for_regression(runners, args):
 
     runners.append(bc_version_runner)
 
+    transformer_api_version_10_runner = TransformerInTargetApiVersion10Runner(args)
+    transformer_api_version_10_runner.add_directory("parser/ts/transformed_cases_api_version_10", "ts",
+                                                    ["--parse-only", "--module", "--target-api-version=10",
+                                                    "--dump-transformed-ast"])
+
+    runners.append(transformer_api_version_10_runner)
 
 def add_directory_for_asm(runners, args):
     runner = AbcToAsmRunner(args)
