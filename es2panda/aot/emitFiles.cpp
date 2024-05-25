@@ -16,9 +16,11 @@
 #include "emitFiles.h"
 
 #include <assembly-emitter.h>
-#include <es2panda.h>
 #include <mem/arena_allocator.h>
+
+#include <es2panda.h>
 #include <protobufSnapshotGenerator.h>
+#include <util/helpers.h>
 
 namespace panda::es2panda::aot {
 void EmitFileQueue::ScheduleEmitCacheJobs(EmitMergedAbcJob *emitMergedAbcJob)

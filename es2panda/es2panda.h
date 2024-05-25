@@ -114,11 +114,9 @@ struct CompilerOptions {
     std::string compileContextInfoPath {};
     CompileContextInfo compileContextInfo {};
     bool dumpDepsInfo {false};
-
-    bool NeedUpdatePkgVersionForAbcInput() const
-    {
-        return enableAbcInput && !compileContextInfo.pkgContextInfo.empty();
-    }
+    bool updatePkgVersionForAbcInput {false};
+    bool removeRedundantFile {false};
+    bool dumpString {false};
 };
 
 enum class ErrorType {

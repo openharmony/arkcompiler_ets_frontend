@@ -117,7 +117,7 @@ void CompileFileJob::Run()
     }
 
     // Update version for abc input when needed
-    if (!src_->isSourceMode && options_->NeedUpdatePkgVersionForAbcInput()) {
+    if (!src_->isSourceMode && options_->updatePkgVersionForAbcInput) {
         compiler.UpdatePackageVersion(prog, *options_);
     }
 
@@ -136,6 +136,7 @@ void CompileFileJob::Run()
     {
         std::unique_lock<std::mutex> lock(global_m_);
         auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), src_->isSourceMode);
+        cache->generatedFromAbc = !src_->isSourceMode;
         progsInfo_.insert({src_->fileName, cache});
         if (requireOptimizationAfterAnalysis) {
             optimizationPendingProgs_.insert(src_->fileName);

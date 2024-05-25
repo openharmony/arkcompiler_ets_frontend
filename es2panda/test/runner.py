@@ -981,7 +981,7 @@ class BcVersionTest(Test):
             12: "12.0.4.0",
             13: "12.0.4.0"
         }
-    
+
     def run(self):
         process = subprocess.Popen(self.cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
@@ -1478,9 +1478,12 @@ def add_directory_for_compiler(runners, args):
                                                 "--file-threads=8"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
-                                                 "--dump-deps-info", "--dump-literal-buffer"]))
+                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-literal-buffer", "--dump-string"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
-                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input",
+                                                 "--dump-deps-info", "--remove-redundant-file",
+                                                 "--dump-literal-buffer", "--dump-string"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
@@ -1551,7 +1554,7 @@ def add_cmd_for_aop_transform(runners, args):
 class AopTransform(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "AopTransform")
-    
+
     def add_cmd(self, cmd, compare_str, compare_abc_str, remove_file, func=TestAop):
         self.tests += [func(cmd, compare_str, compare_abc_str, remove_file)]
 
