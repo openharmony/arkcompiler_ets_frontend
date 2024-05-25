@@ -190,6 +190,11 @@ public:
         flags_ |= flags;
     }
 
+    bool HasFlag(ir::ScriptFunctionFlags flag) const
+    {
+        return (flags_ & flag) != 0;
+    }
+
     void SetInSendable()
     {
         inSendable_ = true;
