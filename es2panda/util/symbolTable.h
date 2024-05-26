@@ -44,7 +44,7 @@ public:
         originModuleInfo_(allocator_.Adapter()),
         originRecordHashFunctionNames_(allocator_.Adapter()) {}
 
-    bool Initialize();
+    bool Initialize(int targetApiVersion);
     void WriteSymbolTable(const std::string &content);
     ArenaUnorderedMap<std::string, OriginFunctionInfo> *GetOriginFunctionInfo()
     {
@@ -64,12 +64,13 @@ public:
 private:
     bool ReadSymbolTable(const std::string &symbolTable);
     std::vector<std::string_view> GetStringItems(std::string_view input, const std::string &separator);
-    void ReadRecordHashFunctionNames(std::string recordName, std::string funcInternalName,
-                                     std::string specialFuncIndex);
+    void ReadRecordHashFunctionNames(const std::string &recordName, const std::string &funcInternalName,
+                                     const std::string &specialFuncIndex);
 
     std::mutex m_;
     std::string symbolTable_;
     std::string dumpSymbolTable_;
+    int targetApiVersion_ {0};
     ArenaAllocator allocator_;
     ArenaUnorderedMap<std::string, OriginFunctionInfo> originFunctionInfo_;
     ArenaUnorderedMap<std::string, std::string> originModuleInfo_;

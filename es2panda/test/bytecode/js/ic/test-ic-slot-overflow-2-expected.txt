@@ -1,6 +1,6 @@
 .language ECMAScript
 
-.function any .MyClass(any a0, any a1, any a2, any a3) {
+.function any .#~@0=#MyClass(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	lda a3
@@ -10,12 +10,35 @@ label_0:
 label_2: 
 }
 
+.function any .#~@0>#sayHello(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	tryldglobalbyname 0x0, console
+	sta v0
+	ldobjbyname 0x1, log
+	sta v1
+	lda.str Hello, 
+	sta v2
+	lda a2
+	ldobjbyname 0x3, name
+	add2 0x5, v2
+	sta v2
+	lda.str !
+	add2 0x6, v2
+	sta v2
+	lda v1
+	callthis1 0x7, v0, v2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldhole
 	sta v0
-	defineclasswithbuffer 0x0, .MyClass, _0, 0x1, v0
+	defineclasswithbuffer 0x0, .#~@0=#MyClass, _1, 0x1, v0
 	sta v0
 	ldobjbyname 0x1, prototype
 	lda v0
@@ -132,29 +155,6 @@ label_0:
 	sta v0
 	ldobjbyname 0x86, sayHello
 	callthis0 0x88, v0
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any .sayHello(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	tryldglobalbyname 0x0, console
-	sta v0
-	ldobjbyname 0x1, log
-	sta v1
-	lda.str Hello, 
-	sta v2
-	lda a2
-	ldobjbyname 0x3, name
-	add2 0x5, v2
-	sta v2
-	lda.str !
-	add2 0x6, v2
-	sta v2
-	lda v1
-	callthis1 0x7, v0, v2
 	ldundefined
 	returnundefined
 label_2: 

@@ -1,0 +1,296 @@
+.language ECMAScript
+
+.function any .#~C=#C(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	lda v2
+	sta v4
+	ldlexvar 0x0, 0x1
+	callruntime.callinit 0x0, v4
+	lda v2
+	sta v4
+	ldhole
+	sta v6
+	defineclasswithbuffer 0x2, .#~C=C~=#, _2, 0x0, v6
+	sta v5
+	lda v5
+	ldobjbyname 0x3, prototype
+	sta v7
+	lda v5
+	stobjbyname 0x5, B_withoutPrivateField, v4
+	lda v2
+	sta v4
+	newlexenv 0x4
+LABEL_4: 
+	ldhole
+	sta v6
+	defineclasswithbuffer 0x7, .#~C=C~^1=#, _3, 0x0, v6
+	sta v5
+	lda v5
+	ldobjbyname 0x8, prototype
+	sta v7
+	sta v7
+	definemethod 0xa, .#~C=C~^1>#instance_initializer, 0x0
+	stlexvar 0x0, 0x1
+	callruntime.createprivateproperty 0x1, _4
+	lda v5
+LABEL_5: 
+	jmp LABEL_7
+LABEL_6: 
+	poplexenv
+	throw
+LABEL_7: 
+	poplexenv
+	stobjbyname 0xb, B_withPrivateField, v4
+	lda v2
+	return
+}
+
+.catchall LABEL_4, LABEL_5, LABEL_6
+
+.function any .#~C=C~=#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~C=C~>#method(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda a3
+	ldprivateproperty 0x0, 0x0, 0x0
+	return
+label_2: 
+}
+
+.function any .#~C=C~^1=#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x1
+	callruntime.callinit 0x0, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~C=C~^1>#instance_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x2a
+	callruntime.defineprivateproperty 0x0, 0x0, 0x2, a2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~C=C~^1>#method(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	lda a2
+	ldprivateproperty 0x0, 0x0, 0x2
+	return
+label_2: 
+}
+
+.function any .#~C>#instance_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda.str test
+	callruntime.defineprivateproperty 0x0, 0x0, 0x0, a2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	newlexenv 0x2
+LABEL_2: 
+	ldhole
+	sta v7
+	defineclasswithbuffer 0x0, .#~C=#C, _5, 0x0, v7
+	sta v5
+	sta v6
+	lda v5
+	ldobjbyname 0x1, prototype
+	sta v8
+	sta v8
+	definemethod 0x3, .#~C>#instance_initializer, 0x0
+	stlexvar 0x0, 0x1
+	callruntime.createprivateproperty 0x1, _6
+	lda v5
+LABEL_3: 
+	jmp LABEL_5
+LABEL_4: 
+	poplexenv
+	throw
+LABEL_5: 
+	poplexenv
+	sta v3
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_2, LABEL_3, LABEL_4
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: method
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#~C=C~>#method
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 1
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+------------------------------------
+slot _3
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: method
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#~C=C~^1>#method
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 1
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+------------------------------------
+slot _4
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _5
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _6
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},

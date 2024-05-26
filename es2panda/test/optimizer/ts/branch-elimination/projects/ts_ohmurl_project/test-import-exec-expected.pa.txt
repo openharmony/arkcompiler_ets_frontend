@@ -85,10 +85,28 @@ label_2:
 
 .language ECMAScript
 
+.function any &myapp/test-import-datatypes&.#*#testDataTypeRegularImport(any a0, any a1, any a2) {
+label_16: 
+label_0: 
+	ldexternalmodulevar 0x2
+	throw.undefinedifholewithname CONST_INT
+	ldexternalmodulevar 0x1
+	throw.undefinedifholewithname CONST_DOUBLE
+	ldexternalmodulevar 0x0
+	throw.undefinedifholewithname CONST_BOOL
+	ldexternalmodulevar 0x0
+	throw.undefinedifholewithname CONST_BOOL
+	ldexternalmodulevar 0x3
+	throw.undefinedifholewithname CONST_STRING
+	ldundefined
+	returnundefined
+label_17: 
+}
+
 .function any &myapp/test-import-datatypes&.func_main_0(any a0, any a1, any a2) {
 label_15: 
 label_0: 
-	definefunc 0x0, &myapp/test-import-datatypes&.testDataTypeRegularImport, 0x0
+	definefunc 0x0, &myapp/test-import-datatypes&.#*#testDataTypeRegularImport, 0x0
 	getmodulenamespace 0x0
 	sta v0
 	getmodulenamespace 0x0
@@ -108,37 +126,10 @@ label_0:
 label_16: 
 }
 
-.function any &myapp/test-import-datatypes&.testDataTypeRegularImport(any a0, any a1, any a2) {
-label_16: 
-label_0: 
-	ldexternalmodulevar 0x2
-	throw.undefinedifholewithname CONST_INT
-	ldexternalmodulevar 0x1
-	throw.undefinedifholewithname CONST_DOUBLE
-	ldexternalmodulevar 0x0
-	throw.undefinedifholewithname CONST_BOOL
-	ldexternalmodulevar 0x0
-	throw.undefinedifholewithname CONST_BOOL
-	ldexternalmodulevar 0x3
-	throw.undefinedifholewithname CONST_STRING
-	ldundefined
-	returnundefined
-label_17: 
-}
-
 
 .language ECMAScript
 
-.function any &myapp/test-import-exec&.func_main_0(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	definefunc 0x0, &myapp/test-import-exec&.testUrlType, 0x0
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any &myapp/test-import-exec&.testUrlType(any a0, any a1, any a2) {
+.function any &myapp/test-import-exec&.#*#testUrlType(any a0, any a1, any a2) {
 label_24: 
 label_0: 
 	ldexternalmodulevar 0x0
@@ -234,14 +225,48 @@ label_22:
 label_25: 
 }
 
+.function any &myapp/test-import-exec&.func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, &myapp/test-import-exec&.#*#testUrlType, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
 
 .language ECMAScript
+
+.function any &myapp/test-import-namespace&.#*#namespaceAsLexVar(any a0, any a1, any a2) {
+label_3: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	sta v0
+	throw.undefinedifholewithname NORMALIZED_LEXVAR
+	lda v0
+	ldobjbyname 0x0, FILE_TYPE
+	sta v0
+	lda.str normalized
+	strictnoteq 0x2, v0
+	jeqz label_1
+label_2: 
+	tryldglobalbyname 0x3, print
+	sta v0
+	lda.str good8
+	sta v1
+	lda v0
+	callarg1 0x4, v1
+label_1: 
+	ldundefined
+	returnundefined
+label_4: 
+}
 
 .function any &myapp/test-import-namespace&.func_main_0(any a0, any a1, any a2) {
 label_23: 
 label_0: 
 	newlexenv 0x1
-	definefunc 0x0, &myapp/test-import-namespace&.namespaceAsLexVar, 0x0
+	definefunc 0x0, &myapp/test-import-namespace&.#*#namespaceAsLexVar, 0x0
 	getmodulenamespace 0x0
 	sta v0
 	getmodulenamespace 0x1
@@ -360,31 +385,6 @@ label_21:
 	ldundefined
 	returnundefined
 label_24: 
-}
-
-.function any &myapp/test-import-namespace&.namespaceAsLexVar(any a0, any a1, any a2) {
-label_3: 
-label_0: 
-	ldlexvar 0x0, 0x0
-	sta v0
-	throw.undefinedifholewithname NORMALIZED_LEXVAR
-	lda v0
-	ldobjbyname 0x0, FILE_TYPE
-	sta v0
-	lda.str normalized
-	strictnoteq 0x2, v0
-	jeqz label_1
-label_2: 
-	tryldglobalbyname 0x3, print
-	sta v0
-	lda.str good8
-	sta v1
-	lda v0
-	callarg1 0x4, v1
-label_1: 
-	ldundefined
-	returnundefined
-label_4: 
 }
 
 

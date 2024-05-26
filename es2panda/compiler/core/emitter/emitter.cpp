@@ -168,7 +168,10 @@ uint32_t FunctionEmitter::UpdateForReturnIns(const ir::AstNode *astNode, panda::
     uint32_t columnNum = INVALID_COL;
     if (pandaIns->opcode == pandasm::Opcode::RETURNUNDEFINED || pandaIns->opcode == pandasm::Opcode::RETURN) {
         while (astNode != nullptr && !astNode->IsScriptFunction()) {
-            if (astNode->IsBlockStatement() && astNode->AsBlockStatement()->Scope()->Node()->IsScriptFunction()) {
+            if (astNode->IsBlockStatement() &&
+                astNode->AsBlockStatement()->Scope() &&
+                astNode->AsBlockStatement()->Scope()->Node() &&
+                astNode->AsBlockStatement()->Scope()->Node()->IsScriptFunction()) {
                 astNode = astNode->AsBlockStatement()->Scope()->Node();
                 break;
             }
@@ -365,6 +368,7 @@ Emitter::Emitter(const CompilerContext *context)
         AddHasTopLevelAwaitRecord(context->Binder()->Program()->HasTLA(), context);
     }
     AddSharedModuleRecord(context);
+    AddScopeNamesRecord(const_cast<CompilerContext *>(context));
 }
 
 Emitter::~Emitter()
@@ -419,6 +423,54 @@ void Emitter::AddFunction(FunctionEmitter *func, CompilerContext *context)
 
     auto *function = func->Function();
     prog_->function_table.emplace(function->name, std::move(*function));
+}
+
+void Emitter::AddScopeNamesRecord(CompilerContext *context)
+{
+    std::lock_guard<std::mutex> lock(m_);
+    // make literalarray for scope names
+    const auto &scopeNamesVec = context->Binder()->GetScopeNames();
+    if (context->Binder()->Program()->TargetApiVersion() < 12) {
+        return;
+    }
+    panda::pandasm::LiteralArray array;
+    auto strTag = panda_file::LiteralTag::STRING;
+    for (const auto &[scopeName, index] : scopeNamesVec) {  // index is unused, only need keys
+        panda::pandasm::LiteralArray::Literal tag;
+        tag.tag_ = panda_file::LiteralTag::TAGVALUE;
+        tag.value_ = static_cast<uint8_t>(strTag);
+        array.literals_.emplace_back(tag);
+        panda::pandasm::LiteralArray::Literal val;
+        val.tag_ = strTag;
+        val.value_ = std::string(scopeName);
+        array.literals_.emplace_back(val);
+    }
+    auto literalKey = std::string(context->Binder()->Program()->RecordName()) +
+                      "_" + std::to_string(context->NewLiteralIndex());
+    prog_->literalarray_table.emplace(literalKey, std::move(array));
+
+    // ScopeNames is a literalarray in each record if it is in mergeAbc, it is a string array which put scope names.
+    // _ESScopeNamesRecord is a literalarray in the record when it is not in mergeAbc.
+    if (context->IsMergeAbc()) {
+        auto scopeNamesField = panda::pandasm::Field(LANG_EXT);
+        scopeNamesField.name = "scopeNames";
+        scopeNamesField.type = panda::pandasm::Type("u32", 0);
+        scopeNamesField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
+            static_cast<std::string_view>(literalKey)));
+        rec_->field_list.emplace_back(std::move(scopeNamesField));
+    } else {
+        auto scopeNamesRecord = panda::pandasm::Record("_ESScopeNamesRecord", LANG_EXT);
+        scopeNamesRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+        auto scopeNamesField = panda::pandasm::Field(LANG_EXT);
+        scopeNamesField.name = std::string {context->Binder()->Program()->SourceFile()};
+        scopeNamesField.type = panda::pandasm::Type("u32", 0);
+        scopeNamesField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
+            static_cast<std::string_view>(literalKey)));
+        scopeNamesRecord.field_list.emplace_back(std::move(scopeNamesField));
+        prog_->record_table.emplace(scopeNamesRecord.name, std::move(scopeNamesRecord));
+    }
 }
 
 void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context)

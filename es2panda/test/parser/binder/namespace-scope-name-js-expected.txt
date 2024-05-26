@@ -1,0 +1,2 @@
+SyntaxError: Unexpected token [namespace-scope-name-js.js:20:11]
+The size of programs is expected to be 1, but is 0

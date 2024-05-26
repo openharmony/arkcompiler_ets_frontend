@@ -1,6 +1,6 @@
 .language ECMAScript
 
-.function any .foo(any a0, any a1, any a2) {
+.function any .#*#foo(any a0, any a1, any a2) {
 label_16: 
 label_5: 
 	ldai 0x1
@@ -57,7 +57,7 @@ label_10:
 	lda v1
 	callarg1 0x15, v2
 label_12: 
-	createobjectwithbuffer 0x17, _1
+	createobjectwithbuffer 0x17, _2
 	sta v1
 	lda v0
 	definepropertybyname 0x18, fa, v1
@@ -92,7 +92,7 @@ label_17:
 label_1: 
 label_0: 
 	newlexenv 0x1
-	definefunc 0x0, .foo, 0x0
+	definefunc 0x0, .#*#foo, 0x0
 	sta v0
 	ldai 0x1
 	sta v1

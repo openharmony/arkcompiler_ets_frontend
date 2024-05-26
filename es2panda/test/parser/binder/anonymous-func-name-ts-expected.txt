@@ -1,0 +1,132 @@
+.language ECMAScript
+
+.function any .#*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#^2(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#*^2*#, 0x0
+	definefunc 0x1, .#*^2*#^1, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#a(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#a^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*^2*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#*^2**#, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*^2*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#*^2*^1*#, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*^2**#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*^2*^1*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	newlexenv 0x2
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+	definefunc 0x0, .#*#, 0x0
+	definefunc 0x1, .#*#^1, 0x0
+	definefunc 0x2, .#*#^2, 0x0
+	definefunc 0x3, .#*#a, 0x0
+	definefunc 0x4, .#*#a^1, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},

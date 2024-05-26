@@ -126,7 +126,28 @@ void PatchFix::ValidateJsonContentRecInfo(const std::string &recordName, const s
 
 bool PatchFix::IsAnonymousOrSpecialOrDuplicateFunction(const std::string &funcName)
 {
-    return funcName.find(binder::Binder::ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER) != std::string::npos;
+    if (targetApiVersion_ < 12) {
+        return funcName.find(binder::Binder::ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER) != std::string::npos;
+    }
+    // Function name is like: #scopes^1#functionname^1
+    // Special function name is which includes "\\" or ".", the name should be transformed into "".
+    // Anonymous function name is "", it's the same with special function name here.
+    // Duplicate function name includes "^" after the last "#".
+    auto pos = funcName.find_last_of(Helpers::FUNC_NAME_SEPARATOR);
+    if (pos == std::string::npos) {
+        return false;
+    }
+
+    if (pos == funcName.size() - 1) {
+        return true;
+    }
+
+    auto posOfDuplicateSep = funcName.find_last_of(Helpers::DUPLICATED_SEPERATOR);
+    if (posOfDuplicateSep != std::string::npos && posOfDuplicateSep > pos) {
+        return true;
+    }
+
+    return false;
 }
 
 int64_t PatchFix::GetLiteralIdxFromStringId(const std::string &stringId)
@@ -546,6 +567,14 @@ void PatchFix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Func
     std::string funcName = func->name;
     auto originFunction = originFunctionInfo_->find(funcName);
     if (originFunction == originFunctionInfo_->end()) {
+        if (pg->Binder()->Program()->TargetApiVersion() > 11 &&
+            IsHotFix() &&
+            IsAnonymousOrSpecialOrDuplicateFunction(funcName)) {
+            std::cerr << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
+                      << funcName << " not supported!" << std::endl;
+            patchError_ = true;
+            return;
+        }
         newFuncNames_.insert(funcName);
         CollectFuncDefineIns(func);
         return;
@@ -595,12 +624,14 @@ void PatchFix::DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Fu
     std::vector<std::pair<std::string, std::string>> hashList = GenerateFunctionAndClassHash(func, literalBuffers);
     ss << hashList.back().second << SymbolTable::SECOND_LEVEL_SEPERATOR;
 
-    auto internalNameStr = pg->InternalName().Mutf8();
-    if (internalNameStr.find("#") != std::string::npos) {
-        ss << (pg->Binder()->SpecialFuncNameIndexMap()).at(internalNameStr) << SymbolTable::SECOND_LEVEL_SEPERATOR;
-    } else {
-        // index 0 for all the normal name functions
-        ss << "0" << SymbolTable::SECOND_LEVEL_SEPERATOR;
+    if (pg->Binder()->Program()->TargetApiVersion() < 12) {
+        auto internalNameStr = pg->InternalName().Mutf8();
+        if (internalNameStr.find("#") != std::string::npos) {
+            ss << (pg->Binder()->SpecialFuncNameIndexMap()).at(internalNameStr) << SymbolTable::SECOND_LEVEL_SEPERATOR;
+        } else {
+            // index 0 for all the normal name functions
+            ss << "0" << SymbolTable::SECOND_LEVEL_SEPERATOR;
+        }
     }
 
     ss << SymbolTable::FIRST_LEVEL_SEPERATOR;

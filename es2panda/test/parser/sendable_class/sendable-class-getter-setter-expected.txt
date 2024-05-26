@@ -1,6 +1,23 @@
 .language ECMAScript
 
-.function any .#6753558177563459672#Prop(any a0, any a1, any a2, any a3) {
+.function any .#~A=#A(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>#Prop(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	ldobjbyname 0x0, prop
+	return
+label_2: 
+}
+
+.function any .#~A>#Prop^1(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
 	lda a3
@@ -10,29 +27,12 @@ label_0:
 label_2: 
 }
 
-.function any .A(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	lda a2
-	return
-label_2: 
-}
-
-.function any .Prop(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	lda a2
-	ldobjbyname 0x0, prop
-	return
-label_2: 
-}
-
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldhole
 	sta v0
-	callruntime.definesendableclass 0x0, .A, _2, 0x0, v0
+	callruntime.definesendableclass 0x0, .#~A=#A, _3, 0x0, v0
 	ldundefined
 	returnundefined
 label_2: 
@@ -42,6 +42,8 @@ label_2:
 ======> literal array buffer <======
 ------------------------------------
 slot _0
+------------------------------------
+slot _1
 {
   index: 0
     tag: 2
@@ -73,7 +75,7 @@ slot _0
     val: 0
 },
 ------------------------------------
-slot _1
+slot _2
 {
   index: 0
     tag: 0
@@ -105,7 +107,7 @@ slot _1
     val: 1
 },
 ------------------------------------
-slot _2
+slot _3
 {
   index: 0
     tag: 0
@@ -124,7 +126,7 @@ slot _2
 {
   index: 3
     tag: 26
-    val: .Prop
+    val: .#~A>#Prop
 },
 {
   index: 4
@@ -154,7 +156,7 @@ slot _2
 {
   index: 9
     tag: 27
-    val: .#6753558177563459672#Prop
+    val: .#~A>#Prop^1
 },
 {
   index: 10
@@ -184,5 +186,5 @@ slot _2
 {
   index: 15
     tag: 24
-    val: _1
+    val: _2
 },

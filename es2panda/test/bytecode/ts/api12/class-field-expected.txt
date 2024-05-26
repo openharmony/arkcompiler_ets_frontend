@@ -1,10 +1,20 @@
 .language ECMAScript
 
-.function any .A(any a0, any a1, any a2) {
+.function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	lda a2
 	return
+label_2: 
+}
+
+.function any .#~A>#static_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	definepropertybyname 0x0, a, a2
+	ldundefined
+	returnundefined
 label_2: 
 }
 
@@ -13,22 +23,12 @@ label_1:
 label_0: 
 	ldhole
 	sta v0
-	defineclasswithbuffer 0x0, .A, _1, 0x0, v0
+	defineclasswithbuffer 0x0, .#~A=#A, _2, 0x0, v0
 	sta v0
 	ldobjbyname 0x1, prototype
 	lda v0
-	definemethod 0x3, .static_initializer, 0x0
+	definemethod 0x3, .#~A>#static_initializer, 0x0
 	callthis0 0x4, v0
-	ldundefined
-	returnundefined
-label_2: 
-}
-
-.function any .static_initializer(any a0, any a1, any a2) {
-label_1: 
-label_0: 
-	ldundefined
-	definepropertybyname 0x0, a, a2
 	ldundefined
 	returnundefined
 label_2: 

@@ -1,0 +1,240 @@
+.language ECMAScript
+
+.function any .#*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldtrue
+	return
+label_2: 
+}
+
+.function any .#*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x1
+	return
+label_2: 
+}
+
+.function any .#*#foo(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo2(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo3(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	newlexenv 0x2
+	mov v0, a0
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+LABEL_1: 
+	definefunc 0x0, .#*#, 0x0
+	sta v5
+	lda v5
+	callarg0 0x1
+	callruntime.isfalse 0x3
+	jnez LABEL_0
+	definefunc 0x5, .#*#foo, 0x0
+	sta v5
+	jmp LABEL_1
+LABEL_0: 
+	definefunc 0x6, .#*#^1, 0x0
+	sta v7
+	lda v7
+	callarg0 0x7
+	sta v6
+LABEL_4: 
+	lda v6
+	sta v7
+	ldai 0x5
+	less 0x9, v7
+	jeqz LABEL_2
+	definefunc 0xa, .#*#foo1, 0x0
+	sta v7
+LABEL_3: 
+	lda v6
+	sta v7
+	lda v7
+	tonumeric 0xb
+	sta v7
+	lda v7
+	inc 0xc
+	sta v6
+	lda v7
+	jmp LABEL_4
+LABEL_2: 
+	createemptyarray 0xd
+	sta v5
+	sta v3
+LABEL_5: 
+	lda v3
+LABEL_6: 
+	jmp LABEL_8
+LABEL_7: 
+	sta v6
+	lda v6
+	throw
+LABEL_8: 
+	getiterator 0xe
+	sta v9
+	lda v9
+	ldobjbyname 0x10, next
+	sta v8
+	ldfalse
+	sta v7
+LABEL_10: 
+	lda v8
+	callthis0 0x12, v9
+	sta v10
+	throw.ifnotobject v10
+	lda v10
+	ldobjbyname 0x14, done
+	callruntime.istrue 0x16
+	jnez LABEL_9
+	lda v10
+	ldobjbyname 0x18, value
+	sta v11
+LABEL_11: 
+	lda v11
+	sta v12
+	definefunc 0x1a, .#*#foo2, 0x0
+	sta v13
+LABEL_12: 
+	jmp LABEL_14
+LABEL_13: 
+	sta v12
+	lda v7
+	callruntime.istrue 0x1b
+	jnez LABEL_15
+	ldtrue
+	sta v7
+	ldundefined
+	sta v13
+	ldhole
+	sta v14
+LABEL_16: 
+	lda v9
+	ldobjbyname 0x1d, return
+	sta v8
+	sta v15
+	ldundefined
+	eq 0x1f, v15
+	jnez LABEL_15
+	lda v8
+	callthis0 0x20, v9
+	sta v13
+LABEL_17: 
+	jmp LABEL_19
+LABEL_18: 
+	sta v14
+LABEL_19: 
+	lda v12
+	throw
+	lda v13
+	throw.ifnotobject v13
+LABEL_15: 
+	lda v12
+	throw
+LABEL_14: 
+	jmp LABEL_10
+LABEL_9: 
+LABEL_20: 
+	lda v3
+	getpropiterator
+	sta v6
+LABEL_21: 
+	jmp LABEL_23
+LABEL_22: 
+	sta v8
+	lda v8
+	throw
+LABEL_23: 
+LABEL_25: 
+	getnextpropname v6
+	sta v7
+	sta v9
+	ldundefined
+	eq 0x22, v9
+	jnez LABEL_24
+	lda v7
+	sta v9
+	definefunc 0x23, .#*#foo3, 0x0
+	sta v10
+	jmp LABEL_25
+LABEL_24: 
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_16, LABEL_17, LABEL_18
+
+.catchall LABEL_5, LABEL_6, LABEL_7
+
+.catchall LABEL_11, LABEL_12, LABEL_13
+
+.catchall LABEL_20, LABEL_21, LABEL_22
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},

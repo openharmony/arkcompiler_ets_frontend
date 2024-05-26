@@ -365,10 +365,24 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, cons
     }
     functionScopes_.push_back(funcScope);
     funcScope->SetInFunctionScopes();
+    if (Program()->TargetApiVersion() > 11) {
+        funcScope->SetSelfScopeName(name);
+        auto recordName = program_->FormatedRecordName().Mutf8();
+        funcScope->BindNameWithScopeInfo(name, util::UString(recordName, Allocator()).View());
+        if (func && (name == ANONYMOUS_FUNC_NAME)) {
+            anonymousFunctionNames_[func] = util::UString(funcScope->InternalName().Mutf8(), Allocator()).View();
+        }
+    } else {
+        LegacyBuildFunction(funcScope, name, func);
+    }
+}
 
+void Binder::LegacyBuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func)
+{
     bool funcNameWithoutDot = (name.Find(".") == std::string::npos);
     bool funcNameWithoutBackslash = (name.Find("\\") == std::string::npos);
-    if (name != ANONYMOUS_FUNC_NAME && funcNameWithoutDot && funcNameWithoutBackslash && !functionNames_.count(name)) {
+    if (name != ANONYMOUS_FUNC_NAME && funcNameWithoutDot &&
+        funcNameWithoutBackslash && !functionNames_.count(name)) {
         // function with normal name, and hasn't been recorded
         auto internalName = std::string(program_->FormatedRecordName()) + std::string(name);
         functionNames_.insert(name);
@@ -672,6 +686,13 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
 
             if (ident->IsReference()) {
                 LookupIdentReference(ident);
+            }
+
+            /* During ts to js transformation, a non-empty namespace in ts file will be transformed
+               into a anonymous function while empty namespace will be removed. So the name for the
+               namespace need to be stored before the transformation.*/
+            if (scope_->Type() == ScopeType::TSMODULE) {
+                scope_->SetSelfScopeName(ident->Name());
             }
 
             ResolveReferences(childNode);

@@ -1,6 +1,6 @@
 .language ECMAScript
 
-.function any .A(any a0, any a1, any a2) {
+.function any .#~A=#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldlexvar 0x0, 0x0
@@ -10,39 +10,7 @@ label_0:
 label_2: 
 }
 
-.function any .func_main_0(any a0, any a1, any a2) {
-	mov v0, a0
-	mov v1, a1
-	mov v2, a2
-	newlexenv 0x1
-LABEL_2: 
-	ldhole
-	sta v7
-	defineclasswithbuffer 0x0, .A, _0, 0x0, v7
-	sta v5
-	sta v6
-	lda v5
-	ldobjbyname 0x1, prototype
-	sta v8
-	sta v8
-	definemethod 0x3, .instance_initializer, 0x0
-	stlexvar 0x0, 0x0
-	lda v5
-LABEL_3: 
-	jmp LABEL_5
-LABEL_4: 
-	poplexenv
-	throw
-LABEL_5: 
-	poplexenv
-	sttoglobalrecord 0x4, A
-	ldundefined
-	returnundefined
-}
-
-.catchall LABEL_2, LABEL_3, LABEL_4
-
-.function any .instance_initializer(any a0, any a1, any a2) {
+.function any .#~A>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldai 0x1
@@ -555,5 +523,37 @@ label_0:
 	returnundefined
 label_2: 
 }
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	newlexenv 0x1
+LABEL_2: 
+	ldhole
+	sta v7
+	defineclasswithbuffer 0x0, .#~A=#A, _1, 0x0, v7
+	sta v5
+	sta v6
+	lda v5
+	ldobjbyname 0x1, prototype
+	sta v8
+	sta v8
+	definemethod 0x3, .#~A>#instance_initializer, 0x0
+	stlexvar 0x0, 0x0
+	lda v5
+LABEL_3: 
+	jmp LABEL_5
+LABEL_4: 
+	poplexenv
+	throw
+LABEL_5: 
+	poplexenv
+	sttoglobalrecord 0x4, A
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_2, LABEL_3, LABEL_4
 
 

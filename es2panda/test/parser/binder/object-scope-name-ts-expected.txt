@@ -1,0 +1,298 @@
+.language ECMAScript
+
+.function any .#*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#^2(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#a#b(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#a^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#foo^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#*#key(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	newlexenv 0x2
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+	createobjectwithbuffer 0x0, _2
+	sta v0
+	definefunc 0x1, .#*#foo, 0x0
+	definepropertybyname 0x2, a, v0
+	createobjectwithbuffer 0x4, _3
+	sta v0
+	definefunc 0x5, .#*#foo^1, 0x0
+	definepropertybyname 0x6, a, v0
+	definefunc 0x8, .#*#, 0x0
+	createobjectwithbuffer 0x9, _4
+	sta v0
+	definefunc 0xa, .#*#key, 0x0
+	definepropertybyname 0xb, key, v0
+	createobjectwithbuffer 0xd, _5
+	sta v0
+	definefunc 0xe, .#*#a^1, 0x0
+	definepropertybyname 0xf, a^1, v0
+	createobjectwithbuffer 0x11, _6
+	sta v0
+	definefunc 0x12, .#*#^1, 0x0
+	definepropertybyname 0x13, c.b, v0
+	createobjectwithbuffer 0x15, _7
+	sta v0
+	definefunc 0x16, .#*#^2, 0x0
+	definepropertybyname 0x17, c\b, v0
+	createobjectwithbuffer 0x19, _8
+	sta v0
+	definefunc 0x1a, .#*#a#b, 0x0
+	definepropertybyname 0x1b, a#b, v0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: a
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},
+------------------------------------
+slot _3
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: a
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},
+------------------------------------
+slot _4
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: key
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},
+------------------------------------
+slot _5
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: a^1
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},
+------------------------------------
+slot _6
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: c.b
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},
+------------------------------------
+slot _7
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: c\b
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},
+------------------------------------
+slot _8
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: a#b
+},
+{
+  index: 2
+    tag: 0
+    val: 255
+},
+{
+  index: 3
+    tag: 255
+    val: 0
+},

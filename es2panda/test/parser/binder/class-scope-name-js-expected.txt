@@ -1,0 +1,389 @@
+.language ECMAScript
+
+.function any .#~A=#A(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	callruntime.callinit 0x0, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>#instance_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x0, .#~A>@0~D=#D, _2, 0x0, v0
+	sta v0
+	ldobjbyname 0x1, prototype
+	lda v0
+	definepropertybyname 0x3, D, a2
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x5, .#~A>@0~D^1=#D, _3, 0x0, v0
+	sta v0
+	ldobjbyname 0x6, prototype
+	lda v0
+	definepropertybyname 0x8, D, a2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~A>@0~D=#D(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~A>@0~D^1=#D(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~B=#B(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#~B=B*#B, 0x0
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~B=B*#B(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~B>#B(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~C<#foo(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~C=#C(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldlexvar 0x0, 0x0
+	callruntime.callinit 0x0, a2
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#~C>#foo(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~C>#foo^1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~C>#instance_initializer(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#~C>@0*#c, 0x0
+	definepropertybyname 0x1, c, a2
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#~C>@0*#c(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	newlexenv 0x1
+LABEL_2: 
+	ldhole
+	sta v9
+	defineclasswithbuffer 0x0, .#~A=#A, _4, 0x0, v9
+	sta v7
+	sta v8
+	lda v7
+	ldobjbyname 0x1, prototype
+	sta v10
+	sta v10
+	definemethod 0x3, .#~A>#instance_initializer, 0x0
+	stlexvar 0x0, 0x0
+	lda v7
+LABEL_3: 
+	jmp LABEL_5
+LABEL_4: 
+	poplexenv
+	throw
+LABEL_5: 
+	poplexenv
+	sta v5
+	ldhole
+	sta v9
+	defineclasswithbuffer 0x4, .#~B=#B, _5, 0x0, v9
+	sta v7
+	sta v8
+	lda v7
+	ldobjbyname 0x5, prototype
+	sta v10
+	lda v7
+	sta v3
+	newlexenv 0x1
+LABEL_10: 
+	ldhole
+	sta v9
+	defineclasswithbuffer 0x7, .#~C=#C, _6, 0x0, v9
+	sta v7
+	sta v8
+	lda v7
+	ldobjbyname 0x8, prototype
+	sta v10
+	sta v10
+	definemethod 0xa, .#~C>#instance_initializer, 0x0
+	stlexvar 0x0, 0x0
+	lda v7
+LABEL_11: 
+	jmp LABEL_13
+LABEL_12: 
+	poplexenv
+	throw
+LABEL_13: 
+	poplexenv
+	sta v4
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_2, LABEL_3, LABEL_4
+
+.catchall LABEL_10, LABEL_11, LABEL_12
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: instance_initializer
+},
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _3
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _4
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _5
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: B
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#~B>#B
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+------------------------------------
+slot _6
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: foo
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#~C>#foo^1
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 0
+    val: 5
+},
+{
+  index: 7
+    tag: 5
+    val: foo
+},
+{
+  index: 8
+    tag: 0
+    val: 6
+},
+{
+  index: 9
+    tag: 6
+    val: .#~C<#foo
+},
+{
+  index: 10
+    tag: 0
+    val: 9
+},
+{
+  index: 11
+    tag: 9
+    val: 0
+},
+{
+  index: 12
+    tag: 0
+    val: 2
+},
+{
+  index: 13
+    tag: 2
+    val: 1
+},

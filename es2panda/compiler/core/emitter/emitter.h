@@ -109,6 +109,7 @@ public:
 
     void AddFunction(FunctionEmitter *func, CompilerContext *context);
     void AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context);
+    void AddScopeNamesRecord(CompilerContext *context);
     static void GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Literal>>> &literalBuffers,
                                   const LiteralBuffer *buff);
     static void DumpAsm(const panda::pandasm::Program *prog);
