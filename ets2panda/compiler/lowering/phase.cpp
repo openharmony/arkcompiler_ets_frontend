@@ -20,6 +20,7 @@
 #include "ets/defaultParameterLowering.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/recordLowering.h"
@@ -59,6 +60,7 @@ std::vector<Phase *> GetTrivialPhaseList()
 
 static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
+static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static EnumLoweringPhase g_enumLoweringPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
@@ -125,6 +127,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_expandBracketsPhase,
         &g_localClassLowering,
         &g_objectLiteralLowering,
+        &g_constStringToCharLowering,
         &g_stringComparisonLowering,
         &g_partialExportClassGen,
         &g_pluginsAfterLowerings,

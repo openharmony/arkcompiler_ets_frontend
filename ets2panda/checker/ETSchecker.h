@@ -376,9 +376,6 @@ public:
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
-    Signature *ResolveCallExpression(ArenaVector<Signature *> &signatures,
-                                     const ir::TSTypeParameterInstantiation *typeArguments,
-                                     const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos);
     Signature *ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                       ir::CallExpression *callExpr, const lexer::SourcePosition &pos,
                                                       TypeRelationFlag throwFlag = TypeRelationFlag::NONE);
@@ -474,7 +471,6 @@ public:
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
     void InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init);
     bool TestUnionType(Type *type, TypeFlag test);
-    bool CheckPossibilityPromotion(Type *left, Type *right, TypeFlag test);
     std::tuple<Type *, bool> ApplyBinaryOperatorPromotion(Type *left, Type *right, TypeFlag test,
                                                           bool doPromotion = true);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,

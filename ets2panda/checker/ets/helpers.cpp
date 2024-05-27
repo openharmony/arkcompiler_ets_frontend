@@ -700,8 +700,9 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
                           {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
         // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
         // are assigned with CONSTANT, which would not be correct. (After feature supported)
-        if (isConst && (!isReadonly || isStatic) && initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) &&
-            annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        if (isConst && (!isReadonly || isStatic) &&
+            ((initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) ||
+             (initType->IsETSStringType() && annotationType->IsETSStringType()))) {
             bindingVar->SetTsType(init->TsType());
         }
         return FixOptionalVariableType(bindingVar, flags);

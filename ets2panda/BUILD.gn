@@ -170,6 +170,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/ambientLowering.cpp",
   "compiler/lowering/ets/bigintLowering.cpp",
   "compiler/lowering/ets/boxingForLocals.cpp",
+  "compiler/lowering/ets/constStringToCharLowering.cpp",
   "compiler/lowering/ets/defaultParameterLowering.cpp",
   "compiler/lowering/ets/enumLowering.cpp",
   "compiler/lowering/ets/expandBrackets.cpp",
