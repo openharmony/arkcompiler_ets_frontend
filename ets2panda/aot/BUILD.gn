@@ -40,6 +40,7 @@ ohos_executable("es2panda") {
     "runtime_core:libarktsbytecodeopt_package",
     "runtime_core:libarktscompiler_package",
     "runtime_core:libarktsfile_package",
+    sdk_libc_secshared_dep,
   ]
 
   libs = platform_libs
