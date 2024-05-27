@@ -379,6 +379,8 @@ private:
     ir::Expression *ParseLaunchExpression(ExpressionParseFlags flags);
     void ValidateInstanceOfExpression(ir::Expression *expr);
     void ValidateRestParameter(ir::Expression *param) override;
+    bool ValidateBreakLabel(util::StringView label) override;
+    bool ValidateContinueLabel(util::StringView label) override;
     void CheckPredefinedMethods(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const;
 
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,

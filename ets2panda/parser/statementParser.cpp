@@ -461,8 +461,7 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
     }
 
     const auto &label = lexer_->GetToken().Ident();
-
-    if (context_.FindLabel(label) == nullptr) {
+    if (!ValidateBreakLabel(label)) {
         ThrowSyntaxError("Undefined label");
     }
 
@@ -516,9 +515,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     }
 
     const auto &label = lexer_->GetToken().Ident();
-    const ParserContext *labelCtx = context_.FindLabel(label);
-
-    if (labelCtx == nullptr || (labelCtx->Status() & ParserStatus::IN_ITERATION) == 0) {
+    if (!ValidateContinueLabel(label)) {
         ThrowSyntaxError("Undefined label");
     }
 

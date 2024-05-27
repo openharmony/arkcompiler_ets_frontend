@@ -188,6 +188,7 @@ protected:
 
     virtual void BindVarDecl([[maybe_unused]] ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
                              [[maybe_unused]] varbinder::Variable *var);
+    virtual void AttachLabelToScope(ir::AstNode *node);
 
 private:
     PhaseContext *ctx_ {};
@@ -354,6 +355,9 @@ private:
     void VisitClassDefinition(ir::ClassDefinition *classDef) override;
     void VisitTSInterfaceBody(ir::TSInterfaceBody *interfBody) override;
     void VisitClassProperty(ir::ClassProperty *classProp) override;
+    void VisitBreakStatement(ir::BreakStatement *stmt) override;
+    void VisitContinueStatement(ir::ContinueStatement *stmt) override;
+    void AttachLabelToScope(ir::AstNode *node) override;
     void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr) override
     {
         Iterate(arrowExpr);

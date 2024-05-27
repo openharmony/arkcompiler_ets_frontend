@@ -46,6 +46,11 @@ public:
         return ident_;
     }
 
+    Identifier *Ident()
+    {
+        return ident_;
+    }
+
     const ir::AstNode *GetReferencedStatement() const;
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

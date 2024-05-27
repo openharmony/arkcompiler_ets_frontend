@@ -1727,6 +1727,18 @@ void ETSParser::ValidateRestParameter(ir::Expression *param)
     }
 }
 
+bool ETSParser::ValidateBreakLabel([[maybe_unused]] util::StringView label)
+{
+    // For ETS validate labels in checker via variables
+    return true;
+}
+
+bool ETSParser::ValidateContinueLabel([[maybe_unused]] util::StringView label)
+{
+    // For ETS validate labels in checker via variables
+    return true;
+}
+
 ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 {
     auto startLoc = Lexer()->GetToken().Start();

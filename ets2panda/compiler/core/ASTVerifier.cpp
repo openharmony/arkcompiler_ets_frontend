@@ -548,12 +548,6 @@ private:
             parent = parent->Parent();
         }
 
-        // NOTE(kkonkuznetsov): skip labels identifiers
-        if (ast->Parent() != nullptr && (ast->Parent()->IsLabelledStatement() || ast->Parent()->IsBreakStatement() ||
-                                         ast->Parent()->IsContinueStatement())) {
-            return true;
-        }
-
         // NOTE(kkonkuznetsov): skip reexport declarations
         if (ast->Parent() != nullptr && ast->Parent()->Parent() != nullptr) {
             parent = ast->Parent()->Parent();
@@ -814,6 +808,16 @@ private:
             return true;
         }
 
+        if (ast->IsLabelledStatement()) {
+            // Labels are attached to loop scopes,
+            // however label identifier is outside of loop.
+            // Example:
+            //
+            // loop: for (let i = 0; i < 10; i++) {
+            // }
+            return true;
+        }
+
         // NOTE(kkonkuznetsov): skip parameters in async functions
         if (ast->Parent() != nullptr && ast->Parent()->IsScriptFunction()) {
             auto scriptFunction = ast->Parent()->AsScriptFunction();
@@ -927,17 +931,20 @@ public:
         if (!maybeVar) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
+
         const auto var = *maybeVar;
         const auto scope = var->GetScope();
         if (scope == nullptr) {
             // already checked
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
+
         const auto encloseScope = scope->EnclosingVariableScope();
         if (encloseScope == nullptr) {
             ctx.AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast, ast->Start());
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
+
         const auto node = scope->Node();
         auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
         if (!IsContainedIn(ast, node)) {
@@ -1003,6 +1010,16 @@ private:
             }
 
             parent = parent->Parent();
+        }
+
+        if (ast->Parent()->IsLabelledStatement()) {
+            // Labels are attached to loop scopes,
+            // however label identifier is outside of loop.
+            // Example:
+            //
+            // loop: for (let i = 0; i < 10; i++) {
+            // }
+            return true;
         }
 
         // NOTE(kkonkuznetsov): skip, something with unions

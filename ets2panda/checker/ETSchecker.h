@@ -528,7 +528,7 @@ public:
     {
         return type->IsETSReferenceType();
     }
-    const ir::AstNode *FindJumpTarget(const ir::AstNode *node) const;
+    const ir::AstNode *FindJumpTarget(ir::AstNode *node);
     void ValidatePropertyAccess(varbinder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos);
     varbinder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
     Type *CheckSwitchDiscriminant(ir::Expression *discriminant);

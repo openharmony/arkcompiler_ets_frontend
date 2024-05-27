@@ -1490,32 +1490,34 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
     return {""};
 }
 
-const ir::AstNode *ETSChecker::FindJumpTarget(const ir::AstNode *node) const
+const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNode *node)
 {
     ASSERT(node->IsBreakStatement() || node->IsContinueStatement());
 
     bool const isContinue = node->IsContinueStatement();
-    auto const *const target = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
 
+    // Look for label
+    auto label = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
+    if (label != nullptr) {
+        auto var = label->Variable();
+        if (var != nullptr && var->Declaration()->IsLabelDecl()) {
+            return var->Declaration()->Node();
+        }
+
+        // Failed to resolve variable for label
+        ThrowError(label);
+    }
+
+    // No label, find the nearest loop or switch statement
     const auto *iter = node->Parent();
-
     while (iter != nullptr) {
         switch (iter->Type()) {
-            case ir::AstNodeType::LABELLED_STATEMENT: {
-                if (const auto *labelled = iter->AsLabelledStatement(); labelled->Ident()->Name() == target->Name()) {
-                    return isContinue ? labelled->GetReferencedStatement() : labelled;
-                }
-                break;
-            }
             case ir::AstNodeType::DO_WHILE_STATEMENT:
             case ir::AstNodeType::WHILE_STATEMENT:
             case ir::AstNodeType::FOR_UPDATE_STATEMENT:
             case ir::AstNodeType::FOR_OF_STATEMENT:
             case ir::AstNodeType::SWITCH_STATEMENT: {
-                if (target == nullptr) {
-                    return iter;
-                }
-                break;
+                return iter;
             }
             default: {
                 break;

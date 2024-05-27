@@ -140,6 +140,7 @@ void ScopesInitPhase::VisitForUpdateStatement(ir::ForUpdateStatement *forUpdateS
     CallNode(forUpdateStmt->Init());
 
     auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), forUpdateStmt);
+    AttachLabelToScope(forUpdateStmt);
     CallNode(forUpdateStmt->Test());
     CallNode(forUpdateStmt->Update());
     CallNode(forUpdateStmt->Body());
@@ -169,6 +170,7 @@ void ScopesInitPhase::VisitForOfStatement(ir::ForOfStatement *forOfStmt)
     CallNode(forOfStmt->Left());
 
     auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), forOfStmt);
+    AttachLabelToScope(forOfStmt);
     CallNode(forOfStmt->Right());
     CallNode(forOfStmt->Body());
     HandleFor(declCtx.GetScope(), lexicalScope.GetScope(), forOfStmt);
@@ -220,6 +222,7 @@ void ScopesInitPhase::VisitSwitchStatement(ir::SwitchStatement *switchStmt)
 {
     CallNode(switchStmt->Discriminant());
     auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), switchStmt);
+    AttachLabelToScope(switchStmt);
     BindScopeNode(localCtx.GetScope(), switchStmt);
     CallNode(switchStmt->Cases());
 }
@@ -228,6 +231,7 @@ void ScopesInitPhase::VisitWhileStatement(ir::WhileStatement *whileStmt)
 {
     CallNode(whileStmt->Test());
     auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), whileStmt);
+    AttachLabelToScope(whileStmt);
     BindScopeNode(lexicalScope.GetScope(), whileStmt);
     CallNode(whileStmt->Body());
 }
@@ -247,6 +251,7 @@ void ScopesInitPhase::VisitClassDeclaration(ir::ClassDeclaration *classDecl)
 void ScopesInitPhase::VisitDoWhileStatement(ir::DoWhileStatement *doWhileStmt)
 {
     auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::LoopScope>(VarBinder(), doWhileStmt);
+    AttachLabelToScope(doWhileStmt);
     BindScopeNode(lexicalScope.GetScope(), doWhileStmt);
     Iterate(doWhileStmt);
 }
@@ -438,6 +443,8 @@ void ScopesInitPhase::BindVarDecl([[maybe_unused]] ir::Identifier *binding, ir::
 {
     decl->BindNode(init);
 }
+
+void ScopesInitPhase::AttachLabelToScope([[maybe_unused]] ir::AstNode *node) {}
 
 void ScopesInitPhase::VisitFunctionExpression(ir::FunctionExpression *funcExpr)
 {
@@ -1143,6 +1150,53 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
         AddOrGetDecl<varbinder::LetDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     }
     Iterate(classProp);
+}
+
+void InitScopesPhaseETS::VisitBreakStatement(ir::BreakStatement *stmt)
+{
+    auto label = stmt->Ident();
+    if (label != nullptr) {
+        auto scope = VarBinder()->GetScope();
+        auto var = scope->FindInFunctionScope(label->Name(), varbinder::ResolveBindingOptions::ALL).variable;
+        label->SetVariable(var);
+    }
+}
+
+void InitScopesPhaseETS::VisitContinueStatement(ir::ContinueStatement *stmt)
+{
+    auto label = stmt->Ident();
+    if (label != nullptr) {
+        auto scope = VarBinder()->GetScope();
+        auto var = scope->FindInFunctionScope(label->Name(), varbinder::ResolveBindingOptions::ALL).variable;
+        label->SetVariable(var);
+    }
+}
+
+void InitScopesPhaseETS::AttachLabelToScope(ir::AstNode *node)
+{
+    if (node->Parent() == nullptr) {
+        return;
+    }
+
+    if (!node->Parent()->IsLabelledStatement()) {
+        return;
+    }
+
+    auto stmt = node->Parent()->AsLabelledStatement();
+    auto label = stmt->Ident();
+    if (label == nullptr) {
+        return;
+    }
+
+    auto decl = AddOrGetDecl<varbinder::LabelDecl>(VarBinder(), label->Name(), stmt, label->Start(), label->Name());
+    decl->BindNode(stmt);
+
+    auto var = VarBinder()->GetScope()->FindLocal(label->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+    if (var != nullptr) {
+        label->SetVariable(var);
+        var->SetScope(VarBinder()->GetScope());
+        var->AddFlag(varbinder::VariableFlags::LOCAL);
+    }
 }
 
 void InitScopesPhaseETS::ParseGlobalClass(ir::ClassDefinition *global)

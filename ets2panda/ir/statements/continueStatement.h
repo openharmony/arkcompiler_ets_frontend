@@ -43,6 +43,11 @@ public:
         return ident_;
     }
 
+    Identifier *Ident() noexcept
+    {
+        return ident_;
+    }
+
     [[nodiscard]] const ir::AstNode *Target() const noexcept
     {
         return target_;
