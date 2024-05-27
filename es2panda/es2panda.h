@@ -113,6 +113,7 @@ struct CompilerOptions {
     bool requireGlobalOptimization {false};
     std::string compileContextInfoPath {};
     CompileContextInfo compileContextInfo {};
+    bool dumpDepsInfo {false};
 };
 
 enum class ErrorType {

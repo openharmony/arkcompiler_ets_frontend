@@ -793,6 +793,8 @@ class CompilerProjectTest(Test):
         for test_path in self.test_paths:
             record_name = self.get_record_name(test_path)
             module_kind = 'esm'
+            if (os.path.basename(test_path).startswith("commonjs")):
+                module_kind = 'commonjs'
             file_info = ('%s;%s;%s;%s;%s\n' % (test_path, record_name, module_kind, test_path, record_name))
             belonging_abc_input = self.get_belonging_abc_input(test_path)
             if belonging_abc_input is not None:
@@ -838,7 +840,7 @@ class CompilerProjectTest(Test):
         # Generate the abc to be tested
         for test_path in self.test_paths:
             self.path = test_path
-            if (self.path.endswith("-exec.ts")):
+            if (self.path.endswith("-exec.ts")) or (self.path.endswith("-exec.js")):
                 exec_file_path = self.path
                 [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
                 if not path.exists(file_absolute_path):
@@ -1473,7 +1475,9 @@ def add_directory_for_compiler(runners, args):
                                                 ["--module", "--branch-elimination", "--merge-abc", "--dump-assembly",
                                                 "--file-threads=8"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
-                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input"]))
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)

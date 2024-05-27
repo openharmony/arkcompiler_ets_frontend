@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include <iostream>
+
 #include <abc2program/program_dump.h>
 #include <assembly-program.h>
 #include <assembly-emitter.h>
@@ -22,12 +24,11 @@
 #include <mem/pool_manager.h>
 #include <options.h>
 #include <protobufSnapshotGenerator.h>
+#include <resolveDepsRelation.h>
 #include <util/dumper.h>
 #include <util/moduleHelpers.h>
 #include <util/programCache.h>
 #include <util/workerQueue.h>
-
-#include <iostream>
 
 namespace panda::es2panda::aot {
 using mem::MemConfig;
@@ -212,6 +213,16 @@ static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::
     return true;
 }
 
+static bool ResolveDepsRelations(const std::map<std::string, panda::es2panda::util::ProgramCache *> &programsInfo,
+                                 const std::unique_ptr<panda::es2panda::aot::Options> &options,
+                                 std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation,
+                                 std::unordered_set<std::string> &generatedRecords)
+{
+    panda::es2panda::aot::DepsRelationResolver depsRelationResolver(programsInfo, options, resolvedDepsRelation,
+                                                                    generatedRecords);
+    return depsRelationResolver.Resolve();
+}
+
 int Run(int argc, const char **argv)
 {
     auto options = std::make_unique<Options>();
@@ -247,6 +258,15 @@ int Run(int argc, const char **argv)
         es2panda::util::ModuleHelpers::CompileNpmModuleEntryList(options->NpmModuleEntryList(),
             options->CompilerOptions(), programsInfo, &allocator);
         expectedProgsCount++;
+    }
+
+    // A mapping of pragram to its records which are resolved and collected as valid dependencies.
+    std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
+    std::unordered_set<std::string> generatedRecords {};
+
+    if (options->NeedRemoveRedundantRecord() &&
+        !ResolveDepsRelations(programsInfo, options, resolvedDepsRelation, generatedRecords)) {
+        return 1;
     }
 
     if (!GenerateAbcFiles(programsInfo, options, expectedProgsCount)) {

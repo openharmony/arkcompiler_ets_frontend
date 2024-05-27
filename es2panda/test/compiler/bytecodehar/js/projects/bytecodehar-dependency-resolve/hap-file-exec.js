@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 
-export function test() {
-    print('bytecodehar2.file1.test');
+import { test } from "@normalized:N&&&bytecodehar1/bytecodehar1-file1&2.0.0"
+import { testRequire } from "@normalized:N&&&myapp/test-require&"
+
+function main() {
+    test();
+    testRequire();
 }

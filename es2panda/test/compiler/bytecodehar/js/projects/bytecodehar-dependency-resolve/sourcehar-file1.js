@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import {test as test1} from '@normalized:N&&&sourcehar/sourcehar-file2&2.0.0'
+
 export function test() {
-    print('bytecodehar2.file1.test');
+    print('sourcehar.file1.test');
 }
