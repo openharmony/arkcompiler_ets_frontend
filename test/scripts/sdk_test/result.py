@@ -32,6 +32,7 @@ import options
 incremetal_compile_tests = ["no_change",
                             "add_oneline",
                             "add_file",
+                            "add_nonexistent_file",
                             "delete_file",
                             "reverse_hap_mode",
                             "change_module_name"

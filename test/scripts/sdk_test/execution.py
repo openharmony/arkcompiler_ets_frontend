@@ -251,6 +251,58 @@ class IncrementalTest:
         os.remove(new_file)
 
     @staticmethod
+    def compile_incremental_add_nonexistent_file(task, is_debug):
+        test_name = 'add_nonexistent_file'
+        inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
+
+        logging.info(f"==========> Running {test_name} for task: {task.name}")
+
+        modify_file_item = task.inc_modify_file
+        modify_file = os.path.join(task.path, *modify_file_item)
+        modify_file_backup = modify_file + ".bak"
+        shutil.copyfile(modify_file, modify_file_backup)
+
+        with open(modify_file, 'r+', encoding='utf-8') as file:
+            old_content = file.read()
+            file.seek(0)
+            patch_lines = options.configs.get(
+                'patch_content').get('patch_lines_1')
+            file.write(patch_lines.get('head'))
+            file.write(old_content)
+            file.write(patch_lines.get('tail'))
+
+        [stdout, stderr] = compile_project(task, is_debug)
+        passed = validate(inc_task, task, is_debug, stdout, stderr, 'incremental_compile_add_nonexistent_file')
+        if not passed:
+            logging.info("The first compilation file does not exist. The compilation fails as expected")
+
+            modify_dir = os.path.dirname(modify_file)
+            if 'js' in task.type:
+                patch_content = options.configs.get(
+                    'patch_content').get('patch_new_file_js')
+                new_file_name = patch_content.get('name')
+                new_file_content = patch_content.get('content')
+            else:
+                patch_content = options.configs.get(
+                    'patch_content').get('patch_new_file_ets')
+                new_file_name = patch_content.get('name')
+                new_file_content = patch_content.get('content')
+            new_file = os.path.join(modify_dir, new_file_name)
+
+            with open(new_file, 'w', encoding='utf-8') as file:
+                file.writelines(new_file_content)
+            
+            [stdout, stderr] = compile_project(task, is_debug)
+            passed = validate(inc_task, task, is_debug, stdout, stderr, 'incremental_compile_add_nonexistent_file')
+            if passed:
+                modified_files = [os.path.join(*modify_file_item)]
+                IncrementalTest.validate_compile_incremental_file(
+                    task, inc_task, is_debug, modified_files)
+
+            shutil.move(modify_file_backup, modify_file)
+            os.remove(new_file)
+
+    @staticmethod
     def compile_incremental_delete_file(task, is_debug):
         test_name = 'delete_file'
         inc_task = IncrementalTest.prepare_incremental_task(task, test_name)
@@ -885,6 +937,7 @@ def compile_incremental(task, is_debug):
     IncrementalTest.compile_incremental_no_modify(task, is_debug)
     IncrementalTest.compile_incremental_add_oneline(task, is_debug)
     IncrementalTest.compile_incremental_add_file(task, is_debug)
+    IncrementalTest.compile_incremental_add_nonexistent_file(task, is_debug)
     IncrementalTest.compile_incremental_delete_file(task, is_debug)
     IncrementalTest.compile_incremental_reverse_hap_mode(task, is_debug)
     IncrementalTest.compile_incremental_modify_module_name(task, is_debug)
