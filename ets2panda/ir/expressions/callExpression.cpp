@@ -77,6 +77,11 @@ void CallExpression::Dump(ir::SrcDumper *dumper) const
     if (IsOptional()) {
         dumper->Add("?.");
     }
+
+    if (typeParams_ != nullptr) {
+        typeParams_->Dump(dumper);
+    }
+
     dumper->Add("(");
     for (auto arg : arguments_) {
         arg->Dump(dumper);

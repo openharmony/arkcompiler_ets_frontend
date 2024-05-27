@@ -1927,6 +1927,13 @@ util::StringView ETSChecker::GetHashFromTypeArguments(const ArenaVector<Type *> 
     for (auto *it : typeArgTypes) {
         it->ToString(ss, true);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
+
+        // In case of ETSTypeParameters storing the name might not be sufficient as there can
+        // be multiple different type parameters with the same name. For those we test identity based
+        // on their memory address equality, so we store them in the hash to keep it unique.
+        // To make it consistent we store it for every type.
+        // NOTE (mmartin): change bare address to something more appropriate unique representation
+        ss << it << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
     return util::UString(ss.str(), Allocator()).View();
@@ -1940,6 +1947,8 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
         k->ToString(ss, true);
         ss << ":";
         v->ToString(ss, true);
+        // NOTE (mmartin): change bare address to something more appropriate unique representation
+        ss << ":" << k << ":" << v;
         fields.push_back(ss.str());
     }
     std::sort(fields.begin(), fields.end());

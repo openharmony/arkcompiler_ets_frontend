@@ -125,7 +125,9 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
 void ScriptFunction::Dump(ir::SrcDumper *dumper) const
 {
     if (TypeParams() != nullptr) {
+        dumper->Add("<");
         TypeParams()->Dump(dumper);
+        dumper->Add(">");
     }
     dumper->Add("(");
     for (auto param : Params()) {
