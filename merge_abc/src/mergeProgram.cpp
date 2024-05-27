@@ -29,10 +29,10 @@
 #include <fstream>
 
 namespace panda::proto {
-bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::string &protoBinSuffix,
-                                 std::vector<std::string> &directoryFiles)
-{
 #if PANDA_TARGET_WINDOWS
+bool MergeProgram::EnumerateFilesWindows(const std::string &protoBinPath, const std::string &protoBinSuffix,
+                                         std::vector<std::string> &directoryFiles)
+{
     int handle = 0;
     struct _finddata_t fileInfo;
     std::string path;
@@ -41,7 +41,7 @@ bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::str
     }
     do {
         if (fileInfo.attrib & _A_SUBDIR) {
-            if((!strncmp(fileInfo.name, ".", 1)) || (!strncmp(fileInfo.name, "..", 2))) {
+            if ((!strncmp(fileInfo.name, ".", 1)) || (!strncmp(fileInfo.name, "..", 2))) {
                 continue;
             }
             if (!GetProtoFiles(path.assign(protoBinPath).append("\\").append(fileInfo.name), protoBinSuffix,
@@ -57,7 +57,13 @@ bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::str
         }
     } while (_findnext(handle, &fileInfo) == 0);
     _findclose(handle);
+    return true;
+}
+
 #elif PANDA_TARGET_UNIX
+bool MergeProgram::EnumerateFilesUnix(const std::string &protoBinPath, const std::string &protoBinSuffix,
+                                      std::vector<std::string> &directoryFiles)
+{
     DIR *protoBin = opendir(protoBinPath.c_str());
     if (protoBin == nullptr) {
         return false;
@@ -65,7 +71,7 @@ bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::str
     dirent *dir = nullptr;
     std::string pathPrefix = protoBinPath + "/";
     while ((dir = readdir(protoBin)) != nullptr) {
-        if((!strncmp(dir->d_name, ".", 1)) || (!strncmp(dir->d_name, "..", 2))) {
+        if ((!strncmp(dir->d_name, ".", 1)) || (!strncmp(dir->d_name, "..", 2))) {
             continue;
         }
         if (dir->d_type == DT_DIR) {
@@ -82,8 +88,18 @@ bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::str
         }
     }
     closedir(protoBin);
-#endif
     return true;
+}
+#endif
+
+bool MergeProgram::GetProtoFiles(const std::string &protoBinPath, const std::string &protoBinSuffix,
+                                 std::vector<std::string> &directoryFiles)
+{
+#if PANDA_TARGET_WINDOWS
+    return EnumerateFilesWindows(protoBinPath, protoBinSuffix, directoryFiles);
+#elif PANDA_TARGET_UNIX
+    return EnumerateFilesUnix(protoBinPath, protoBinSuffix, directoryFiles);
+#endif
 }
 
 bool MergeProgram::AppendProtoFiles(const std::string &filePath, const std::string &protoBinSuffix,

@@ -22,7 +22,12 @@
 
 namespace panda::proto {
 class MergeProgram {
+private:
+    static bool EnumerateFilesWindows(const std::string &protoBinPath, const std::string &protoBinSuffix,
+                                      std::vector<std::string> &directoryFiles);
 public:
+    static bool EnumerateFilesUnix(const std::string &protoBinPath, const std::string &protoBinSuffix,
+                                   std::vector<std::string> &directoryFiles);
     static bool GetProtoFiles(const std::string &protoBinPath, const std::string &protoBinSuffix,
                               std::vector<std::string> &directoryFiles);
     static bool AppendProtoFiles(const std::string &filePath, const std::string &protoBinSuffix,

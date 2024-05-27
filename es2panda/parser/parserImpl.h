@@ -323,6 +323,7 @@ private:
                                      ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
                                      bool isDeclare, bool isAbstractClass, bool isExtendsFromNull,
                                      std::pair<binder::FunctionScope *, binder::FunctionScope *> implicitScopes);
+    ir::Identifier *GetKeyByFuncFlag(ir::ScriptFunctionFlags funcFlag);
     ir::MethodDefinition *CreateImplicitMethod(ir::Expression *superClass, bool hasSuperClass,
                                                ir::ScriptFunctionFlags funcFlag, bool isDeclare = false);
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
@@ -357,6 +358,7 @@ private:
     ir::Expression *TryParseConstraintOfInferType(TypeAnnotationParsingOptions *options);
     ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     bool CheckOutIsIdentInTypeParameter();
+    void ParseTypeModifier(bool &isTypeIn, bool &isTypeOut, bool &isAllowInOut);
     ir::TSTypeParameter *ParseTsTypeParameter(bool throwError, bool addBinding = false, bool isAllowInOut = false);
     ir::TSTypeParameterDeclaration *ParseTsTypeParameterDeclaration(bool throwError = true, bool isAllowInOut = false);
     ir::TSTypeParameterInstantiation *ParseTsTypeParameterInstantiation(bool throwError = true);

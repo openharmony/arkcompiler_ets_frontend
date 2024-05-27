@@ -1081,6 +1081,44 @@ void Lexer::ScanRegExpPattern()
     }
 }
 
+bool Lexer::GetRegExpFlag(char32_t cp, RegExpFlags &flag)
+{
+    switch (cp) {
+        case LEX_CHAR_LOWERCASE_G: {
+            flag = RegExpFlags::GLOBAL;
+            break;
+        }
+        case LEX_CHAR_LOWERCASE_I: {
+            flag = RegExpFlags::IGNORE_CASE;
+            break;
+        }
+        case LEX_CHAR_LOWERCASE_M: {
+            flag = RegExpFlags::MULTILINE;
+            break;
+        }
+        case LEX_CHAR_LOWERCASE_S: {
+            flag = RegExpFlags::DOTALL;
+            break;
+        }
+        case LEX_CHAR_LOWERCASE_U: {
+            flag = RegExpFlags::UNICODE;
+            break;
+        }
+        case LEX_CHAR_LOWERCASE_Y: {
+            flag = RegExpFlags::STICKY;
+            break;
+        }
+        case LEX_CHAR_LOWERCASE_D: {
+            flag = RegExpFlags::HAS_INDICES;
+            break;
+        }
+        default: {
+            return false;
+        }
+    }
+    return true;
+}
+
 RegExpFlags Lexer::ScanRegExpFlags()
 {
     RegExpFlags resultFlags = RegExpFlags::EMPTY;
@@ -1096,39 +1134,10 @@ RegExpFlags Lexer::ScanRegExpFlags()
 
         RegExpFlags flag = RegExpFlags::EMPTY;
 
-        switch (cp) {
-            case LEX_CHAR_LOWERCASE_G: {
-                flag = RegExpFlags::GLOBAL;
-                break;
-            }
-            case LEX_CHAR_LOWERCASE_I: {
-                flag = RegExpFlags::IGNORE_CASE;
-                break;
-            }
-            case LEX_CHAR_LOWERCASE_M: {
-                flag = RegExpFlags::MULTILINE;
-                break;
-            }
-            case LEX_CHAR_LOWERCASE_S: {
-                flag = RegExpFlags::DOTALL;
-                break;
-            }
-            case LEX_CHAR_LOWERCASE_U: {
-                flag = RegExpFlags::UNICODE;
-                break;
-            }
-            case LEX_CHAR_LOWERCASE_Y: {
-                flag = RegExpFlags::STICKY;
-                break;
-            }
-            case LEX_CHAR_LOWERCASE_D: {
-                flag = RegExpFlags::HAS_INDICES;
-                break;
-            }
-            case LEX_CHAR_SP: {
+        if (!GetRegExpFlag(cp, flag)) {
+            if (cp == LEX_CHAR_SP) {
                 return resultFlags;
-            }
-            default: {
+            } else {
                 ThrowError("Invalid RegExp flag");
             }
         }

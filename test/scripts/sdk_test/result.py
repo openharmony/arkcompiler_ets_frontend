@@ -206,64 +206,11 @@ def generate_detail_data(test_tasks):
         task_result_data = copy.deepcopy(task_time_size_data)
         task_result_data['Task Type'] = ','.join(task.type)
 
-        full_compilation_debug = task.full_compilation_info.debug_info
-        full_compilation_release = task.full_compilation_info.release_info
-        task_time_size_data[
-            '[Full Compilation]\n[Debug]\n[Compilation Time(s)]'] = full_compilation_debug.time
-        task_time_size_data[
-            '[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = full_compilation_release.time
-        task_result_data['[Debug]'] = get_result_symbol(
-            full_compilation_debug.result)
-        task_result_data['[Debug-runtime]'] = get_result_symbol(
-            full_compilation_debug.runtime_result)
-        task_result_data['[Release]'] = get_result_symbol(
-            full_compilation_release.result)
-        task_result_data['[Release-runtime]'] = get_result_symbol(
-            full_compilation_release.runtime_result)
+        full_compilation_debug, full_compilation_release = get_full_build_test_result(task, task_result_data,
+                                                                                      task_time_size_data)
+        get_incremental_build_test_result(task, task_result_data, task_time_size_data)
 
-        for test in incremetal_compile_tests:
-            debug_result = options.TaskResult.undefind
-            debug_runtime_result = options.TaskResult.undefind
-            release_result = options.TaskResult.undefind
-            release_runtime_result = options.TaskResult.undefind
-            if test in task.incre_compilation_info.keys():
-                inc_task_info = task.incre_compilation_info[test]
-                debug_result = inc_task_info.debug_info.result
-                debug_runtime_result = inc_task_info.debug_info.runtime_result
-                release_result = inc_task_info.release_info.result
-                release_runtime_result = inc_task_info.release_info.runtime_result
-            task_result_data[f'[Debug]\n{test}'] = get_result_symbol(
-                debug_result)
-            task_result_data[f'[Debug-runtime]\n{test}'] = get_result_symbol(
-                debug_runtime_result)
-            task_result_data[f'[Release]\n{test}'] = get_result_symbol(
-                release_result)
-            task_result_data[f'[Release-runtime]\n{test}'] = get_result_symbol(
-                release_runtime_result)
-
-            if test == 'add_oneline':
-                debug_test_time = 0
-                release_test_time = 0
-                if test in task.incre_compilation_info.keys():
-                    inc_task_info = task.incre_compilation_info[test]
-                    debug_test_time = inc_task_info.debug_info.time
-                    release_test_time = inc_task_info.release_info.time
-
-                task_time_size_data[
-                    '[Incremental Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
-                task_time_size_data[
-                    '[Incremental Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
-
-        for test in other_tests:
-            result = options.TaskResult.undefind
-            runtime_result = options.TaskResult.undefind
-            if test in task.other_tests.keys():
-                task_info = task.other_tests[test]
-                result = task_info.result
-                # todo
-                runtime_result = task_info.runtime_result
-            task_result_data[f'{test}'] = get_result_symbol(result)
-            task_result_data[f'{test}-runtime'] = get_result_symbol(runtime_result)
+        get_other_test_result(task, task_result_data)
 
         task_time_size_data['[Abc Size(byte)]\n[Debug]'] = full_compilation_debug.abc_size
         task_time_size_data['[Abc Size(byte)]\n[Release]'] = full_compilation_release.abc_size
@@ -275,6 +222,71 @@ def generate_detail_data(test_tasks):
         'time_size_data': time_size_data
     }
     return detail_data
+
+
+def get_full_build_test_result(task, task_result_data, task_time_size_data):
+    full_compilation_debug = task.full_compilation_info.debug_info
+    full_compilation_release = task.full_compilation_info.release_info
+    task_time_size_data[
+        '[Full Compilation]\n[Debug]\n[Compilation Time(s)]'] = full_compilation_debug.time
+    task_time_size_data[
+        '[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = full_compilation_release.time
+    task_result_data['[Debug]'] = get_result_symbol(
+        full_compilation_debug.result)
+    task_result_data['[Debug-runtime]'] = get_result_symbol(
+        full_compilation_debug.runtime_result)
+    task_result_data['[Release]'] = get_result_symbol(
+        full_compilation_release.result)
+    task_result_data['[Release-runtime]'] = get_result_symbol(
+        full_compilation_release.runtime_result)
+    return full_compilation_debug, full_compilation_release
+
+
+def get_incremental_build_test_result(task, task_result_data, task_time_size_data):
+    for test in incremetal_compile_tests:
+        debug_result = options.TaskResult.undefind
+        debug_runtime_result = options.TaskResult.undefind
+        release_result = options.TaskResult.undefind
+        release_runtime_result = options.TaskResult.undefind
+        if test in task.incre_compilation_info.keys():
+            inc_task_info = task.incre_compilation_info[test]
+            debug_result = inc_task_info.debug_info.result
+            debug_runtime_result = inc_task_info.debug_info.runtime_result
+            release_result = inc_task_info.release_info.result
+            release_runtime_result = inc_task_info.release_info.runtime_result
+        task_result_data[f'[Debug]\n{test}'] = get_result_symbol(
+            debug_result)
+        task_result_data[f'[Debug-runtime]\n{test}'] = get_result_symbol(
+            debug_runtime_result)
+        task_result_data[f'[Release]\n{test}'] = get_result_symbol(
+            release_result)
+        task_result_data[f'[Release-runtime]\n{test}'] = get_result_symbol(
+            release_runtime_result)
+
+        if test == 'add_oneline':
+            debug_test_time = 0
+            release_test_time = 0
+            if test in task.incre_compilation_info.keys():
+                inc_task_info = task.incre_compilation_info[test]
+                debug_test_time = inc_task_info.debug_info.time
+                release_test_time = inc_task_info.release_info.time
+
+            task_time_size_data[
+                '[Incremental Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
+            task_time_size_data[
+                '[Incremental Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
+
+
+def get_other_test_result(task, task_result_data):
+    for test in other_tests:
+        result = options.TaskResult.undefind
+        runtime_result = options.TaskResult.undefind
+        if test in task.other_tests.keys():
+            task_info = task.other_tests[test]
+            result = task_info.result
+            runtime_result = task_info.runtime_result
+        task_result_data[f'{test}'] = get_result_symbol(result)
+        task_result_data[f'{test}-runtime'] = get_result_symbol(runtime_result)
 
 
 def rotate_data(df):
@@ -371,41 +383,48 @@ def generate_data_html(summary_data, detail_data):
     return summary_table, time_size_table, result_table
 
 
+def get_html_style():
+    html_style = '''
+         #sdk body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #sdk h2 {
+            color: #333;
+        }
+        #sdk {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        #sdk th, #sdk td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        #sdk th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        #sdk tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+    '''
+    return html_style
+
+
 def generate_report_html(summary_data, detail_data):
     [summary_table, time_size_table, result_table] = generate_data_html(
         summary_data, detail_data)
+    html_style = get_html_style()
 
     html_content = f'''
     <html>
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <style>
-    #sdk body {{
-        font-family: Arial, sans-serif;
-        margin: 20px;
-    }}
-    #sdk h2 {{
-        color: #333;
-    }}
-    #sdk {{
-        border-collapse: collapse;
-        width: 100%;
-        margin-bottom: 20px;
-    }}
-    #sdk th, #sdk td {{
-        padding: 8px;
-        border: 1px solid #ddd;
-    }}
-    #sdk th {{
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }}
-    #sdk tr:nth-child(odd) {{
-        background-color: #f9f9f9;
-    }}
+    {html_style}
     </style>
     </head>
-
     <body>
     <h2>SDK Test Results</h2>
     <h3>Summary</h3>
