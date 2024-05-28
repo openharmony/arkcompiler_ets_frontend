@@ -1,0 +1,20 @@
+{
+    "mCompact": false,
+    "mRemoveComments": false,
+    "mOutputDir": "",
+    "mDisableHilog": false,
+    "mDisableConsole": false,
+    "mSimplify": false,
+    "mNameObfuscation": {
+        "mEnable": true,
+        "mNameGeneratorType": 1,
+        "mDictionaryList": [],
+        "mRenameProperties": false,
+        "mReservedProperties": ["prop?", "function*", "*pro?", "prop"],
+        "mKeepStringProperty": false,
+        "mTopLevel": true,
+        "mReservedToplevelNames": ["a*", "*shoul?keep*", "func2"]
+    },
+    "mEnableSourceMap": false,
+    "mEnableNameCache": false
+}
