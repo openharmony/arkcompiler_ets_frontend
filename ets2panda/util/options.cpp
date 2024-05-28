@@ -156,6 +156,7 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     ark::PandArg<bool> opHelp("help", false, "Print this message and exit");
+    ark::PandArg<bool> opVersion("version", false, "Print message with version and exit");
 
     // parser
     ark::PandArg<std::string> inputExtension("extension", "",
@@ -251,6 +252,7 @@ bool Options::Parse(int argc, const char **argv)
     ark::PandArg<std::string> inputFile("input", "", "input file");
 
     argparser_->Add(&opHelp);
+    argparser_->Add(&opVersion);
     argparser_->Add(&opModule);
     argparser_->Add(&opDumpAst);
     argparser_->Add(&opDumpAstOnlySilent);
@@ -319,6 +321,29 @@ bool Options::Parse(int argc, const char **argv)
               "prefix"
            << std::endl;
 
+        errorMsg_ = ss.str();
+        return false;
+    }
+
+    if (opVersion.GetValue()) {
+        std::stringstream ss;
+
+        ss << std::endl;
+        ss << "  Es2panda Version " << ES2PANDA_VERSION << std::endl;
+
+#ifndef PANDA_PRODUCT_BUILD
+#ifdef ES2PANDA_DATE
+        ss << std::endl;
+        ss << "  Build date: ";
+        ss << ES2PANDA_DATE;
+#endif  // ES2PANDA_DATE
+#ifdef ES2PANDA_HASH
+        ss << std::endl;
+        ss << "  Last commit hash: ";
+        ss << ES2PANDA_HASH;
+        ss << std::endl;
+#endif  // ES2PANDA_HASH
+#endif  // PANDA_PRODUCT_BUILD
         errorMsg_ = ss.str();
         return false;
     }

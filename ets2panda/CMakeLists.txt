@@ -53,6 +53,23 @@ if(PANDA_WITH_ETS)
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
 endif()
 
+if(NOT PANDA_PRODUCT_BUILD)
+  execute_process(
+    COMMAND date "+%Y-%m-%d %H:%M:%S"
+    OUTPUT_VARIABLE CURRENT_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  execute_process(
+    COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE LAST_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  add_definitions(-DES2PANDA_DATE="${CURRENT_DATE}")
+  add_definitions(-DES2PANDA_HASH="${LAST_COMMIT_HASH}")
+  endif()
+
 add_custom_command(
   OUTPUT ${GENERATED_STAMP}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
