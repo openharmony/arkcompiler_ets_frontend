@@ -122,7 +122,9 @@ def parse_args():
                         help="Run test262 with aot pgo")
     parser.add_argument('--abc2program', action='store_true',
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
-    
+    parser.add_argument('--disenable-force-gc', action='store_true',
+                        help="Run test262 with close force-gc")
+
     args = parser.parse_args()
     if args.abc2program and (args.run_pgo or args.ark_aot):
         sys.exit("Error: '--abc2program' used together with  '--ark-aot' or '--run-pgo' is not supported")
@@ -606,6 +608,10 @@ def get_host_args_of_ark_arch(args, host_args):
 
     return host_args
 
+def get_disenable_force_gc(host_args, args):
+    host_args += f"--disenable-force-gc "
+
+    return host_args
 
 def get_host_args(args, host_type):
     host_args = ""
@@ -661,6 +667,9 @@ def get_host_args(args, host_type):
 
     if args.ark_arch != ark_arch:
         host_args = get_host_args_of_ark_arch(args, host_args)
+
+    if args.disenable_force_gc:
+        host_args = get_disenable_force_gc(host_args, args)
 
     return host_args
 
