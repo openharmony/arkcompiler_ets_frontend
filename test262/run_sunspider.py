@@ -95,6 +95,8 @@ def parse_args():
                         help="Run test262 with aot pgo")
     parser.add_argument('--abc2program', action='store_true',
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
+    parser.add_argument('--disenable-force-gc', action='store_true',
+                        help="Run test262 with close force-gc")
     arguments = parser.parse_args()
     return arguments
 
@@ -117,6 +119,7 @@ class ArkProgram():
         self.ark_tool = ARK_TOOL
         self.ark_aot = False
         self.run_pgo = False
+        self.disenable_force_gc = False
         self.ark_aot_tool = ARK_AOT_TOOL
         self.libs_dir = LIBS_DIR
         self.ark_frontend = ARK_FRONTEND
@@ -145,6 +148,9 @@ class ArkProgram():
 
         if self.args.run_pgo:
             self.run_pgo = self.args.run_pgo
+
+        if self.args.disenable_force_gc:
+            self.disenable_force_gc = self.args.disenable_force_gc
 
         if self.args.ark_aot_tool:
             self.ark_aot_tool = self.args.ark_aot_tool
@@ -515,6 +521,8 @@ class ArkProgram():
             cmd_args.append("--compiler-opt-inlining=true")
             cmd_args.append("--compiler-max-inline-bytecodes=45")
             cmd_args.append("--compiler-opt-level=2")
+            if self.disenable_force_gc:
+                cmd_args.append(f"--enable-force-gc=false")
             cmd_args.append(f'--compiler-pgo-profiler-path={file_name_pre}.ap')
             cmd_args.append(f'--aot-file={file_name_pre}')
             cmd_args.append(self.abc_file)
@@ -563,7 +571,7 @@ class ArkProgram():
             if file_name_pre in FORCE_GC_SKIP_TESTS:
                 unforce_gc = True
             asm_arg1 = "--enable-force-gc=true"
-            if unforce_gc:
+            if unforce_gc or self.disenable_force_gc:
                 asm_arg1 = "--enable-force-gc=false"
             cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
                         f'--aot-file={file_name_pre}',
@@ -619,7 +627,7 @@ class ArkProgram():
             if file_name_pre in FORCE_GC_SKIP_TESTS:
                 unforce_gc = True
             asm_arg1 = "--enable-force-gc=true"
-            if unforce_gc:
+            if unforce_gc or self.disenable_force_gc:
                 asm_arg1 = "--enable-force-gc=false"
             cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
                         f'{file_name_pre}.abc']
@@ -650,8 +658,7 @@ class ArkProgram():
                         "--compiler-opt-inlining=true",
                         f'--compiler-pgo-profiler-path={file_name_pre}.ap',
                         "--asm-interpreter=true",
-                        f'--entry-point={record_name}',
-                        f'{file_name_pre}.abc']
+                        f'--entry-point={record_name}']
         else:
             cmd_args = [self.ark_tool, ICU_PATH,
                         "--log-level=error",
@@ -659,8 +666,10 @@ class ArkProgram():
                         "--compiler-opt-inlining=true",
                         f'--compiler-pgo-profiler-path={file_name_pre}.ap',
                         "--asm-interpreter=true",
-                        f'--entry-point={record_name}',
-                        f'{file_name_pre}.abc']
+                        f'--entry-point={record_name}']
+        if self.disenable_force_gc:
+            cmd_args.append(f"--enable-force-gc=false")
+        cmd_args.append(f'{file_name_pre}.abc')
         return_code = exec_command(cmd_args)
         if return_code:
             print_command(cmd_args)
