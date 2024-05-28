@@ -50,7 +50,7 @@ import { EventList } from '../../utils/PrinterUtils';
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
     'name': 'disableHilogPlugin',
-    'order': (1 << TransformerOrder.DISABLE_HILOG_TRANSFORMER),
+    'order': TransformerOrder.DISABLE_HILOG_TRANSFORMER,
     'createTransformerFactory': createDisableHilogFactory
   };
 

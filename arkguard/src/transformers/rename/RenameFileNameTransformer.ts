@@ -369,7 +369,7 @@ namespace secharmony {
 
   export let transformerPlugin: TransformPlugin = {
     'name': 'renamePropertiesPlugin',
-    'order': (1 << TransformerOrder.RENAME_FILE_NAME_TRANSFORMER),
+    'order': TransformerOrder.RENAME_FILE_NAME_TRANSFORMER,
     'createTransformerFactory': createRenameFileNameFactory
   };
 }

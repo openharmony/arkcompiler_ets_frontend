@@ -39,7 +39,7 @@ function traverseDirs(rootDirPath, configPath) {
   }
 
   const hasJsOrTsFiles = currentEntries.some(entry => {
-    return entry.endsWith(Extension.TS) || entry.endsWith(Extension.JS);
+    return entry.endsWith(Extension.TS) || entry.endsWith(Extension.JS) || entry.endsWith(Extension.DETS);
   });
 
   if (hasJsOrTsFiles) {

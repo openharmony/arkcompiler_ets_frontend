@@ -54,7 +54,7 @@ import { EventList } from '../../utils/PrinterUtils';
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
     'name': 'disableConsolePlugin',
-    'order': (1 << TransformerOrder.DISABLE_CONSOLE_TRANSFORMER),
+    'order': TransformerOrder.DISABLE_CONSOLE_TRANSFORMER,
     'createTransformerFactory': createDisableConsoleFactory
   };
 
