@@ -233,11 +233,13 @@ namespace secharmony {
         defs.forEach((def) => {
           const original: string = def.name;
           let mangled: string = original;
+          const path: string = scope.loc + '#' + original;
           // No allow to rename reserved names.
           if ((!Reflect.has(def, 'obfuscateAsProperty') && reservedNames.includes(original)) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
             isSkippedGlobal(openTopLevel, scope)) {
             scope.mangledNames.add(mangled);
+            mangledSymbolNames.set(def, {mangledName: mangled, originalNameWithScope: path});
             return;
           }
 
@@ -245,7 +247,6 @@ namespace secharmony {
             return;
           }
 
-          const path: string = scope.loc + '#' + original;
           const historyName: string = historyNameCache?.get(path);
           if (historyName) {
             mangled = historyName;
