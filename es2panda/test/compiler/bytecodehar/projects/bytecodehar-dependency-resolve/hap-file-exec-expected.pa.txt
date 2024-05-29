@@ -53,6 +53,131 @@ record_name: &sourcehar/sourcehar-file2&2.0.0
 }
 
 
+======> literal array buffer <======
+------------------------------------
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_880
+{
+  index: 0
+    tag: 2
+    val: 1
+},
+{
+  index: 1
+    tag: 5
+    val: @normalized:N&&&@ohos/bytecodehar2/bytecodehar2-file1&2.0.0
+},
+{
+  index: 2
+    tag: 2
+    val: 1
+},
+{
+  index: 3
+    tag: 5
+    val: test1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+{
+  index: 8
+    tag: 5
+    val: test
+},
+{
+  index: 9
+    tag: 5
+    val: test
+},
+{
+  index: 10
+    tag: 2
+    val: 0
+},
+{
+  index: 11
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1510
+{
+  index: 0
+    tag: 2
+    val: 1
+},
+{
+  index: 1
+    tag: 5
+    val: @normalized:N&&&@ohos/bytecodehar2/bytecodehar2-file2&2.0.0
+},
+{
+  index: 2
+    tag: 2
+    val: 1
+},
+{
+  index: 3
+    tag: 5
+    val: test1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+{
+  index: 8
+    tag: 5
+    val: test
+},
+{
+  index: 9
+    tag: 5
+    val: test
+},
+{
+  index: 10
+    tag: 2
+    val: 0
+},
+{
+  index: 11
+    tag: 2
+    val: 0
+},
 .language ECMAScript
 
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -92,6 +217,91 @@ record_name: &sourcehar/sourcehar-file2&2.0.0
 }
 
 
+======> literal array buffer <======
+------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_841
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 5
+    val: test
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1358
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 5
+    val: test
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 0
+},
 .language ECMAScript
 
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {
@@ -117,6 +327,61 @@ label_2:
 }
 
 
+======> literal array buffer <======
+------------------------------------
+slot &myapp/hap-file-exec&_0
+------------------------------------
+slot &myapp/hap-file-exec&_1
+{
+  index: 0
+    tag: 2
+    val: 1
+},
+{
+  index: 1
+    tag: 5
+    val: @normalized:N&&&bytecodehar1/bytecodehar1-file1&2.0.0
+},
+{
+  index: 2
+    tag: 2
+    val: 1
+},
+{
+  index: 3
+    tag: 5
+    val: test
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 0
+},
+{
+  index: 8
+    tag: 2
+    val: 0
+},
+{
+  index: 9
+    tag: 2
+    val: 0
+},
 .language ECMAScript
 
 .function any &sourcehar/sourcehar-file1&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -144,6 +409,71 @@ label_2:
 }
 
 
+======> literal array buffer <======
+------------------------------------
+slot &sourcehar/sourcehar-file1&2.0.0_0
+------------------------------------
+slot &sourcehar/sourcehar-file1&2.0.0_1
+{
+  index: 0
+    tag: 2
+    val: 1
+},
+{
+  index: 1
+    tag: 5
+    val: @normalized:N&&&sourcehar/sourcehar-file2&2.0.0
+},
+{
+  index: 2
+    tag: 2
+    val: 1
+},
+{
+  index: 3
+    tag: 5
+    val: test1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+{
+  index: 8
+    tag: 5
+    val: test
+},
+{
+  index: 9
+    tag: 5
+    val: test
+},
+{
+  index: 10
+    tag: 2
+    val: 0
+},
+{
+  index: 11
+    tag: 2
+    val: 0
+},
 .language ECMAScript
 
 .function any &sourcehar/sourcehar-file2&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -171,3 +501,48 @@ label_2:
 }
 
 
+======> literal array buffer <======
+------------------------------------
+slot &sourcehar/sourcehar-file2&2.0.0_0
+------------------------------------
+slot &sourcehar/sourcehar-file2&2.0.0_1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 1
+},
+{
+  index: 4
+    tag: 5
+    val: test
+},
+{
+  index: 5
+    tag: 5
+    val: test
+},
+{
+  index: 6
+    tag: 2
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 0
+},

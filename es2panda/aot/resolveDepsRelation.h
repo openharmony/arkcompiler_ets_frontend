@@ -48,10 +48,7 @@ private:
     void FillRecord2ProgramMap(std::unordered_map<std::string, std::string> &record2ProgramMap);
     bool CollectCommonjsRecords(const std::vector<panda::pandasm::Field> &fieldList,
                                 const std::string &progKey, const std::string &recordName);
-    bool CheckShouldCollectDepsLiteralValue(std::string ohmurl);
-    void CollectStaticImportDepsRelationWithLiteral(panda::pandasm::LiteralArray::Literal literal);
-    void ResolveDynamicImportDepsRelation(const panda::pandasm::Function &func, size_t regs_num);
-    void ResolveStaticImportDepsRelation(const panda::pandasm::Program &program, const std::string &literalArrayKey);
+    void CollectDepsIfNeeded(const std::string &ohmurl);
     void DumpDepsRelations();
 
     const std::map<std::string, panda::es2panda::util::ProgramCache *> &progsInfo_;

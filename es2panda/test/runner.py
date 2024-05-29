@@ -1475,7 +1475,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--module", "--branch-elimination", "--merge-abc", "--dump-assembly",
                                                 "--file-threads=8"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
-                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info", "--dump-literal-buffer"]))
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input",
+                                                 "--dump-deps-info", "--dump-literal-buffer"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
 

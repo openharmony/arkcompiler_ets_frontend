@@ -16,11 +16,17 @@
 #ifndef ES2PANDA_UTIL_COMMON_H
 #define ES2PANDA_UTIL_COMMON_H
 
+#include <functional>
 #include <iostream>
 #include <vector>
 #include <set>
 #include <string>
 #include <string_view>
+
+#include "assembler/assembly-function.h"
+#include "assembler/assembly-literals.h"
+#include "assembler/assembly-program.h"
+#include "assembler/assembly-record.h"
 
 namespace panda::es2panda {
 struct CompileContextInfo;
@@ -46,6 +52,53 @@ bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const CompileContextInfo &info);
+
+template<bool isConst, typename T>
+using ConstReferenceIf = typename std::conditional<isConst, const T &, T &>::type;
+
+template<bool isConst>
+using ImportTraverser = std::function<void(ConstReferenceIf<isConst, std::string>)>;
+
+template <bool isConst>
+void VisitStaticImports(ConstReferenceIf<isConst, pandasm::Program> program,
+                        ConstReferenceIf<isConst, pandasm::Record> record,
+                        const ImportTraverser<isConst> &cb)
+{
+    for (const pandasm::Field &field : record.field_list) {
+        if (field.name == util::MODULE_RECORD_IDX) {
+            auto moduleLiteralKey = field.metadata->GetValue().value().GetValue<std::string>();
+            auto iter = program.literalarray_table.find(moduleLiteralKey);
+            ASSERT(iter != program.literalarray_table.end());
+            auto &array = iter->second;
+            uint32_t importSize = std::get<uint32_t>(iter->second.literals_[0].value_);
+            for (size_t idx = 1; idx < importSize + 1; ++idx) {
+                cb(std::get<std::string>(array.literals_[idx].value_));
+            }
+        }
+    }
+}
+
+// Only visit dynamic imports for import("xxxx") expression
+template <bool isConst>
+void VisitDyanmicImports(ConstReferenceIf<isConst, pandasm::Function> function, const ImportTraverser<isConst> &cb)
+{
+    for (auto iter = function.ins.begin(); iter != function.ins.end(); iter++) {
+        // Only visit dynamic imports for import("xxxx") expression, whose bytecode always is:
+        // lda.str -> dynamicimport
+        // The dynamicimport bytecode should not have label, otherwise the dyanmicimport might be a jump
+        // target and its parameter is a variable instead of a constant string expression (Check
+        // AbcCodeProcessor::AddJumpLabels for more details).
+        if (iter->opcode != pandasm::Opcode::DYNAMICIMPORT || iter->set_label) {
+            continue;
+        }
+        auto prevIns = iter - 1;
+        if (prevIns->opcode != pandasm::Opcode::LDA_STR) {
+            continue;
+        }
+        ASSERT(prevIns->ids.size() == 1);
+        cb(prevIns->ids[0]);  // 0: index of the string in lda.str bytecode
+    }
+}
 }  // namespace panda::es2panda::util
 
 #endif

@@ -269,11 +269,6 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
     compilerOptions_.compileContextInfo.pkgContextInfo = pkgContextMap;
 }
 
-bool Options::NeedUpdatePkgVersionInRecordName()
-{
-    return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
-}
-
 // Collect dependencies based on the compile entries and remove redundant content from the abc file as input.
 bool Options::NeedRemoveRedundantRecord()
 {
