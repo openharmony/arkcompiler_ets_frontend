@@ -1331,7 +1331,8 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
                                 expr->Start());
     }
 
-    if (expr->PreferredType()->ToAssemblerName().str() == "escompat.Map") {
+    if (expr->PreferredType()->ToAssemblerName().str() == "escompat.Record" ||
+        expr->PreferredType()->ToAssemblerName().str() == "escompat.Map") {
         // 7.6.3 Object Literal of Record Type
         // Record is an alias to Map
         // Here we just set the type to pass the checker
