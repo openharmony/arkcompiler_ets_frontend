@@ -59,13 +59,16 @@ void DepsRelationResolver::FillRecord2ProgramMap(std::unordered_map<std::string,
     }
 }
 
-bool DepsRelationResolver::CheckShouldCollectDepsLiteralValue(std::string ohmurl)
+void DepsRelationResolver::CollectDepsIfNeeded(const std::string &ohmurl)
 {
     if (ohmurl.find(util::NORMALIZED_OHMURL_NOT_SO) != std::string::npos &&
         !util::IsExternalPkgNames(ohmurl, compileContextInfo_.externalPkgNames)) {
-        return true;
+        std::string collectRecord = util::GetRecordNameFromNormalizedOhmurl(ohmurl);
+        if (!collectRecord.empty() && this->resolvedRecords_.count(collectRecord) == 0) {
+            this->depsToBeResolved_.push(collectRecord);
+            this->resolvedRecords_.insert(collectRecord);
+        }
     }
-    return false;
 }
 
 void DepsRelationResolver::DumpDepsRelations()
@@ -120,31 +123,6 @@ bool DepsRelationResolver::Resolve()
     return true;
 }
 
-void DepsRelationResolver::CollectStaticImportDepsRelationWithLiteral(panda::pandasm::LiteralArray::Literal literal)
-{
-    std::visit([this](auto&& element) {
-        if constexpr (std::is_same_v<std::decay_t<decltype(element)>, std::string>) {
-            std::string collectRecord = "";
-            if (this->CheckShouldCollectDepsLiteralValue(element)) {
-                collectRecord = util::GetRecordNameFromNormalizedOhmurl(element);
-            }
-            if (collectRecord.size() > 0 && !this->resolvedRecords_.count(collectRecord)) {
-                this->depsToBeResolved_.push(collectRecord);
-                this->resolvedRecords_.insert(collectRecord);
-            }
-        }
-    }, literal.value_);
-}
-
-void DepsRelationResolver::ResolveStaticImportDepsRelation(const panda::pandasm::Program &program,
-                                                           const std::string &literalArrayKey)
-{
-    auto itr = program.literalarray_table.find(literalArrayKey);
-    for (auto& literal : itr->second.literals_) {
-        CollectStaticImportDepsRelationWithLiteral(literal);
-    }
-}
-
 void DepsRelationResolver::CollectStaticImportDepsRelation(const panda::pandasm::Program &program,
                                                            const std::string &recordName)
 {
@@ -154,13 +132,9 @@ void DepsRelationResolver::CollectStaticImportDepsRelation(const panda::pandasm:
         if (pair.first.find(recordName) == std::string::npos) {
             continue;
         }
-        for (auto &field : pair.second.field_list) {
-            if (field.name == util::MODULE_RECORD_IDX) {
-                literalArrayKey = field.metadata->GetValue().value().GetValue<std::string>();
-                ResolveStaticImportDepsRelation(program, literalArrayKey);
-                break;
-            }
-        }
+        util::VisitStaticImports<true>(program, pair.second, [this](const std::string &ohmurl) {
+            this->CollectDepsIfNeeded(ohmurl);
+        });
     }
 }
 
@@ -168,42 +142,13 @@ void DepsRelationResolver::CollectDynamicImportDepsRelation(const panda::pandasm
                                                             const std::string &recordName)
 {
     for (const auto &func: program.function_table) {
-        size_t regs_num = func.second.regs_num;
         if (func.second.name.find(recordName) == std::string::npos) {
             continue;
         }
-        ResolveDynamicImportDepsRelation(func.second, regs_num);
+        util::VisitDyanmicImports<true>(func.second, [this](const std::string &ohmurl) {
+            this->CollectDepsIfNeeded(ohmurl);
+        });
     }
 }
 
-void DepsRelationResolver::ResolveDynamicImportDepsRelation(const panda::pandasm::Function &func, size_t regs_num)
-{
-    for (uint32_t i = 0; i < func.ins.size(); i++) {
-        const auto inst = func.ins[i];
-        if (inst.opcode != pandasm::Opcode::DYNAMICIMPORT) {
-            continue;
-        }
-
-        std::string dynamicImportOhmurl {};
-        for (uint32_t j = i; j >= 0; j--) {
-            if (func.ins[j].opcode == pandasm::Opcode::LDA_STR) {
-                dynamicImportOhmurl = func.ins[j].ToString("", true, regs_num);
-                break;
-            }
-        }
-        // skip variable dynamicImport and native SO
-        if (dynamicImportOhmurl.find(util::NORMALIZED_OHMURL_NOT_SO) == std::string::npos) {
-            continue;
-        }
-        // skip HSP package
-        if (util::IsExternalPkgNames(dynamicImportOhmurl, compileContextInfo_.externalPkgNames)) {
-            continue;
-        }
-        auto dynamicImportRecord = util::GetRecordNameFromNormalizedOhmurl(dynamicImportOhmurl);
-        if (!resolvedRecords_.count(dynamicImportRecord)) {
-            depsToBeResolved_.push(dynamicImportRecord);
-            resolvedRecords_.insert(dynamicImportRecord);
-        }
-    }
-}
 } // namespace panda::es2panda::aot

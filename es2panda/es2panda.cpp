@@ -23,6 +23,7 @@
 #include <parser/program/program.h>
 #include <parser/transformer/transformer.h>
 #include <typescript/checker.h>
+#include <util/commonUtil.h>
 #include <util/helpers.h>
 
 #include <iostream>
@@ -100,6 +101,36 @@ panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, con
     panda::pandasm::Program *prog = new panda::pandasm::Program();
     (void)abcToAsmCompiler_->FillProgramData(*prog);
     return prog;
+}
+
+void Compiler::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
+                                                 const panda::es2panda::CompilerOptions &options)
+{
+    for (auto &[name, function] : prog->function_table) {
+        util::VisitDyanmicImports<false>(function, [&prog, options](std::string &ohmurl) {
+            const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, options.compileContextInfo);
+            prog->strings.insert(newOhmurl);
+            ohmurl = newOhmurl;
+        });
+    }
+}
+
+void Compiler::UpdateStaticImportPackageVersion(panda::pandasm::Program *prog,
+                                                const panda::es2panda::CompilerOptions &options)
+{
+    for (auto &[recordName, record] : prog->record_table) {
+        util::VisitStaticImports<false>(*prog, record, [options](std::string &ohmurl) {
+            ohmurl = util::UpdatePackageVersionIfNeeded(ohmurl, options.compileContextInfo);
+        });
+    }
+}
+
+void Compiler::UpdatePackageVersion(panda::pandasm::Program *prog, const panda::es2panda::CompilerOptions &options)
+{
+    // Replace for esm module static import
+    UpdateStaticImportPackageVersion(prog, options);
+    // Replace for dynamic import
+    UpdateDynamicImportPackageVersion(prog, options);
 }
 
 panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,

@@ -116,6 +116,11 @@ void CompileFileJob::Run()
         return;
     }
 
+    // Update version for abc input when needed
+    if (!src_->isSourceMode && options_->NeedUpdatePkgVersionForAbcInput()) {
+        compiler.UpdatePackageVersion(prog, *options_);
+    }
+
     bool requireOptimizationAfterAnalysis = false;
     // When cross-program optimizations are required, skip program-local optimization at this stage
     // and perform it later after the analysis of all programs has been completed

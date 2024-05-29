@@ -757,7 +757,7 @@ class CompilerProjectTest(Test):
             if not filename.endswith('.txt'):
                 self.remove_project(runner)
                 raise Exception("Invalid abc input file: %s, only txt files are allowed in abcinputs directory: %s"
-                                %(filename, self.abc_inputs_path))
+                                % (filename, self.abc_inputs_path))
             with open(path.join(self.abc_inputs_path, filename)) as abc_inputs_fp:
                 abc_inputs_lines = abc_inputs_fp.readlines()
                 for abc_input_line in abc_inputs_lines:
@@ -775,11 +775,11 @@ class CompilerProjectTest(Test):
             abc_files_info = abc_files_infos[abc_files_info_name]
             if len(abc_files_info) != 0:
                 abc_input_path = path.join(self.generated_abc_inputs_path, abc_files_info_name)
-                abc_files_info_path = ("%s-filesInfo.txt" %(abc_input_path))
+                abc_files_info_path = ("%s-filesInfo.txt" % (abc_input_path))
                 abc_files_info_fd = os.open(abc_files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
                 abc_files_info_f = os.fdopen(abc_files_info_fd, 'w')
                 abc_files_info_f.writelines(abc_files_info)
-                final_file_info_f.writelines('%s-abcinput.abc;;;;\n' %(abc_input_path))
+                final_file_info_f.writelines('%s-abcinput.abc;;;;\n' % (abc_input_path))
 
     def gen_files_info(self, runner):
         # After collect_record_mapping, self.file_record_mapping stores {'source file name' : 'source file record name'}
@@ -806,11 +806,11 @@ class CompilerProjectTest(Test):
         self.gen_abc_input_files_infos(runner, abc_files_infos, f)
         f.close()
 
-    def gen_es2abc_cmd(self, runner, input, output):
+    def gen_es2abc_cmd(self, runner, input_file, output_file):
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
         es2abc_cmd.extend(self.flags)
-        es2abc_cmd.extend(['%s%s' % ("--output=", output)])
-        es2abc_cmd.append('@' + input)
+        es2abc_cmd.extend(['%s%s' % ("--output=", output_file)])
+        es2abc_cmd.append('@' + input_file)
         return es2abc_cmd
 
     def gen_merged_abc_for_abc_input(self, runner, files_info_name):
@@ -819,7 +819,7 @@ class CompilerProjectTest(Test):
             return
         abc_input_files_info_path = path.join(self.generated_abc_inputs_path, files_info_name)
         abc_input_merged_abc_path = path.join(self.generated_abc_inputs_path,
-                                              '%s-abcinput.abc' %(files_info_name[:-len('-filesInfo.txt')]))
+                                              '%s-abcinput.abc' % (files_info_name[:-len('-filesInfo.txt')]))
         es2abc_cmd = self.gen_es2abc_cmd(runner, abc_input_files_info_path, abc_input_merged_abc_path)
         self.log_cmd(es2abc_cmd)
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -831,8 +831,8 @@ class CompilerProjectTest(Test):
     def gen_merged_abc(self, runner):
         # Generate abc inputs
         if (os.path.exists(self.generated_abc_inputs_path)):
-            filesInfo_names = os.listdir(self.generated_abc_inputs_path)
-            for filename in filesInfo_names:
+            files_info_names = os.listdir(self.generated_abc_inputs_path)
+            for filename in files_info_names:
                 self.gen_merged_abc_for_abc_input(runner, filename)
                 if (not self.passed):
                     self.remove_project(runner)
@@ -851,7 +851,7 @@ class CompilerProjectTest(Test):
         es2abc_cmd = self.gen_es2abc_cmd(runner, self.files_info_path, output_abc_name)
         compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
         if path.exists(compile_context_info_path):
-            es2abc_cmd.append("%s%s" %("--compile-context-info=", compile_context_info_path))
+            es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
         self.log_cmd(es2abc_cmd)
         self.path = exec_file_path
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -1477,7 +1477,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--module", "--branch-elimination", "--merge-abc", "--dump-assembly",
                                                 "--file-threads=8"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/projects", "ts",
-                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input",
+                                                 "--dump-deps-info", "--dump-literal-buffer"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/js/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input", "--dump-deps-info"]))
 

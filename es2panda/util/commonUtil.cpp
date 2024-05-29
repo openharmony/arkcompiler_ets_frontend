@@ -17,7 +17,10 @@
 
 #include <algorithm>
 
+#include "util/helpers.h"
+
 namespace panda::es2panda::util {
+
 std::vector<std::string> Split(const std::string &str, const char delimiter)
 {
     std::string normalizedImport {};
@@ -43,7 +46,9 @@ std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl)
     std::string normalizedImport {};
     std::string pkgName {};
     auto items = Split(ohmurl, NORMALIZED_OHMURL_SEPARATOR);
-
+    if (items.size() <= NORMALIZED_IMPORT_POS) {
+        return pkgName;
+    }
     normalizedImport = items[NORMALIZED_IMPORT_POS];
     size_t pos = normalizedImport.find(SLASH_TAG);
     if (pos != std::string::npos) {
@@ -77,5 +82,35 @@ bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &
     }
     return false;
 }
+
+std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const panda::es2panda::CompileContextInfo &info)
+{
+    // Input ohmurl format:
+    // @normalized:{N|Y}&[module name]&[bundle name]&{<package name>|<@package/name>}/{import_path}&[version]
+    // Update the version for ohmurls and return the updated ohmurl when:
+    // 1. The package name and version are specified in the CompileContextInfo file.
+    // 2. The ohmurl is an imported non-native ohmurl (starts with @normalized:N).
+    // 3. The version in the ohmurl differs from the version in the CompileContextInfo file.
+    // Return the original ohmurl otherwise.
+    if (ohmurl.find(util::NORMALIZED_OHMURL_NOT_SO) != 0) {
+        return ohmurl;
+    }
+    std::string packageName = util::GetPkgNameFromNormalizedOhmurl(ohmurl);
+    // Incorrect ohmurl format: no package name, skip version update
+    if (packageName.empty()) {
+        return ohmurl;
+    }
+    auto iter = info.pkgContextInfo.find(packageName);
+    if (iter == info.pkgContextInfo.end()) {
+        return ohmurl;
+    }
+    auto versionStart = ohmurl.rfind(util::NORMALIZED_OHMURL_SEPARATOR);
+    // Incorrect ohmurl format: no version, skip version update
+    if (versionStart == std::string::npos) {
+        return ohmurl;
+    }
+    return ohmurl.substr(0, versionStart + 1) + iter->second.version;
+}
+
 
 } // namespace panda::es2panda::util
