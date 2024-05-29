@@ -377,7 +377,10 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
     auto const otherTypeArguments = other->AsETSObjectType()->TypeArguments();
 
     auto const argsNumber = typeArguments_.size();
-    ASSERT(argsNumber == otherTypeArguments.size());
+    if (argsNumber != otherTypeArguments.size()) {
+        relation->Result(false);
+        return;
+    }
 
     for (size_t idx = 0U; idx < argsNumber; ++idx) {
         if (typeArguments_[idx]->IsWildcardType() || otherTypeArguments[idx]->IsWildcardType()) {
@@ -625,7 +628,11 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
 
     auto *sourceType = source->AsETSObjectType();
     auto const sourceTypeArguments = sourceType->TypeArguments();
-    ASSERT(typeArguments_.size() == sourceTypeArguments.size());
+    auto const typeArgumentsNumber = typeArguments_.size();
+    if (typeArgumentsNumber > sourceTypeArguments.size()) {
+        relation->Result(false);
+        return;
+    }
 
     ASSERT(declNode_ == sourceType->GetDeclNode());
 
@@ -637,9 +644,9 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
     }
 
     auto &typeParams = typeParamsDecl->Params();
-    ASSERT(typeParams.size() == typeArguments_.size());
+    ASSERT(typeParams.size() == typeArgumentsNumber);
 
-    for (size_t idx = 0; idx < typeArguments_.size(); idx++) {
+    for (size_t idx = 0U; idx < typeArgumentsNumber; ++idx) {
         auto *typeArg = typeArguments_[idx];
         auto *sourceTypeArg = sourceTypeArguments[idx];
         auto *typeParam = typeParams[idx];

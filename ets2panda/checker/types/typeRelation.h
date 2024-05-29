@@ -283,6 +283,10 @@ public:
     bool IsAssignableTo(Type *source, Type *target);
     bool IsComparableTo(Type *source, Type *target);
     bool IsCastableTo(Type *const source, Type *const target);
+    bool IsSupertypeOf(Type const *super, Type const *sub)
+    {
+        return IsSupertypeOf(const_cast<Type *>(super), const_cast<Type *>(sub));
+    }
     bool IsSupertypeOf(Type *super, Type *sub);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
