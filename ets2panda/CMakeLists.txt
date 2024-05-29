@@ -175,6 +175,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/defaultParameterLowering.cpp
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp
+  compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
