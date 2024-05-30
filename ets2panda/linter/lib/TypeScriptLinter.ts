@@ -50,6 +50,7 @@ import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import {
   ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
+  OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE,
   NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE,
   TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE,
   LibraryTypeCallDiagnosticChecker
@@ -810,27 +811,38 @@ export class TypeScriptLinter {
           return expectedDecorators.includes(decoratorName);
         })
       ) {
-        const file = path.normalize(this.sourceFile.fileName);
-        const tscDiagnostics = this.tscStrictDiagnostics.get(file);
-        if (tscDiagnostics) {
-          const filteredDiagnostics = tscDiagnostics.filter((val) => {
-            if (val.code !== code) {
-              return true;
-            }
-            if (val.start === undefined) {
-              return true;
-            }
-            if (val.start < range.begin) {
-              return true;
-            }
-            if (val.start > range.end) {
-              return true;
-            }
-            return false;
-          });
-          this.tscStrictDiagnostics.set(file, filteredDiagnostics);
-        }
+        this.filterOutDiagnostics(range, code);
       }
+    }
+  }
+
+  private filterOutDiagnostics(
+    range: { begin: number; end: number },
+    code: number
+  ): void {
+    // Filter out strict diagnostics within the given range with the given code.
+    if (!this.tscStrictDiagnostics || !this.sourceFile) {
+      return;
+    }
+    const file = path.normalize(this.sourceFile.fileName);
+    const tscDiagnostics = this.tscStrictDiagnostics.get(file);
+    if (tscDiagnostics) {
+      const filteredDiagnostics = tscDiagnostics.filter((val) => {
+        if (val.code !== code) {
+          return true;
+        }
+        if (val.start === undefined) {
+          return true;
+        }
+        if (val.start < range.begin) {
+          return true;
+        }
+        if (val.start > range.end) {
+          return true;
+        }
+        return false;
+      });
+      this.tscStrictDiagnostics.set(file, filteredDiagnostics);
     }
   }
 
@@ -1952,7 +1964,7 @@ export class TypeScriptLinter {
       rangesToFilter.push({ begin: callExpr.arguments.pos, end: callExpr.arguments.end });
     }
 
-    this.filterStrictDiagnostics(
+    const hasFiltered = this.filterStrictDiagnostics(
       {
         [ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE]: (pos: number) => {
           return TypeScriptLinter.checkInRange(rangesToFilter, pos);
@@ -1966,6 +1978,12 @@ export class TypeScriptLinter {
       },
       this.libraryTypeCallDiagnosticChecker
     );
+    if (hasFiltered) {
+      this.filterOutDiagnostics(
+        { begin: callExpr.getStart(), end: callExpr.getEnd() },
+        OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE
+      );
+    }
 
     for (const msgChain of diagnosticMessages) {
       TypeScriptLinter.filteredDiagnosticMessages.add(msgChain);

@@ -28,6 +28,7 @@ export const TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE =
   /^Type '(.*)\bundefined\b(.*)' is not assignable to type '.*'\.$/;
 
 export const ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE = 2345;
+export const OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE = 2532;
 export const NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE = 2769;
 export const ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE =
   /^Argument of type '(.*)\bnull\b(.*)' is not assignable to parameter of type '.*'\.$/;
