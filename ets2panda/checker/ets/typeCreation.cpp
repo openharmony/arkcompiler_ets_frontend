@@ -536,14 +536,15 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
         ASSERT(declNode->IsTSInterfaceDeclaration());
         assemblerName = declNode->AsTSInterfaceDeclaration()->InternalName();
     } else {
-        prefix = static_cast<ir::ETSScript *>(declNode->GetTopStatement())->Program()->GetPackageName();
+        auto program = static_cast<ir::ETSScript *>(declNode->GetTopStatement())->Program();
+        prefix = program->OmitModuleName() ? util::StringView() : program->ModuleName();
     }
 
     if (!prefix.Empty()) {
-        util::UString fullPath(prefix, Allocator());
-        fullPath.Append('.');
-        fullPath.Append(assemblerName);
-        assemblerName = fullPath.View();
+        assemblerName =
+            util::UString(prefix.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() + assemblerName.Mutf8(),
+                          Allocator())
+                .View();
     }
 
     Language lang(Language::Id::ETS);
@@ -569,7 +570,6 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
     if (lang.IsDynamic()) {
         return Allocator()->New<ETSDynamicType>(Allocator(), name, assemblerName, declNode, flags, Relation(), lang,
                                                 hasDecl);
-        ;
     }
 
     return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName, declNode, flags, Relation());

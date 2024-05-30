@@ -41,8 +41,6 @@ public:
 
     [[nodiscard]] bool IsETSParser() const noexcept override;
 
-    const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &ModuleList() const;
-
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
 
 public:

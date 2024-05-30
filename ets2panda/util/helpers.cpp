@@ -15,6 +15,7 @@
 
 #include "helpers.h"
 
+#include "generated/signatures.h"
 #include "varbinder/privateBinding.h"
 #include "checker/types/ets/types.h"
 #include "ir/astNode.h"
@@ -656,8 +657,15 @@ std::vector<std::string> &Helpers::StdLib()
 bool Helpers::IsStdLib(const parser::Program *program)
 {
     const auto &stdlib = StdLib();
-    auto fileFolder = program->GetPackageName().Mutf8();
-    std::replace(fileFolder.begin(), fileFolder.end(), '.', '/');
+
+    // NOTE(rsipka): early check: if program is not a package module then it is not part of the stdlib either
+    if (!program->IsPackageModule()) {
+        return false;
+    }
+
+    auto fileFolder = program->ModuleName().Mutf8();
+    std::replace(fileFolder.begin(), fileFolder.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
+                 *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
     return std::count(stdlib.begin(), stdlib.end(), fileFolder) != 0;
 }
 

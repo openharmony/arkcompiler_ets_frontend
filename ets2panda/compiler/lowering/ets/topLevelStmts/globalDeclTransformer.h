@@ -58,10 +58,10 @@ public:
      * Creates ClassProperty for global variables and MethodFunction for global functions.
      * Copy top level statements to vector.
      * @param stmts top level statements
-     * @param is_package if current file is package. In package $init$ doesn't contain global variable initializers
+     * @param addInitializer $init$ should contain global variable initializers
      * @return pair (class properties, init statements)
      */
-    ResultT TransformStatements(const ArenaVector<ir::Statement *> &stmts, bool isPackage);
+    ResultT TransformStatements(const ArenaVector<ir::Statement *> &stmts, bool addInitializer);
 
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
@@ -74,7 +74,7 @@ public:
 private:
     ArenaAllocator *allocator_;
     ResultT result_;
-    bool isPackage_ = false;
+    bool addInitializer_ = true;
 };
 
 }  // namespace ark::es2panda::compiler

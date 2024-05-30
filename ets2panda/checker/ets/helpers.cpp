@@ -1221,25 +1221,23 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
 {
     auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
-    auto extRecords = etsBinder->GetGlobalRecordTable()->Program()->ExternalSources();
-    auto [name, isPackageModule] = etsBinder->GetModuleInfo(importPath);
-    auto res = extRecords.find(name);
-    ASSERT(res != extRecords.end());
+    auto programList = etsBinder->GetProgramList(importPath);
+    ASSERT(!programList.empty());
 
     // Check imported properties before assigning them to module object
-    res->second.front()->Ast()->Check(this);
+    programList.front()->Ast()->Check(this);
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticFieldScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->TypeAliasScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->TypeAliasScope()->Bindings());
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)
@@ -2493,17 +2491,19 @@ ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration
 {
     auto importPath = importDecl->ResolvedSource()->Str();
 
-    auto [moduleName, isPackageModule] = VarBinder()->AsETSBinder()->GetModuleInfo(importPath);
+    auto programList = VarBinder()->AsETSBinder()->GetProgramList(importPath);
+    ASSERT(!programList.empty());
 
-    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(moduleName);
-
+    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(programList.front()->ModuleName());
     ASSERT(!syntheticNames.empty());
 
     auto assemblerName = syntheticNames[0];
-    if (!isPackageModule) {
-        assemblerName =
-            util::UString(assemblerName.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL), Allocator())
-                .View();
+    if (!programList.front()->OmitModuleName()) {
+        assemblerName = util::UString(assemblerName.Mutf8()
+                                          .append(compiler::Signatures::METHOD_SEPARATOR)
+                                          .append(compiler::Signatures::ETS_GLOBAL),
+                                      Allocator())
+                            .View();
     }
 
     auto *moduleObjectType = Allocator()->New<checker::ETSObjectType>(

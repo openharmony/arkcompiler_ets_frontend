@@ -317,14 +317,13 @@ ir::ClassStaticBlock *ETSChecker::CreateDynamicCallClassInitializer(Language lan
         std::stringstream ss;
         auto name = isConstruct ? compiler::Signatures::Dynamic::NewClass(lang)
                                 : compiler::Signatures::Dynamic::CallClass(lang);
-        auto package = VarBinder()->Program()->GetPackageName();
 
         ss << compiler::Signatures::CLASS_REF_BEGIN;
-        if (!package.Empty()) {
-            std::string packageStr(package);
-            std::replace(packageStr.begin(), packageStr.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
+        if (!VarBinder()->Program()->OmitModuleName()) {
+            std::string moduleString(VarBinder()->Program()->ModuleName());
+            std::replace(moduleString.begin(), moduleString.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
                          *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
-            ss << packageStr << compiler::Signatures::NAMESPACE_SEPARATOR;
+            ss << moduleString << compiler::Signatures::NAMESPACE_SEPARATOR;
         }
         ss << name << compiler::Signatures::MANGLE_SEPARATOR;
 

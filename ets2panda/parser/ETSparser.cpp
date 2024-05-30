@@ -128,11 +128,6 @@ bool ETSParser::IsETSParser() const noexcept
     return true;
 }
 
-const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &ETSParser::ModuleList() const
-{
-    return importPathManager_->ModuleList();
-}
-
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &sourceFile)
 {
     GetProgram()->SetSource(sourceFile);
@@ -159,7 +154,6 @@ void ETSParser::ParseProgram(ScriptKind kind)
     auto script = ParseETSGlobalScript(startLoc, statements);
 
     AddExternalSource(ParseSources());
-    GetProgram()->VarBinder()->AsETSBinder()->SetModuleList(this->ModuleList());
     GetProgram()->SetAst(script);
 }
 
@@ -186,8 +180,7 @@ void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
     for (auto *newProg : programs) {
         auto &extSources = globalProgram_->ExternalSources();
 
-        const util::StringView name =
-            newProg->Ast()->Statements().empty() ? newProg->FileName() : newProg->GetPackageName();
+        const util::StringView name = newProg->ModuleName();
         if (extSources.count(name) == 0) {
             extSources.emplace(name, Allocator()->Adapter());
         }
@@ -2378,15 +2371,9 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     auto startLoc = Lexer()->GetToken().Start();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_PACKAGE) {
-        if (!IsETSModule() && GetProgram()->IsEntryPoint()) {
-            // NOTE(rsipka): consider adding a filename name as module name to entry points as well
-            importPathManager_->InsertModuleInfo(GetProgram()->AbsoluteName(),
-                                                 util::ImportPathManager::ModuleInfo {util::StringView(""), false});
-            return nullptr;
-        }
-        importPathManager_->InsertModuleInfo(GetProgram()->AbsoluteName(),
-                                             util::ImportPathManager::ModuleInfo {GetProgram()->FileName(), false});
-        GetProgram()->SetPackageName(GetProgram()->FileName());
+        // NOTE(rsipka): Unclear behavior/code. Currently, all entry programs omit the module name if it is not a
+        // package module and the '--ets-module' option is not specified during compilation
+        GetProgram()->SetModuleInfo(GetProgram()->FileName(), false, GetProgram()->IsEntryPoint() && !IsETSModule());
         return nullptr;
     }
 
@@ -2402,12 +2389,7 @@ ir::ETSPackageDeclaration *ETSParser::ParsePackageDeclaration()
     auto packageName =
         name->IsIdentifier() ? name->AsIdentifier()->Name() : name->AsTSQualifiedName()->ToString(Allocator());
 
-    GetProgram()->SetPackageName(packageName);
-    // NOTE(rsipka): handle these two cases, check that is it really required
-    importPathManager_->InsertModuleInfo(GetProgram()->AbsoluteName(),
-                                         util::ImportPathManager::ModuleInfo {packageName, true});
-    importPathManager_->InsertModuleInfo(GetProgram()->ResolvedFilePath(),
-                                         util::ImportPathManager::ModuleInfo {packageName, true});
+    GetProgram()->SetModuleInfo(packageName, true);
 
     return packageDeclaration;
 }

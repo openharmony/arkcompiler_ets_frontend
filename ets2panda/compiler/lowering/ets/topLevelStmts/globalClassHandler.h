@@ -56,11 +56,11 @@ private:
      *
      * @param global_stmts leave only declarations here
      * @param class_def add new properties such as methods and fields
-     * @param is_package
+     * @param addInitializer $init$ should contain global variable initializers
      * @return Statements, which should be executed before the start
      */
     ArenaVector<ir::Statement *> MakeGlobalStatements(ir::BlockStatement *globalStmts, ir::ClassDefinition *classDef,
-                                                      bool isPackage);
+                                                      bool addInitializer);
 
     void AddInitCall(ir::ClassDefinition *globalClass, ir::MethodDefinition *initMethod);
 
