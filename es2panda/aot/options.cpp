@@ -270,10 +270,16 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
     compilerOptions_.compileContextInfo.pkgContextInfo = pkgContextMap;
 }
 
-// Collect dependencies based on the compile entries and remove redundant content from the abc file as input.
-bool Options::NeedRemoveRedundantRecord()
+// Collect dependencies based on the compile entries.
+bool Options::NeedCollectDepsRelation()
 {
     return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.compileEntries.empty();
+}
+
+// Remove redundant content from the abc file and remove programs generated from redundant source files.
+bool Options::NeedRemoveRedundantRecord()
+{
+    return compilerOptions_.removeRedundantFile && NeedCollectDepsRelation();
 }
 
 Options::Options() : argparser_(new panda::PandArgParser()) {}
@@ -360,6 +366,10 @@ bool Options::Parse(int argc, const char **argv)
         "info file");
     panda::PandArg<bool> opDumpDepsInfo("dump-deps-info", false, "Dump all dependency files and records "\
         "including source files and bytecode files");
+    panda::PandArg<bool> opRemoveRedundantFile("remove-redundant-file", false, "Remove redundant info"\
+        " from abc file and remove redundant source file, which is effective when the compile-context-info switch"\
+        "  is turned on and there is abc input");
+    panda::PandArg<bool> opDumpString("dump-string", false, "Dump program strings");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -418,6 +428,8 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&compileContextInfoPath);
     argparser_->Add(&opDumpDepsInfo);
+    argparser_->Add(&opRemoveRedundantFile);
+    argparser_->Add(&opDumpString);
 
     argparser_->Add(&transformLib);
 
@@ -604,6 +616,10 @@ bool Options::Parse(int argc, const char **argv)
         ParseCompileContextInfo(compileContextInfoPath.GetValue());
     }
     compilerOptions_.dumpDepsInfo = opDumpDepsInfo.GetValue();
+    compilerOptions_.updatePkgVersionForAbcInput = compilerOptions_.enableAbcInput
+        && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
+    compilerOptions_.removeRedundantFile = opRemoveRedundantFile.GetValue();
+    compilerOptions_.dumpString = opDumpString.GetValue();
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();

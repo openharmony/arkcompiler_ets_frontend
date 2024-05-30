@@ -16,13 +16,15 @@
 #ifndef ES2PANDA_UTIL_HELPERS_H
 #define ES2PANDA_UTIL_HELPERS_H
 
-#include <binder/variableFlags.h>
+#include <cmath>
+
 #include <mem/arena_allocator.h>
 #include <os/file.h>
 #include <os/library_loader.h>
-#include <util/ustring.h>
 
-#include <cmath>
+#include <binder/variableFlags.h>
+#include <programCache.h>
+#include <util/ustring.h>
 
 namespace panda::es2panda::ir {
 class Expression;
@@ -81,6 +83,15 @@ public:
     static constexpr std::string_view DLL = ".dll";
     static constexpr std::string_view SO = ".so";
     static constexpr std::string_view DYLIB = ".dylib";
+};
+
+struct DepsRelationInfo {
+    const std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
+    const std::unordered_set<std::string> generatedRecords {};
+
+    DepsRelationInfo(const std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation,
+                     const std::unordered_set<std::string> generatedRecords)
+        : resolvedDepsRelation(resolvedDepsRelation), generatedRecords(generatedRecords) {};
 };
 
 using AopTransformFuncDef = int (*)(const char *);
@@ -148,6 +159,14 @@ public:
     static bool IsUseShared(const ir::Statement *statement);
     static const ir::ClassDefinition *GetContainingSendableClass(const ir::AstNode *node);
     static bool IsSpecialScopeName(const util::StringView &str);
+    static bool BelongingToRecords(const std::string &name, const std::unordered_set<std::string> &retainRecordSet,
+                                   const std::string &delimiter = std::string(DOT));
+    static void RemoveProgramRedundantData(panda::pandasm::Program &program,
+                                           const std::unordered_set<std::string> &retainRecordSet,
+                                           const std::unordered_set<std::string> &generatedRecords);
+    static void RemoveProgramsRedundantData(std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+        const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation,
+        const std::unordered_set<std::string> &generatedRecords);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;

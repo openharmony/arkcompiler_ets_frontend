@@ -16,12 +16,17 @@
 
 namespace panda::es2panda::util {
 
-void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable)
+void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable,
+                          bool skipLiteralArraySlot)
 {
     std::cout << "======> literal array buffer <======" << std::endl;
     for (auto it : literalTable) {
         std::cout << "------------------------------------" << std::endl;
-        std::cout << "slot " << it.first << std::endl;
+        // Literalarray slot of programs generated from abc input depends on literalarray' offset, which is unstable,
+        // and will affect the UT. Skip dumping this information as a workaround.
+        if (!skipLiteralArraySlot) {
+            std::cout << "slot " << it.first << std::endl;
+        }
         int count = 0;
         for (auto literal : it.second.literals_) {
             std::cout << "{" << std::endl;
@@ -41,6 +46,15 @@ void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> co
             std::cout << "}," << std::endl;
         }
     }
+}
+
+void Dumper::DumpStrings(std::set<std::string> const &strings)
+{
+    std::cout << "======> strings <======" << std::endl;
+    for (auto &string : strings) {
+        std::cout << "\"" << string << "\"; ";
+    }
+    std::cout << std::endl;
 }
 
 }  // namespace panda::es2panda::util

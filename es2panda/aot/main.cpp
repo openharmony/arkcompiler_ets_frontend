@@ -150,14 +150,20 @@ static void DumpProgramInfos(const std::map<std::string, panda::es2panda::util::
             }
 
             if (compilerOptions.dumpLiteralBuffer) {
-                panda::es2panda::util::Dumper::DumpLiterals(progInfo.second->program.literalarray_table);
+                panda::es2panda::util::Dumper::DumpLiterals(progInfo.second->program.literalarray_table,
+                                                            compilerOptions.enableAbcInput);
+            }
+
+            if (compilerOptions.dumpString) {
+                panda::es2panda::util::Dumper::DumpStrings(progInfo.second->program.strings);
             }
         }
     }
 }
 
-static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
-    const std::unique_ptr<panda::es2panda::aot::Options> &options)
+static bool GenerateProgram(std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
+                            const std::unique_ptr<panda::es2panda::aot::Options> &options,
+                            util::DepsRelationInfo *depsRelationInfo)
 {
     DumpProgramInfos(programsInfo, options);
 
@@ -174,6 +180,12 @@ static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::P
             panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->compilerProtoOutput());
             return true;
         }
+    }
+
+    if (options->NeedRemoveRedundantRecord()) {
+        util::Helpers::RemoveProgramsRedundantData(programsInfo, depsRelationInfo->resolvedDepsRelation,
+                                                   depsRelationInfo->generatedRecords);
+        DumpProgramInfos(programsInfo, options);
     }
 
     bool dumpSize = options->SizeStat();
@@ -196,8 +208,9 @@ static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::P
     return true;
 }
 
-static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
-    const std::unique_ptr<panda::es2panda::aot::Options> &options, size_t expectedProgsCount)
+static bool GenerateAbcFiles(std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
+                             const std::unique_ptr<panda::es2panda::aot::Options> &options, size_t expectedProgsCount,
+                             util::DepsRelationInfo *depsRelationInfo)
 {
     if (programsInfo.size() != expectedProgsCount) {
         std::cerr << "The size of programs is expected to be " << expectedProgsCount
@@ -205,7 +218,7 @@ static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::
         return false;
     }
 
-    if (!GenerateProgram(programsInfo, options)) {
+    if (!GenerateProgram(programsInfo, options, depsRelationInfo)) {
         std::cerr << "GenerateProgram Failed!" << std::endl;
         return false;
     }
@@ -260,16 +273,18 @@ int Run(int argc, const char **argv)
         expectedProgsCount++;
     }
 
-    // A mapping of pragram to its records which are resolved and collected as valid dependencies.
+    // A mapping of program to its records which are resolved and collected as valid dependencies.
     std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
     std::unordered_set<std::string> generatedRecords {};
 
-    if (options->NeedRemoveRedundantRecord() &&
+    if (options->NeedCollectDepsRelation() &&
         !ResolveDepsRelations(programsInfo, options, resolvedDepsRelation, generatedRecords)) {
         return 1;
     }
 
-    if (!GenerateAbcFiles(programsInfo, options, expectedProgsCount)) {
+    auto *depsRelationInfo = allocator.New<util::DepsRelationInfo>(resolvedDepsRelation, generatedRecords);
+
+    if (!GenerateAbcFiles(programsInfo, options, expectedProgsCount, depsRelationInfo)) {
         return 1;
     }
 

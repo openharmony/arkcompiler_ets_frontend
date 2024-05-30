@@ -23,7 +23,8 @@ namespace panda::es2panda::util {
 struct ProgramCache {
     uint32_t hashCode;
     panda::pandasm::Program program;
-    bool needUpdateCache { false };
+    bool needUpdateCache {false};
+    bool generatedFromAbc {false};
 
     ProgramCache(uint32_t hashCode, panda::pandasm::Program program) : hashCode(hashCode), program(std::move(program))
     {
