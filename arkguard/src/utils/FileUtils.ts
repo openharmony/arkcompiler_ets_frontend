@@ -138,7 +138,7 @@ export class FileUtils {
     const directories = this.splitFilePath(filePath);
     directories.forEach(reservedStr => {
       reservedArray.push(reservedStr);
-    })
+    });
   }
 
   static relativePathBegins: string[] = ['./', '../', '.\\', '..\\'];
