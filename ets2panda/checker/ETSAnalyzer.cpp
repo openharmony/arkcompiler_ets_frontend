@@ -2636,14 +2636,30 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     checker::Type *baseType = expr->Left()->Check(checker);
+
     if (baseType->IsETSObjectType()) {
+        auto importDecl = baseType->AsETSObjectType()->GetDeclNode()->Parent()->Parent();
+        // clang-format off
+        auto searchName =
+            importDecl->IsETSImportDeclaration()
+                ? checker->VarBinder()->AsETSBinder()->GetExportSelectiveAliasValue(
+                    importDecl->AsETSImportDeclaration()->ResolvedSource()->Str(), expr->Right()->Name())
+                : expr->Right()->Name();
+        // clang-format on
         varbinder::Variable *prop =
-            baseType->AsETSObjectType()->GetProperty(expr->Right()->Name(), checker::PropertySearchFlags::SEARCH_DECL);
+            baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_DECL);
+
+        if (prop == nullptr) {
+            checker->ThrowTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
+        }
+
+        if (expr->Right()->Name().Is(searchName.Mutf8()) && prop->Declaration()->Node()->HasAliasExport()) {
+            checker->ThrowTypeError({"Cannot find imported element '", searchName, "' exported with alias"},
+                                    expr->Right()->Start());
+        }
 
         expr->Right()->SetVariable(prop);
-        if (prop != nullptr) {
-            return checker->GetTypeOfVariable(prop);
-        }
+        return checker->GetTypeOfVariable(prop);
     }
 
     checker->ThrowTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());

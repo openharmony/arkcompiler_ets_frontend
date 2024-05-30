@@ -438,6 +438,8 @@ public:
         return flags_;
     }
 
+    [[nodiscard]] bool HasAliasExport() const noexcept;
+
     // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_FLAG_OPERATIONS(flag_type, member_name)     \
     void Set##flag_type(flag_type flags) const noexcept     \

@@ -30,13 +30,22 @@ AstNode::AstNode(AstNode const &other)
     // boxing_unboxing_flags_ {};  leave default value!
 }
 
-[[nodiscard]] bool ir::AstNode::IsExportedType() const noexcept
+[[nodiscard]] bool AstNode::IsExportedType() const noexcept
 {
     if (UNLIKELY(IsClassDefinition())) {
         return this->parent_->IsExportedType();
     }
 
     return (flags_ & ModifierFlags::EXPORT_TYPE) != 0;
+}
+
+[[nodiscard]] bool AstNode::HasAliasExport() const noexcept
+{
+    if (UNLIKELY(IsClassDefinition())) {
+        return parent_->HasAliasExport();
+    }
+
+    return (astNodeFlags_ & AstNodeFlags::HAS_EXPORT_ALIAS) != 0;
 }
 
 bool AstNode::IsScopeBearer() const noexcept
