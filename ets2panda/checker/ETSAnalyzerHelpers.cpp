@@ -237,7 +237,9 @@ void CheckIteratorMethodReturnType(ETSChecker *checker, ir::ScriptFunction *scri
         }
     }
 
-    checker->ThrowTypeError(methodName + "' has invalid return type.", position);
+    checker->ThrowTypeError(
+        {"The return type of '", scriptFunc->Id()->Name(), "' must be a type that implements Iterator interface."},
+        position);
 }
 
 checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expression *callee,
