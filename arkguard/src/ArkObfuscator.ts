@@ -453,7 +453,8 @@ export class ArkObfuscator {
 
     // Add the whitelist of file name obfuscation for ut.
     if (this.mCustomProfiles.mRenameFileName?.mEnable) {
-      this.mCustomProfiles.mRenameFileName.mReservedFileNames.push(this.mConfigPath);
+      const reservedArray = this.mCustomProfiles.mRenameFileName.mReservedFileNames;
+      FileUtils.collectPathReservedString(this.mConfigPath, reservedArray);
     }
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);

@@ -128,16 +128,17 @@ export class FileUtils {
       return [filePath];
     }
     const directories = filePath.split(/[\/\\]/);
-    const output: string[] = [];
-    /* path: /foo//bar; the target output is ['', 'foo', '', 'bar'].
-     * if the first empty string is deleted, the path joining of the Linux platform folder is 'foo/bar'.
-     */
-    if (directories.length > 0 && directories[0] === '') {
-      output.push('');
-    }
-
-    output.push(...(directories.filter(part => part !== '')));
     return directories;
+  }
+
+  /**
+   * split the file path and collect the results into the reserved array
+   */
+  public static collectPathReservedString(filePath: string, reservedArray: string[]): void {
+    const directories = this.splitFilePath(filePath);
+    directories.forEach(reservedStr => {
+      reservedArray.push(reservedStr);
+    })
   }
 
   static relativePathBegins: string[] = ['./', '../', '.\\', '..\\'];
