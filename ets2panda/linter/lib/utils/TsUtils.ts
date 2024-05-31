@@ -2233,7 +2233,7 @@ export class TsUtils {
     return false;
   }
 
-  private getDeclarationNode(node: ts.Node): ts.Declaration | undefined {
+  getDeclarationNode(node: ts.Node): ts.Declaration | undefined {
     const sym = this.trueSymbolAtLocation(node);
     return TsUtils.getDeclaration(sym);
   }
@@ -2250,5 +2250,30 @@ export class TsUtils {
     return typeNode && !TsUtils.isFunctionLikeDeclaration(decl!) ?
       this.isSendableTypeNode(typeNode) :
       this.isShareableType(this.tsTypeChecker.getTypeAtLocation(decl ? decl : node));
+  }
+
+  isSendableClassOrInterfaceEntity(node: ts.Node): boolean {
+    const decl = this.getDeclarationNode(node);
+    if (!decl) {
+      return false;
+    }
+    if (ts.isClassDeclaration(decl)) {
+      return TsUtils.hasSendableDecorator(decl);
+    }
+    if (ts.isInterfaceDeclaration(decl)) {
+      return this.isOrDerivedFrom(this.tsTypeChecker.getTypeAtLocation(decl), TsUtils.isISendableInterface);
+    }
+    return false;
+  }
+
+  static isInImportWhiteList(resolvedModule: ts.ResolvedModuleFull): boolean {
+    if (
+      !resolvedModule.resolvedFileName ||
+      path.basename(resolvedModule.resolvedFileName).toLowerCase() !== ARKTS_LANG_D_ETS &&
+      path.basename(resolvedModule.resolvedFileName).toLowerCase() !== ARKTS_COLLECTIONS_D_ETS
+    ) {
+      return false;
+    }
+    return true;
   }
 }

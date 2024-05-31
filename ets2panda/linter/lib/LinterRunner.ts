@@ -16,6 +16,7 @@
 import type * as ts from 'typescript';
 import type { ProblemInfo } from './ProblemInfo';
 import { TypeScriptLinter, consoleLog } from './TypeScriptLinter';
+import { InteropTypescriptLinter } from './InteropTypescriptLinter';
 import { FaultID } from './Problems';
 import { faultDesc } from './FaultDesc';
 import { faultsAttrs } from './FaultAttrs';
@@ -61,7 +62,7 @@ function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   return inputFiles;
 }
 
-function countProblems(linter: TypeScriptLinter): [number, number] {
+function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [number, number] {
   let errorNodesTotal = 0;
   let warningNodes = 0;
   for (let i = 0; i < FaultID.LAST_ID; i++) {
@@ -98,15 +99,21 @@ export function lint(options: LintOptions): LintRunResult {
   }
 
   const tscStrictDiagnostics = getTscDiagnostics(tscCompiledProgram, srcFiles);
-  const linter = new TypeScriptLinter(
-    tsProgram.getTypeChecker(),
-    cmdOptions.enableAutofix,
-    cancellationToken,
-    options.incrementalLintInfo,
-    tscStrictDiagnostics,
-    options.reportAutofixCb,
-    options.isEtsFileCb
-  );
+  const linter = options.isEtsFile ?
+    new TypeScriptLinter(
+      tsProgram.getTypeChecker(),
+      cmdOptions.enableAutofix,
+      cancellationToken,
+      options.incrementalLintInfo,
+      tscStrictDiagnostics,
+      options.reportAutofixCb,
+      options.isEtsFileCb
+    ) :
+    new InteropTypescriptLinter(
+      tsProgram.getTypeChecker(),
+      tsProgram.getCompilerOptions(),
+      options.incrementalLintInfo
+    );
   const { errorNodes, problemsInfos } = lintFiles(srcFiles, linter);
 
   consoleLog('\n\n\nFiles scanned: ', srcFiles.length);
@@ -123,7 +130,7 @@ export function lint(options: LintOptions): LintRunResult {
   };
 }
 
-function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter): LintRunResult {
+function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | InteropTypescriptLinter): LintRunResult {
   let problemFiles = 0;
   const problemsInfos: Map<string, ProblemInfo[]> = new Map();
 
@@ -173,7 +180,7 @@ function countProblemFiles(
   fileNodes: number,
   fileErrorLines: number,
   fileWarningLines: number,
-  linter: TypeScriptLinter
+  linter: TypeScriptLinter | InteropTypescriptLinter
 ): number {
   let errorNodes = 0;
   let warningNodes = 0;
@@ -217,7 +224,11 @@ function countProblemFiles(
   return filesNumber;
 }
 
-function logTotalProblemsInfo(errorNodes: number, warningNodes: number, linter: TypeScriptLinter): void {
+function logTotalProblemsInfo(
+  errorNodes: number,
+  warningNodes: number,
+  linter: TypeScriptLinter | InteropTypescriptLinter
+): void {
   const errorRate = (errorNodes / linter.totalVisitedNodes * 100).toFixed(2);
   const warningRate = (warningNodes / linter.totalVisitedNodes * 100).toFixed(2);
   consoleLog('\nTotal error constructs (%): ', errorRate);
@@ -226,7 +237,7 @@ function logTotalProblemsInfo(errorNodes: number, warningNodes: number, linter: 
   consoleLog('\nTotal warning lines:', linter.totalWarningLines, ' lines\n');
 }
 
-function logProblemsPercentageByFeatures(linter: TypeScriptLinter): void {
+function logProblemsPercentageByFeatures(linter: TypeScriptLinter | InteropTypescriptLinter): void {
   consoleLog('\nPercent by features: ');
   for (let i = 0; i < FaultID.LAST_ID; i++) {
     const nodes = linter.nodeCounters[i];

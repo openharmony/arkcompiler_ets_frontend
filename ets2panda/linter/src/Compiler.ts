@@ -37,7 +37,8 @@ export function compileLintOptions(cmdOptions: CommandLineOptions): LintOptions 
   const nonStrict = compile(cmdOptions, getOverrideCompilerOptions(false));
   return {
     cmdOptions: cmdOptions,
-    tscCompiledProgram: new TSCCompiledProgramWithDiagnostics(strict, nonStrict, cmdOptions.inputFiles)
+    tscCompiledProgram: new TSCCompiledProgramWithDiagnostics(strict, nonStrict, cmdOptions.inputFiles),
+    isEtsFile: true
   };
 }
 
