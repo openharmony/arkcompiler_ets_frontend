@@ -50,3 +50,6 @@ parser/ets/recursive_import/case_5_main-is-not-part-of-circle/foo3__module.ets
 
 # No conversion from enum to Object
 compiler/ets/lambda_infer_type/lambda_infer_type_retrun_enum.ets
+
+# Issue: #17983
+parser/ets/TypeInferFunc.ets

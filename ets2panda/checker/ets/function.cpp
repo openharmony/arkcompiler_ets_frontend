@@ -94,53 +94,44 @@ bool ETSChecker::InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParam
     return false;
 }
 
-ArenaVector<Type *> ETSChecker::GetSourceParameters(const ETSObjectType *object, const Type *paramType,
-                                                    const ArenaVector<Type *> &requiredOrder)
+bool ETSChecker::EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
+                                                   const Type *paramType, Substitution *substitution)
 {
-    ArenaVector<Type *> retVal(Allocator()->Adapter());
+    ArenaVector<Type *> objectParams(Allocator()->Adapter());
 
-    if (!object->GetDeclNode()->IsClassDefinition()) {
-        return retVal;
+    if (!argType->AsETSObjectType()->GetDeclNode()->IsClassDefinition()) {
+        return false;
     }
 
-    const auto params = paramType->AsETSObjectType()->TypeArguments();
+    const auto paramTypeArgs = paramType->AsETSObjectType()->TypeArguments();
 
-    for (const auto it : requiredOrder) {
+    for (const auto it : typeParams) {
         bool found = false;
 
-        for (size_t i = 0; i < params.size(); i++) {
-            if (params[i] == it) {
-                retVal.push_back(object->TypeArguments()[i]);
+        for (size_t i = 0; i < paramTypeArgs.size() && !found; i++) {
+            if (paramTypeArgs[i] == it) {
+                objectParams.push_back(argType->AsETSObjectType()->TypeArguments()[i]);
                 found = true;
-                break;
             }
         }
 
         if (!found) {
-            retVal.push_back(nullptr);
+            objectParams.push_back(nullptr);
         }
     }
 
-    return retVal;
-}
-
-bool ETSChecker::EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
-                                                   const Type *paramType, Substitution *substitution)
-{
-    const auto paramTypeArgs = paramType->AsETSObjectType()->TypeArguments();
-    const auto objectParams = GetSourceParameters(argType->AsETSObjectType(), paramType, typeParams);
+    if (objectParams.size() < paramTypeArgs.size()) {
+        return false;
+    }
 
     bool res = true;
     for (size_t j = 0; j < paramTypeArgs.size() && res; ++j) {
-        if (objectParams.size() <= j) {
-            res = false;
-            break;
+        if (objectParams[j] != nullptr) {
+            res = InsertTypeIntoSubstitution(typeParams, paramTypeArgs[j], j, substitution, objectParams[j]);
+        } else {
+            res = EnhanceSubstitutionForType(typeParams, paramTypeArgs[j],
+                                             argType->AsETSObjectType()->TypeArguments()[j], substitution);
         }
-        if (objectParams[j] == nullptr) {
-            continue;
-        }
-
-        res = InsertTypeIntoSubstitution(typeParams, paramTypeArgs[j], j, substitution, objectParams[j]);
     }
 
     return res;
@@ -158,6 +149,10 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         auto *const originalTparam = tparam->GetOriginal();
         if (std::find(typeParams.begin(), typeParams.end(), originalTparam) != typeParams.end() &&
             substitution->count(originalTparam) == 0) {
+            if (!IsReferenceType(argumentType)) {
+                ThrowTypeError({argumentType, " is not compatible with type ", tparam}, tparam->GetDeclNode()->Start());
+            }
+
             if (!IsCompatibleTypeArgument(tparam, argumentType, substitution)) {
                 return false;
             }
@@ -192,10 +187,14 @@ bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typePara
                                              Type *argumentType, Substitution *substitution)
 {
     if (!argumentType->IsETSUnionType()) {
-        return std::any_of(paramUn->ConstituentTypes().begin(), paramUn->ConstituentTypes().end(),
-                           [this, typeParams, argumentType, substitution](Type *ctype) {
-                               return EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution);
-                           });
+        return std::any_of(
+            paramUn->ConstituentTypes().begin(), paramUn->ConstituentTypes().end(),
+            [this, typeParams, argumentType, substitution](Type *ctype) {
+                return EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution) &&
+                       (!ctype->IsETSTypeParameter() ||
+                        (substitution->find(ctype->AsETSTypeParameter()) != substitution->end() &&
+                         Relation()->IsAssignableTo(argumentType, substitution->at(ctype->AsETSTypeParameter()))));
+            });
     }
     auto *const argUn = argumentType->AsETSUnionType();
 

@@ -110,6 +110,25 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
             return nullptr;
         }
     }
+
+    if (substitution->size() != sigInfo->typeParams.size()) {
+        for (const auto it : sigInfo->typeParams) {
+            if (substitution->find(it->AsETSTypeParameter()) == substitution->end() &&
+                it->AsETSTypeParameter()->GetDefaultType() != nullptr) {
+                ETSChecker::EmplaceSubstituted(substitution, it->AsETSTypeParameter(),
+                                               it->AsETSTypeParameter()->GetDefaultType());
+            }
+        }
+
+        if (substitution->size() != sigInfo->typeParams.size() &&
+            (signature->Function()->ReturnTypeAnnotation() == nullptr ||
+             !checker->EnhanceSubstitutionForType(sigInfo->typeParams,
+                                                  signature->Function()->ReturnTypeAnnotation()->TsType(),
+                                                  signature->ReturnType(), substitution))) {
+            return nullptr;
+        }
+    }
+
     return substitution;
 }
 
