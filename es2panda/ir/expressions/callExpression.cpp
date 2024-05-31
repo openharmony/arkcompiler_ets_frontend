@@ -24,6 +24,7 @@
 #include <typescript/types/type.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
+#include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/chainExpression.h>
 #include <ir/expressions/memberExpression.h>
@@ -70,7 +71,7 @@ void CallExpression::CompileSuperCall(compiler::PandaGen *pg, bool containsSprea
         compiler::RegScope paramScope(pg);
         compiler::VReg argsObj {};
         // arguments_ is only ...args
-        if (arguments_.size() == 1) {
+        if (util::Helpers::GetContainingConstructor(this)->HasFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR)) {
             argsObj = pg->AllocReg();
             arguments_[0]->AsSpreadElement()->Argument()->Compile(pg);
             pg->StoreAccumulator(this, argsObj);

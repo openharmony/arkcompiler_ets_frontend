@@ -2995,6 +2995,9 @@ ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClas
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, isDeclare ? nullptr : body, nullptr,
                                                funcFlag, isDeclare, Extension() == ScriptExtension::TS);
+    if (isConstructor) {
+        func->AddFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR);
+    }
     scope->BindNode(func);
     paramScope->BindNode(func);
     scope->BindParamScope(paramScope);

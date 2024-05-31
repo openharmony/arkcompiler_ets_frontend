@@ -13,8 +13,16 @@ label_1:
 label_0: 
 	copyrestargs 0x0
 	sta v0
+	createemptyarray 0x0
+	sta v1
+	ldai 0x0
+	sta v2
+	lda v0
+	starrayspread v1, v2
+	lda v1
+	ldobjbyname 0x1, length
 	lda a0
-	supercallspread 0x0, v0
+	supercallspread 0x3, v1
 	sta v0
 	lda a2
 	throw.ifsupernotcorrectcall 0x1
