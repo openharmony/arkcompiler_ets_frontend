@@ -255,7 +255,11 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ScriptFunction *node) con
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
 {
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *elementType =
+        expr->AsSpreadElement()->Argument()->AsIdentifier()->Check(checker)->AsETSArrayType()->ElementType();
+    expr->SetTsType(elementType);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TemplateElement *expr) const

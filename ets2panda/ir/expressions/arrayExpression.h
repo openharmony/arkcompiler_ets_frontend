@@ -69,6 +69,11 @@ public:
         return elements_;
     }
 
+    void SetElements(ArenaVector<Expression *> &&elements) noexcept
+    {
+        elements_ = std::move(elements);
+    }
+
     [[nodiscard]] bool IsDeclaration() const noexcept
     {
         return isDeclaration_;

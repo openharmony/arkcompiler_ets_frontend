@@ -1159,7 +1159,8 @@ private:
 template <typename T>
 void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
 {
-    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType())
+    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
+                                    !targetType_->IsETSArrayType())
                         ? checker::ETSChecker::TypeKind(targetType_)
                         : targetType;
 

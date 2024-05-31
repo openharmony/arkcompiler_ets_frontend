@@ -187,6 +187,7 @@ libes2panda_sources = [
   "compiler/lowering/ets/partialExportClassGen.cpp",
   "compiler/lowering/ets/promiseVoid.cpp",
   "compiler/lowering/ets/recordLowering.cpp",
+  "compiler/lowering/ets/spreadLowering.cpp",
   "compiler/lowering/ets/stringComparison.cpp",
   "compiler/lowering/ets/stringConstructorLowering.cpp",
   "compiler/lowering/ets/structLowering.cpp",

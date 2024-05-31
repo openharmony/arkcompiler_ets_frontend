@@ -727,6 +727,9 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::C
 
         if (i < argumentCount && expr->Arguments()[i]->IsSpreadElement()) {
             arguments[i] = expr->Arguments()[i]->AsSpreadElement()->Argument();
+        } else if (i < argumentCount && expr->Arguments()[i]->IsTSAsExpression() &&
+                   expr->Arguments()[i]->AsTSAsExpression()->Expr()->Type() == ir::AstNodeType::SPREAD_ELEMENT) {
+            arguments[i] = expr->Arguments()[i]->AsTSAsExpression()->Expr()->AsSpreadElement()->Argument();
         } else {
             ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
             for (; i < argumentCount; ++i) {
