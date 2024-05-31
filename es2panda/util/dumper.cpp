@@ -16,17 +16,12 @@
 
 namespace panda::es2panda::util {
 
-void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable,
-                          bool skipLiteralArraySlot)
+void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable)
 {
     std::cout << "======> literal array buffer <======" << std::endl;
     for (auto it : literalTable) {
         std::cout << "------------------------------------" << std::endl;
-        // Literalarray slot of programs generated from abc input depends on literalarray' offset, which is unstable,
-        // and will affect the UT. Skip dumping this information as a workaround.
-        if (!skipLiteralArraySlot) {
-            std::cout << "slot " << it.first << std::endl;
-        }
+        std::cout << "slot " << it.first << std::endl;
         int count = 0;
         for (auto literal : it.second.literals_) {
             std::cout << "{" << std::endl;

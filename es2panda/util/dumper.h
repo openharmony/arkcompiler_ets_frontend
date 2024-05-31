@@ -25,8 +25,7 @@ namespace panda::es2panda::util {
 
 class Dumper {
 public:
-    static void DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable,
-                             bool skipLiteralArraySlot = false);
+    static void DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable);
     static void DumpStrings(std::set<std::string> const &strings);
 };
 

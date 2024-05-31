@@ -150,8 +150,7 @@ static void DumpProgramInfos(const std::map<std::string, panda::es2panda::util::
             }
 
             if (compilerOptions.dumpLiteralBuffer) {
-                panda::es2panda::util::Dumper::DumpLiterals(progInfo.second->program.literalarray_table,
-                                                            compilerOptions.enableAbcInput);
+                panda::es2panda::util::Dumper::DumpLiterals(progInfo.second->program.literalarray_table);
             }
 
             if (compilerOptions.dumpString) {
