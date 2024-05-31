@@ -140,7 +140,9 @@ def parse_args():
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     parser.add_argument('--disable-force-gc', action='store_true',
                         help="Run test262 with close force-gc")
-
+    parser.add_argument('--enable-arkguard', action='store_true',
+                        help="enable arkguard for 262 tests")
+    
     args = parser.parse_args()
     if args.abc2program and (args.run_pgo or args.ark_aot):
         sys.exit("Error: '--abc2program' used together with  '--ark-aot' or '--run-pgo' is not supported")
@@ -673,6 +675,8 @@ def get_host_args_of_host_type(args, host_args, ark_tool, ark_aot_tool, libs_dir
     host_args += f"--product-name={product_name} "
     if args.abc2program:
         host_args = f"{host_args}--abc2program "
+    if args.enable_arkguard:
+        host_args = f"{host_args}--enable-arkguard "
 
     return host_args
 

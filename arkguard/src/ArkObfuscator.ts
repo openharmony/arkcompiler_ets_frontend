@@ -33,9 +33,7 @@ import type {
   TransformerFactory,
 } from 'typescript';
 
-import * as fs from 'fs';
 import path from 'path';
-import sourceMap from 'source-map';
 
 import type { IOptions } from './configs/IOptions';
 import { FileUtils } from './utils/FileUtils';
@@ -52,15 +50,11 @@ import {
 import {
   deleteLineInfoForNameString,
   getMapFromJson,
-  NAME_CACHE_SUFFIX,
-  PROPERTY_CACHE_FILE,
   IDENTIFIER_CACHE,
-  MEM_METHOD_CACHE,
-  readCache,
-  writeCache,
+  MEM_METHOD_CACHE
 } from './utils/NameCacheUtil';
 import { ListUtil } from './utils/ListUtil';
-import { needReadApiInfo, readProjectProperties, readProjectPropertiesByCollectedPaths } from './common/ApiReader';
+import { needReadApiInfo, readProjectPropertiesByCollectedPaths } from './common/ApiReader';
 import { ApiExtractor } from './common/ApiExtractor';
 import esInfo from './configs/preset/es_reserved_properties.json';
 import { EventList, TimeSumPrinter, TimeTracker } from './utils/PrinterUtils';
@@ -88,7 +82,7 @@ export let performancePrinter: PerformancePrinter = {
   iniPrinter: new TimeTracker(),
 };
 
-type ObfuscationResultType = {
+export type ObfuscationResultType = {
   content: string;
   sourceMap?: RawSourceMap;
   nameCache?: { [k: string]: string | {} };
@@ -98,22 +92,16 @@ type ObfuscationResultType = {
 const JSON_TEXT_INDENT_LENGTH: number = 2;
 export class ArkObfuscator {
   // Used only for testing
-  private mWriteOriginalFile: boolean = false;
+  protected mWriteOriginalFile: boolean = false;
 
   // A text writer of Printer
   private mTextWriter: EmitTextWriter;
-
-  // A list of source file path
-  private readonly mSourceFiles: string[];
-
-  // Path of obfuscation configuration file.
-  private readonly mConfigPath: string;
 
   // Compiler Options for typescript,use to parse ast
   private readonly mCompilerOptions: CompilerOptions;
 
   // User custom obfuscation profiles.
-  private mCustomProfiles: IOptions;
+  protected mCustomProfiles: IOptions;
 
   private mTransformers: TransformerFactory<Node>[];
 
@@ -122,9 +110,7 @@ export class ArkObfuscator {
   // If isKeptCurrentFile is true, both identifier and property obfuscation are skipped.
   static mIsKeptCurrentFile: boolean = false;
 
-  public constructor(sourceFiles?: string[], configPath?: string) {
-    this.mSourceFiles = sourceFiles;
-    this.mConfigPath = configPath;
+  public constructor() {
     this.mCompilerOptions = {};
     this.mTransformers = [];
   }
@@ -175,10 +161,6 @@ export class ArkObfuscator {
     return this.mCustomProfiles;
   }
 
-  public get configPath(): string {
-    return this.mConfigPath;
-  }
-
   public static get isKeptCurrentFile(): boolean {
     return ArkObfuscator.mIsKeptCurrentFile;
   }
@@ -209,17 +191,10 @@ export class ArkObfuscator {
    * init ArkObfuscator according to user config
    * should be called after constructor
    */
-  public init(config?: IOptions): boolean {
-    if (!this.mConfigPath && !config) {
+  public init(config: IOptions | undefined): boolean {
+    if (!config) {
       console.error('obfuscation config file is not found and no given config.');
       return false;
-    }
-
-    if (this.mConfigPath) {
-      config = FileUtils.readFileAsJson(this.mConfigPath);
-      // this.mConfigPath from Arkguard unit test
-      handleReservedConfig(config, 'mNameObfuscation', 'mReservedProperties', 'mUniversalReservedProperties');
-      handleReservedConfig(config, 'mNameObfuscation', 'mReservedToplevelNames', 'mUniversalReservedToplevelNames');
     }
 
     handleReservedConfig(config, 'mRenameFileName', 'mReservedFileNames', 'mUniversalReservedFileNames');
@@ -249,114 +224,6 @@ export class ArkObfuscator {
     }
 
     return true;
-  }
-
-  /**
-   * Obfuscate all the source files.
-   */
-  public async obfuscateFiles(): Promise<void> {
-    if (!path.isAbsolute(this.mCustomProfiles.mOutputDir)) {
-      this.mCustomProfiles.mOutputDir = path.join(path.dirname(this.mConfigPath), this.mCustomProfiles.mOutputDir);
-    }
-    if (this.mCustomProfiles.mOutputDir && !fs.existsSync(this.mCustomProfiles.mOutputDir)) {
-      fs.mkdirSync(this.mCustomProfiles.mOutputDir);
-    }
-
-    performancePrinter?.filesPrinter?.startEvent(EventList.ALL_FILES_OBFUSCATION);
-    readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
-    const propertyCachePath = path.join(this.mCustomProfiles.mOutputDir, 
-                                        path.basename(this.mSourceFiles[0])); // Get dir name
-    this.readPropertyCache(propertyCachePath);
-
-    // support directory and file obfuscate
-    for (const sourcePath of this.mSourceFiles) {
-      if (!fs.existsSync(sourcePath)) {
-        console.error(`File ${FileUtils.getFileName(sourcePath)} is not found.`);
-        return;
-      }
-
-      if (fs.lstatSync(sourcePath).isFile()) {
-        await this.obfuscateFile(sourcePath, this.mCustomProfiles.mOutputDir);
-        continue;
-      }
-
-      const dirPrefix: string = FileUtils.getPrefix(sourcePath);
-      await this.obfuscateDir(sourcePath, dirPrefix);
-    }
-
-    this.producePropertyCache(propertyCachePath);
-    performancePrinter?.filesPrinter?.endEvent(EventList.ALL_FILES_OBFUSCATION);
-    performancePrinter?.timeSumPrinter?.print('Sum up time of processes');
-    performancePrinter?.timeSumPrinter?.summarizeEventDuration();
-  }
-
-  /**
-   * obfuscate directory
-   * @private
-   */
-  private async obfuscateDir(dirName: string, dirPrefix: string): Promise<void> {
-    const currentDir: string = FileUtils.getPathWithoutPrefix(dirName, dirPrefix);
-    let newDir: string = this.mCustomProfiles.mOutputDir;
-    // there is no need to create directory because the directory names will be obfuscated.
-    if (!this.mCustomProfiles.mRenameFileName?.mEnable) {
-      newDir = path.join(this.mCustomProfiles.mOutputDir, currentDir);
-      if (!fs.existsSync(newDir)) {
-        fs.mkdirSync(newDir);
-      }
-    }
-
-    const fileNames: string[] = fs.readdirSync(dirName);
-    for (let fileName of fileNames) {
-      const filePath: string = path.join(dirName, fileName);
-      if (fs.lstatSync(filePath).isFile()) {
-        await this.obfuscateFile(filePath, newDir);
-        continue;
-      }
-
-      await this.obfuscateDir(filePath, dirPrefix);
-    }
-  }
-
-  private readNameCache(sourceFile: string, outputDir: string): void {
-    if (!this.mCustomProfiles.mNameObfuscation?.mEnable || !this.mCustomProfiles.mEnableNameCache) {
-      return;
-    }
-
-    const nameCachePath: string = path.join(outputDir, FileUtils.getFileName(sourceFile) + NAME_CACHE_SUFFIX);
-    const nameCache: Object = readCache(nameCachePath);
-    let historyNameCache = new Map<string, string>();
-    let identifierCache = nameCache ? Reflect.get(nameCache, IDENTIFIER_CACHE) : undefined;
-    deleteLineInfoForNameString(historyNameCache, identifierCache);
-
-    renameIdentifierModule.historyNameCache = historyNameCache;
-  }
-
-  private readPropertyCache(outputDir: string): void {
-    if (!this.mCustomProfiles.mNameObfuscation?.mRenameProperties || !this.mCustomProfiles.mEnableNameCache) {
-      return;
-    }
-
-    const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
-    const propertyCache: Object = readCache(propertyCachePath);
-    if (!propertyCache) {
-      return;
-    }
-
-    renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
-  }
-
-  private produceNameCache(namecache: { [k: string]: string | {} }, resultPath: string): void {
-    const nameCachePath: string = resultPath + NAME_CACHE_SUFFIX;
-    fs.writeFileSync(nameCachePath, JSON.stringify(namecache, null, JSON_TEXT_INDENT_LENGTH));
-  }
-
-  private producePropertyCache(outputDir: string): void {
-    if (this.mCustomProfiles.mNameObfuscation &&
-      this.mCustomProfiles.mNameObfuscation.mRenameProperties &&
-      this.mCustomProfiles.mEnableNameCache) {
-      const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
-      writeCache(renamePropertyModule.globalMangledTable, propertyCachePath);
-    }
   }
 
   private initPerformancePrinter(): void {
@@ -403,7 +270,7 @@ export class ArkObfuscator {
     return createPrinter(printerOptions);
   }
 
-  private isObfsIgnoreFile(fileName: string): boolean {
+  protected isObfsIgnoreFile(fileName: string): boolean {
     let suffix: string = FileUtils.getFileExtension(fileName);
 
     return suffix !== 'js' && suffix !== 'ts' && suffix !== 'ets';
@@ -445,60 +312,6 @@ export class ArkObfuscator {
       updatedCache[newKey] = value;
     }
     return updatedCache;
-  }
-
-  /**
-   * Obfuscate single source file with path provided
-   *
-   * @param sourceFilePath single source file path
-   * @param outputDir
-   */
-  public async obfuscateFile(sourceFilePath: string, outputDir: string): Promise<void> {
-    const fileName: string = FileUtils.getFileName(sourceFilePath);
-    if (this.isObfsIgnoreFile(fileName)) {
-      fs.copyFileSync(sourceFilePath, path.join(outputDir, fileName));
-      return;
-    }
-
-    // Add the whitelist of file name obfuscation for ut.
-    if (this.mCustomProfiles.mRenameFileName?.mEnable) {
-      const reservedArray = this.mCustomProfiles.mRenameFileName.mReservedFileNames;
-      FileUtils.collectPathReservedString(this.mConfigPath, reservedArray);
-    }
-    let content: string = FileUtils.readFile(sourceFilePath);
-    this.readNameCache(sourceFilePath, outputDir);
-    performancePrinter?.filesPrinter?.startEvent(sourceFilePath);
-    const mixedInfo: ObfuscationResultType = await this.obfuscate(content, sourceFilePath);
-    performancePrinter?.filesPrinter?.endEvent(sourceFilePath, undefined, true);
-
-    if (this.mWriteOriginalFile && mixedInfo) {
-      // Write the obfuscated content directly to orignal file.
-      fs.writeFileSync(sourceFilePath, mixedInfo.content);
-      return;
-    }
-    if (outputDir && mixedInfo) {
-      // the writing file is for the ut.
-      const testCasesRootPath = path.join(__dirname, '../', 'test/grammar');
-      let relativePath = '';
-      let resultPath = '';
-      if (this.mCustomProfiles.mRenameFileName?.mEnable && mixedInfo.filePath) {
-        relativePath = mixedInfo.filePath.replace(testCasesRootPath, '');
-      } else {
-        relativePath = sourceFilePath.replace(testCasesRootPath, '');
-      }
-      resultPath = path.join(this.mCustomProfiles.mOutputDir, relativePath);
-      fs.mkdirSync(path.dirname(resultPath), { recursive: true });
-      fs.writeFileSync(resultPath, mixedInfo.content);
-
-      if (this.mCustomProfiles.mEnableSourceMap && mixedInfo.sourceMap) {
-        fs.writeFileSync(path.join(resultPath + '.map'),
-          JSON.stringify(mixedInfo.sourceMap, null, JSON_TEXT_INDENT_LENGTH));
-      }
-
-      if (this.mCustomProfiles.mEnableNameCache && this.mCustomProfiles.mEnableNameCache) {
-        this.produceNameCache(mixedInfo.nameCache, resultPath);
-      }
-    }
   }
 
   /**

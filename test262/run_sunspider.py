@@ -106,6 +106,9 @@ def parse_args():
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     parser.add_argument('--disable-force-gc', action='store_true',
                         help="Run test262 with close force-gc")
+    parser.add_argument('--enable-arkguard', action='store_true',
+                        required=False,
+                        help="enable arkguard for 262 tests")
     arguments = parser.parse_args()
     return arguments
 
@@ -150,6 +153,7 @@ class ArkProgram():
         self.abc2program = False
         # when enabling abc2program, may generate a list of abc files
         self.abc_outputs = []
+        self.enable_arkguard = False
 
     def proce_parameters(self):
         if self.args.ark_tool:
@@ -199,6 +203,8 @@ class ArkProgram():
         
         if self.args.abc2program:
             self.abc2program = self.args.abc2program
+
+        self.enable_arkguard = self.args.enable_arkguard
 
         self.module_list = MODULE_LIST
 
@@ -521,6 +527,19 @@ class ArkProgram():
 
         return retcode
 
+    def execute_arkguard(self):
+        js_file = self.js_file
+        js_file_allpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../', js_file)
+        cmd_args = ['node', '--no-warnings',
+                    '--loader=ts-node/esm',
+                    './src/cli/SecHarmony.ts',
+                    js_file_allpath,
+                    '--config-path',
+                    './test/test262/test262Config.json',
+                    '--inplace']
+        arkguard_path = os.getcwd() + '/arkguard'
+        retcode = exec_command(cmd_args, custom_cwd = arkguard_path)
+
     def compile_aot(self):
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
@@ -721,7 +740,8 @@ class ArkProgram():
         self.get_all_skip_force_gc_tests()
         if not self.is_legal_frontend():
             return
-
+        if self.enable_arkguard:
+            self.execute_arkguard()
         if self.gen_abc():
             return
         if self.run_pgo:
