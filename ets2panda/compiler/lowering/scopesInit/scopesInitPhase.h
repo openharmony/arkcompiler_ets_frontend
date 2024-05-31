@@ -180,9 +180,9 @@ protected:
 
     void BindClassDefinition(ir::ClassDefinition *classDef);
 
-    std::tuple<varbinder::Decl *, varbinder::Variable *> AddVarDecl(ir::VariableDeclaratorFlag flag,
-                                                                    lexer::SourcePosition startLoc,
-                                                                    const util::StringView &name);
+    std::tuple<varbinder::Decl *, varbinder::Variable *> AddOrGetVarDecl(ir::VariableDeclaratorFlag flag,
+                                                                         lexer::SourcePosition startLoc,
+                                                                         const ir::Identifier *id);
 
     virtual void BindVarDecl([[maybe_unused]] ir::Identifier *binding, ir::Expression *init, varbinder::Decl *decl,
                              [[maybe_unused]] varbinder::Variable *var);

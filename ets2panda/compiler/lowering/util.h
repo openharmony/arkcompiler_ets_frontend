@@ -23,7 +23,7 @@ namespace ark::es2panda::compiler {
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
 ir::Identifier *Gensym(ArenaAllocator *allocator);
 util::UString GenName(ArenaAllocator *allocator);
-void ClearTypesAndVariables(ir::AstNode *node) noexcept;
+void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept;
 
 }  // namespace ark::es2panda::compiler
 

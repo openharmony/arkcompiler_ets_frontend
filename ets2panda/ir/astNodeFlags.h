@@ -54,6 +54,7 @@ enum class ModifierFlags : uint32_t {
     DEFAULT_EXPORT = 1U << 23U,
     EXPORT_TYPE = 1U << 24U,
     EXTERNAL = 1U << 25U,
+    SUPER_OWNER = 1U << 26U,
     ACCESS = PUBLIC | PROTECTED | PRIVATE | INTERNAL,
     ALL = STATIC | ASYNC | ACCESS | DECLARE | READONLY | ABSTRACT,
     ALLOWED_IN_CTOR_PARAMETER = ACCESS | READONLY,
@@ -86,7 +87,8 @@ enum class ScriptFunctionFlags : uint32_t {
     SETTER = 1U << 16U,
     ENTRY_POINT = 1U << 17U,
     INSTANCE_EXTENSION_METHOD = 1U << 18U,
-    HAS_RETURN = 1U << 19U
+    HAS_RETURN = 1U << 19U,
+    ASYNC_IMPL = 1U << 20U,
 };
 
 enum class TSOperatorType { READONLY, KEYOF, UNIQUE };

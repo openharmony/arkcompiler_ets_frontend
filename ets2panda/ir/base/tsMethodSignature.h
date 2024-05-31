@@ -63,6 +63,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     [[nodiscard]] const Expression *Key() const noexcept
     {
         return key_;

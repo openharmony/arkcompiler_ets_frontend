@@ -680,8 +680,14 @@ varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Prog
 ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringView &sourceName,
                                                              const ir::StringLiteral *importPath)
 {
-    const auto &extRecords = globalRecordTable_.Program()->ExternalSources();
+    // NOTE: quick fix to make sure not to look for the global program among the external sources
+    if (sourceName.Compare(globalRecordTable_.Program()->AbsoluteName()) == 0) {
+        ArenaVector<parser::Program *> mainModule(Allocator()->Adapter());
+        mainModule.emplace_back(globalRecordTable_.Program());
+        return mainModule;
+    }
 
+    const auto &extRecords = globalRecordTable_.Program()->ExternalSources();
     auto [name, _] = GetModuleInfo(sourceName);
     auto res = extRecords.find(name);
     if (res == extRecords.end()) {

@@ -47,6 +47,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     const ArenaVector<TSTypeParameter *> &Params() const
     {
         return params_;

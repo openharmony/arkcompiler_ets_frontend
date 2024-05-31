@@ -39,6 +39,11 @@ AstNode::AstNode(AstNode const &other)
     return (flags_ & ModifierFlags::EXPORT_TYPE) != 0;
 }
 
+void AstNode::ClearScope() noexcept
+{
+    UNREACHABLE();
+}
+
 template <typename R, typename T>
 static R GetTopStatementImpl(T *self)
 {

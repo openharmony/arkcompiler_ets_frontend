@@ -173,7 +173,7 @@ bool Options::Parse(int argc, const char **argv)
     ark::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     ark::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
     ark::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
-    ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
+    ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)", 0, MAX_OPT_LEVEL);
     ark::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
 
     // ETS-warnings
@@ -212,18 +212,21 @@ bool Options::Parse(int argc, const char **argv)
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
-        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll");
+        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
+        "ReferenceTypeAnnotationIsNullForAll");
     ark::PandArg<std::string> verifierErrors(
         "verifier-errors",
         "ForLoopCorrectlyInitializedForAll,SequenceExpressionHasLastTypeForAll,NodeHasTypeForAll,NodeHasParentForAll,"
         "EveryChildHasValidParentForAll,ModifierAccessValidForAll,ArithmeticOperationValidForAll,"
-        "VariableHasScopeForAll,IdentifierHasVariableForAll,VariableHasEnclosingScopeForAll",
+        "VariableHasScopeForAll,IdentifierHasVariableForAll,VariableHasEnclosingScopeForAll,"
+        "ReferenceTypeAnnotationIsNullForAll",
         "Print errors and stop compilation if AST tree is incorrect. "
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
-        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll");
+        "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
+        "ReferenceTypeAnnotationIsNullForAll");
     ark::PandArg<bool> verifierAllChecks(
         "verifier-all-checks", false,
         "Run verifier checks on every phase, monotonically expanding them on every phase");

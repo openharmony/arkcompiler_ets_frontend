@@ -45,6 +45,16 @@ public:
         return promiseType_->TypeArguments()[0];
     }
 
+    [[nodiscard]] const Type *PromiseType() const noexcept
+    {
+        return promiseType_;
+    }
+
+    [[nodiscard]] Type *PromiseType() noexcept
+    {
+        return promiseType_;
+    }
+
 private:
     ETSObjectType *promiseType_;
 };

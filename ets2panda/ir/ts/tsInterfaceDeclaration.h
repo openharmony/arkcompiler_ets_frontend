@@ -66,6 +66,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     TSInterfaceBody *Body()
     {
         return body_;

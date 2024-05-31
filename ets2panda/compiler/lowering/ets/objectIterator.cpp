@@ -68,7 +68,7 @@ void ObjectIteratorLowering::TransferForOfLoopBody(ir::Statement *const forBody,
             statement->SetParent(whileBody);
             if (needCleaning) {
                 // Note: we don't need to clean top-level statement itself because it doesn't have type.
-                ClearTypesAndVariables(statement);
+                ClearTypesVariablesAndScopes(statement);
             }
             whileStatements[WHILE_LOOP_SIZE + i - 1U] = statement;
         }
@@ -78,7 +78,7 @@ void ObjectIteratorLowering::TransferForOfLoopBody(ir::Statement *const forBody,
 
         forBody->SetParent(whileBody);
         if (needCleaning) {
-            ClearTypesAndVariables(forBody);
+            ClearTypesVariablesAndScopes(forBody);
         }
         whileStatements[WHILE_LOOP_SIZE - 1U] = forBody;
     }

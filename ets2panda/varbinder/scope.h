@@ -243,7 +243,7 @@ public:
 
     virtual InsertResult InsertBinding(const util::StringView &name, Variable *var);
     virtual InsertResult TryInsertBinding(const util::StringView &name, Variable *var);
-    virtual void ReplaceBindings(VariableMap bindings);
+    virtual void MergeBindings(VariableMap const &bindings);
     virtual VariableMap::size_type EraseBinding(const util::StringView &name);
 
     const VariableMap &Bindings() const
@@ -498,13 +498,12 @@ public:
     void BindParamScope(T *paramScope)
     {
         AssignParamScope(paramScope);
-        this->ReplaceBindings(paramScope->Bindings());
+        this->MergeBindings(paramScope->Bindings());
     }
 
     void AssignParamScope(T *paramScope)
     {
         ASSERT(this->Parent() == paramScope);
-        ASSERT(this->Bindings().empty());
 
         paramScope_ = paramScope;
     }
@@ -833,7 +832,7 @@ public:
 
     InsertResult InsertBinding(const util::StringView &name, Variable *var) override;
     InsertResult TryInsertBinding(const util::StringView &name, Variable *var) override;
-    void ReplaceBindings(VariableMap bindings) override;
+    void MergeBindings(VariableMap const &bindings) override;
     VariableMap::size_type EraseBinding(const util::StringView &name) override;
 
     InsertResult InsertForeignBinding(const util::StringView &name, Variable *var);

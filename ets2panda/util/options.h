@@ -40,6 +40,8 @@ enum class OptionFlags : uint32_t {
     SIZE_STAT = 1U << 2U,
 };
 
+constexpr int MAX_OPT_LEVEL = 2;
+
 inline std::underlying_type_t<OptionFlags> operator&(OptionFlags a, OptionFlags b)
 {
     using Utype = std::underlying_type_t<OptionFlags>;

@@ -13,62 +13,42 @@
  * limitations under the License.
  */
 
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "varbinder/variableFlags.h"
 #include "checker/checker.h"
-#include "checker/checkerContext.h"
 #include "checker/ets/narrowingWideningConverter.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/astNode.h"
-#include "lexer/token/tokenType.h"
 #include "ir/base/catchClause.h"
 #include "ir/expression.h"
 #include "ir/typeNode.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/classDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/switchCaseStatement.h"
 #include "ir/expressions/identifier.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/objectExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
-#include "ir/expressions/literals/booleanLiteral.h"
-#include "ir/expressions/literals/charLiteral.h"
-#include "ir/expressions/binaryExpression.h"
-#include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/arrowFunctionExpression.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/literals/undefinedLiteral.h"
-#include "ir/expressions/literals/nullLiteral.h"
 #include "ir/statements/labelledStatement.h"
 #include "ir/statements/tryStatement.h"
-#include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsParameterExpression.h"
-#include "ir/ts/tsAsExpression.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsTypeParameter.h"
+#include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsPrimitiveType.h"
-#include "ir/ts/tsQualifiedName.h"
 #include "varbinder/variable.h"
 #include "varbinder/scope.h"
 #include "varbinder/declaration.h"
-#include "parser/ETSparser.h"
 #include "parser/program/program.h"
 #include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ets/boxingConverter.h"
 #include "checker/ets/unboxingConverter.h"
-#include "checker/types/ets/types.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
@@ -900,6 +880,65 @@ bool ETSChecker::CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction
     return lambda->Params().size() == calleeType->Params().size();
 }
 
+bool ETSChecker::CheckLambdaInvocable(ir::AstNode *typeAnnotation, ir::ArrowFunctionExpression *const arrowFuncExpr,
+                                      Type *const parameterType, TypeRelationFlag flags)
+{
+    if (typeAnnotation->IsETSTypeReference()) {
+        typeAnnotation = DerefETSTypeReference(typeAnnotation);
+    }
+
+    if (!typeAnnotation->IsETSFunctionType()) {
+        return false;
+    }
+
+    flags |= TypeRelationFlag::NO_THROW;
+    ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+
+    InferTypesForLambda(lambda, typeAnnotation->AsETSFunctionType());
+    Type *const argumentType = arrowFuncExpr->Check(this);
+
+    checker::InvocationContext invocationCtx(Relation(), arrowFuncExpr, argumentType, parameterType,
+                                             arrowFuncExpr->Start(), {}, flags);
+    return invocationCtx.IsInvocable();
+}
+
+bool ETSChecker::CheckLambdaTypeAnnotation(ir::AstNode *typeAnnotation,
+                                           ir::ArrowFunctionExpression *const arrowFuncExpr, Type *const parameterType,
+                                           TypeRelationFlag flags)
+{
+    //  process `single` type as usual.
+    if (!typeAnnotation->IsETSUnionType()) {
+        return CheckLambdaInvocable(typeAnnotation, arrowFuncExpr, parameterType, flags);
+    }
+
+    // Preserve actual lambda types
+    ir::ScriptFunction *const lambda = arrowFuncExpr->Function();
+    ArenaVector<ir::TypeNode *> lambdaParamTypes {Allocator()->Adapter()};
+    for (auto *const lambdaParam : lambda->Params()) {
+        lambdaParamTypes.emplace_back(lambdaParam->AsETSParameterExpression()->Ident()->TypeAnnotation());
+    }
+    auto *const lambdaReturnTypeAnnotation = lambda->ReturnTypeAnnotation();
+
+    for (ir::AstNode *typeNode : typeAnnotation->AsETSUnionType()->Types()) {
+        if (CheckLambdaInvocable(typeNode, arrowFuncExpr, parameterType, flags)) {
+            return true;
+        }
+
+        //  Restore inferring lambda types:
+        for (std::size_t i = 0U; i < lambda->Params().size(); ++i) {
+            auto *const lambdaParamTypeAnnotation = lambdaParamTypes[i];
+            if (lambdaParamTypeAnnotation == nullptr) {
+                lambda->Params()[i]->AsETSParameterExpression()->Ident()->SetTsTypeAnnotation(nullptr);
+            }
+        }
+        if (lambdaReturnTypeAnnotation == nullptr) {
+            lambda->SetReturnTypeAnnotation(nullptr);
+        }
+    }
+
+    return false;
+}
+
 bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                                TypeRelationFlag flags)
 {
@@ -926,42 +965,21 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
 
         auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
         ir::AstNode *typeAnn = param->TypeAnnotation();
+        Type *const parameterType = signature->Params()[index]->TsType();
 
-        if (typeAnn->IsETSTypeReference()) {
-            typeAnn = DerefETSTypeReference(typeAnn);
+        bool const rc = CheckLambdaTypeAnnotation(typeAnn, arrowFuncExpr, parameterType, flags);
+        if (!rc && (flags & TypeRelationFlag::NO_THROW) == 0) {
+            Type *const argumentType = arrowFuncExpr->Check(this);
+            const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(parameterType);
+            const std::initializer_list<TypeErrorMessageElement> list = {
+                "Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1};
+            ThrowTypeError(list, arrowFuncExpr->Start());
         }
 
-        HandleLambdaTypeInfer(typeAnn, lambda);
-
-        Type *const argumentType = GetApparentType(arrowFuncExpr->Check(this));
-        Type *const parameterType = GetApparentType(signature->Params()[index]->TsType());
-        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(parameterType);
-        const std::initializer_list<TypeErrorMessageElement> msg = {
-            "Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1};
-
-        checker::InvocationContext invokationCtx(Relation(), arguments[index], argumentType, parameterType,
-                                                 arrowFuncExpr->Start(), msg, flags);
-
-        invocable &= invokationCtx.IsInvocable();
+        invocable &= rc;
     }
+
     return invocable;
-}
-
-void ETSChecker::HandleLambdaTypeInfer(ir::AstNode *typeAnn, ir::ScriptFunction *const lambda)
-{
-    ASSERT(typeAnn->IsETSFunctionType() || typeAnn->IsETSUnionType());
-
-    if (typeAnn->IsETSFunctionType()) {
-        InferTypesForLambda(lambda, typeAnn->AsETSFunctionType());
-        return;
-    }
-
-    for (auto type : typeAnn->AsETSUnionType()->Types()) {
-        if (type->IsETSFunctionType()) {
-            InferTypesForLambda(lambda, type->AsETSFunctionType());
-            return;
-        }
-    }
 }
 
 bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)

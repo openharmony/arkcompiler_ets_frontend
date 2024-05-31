@@ -50,6 +50,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     const ArenaVector<Statement *> &Statements() const
     {
         return statements_;

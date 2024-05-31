@@ -70,6 +70,79 @@ bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *typeParam, Type *typ
     return Relation()->IsSupertypeOf(constraint, typeArgument);
 }
 
+bool ETSChecker::HasTypeArgsOfObject(Type *argType, Type *paramType)
+{
+    return paramType->IsETSObjectType() && argType->IsETSObjectType() &&
+           !argType->AsETSObjectType()->TypeArguments().empty() &&
+           !paramType->AsETSObjectType()->TypeArguments().empty();
+}
+
+bool ETSChecker::InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParams, const Type *typeParam,
+                                            const size_t index, Substitution *substitution, Type *objectParam)
+{
+    // Check if the type parameter is in the signature, and the type argument is not already in the return vector
+    if (typeParams.size() > index &&
+        IsCompatibleTypeArgument(typeParams[index]->AsETSTypeParameter(), objectParam, substitution) &&
+        std::find(typeParams.begin(), typeParams.end(), typeParam) != typeParams.end()) {
+        substitution->emplace(typeParams[index]->AsETSTypeParameter(), objectParam);
+        return true;
+    }
+
+    return false;
+}
+
+ArenaVector<Type *> ETSChecker::GetSourceParameters(const ETSObjectType *object, const Type *paramType,
+                                                    const ArenaVector<Type *> &requiredOrder)
+{
+    ArenaVector<Type *> retVal(Allocator()->Adapter());
+
+    if (!object->GetDeclNode()->IsClassDefinition()) {
+        return retVal;
+    }
+
+    const auto params = paramType->AsETSObjectType()->TypeArguments();
+
+    for (const auto it : requiredOrder) {
+        bool found = false;
+
+        for (size_t i = 0; i < params.size(); i++) {
+            if (params[i] == it) {
+                retVal.push_back(object->TypeArguments()[i]);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            retVal.push_back(nullptr);
+        }
+    }
+
+    return retVal;
+}
+
+bool ETSChecker::EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
+                                                   const Type *paramType, Substitution *substitution)
+{
+    const auto paramTypeArgs = paramType->AsETSObjectType()->TypeArguments();
+    const auto objectParams = GetSourceParameters(argType->AsETSObjectType(), paramType, typeParams);
+
+    bool res = true;
+    for (size_t j = 0; j < paramTypeArgs.size() && res; ++j) {
+        if (objectParams.size() <= j) {
+            res = false;
+            break;
+        }
+        if (objectParams[j] == nullptr) {
+            continue;
+        }
+
+        res = InsertTypeIntoSubstitution(typeParams, paramTypeArgs[j], j, substitution, objectParams[j]);
+    }
+
+    return res;
+}
+
 /* A very rough and imprecise partial type inference */
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
                                             Substitution *substitution)
@@ -99,6 +172,10 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         return EnhanceSubstitutionForUnion(typeParams, paramType->AsETSUnionType(), argumentType, substitution);
     }
     if (paramType->IsETSObjectType()) {
+        if (HasTypeArgsOfObject(argumentType, paramType) &&
+            EnhanceSubstitutionForGenericType(typeParams, argumentType, paramType, substitution)) {
+            return true;
+        }
         return EnhanceSubstitutionForObject(typeParams, paramType->AsETSObjectType(), argumentType, substitution);
     }
     if (paramType->IsETSArrayType()) {
@@ -112,12 +189,10 @@ bool ETSChecker::EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typePara
                                              Type *argumentType, Substitution *substitution)
 {
     if (!argumentType->IsETSUnionType()) {
-        for (auto *ctype : paramUn->ConstituentTypes()) {
-            if (!EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution)) {
-                return false;
-            }
-        }
-        return true;
+        return std::any_of(paramUn->ConstituentTypes().begin(), paramUn->ConstituentTypes().end(),
+                           [this, typeParams, argumentType, substitution](Type *ctype) {
+                               return EnhanceSubstitutionForType(typeParams, ctype, argumentType, substitution);
+                           });
     }
     auto *const argUn = argumentType->AsETSUnionType();
 
@@ -161,8 +236,8 @@ bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &typePar
             return true;  // don't attempt anything fancy for now
         }
         bool res = true;
-        for (size_t ix = 0; ix < argObjType->TypeArguments().size(); ix++) {
-            res &= enhance(paramObjType->TypeArguments()[ix], argObjType->TypeArguments()[ix]);
+        for (size_t i = 0; i < argObjType->TypeArguments().size(); i++) {
+            res &= enhance(paramObjType->TypeArguments()[i], argObjType->TypeArguments()[i]);
         }
         return res;
     }
@@ -3092,9 +3167,15 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     modifiers &= ~ir::ModifierFlags::ASYNC;
     ir::ScriptFunction *asyncFunc = asyncMethod->Function();
     ir::ScriptFunctionFlags flags = ir::ScriptFunctionFlags::METHOD;
+
     if (asyncFunc->IsProxy()) {
         flags |= ir::ScriptFunctionFlags::PROXY;
     }
+
+    if (asyncFunc->HasReturnStatement()) {
+        flags |= ir::ScriptFunctionFlags::HAS_RETURN;
+    }
+
     asyncMethod->AddModifier(ir::ModifierFlags::NATIVE);
     asyncFunc->AddModifier(ir::ModifierFlags::NATIVE);
     // Create async_impl method copied from CreateInvokeFunction
@@ -3105,31 +3186,39 @@ ir::MethodDefinition *ETSChecker::CreateAsyncImplMethod(ir::MethodDefinition *as
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     varbinder::FunctionParamScope *paramScope = CopyParams(asyncFunc->Params(), params);
 
-    // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
-    auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
-    objectId->SetReference();
-    VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
-    auto *returnTypeAnn =
-        AllocNode<ir::ETSTypeReference>(AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));
-    objectId->SetParent(returnTypeAnn->Part());
-    returnTypeAnn->Part()->SetParent(returnTypeAnn);
-    auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
-    auto *promiseType = [this](ir::TypeNode *type) {
-        if (type != nullptr) {
-            return type->GetType(this)->AsETSObjectType();
-        }
+    ir::ETSTypeReference *returnTypeAnn = nullptr;
 
-        return GlobalBuiltinPromiseType()->AsETSObjectType();
-    }(asyncFuncRetTypeAnn);
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
-    returnTypeAnn->SetTsType(retType);
+    if (!asyncFunc->Signature()->HasSignatureFlag(SignatureFlags::NEED_RETURN_TYPE)) {
+        // Set impl method return type "Object" because it may return Promise as well as Promise parameter's type
+        auto *objectId = AllocNode<ir::Identifier>(compiler::Signatures::BUILTIN_OBJECT_CLASS, Allocator());
+        objectId->SetReference();
+        VarBinder()->AsETSBinder()->LookupTypeReference(objectId, false);
+        returnTypeAnn =
+            AllocNode<ir::ETSTypeReference>(AllocNode<ir::ETSTypeReferencePart>(objectId, nullptr, nullptr));
+        objectId->SetParent(returnTypeAnn->Part());
+        returnTypeAnn->Part()->SetParent(returnTypeAnn);
+        auto *asyncFuncRetTypeAnn = asyncFunc->ReturnTypeAnnotation();
+        auto *promiseType = [this](ir::TypeNode *type) {
+            if (type != nullptr) {
+                return type->GetType(this)->AsETSObjectType();
+            }
+
+            return GlobalBuiltinPromiseType()->AsETSObjectType();
+        }(asyncFuncRetTypeAnn);
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        auto *retType = Allocator()->New<ETSAsyncFuncReturnType>(Allocator(), Relation(), promiseType);
+        returnTypeAnn->SetTsType(retType);
+    }
 
     ir::MethodDefinition *implMethod =
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
         CreateMethod(implName.View(), modifiers, flags, std::move(params), paramScope, returnTypeAnn, body);
     asyncFunc->SetBody(nullptr);
-    returnTypeAnn->SetParent(implMethod->Function());
+
+    if (returnTypeAnn != nullptr) {
+        returnTypeAnn->SetParent(implMethod->Function());
+    }
+
+    implMethod->Function()->AddFlag(ir::ScriptFunctionFlags::ASYNC_IMPL);
     implMethod->SetParent(asyncMethod->Parent());
     return implMethod;
 }

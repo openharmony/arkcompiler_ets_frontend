@@ -118,6 +118,18 @@ static bool IsBooleanType(const ir::AstNode *ast)
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::BOOLEAN_LIKE);
 }
 
+bool IsImportLike(const ir::AstNode *ast)
+{
+    return (ast->IsETSImportDeclaration() || ast->IsETSReExportDeclaration() || ast->IsImportExpression() ||
+            ast->IsImportSpecifier() || ast->IsImportDefaultSpecifier() || ast->IsImportNamespaceSpecifier());
+}
+
+bool IsExportLike(const ir::AstNode *ast)
+{
+    return (ast->IsExportDefaultDeclaration() || ast->IsExportSpecifier() || ast->IsExportAllDeclaration() ||
+            ast->IsExportNamedDeclaration() || ast->IsETSReExportDeclaration());
+}
+
 static bool IsValidTypeForBinaryOp(const ir::AstNode *ast, bool isBitwise)
 {
     if (ast == nullptr) {
@@ -421,6 +433,23 @@ public:
     }
 };
 
+class ReferenceTypeAnnotationIsNull {
+public:
+    explicit ReferenceTypeAnnotationIsNull([[maybe_unused]] ArenaAllocator &allocator) {}
+
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
+        if (ast->IsIdentifier()) {
+            if (ast->AsIdentifier()->IsReference() && ast->AsIdentifier()->TypeAnnotation() != nullptr) {
+                ctx.AddCheckMessage("TYPE_ANNOTATION_NOT_NULLPTR", *ast, ast->Start());
+                result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+            }
+        }
+        return result;
+    }
+};
+
 class NodeHasSourceRange {
 public:
     explicit NodeHasSourceRange([[maybe_unused]] ArenaAllocator &allocator) {}
@@ -451,24 +480,126 @@ public:
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
-        /*
-         * NOTICE: That is temporary fix for identifies without variable
-         *         That should be removed in future after fix issues in
-         *         varbinder and checker
-         */
-        if (ast->AsIdentifier()->Variable() != nullptr || ast->AsIdentifier()->IsReference() ||
-            ast->AsIdentifier()->Name().Empty() || ast->AsIdentifier()->Name() == "Void" ||
-            ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0 ||
-            (ast->AsIdentifier()->Parent() != nullptr && ast->AsIdentifier()->Parent()->IsProperty())) {
+        const auto *id = ast->AsIdentifier();
+        if (CheckAstExceptions(id)) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
-        const auto *id = ast->AsIdentifier();
+        // Another function with exceptions to reduce function size
+        if (CheckMoreAstExceptions(id)) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+
         ctx.AddCheckMessage("NULL_VARIABLE", *id, id->Start());
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
 
 private:
+    bool CheckMoreAstExceptions(const ir::Identifier *ast) const
+    {
+        // NOTE(kkonkuznetsov): skip extension functions
+        if (ast->Parent() != nullptr && ast->Parent()->IsMemberExpression()) {
+            // Only properties cause verifier warnings
+            auto property = ast->Parent()->AsMemberExpression()->Property();
+            if (property == ast) {
+                return true;
+            }
+        }
+
+        // NOTE(kkonkuznetsov): skip async functions
+        auto parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsScriptFunction()) {
+                auto script = parent->AsScriptFunction();
+                if (script->IsAsyncFunc()) {
+                    return true;
+                }
+
+                break;
+            }
+
+            parent = parent->Parent();
+        }
+
+        // NOTE(kkonkuznetsov): skip labels identifiers
+        if (ast->Parent() != nullptr && (ast->Parent()->IsLabelledStatement() || ast->Parent()->IsBreakStatement() ||
+                                         ast->Parent()->IsContinueStatement())) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): skip reexport declarations
+        if (ast->Parent() != nullptr && ast->Parent()->Parent() != nullptr) {
+            parent = ast->Parent()->Parent();
+            if (parent->IsETSReExportDeclaration()) {
+                return true;
+            }
+        }
+
+        // NOTE(kkonkuznetsov): object expressions
+        parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsObjectExpression()) {
+                return true;
+            }
+
+            parent = parent->Parent();
+        }
+
+        // NOTE(kkonkuznetsov): lambdas
+        if (ast->Name().Utf8().find("lambda$invoke$") == 0) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): some identifiers have empty names
+        if (ast->Name().Empty()) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): skip import alias
+        if (ast->Parent()->IsTSQualifiedName()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool CheckAstExceptions(const ir::Identifier *ast) const
+    {
+        // NOTE(kkonkuznetsov): skip enums
+        if (ast->Parent()->IsMemberExpression() &&
+            (ast->Parent()->AsMemberExpression()->Object()->TsType() == nullptr ||
+             ast->Parent()->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
+             ast->Parent()->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType())) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): skip length property
+        if (ast->Parent()->IsMemberExpression() && ast->Name().Is("length")) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): skip package declarations
+        auto parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsETSPackageDeclaration()) {
+                return true;
+            }
+
+            parent = parent->Parent();
+        }
+
+        // NOTE(kkonkuznetsov): skip imports
+        if (IsImportLike(ast->Parent())) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): skip anonymous class id
+        if (ast->Parent()->Parent() != nullptr && ast->Parent()->Parent()->IsETSNewClassInstanceExpression()) {
+            return true;
+        }
+
+        return false;
+    }
 };
 
 class NodeHasType {
@@ -514,49 +645,6 @@ public:
     }
 
 private:
-    bool IsImportLike(const ir::AstNode *ast) const
-    {
-        if (ast->IsETSImportDeclaration()) {
-            return true;
-        }
-        if (ast->IsETSReExportDeclaration()) {
-            return true;
-        }
-        if (ast->IsImportExpression()) {
-            return true;
-        }
-        if (ast->IsImportSpecifier()) {
-            return true;
-        }
-        if (ast->IsImportDefaultSpecifier()) {
-            return true;
-        }
-        if (ast->IsImportNamespaceSpecifier()) {
-            return true;
-        }
-        return false;
-    }
-
-    bool IsExportLike(const ir::AstNode *ast) const
-    {
-        if (ast->IsExportDefaultDeclaration()) {
-            return true;
-        }
-        if (ast->IsExportSpecifier()) {
-            return true;
-        }
-        if (ast->IsExportAllDeclaration()) {
-            return true;
-        }
-        if (ast->IsExportNamedDeclaration()) {
-            return true;
-        }
-        if (ast->IsETSReExportDeclaration()) {
-            return true;
-        }
-        return false;
-    }
-
     CheckResult CheckCompound(CheckContext &ctx, const ir::AstNode *ast)
     {
         if (ast->IsTSInterfaceDeclaration()) {
@@ -588,17 +676,12 @@ public:
     [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
     {
         if (!ast->IsIdentifier()) {
-            return {CheckDecision::CORRECT, CheckAction::CONTINUE};  // we will check invariant of Identifier only
+            // Check invariant of Identifier only
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
-        /*
-         * NOTICE: That is temporary exclusion for identifies without variable
-         *         Should removed in future
-         */
-        if (ast->AsIdentifier()->IsReference() || ast->AsIdentifier()->TypeAnnotation() != nullptr ||
-            ast->AsIdentifier()->Name().Empty() || ast->AsIdentifier()->Name().Utf8().find("Void") == 0 ||
-            ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0 ||
-            (ast->AsIdentifier()->Parent() != nullptr && ast->AsIdentifier()->Parent()->IsProperty())) {
+        // NOTE(kkonkuznetsov): lambdas
+        if (ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
@@ -610,12 +693,15 @@ public:
                 ctx.AddCheckMessage("NULL_SCOPE_LOCAL_VAR", *ast, ast->Start());
                 return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             }
+
             auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
             if (!ScopeEncloseVariable(ctx, var)) {
                 result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             }
+
             return result;
         }
+
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
@@ -626,27 +712,24 @@ public:
             return std::nullopt;
         }
 
-        /*
-         * NOTICE: That is temporary exclusion for identifies without variable and scope
-         *         Should removed in future
-         */
-        if (ast->AsIdentifier()->IsReference() || ast->AsIdentifier()->TypeAnnotation() != nullptr ||
-            ast->AsIdentifier()->Name().Empty() || ast->AsIdentifier()->Name().Utf8().find("Void") == 0 ||
-            ast->AsIdentifier()->Name().Utf8().find("field") == 0 ||
-            ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0 ||
-            (ast->AsIdentifier()->Parent() != nullptr && ast->AsIdentifier()->Parent()->IsProperty())) {
-            return std::nullopt;
-        }
-
         auto invariantHasVariable = IdentifierHasVariable {allocator};
         const auto variable = ast->AsIdentifier()->Variable();
         const auto [decision, action] = invariantHasVariable(ctx, ast);
+
+        if (variable == nullptr) {
+            // NOTE(kkonkuznetsov): variable should not be null
+            // but currently some identifiers do not have variables,
+            // see exceptions in IdentifierHasVariable check
+            return std::nullopt;
+        }
+
         if (decision == CheckDecision::CORRECT && variable->IsLocalVariable()) {
             const auto localVar = variable->AsLocalVariable();
             if (localVar->HasFlag(varbinder::VariableFlags::LOCAL)) {
                 return localVar;
             }
         }
+
         return std::nullopt;
     }
 
@@ -658,33 +741,85 @@ public:
         if (scope == nullptr || var->Declaration() == nullptr) {
             return true;
         }
+
         const auto node = var->Declaration()->Node();
         if (node == nullptr) {
             return true;
         }
+
         const auto varStart = node->Start();
         bool isOk = true;
         if (scope->Bindings().count(var->Name()) == 0) {
             ctx.AddCheckMessage("SCOPE_DO_NOT_ENCLOSE_LOCAL_VAR", *node, varStart);
             isOk = false;
         }
+
         const auto scopeNode = scope->Node();
-        auto varNode = node;
+        const auto varNode = node;
+        bool skip = CheckAstExceptions(varNode);
+
         if (!IsContainedIn(varNode, scopeNode) || scopeNode == nullptr) {
-            ctx.AddCheckMessage("SCOPE_NODE_DONT_DOMINATE_VAR_NODE", *node, varStart);
-            isOk = false;
+            if (!skip) {
+                ctx.AddCheckMessage("SCOPE_NODE_DONT_DOMINATE_VAR_NODE", *node, varStart);
+                isOk = false;
+            }
         }
+
         const auto &decls = scope->Decls();
         const auto declDominate = std::count(decls.begin(), decls.end(), var->Declaration());
         if (declDominate == 0) {
-            ctx.AddCheckMessage("SCOPE_DECL_DONT_DOMINATE_VAR_DECL", *node, varStart);
-            isOk = false;
+            if (!skip) {
+                ctx.AddCheckMessage("SCOPE_DECL_DONT_DOMINATE_VAR_DECL", *node, varStart);
+                isOk = false;
+            }
         }
+
         return isOk;
     }
 
 private:
     ArenaAllocator &allocator_;
+
+    bool CheckAstExceptions(const ir::AstNode *ast)
+    {
+        // NOTE(kkonkuznetsov): in some cases with lambdas scope node is null
+        if (ast->Parent() != nullptr && ast->Parent()->IsETSFunctionType()) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): skip parameters in async functions
+        if (ast->Parent() != nullptr && ast->Parent()->IsScriptFunction()) {
+            auto scriptFunction = ast->Parent()->AsScriptFunction();
+            if (scriptFunction->IsAsyncFunc()) {
+                return true;
+            }
+        }
+
+        // NOTE(kkonkuznetsov): skip unions/async lambdas
+        if (ast->IsIdentifier()) {
+            auto id = ast->AsIdentifier();
+            if (id->TypeAnnotation() != nullptr && id->TypeAnnotation()->IsETSUnionType()) {
+                return true;
+            }
+        }
+
+        // NOTE(kkonkuznetsov): lambdas
+        auto parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsScriptFunction()) {
+                auto script = parent->AsScriptFunction();
+                if (script->Id() != nullptr && script->Id()->Name().Utf8().find("lambda$invoke$") == 0) {
+                    return true;
+                }
+
+                break;
+            }
+
+            parent = parent->Parent();
+        }
+
+        return false;
+    }
 };
 
 class EveryChildInParentRange {
@@ -779,18 +914,96 @@ public:
         const auto node = scope->Node();
         auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
         if (!IsContainedIn(ast, node)) {
+            if (CheckScopeNodeExceptions(node)) {
+                return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+            }
+
+            if (CheckAstExceptions(ast)) {
+                return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+            }
+
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
         }
+
         if (!IsContainedIn<varbinder::Scope>(scope, encloseScope)) {
             result = {CheckDecision::INCORRECT, CheckAction::CONTINUE};
             ctx.AddCheckMessage("VARIABLE_NOT_ENCLOSE_SCOPE", *ast, ast->Start());
         }
+
         return result;
     }
 
 private:
     ArenaAllocator &allocator_;
+
+    bool CheckScopeNodeExceptions(const ir::AstNode *node) const
+    {
+        if (node == nullptr) {
+            return false;
+        }
+
+        // NOTE(kkonkuznetsov): skip catch clause
+        if (node->Parent() != nullptr && node->Parent()->IsCatchClause()) {
+            return true;
+        }
+
+        // NOTE(kkonkuznetsov): lambdas
+        auto parent = node->Parent();
+        while (parent != nullptr) {
+            if (parent->IsFunctionExpression()) {
+                auto script = parent->AsFunctionExpression()->Function();
+                if (script->Id()->Name().Utf8().find("lambda$invoke$") == 0) {
+                    return true;
+                }
+
+                break;
+            }
+
+            parent = parent->Parent();
+        }
+
+        return false;
+    }
+
+    bool CheckAstExceptions(const ir::AstNode *ast) const
+    {
+        // NOTE(kkonkuznetsov): skip parameter expression inside arrow function expression
+        auto parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsETSParameterExpression()) {
+                return true;
+            }
+
+            parent = parent->Parent();
+        }
+
+        // NOTE(kkonkuznetsov): skip, something with unions
+        if (ast->IsIdentifier()) {
+            auto id = ast->AsIdentifier();
+            auto annotation = id->TypeAnnotation();
+            if (annotation != nullptr && annotation->IsETSUnionType()) {
+                return true;
+            }
+        }
+
+        // NOTE(kkonkuznetsov): skip lambdas
+        parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsFunctionExpression()) {
+                auto script = parent->AsFunctionExpression()->Function();
+                if (script->Id()->Name().Utf8().find("lambda$invoke$") == 0) {
+                    return true;
+                }
+
+                break;
+            }
+
+            parent = parent->Parent();
+        }
+
+        return false;
+    }
 };
 
 class SequenceExpressionHasLastType {
@@ -1141,6 +1354,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<ImportExportAccessValid>(allocator, "ImportExportAccessValid");
     AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
     AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
+    AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

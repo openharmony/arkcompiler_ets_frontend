@@ -103,6 +103,7 @@ public:
         if (phaseName == "CheckerPhase") {
             accumulatedChecks_.insert("NodeHasTypeForAll");
             accumulatedChecks_.insert("IdentifierHasVariableForAll");
+            accumulatedChecks_.insert("ReferenceTypeAnnotationIsNullForAll");
             accumulatedChecks_.insert("ArithmeticOperationValidForAll");
             accumulatedChecks_.insert("SequenceExpressionHasLastTypeForAll");
             accumulatedChecks_.insert("ForLoopCorrectlyInitializedForAll");

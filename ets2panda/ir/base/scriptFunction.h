@@ -150,6 +150,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::ASYNC) != 0;
     }
 
+    [[nodiscard]] bool IsAsyncImplFunc() const noexcept
+    {
+        return (funcFlags_ & ir::ScriptFunctionFlags::ASYNC_IMPL) != 0;
+    }
+
     [[nodiscard]] bool IsArrow() const noexcept
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::ARROW) != 0;
@@ -220,6 +225,11 @@ public:
         return signature_->RestVar() != nullptr;
     }
 
+    [[nodiscard]] bool HasReturnStatement() const noexcept
+    {
+        return (funcFlags_ & ir::ScriptFunctionFlags::HAS_RETURN) != 0;
+    }
+
     [[nodiscard]] bool IsThrowing() const noexcept
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::THROWS) != 0;
@@ -282,6 +292,11 @@ public:
     void SetScope(varbinder::FunctionScope *scope) noexcept
     {
         scope_ = scope;
+    }
+
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
     }
 
     [[nodiscard]] es2panda::Language Language() const noexcept

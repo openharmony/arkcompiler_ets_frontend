@@ -52,6 +52,11 @@ public:
         scope_ = scope;
     }
 
+    void ClearScope() noexcept override
+    {
+        scope_ = nullptr;
+    }
+
     const TSTypeParameterDeclaration *TypeParams() const
     {
         return signature_.TypeParams();

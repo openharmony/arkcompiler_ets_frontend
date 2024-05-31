@@ -21,6 +21,7 @@
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ets/etsTupleType.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 namespace ark::es2panda::checker {
 
@@ -162,13 +163,26 @@ checker::Type *ETSAnalyzer::Check(ir::MethodDefinition *node) const
         }
     }
 
+    if (IsAsyncMethod(node)) {
+        if (scriptFunc->ReturnTypeAnnotation() != nullptr) {
+            auto *asyncFuncReturnType = scriptFunc->Signature()->ReturnType();
+
+            if (!asyncFuncReturnType->IsETSObjectType() ||
+                asyncFuncReturnType->AsETSObjectType()->GetOriginalBaseType() != checker->GlobalBuiltinPromiseType()) {
+                checker->ThrowTypeError("Return type of async function must be 'Promise'.", scriptFunc->Start());
+            }
+        }
+
+        ComposeAsyncImplMethod(checker, node);
+    }
+
     DoBodyTypeChecking(checker, node, scriptFunc);
     CheckPredefinedMethodReturnType(checker, scriptFunc);
 
     checker->CheckOverride(node->TsType()->AsETSFunctionType()->FindSignature(node->Function()));
 
-    for (auto *it : node->Overloads()) {
-        it->Check(checker);
+    for (auto *overload : node->Overloads()) {
+        overload->Check(checker);
     }
 
     if (scriptFunc->IsRethrowing()) {
@@ -356,10 +370,18 @@ checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
     // Launch expression returns a Promise<T> type, so we need to insert the expression's type
     // as type parameter for the Promise class.
 
-    auto *exprType =
-        expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) && !expr->expr_->TsType()->IsETSVoidType()
-            ? checker->PrimitiveTypeAsETSBuiltinType(expr->expr_->TsType())
-            : expr->expr_->TsType();
+    auto exprType = [&checker](auto *tsType) {
+        if (tsType->IsETSVoidType()) {
+            return checker->GlobalETSUndefinedType();
+        }
+
+        if (tsType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+            return checker->PrimitiveTypeAsETSBuiltinType(tsType);
+        }
+
+        return tsType;
+    }(expr->expr_->TsType());
+
     checker::Substitution *substitution = checker->NewSubstitution();
     ASSERT(launchPromiseType->TypeArguments().size() == 1);
     checker::ETSChecker::EmplaceSubstituted(
