@@ -137,7 +137,7 @@ public:
     bool CollectInputFilesFromFileDirectory(const std::string &input, const std::string &extension);
     void ParseCacheFileOption(const std::string &cacheInput);
     void ParseCompileContextInfo(const std::string compileContextInfoPath);
-    bool NeedUpdatePkgVersionInRecordName();
+    bool NeedCollectDepsRelation();
     bool NeedRemoveRedundantRecord();
 
 private:

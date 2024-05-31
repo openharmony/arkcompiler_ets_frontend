@@ -92,6 +92,9 @@ TEST262_GIT_URL = "https://gitee.com/hufeng20/test262.git"
 ESHOST_GIT_URL = "https://gitee.com/hufeng20/eshost.git"
 HARNESS_GIT_URL = "https://gitee.com/hufeng20/test262-harness.git"
 
+TEST262_JIT_GIT_URL = "https://gitee.com/lxy0115/test262.git"
+TEST262_JIT_GIT_HASH = "41cf77eb3ab4babdf8662c2a60cb63439c61740a"
+
 SKIP_LIST_FILE = os.path.join("test262", "skip_tests.json")
 ES2ABC_SKIP_LIST_FILE = os.path.join("test262", "es2abc_skip_tests.json")
 TS2ABC_SKIP_LIST_FILE = os.path.join("test262", "ts2abc_skip_tests.json")

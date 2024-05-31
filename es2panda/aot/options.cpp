@@ -27,6 +27,7 @@
 #include <dirent.h>
 #endif
 
+#include "bytecode_optimizer/bytecodeopt_options.h"
 #include "compiler_options.h"
 #include "os/file.h"
 
@@ -269,15 +270,16 @@ void Options::ParseCompileContextInfo(const std::string compileContextInfoPath)
     compilerOptions_.compileContextInfo.pkgContextInfo = pkgContextMap;
 }
 
-bool Options::NeedUpdatePkgVersionInRecordName()
-{
-    return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
-}
-
-// Collect dependencies based on the compile entries and remove redundant content from the abc file as input.
-bool Options::NeedRemoveRedundantRecord()
+// Collect dependencies based on the compile entries.
+bool Options::NeedCollectDepsRelation()
 {
     return compilerOptions_.enableAbcInput && !compilerOptions_.compileContextInfo.compileEntries.empty();
+}
+
+// Remove redundant content from the abc file and remove programs generated from redundant source files.
+bool Options::NeedRemoveRedundantRecord()
+{
+    return compilerOptions_.removeRedundantFile && NeedCollectDepsRelation();
 }
 
 Options::Options() : argparser_(new panda::PandArgParser()) {}
@@ -337,6 +339,8 @@ bool Options::Parse(int argc, const char **argv)
 
     // optimizer
     panda::PandArg<bool> opBranchElimination("branch-elimination", false, "Enable branch elimination optimization");
+    panda::PandArg<bool> opOptTryCatchFunc("opt-try-catch-func", true, "Enable optimizations for functions with "\
+        "try-catch blocks");
 
     // patchfix && hotreload
     panda::PandArg<std::string> opDumpSymbolTable("dump-symbol-table", "", "dump symbol table to file");
@@ -362,6 +366,10 @@ bool Options::Parse(int argc, const char **argv)
         "info file");
     panda::PandArg<bool> opDumpDepsInfo("dump-deps-info", false, "Dump all dependency files and records "\
         "including source files and bytecode files");
+    panda::PandArg<bool> opRemoveRedundantFile("remove-redundant-file", false, "Remove redundant info"\
+        " from abc file and remove redundant source file, which is effective when the compile-context-info switch"\
+        "  is turned on and there is abc input");
+    panda::PandArg<bool> opDumpString("dump-string", false, "Dump program strings");
 
     // aop transform
     panda::PandArg<std::string> transformLib("transform-lib", "", "aop transform lib file path");
@@ -404,6 +412,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opMergeAbc);
     argparser_->Add(&opuseDefineSemantic);
     argparser_->Add(&opBranchElimination);
+    argparser_->Add(&opOptTryCatchFunc);
 
     argparser_->Add(&opDumpSymbolTable);
     argparser_->Add(&opInputSymbolTable);
@@ -419,6 +428,8 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&compileContextInfoPath);
     argparser_->Add(&opDumpDepsInfo);
+    argparser_->Add(&opRemoveRedundantFile);
+    argparser_->Add(&opDumpString);
 
     argparser_->Add(&transformLib);
 
@@ -605,6 +616,10 @@ bool Options::Parse(int argc, const char **argv)
         ParseCompileContextInfo(compileContextInfoPath.GetValue());
     }
     compilerOptions_.dumpDepsInfo = opDumpDepsInfo.GetValue();
+    compilerOptions_.updatePkgVersionForAbcInput = compilerOptions_.enableAbcInput
+        && !compilerOptions_.compileContextInfo.pkgContextInfo.empty();
+    compilerOptions_.removeRedundantFile = opRemoveRedundantFile.GetValue();
+    compilerOptions_.dumpString = opDumpString.GetValue();
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();
@@ -645,6 +660,7 @@ bool Options::Parse(int argc, const char **argv)
                                                  compilerOptions_.branchElimination &&
                                                  compilerOptions_.mergeAbc;
     panda::compiler::options.SetCompilerBranchElimination(compilerOptions_.branchElimination);
+    panda::bytecodeopt::options.SetSkipMethodsWithEh(!opOptTryCatchFunc.GetValue());
 
     return true;
 }

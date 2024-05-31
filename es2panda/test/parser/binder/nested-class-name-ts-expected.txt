@@ -1,53 +1,48 @@
 .language ECMAScript
 
 .function any .#~C=#C(any a0, any a1, any a2) {
-	mov v0, a0
-	mov v1, a1
-	mov v2, a2
-	lda v2
-	sta v4
+	nop
+label_7: 
+label_0: 
 	ldlexvar 0x0, 0x1
-	callruntime.callinit 0x0, v4
-	lda v2
-	sta v4
+	callruntime.callinit 0x0, a2
 	ldhole
-	sta v6
-	defineclasswithbuffer 0x2, .#~C=C~=#, _2, 0x0, v6
-	sta v5
-	lda v5
+	sta v0
+	defineclasswithbuffer 0x2, .#~C=C~=#, _2, 0x0, v0
+	sta v0
 	ldobjbyname 0x3, prototype
-	sta v7
-	lda v5
-	stobjbyname 0x5, B_withoutPrivateField, v4
-	lda v2
-	sta v4
+	lda v0
+	stobjbyname 0x5, B_withoutPrivateField, a2
 	newlexenv 0x4
-LABEL_4: 
+label_2: 
+label_4: 
 	ldhole
-	sta v6
-	defineclasswithbuffer 0x7, .#~C=C~^1=#, _3, 0x0, v6
-	sta v5
-	lda v5
+	sta v1
+	defineclasswithbuffer 0x7, .#~C=C~^1=#, _3, 0x0, v1
+	sta v1
 	ldobjbyname 0x8, prototype
-	sta v7
-	sta v7
 	definemethod 0xa, .#~C=C~^1>#instance_initializer, 0x0
 	stlexvar 0x0, 0x1
 	callruntime.createprivateproperty 0x1, _4
-	lda v5
-LABEL_5: 
-	jmp LABEL_7
-LABEL_6: 
+label_3: 
+end_label_3: 
+	jmp label_1
+label_9: 
+	sta v0
+label_6: 
 	poplexenv
+	lda v0
 	throw
-LABEL_7: 
+label_1: 
 	poplexenv
-	stobjbyname 0xb, B_withPrivateField, v4
-	lda v2
+	lda v1
+	stobjbyname 0xb, B_withPrivateField, a2
+	lda a2
 	return
+label_8: 
 }
 
-.catchall LABEL_4, LABEL_5, LABEL_6
+.catchall label_2, end_label_3, label_9
 
 .function any .#~C=C~=#(any a0, any a1, any a2) {
 label_1: 
@@ -106,37 +101,36 @@ label_2:
 }
 
 .function any .func_main_0(any a0, any a1, any a2) {
-	mov v0, a0
-	mov v1, a1
-	mov v2, a2
+	nop
+label_7: 
+label_0: 
 	newlexenv 0x2
-LABEL_2: 
+label_2: 
+label_4: 
 	ldhole
-	sta v7
-	defineclasswithbuffer 0x0, .#~C=#C, _5, 0x0, v7
-	sta v5
-	sta v6
-	lda v5
+	sta v1
+	defineclasswithbuffer 0x0, .#~C=#C, _5, 0x0, v1
 	ldobjbyname 0x1, prototype
-	sta v8
-	sta v8
 	definemethod 0x3, .#~C>#instance_initializer, 0x0
 	stlexvar 0x0, 0x1
 	callruntime.createprivateproperty 0x1, _6
-	lda v5
-LABEL_3: 
-	jmp LABEL_5
-LABEL_4: 
+label_3: 
+end_label_3: 
+	jmp label_1
+label_9: 
+	sta v0
+label_6: 
 	poplexenv
+	lda v0
 	throw
-LABEL_5: 
+label_1: 
 	poplexenv
-	sta v3
 	ldundefined
 	returnundefined
+label_8: 
 }
 
-.catchall LABEL_2, LABEL_3, LABEL_4
+.catchall label_2, end_label_3, label_9
 
 
 ======> literal array buffer <======

@@ -946,4 +946,92 @@ bool Helpers::IsSpecialScopeName(const util::StringView &name)
     return name.Find(Helpers::DOT.data()) != std::string::npos ||
            name.Find(Helpers::BACKSLASH.data()) != std::string::npos;
 }
+
+bool Helpers::BelongingToRecords(const std::string &name, const std::unordered_set<std::string> &retainRecordSet,
+                                 const std::string &delimiter)
+{
+    size_t pos = name.rfind(delimiter);
+    if (pos == std::string::npos) {
+        std::cerr << "The input name: " << name << " is illegal, it should contain the delimiter character '"
+                  << delimiter << "'" << std::endl;
+        return false;
+    }
+
+    auto recordName = name.substr(0, pos);
+    return retainRecordSet.find(recordName) != retainRecordSet.end();
+}
+
+void Helpers::RemoveProgramRedundantData(panda::pandasm::Program &program,
+                                         const std::unordered_set<std::string> &retainRecordSet,
+                                         const std::unordered_set<std::string> &generatedRecords)
+{
+    // remove redundant record
+    auto recordIter = program.record_table.begin();
+    while (recordIter != program.record_table.end()) {
+        if (retainRecordSet.find(recordIter->first) == retainRecordSet.end()
+            && generatedRecords.find(recordIter->first) == generatedRecords.end()) {
+            recordIter = program.record_table.erase(recordIter);
+        } else {
+            recordIter++;
+        }
+    }
+
+    std::set<std::string> updatedStrings {};
+
+    // remove redundant function
+    auto functionIter = program.function_table.begin();
+    while (functionIter != program.function_table.end()) {
+        auto funcName = functionIter->first;
+        if (!BelongingToRecords(funcName, retainRecordSet)) {
+            functionIter = program.function_table.erase(functionIter);
+
+            auto synonymsIter = program.function_synonyms.find(funcName);
+            if (synonymsIter != program.function_synonyms.end()) {
+                program.function_synonyms.erase(synonymsIter);
+            }
+        } else {
+            auto funcStringSet = functionIter->second.CollectStringsFromFunctionInsns();
+            updatedStrings.insert(funcStringSet.begin(), funcStringSet.end());
+
+            functionIter++;
+        }
+    }
+
+    // remove redundant string
+    program.strings = updatedStrings;
+
+    // remove redundant literalarray
+    auto literalarrayIter = program.literalarray_table.begin();
+    while (literalarrayIter != program.literalarray_table.end()) {
+        // literalArrayKey format: recordName_literalArrayOffset
+        if (!BelongingToRecords(literalarrayIter->first, retainRecordSet, "_")) {
+            literalarrayIter = program.literalarray_table.erase(literalarrayIter);
+        } else {
+            literalarrayIter++;
+        }
+    }
+}
+
+void Helpers::RemoveProgramsRedundantData(std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    const std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation,
+    const std::unordered_set<std::string> &generatedRecords)
+{
+    auto progInfoIter = progsInfo.begin();
+    while (progInfoIter != progsInfo.end()) {
+        // 1. remove redundant files which are not dependant in compilation
+        if (resolvedDepsRelation.find(progInfoIter->first) == resolvedDepsRelation.end()) {
+            progInfoIter = progsInfo.erase(progInfoIter);
+            continue;
+        }
+
+        // 2. remove redundant data from programs which are generated from abc
+        if (progInfoIter->second->generatedFromAbc) {
+            auto retainRecordSet = resolvedDepsRelation.find(progInfoIter->first)->second;
+            RemoveProgramRedundantData(progInfoIter->second->program, retainRecordSet, generatedRecords);
+        }
+
+        progInfoIter++;
+    }
+}
+
 }  // namespace panda::es2panda::util

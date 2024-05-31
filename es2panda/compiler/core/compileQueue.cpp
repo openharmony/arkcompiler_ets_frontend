@@ -116,6 +116,11 @@ void CompileFileJob::Run()
         return;
     }
 
+    // Update version for abc input when needed
+    if (!src_->isSourceMode && options_->updatePkgVersionForAbcInput) {
+        compiler.UpdatePackageVersion(prog, *options_);
+    }
+
     bool requireOptimizationAfterAnalysis = false;
     // When cross-program optimizations are required, skip program-local optimization at this stage
     // and perform it later after the analysis of all programs has been completed
@@ -131,6 +136,7 @@ void CompileFileJob::Run()
     {
         std::unique_lock<std::mutex> lock(global_m_);
         auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), src_->isSourceMode);
+        cache->generatedFromAbc = !src_->isSourceMode;
         progsInfo_.insert({src_->fileName, cache});
         if (requireOptimizationAfterAnalysis) {
             optimizationPendingProgs_.insert(src_->fileName);

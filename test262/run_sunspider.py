@@ -93,6 +93,9 @@ def parse_args():
     parser.add_argument('--run-pgo', action='store_true',
                         required=False,
                         help="Run test262 with aot pgo")
+    parser.add_argument('--run-jit', action='store_true',
+                        required=False,
+                        help="Run test262 with JIT")
     parser.add_argument('--abc2program', action='store_true',
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     parser.add_argument('--disenable-force-gc', action='store_true',
@@ -120,6 +123,7 @@ class ArkProgram():
         self.ark_aot = False
         self.run_pgo = False
         self.disenable_force_gc = False
+        self.run_jit = False
         self.ark_aot_tool = ARK_AOT_TOOL
         self.libs_dir = LIBS_DIR
         self.ark_frontend = ARK_FRONTEND
@@ -151,6 +155,9 @@ class ArkProgram():
 
         if self.args.disenable_force_gc:
             self.disenable_force_gc = self.args.disenable_force_gc
+
+        if self.args.run_jit:
+            self.run_jit = self.args.run_jit
 
         if self.args.ark_aot_tool:
             self.ark_aot_tool = self.args.ark_aot_tool
@@ -616,6 +623,10 @@ class ArkProgram():
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
                         ICU_PATH,
                         f'{file_name_pre}.abc']
+            if self.run_jit:
+                cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool, f'--compiler-enable-litecg=true',
+                            f'--compiler-enable-jit=true --log-debug=jit', ICU_PATH,
+                            f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[2]:
             qemu_tool = "qemu-arm"
             qemu_arg1 = "-L"
@@ -623,6 +634,10 @@ class ArkProgram():
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
                         ICU_PATH,
                         f'{file_name_pre}.abc']
+            if self.run_jit:
+                cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool, f'--compiler-enable-litecg=true',
+                            f'--compiler-enable-jit=true --log-debug=jit', ICU_PATH,
+                            f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[0]:
             if file_name_pre in FORCE_GC_SKIP_TESTS:
                 unforce_gc = True
@@ -631,6 +646,10 @@ class ArkProgram():
                 asm_arg1 = "--enable-force-gc=false"
             cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
                         f'{file_name_pre}.abc']
+            if self.run_jit:
+                cmd_args = [self.ark_tool, f'--compiler-enable-litecg=true',
+                            f'--compiler-enable-jit=true --log-debug=jit',ICU_PATH, asm_arg1,
+                            f'{file_name_pre}.abc']
 
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
         cmd_args.insert(-1, f'--entry-point={record_name}')
