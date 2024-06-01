@@ -1157,19 +1157,16 @@ class PatchRunner(Runner):
         self.preserve_files = args.error
         self.tests_in_dirs = []
         dirs = os.listdir(path.join(self.test_root, "patch"))
-        for sub_dir in dirs:
-            target_version = 0
-            if sub_dir.isdigit():
-                target_version = int(sub_dir)
-            self.add_tests(sub_dir, name)
+        for target_version_path in dirs:
+            self.add_tests(target_version_path, name)
 
-    def add_tests(self, path, name):
-        name_dir = os.path.join(self.test_root, "patch", path, name)
+    def add_tests(self, target_version_path, name):
+        name_dir = os.path.join(self.test_root, "patch", target_version_path, name)
         if not os.path.exists(name_dir):
             return
         target_version = 0
-        if path.isdigit():
-            target_version = int(path)
+        if target_version_path.isdigit():
+            target_version = int(target_version_path)
         for sub_path in os.listdir(name_dir):
             test_base_path = os.path.join(name_dir, sub_path)
             for test_dir in os.listdir(test_base_path):
@@ -1185,17 +1182,21 @@ class HotfixRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "hotfix")
 
+
 class HotreloadRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "hotreload")
+
 
 class ColdfixRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "coldfix")
 
+
 class ColdreloadRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "coldreload")
+
 
 class DebuggerTest(Test):
     def __init__(self, test_path, mode):

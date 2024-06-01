@@ -61,6 +61,11 @@ public:
         return &originRecordHashFunctionNames_;
     }
 
+    int GetTargetApiVersion()
+    {
+        return targetApiVersion_;
+    }
+
 private:
     bool ReadSymbolTable(const std::string &symbolTable);
     std::vector<std::string_view> GetStringItems(std::string_view input, const std::string &separator);

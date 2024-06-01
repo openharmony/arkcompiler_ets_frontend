@@ -463,7 +463,13 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
         auto scopeNamesRecord = panda::pandasm::Record("_ESScopeNamesRecord", LANG_EXT);
         scopeNamesRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
         auto scopeNamesField = panda::pandasm::Field(LANG_EXT);
-        scopeNamesField.name = std::string {context->Binder()->Program()->SourceFile()};
+        // If the input arg "source-file" is not specified, context->SourceFile() will be empty,
+        // in this case, use it's absolute path.
+        if (context->SourceFile().empty()) {
+            scopeNamesField.name = context->Binder()->Program()->SourceFile().Mutf8();
+        } else {
+            scopeNamesField.name = context->SourceFile();
+        }
         scopeNamesField.type = panda::pandasm::Type("u32", 0);
         scopeNamesField.metadata->SetValue(
             panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(

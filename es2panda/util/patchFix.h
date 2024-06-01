@@ -43,7 +43,7 @@ class PatchFix {
 
 public:
     PatchFix(bool generateSymbolFile, bool generatePatch, PatchFixKind patchFixKind, const std::string &recordName,
-        util::SymbolTable *symbolTable, int targetApiVersion)
+        util::SymbolTable *symbolTable)
         : generateSymbolFile_(generateSymbolFile), generatePatch_(generatePatch), patchFixKind_(patchFixKind),
         recordName_(recordName),
         symbolTable_(symbolTable),
@@ -55,7 +55,7 @@ public:
         modifiedClassNames_(allocator_.Adapter()),
         classMemberFunctions_(allocator_.Adapter()),
         funcDefinedClasses_(allocator_.Adapter()),
-        targetApiVersion_(targetApiVersion) {
+        targetApiVersion_(symbolTable->GetTargetApiVersion()) {
             originFunctionInfo_ = symbolTable_->GetOriginFunctionInfo();
             originModuleInfo_ = symbolTable_->GetOriginModuleInfo();
             originRecordHashFunctionNames_ = symbolTable_->GetOriginRecordHashFunctionNames();
