@@ -1481,7 +1481,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
         nextToken != LEX_CHAR_COLON && nextToken != LEX_CHAR_COMMA && nextToken != LEX_CHAR_LESS_THAN &&
         nextToken != LEX_CHAR_SEMICOLON) {
         readonly = true;
-        lexer_->NextToken();
+        lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
     }
 
     ParseTsTypeLiteralOrInterfaceKeyModifiers(&isGetAccessor, &isSetAccessor);
