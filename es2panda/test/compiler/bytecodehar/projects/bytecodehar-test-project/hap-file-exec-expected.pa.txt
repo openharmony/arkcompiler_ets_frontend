@@ -53,6 +53,7 @@ record_name: &sourcehar/sourcehar-file1&2.0.0
 
 ======> literal array buffer <======
 ------------------------------------
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_782
 {
   index: 0
     tag: 2
@@ -114,6 +115,7 @@ record_name: &sourcehar/sourcehar-file1&2.0.0
     val: 0
 },
 ------------------------------------
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1314
 {
   index: 0
     tag: 2
@@ -217,6 +219,7 @@ record_name: &sourcehar/sourcehar-file1&2.0.0
 
 ======> literal array buffer <======
 ------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_743
 {
   index: 0
     tag: 2
@@ -258,6 +261,7 @@ record_name: &sourcehar/sourcehar-file1&2.0.0
     val: 0
 },
 ------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1162
 {
   index: 0
     tag: 2
@@ -327,7 +331,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &myapp/hap-file-exec&_0
 ------------------------------------
+slot &myapp/hap-file-exec&_1
 {
   index: 0
     tag: 2
@@ -409,7 +415,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &sourcehar/sourcehar-file1&2.0.0_0
 ------------------------------------
+slot &sourcehar/sourcehar-file1&2.0.0_1
 {
   index: 0
     tag: 2
@@ -481,7 +489,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &sourcehar/sourcehar-file2&2.0.0_0
 ------------------------------------
+slot &sourcehar/sourcehar-file2&2.0.0_1
 {
   index: 0
     tag: 2
@@ -549,6 +559,7 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_782
 {
   index: 0
     tag: 2
@@ -634,6 +645,7 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_743
 {
   index: 0
     tag: 2
@@ -703,7 +715,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &myapp/hap-file-exec&_0
 ------------------------------------
+slot &myapp/hap-file-exec&_1
 {
   index: 0
     tag: 2
@@ -785,7 +799,9 @@ label_2:
 
 ======> literal array buffer <======
 ------------------------------------
+slot &sourcehar/sourcehar-file1&2.0.0_0
 ------------------------------------
+slot &sourcehar/sourcehar-file1&2.0.0_1
 {
   index: 0
     tag: 2

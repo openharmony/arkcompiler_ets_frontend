@@ -795,7 +795,8 @@ class CompilerProjectTest(Test):
             module_kind = 'esm'
             if (os.path.basename(test_path).startswith("commonjs")):
                 module_kind = 'commonjs'
-            file_info = ('%s;%s;%s;%s;%s\n' % (test_path, record_name, module_kind, test_path, record_name))
+            file_info = ('%s;%s;%s;%s;%s\n' % (test_path, record_name, module_kind,
+                                               os.path.relpath(test_path, self.projects_path), record_name))
             belonging_abc_input = self.get_belonging_abc_input(test_path)
             if belonging_abc_input is not None:
                 if not belonging_abc_input in abc_files_infos:
