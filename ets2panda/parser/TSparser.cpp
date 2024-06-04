@@ -2033,7 +2033,6 @@ ir::AstNode *TSParser::ParseTypeLiteralOrInterfaceMember()
     bool isReadonly = Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_READONLY &&
                       nextCp != lexer::LEX_CHAR_LEFT_PAREN && nextCp != lexer::LEX_CHAR_COLON &&
                       nextCp != lexer::LEX_CHAR_COMMA;
-
     if (isReadonly) {
         Lexer()->NextToken();  // eat 'readonly"
     }

@@ -223,10 +223,6 @@ const checker::ETSObjectType *Helpers::GetContainingObjectType(const ir::AstNode
             return ret != nullptr ? ret->AsETSObjectType() : nullptr;
         }
 
-        if (iter->IsImportDeclaration()) {
-            // return iter->AsImportDeclaration();
-        }
-
         iter = iter->Parent();
     }
 
@@ -460,7 +456,6 @@ void Helpers::CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specif
     for (auto *it : specifiers) {
         auto savedIdentName = it->Imported()->Name();
         auto savedAliasName = it->Local()->Name();
-
         if (savedIdentName == savedAliasName && savedAliasName == newIdentName) {
             message << "Warning: '" << newIdentName << "' has already imported ";
             break;

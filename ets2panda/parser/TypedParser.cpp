@@ -1408,7 +1408,6 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
         case ir::AstNodeType::IDENTIFIER: {
             const util::StringView &identifier = expr->AsIdentifier()->Name();
             bool isOptional = expr->AsIdentifier()->IsOptional();
-
             if ((*seenOptional) && !isOptional) {
                 ThrowSyntaxError("A required parameter cannot follow an optional parameter.", expr->Start());
             }

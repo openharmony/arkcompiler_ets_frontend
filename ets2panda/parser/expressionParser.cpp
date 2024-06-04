@@ -1620,7 +1620,6 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
             }
             case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
                 const bool shouldBreak = ParsePotentialNonNullExpression(&returnExpression, startLoc);
-
                 if (shouldBreak) {
                     break;
                 }

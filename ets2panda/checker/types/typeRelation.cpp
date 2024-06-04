@@ -149,7 +149,6 @@ bool TypeRelation::IsComparableTo(Type *source, Type *target)
 bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
 {
     result_ = CacheLookup(source, target, checker_->UncheckedCastableResult(), RelationType::UNCHECKED_CASTABLE);
-
     if (result_ == RelationResult::CACHE_MISS) {
         result_ = RelationResult::FALSE;
         flags_ |= TypeRelationFlag::UNCHECKED_CAST;
