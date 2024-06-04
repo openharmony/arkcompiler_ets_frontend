@@ -104,7 +104,6 @@ const ClassScope *Scope::EnclosingClassScope() const
     return nullptr;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if ((options & ResolveBindingOptions::INTERFACES) != 0) {

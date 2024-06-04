@@ -998,7 +998,6 @@ ir::AstNode *ETSParser::ParseClassElement(const ArenaVector<ir::AstNode *> &prop
 
     bool seenStatic = false;
     char32_t nextCp = Lexer()->Lookahead();
-
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC && nextCp != lexer::LEX_CHAR_EQUALS &&
         nextCp != lexer::LEX_CHAR_COLON && nextCp != lexer::LEX_CHAR_LEFT_PAREN &&
         nextCp != lexer::LEX_CHAR_LESS_THAN) {
@@ -1701,7 +1700,6 @@ ir::AstNode *ETSParser::ParseTypeLiteralOrInterfaceMember()
 {
     auto startLoc = Lexer()->GetToken().Start();
     ir::ModifierFlags methodFlags = ParseInterfaceMethodModifiers();
-
     if (methodFlags != ir::ModifierFlags::NONE) {
         if ((methodFlags & ir::ModifierFlags::PRIVATE) == 0) {
             methodFlags |= ir::ModifierFlags::PUBLIC;
@@ -3388,7 +3386,6 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primaryExp
             }
             case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
                 const bool shouldBreak = ParsePotentialNonNullExpression(&returnExpression, startLoc);
-
                 if (shouldBreak) {
                     break;
                 }

@@ -799,7 +799,6 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
                                           ? variableScope->IsGlobalScope() || (variableScope->Parent() != nullptr &&
                                                                                variableScope->Parent()->IsGlobalScope())
                                           : false;
-
         if (!topLevelVariable && !variable->HasFlag(varbinder::VariableFlags::BOXED)) {
             if (checker->Relation()->IsIdenticalTo(leftType, smartType)) {
                 checker->Context().RemoveSmartCast(variable);
@@ -1075,7 +1074,6 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     SmartCastArray smartCasts = checker->Context().EnterTestExpression();
     checker->CheckTruthinessOfType(expr->Test());
     SmartCastTypes testedTypes = checker->Context().ExitTestExpression();
-
     if (testedTypes.has_value()) {
         for (auto [variable, consequentType, _] : *testedTypes) {
             checker->ApplySmartCast(variable, consequentType);
@@ -1944,7 +1942,6 @@ checker::Type *ETSAnalyzer::Check(ir::IfStatement *st) const
     SmartCastArray smartCasts = checker->Context().EnterTestExpression();
     checker->CheckTruthinessOfType(st->Test());
     SmartCastTypes testedTypes = checker->Context().ExitTestExpression();
-
     if (testedTypes.has_value()) {
         for (auto [variable, consequentType, _] : *testedTypes) {
             checker->ApplySmartCast(variable, consequentType);
@@ -1969,7 +1966,6 @@ checker::Type *ETSAnalyzer::Check(ir::IfStatement *st) const
         checker->Context().EnterPath();
         st->Alternate()->Check(checker);
         bool const alternateTerminated = checker->Context().ExitPath();
-
         if (alternateTerminated) {
             if (!consequentTerminated) {
                 // Here we need to restore types from consequent if block.
@@ -2217,7 +2213,6 @@ checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const
     //  NOTE: T_S and K_o_t_l_i_n don't act in such way, but we can try - why not? :)
     if (auto *const initType = st->Init() != nullptr ? st->Init()->TsType() : nullptr; initType != nullptr) {
         smartType = checker->ResolveSmartType(initType, variableType);
-
         //  Set smart type for identifier if it differs from annotated type
         //  Top-level and captured variables are not processed here!
         if (!checker->Relation()->IsIdenticalTo(variableType, smartType)) {
@@ -2497,7 +2492,6 @@ checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
     if (expr->TsType() == nullptr) {
         ETSChecker *checker = GetETSChecker();
         auto exprType = expr->expr_->Check(checker);
-
         if (!exprType->PossiblyETSNullish()) {
             checker->ThrowTypeError(
                 "Bad operand type, the operand of the non-nullish expression must be a nullish type",
