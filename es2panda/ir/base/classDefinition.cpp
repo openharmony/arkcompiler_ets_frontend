@@ -166,7 +166,7 @@ int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::B
             continue;
         }
 
-        if (prop->IsOptional() && prop->Value()->Function()->IsOverload()) {
+        if (prop->Value()->Function()->IsOverload()) {
             compiled.Set(i);
             continue;
         }
