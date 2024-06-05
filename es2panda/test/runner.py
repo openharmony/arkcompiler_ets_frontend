@@ -1173,10 +1173,14 @@ class PatchRunner(Runner):
             target_version = int(path)
         for sub_path in os.listdir(name_dir):
             test_base_path = os.path.join(name_dir, sub_path)
-            for test_dir in os.listdir(test_base_path):
-                test_path = os.path.join(test_base_path, test_dir)
-                self.tests_in_dirs.append(test_path)
-                self.tests.append(PatchTest(test_path, name, target_version, self.preserve_files))
+            if name != "coldreload":
+                for test_dir in os.listdir(test_base_path):
+                    test_path = os.path.join(test_base_path, test_dir)
+                    self.tests_in_dirs.append(test_path)
+                    self.tests.append(PatchTest(test_path, name, target_version, self.preserve_files))
+            else:
+                self.tests_in_dirs.append(test_base_path)
+                self.tests.append(PatchTest(test_base_path, name, target_version, self.preserve_files))
 
     def test_path(self, src):
         return os.path.basename(src)

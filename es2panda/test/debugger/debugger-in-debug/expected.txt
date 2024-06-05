@@ -10,9 +10,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 .language ECMAScript
 
-.function any .A(any a0, any a1, any a2) {
+.function any .#*#A(any a0, any a1, any a2) {
 	mov v0, a0
 	mov v1, a1
 	mov v2, a2
@@ -38,11 +39,11 @@
 }
 
 .function any .func_main_0(any a0, any a1, any a2) {
-	newlexenvwithname 0x1, _1
+	newlexenvwithname 0x1, _2
 	mov v0, a0
 	mov v1, a1
 	mov v2, a2
-	definefunc 0x0, .A, 0x0
+	definefunc 0x0, .#*#A, 0x0
 	sta v3
 	ldai 0x0
 	sta v5

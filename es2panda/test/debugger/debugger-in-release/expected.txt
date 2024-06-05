@@ -10,9 +10,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 .language ECMAScript
 
-.function any .A(any a0, any a1, any a2) {
+.function any .#*#A(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldlexvar 0x0, 0x0
@@ -32,7 +33,7 @@ label_2:
 label_1: 
 label_0: 
 	newlexenv 0x1
-	definefunc 0x0, .A, 0x0
+	definefunc 0x0, .#*#A, 0x0
 	ldai 0x0
 	stlexvar 0x0, 0x0
 	ldundefined
