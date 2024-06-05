@@ -799,9 +799,11 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus newStatus, ir::Identif
     functionContext.AddFlag(throwMarker);
 
     // clang-format off
+    bool isDeclare = InAmbientContext();
+    ir::ModifierFlags mFlags = isDeclare ? ir::ModifierFlags::DECLARE : ir::ModifierFlags::NONE;
     auto *funcNode = AllocNode<ir::ScriptFunction>(
         Allocator(), ir::ScriptFunction::ScriptFunctionData {
-                        body, std::move(signature), functionContext.Flags(), {}, false, GetContext().GetLanguage()});
+            body, std::move(signature), functionContext.Flags(), mFlags, isDeclare, GetContext().GetLanguage()});
     // clang-format on
 
     funcNode->SetRange({startLoc, endLoc});
@@ -4085,7 +4087,8 @@ void ETSParser::CheckDeclare()
         case lexer::TokenType::KEYW_TYPE:
         case lexer::TokenType::KEYW_ABSTRACT:
         case lexer::TokenType::KEYW_FINAL:
-        case lexer::TokenType::KEYW_INTERFACE: {
+        case lexer::TokenType::KEYW_INTERFACE:
+        case lexer::TokenType::KEYW_ASYNC: {
             return;
         }
         default: {

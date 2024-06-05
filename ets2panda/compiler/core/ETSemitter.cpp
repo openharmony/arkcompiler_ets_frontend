@@ -218,7 +218,8 @@ void ETSEmitter::GenAnnotation()
 
     for (auto *signature : globalRecordTable->Signatures()) {
         auto *scriptFunc = signature->Node()->AsScriptFunction();
-        auto func = GenScriptFunction(Context(), scriptFunc);
+        auto func = scriptFunc->Declare() ? GenExternalFunction(scriptFunc->Signature(), scriptFunc->IsConstructor())
+                                          : GenScriptFunction(Context(), scriptFunc);
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));

@@ -80,6 +80,7 @@
                     }
                   }
                 },
+                "declare": true,
                 "loc": {
                   "start": {
                     "line": 17,
