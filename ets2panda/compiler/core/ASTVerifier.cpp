@@ -820,14 +820,6 @@ private:
             return true;
         }
 
-        // NOTE(kkonkuznetsov): skip parameters in async functions
-        if (ast->Parent() != nullptr && ast->Parent()->IsScriptFunction()) {
-            auto scriptFunction = ast->Parent()->AsScriptFunction();
-            if (scriptFunction->IsAsyncFunc()) {
-                return true;
-            }
-        }
-
         // NOTE(kkonkuznetsov): skip unions/async lambdas
         if (ast->IsIdentifier()) {
             auto id = ast->AsIdentifier();

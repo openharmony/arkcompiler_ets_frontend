@@ -1691,11 +1691,7 @@ ir::MethodDefinition *ETSChecker::CreateAsyncProxy(ir::MethodDefinition *asyncMe
         implFuncScope->Decls().push_back(decl);
         implFuncScope->InsertBinding(decl->Name(), var);
     }
-    for (const auto &entry : asyncFunc->Scope()->Bindings()) {
-        auto *var = entry.second;
-        var->SetScope(implFuncScope);
-        implFuncScope->InsertBinding(entry.first, entry.second);
-    }
+
     ReplaceScope(implMethod->Function()->Body(), asyncFunc, implFuncScope);
 
     ArenaVector<varbinder::Variable *> captured(Allocator()->Adapter());
