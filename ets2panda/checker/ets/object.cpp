@@ -975,7 +975,6 @@ void ETSChecker::CheckImplicitSuper(ETSObjectType *classType, Signature *ctorSig
         return stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
                stmt->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsThisExpression();
     });
-
     // There is an alternate constructor invocation, no need for super constructor invocation
     if (thisCall != stmts.end()) {
         return;
@@ -1151,7 +1150,6 @@ void ETSChecker::CheckConstFieldInitialized(const Signature *signature, varbinde
     bool initialized = false;
     const auto &stmts = signature->Function()->Body()->AsBlockStatement()->Statements();
     const auto it = stmts.begin();
-
     if (it != stmts.end()) {
         if (const auto *first = *it;
             first->IsExpressionStatement() && first->AsExpressionStatement()->GetExpression()->IsCallExpression() &&

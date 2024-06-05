@@ -779,7 +779,6 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
             // Check if signature is most specific for i. parameter type.
             const bool hasSignature =
                 std::any_of(range.first, range.second, [&sig](auto entry) { return entry.second == sig; });
-
             if (!hasSignature) {
                 mostSpecific = false;
                 break;
@@ -1227,7 +1226,6 @@ void ETSChecker::CheckThrowMarkers(Signature *source, Signature *target)
     ir::ScriptFunctionFlags throwMarkers = ir::ScriptFunctionFlags::THROWS | ir::ScriptFunctionFlags::RETHROWS;
     auto sourceThrowMarkers = source->Function()->Flags() & throwMarkers;
     auto targetThrowMarkers = target->Function()->Flags() & throwMarkers;
-
     if (sourceThrowMarkers != targetThrowMarkers) {
         ThrowTypeError(
             "A method that overrides or hides another method cannot change throw or rethrow clauses of the "

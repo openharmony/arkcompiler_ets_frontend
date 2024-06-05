@@ -117,7 +117,6 @@ ETSStringType *ETSChecker::CreateETSStringLiteralType(util::StringView value)
 ETSArrayType *ETSChecker::CreateETSArrayType(Type *elementType)
 {
     auto res = arrayTypes_.find(elementType);
-
     if (res != arrayTypes_.end()) {
         return res->second;
     }
@@ -608,7 +607,6 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
 Signature *ETSChecker::CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim)
 {
     auto res = globalArraySignatures_.find(arrayType);
-
     if (res != globalArraySignatures_.end()) {
         return res->second;
     }

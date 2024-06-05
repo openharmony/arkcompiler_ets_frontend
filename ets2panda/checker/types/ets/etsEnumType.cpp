@@ -284,7 +284,6 @@ ir::TSEnumMember *ETSEnumInterface::FindMember(const util::StringView &name) con
     auto memberIt = std::find_if(members.begin(), members.end(), [name](const ir::AstNode *const node) {
         return node->AsTSEnumMember()->Key()->AsIdentifier()->Name() == name;
     });
-
     if (memberIt != members.end()) {
         return (*memberIt)->AsTSEnumMember();
     }

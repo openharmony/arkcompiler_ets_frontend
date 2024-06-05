@@ -32,7 +32,6 @@ void Path::Initializer(const std::string &path, ArenaAllocator *allocator)
     isRelative_ = false;
     allocator_ = allocator;
     path_ = util::UString(path, allocator).View();
-
     if (*(path_.Bytes()) == '.') {
         isRelative_ = true;
     }
