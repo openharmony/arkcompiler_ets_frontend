@@ -22,7 +22,7 @@ console.log(array1[0]); // Legal
 const num = 123;
 console.log(array1[num]); // Legal
 
-console.log(array1["str"]); // Illegal
+console.log(array1['str']); // Illegal
 const str = "abc";
 console.log(array1[str]); // Illegal
 
@@ -63,17 +63,17 @@ console.log(float64arr[num]); // Illegal
 console.log(bigint64arr[num]); // Illegal
 console.log(biguint64arr[num]); // Illegal
 
-console.log(int8arr["str"]); // Illegal
-console.log(uint8arr["str"]); // Illegal
-console.log(uint8clampedarr["str"]); // Illegal
-console.log(int16arr["str"]); // Illegal
-console.log(uint16arr["str"]); // Illegal
-console.log(int32arr["str"]); // Illegal
-console.log(uint32arr["str"]); // Illegal
-console.log(float32arr["str"]); // Illegal
-console.log(float64arr["str"]); // Illegal
-console.log(bigint64arr["str"]); // Illegal
-console.log(biguint64arr["str"]); // Illegal
+console.log(int8arr['str']); // Illegal
+console.log(uint8arr['str']); // Illegal
+console.log(uint8clampedarr['str']); // Illegal
+console.log(int16arr['str']); // Illegal
+console.log(uint16arr['str']); // Illegal
+console.log(int32arr['str']); // Illegal
+console.log(uint32arr['str']); // Illegal
+console.log(float32arr['str']); // Illegal
+console.log(float64arr['str']); // Illegal
+console.log(bigint64arr['str']); // Illegal
+console.log(biguint64arr['str']); // Illegal
 console.log(int8arr[str]); // Illegal
 console.log(uint8arr[str]); // Illegal
 console.log(uint8clampedarr[str]); // Illegal
