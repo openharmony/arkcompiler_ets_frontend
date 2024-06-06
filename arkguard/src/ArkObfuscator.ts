@@ -151,6 +151,15 @@ export class ArkObfuscator {
       nameObfuscationConfig?.mReservedNames);
   }
 
+  public addReservedToplevelNames(newReservedGlobalNames: string[]): void {
+    if (newReservedGlobalNames.length === 0) {
+      return;
+    }
+    const nameObfuscationConfig = this.mCustomProfiles.mNameObfuscation;
+    nameObfuscationConfig.mReservedToplevelNames = ListUtil.uniqueMergeList(newReservedGlobalNames,
+      nameObfuscationConfig.mReservedToplevelNames);
+  }
+
   public setKeepSourceOfPaths(mKeepSourceOfPaths: Set<string>): void {
     this.mCustomProfiles.mKeepFileSourceCode.mKeepSourceOfPaths = mKeepSourceOfPaths;
   }
