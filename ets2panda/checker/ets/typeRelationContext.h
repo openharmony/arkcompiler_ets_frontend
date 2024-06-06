@@ -129,6 +129,39 @@ private:
     bool invocable_ {false};
 };
 
+class ConstraintCheckScope {
+public:
+    explicit ConstraintCheckScope(ETSChecker *checker) : checker_(checker), isheld_(true)
+    {
+        size_t &counter = checker_->ConstraintCheckScopesCount();
+        ASSERT(counter != 0 || checker_->PendingConstraintCheckRecords().empty());
+        counter++;
+    }
+
+    ~ConstraintCheckScope()
+    {
+        if (isheld_) {
+            Unlock();
+        }
+    }
+
+    void TryCheckConstraints();
+
+    NO_COPY_SEMANTIC(ConstraintCheckScope);
+    NO_MOVE_SEMANTIC(ConstraintCheckScope);
+
+private:
+    bool Unlock()
+    {
+        ASSERT(isheld_);
+        isheld_ = false;
+        return --checker_->ConstraintCheckScopesCount() == 0;
+    }
+
+    ETSChecker *checker_;
+    bool isheld_ {};
+};
+
 class InstantiationContext {
 public:
     InstantiationContext(ETSChecker *checker, ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs,
@@ -141,14 +174,14 @@ public:
         InstantiateType(type, typeArgs);
     }
 
-    InstantiationContext(ETSChecker *checker, ETSObjectType *type, ArenaVector<Type *> &typeArgs,
+    InstantiationContext(ETSChecker *checker, ETSObjectType *type, ArenaVector<Type *> &&typeArgs,
                          const lexer::SourcePosition &pos)
         : checker_(checker)
     {
         if (type->HasObjectFlag(ETSObjectFlags::ENUM)) {
             return;
         }
-        InstantiateType(type, typeArgs, pos);
+        InstantiateType(type, std::move(typeArgs), pos);
     }
 
     ETSObjectType *Result()
@@ -164,7 +197,7 @@ private:
 
     void InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *typeArgs);
 
-    void InstantiateType(ETSObjectType *type, ArenaVector<Type *> &typeArgTypes, const lexer::SourcePosition &pos);
+    void InstantiateType(ETSObjectType *type, ArenaVector<Type *> &&typeArgTypes, const lexer::SourcePosition &pos);
     util::StringView GetHashFromTypeArguments(ArenaVector<Type *> &typeArgTypes);
 
     ETSChecker *checker_;

@@ -306,7 +306,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
     ArenaVector<checker::Type *> typeArgTypes(checker->Allocator()->Adapter());
     typeArgTypes.push_back(exprType);  // NOTE: Box it if it's a primitive type
 
-    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), typeArgTypes, expr->Range().start);
+    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), std::move(typeArgTypes),
+                                      expr->Range().start);
     expr->SetTsType(ctx.Result());
 
     return expr->TsType();
@@ -2651,7 +2652,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     }
 
     if (st->TypeParameterTypes().empty()) {
-        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+        st->SetTypeParameterTypes(checker->CreateUnconstrainedTypeParameters(st->TypeParams()));
+        checker->AssignTypeParameterConstraints(st->TypeParams());
     }
 
     for (auto *const param : st->TypeParams()->Params()) {

@@ -1060,7 +1060,8 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
     }
 
     if (func->TypeParams() != nullptr) {
-        signatureInfo->typeParams = CreateTypeForTypeParameters(func->TypeParams());
+        signatureInfo->typeParams = CreateUnconstrainedTypeParameters(func->TypeParams());
+        AssignTypeParameterConstraints(func->TypeParams());
     }
 
     for (auto *const it : func->Params()) {
@@ -1916,6 +1917,16 @@ void ETSChecker::CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectTy
     auto hash = GetHashFromFunctionType(type);
     ASSERT(functionalInterfaceCache_.find(hash) == functionalInterfaceCache_.cend());
     functionalInterfaceCache_.emplace(hash, ifaceType);
+}
+
+ArenaVector<ConstraintCheckRecord> &ETSChecker::PendingConstraintCheckRecords()
+{
+    return pendingConstraintCheckRecords_;
+}
+
+size_t &ETSChecker::ConstraintCheckScopesCount()
+{
+    return constraintCheckScopesCount_;
 }
 
 }  // namespace ark::es2panda::checker

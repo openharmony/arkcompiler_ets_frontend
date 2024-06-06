@@ -566,4 +566,4 @@
     }
   }
 }
-TypeError: Type 'BigInt' is not assignable to constraint type 'Numeric|String'. [recordKeyTypeCheck03.ets:19:19]
+TypeError: Type BigInt is not assignable to constraint type Numeric|String [recordKeyTypeCheck03.ets:19:18]

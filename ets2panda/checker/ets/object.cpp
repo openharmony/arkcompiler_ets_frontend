@@ -87,7 +87,6 @@ ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
 
     type->SetSuperType(superObj);
     GetSuperType(superObj);
-
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_SUPER);
     return type->SuperType();
 }
@@ -119,7 +118,6 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfClass(ETSObjectType *typ
     for (auto *it : declNode->Implements()) {
         ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extendsSet, it->Start());
     }
-
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
     return type->Interfaces();
 }
@@ -138,7 +136,6 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfacesOfInterface(ETSObjectType 
     for (auto *it : declNode->Extends()) {
         ValidateImplementedInterface(type, it->Expr()->AsTypeNode()->GetType(this), &extendsSet, it->Start());
     }
-
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_INTERFACES);
     return type->Interfaces();
 }
@@ -156,7 +153,7 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfaces(ETSObjectType *type)
     return type->Interfaces();
 }
 
-ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams)
+ArenaVector<Type *> ETSChecker::CreateUnconstrainedTypeParameters(ir::TSTypeParameterDeclaration const *typeParams)
 {
     ArenaVector<Type *> result {Allocator()->Adapter()};
     checker::ScopeContext scopeCtx(this, typeParams->Scope());
@@ -174,14 +171,18 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
     for (auto *const typeParam : typeParams->Params()) {
         result.emplace_back(SetUpParameterType(typeParam));
     }
+    return result;
+}
 
+void ETSChecker::AssignTypeParameterConstraints(ir::TSTypeParameterDeclaration const *typeParams)
+{
+    ConstraintCheckScope ctScope(this);
     // The type parameter might be used in the constraint, like 'K extend Comparable<K>',
     // so we need to create their type first, then set up the constraint
     for (auto *const param : typeParams->Params()) {
         SetUpTypeParameterConstraint(param);
     }
-
-    return result;
+    ctScope.TryCheckConstraints();
 }
 
 void ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends)
@@ -214,11 +215,7 @@ void ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2T
 
 void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 {
-    ETSTypeParameter *const paramType = [this, param]() {
-        auto *const type = param->Name()->Variable()->TsType();
-        return type != nullptr ? type->AsETSTypeParameter() : SetUpParameterType(param);
-    }();
-
+    ETSTypeParameter *const paramType = param->Name()->Variable()->TsType()->AsETSTypeParameter();
     auto const traverseReferenced =
         [this, scope = param->Parent()->AsTSTypeParameterDeclaration()->Scope()](ir::TypeNode *typeNode) {
             if (!typeNode->IsETSTypeReference()) {
@@ -234,6 +231,7 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
     if (param->Constraint() != nullptr) {
         traverseReferenced(param->Constraint());
         auto *const constraint = param->Constraint()->GetType(this);
+        // invalid: T extends int[]
         if (!constraint->IsETSObjectType() && !constraint->IsETSTypeParameter() && !constraint->IsETSUnionType()) {
             ThrowTypeError("Extends constraint must be an object", param->Constraint()->Start());
         }
@@ -277,7 +275,8 @@ void ETSChecker::CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type
     ir::TSTypeParameterDeclaration *typeParams = type->GetDeclNode()->IsClassDefinition()
                                                      ? type->GetDeclNode()->AsClassDefinition()->TypeParams()
                                                      : type->GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
-    type->SetTypeArguments(CreateTypeForTypeParameters(typeParams));
+    type->SetTypeArguments(CreateUnconstrainedTypeParameters(typeParams));
+    AssignTypeParameterConstraints(typeParams);
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_TYPE_PARAMS);
     type->AddObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION);
 }
@@ -297,15 +296,15 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
         interfaceType = var->TsType()->AsETSObjectType();
     }
 
+    ConstraintCheckScope ctScope(this);
     if (interfaceDecl->TypeParams() != nullptr) {
         interfaceType->AddTypeFlag(TypeFlag::GENERIC);
         CreateTypeForClassOrInterfaceTypeParameters(interfaceType);
     }
 
     GetInterfacesOfInterface(interfaceType);
-
     interfaceType->SetSuperType(GlobalETSObjectType());
-
+    ctScope.TryCheckConstraints();
     return interfaceType;
 }
 
@@ -334,6 +333,7 @@ ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classD
 
     classDef->SetTsType(classType);
 
+    ConstraintCheckScope ctScope(this);
     if (classDef->TypeParams() != nullptr) {
         classType->AddTypeFlag(TypeFlag::GENERIC);
         CreateTypeForClassOrInterfaceTypeParameters(classType);
@@ -354,7 +354,7 @@ ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classD
         GetSuperType(classType);
         GetInterfacesOfClass(classType);
     }
-
+    ctScope.TryCheckConstraints();
     return classType;
 }
 
@@ -1926,4 +1926,5 @@ void ETSChecker::CheckInvokeMethodsLegitimacy(ETSObjectType *const classType)
     }
     classType->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
 }
+
 }  // namespace ark::es2panda::checker
