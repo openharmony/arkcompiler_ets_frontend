@@ -13,17 +13,6 @@
  * limitations under the License.
  */
 
-let a: byte = 127;
-let b: short = -32768;
-let c: int = 2147483647;
-let d: long = -9223372036854775808;
+function foo<T>(x: T) {}
 
-let e: boolean = true;
-let f: char = c'a';
-
-let g: undefined;
-
-let k: float = 3.1415;
-let l: double = 3.1415;
-
-let c2: int = a;
+foo<void>(void) 

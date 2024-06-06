@@ -131,6 +131,7 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
             return TsType();
         }
         case PrimitiveType::VOID: {
+            checker->CheckVoidAnnotation(this);
             SetTsType(checker->GlobalVoidType());
             return TsType();
         }

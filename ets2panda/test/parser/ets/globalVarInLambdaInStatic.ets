@@ -28,7 +28,7 @@ function nativeModule(): NativeModule {
 
 class NativeString {
     static MethodeOfStatic() {
-        let tmp = globalFunction((len: number):void => {
+        globalFunction((len: number):void => {
             nativeModule().MethodeOfClass(len);
         });
     }

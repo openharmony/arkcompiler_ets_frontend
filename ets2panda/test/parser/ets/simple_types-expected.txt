@@ -1064,7 +1064,7 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "ETSPrimitiveType",
+              "type": "ETSUndefinedType",
               "loc": {
                 "start": {
                   "line": 24,
@@ -1072,7 +1072,7 @@
                 },
                 "end": {
                   "line": 24,
-                  "column": 12
+                  "column": 17
                 }
               }
             },

@@ -590,6 +590,7 @@ public:
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);
     checker::ETSObjectType *CreateSyntheticType(util::StringView const &syntheticName,
                                                 checker::ETSObjectType *lastObjectType, ir::Identifier *id);
+    void CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
 
     // Smart cast support
     [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);

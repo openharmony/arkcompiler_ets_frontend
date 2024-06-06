@@ -976,7 +976,25 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
                ? std::make_optional(std::make_tuple(testCondition_.variable, consequentType, alternateType))
                : std::make_optional(std::make_tuple(testCondition_.variable, alternateType, consequentType));
 }
+void ETSChecker::CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation)
+{
+    // Void annotation is valid only when used as 'return type' , 'type parameter instantiation', 'default type'.
+    if (typeAnnotation->GetPrimitiveType() != ir::PrimitiveType::VOID) {
+        return;
+    }
 
+    auto parent = typeAnnotation->Parent();
+    if (parent->IsScriptFunction() && parent->AsScriptFunction()->ReturnTypeAnnotation() == typeAnnotation) {
+        return;
+    }
+    if (parent->IsETSFunctionType() && parent->AsETSFunctionType()->ReturnType() == typeAnnotation) {
+        return;
+    }
+    if (parent->IsTSTypeParameterInstantiation() || parent->IsTSTypeParameter()) {
+        return;
+    }
+    ThrowTypeError({"'void' used as type annotation."}, typeAnnotation->Start());
+}
 void ETSChecker::ApplySmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
 {
     ASSERT(variable != nullptr);

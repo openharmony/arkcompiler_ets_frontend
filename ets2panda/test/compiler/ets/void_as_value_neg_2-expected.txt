@@ -1,0 +1,203 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1
+            },
+            "end": {
+              "line": 1,
+              "column": 1
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 1
+              }
+            }
+          },
+          {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "x",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 15,
+                  "column": 5
+                },
+                "end": {
+                  "line": 15,
+                  "column": 6
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSPrimitiveType",
+              "loc": {
+                "start": {
+                  "line": 15,
+                  "column": 8
+                },
+                "end": {
+                  "line": 15,
+                  "column": 12
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 15,
+                "column": 5
+              },
+              "end": {
+                "line": 15,
+                "column": 6
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1
+          },
+          "end": {
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 1
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 15,
+      "column": 12
+    }
+  }
+}
+TypeError: 'void' used as type annotation. [void_as_value_neg_2.ets:15:8]

@@ -13,17 +13,14 @@
  * limitations under the License.
  */
 
-let a: byte = 127;
-let b: short = -32768;
-let c: int = 2147483647;
-let d: long = -9223372036854775808;
+class A<T>{}
 
-let e: boolean = true;
-let f: char = c'a';
+function foo<T>(x: T) {}
 
-let g: undefined;
+function main(){
+    foo<void>(undefined) 
+    let a = new A<void>()
+    let b = new A<undefined>()
+}
 
-let k: float = 3.1415;
-let l: double = 3.1415;
 
-let c2: int = a;
