@@ -967,13 +967,30 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
         }
     }
 
+    auto parseClassMethod = [&memberModifiers, &startLoc, this](ir::Identifier *methodName) {
+        auto *classMethod = ParseClassMethodDefinition(methodName, memberModifiers, nullptr);
+        classMethod->SetStart(startLoc);
+        return classMethod;
+    };
+
+    if (InAmbientContext()) {
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS &&
+            (GetContext().Status() & ParserStatus::IN_CLASS_BODY) != 0U) {
+            // Special case for processing of special '(param: type): returnType` identifier using in ambient context
+            util::StringView tokenName = util::StringView {compiler::Signatures::STATIC_INVOKE_METHOD};
+            memberModifiers |= ir::ModifierFlags::STATIC;
+            auto *ident = AllocNode<ir::Identifier>(tokenName, Allocator());
+            ident->SetReference(false);
+            ident->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
+            return parseClassMethod(ident);
+        }
+    }
+
     auto *memberName = ExpectIdentifier();
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto *classMethod = ParseClassMethodDefinition(memberName, memberModifiers, nullptr);
-        classMethod->SetStart(startLoc);
-        return classMethod;
+        return parseClassMethod(memberName);
     }
 
     ArenaVector<ir::AstNode *> fieldDeclarations(Allocator()->Adapter());

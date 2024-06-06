@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected. [non-ambient_call_signature.ets:17:5]
