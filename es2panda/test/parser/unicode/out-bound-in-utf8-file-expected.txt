@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token [out-bound-in-utf8-file.js:15:6]
