@@ -1749,7 +1749,6 @@ bool ETSChecker::CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *an
             enclosingCatchClause = FindAncestorGivenByType(startPoint, ir::AstNodeType::CATCH_CLAUSE, p);
             enclosingFinallyBlock = FindFinalizerOfTryStatement(startPoint, p);
             const auto catches = p->AsTryStatement()->CatchClauses();
-
             if (std::any_of(catches.begin(), catches.end(), predicateFunc)) {
                 startPoint = enclosingCatchClause;
             } else if (enclosingFinallyBlock != nullptr &&

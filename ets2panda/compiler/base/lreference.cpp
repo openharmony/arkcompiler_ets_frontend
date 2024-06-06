@@ -43,7 +43,6 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
         case ir::AstNodeType::IDENTIFIER: {
             const util::StringView &name = node->AsIdentifier()->Name();
             auto res = cg->Scope()->Find(name, varbinder::ResolveBindingOptions::ALL);
-
             if (res.variable == nullptr) {
                 res.variable = node->AsIdentifier()->Variable();
             }
@@ -184,7 +183,6 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
 
     const auto *memberExpr = Node()->AsMemberExpression();
     staticObjRef_ = memberExpr->Object()->TsType();
-
     if (!memberExpr->IsComputed() && etsg_->Checker()->IsVariableStatic(memberExpr->PropVar()) &&
         !staticObjRef_->IsETSDynamicType()) {
         return;
