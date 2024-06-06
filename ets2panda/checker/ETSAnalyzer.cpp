@@ -803,7 +803,7 @@ checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *const expr) const
         checker->ThrowTypeError("Invalid left-hand side of assignment expression", expr->Left()->Start());
     }
 
-    if (expr->target_ != nullptr) {
+    if (expr->target_ != nullptr && !expr->IsIgnoreConstAssign()) {
         checker->ValidateUnaryOperatorOperand(expr->target_);
     }
 
@@ -1389,9 +1389,6 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
             checker->ThrowTypeError({"type ", objType->Name(), " has no property named ", pname}, propExpr->Start());
         }
         checker->ValidatePropertyAccess(lv, objType, propExpr->Start());
-        if (lv->HasFlag(varbinder::VariableFlags::READONLY)) {
-            checker->ThrowTypeError({"cannot assign to readonly property ", pname}, propExpr->Start());
-        }
 
         if (key->IsIdentifier()) {
             key->AsIdentifier()->SetVariable(lv);

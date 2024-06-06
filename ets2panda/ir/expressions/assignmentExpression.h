@@ -121,6 +121,16 @@ public:
         return target_;
     }
 
+    void SetIgnoreConstAssign()
+    {
+        ignoreConstAssign_ = true;
+    }
+
+    [[nodiscard]] bool IsIgnoreConstAssign() const
+    {
+        return ignoreConstAssign_;
+    }
+
     [[nodiscard]] AssignmentExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     [[nodiscard]] bool ConvertibleToAssignmentPattern(bool mustBePattern = true);
@@ -155,6 +165,7 @@ private:
     lexer::TokenType operator_;
     varbinder::Variable *target_ {};
     checker::Type *operationType_ {};
+    bool ignoreConstAssign_ = false;
 };
 }  // namespace ark::es2panda::ir
 

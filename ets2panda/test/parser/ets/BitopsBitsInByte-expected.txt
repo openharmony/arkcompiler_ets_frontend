@@ -772,7 +772,7 @@
             },
             "accessibility": "private",
             "static": true,
-            "readonly": false,
+            "readonly": true,
             "declare": false,
             "optional": false,
             "computed": false,

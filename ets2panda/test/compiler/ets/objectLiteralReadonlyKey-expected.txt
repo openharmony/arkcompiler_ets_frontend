@@ -41,7 +41,7 @@
             },
             "accessibility": "public",
             "static": false,
-            "readonly": false,
+            "readonly": true,
             "declare": false,
             "optional": false,
             "computed": false,
@@ -612,4 +612,3 @@
     }
   }
 }
-TypeError: cannot assign to readonly property f [objectLiteralReadonlyKey.ets:21:5]

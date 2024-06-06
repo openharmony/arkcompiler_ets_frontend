@@ -96,7 +96,7 @@
             },
             "accessibility": "public",
             "static": false,
-            "readonly": false,
+            "readonly": true,
             "declare": false,
             "optional": false,
             "computed": false,
