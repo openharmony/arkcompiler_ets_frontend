@@ -172,8 +172,10 @@ protected:
     template <class Scope, class Node>
     static void BindScopeNode(Scope *scope, Node *node)
     {
-        scope->BindNode(node);
-        node->SetScope(scope);
+        if (node->Scope() == nullptr || node->IsBlockStatement()) {
+            scope->BindNode(node);
+            node->SetScope(scope);
+        }
     }
 
     static void BindFunctionScopes(varbinder::FunctionScope *scope, varbinder::FunctionParamScope *paramScope);
