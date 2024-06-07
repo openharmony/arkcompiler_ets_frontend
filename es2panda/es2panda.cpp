@@ -217,7 +217,7 @@ util::PatchFix *Compiler::InitPatchFixHelper(const SourceFile &input, const Comp
             patchFixKind = util::PatchFixKind::COLDRELOAD;
         }
         patchFixHelper = new util::PatchFix(needDumpSymbolFile, needGeneratePatch, patchFixKind, input.recordName,
-            symbolTable, options.targetApiVersion);
+            symbolTable);
         parser_->AddPatchFixHelper(patchFixHelper);
         compiler_->AddPatchFixHelper(patchFixHelper);
     }
