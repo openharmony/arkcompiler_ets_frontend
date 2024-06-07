@@ -68,6 +68,10 @@ namespace secharmony {
   // used for property cache
   export let historyMangledTable: Map<string, string> = undefined;
 
+  // saved generated property name
+  export let newlyOccupiedMangledProps: Set<string> = new Set();
+  export let mangledPropsInNameCache: Set<string> = new Set();
+
   export let reservedProperties: Set<string> = new Set();
   export let universalReservedProperties: RegExp[] = [];
 
@@ -82,22 +86,22 @@ namespace secharmony {
     if (!profile || !profile.mEnable || !profile.mRenameProperties) {
       return null;
     }
+    let isInitializedReservedList = false;
 
     return renamePropertiesFactory;
 
     function renamePropertiesFactory(context: TransformationContext): Transformer<Node> {
       let options: NameGeneratorOptions = {};
-      if (profile.mNameGeneratorType === NameGeneratorType.HEX) {
-        options.hexWithPrefixSuffix = true;
-      }
-
       let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
-
-      let tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
-      tmpReservedProps.forEach(item => {
-        reservedProperties.add(item);
-      });
-      universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
+      if (!isInitializedReservedList) {
+        const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
+        tmpReservedProps.forEach(item => {
+          reservedProperties.add(item);
+        });
+        mangledPropsInNameCache = new Set(historyMangledTable?.values());
+        universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
+        isInitializedReservedList = true;
+      }
 
       let currentConstructorParams: Set<string> = new Set<string>();
 
@@ -222,34 +226,14 @@ namespace secharmony {
             continue;
           }
 
-          let isInGlobalMangledTable = false;
-          for (const value of globalMangledTable.values()) {
-            if (value === tmpName) {
-              isInGlobalMangledTable = true;
-              break;
-            }
-          }
-
-          if (isInGlobalMangledTable) {
+          if (newlyOccupiedMangledProps.has(tmpName) || mangledPropsInNameCache.has(tmpName)) {
             continue;
           }
 
-          let isInHistoryMangledTable = false;
-          if (historyMangledTable) {
-            for (const value of historyMangledTable.values()) {
-              if (value === tmpName) {
-                isInHistoryMangledTable = true;
-                break;
-              }
-            }
-          }
-
-          if (!isInHistoryMangledTable) {
-            mangledName = tmpName;
-            break;
-          }
+          mangledName = tmpName;
         }
         globalMangledTable.set(original, mangledName);
+        newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
 

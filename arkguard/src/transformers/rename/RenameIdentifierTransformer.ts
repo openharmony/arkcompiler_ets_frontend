@@ -89,7 +89,9 @@ import {
   historyMangledTable,
   reservedProperties,
   globalSwappedMangledTable,
-  universalReservedProperties
+  universalReservedProperties,
+  newlyOccupiedMangledProps,
+  mangledPropsInNameCache
 } from './RenamePropertiesTransformer';
 import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
@@ -282,35 +284,15 @@ namespace secharmony {
             continue;
           }
 
-          let isInGlobalMangledTable = false;
-          for (const value of globalMangledTable.values()) {
-            if (value === tmpName) {
-              isInGlobalMangledTable = true;
-              break;
-            }
-          }
-
-          if (isInGlobalMangledTable) {
+          if (newlyOccupiedMangledProps.has(tmpName) || mangledPropsInNameCache.has(tmpName)) {
             continue;
           }
 
-          let isInHistoryMangledTable = false;
-          if (historyMangledTable) {
-            for (const value of historyMangledTable.values()) {
-              if (value === tmpName) {
-                isInHistoryMangledTable = true;
-                break;
-              }
-            }
-          }
-
-          if (!isInHistoryMangledTable) {
-            mangledName = tmpName;
-            break;
-          }
+          mangledName = tmpName;
         }
 
         globalMangledTable.set(original, mangledName);
+        newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
 
