@@ -2133,4 +2133,4 @@
     }
   }
 }
-TypeError: Type 'B<String>' is not compatible with type 'AInterface<T>' at index 1 [InferTypeParamFromParam2.sts:27:39]
+TypeError: No matching call signature for staticFunction(B<String>) [InferTypeParamFromParam2.sts:27:12]
