@@ -1063,6 +1063,12 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         calleeType = checker->GetApparentType(expr->Callee()->Check(checker));
     }
     checker->CheckNonNullish(expr->Callee());
+    if (expr->Callee()->IsMemberExpression() && expr->Callee()->AsMemberExpression()->Object() != nullptr &&
+        expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSObjectType() &&
+        expr->Callee()->AsMemberExpression()->Object()->TsType()->AsETSObjectType()->HasObjectFlag(
+            ETSObjectFlags::READONLY)) {
+        checker->ThrowTypeError("Cannot call readonly type methods.", expr->Start());
+    }
     checker::Type *returnType;
     if (calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl()) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`

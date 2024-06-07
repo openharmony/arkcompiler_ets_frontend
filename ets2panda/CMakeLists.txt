@@ -421,6 +421,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsExtensionFuncHelperType.cpp
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsNonNullishType.cpp
+  checker/types/ets/etsReadonlyType.cpp
   checker/types/ets/etsNullishTypes.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp

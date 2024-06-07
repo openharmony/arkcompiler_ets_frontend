@@ -81,6 +81,7 @@ libes2panda_sources = [
   "checker/types/ets/etsNonNullishType.cpp",
   "checker/types/ets/etsNullishTypes.cpp",
   "checker/types/ets/etsObjectType.cpp",
+  "checker/types/ets/etsReadonlyType.cpp",
   "checker/types/ets/etsStringType.cpp",
   "checker/types/ets/etsTupleType.cpp",
   "checker/types/ets/etsTypeParameter.cpp",

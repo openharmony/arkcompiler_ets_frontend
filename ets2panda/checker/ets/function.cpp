@@ -137,6 +137,13 @@ bool ETSChecker::EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &ty
     return res;
 }
 
+bool ETSChecker::EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
+                                                Type *argumentType, Substitution *substitution)
+{
+    return EnhanceSubstitutionForType(typeParams, paramType->GetUnderlying(), GetReadonlyType(argumentType),
+                                      substitution);
+}
+
 /* A very rough and imprecise partial type inference */
 bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType, Type *argumentType,
                                             Substitution *substitution)
@@ -166,6 +173,9 @@ bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParam
         }
     }
 
+    if (paramType->IsETSReadonlyType()) {
+        return EnhanceSubstitutionForReadonly(typeParams, paramType->AsETSReadonlyType(), argumentType, substitution);
+    }
     if (paramType->IsETSUnionType()) {
         return EnhanceSubstitutionForUnion(typeParams, paramType->AsETSUnionType(), argumentType, substitution);
     }

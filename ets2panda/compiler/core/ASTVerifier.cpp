@@ -590,6 +590,11 @@ private:
 
     bool CheckAstExceptions(const ir::Identifier *ast) const
     {
+        // NOTE(lujiahui): skip Readonly property
+        if (ast->Parent()->IsETSTypeReferencePart() && ast->Name().Is("Readonly")) {
+            return true;
+        }
+        // E
         // NOTE(kkonkuznetsov): skip enums
         if (ast->Parent()->IsMemberExpression() &&
             (ast->Parent()->AsMemberExpression()->Object()->TsType() == nullptr ||

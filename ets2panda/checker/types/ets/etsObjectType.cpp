@@ -343,7 +343,7 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
 void ETSObjectType::IdenticalUptoTypeArguments(TypeRelation *relation, Type *other)
 {
     relation->Result(false);
-    if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType()->ObjectFlags())) {
+    if (!other->IsETSObjectType() || !CheckIdenticalFlags(other->AsETSObjectType())) {
         return;
     }
 
@@ -394,13 +394,17 @@ void ETSObjectType::Identical(TypeRelation *relation, Type *other)
     relation->Result(true);
 }
 
-bool ETSObjectType::CheckIdenticalFlags(const ETSObjectFlags target) const
+bool ETSObjectType::CheckIdenticalFlags(ETSObjectType *other) const
 {
     constexpr auto FLAGS_TO_REMOVE = ETSObjectFlags::INCOMPLETE_INSTANTIATION |
                                      ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
-
-    auto cleanedTargetFlags = target;
+                                     ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY | ETSObjectFlags::READONLY;
+    // note(lujiahui): we support assigning T to Readonly<T>, but do not support assigning Readonly<T> to T
+    // more details in spec
+    if (!HasObjectFlag(ETSObjectFlags::READONLY) && other->HasObjectFlag(ETSObjectFlags::READONLY)) {
+        return false;
+    }
+    auto cleanedTargetFlags = other->ObjectFlags();
     cleanedTargetFlags &= ~FLAGS_TO_REMOVE;
 
     auto cleanedSelfFlags = ObjectFlags();
@@ -416,6 +420,11 @@ bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unuse
 
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
+    if (source->IsETSObjectType() && source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::READONLY)) {
+        relation->Result(false);
+        return;
+    }
+
     if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL) && source->IsETSFunctionType()) {
         EnsurePropertiesInstantiated();
         auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find(
@@ -823,6 +832,44 @@ void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObj
     copiedType->SetTypeArguments(std::move(newTypeArgs));
     copiedType->relation_ = relation;
     copiedType->substitution_ = substitution;
+}
+
+void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop,
+                                       PropertyType fieldType, PropertyProcesser const &func)
+{
+    auto *const propType = prop->Declaration()->Node()->Check(checker);
+
+    if (propType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        checker->ThrowTypeError("Base type of a Utility type can only contain fields with reference type.",
+                                prop->Declaration()->Node()->Start());
+    }
+
+    auto *const propCopy = func(prop, propType);
+    if (fieldType == PropertyType::INSTANCE_FIELD) {
+        RemoveProperty<PropertyType::INSTANCE_FIELD>(prop);
+        AddProperty<PropertyType::INSTANCE_FIELD>(propCopy);
+    } else {
+        RemoveProperty<PropertyType::STATIC_FIELD>(prop);
+        AddProperty<PropertyType::STATIC_FIELD>(propCopy);
+    }
+}
+
+void ETSObjectType::UpdateTypeProperties(checker::ETSChecker *checker, PropertyProcesser const &func)
+{
+    AddObjectFlag(ETSObjectFlags::READONLY);
+    for (auto const &prop : InstanceFields()) {
+        UpdateTypeProperty(checker, prop.second, PropertyType::INSTANCE_FIELD, func);
+    }
+
+    for (auto const &prop : StaticFields()) {
+        UpdateTypeProperty(checker, prop.second, PropertyType::STATIC_FIELD, func);
+    }
+
+    if (SuperType() != nullptr) {
+        auto *const superProp = SuperType()->Clone(checker)->AsETSObjectType();
+        superProp->UpdateTypeProperties(checker, func);
+        SetSuperType(superProp);
+    }
 }
 
 ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution, bool cache)

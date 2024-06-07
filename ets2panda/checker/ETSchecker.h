@@ -321,6 +321,8 @@ public:
     static void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
+                                                      Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
                                                     Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
@@ -436,7 +438,10 @@ public:
     Type *GetTypeFromClassReference(varbinder::Variable *var);
     void ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *typeAliasNode,
                                                const ir::TSTypeParameterInstantiation *exactTypeParams);
+    void MakePropertiesReadonly(ETSObjectType *classType);
+    Type *HandleReadonlyType(const ir::TSTypeParameterInstantiation *typeParams);
     Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *typeParams);
+    Type *GetReadonlyType(Type *type);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantTypeFromPrimitiveType(Type *type) const;

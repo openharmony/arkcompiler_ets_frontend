@@ -39,5 +39,6 @@
 #include "etsNonNullishType.h"
 #include "etsNullishTypes.h"
 #include "checker/types/signature.h"
+#include "etsReadonlyType.h"
 
 #endif /* TYPES_H */

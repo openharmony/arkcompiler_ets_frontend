@@ -128,6 +128,8 @@ defines:
     ref: UNDEFINED
   - name: 'null'
     ref: NULL_LITERAL
+  - name: 'Readonly'
+    ref: READONLY_TYPE_NAME
 
 packages:
   - name: 'std.core'
