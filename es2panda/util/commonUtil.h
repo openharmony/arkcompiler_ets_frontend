@@ -47,7 +47,7 @@ constexpr size_t BUNDLE_NAME_POS = 2U;
 constexpr size_t NORMALIZED_IMPORT_POS = 3U;
 constexpr size_t VERSION_POS = 4U;
 
-std::vector<std::string> Split(const std::string &ohmurl, const char delimiter);
+std::vector<std::string> Split(const std::string &str, const char delimiter);
 bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &externalPkgNames);
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
