@@ -64,6 +64,8 @@ Note:If the text contains special characters, please escape them according to th
                     <filteritem type="filepath" name="legacy_bin/api8/bin/mac/js2abc" desc="js2abc for max"/>
                     <filteritem type="filepath" name="legacy_bin/api8/bin/win/js2abc.exe" desc="js2abc for win"/>
                     <filteritem type="filepath" name="ets2panda/linter/test/d_ts.lib.d.ts" desc="common ts test file"/>
+                    <filteritem type="filepath" name="figures/en-us_image_ets_frontend_arch.png" desc="picture used in README.md"/>
+                    <filteritem type="filepath" name="figures/zh-cn_image_ets_frontend_arch.png" desc="picture used in README_zh.md"/>
             </filefilter>
             <filefilter name="copyrightPolicyFilter" desc="" >
                 <filteritem type="filepath" name="legacy_bin/api8/src/index.js" desc="third-party"/>
