@@ -103,8 +103,8 @@ bool DepsRelationResolver::Resolve()
             depsToBeResolved_.pop();
             const auto progkeyItr = record2ProgramMap.find(record);
             if (progkeyItr == record2ProgramMap.end()) {
-                std::cerr << "Failed to find compile record: " << record << std::endl;
-                return false;
+                // Skip external record, may happen at PatchFix or HSP scenario
+                continue;
             }
             const auto progItr = progsInfo_.find(progkeyItr->second);
             if (progItr == progsInfo_.end()) {
