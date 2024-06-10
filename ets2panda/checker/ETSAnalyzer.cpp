@@ -1140,7 +1140,8 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
         }
     }
 
-    auto *const consequentType = expr->Consequent()->Check(checker);
+    auto *consequent = expr->Consequent();
+    auto *consequentType = consequent->Check(checker);
 
     SmartCastArray consequentSmartCasts = checker->Context().CloneSmartCasts();
     checker->Context().RestoreSmartCasts(smartCasts);
@@ -1151,7 +1152,8 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
         }
     }
 
-    auto *const alternateType = expr->Alternate()->Check(checker);
+    auto *alternate = expr->Alternate();
+    auto *alternateType = alternate->Check(checker);
 
     // Here we need to combine types from consequent and alternate if blocks.
     checker->Context().CombineSmartCasts(consequentSmartCasts);
@@ -1159,10 +1161,19 @@ checker::Type *ETSAnalyzer::Check(ir::ConditionalExpression *expr) const
     if (checker->IsTypeIdenticalTo(consequentType, alternateType)) {
         expr->SetTsType(checker->GetNonConstantTypeFromPrimitiveType(consequentType));
     } else {
-        expr->SetTsType(checker->CreateETSUnionType({consequentType, alternateType}));
-        if (expr->TsType()->IsETSReferenceType()) {
-            checker->MaybeBoxExpression(expr->Consequent());
-            checker->MaybeBoxExpression(expr->Alternate());
+        //  If possible and required update number literal type to the proper value (identical to left-side type)
+        if (alternate->IsNumberLiteral() &&
+            checker->AdjustNumberLiteralType(alternate->AsNumberLiteral(), alternateType, consequentType)) {
+            expr->SetTsType(consequentType);
+        } else if (consequent->IsNumberLiteral() &&
+                   checker->AdjustNumberLiteralType(consequent->AsNumberLiteral(), consequentType, alternateType)) {
+            expr->SetTsType(alternateType);
+        } else {
+            expr->SetTsType(checker->CreateETSUnionType({consequentType, alternateType}));
+            if (expr->TsType()->IsETSReferenceType()) {
+                checker->MaybeBoxExpression(expr->Consequent());
+                checker->MaybeBoxExpression(expr->Alternate());
+            }
         }
     }
 

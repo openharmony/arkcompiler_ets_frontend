@@ -16,14 +16,14 @@
 #ifndef ES2PANDA_CHECKER_ETS_CHECKER_H
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
+#include <mutex>
+
 #include "checker/checker.h"
 
 #include "checker/types/ets/types.h"
 #include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
 #include "util/helpers.h"
-
-#include <mutex>
 
 namespace ark::es2panda::varbinder {
 class VarBinder;
@@ -284,8 +284,10 @@ public:
                                                               checker::Type *rightType, Type *unboxedL, Type *unboxedR);
     std::tuple<Type *, Type *> CheckBinaryOperatorInstanceOf(lexer::SourcePosition pos, checker::Type *leftType,
                                                              checker::Type *rightType);
-    checker::Type *CheckBinaryOperatorNullishCoalescing(ir::Expression *right, lexer::SourcePosition pos,
-                                                        checker::Type *leftType, checker::Type *rightType);
+    checker::Type *CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir::Expression *right,
+                                                        lexer::SourcePosition pos);
+    bool AdjustNumberLiteralType(ir::NumberLiteral *literal, Type *literalType, Type *otherType);
+
     Type *HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
     Type *HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
     void FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::Expression *typeExpression);

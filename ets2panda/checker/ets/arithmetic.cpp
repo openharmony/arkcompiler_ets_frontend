@@ -15,12 +15,7 @@
 
 #include "arithmetic.h"
 
-#include "varbinder/variable.h"
-#include "checker/ETSchecker.h"
-#include "checker/ETSAnalyzerHelpers.h"
-
 namespace ark::es2panda::checker {
-
 Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
 {
     ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
@@ -521,16 +516,42 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
     return {tsType, opType};
 }
 
-Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, lexer::SourcePosition pos,
-                                                       checker::Type *const leftType,
-                                                       [[maybe_unused]] checker::Type *const rightType)
+bool ETSChecker::AdjustNumberLiteralType(ir::NumberLiteral *const literal, Type *literalType, Type *const otherType)
 {
-    ASSERT(rightType == right->TsType());
+    if (otherType->IsETSObjectType()) {
+        auto *const objectType = otherType->AsETSObjectType();
+        if (objectType->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE) && !objectType->IsETSStringType()) {
+            literal->RemoveBoxingUnboxingFlags(GetBoxingFlag(literalType));
+            literalType = ETSBuiltinTypeAsPrimitiveType(objectType);
+            literal->SetTsType(literalType);
+            literal->AddBoxingUnboxingFlags(GetBoxingFlag(literalType));
+            return true;
+        }
+    }
+    return false;
+}
+
+Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir::Expression *right,
+                                                       lexer::SourcePosition pos)
+{
+    auto *leftType = left->TsType();
     if (!IsReferenceType(leftType)) {
-        ThrowTypeError("Left-hand side expression must be a reference type.", pos);
+        ThrowTypeError("Left-hand side of nullish-coalescing expression must be a reference type.", pos);
     }
 
-    return CreateETSUnionType({GetNonNullishType(leftType), MaybeBoxExpression(right)});
+    leftType = GetNonNullishType(leftType);
+    auto *rightType = MaybeBoxExpression(right);
+
+    if (IsTypeIdenticalTo(leftType, rightType)) {
+        return leftType;
+    }
+
+    //  If possible and required update number literal type to the proper value (identical to left-side type)
+    if (right->IsNumberLiteral() && AdjustNumberLiteralType(right->AsNumberLiteral(), rightType, leftType)) {
+        return leftType;
+    }
+
+    return CreateETSUnionType({leftType, rightType});
 }
 
 using CheckBinaryFunction = std::function<checker::Type *(
@@ -630,7 +651,7 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
             return checker->CheckBinaryOperatorInstanceOf(pos, leftType, rightType);
         }
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
-            tsType = checker->CheckBinaryOperatorNullishCoalescing(right, pos, leftType, rightType);
+            tsType = checker->CheckBinaryOperatorNullishCoalescing(left, right, pos);
             break;
         }
         default: {
