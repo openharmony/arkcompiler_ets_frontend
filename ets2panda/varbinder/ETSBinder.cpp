@@ -60,6 +60,7 @@
 #include "ir/module/importSpecifier.h"
 #include "ir/expressions/literals/stringLiteral.h"
 #include "mem/arena_allocator.h"
+#include "os/filesystem.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "checker/ETSchecker.h"
@@ -606,6 +607,14 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
     }
 }
 
+bool ETSBinder::ReexportPathMatchesImportPath(const ir::ETSReExportDeclaration *const reexport,
+                                              const ir::ETSImportDeclaration *const import) const
+{
+    auto importSource = import->ResolvedSource()->Str();
+    auto reexportSource = reexport->GetProgramPath();
+    return importSource == reexportSource;
+}
+
 bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                           const varbinder::Scope::VariableMap &globalBindings,
                                                           const parser::Program *const importProgram,
@@ -621,11 +630,9 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
         ImportAllForeignBindings(specifier, globalBindings, importProgram, importGlobalScope, import);
     }
 
-    std::unordered_set<std::string> exportedNames;
     for (auto item : ReExportImports()) {
         // NOTE(rsipka): this should be refactored or eliminated
-        if (auto source = import->ResolvedSource()->Str(), program = item->GetProgramPath();
-            !source.Is(program.Mutf8())) {
+        if (!ReexportPathMatchesImportPath(item, import)) {
             continue;
         }
 
@@ -636,12 +643,6 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
 
             AddSpecifiersToTopBindings(it, item->GetETSImportDeclarations(),
                                        item->GetETSImportDeclarations()->Source());
-
-            if (it->IsImportSpecifier() &&
-                !exportedNames.insert(it->AsImportSpecifier()->Local()->Name().Mutf8()).second) {
-                ThrowError(import->Start(), "Ambiguous import \"" + it->AsImportSpecifier()->Local()->Name().Mutf8() +
-                                                "\" has multiple matching exports");
-            }
         }
     }
 
@@ -684,8 +685,7 @@ ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImpo
 {
     ir::ETSImportDeclaration *implDecl = nullptr;
     for (auto item : ReExportImports()) {
-        if (auto source = import->ResolvedSource()->Str(), program = item->GetProgramPath();
-            !source.Is(program.Mutf8())) {
+        if (!ReexportPathMatchesImportPath(item, import)) {
             continue;
         }
 
@@ -1066,6 +1066,8 @@ void ETSBinder::BuildProgram()
         BuildImportDeclaration(defaultImport);
     }
 
+    ValidateReexports();
+
     auto &stmts = Program()->Ast()->Statements();
     const auto etsGlobal = std::find_if(stmts.begin(), stmts.end(), [](const ir::Statement *stmt) {
         return stmt->IsClassDeclaration() &&
@@ -1132,6 +1134,94 @@ void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
 
     for (auto specifier : specifiers) {
         AddSpecifiersToTopBindings(specifier, decl, decl->Source());
+    }
+}
+
+Variable *ETSBinder::ValidateImportSpecifier(const ir::ImportSpecifier *const specifier,
+                                             const ir::ETSImportDeclaration *const import,
+                                             std::vector<ir::ETSImportDeclaration *> viewedReExport)
+{
+    const auto sourceName = import->ResolvedSource()->Str();
+    const auto &record = GetExternalProgram(sourceName, import->Source());
+    const auto *const importProgram = record.front();
+    const auto *const importGlobalScope = importProgram->GlobalScope();
+    const auto &globalBindings = importGlobalScope->Bindings();
+
+    auto imported = specifier->Imported()->Name();
+    for (const auto *const item : import->Specifiers()) {
+        // Handle alias
+        // export {foo as FOO}
+        if (item->IsImportSpecifier() && item->AsImportSpecifier()->Local()->Name().Is(imported.Mutf8()) &&
+            !item->AsImportSpecifier()->Local()->Name().Is(item->AsImportSpecifier()->Imported()->Name().Mutf8())) {
+            imported = item->AsImportSpecifier()->Imported()->Name();
+        }
+    }
+
+    auto *const var = FindImportSpecifiersVariable(imported, globalBindings, record);
+    if (var != nullptr) {
+        return var;
+    }
+
+    // Failed to find variable, go through reexports
+    const ir::ETSImportDeclaration *const implDecl =
+        FindImportDeclInReExports(import, viewedReExport, imported, import->Source());
+    if (implDecl != nullptr) {
+        return ValidateImportSpecifier(specifier, implDecl, std::move(viewedReExport));
+    }
+
+    return nullptr;
+}
+
+void ETSBinder::ValidateReexports()
+{
+    // This will throw syntax error if the reexport is incorrect
+    // This will also set variables and check for ambiguous reexports
+    for (auto *reexport : reExportImports_) {
+        ValidateReexportDeclaration(reexport);
+    }
+
+    reexportedNames_.clear();
+}
+
+void ETSBinder::ValidateReexportDeclaration(ir::ETSReExportDeclaration *decl)
+{
+    // Reexport declarations are available in all files, see ReExportImports()
+    // Check that reexport declaration is in this file
+    const auto program = Program()->SourceFile().GetAbsolutePath();
+    const auto reexportSource = os::GetAbsolutePath(decl->GetProgramPath().Utf8());
+    if (program.Utf8() != reexportSource) {
+        return;
+    }
+
+    const auto *const import = decl->GetETSImportDeclarations();
+    const auto &specifiers = import->Specifiers();
+    for (auto specifier : specifiers) {
+        // Example: export {foo} from "./A"
+        if (specifier->IsImportSpecifier()) {
+            auto importSpecifier = specifier->AsImportSpecifier();
+            const auto reexported = importSpecifier->Imported()->Name();
+            auto *const var =
+                ValidateImportSpecifier(importSpecifier, import, std::vector<ir::ETSImportDeclaration *>());
+            if (var == nullptr) {
+                ThrowError(import->Start(), "Incorrect export \"" + reexported.Mutf8() + "\"");
+            }
+
+            importSpecifier->Imported()->SetVariable(var);
+            importSpecifier->Local()->SetVariable(var);
+
+            // Remember reexported name to check for ambiguous reexports
+            if (!reexportedNames_.insert(reexported).second) {
+                ThrowError(import->Start(), "Ambiguous export \"" + reexported.Mutf8() + "\"");
+            }
+        }
+
+        if (specifier->IsImportNamespaceSpecifier()) {
+            // NOTE(kkonkuznetsov): See #20658
+            // How to validate ambiguous exports with namespace specifiers?
+            // Example:
+            // export * from "./A"
+            // export * from "./B"
+        }
     }
 }
 
