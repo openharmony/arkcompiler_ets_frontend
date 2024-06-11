@@ -57,7 +57,7 @@ static ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, var
     auto classCtx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
     auto *classDef =
         checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
-                                                ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+                                                ir::ModifierFlags::FINAL, Language(Language::Id::ETS));
     classDef->SetScope(classCtx.GetScope());
     auto *classDecl = checker->AllocNode<ir::ClassDeclaration>(classDef, checker->Allocator());
     classDef->Scope()->BindNode(classDecl);

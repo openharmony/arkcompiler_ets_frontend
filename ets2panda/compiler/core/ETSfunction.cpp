@@ -41,7 +41,7 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
     auto *superType = etsg->ContainingObjectType()->SuperType();
 
     if (superType == nullptr) {
-        etsg->CallThisStatic0(etsg->RootNode(), etsg->GetThisReg(), Signatures::BUILTIN_OBJECT_CTOR);
+        etsg->CallExact(etsg->RootNode(), Signatures::BUILTIN_OBJECT_CTOR, etsg->GetThisReg());
 
         return;
     }
@@ -52,7 +52,7 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
         return;
     }
 
-    etsg->CallThisStatic0(etsg->RootNode(), etsg->GetThisReg(), (*res)->InternalName());
+    etsg->CallExact(etsg->RootNode(), (*res)->InternalName(), etsg->GetThisReg());
 }
 
 void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block)

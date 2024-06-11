@@ -39,8 +39,7 @@ private:
     void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &calleeReg) const;
     void CompileCastUnboxable(const ir::TSAsExpression *expr) const;
     void CompileCast(const ir::TSAsExpression *expr) const;
-    void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, bool isStatic,
-                  checker::Signature *signature, bool isReference) const;
+    void EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, checker::Signature *signature) const;
     bool HandleLambdaObject(const ir::MemberExpression *expr, ETSGen *etsg) const;
     bool HandleArrayTypeLengthProperty(const ir::MemberExpression *expr, ETSGen *etsg) const;
     bool HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg) const;

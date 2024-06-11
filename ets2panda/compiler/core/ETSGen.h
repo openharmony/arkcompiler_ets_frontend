@@ -519,7 +519,7 @@ public:
 
     // Call, Construct
     void NewArray(const ir::AstNode *node, VReg arr, VReg dim, const checker::Type *arrType);
-    void NewObject(const ir::AstNode *node, VReg ctor, util::StringView name);
+    void NewObject(const ir::AstNode *node, util::StringView name, VReg athis);
     void BuildString(const ir::Expression *node);
     void CallBigIntUnaryOperator(const ir::Expression *node, VReg arg, util::StringView signature);
     void CallBigIntBinaryOperator(const ir::Expression *node, VReg lhs, VReg rhs, util::StringView signature);
@@ -531,72 +531,94 @@ public:
         CallImpl<InitobjShort, Initobj, InitobjRange>(node, signature, arguments);
     }
 
-    void CallStatic(const ir::AstNode *node, checker::Signature *signature,
-                    const ArenaVector<ir::Expression *> &arguments)
+    bool IsDevirtualizedSignature(const checker::Signature *signature)
+    {
+        ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        return signature->HasSignatureFlag(checker::SignatureFlags::FINAL | checker::SignatureFlags::PRIVATE |
+                                           checker::SignatureFlags::CONSTRUCTOR);
+    }
+
+    void CallExact(const ir::AstNode *node, checker::Signature *signature,
+                   const ArenaVector<ir::Expression *> &arguments)
     {
         CallImpl<CallShort, Call, CallRange>(node, signature, arguments);
     }
 
-    void CallThisStatic(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
-                        const ArenaVector<ir::Expression *> &arguments)
+    void CallExact(const ir::AstNode *const node, const checker::Signature *signature, const VReg arg0,
+                   const ArenaVector<ir::Expression *> &arguments)
     {
-        CallThisImpl<CallShort, Call, CallRange>(node, ctor, signature, arguments);
+        CallArgStart<CallShort, Call, CallRange>(node, signature, arg0, arguments);
     }
 
-    void CallThisVirtual(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
-                         const ArenaVector<ir::Expression *> &arguments)
-    {
-        CallThisImpl<CallVirtShort, CallVirt, CallVirtRange>(node, ctor, signature, arguments);
-    }
-
-    void CallThisVirtual0(const ir::AstNode *const node, const VReg ctor, const util::StringView name)
-    {
-        Ra().Emit<CallVirtShort, 1>(node, name, ctor, dummyReg_);
-    }
-
-    void CallThisVirtual1(const ir::AstNode *const node, const VReg ctor, const util::StringView name, const VReg arg0)
-    {
-        Ra().Emit<CallVirtShort>(node, name, ctor, arg0);
-    }
-
-    void CallStatic0(const ir::AstNode *const node, const util::StringView name)
+    void CallExact(const ir::AstNode *const node, const util::StringView name)
     {
         Ra().Emit<CallShort, 0>(node, name, dummyReg_, dummyReg_);
     }
 
-    void CallStatic1(const ir::AstNode *const node, const util::StringView name, const VReg arg0)
+    void CallExact(const ir::AstNode *const node, const util::StringView name, const VReg arg0)
     {
-        Ra().Emit<CallShort, 1U>(node, name, arg0, dummyReg_);
+        Ra().Emit<CallShort, 1>(node, name, arg0, dummyReg_);
     }
 
-    void CallStatic2(const ir::AstNode *const node, const util::StringView name, const VReg arg0, const VReg arg1)
+    void CallExact(const ir::AstNode *const node, const util::StringView name, const VReg arg0, const VReg arg1)
     {
-        Ra().Emit<CallShort, 2U>(node, name, arg0, arg1);
+        Ra().Emit<CallShort>(node, name, arg0, arg1);
     }
 
-    void CallThisStatic0(const ir::AstNode *const node, const VReg ctor, const util::StringView name)
+    void CallExact(const ir::AstNode *const node, const util::StringView name, const VReg arg0, const VReg arg1,
+                   const VReg arg2)
     {
-        Ra().Emit<CallShort, 1>(node, name, ctor, dummyReg_);
+        Ra().Emit<Call, 3U>(node, name, arg0, arg1, arg2, dummyReg_);
     }
 
-    void CallThisStatic1(const ir::AstNode *const node, const VReg ctor, const util::StringView name, const VReg arg0)
+    void CallVirtual(const ir::AstNode *const node, const checker::Signature *signature, const VReg athis,
+                     const ArenaVector<ir::Expression *> &arguments)
     {
-        Ra().Emit<CallShort>(node, name, ctor, arg0);
+        ASSERT(!signature->HasSignatureFlag(checker::SignatureFlags::STATIC));
+        ASSERT(!signature->Owner()->GetDeclNode()->IsFinal() || signature->IsFinal());
+        if (IsDevirtualizedSignature(signature)) {
+            CallArgStart<CallShort, Call, CallRange>(node, signature, athis, arguments);
+        } else {
+            CallArgStart<CallVirtShort, CallVirt, CallVirtRange>(node, signature, athis, arguments);
+        }
     }
 
-    void CallThisStatic2(const ir::AstNode *const node, const VReg ctor, const util::StringView name, const VReg arg0,
-                         const VReg arg1)
+    void CallVirtual(const ir::AstNode *const node, const checker::Signature *signature, const VReg athis)
     {
-        Ra().Emit<Call, 3U>(node, name, ctor, arg0, arg1, dummyReg_);
+        if (IsDevirtualizedSignature(signature)) {
+            CallExact(node, signature->InternalName(), athis);
+        } else {
+            CallVirtual(node, signature->InternalName(), athis);
+        }
     }
 
-    void CallDynamic(const ir::AstNode *node, VReg &obj, VReg &param2, checker::Signature *signature,
+    void CallVirtual(const ir::AstNode *const node, const checker::Signature *signature, const VReg athis,
+                     const VReg arg0)
+    {
+        if (IsDevirtualizedSignature(signature)) {
+            CallExact(node, signature->InternalName(), athis, arg0);
+        } else {
+            CallVirtual(node, signature->InternalName(), athis, arg0);
+        }
+    }
+
+    void CallVirtual(const ir::AstNode *const node, const util::StringView name, const VReg athis)
+    {
+        Ra().Emit<CallVirtShort, 1>(node, name, athis, dummyReg_);
+    }
+
+    void CallVirtual(const ir::AstNode *const node, const util::StringView name, const VReg athis, const VReg arg0)
+    {
+        Ra().Emit<CallVirtShort>(node, name, athis, arg0);
+    }
+
+    void CallDynamic(const ir::AstNode *node, VReg obj, VReg param2, checker::Signature *signature,
                      const ArenaVector<ir::Expression *> &arguments)
     {
         CallDynamicImpl<CallShort, Call, CallRange>(node, obj, param2, signature, arguments);
     }
 
-    void CallDynamic(const ir::AstNode *node, VReg &obj, VReg &param2, VReg &param3, checker::Signature *signature,
+    void CallDynamic(const ir::AstNode *node, VReg obj, VReg param2, VReg param3, checker::Signature *signature,
                      const ArenaVector<ir::Expression *> &arguments)
     {
         CallDynamicImpl<CallShort, Call, CallRange>(node, obj, param2, param3, signature, arguments);
@@ -605,22 +627,20 @@ public:
 #ifdef PANDA_WITH_ETS
     // The functions below use ETS specific instructions.
     // Compilation of es2panda fails if ETS plugin is disabled
-    void LaunchStatic(const ir::AstNode *node, checker::Signature *signature,
-                      const ArenaVector<ir::Expression *> &arguments)
+    void LaunchExact(const ir::AstNode *node, checker::Signature *signature,
+                     const ArenaVector<ir::Expression *> &arguments)
     {
         CallImpl<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, signature, arguments);
     }
 
-    void LaunchThisStatic(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
-                          const ArenaVector<ir::Expression *> &arguments)
+    void LaunchVirtual(const ir::AstNode *const node, checker::Signature *const signature, const VReg athis,
+                       const ArenaVector<ir::Expression *> &arguments)
     {
-        CallThisImpl<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, ctor, signature, arguments);
-    }
-
-    void LaunchThisVirtual(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
-                           const ArenaVector<ir::Expression *> &arguments)
-    {
-        CallThisImpl<EtsLaunchVirtShort, EtsLaunchVirt, EtsLaunchVirtRange>(node, ctor, signature, arguments);
+        if (IsDevirtualizedSignature(signature)) {
+            CallArgStart<EtsLaunchShort, EtsLaunch, EtsLaunchRange>(node, signature, athis, arguments);
+        } else {
+            CallArgStart<EtsLaunchVirtShort, EtsLaunchVirt, EtsLaunchVirtRange>(node, signature, athis, arguments);
+        }
     }
 #endif  // PANDA_WITH_ETS
 
@@ -962,7 +982,7 @@ private:
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
-    void CallThisImpl(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
+    void CallArgStart(const ir::AstNode *const node, const checker::Signature *signature, const VReg argStart,
                       const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);
@@ -970,25 +990,25 @@ private:
 
         switch (arguments.size()) {
             case 0U: {
-                Ra().Emit<Short, 1>(node, name, ctor, dummyReg_);
+                Ra().Emit<Short, 1>(node, name, argStart, dummyReg_);
                 break;
             }
             case 1U: {
                 COMPILE_ARG(0);
-                Ra().Emit<Short>(node, name, ctor, arg0);
+                Ra().Emit<Short>(node, name, argStart, arg0);
                 break;
             }
             case 2U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
-                Ra().Emit<General, 3U>(node, name, ctor, arg0, arg1, dummyReg_);
+                Ra().Emit<General, 3U>(node, name, argStart, arg0, arg1, dummyReg_);
                 break;
             }
             case 3U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
-                Ra().Emit<General>(node, name, ctor, arg0, arg1, arg2);
+                Ra().Emit<General>(node, name, argStart, arg0, arg1, arg2);
                 break;
             }
             default: {
@@ -996,7 +1016,7 @@ private:
                     COMPILE_ARG(idx);
                 }
 
-                Rra().Emit<Range>(node, ctor, arguments.size() + 1, name, ctor);
+                Rra().Emit<Range>(node, argStart, arguments.size() + 1, name, argStart);
                 break;
             }
         }
@@ -1148,7 +1168,7 @@ private:
     }
 
     template <typename Short, typename General, typename Range>
-    void CallDynamicImpl(const ir::AstNode *node, VReg &obj, VReg &param2, VReg &param3, checker::Signature *signature,
+    void CallDynamicImpl(const ir::AstNode *node, VReg obj, VReg param2, VReg param3, checker::Signature *signature,
                          const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);

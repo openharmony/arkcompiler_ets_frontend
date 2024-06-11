@@ -208,11 +208,9 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) 
     }
 
     if (isStatic) {
-        etsg->LaunchStatic(expr, signature, expr->expr_->Arguments());
-    } else if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
-        etsg->LaunchThisStatic(expr, calleeReg, signature, expr->expr_->Arguments());
+        etsg->LaunchExact(expr, signature, expr->expr_->Arguments());
     } else {
-        etsg->LaunchThisVirtual(expr, calleeReg, signature, expr->expr_->Arguments());
+        etsg->LaunchVirtual(expr, signature, calleeReg, expr->expr_->Arguments());
     }
 
     etsg->SetAccumulatorType(expr->TsType());
@@ -508,7 +506,7 @@ void ETSCompiler::Compile(const ir::AwaitExpression *expr) const
     compiler::VReg argumentReg = etsg->AllocReg();
     expr->Argument()->Compile(etsg);
     etsg->StoreAccumulator(expr, argumentReg);
-    etsg->CallThisVirtual0(expr->Argument(), argumentReg, compiler::Signatures::BUILTIN_PROMISE_AWAIT_RESOLUTION);
+    etsg->CallVirtual(expr->Argument(), compiler::Signatures::BUILTIN_PROMISE_AWAIT_RESOLUTION, argumentReg);
     etsg->CastToReftype(expr->Argument(), expr->TsType(), IS_UNCHECKED_CAST);
     etsg->SetAccumulatorType(expr->TsType());
 }
@@ -831,7 +829,7 @@ bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *
         }();
 
         ASSERT(signature->ReturnType() == expr->Signature()->ReturnType());
-        etsg->CallStatic(expr, signature, arguments);
+        etsg->CallExact(expr, signature, arguments);
         etsg->SetAccumulatorType(expr->TsType());
     }
 
@@ -869,28 +867,20 @@ void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg 
     }
 }
 
-// Helper function to avoid branching in non optional cases
-void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg, bool isStatic,
-                           checker::Signature *signature, bool isReference) const
+void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calleeReg,
+                           checker::Signature *signature) const
 {
     ETSGen *etsg = GetETSGen();
     if (expr->Callee()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
         etsg->ApplyConversionAndStoreAccumulator(expr->Callee(), calleeReg, nullptr);
     }
-    if (isStatic) {
-        etsg->CallStatic(expr, expr->Signature(), expr->Arguments());
-    } else if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::PRIVATE) || expr->IsETSConstructorCall() ||
-               (expr->Callee()->IsMemberExpression() &&
+    if (signature->HasSignatureFlag(checker::SignatureFlags::STATIC)) {
+        etsg->CallExact(expr, expr->Signature(), expr->Arguments());
+    } else if ((expr->Callee()->IsMemberExpression() &&
                 expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression())) {
-        etsg->CallThisStatic(expr, calleeReg, signature, expr->Arguments());
+        etsg->CallExact(expr, signature, calleeReg, expr->Arguments());
     } else {
-        etsg->CallThisVirtual(expr, calleeReg, signature, expr->Arguments());
-    }
-
-    if (isReference) {
-        etsg->CheckedReferenceNarrowing(expr, signature->ReturnType());
-    } else {
-        etsg->SetAccumulatorType(signature->ReturnType());
+        etsg->CallVirtual(expr, signature, calleeReg, expr->Arguments());
     }
 
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
@@ -949,23 +939,23 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
             etsg->LoadThis(expr);
             etsg->StoreAccumulator(expr, calleeReg);
         }
-        EmitCall(expr, calleeReg, isStatic, signature, isReference);
+        EmitCall(expr, calleeReg, signature);
     } else if (!isReference && expr->Callee()->IsMemberExpression()) {
         if (!isStatic) {
             expr->Callee()->AsMemberExpression()->Object()->Compile(etsg);
             etsg->StoreAccumulator(expr, calleeReg);
         }
-        EmitCall(expr, calleeReg, isStatic, signature, isReference);
+        EmitCall(expr, calleeReg, signature);
     } else if (expr->Callee()->IsSuperExpression() || expr->Callee()->IsThisExpression()) {
         ASSERT(!isReference && expr->IsETSConstructorCall());
         expr->Callee()->Compile(etsg);  // ctor is not a value!
         etsg->StoreAccumulator(expr, calleeReg);
-        EmitCall(expr, calleeReg, isStatic, signature, isReference);
+        EmitCall(expr, calleeReg, signature);
     } else {
         ASSERT(isReference);
         etsg->CompileAndCheck(expr->Callee());
         etsg->StoreAccumulator(expr, calleeReg);
-        EmitCall(expr, calleeReg, isStatic, signature, isReference);
+        EmitCall(expr, calleeReg, signature);
     }
 
     if (expr->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG | ir::BoxingUnboxingFlags::BOXING_FLAG)) {
@@ -1127,8 +1117,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     ASSERT(expr->PropVar()->TsType() != nullptr);
     const checker::Type *const variableType = expr->PropVar()->TsType();
     if (variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-        checker::Signature *sig = variableType->AsETSFunctionType()->FindGetter();
-        etsg->CallThisVirtual0(expr, objReg, sig->InternalName());
+        etsg->CallVirtual(expr, variableType->AsETSFunctionType()->FindGetter(), objReg);
     } else if (objectType->IsETSDynamicType()) {
         etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, propName);
     } else if (objectType->IsETSUnionType()) {
@@ -1199,7 +1188,7 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
 
         if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
             checker::Signature *sig = variable->TsType()->AsETSFunctionType()->FindGetter();
-            etsg->CallStatic0(expr, sig->InternalName());
+            etsg->CallExact(expr, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
             return true;
         }
@@ -1342,7 +1331,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) con
     }
     auto argReg = etsg->AllocReg();
     etsg->StoreAccumulator(expr, argReg);
-    etsg->CallThisStatic0(expr, argReg, Signatures::BUILTIN_RUNTIME_TYPEOF);
+    etsg->CallExact(expr, Signatures::BUILTIN_RUNTIME_TYPEOF, argReg);
     etsg->SetAccumulatorType(expr->TsType());
 }
 
@@ -1562,8 +1551,8 @@ static void ThrowError(compiler::ETSGen *const etsg, const ir::AssertStatement *
     etsg->StoreAccumulator(st, message);
 
     const auto assertionError = etsg->AllocReg();
-    etsg->NewObject(st, assertionError, compiler::Signatures::BUILTIN_ASSERTION_ERROR);
-    etsg->CallThisStatic1(st, assertionError, compiler::Signatures::BUILTIN_ASSERTION_ERROR_CTOR, message);
+    etsg->NewObject(st, compiler::Signatures::BUILTIN_ASSERTION_ERROR, assertionError);
+    etsg->CallExact(st, compiler::Signatures::BUILTIN_ASSERTION_ERROR_CTOR, assertionError, message);
     etsg->EmitThrow(st, assertionError);
 }
 
@@ -2125,7 +2114,7 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
                                         : expr->TsType()->AsETSStringEnumType()->FromIntMethod().globalSignature;
             ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
             arguments.push_back(expr->expression_);
-            etsg->CallStatic(expr, signature, arguments);
+            etsg->CallExact(expr, signature, arguments);
             etsg->SetAccumulatorType(signature->ReturnType());
             break;
         }

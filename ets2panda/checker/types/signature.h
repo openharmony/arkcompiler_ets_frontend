@@ -185,6 +185,11 @@ public:
         return ownerObj_;
     }
 
+    const ETSObjectType *Owner() const
+    {
+        return ownerObj_;
+    }
+
     varbinder::Variable *OwnerVar()
     {
         return ownerVar_;
