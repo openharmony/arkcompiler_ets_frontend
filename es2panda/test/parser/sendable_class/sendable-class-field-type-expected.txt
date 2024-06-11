@@ -80,7 +80,7 @@ slot _0
 {
   index: 1
     tag: 5
-    val: Test
+    val: Person
 },
 {
   index: 2
@@ -100,7 +100,7 @@ slot _0
 {
   index: 5
     tag: 5
-    val: Person
+    val: Test
 },
 ------------------------------------
 slot _1

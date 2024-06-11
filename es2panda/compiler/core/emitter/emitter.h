@@ -102,7 +102,7 @@ private:
 
 class Emitter {
 public:
-    explicit Emitter(const CompilerContext *context);
+    explicit Emitter(CompilerContext *context);
     ~Emitter();
     NO_COPY_SEMANTIC(Emitter);
     NO_MOVE_SEMANTIC(Emitter);

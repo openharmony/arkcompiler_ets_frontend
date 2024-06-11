@@ -268,6 +268,7 @@ public:
     void SetParent(Scope *parent)
     {
         parent_ = parent;
+        SetTopScope();
     }
 
     const compiler::IRNode *ScopeStart() const
@@ -436,11 +437,7 @@ protected:
           scopeNames_(allocator->Adapter()),
           allocator_(allocator)
     {
-        if (parent) {
-            topScope_ = parent->GetTopScope();
-        } else {
-            topScope_ = this;
-        }
+        SetTopScope();
     }
 
     /**
@@ -459,6 +456,15 @@ protected:
                   [[maybe_unused]] ScriptExtension extension);
 
     void SetFullScopeNames();
+
+    void SetTopScope()
+    {
+        if (parent_) {
+            topScope_ = parent_->GetTopScope();
+        } else {
+            topScope_ = this;
+        }
+    }
 
     void OptimizeSelfScopeName(std::stringstream &selfScopeStream);
 
@@ -504,7 +510,6 @@ protected:
     util::StringView selfScopeName_ {};
     bool hasSelfScopeNameSet_ { false };
     bool hasFullScopeNameSet_ { false };
-
 
 private:
     virtual util::StringView GetScopeTag()
