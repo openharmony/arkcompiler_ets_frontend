@@ -1601,6 +1601,11 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
         if (auto *const asExprVar = expr->Argument()->AsTSAsExpression()->Variable(); asExprVar != nullptr) {
             checker->ValidateUnaryOperatorOperand(asExprVar);
         }
+    } else if (expr->Argument()->IsTSNonNullExpression()) {
+        if (auto *const nonNullExprVar = expr->Argument()->AsTSNonNullExpression()->Variable();
+            nonNullExprVar != nullptr) {
+            checker->ValidateUnaryOperatorOperand(nonNullExprVar);
+        }
     } else {
         ASSERT(expr->Argument()->IsMemberExpression());
         varbinder::LocalVariable *propVar = expr->argument_->AsMemberExpression()->PropVar();

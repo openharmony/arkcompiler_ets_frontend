@@ -55,3 +55,6 @@ type_param_in_union.ets
 # verifier false positive for 64 bit instructions on union types.
 # Issue: #16216
 union_wide_property_access.ets
+
+# Issue: #16049
+increment-on-nullish-type.ets
