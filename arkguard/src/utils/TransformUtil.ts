@@ -112,13 +112,7 @@ export function separateUniversalReservedItem(originalArray: string[]): Reserved
     specificReservedArray: []
   };
 
-  const specialRegex = /[\\\^\$\+\|\(\)\[\]\{\}]/;
   originalArray.forEach(reservedItem => {
-    // do not process elements containing special characters
-    // special characters: '\', '^', '$', '+', '|', '[', ']', '{', '}', '(', ')'
-    if (specialRegex.test(reservedItem)) {
-      return;
-    }
     if (containWildcards(reservedItem)) {
       const regexPattern = wildcardTransformer(reservedItem);
       const regexOperator = new RegExp(`^${regexPattern}$`);
@@ -141,15 +135,19 @@ export function containWildcards(item: string): boolean {
  * Convert specific characters into regular expressions.
  */
 export function wildcardTransformer(wildcard: string, isPath?: boolean): string {
+  // Add an escape character in front of special characters
+  // special characters: '\', '^', '$', '.', '+', '|', '[', ']', '{', '}', '(', ')'
+  let escapedItem = wildcard.replace(/[\\+^${}()|\[\]\.]/g, '\\$&');
+
   // isPath: containing '**', and '*', '?' can not be matched with '/'. 
   if (isPath) {
     // before: ../**/a/b/c*/?.ets
     // after: ../.*/a/b/c[^/]*/[^/].ets
-    return wildcard.replace(/\*\*/g, '.*').replace(/(?<!\.)\*/g, '[^/]*').replace(/\?/g, '[^/]');
+    return escapedItem.replace(/\*\*/g, '.*').replace(/(?<!\.)\*/g, '[^/]*').replace(/\?/g, '[^/]');
   }
   // before: *a?
   // after: .*a.
-  return wildcard.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.');
+  return escapedItem.replace(/\*/g, '.*').replace(/\?/g, '.');
 }
 
 /**

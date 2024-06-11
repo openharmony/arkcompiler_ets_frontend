@@ -11,7 +11,7 @@
         "mDictionaryList": [],
         "mReservedNames": [],
         "mRenameProperties": true,
-        "mReservedProperties": ["a*"],
+        "mReservedProperties": ["a*", "/", "+", "*{", "}*"],
         "mKeepStringProperty": false,
         "mTopLevel": true
     },
