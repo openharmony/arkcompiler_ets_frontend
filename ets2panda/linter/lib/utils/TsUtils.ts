@@ -31,7 +31,6 @@ import { SENDABLE_DECORATOR } from './consts/SendableAPI';
 import { USE_SHARED } from './consts/SharedModuleAPI';
 import {
   ARKTS_COLLECTIONS_D_ETS,
-  ARKTS_COLLECTIONS_TYPES,
   COLLECTIONS_NAMESPACE,
   ARKTS_LANG_D_ETS,
   LANG_NAMESPACE,
@@ -1921,20 +1920,24 @@ export class TsUtils {
       return false;
     }
 
-    return TsUtils.isArkTSCollectionsArrayLikeDeclaration(node.parent);
+    return this.isArkTSCollectionsArrayLikeDeclaration(node.parent);
   }
 
-  static isArkTSCollectionsArrayLikeType(type: ts.Type): boolean {
+  isArkTSCollectionsArrayLikeType(type: ts.Type): boolean {
     const symbol = type.aliasSymbol ?? type.getSymbol();
     if (symbol?.declarations === undefined || symbol.declarations.length < 1) {
       return false;
     }
 
-    return TsUtils.isArkTSCollectionsArrayLikeDeclaration(symbol.declarations[0]);
+    return this.isArkTSCollectionsArrayLikeDeclaration(symbol.declarations[0]);
   }
 
-  private static isArkTSCollectionsArrayLikeDeclaration(decl: ts.Declaration): boolean {
-    if (!ts.isClassDeclaration(decl) || !decl.name || !ARKTS_COLLECTIONS_TYPES.includes(decl.name.text)) {
+  private isArkTSCollectionsArrayLikeDeclaration(decl: ts.Declaration): boolean {
+    if (!ts.isClassDeclaration(decl) && !ts.isInterfaceDeclaration(decl) || !decl.name) {
+      return false;
+    }
+
+    if (!this.tsTypeChecker.getTypeAtLocation(decl).getNumberIndexType()) {
       return false;
     }
 
