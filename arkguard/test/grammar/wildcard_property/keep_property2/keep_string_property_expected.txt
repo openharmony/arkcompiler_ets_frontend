@@ -12,10 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class j {
+class k {
     "g": string = '1';
     "h": number = 2;
     "abcdef": number = 3; // keep
     "a*": number = 4; // keep
     "i": number = 6;
+    "/": number = 7; // keep
+    "+": number = 8; // keep
+    "aa{": number = 9; // keep
+    "}bb": number = 10; // keep
+    "j": number = 11;
 }

@@ -17,7 +17,10 @@ import {before} from 'mocha';
 import {assert} from 'chai';
 import {createSourceFile, ScriptTarget, SourceFile} from 'typescript';
 
-import {collectExistNames} from '../../../src/utils/TransformUtil';
+import {
+  collectExistNames,
+  wildcardTransformer
+} from '../../../src/utils/TransformUtil';
 
 describe('test for TransformUtil', function () {
   let sourceFile: SourceFile;
@@ -45,6 +48,29 @@ describe('test for TransformUtil', function () {
       targetNames.forEach((value) => {
         assert.isTrue(nameSets.has(value));
       });
+    });
+  });
+
+  describe('test for function wildcardTransformer', function () {
+    it('test wildcardTransformer', function () {
+      // special characters: '\', '^', '$', '.', '+', '|', '[', ']', '{', '}', '(', ')'
+      const reserved1 = 'a\\+b*';
+      const reserved2 = '{*}[*](*)';
+      const reserved3 = '*^';
+      const reserved4 = '?$\\..';
+      const reserved5 = '?|123';
+
+      const result1 = wildcardTransformer(reserved1);
+      const result2 = wildcardTransformer(reserved2);
+      const result3 = wildcardTransformer(reserved3);
+      const result4 = wildcardTransformer(reserved4);
+      const result5 = wildcardTransformer(reserved5);
+
+      assert.strictEqual(result1, String.raw`a\\\+b.*`);
+      assert.strictEqual(result2, String.raw`\{.*\}\[.*\]\(.*\)`);
+      assert.strictEqual(result3, String.raw`.*\^`);
+      assert.strictEqual(result4, String.raw`.\$\\\.\.`);
+      assert.strictEqual(result5, String.raw`.\|123`);
     });
   });
 });
