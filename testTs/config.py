@@ -19,6 +19,8 @@ Description: Use ark to execute test 262 test suite
 """
 
 import os
+import sys
+import platform
 import json
 TS_GIT_PATH = 'https://gitee.com/zhangrengao1/TypeScript.git'
 TS_TAG = "v4.3.5"
@@ -33,7 +35,11 @@ SKIP_FILE_PATH = os.path.join("testTs", "skip_tests.json")
 CUR_FILE_DIR = os.path.dirname(__file__)
 IMPORT_FILE_PATH = os.path.join(CUR_FILE_DIR, "import_tests.json")
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
-ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_frontend"
+
+IS_LINUX_ARM64 = (sys.platform == "linux" and platform.machine().lower() == "aarch64")
+CLANG_TOOLCHAIN = "clang_arm64" if IS_LINUX_ARM64 else "clang_x64"
+ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/{CLANG_TOOLCHAIN}/arkcompiler/ets_frontend"
+
 WORK_PATH = f'{CODE_ROOT}/arkcompiler/ets_frontend'
 
 DEFAULT_ARK_FRONTEND_TOOL = os.path.join(ARK_DIR, "build", "src", "index.js")

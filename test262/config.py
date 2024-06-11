@@ -20,7 +20,12 @@ Description: Execute 262 test suite configuration file
 
 
 import os
+import sys
+import platform
 from multiprocessing import cpu_count
+
+IS_LINUX_ARM64 = (sys.platform == "linux" and platform.machine().lower() == "aarch64")
+CLANG_TOOLCHAIN = "clang_arm64" if IS_LINUX_ARM64 else "clang_x64"
 
 DATA_DIR = os.path.join("test262", "data")
 ESHOST_DIR = os.path.join("test262", "eshost")
@@ -30,7 +35,10 @@ BASE_OUT_DIR = os.path.join("out", "test262")
 
 CUR_FILE_DIR = os.path.dirname(__file__)
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
-LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-x86_64/llvm/lib/"
+if IS_LINUX_ARM64:
+    LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-aarch64/llvm/lib/"
+else:
+    LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-x86_64/llvm/lib/"
 
 DEFAULT_MODE = 2
 
@@ -91,9 +99,6 @@ ESNEXT_GIT_HASH = "281eb10b2844929a7c0ac04527f5b42ce56509fd"
 TEST262_GIT_URL = "https://gitee.com/hufeng20/test262.git"
 ESHOST_GIT_URL = "https://gitee.com/hufeng20/eshost.git"
 HARNESS_GIT_URL = "https://gitee.com/hufeng20/test262-harness.git"
-
-TEST262_JIT_GIT_URL = "https://gitee.com/lxy0115/test262.git"
-TEST262_JIT_GIT_HASH = "41cf77eb3ab4babdf8662c2a60cb63439c61740a"
 
 SKIP_LIST_FILE = os.path.join("test262", "skip_tests.json")
 ES2ABC_SKIP_LIST_FILE = os.path.join("test262", "es2abc_skip_tests.json")
