@@ -90,14 +90,19 @@ namespace secharmony {
     }
 
     generator = getNameGenerator(profile.mNameGeneratorType, nameGeneratorOption);
-    let configReservedFileName: string[] = profile?.mReservedFileNames ?? [];
+    let configReservedFileNameOrPath: string[] = profile?.mReservedFileNames ?? [];
     const tempReservedName: string[] = ['.', '..', ''];
-    configReservedFileName.forEach(directory => {
-      tempReservedName.push(directory);
-      const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(directory);
-      if (pathOrExtension.ext) {
-        tempReservedName.push(pathOrExtension.ext);
-        tempReservedName.push(pathOrExtension.path);
+    configReservedFileNameOrPath.map(fileNameOrPath => {
+      if (fileNameOrPath && fileNameOrPath.length > 0) {
+        const directories = FileUtils.splitFilePath(fileNameOrPath);
+        directories.forEach(directory => {
+          tempReservedName.push(directory);
+          const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(directory);
+          if (pathOrExtension.ext) {
+            tempReservedName.push(pathOrExtension.ext);
+            tempReservedName.push(pathOrExtension.path);
+          }
+        });
       }
     });
     reservedFileNames = new Set<string>(tempReservedName);
