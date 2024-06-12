@@ -13,8 +13,19 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
+export declare const obj1: {
+  prop1: typeof obj2;
+  prop2: {
+    innerProp1: string;
+    innerProp2: string;
+  };
+};
 
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+declare const obj2: {
+  prop3: any;
+  prop4: {
+    innerProp3: string;
+    innerProp4: string;
+  };
+};
+export {};

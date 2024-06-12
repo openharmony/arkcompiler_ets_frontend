@@ -13,8 +13,11 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
-
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+declare class ExportDeclarationClass1 {
+  param1: string;
+  param2: number;
+  param3: undefined;
+}
+declare class ExportDeclarationClass2 {}
+declare class ExportDeclarationClass3 {}
+export { ExportDeclarationClass1 as exportName, ExportDeclarationClass2, ExportDeclarationClass3 as default };

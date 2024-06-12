@@ -13,8 +13,23 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
+export declare namespace ns1 {
+  export class TestClass1 {
+      prop1: ns2.TestClass2;
+      prop2: TestInterface1;
+  }
+  interface TestInterface1 {
+      prop3: number;
+  }
+  export {};
+}
 
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+declare namespace ns2 {
+  class TestClass2 {
+      prop4: TestInterface2;
+  }
+  interface TestInterface2 {
+      prop5: number;
+  }
+}
+export {};

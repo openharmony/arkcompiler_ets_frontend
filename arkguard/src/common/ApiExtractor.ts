@@ -14,7 +14,9 @@
  */
 
 import type {
+  EnumDeclaration,
   ModifiersArray,
+  ModuleDeclaration,
   Node,
   ParameterDeclaration,
   SourceFile
@@ -45,7 +47,19 @@ import {
   SyntaxKind,
   sys,
   isConstructorDeclaration,
-  getModifiers
+  getModifiers,
+  isNamedExports,
+  isNamespaceExport,
+  isPropertyDeclaration,
+  isPropertySignature,
+  isMethodDeclaration,
+  isMethodSignature,
+  isObjectLiteralElementLike,
+  isModuleDeclaration,
+  isPropertyAssignment,
+  isModuleBlock,
+  isFunctionDeclaration,
+  isEnumMember
 } from 'typescript';
 
 import fs from 'fs';
@@ -115,12 +129,49 @@ export namespace ApiExtractor {
    * @param astNode
    */
   const visitExport = function (astNode): void {
+    /**
+     * export = exportClass //collect exportClass
+     * 
+     * function foo()
+     * export default foo //collect foo
+     */
     if (isExportAssignment(astNode)) {
-      if (!mCurrentExportNameSet.has(astNode.expression.getText())) {
-        mCurrentExportNameSet.add(astNode.expression.getText());
-        mCurrentExportedPropertySet.add(astNode.expression.getText());
+      let nodeName = astNode.expression.getText();
+      if (!mCurrentExportNameSet.has(nodeName)) {
+        collectNodeName(nodeName);
+      }
+      return;
+    }
+
+    if (isExportDeclaration(astNode) && astNode.exportClause) {
+      /**
+       * export {name1, name2} //collect name1, name2
+       * export {name1 as n1, name2} //collect n1, name2
+       * export {name1 as default, name2, name3} //collect default, name2, name3
+       */
+      if (isNamedExports(astNode.exportClause)) {
+        for (const element of astNode.exportClause.elements) {
+          const exportElementName = element.name.getText();
+          if (!mCurrentExportNameSet.has(exportElementName)) {
+            collectNodeName(exportElementName);
+          }
+        }
       }
 
+      /**
+       * export * as name1 from 'file.ts' //collect name1
+       */
+      if (isNamespaceExport(astNode.exportClause)) {
+        const exportElementName = astNode.exportClause.name.getText();
+        if (!mCurrentExportNameSet.has(exportElementName)) {
+          collectNodeName(exportElementName);
+        }
+      }
+
+      /**
+      * Other export syntax, which does not contain a name. such as:
+      * export * from 'file.ts'
+      */
       return;
     }
 
@@ -131,9 +182,9 @@ export namespace ApiExtractor {
     }
 
     if (astNode.name) {
-      if (!mCurrentExportNameSet.has(astNode.name.getText())) {
-        mCurrentExportNameSet.add(astNode.name.getText());
-        mCurrentExportedPropertySet.add(astNode.name.getText());
+      let nodeName = astNode.name.getText();
+      if (!mCurrentExportNameSet.has(nodeName)) {
+        collectNodeName(nodeName);
       }
 
       return;
@@ -143,14 +194,13 @@ export namespace ApiExtractor {
       astNode.declarationList.declarations.forEach((declaration) => {
         const declarationName = declaration.name.getText();
         if (!mCurrentExportNameSet.has(declarationName)) {
-          mCurrentExportNameSet.add(declarationName);
-          mCurrentExportedPropertySet.add(declarationName);
+          collectNodeName(declarationName);
         }
       });
     }
   };
 
-  const checkPropertyNeedVisit = function (astNode): boolean {
+  const isCollectedToplevelElements = function (astNode): boolean {
     if (astNode.name && !mCurrentExportNameSet.has(astNode.name.getText())) {
       return false;
     }
@@ -223,7 +273,12 @@ export namespace ApiExtractor {
    * @param astNode node of ast
    */
   const visitPropertyAndName = function (astNode): void {
-    if (!checkPropertyNeedVisit(astNode)) {
+    if (!isCollectedToplevelElements(astNode)) {
+      /**
+       * Collects property names of elements within top-level elements that haven't been collected yet.
+       * @param astNode toplevel elements of sourcefile
+       */
+      collectPropertyNames(astNode);
       return;
     }
 
@@ -740,5 +795,81 @@ export namespace ApiExtractor {
     mPropertySet.clear();
 
     return {reservedProperties: reservedProperties, reservedLibExportNames: reservedLibExportNames};
+  }
+
+  /**
+   * Collect all property names in the AST.
+   * @param astNode Nodes of the AST.
+   */
+  function collectPropertyNames(astNode: Node): void {
+    visitElementsWithProperties(astNode);
+  }
+
+  /**
+   * Visit elements that can contain properties.
+   * @param node The current AST node.
+   */
+  function visitElementsWithProperties(node: Node) {
+    switch (node.kind) {
+      case SyntaxKind.ClassDeclaration:
+        forEachChild(node, visitClass);
+        break;
+      case SyntaxKind.InterfaceDeclaration:
+      case SyntaxKind.TypeLiteral:
+        forEachChild(node, visitInterfaceOrType);
+        break;
+      case SyntaxKind.EnumDeclaration:
+        forEachChild(node, visitEnum);
+        break;
+      case SyntaxKind.ObjectLiteralExpression:
+        forEachChild(node, visitObjectLiteral);
+        break;
+      case SyntaxKind.ModuleDeclaration:
+        forEachChild(node, visitModule);
+        break;
+    }
+    forEachChild(node, visitElementsWithProperties);
+  }
+
+  function visitClass(node: Node) {
+    if (isPropertyDeclaration(node)  || isMethodDeclaration(node)) {
+      if (isIdentifier(node.name)) {
+        mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+      }
+    }
+    forEachChild(node, visitClass);
+  }
+
+  function visitInterfaceOrType(node: Node) {
+    if (isPropertySignature(node) || isMethodSignature(node)) {
+      if (isIdentifier(node.name)) {
+        mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+      }
+    }
+    forEachChild(node, visitInterfaceOrType);
+  }
+
+  function visitEnum(node: Node) {
+    if (isEnumMember(node) && isIdentifier(node.name)) {
+      mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+    }
+  }
+
+  function visitObjectLiteral(node: Node) {
+    if (isPropertyAssignment(node)) {
+      if (isIdentifier(node.name)) {
+        mCurrentExportedPropertySet.add(node.name.escapedText.toString());
+      }
+    }
+    forEachChild(node, visitObjectLiteral);
+  }
+
+  function visitModule(node: Node) {
+    forEachChild(node, visitElementsWithProperties);
+  }
+
+  function collectNodeName(name: string): void {
+    mCurrentExportNameSet.add(name);
+    mCurrentExportedPropertySet.add(name);
   }
 }

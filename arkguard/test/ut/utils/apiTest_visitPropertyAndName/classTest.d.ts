@@ -13,8 +13,17 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
+export declare class TestClass1 {
+  prop1: TestClass2;
+  foo1(param1: AbstractClass): void;
+}
 
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+declare abstract class AbstractClass {
+  abstract abstractProp: TestClass2;
+}
+
+declare class TestClass2 {
+  prop2: string;
+  foo2(param2: string): void;
+}
+export {};

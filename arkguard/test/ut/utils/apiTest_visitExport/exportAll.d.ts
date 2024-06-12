@@ -13,8 +13,4 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
-
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+export * as name1 from './exportDeclarationAst';

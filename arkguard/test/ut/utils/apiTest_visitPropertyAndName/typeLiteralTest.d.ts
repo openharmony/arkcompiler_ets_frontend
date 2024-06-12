@@ -13,8 +13,13 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
+export type TestType1 = {
+  collectProp1: TestType2;
+  testFunc1: (message1: string) => void;
+};
 
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+type TestType2 = {
+  collectProp2: string;
+  testFunc2: (message2: string) => void;
+};
+export {};

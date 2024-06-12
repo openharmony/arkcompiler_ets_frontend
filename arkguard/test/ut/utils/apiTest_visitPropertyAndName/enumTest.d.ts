@@ -13,8 +13,16 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
+declare enum TestEnum2 {
+  PARAM2 = 0
+}
 
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+export declare class A {
+  prop: TestEnum1 | undefined;
+  prop2: TestEnum2 | undefined;
+}
+
+export declare enum TestEnum1 {
+  PARAM1 = 0
+}
+export {};

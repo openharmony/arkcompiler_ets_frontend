@@ -13,8 +13,13 @@
  * limitations under the License.
  */
 
-import assert from 'assert';
-import path from 'path';
+export interface TestInterface1 {
+  prop1: TestInterface2;
+  foo1(param1: string): void;
+}
 
-const fileName: string = path.basename(__filename);
-assert(fileName !== 'no^_keep{}.ts', 'success');
+interface TestInterface2 {
+  prop2: string;
+  foo2(param2: string): void;
+}
+export {};
