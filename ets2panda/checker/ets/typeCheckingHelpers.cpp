@@ -482,9 +482,21 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         return nullptr;
     }
 
-    auto *baseProp = prop->Declaration()->Node()->IsClassProperty()
-                         ? prop->Declaration()->Node()->AsClassProperty()->Id()->Variable()
-                         : prop->Declaration()->Node()->AsMethodDefinition()->Variable();
+    varbinder::Variable *baseProp = nullptr;
+    switch (auto node = prop->Declaration()->Node(); node->Type()) {
+        case ir::AstNodeType::CLASS_PROPERTY:
+            baseProp = node->AsClassProperty()->Id()->Variable();
+            break;
+        case ir::AstNodeType::METHOD_DEFINITION:
+            baseProp = node->AsMethodDefinition()->Variable();
+            break;
+        case ir::AstNodeType::CLASS_DEFINITION:
+            baseProp = node->AsClassDefinition()->Ident()->Variable();
+            break;
+        default:
+            UNREACHABLE();
+    }
+
     if (baseProp == prop) {
         return nullptr;
     }
