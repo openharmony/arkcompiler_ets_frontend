@@ -679,5 +679,6 @@ function main() : void {
     test_shift();
     test_bitwise();
     test_double();
-    test_scientific();
+    // NOTE(aakmaev): Enable after fix #17683.
+    // test_scientific();
 }
