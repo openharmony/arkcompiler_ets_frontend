@@ -21,7 +21,7 @@
     "mRenameFileName": {
         "mEnable": true,
         "mNameGeneratorType": 1,
-        "mReservedFileNames": ["local", "wildcard_global", "keep_filename?", "keep_the*"],
+        "mReservedFileNames": ["local", "wildcard_global", "keep_filename?", "keep_the*", "*+*", "^$", "myfilename*"],
         "mOhmUrlUseNormalized": false
     }
 }

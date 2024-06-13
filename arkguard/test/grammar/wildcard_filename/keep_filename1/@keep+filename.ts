@@ -13,15 +13,8 @@
  * limitations under the License.
  */
 
-class KeepProperty2 {
-    "prop1": string = '1';
-    "prop2": number = 2;
-    "abcdef": number = 3; // keep
-    "a*": number = 4; // keep
-    "*": number = 6;
-    "/": number = 7; // keep
-    "+": number = 8; // keep
-    "aa{": number = 9; // keep
-    "}bb": number = 10; // keep
-    "{}": number = 11;
-}
+import assert from 'assert';
+import path from 'path';
+
+const fileName: string = path.basename(__filename);
+assert(fileName === '@keep+filename.ts', 'success');
