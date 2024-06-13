@@ -412,6 +412,34 @@ static bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, c
     return ret;
 }
 
+class VariableNameIdentifierNameSame {
+public:
+    explicit VariableNameIdentifierNameSame([[maybe_unused]] ArenaAllocator &allocator) {}
+
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        if (!ast->IsIdentifier()) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        const auto *id = ast->AsIdentifier();
+        const auto variable = ast->AsIdentifier()->Variable();
+        if (variable == nullptr || variable->Declaration() == nullptr || variable->Declaration()->Node() == nullptr) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        const auto variableNode = variable->Declaration()->Node();
+        // NOTE(psaykerone): skip because, this exceptions need to be fixed in checker and lowering
+        if (variableNode->IsExported() || variableNode->IsExportedType() || variableNode->IsDefaultExported() ||
+            id->Name().Utf8().find("field") == 0 || variable->Name().Utf8().find("field") == 0) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        if (id->Name() == variable->Name()) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        ctx.AddCheckMessage("IDENTIFIER_NAME_DIFFERENCE", *id, id->Start());
+        return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+    }
+};
+
 class NodeHasParent {
 public:
     explicit NodeHasParent([[maybe_unused]] ArenaAllocator &allocator) {}
@@ -1354,6 +1382,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
     AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
     AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
+    AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

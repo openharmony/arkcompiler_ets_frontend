@@ -263,3 +263,85 @@ TEST_F(ASTVerifierTest, SequenceExpressionType)
 
     ASSERT_EQ(messages.size(), 0);
 }
+
+TEST_F(ASTVerifierTest, VariableNameIdentifierNameSameNegative)
+{
+    ark::es2panda::compiler::ast_verifier::ASTVerifier verifier {Allocator()};
+    char const *text = R"(
+        function main(): void {
+            let tmp = 1;
+            let lambda2: (value: int) => Int = (value: int): Int => {
+                let a = 42;
+                let num: Int = new Int(a + value);
+                return num;
+            }
+            let n_tmp = tmp + 2;
+            return 1;
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<ark::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    // Note(@kirillbychkov): Change Identifier name in variable lambda2
+    ast->AsETSScript()
+        ->Statements()[0]
+        ->AsClassDeclaration()
+        ->Definition()
+        ->AsClassDefinition()
+        ->Body()[1]
+        ->AsClassElement()
+        ->Value()
+        ->AsFunctionExpression()
+        ->Function()
+        ->AsScriptFunction()
+        ->Body()
+        ->AsBlockStatement()
+        ->Statements()[1]
+        ->AsVariableDeclaration()
+        ->Declarators()[0]
+        ->AsVariableDeclarator()
+        ->Id()
+        ->AsIdentifier()
+        ->SetName("not_name");
+
+    const auto check = "VariableNameIdentifierNameSameForAll";
+    auto checks = ark::es2panda::compiler::ast_verifier::InvariantNameSet {};
+    checks.insert(check);
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 1);
+
+    ASSERT_EQ(messages[0].Invariant(), check);
+
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(ASTVerifierTest, VariableNameIdentifierNameSame)
+{
+    ark::es2panda::compiler::ast_verifier::ASTVerifier verifier {Allocator()};
+    char const *text = R"(
+        function main(): void {
+            let tmp = 1;
+            let lambda2: (value: int) => Int = (value: int): Int => {
+                let a = 42;
+                let num: Int = new Int(a + value);
+                return num;
+            }
+            let n_tmp = tmp + 2;
+            return 1;
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<ark::es2panda::ir::ETSScript *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    auto checks = ark::es2panda::compiler::ast_verifier::InvariantNameSet {};
+    checks.insert("VariableNameIdentifierNameSameForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+    impl_->DestroyContext(ctx);
+}
