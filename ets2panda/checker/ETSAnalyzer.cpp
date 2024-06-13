@@ -1814,7 +1814,10 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) cons
 checker::Type *ETSAnalyzer::Check(ir::AssertStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker->CheckTruthinessOfType(st->test_);
+    if (!(st->Test()->Check(checker)->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::BOOLEAN_LIKE) ||
+          st->Test()->Check(checker)->ToString() == "Boolean")) {
+        checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.", st->Test()->Start());
+    }
 
     if (st->Second() != nullptr) {
         auto *msgType = st->second_->Check(checker);

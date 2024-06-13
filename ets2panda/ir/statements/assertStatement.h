@@ -39,6 +39,11 @@ public:
         return test_;
     }
 
+    Expression *Test()
+    {
+        return test_;
+    }
+
     const Expression *Second() const
     {
         return second_;

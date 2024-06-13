@@ -22,7 +22,7 @@ function assert_npe(f: () => void) {
     } catch (e: NullPointerError) {
         return;
     }
-    assert("npe was not thrown");
+    assert false : "npe was not thrown";
 }
 
 class Link {
@@ -57,6 +57,7 @@ function test1(l: Link | null, nl: Link | null) {
     assert_u(nl?.a[0]);
     assert_u(nl?.c());
     assert_u(nl?.of!.f);
+    assert_u(nl?.nf!.f);
 
     nl?.m().noeval();
     nl?.f.noeval();
@@ -109,7 +110,6 @@ function test3(l: Link | null, nl: Link | null) {
 function test4(l: Link | null, nl: Link | null) {
     assert_npe(() => { nl?.of! });
     nl?.of!.f;
-    assert_npe(() => { nl?.nf!.f });
 }
 
 function test5(l: Link | null, nl: Link | null) {
