@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,17 +57,29 @@ const varbinder::GlobalScope *Program::GlobalScope() const
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
-void Program::SetDeclarationModuleInfo()
+void Program::SetPackageInfo(const util::StringView &name, ModuleKind kind)
 {
-    bool onlyDeclarations = true;
-    for (auto stmt : ast_->Statements()) {
-        if (stmt->IsDeclare() || stmt->IsTSTypeAliasDeclaration()) {
-            continue;
-        }
-        onlyDeclarations = false;
-        break;
+    moduleInfo_.moduleName = name;
+    moduleInfo_.modulePrefix =
+        name.Empty()
+            ? ""
+            : util::UString(std::string(name).append(compiler::Signatures::METHOD_SEPARATOR), allocator_).View();
+
+    moduleInfo_.kind = kind;
+}
+
+// NOTE(vpukhov): part of ongoing design
+void Program::MaybeTransformToDeclarationModule()
+{
+    if (IsPackage()) {
+        return;
     }
-    moduleInfo_.isDeclModule = onlyDeclarations;
+    for (auto stmt : ast_->Statements()) {
+        if (!(stmt->IsDeclare() || stmt->IsTSTypeAliasDeclaration())) {
+            return;
+        }
+    }
+    moduleInfo_.kind = ModuleKind::DECLARATION;
 }
 
 void Program::AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection)

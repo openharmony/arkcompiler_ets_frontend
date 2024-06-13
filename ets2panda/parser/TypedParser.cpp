@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -946,9 +946,10 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
         flags |= ir::ModifierFlags::DECLARE;
     }
 
-    auto *classDefinition = AllocNode<ir::ClassDefinition>(
-        privateBinding.View(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
-        std::move(properties), modifiers, flags, GetContext().GetLanguage());
+    auto *classDefinition =
+        AllocNode<ir::ClassDefinition>(identNode, typeParamDecl, superTypeParams, std::move(implements), ctor,
+                                       superClass, std::move(properties), modifiers, flags, GetContext().GetLanguage());
+    classDefinition->SetInternalName(privateBinding.View());
 
     classDefinition->SetRange(bodyRange);
 

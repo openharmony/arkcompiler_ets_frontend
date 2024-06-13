@@ -79,14 +79,13 @@ public:
 
     ClassDefinition *Build()
     {
-        auto node = AllocNode(util::StringView(), ident_, typeParams_, superTypeParams_, std::move(implements_), ctor_,
-                              superClass_, std::move(body_), ir::ClassDefinitionModifiers::CLASS_DECL,
-                              ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+        auto node = AllocNode(ident_, typeParams_, superTypeParams_, std::move(implements_), ctor_, superClass_,
+                              std::move(body_), ir::ClassDefinitionModifiers::CLASS_DECL, ir::ModifierFlags::NONE,
+                              Language(Language::Id::ETS));
         return node;
     }
 
 private:
-    util::StringView privateId_ {};
     Identifier *ident_ {};
     MethodDefinition *ctor_ {};
     Expression *superClass_ {};

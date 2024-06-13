@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
-import {num} from "./re_export_file"
+import {num} from "./re_export_file_2"

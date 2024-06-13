@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,6 @@
 #include "checker/checker.h"
 
 #include "checker/types/ets/types.h"
-#include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/visitor/AstVisitor.h"
@@ -80,7 +79,6 @@ public:
           arrayTypes_(Allocator()->Adapter()),
           pendingConstraintCheckRecords_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
-          primitiveWrappers_(Allocator()),
           cachedComputedAbstracts_(Allocator()->Adapter()),
           dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
                               DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
@@ -293,12 +291,12 @@ public:
     ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
     Type *ResolveFunctionalInterfaces(ArenaVector<Signature *> &signatures);
     ETSTypeParameter *CreateTypeParameter();
-    ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
+    ETSObjectType *CreateETSObjectType(ir::AstNode *declNode, ETSObjectFlags flags);
+    ETSObjectType *CreateETSObjectTypeOrBuiltin(ir::AstNode *declNode, ETSObjectFlags flags);
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType, size_t dim);
     Signature *CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim);
     IntType *CreateIntTypeFromType(Type *type);
     std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName);
-    ETSObjectType *CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     ETSObjectType *CreatePromiseOf(Type *type);
 
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func);
@@ -657,8 +655,6 @@ public:
     ETSObjectType *GetImportSpecifierObjectType(ir::ETSImportDeclaration *importDecl, ir::Identifier *ident);
     void ImportNamespaceObjectTypeAddReExportType(ir::ETSImportDeclaration *importDecl,
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);
-    checker::ETSObjectType *CreateSyntheticType(util::StringView const &syntheticName,
-                                                checker::ETSObjectType *lastObjectType, ir::Identifier *id);
     bool CheckValidUnionEqual(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType);
     bool CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
@@ -671,9 +667,7 @@ public:
                                          const std::string_view &utilityType);
     // Partial
     Type *CreatePartialType(Type *typeToBePartial);
-    Type *HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, bool isClassDeclaredInCurrentFile,
-                                 util::StringView const &partialClassName, parser::Program *programToUse,
-                                 ETSObjectType *const typeToBePartial);
+    Type *HandlePartialInterface(ir::TSInterfaceDeclaration *interfaceDecl, ETSObjectType *typeToBePartial);
 
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
     ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *const prop,
@@ -687,9 +681,8 @@ public:
     void CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition, ir::ClassDefinition *classDef);
     ir::ETSTypeReference *BuildSuperPartialTypeReference(Type *superPartialType,
                                                          ir::TSTypeParameterInstantiation *superPartialRefTypeParams);
-    ir::TSInterfaceDeclaration *CreateInterfaceProto(util::StringView name, const bool isStatic,
-                                                     const bool isClassDeclaredInCurrentFile,
-                                                     const ir::ModifierFlags flags);
+    ir::TSInterfaceDeclaration *CreateInterfaceProto(util::StringView name, parser::Program *const interfaceDeclProgram,
+                                                     const bool isStatic, const ir::ModifierFlags flags);
     ir::TSTypeParameterInstantiation *CreateNewSuperPartialRefTypeParamsDecl(
         ArenaMap<ir::TSTypeParameter *, ir::TSTypeParameter *> *likeSubstitution, const Type *const superPartialType,
         ir::Expression *superRef);
@@ -705,7 +698,6 @@ public:
     ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
     varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
                                                        const std::set<util::StringView> &classNamesToFind);
-    util::StringView GetQualifiedClassName(const parser::Program *classDefProgram, util::StringView className);
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunctionForConstructor(
         varbinder::FunctionScope *scope);
     ir::MethodDefinition *CreateNonStaticClassInitializer(varbinder::ClassScope *classScope,
@@ -720,6 +712,9 @@ public:
     void MakePropertyNonNullish(ETSObjectType *classType, varbinder::LocalVariable *prop);
     void ValidateObjectLiteralForRequiredType(const ETSObjectType *requiredType,
                                               const ir::ObjectExpression *initObjExpr);
+
+    using NamedAccessMeta = std::tuple<ETSObjectType const *, checker::Type const *, const util::StringView>;
+    static NamedAccessMeta FormNamedAccessMetadata(varbinder::Variable const *prop);
 
     // Smart cast support
     [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
@@ -879,8 +874,6 @@ private:
 
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
-    ETSObjectType *UpdateBoxedGlobalType(ETSObjectType *objType, util::StringView name);
-    ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
     void CheckProgram(parser::Program *program, bool runAnalysis = false);
     void CheckWarnings(parser::Program *program, const util::Options &options);
 
@@ -929,7 +922,6 @@ private:
     ArenaVector<ConstraintCheckRecord> pendingConstraintCheckRecords_;
     size_t constraintCheckScopesCount_ {0};
     GlobalArraySignatureMap globalArraySignatures_;
-    PrimitiveWrappers primitiveWrappers_;
     ComputedAbstracts cachedComputedAbstracts_;
     // NOTE(aleksisch): Extract dynamic from checker to separate class
     std::array<DynamicCallIntrinsicsMap, 2U> dynamicIntrinsics_;

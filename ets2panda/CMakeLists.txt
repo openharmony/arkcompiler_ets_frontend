@@ -481,7 +481,6 @@ set(ES2PANDA_LIB_SRC
   checker/ets/narrowingConverter.cpp
   checker/ets/narrowingWideningConverter.cpp
   checker/ets/object.cpp
-  checker/ets/primitiveWrappers.cpp
   checker/ets/typeConverter.cpp
   checker/ets/typeCreation.cpp
   checker/ets/typeRelationContext.cpp

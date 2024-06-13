@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -159,7 +159,6 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
 {
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
-    program.MarkEntry();
     auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.rawParserStatus));
     auto checker = Checker();
     auto analyzer = Analyzer(&checker);

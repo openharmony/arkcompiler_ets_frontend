@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,7 @@ static bool CheckSourceConsistency(util::StringView name, ArenaVector<parser::Pr
     if (programs.size() == 1) {
         return true;
     }
-    if (std::all_of(programs.begin(), programs.end(), [](auto p) { return p->IsPackageModule(); })) {
+    if (std::all_of(programs.begin(), programs.end(), [](auto p) { return p->IsPackage(); })) {
         return true;
     }
     std::stringstream ss;
@@ -32,7 +32,7 @@ static bool CheckSourceConsistency(util::StringView name, ArenaVector<parser::Pr
     std::for_each(programs.begin(), programs.end(), [&ss](parser::Program *p) {
         ss << std::endl << "  at " << p->SourceFilePath().Mutf8();
     });
-    // NOTE(vpukhov): silent compilation failure
+    std::cerr << ss.str() << std::endl;
     return false;
 }
 

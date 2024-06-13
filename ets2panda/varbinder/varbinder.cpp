@@ -227,7 +227,7 @@ void VarBinder::InstantiatePrivateContext(const ir::Identifier *ident) const
 
     while (classDef != nullptr) {
         auto *scope = classDef->Scope();
-        Variable *variable = scope->FindLocal(classDef->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
+        Variable *variable = scope->FindLocal(classDef->InternalName(), varbinder::ResolveBindingOptions::BINDINGS);
 
         if (!variable->HasFlag(VariableFlags::INITIALIZED)) {
             break;
@@ -405,7 +405,7 @@ void VarBinder::BuildClassDefinition(ir::ClassDefinition *classDef)
         ResolveReference(classDef->Super());
     }
 
-    Variable *variable = scope_->FindLocal(classDef->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
+    Variable *variable = scope_->FindLocal(classDef->InternalName(), varbinder::ResolveBindingOptions::BINDINGS);
     variable->AddFlag(VariableFlags::INITIALIZED);
 
     if (classDef->Ident() != nullptr) {

@@ -40,7 +40,7 @@ static bool IsCompatibleExtension(const std::string &extension)
     return extension == ".sts" || extension == ".ts";
 }
 
-StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath) const
+util::StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, const StringView &importPath) const
 {
     if (importPath.Empty()) {
         throw Error(ErrorType::GENERIC, "", "Import path cannot be empty");
@@ -58,9 +58,15 @@ StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, c
         return AppendExtensionOrIndexFileIfOmitted(resolvedPath.View());
     }
 
-    std::string baseUrl;
+    return ResolveAbsolutePath(importPath);
+}
+
+util::StringView ImportPathManager::ResolveAbsolutePath(const StringView &importPath) const
+{
+    ASSERT(!IsRelativePath(importPath));
+
     if (importPath.Mutf8()[0] == pathDelimiter_.at(0)) {
-        baseUrl = arktsConfig_->BaseUrl();
+        std::string baseUrl = arktsConfig_->BaseUrl();
         baseUrl.append(importPath.Mutf8(), 0, importPath.Mutf8().length());
         return AppendExtensionOrIndexFileIfOmitted(UString(baseUrl, allocator_).View());
     }
@@ -75,24 +81,22 @@ StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, c
     auto rootPart = containsDelim ? importPath.Substr(0, pos) : importPath;
     if (!stdLib_.empty() &&
         (rootPart.Is("std") || rootPart.Is("escompat"))) {  // Get std or escompat path from CLI if provided
-        baseUrl = stdLib_ + pathDelimiter_.at(0) + rootPart.Mutf8();
-    } else {
-        ASSERT(arktsConfig_ != nullptr);
-        auto resolvedPath = arktsConfig_->ResolvePath(importPath.Mutf8());
-        if (!resolvedPath) {
-            throw Error(ErrorType::GENERIC, "",
-                        "Can't find prefix for '" + importPath.Mutf8() + "' in " + arktsConfig_->ConfigPath());
+        std::string baseUrl = stdLib_ + pathDelimiter_.at(0) + rootPart.Mutf8();
+
+        if (containsDelim) {
+            baseUrl.append(1, pathDelimiter_.at(0));
+            baseUrl.append(importPath.Mutf8(), rootPart.Mutf8().length() + 1, importPath.Mutf8().length());
         }
-
-        return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View());
+        return UString(baseUrl, allocator_).View();
     }
 
-    if (containsDelim) {
-        baseUrl.append(1, pathDelimiter_.at(0));
-        baseUrl.append(importPath.Mutf8(), rootPart.Mutf8().length() + 1, importPath.Mutf8().length());
+    ASSERT(arktsConfig_ != nullptr);
+    auto resolvedPath = arktsConfig_->ResolvePath(importPath.Mutf8());
+    if (!resolvedPath) {
+        throw Error(ErrorType::GENERIC, "",
+                    "Can't find prefix for '" + importPath.Mutf8() + "' in " + arktsConfig_->ConfigPath());
     }
-
-    return UString(baseUrl, allocator_).View();
+    return AppendExtensionOrIndexFileIfOmitted(UString(resolvedPath.value(), allocator_).View());
 }
 
 #ifdef USE_UNIX_SYSCALL
@@ -287,6 +291,77 @@ StringView ImportPathManager::AppendExtensionOrIndexFileIfOmitted(const StringVi
     }
 
     throw Error(ErrorType::GENERIC, "", "Not supported path: " + path.Mutf8());
+}
+
+static std::string FormUnitName(std::string name)
+{
+    // this policy may change
+    return name;
+}
+
+// Transform /a/b/c.sts to a.b.c
+static std::string FormRelativeModuleName(std::string relPath)
+{
+    if (auto pos = relPath.find_last_of('.'); pos != std::string::npos) {
+        relPath = relPath.substr(0, pos);
+    } else {
+        ASSERT_PRINT(false, "Invalid relative filename: " + relPath);
+    }
+
+    while (relPath[0] == util::PATH_DELIMITER) {
+        relPath = relPath.substr(1);
+    }
+    std::replace(relPath.begin(), relPath.end(), util::PATH_DELIMITER, '.');
+    return relPath;
+}
+
+util::StringView ImportPathManager::FormModuleName(const util::Path &path)
+{
+    if (!absoluteEtsPath_.empty()) {
+        std::string filePath(path.GetAbsolutePath());
+        if (filePath.rfind(absoluteEtsPath_, 0) != 0) {
+            throw Error(ErrorType::GENERIC, filePath, "Source file outside ets-path");
+        }
+        auto name = FormRelativeModuleName(filePath.substr(absoluteEtsPath_.size()));
+        return util::UString(name, allocator_).View();
+    }
+    if (arktsConfig_->Package().empty()) {
+        return path.GetFileName();
+    }
+
+    std::string const filePath(path.GetAbsolutePath());
+
+    // should be implemented with a stable name -> path mapping list
+    auto const tryFormModuleName = [filePath](std::string const &unitName,
+                                              std::string const &unitPath) -> std::optional<std::string> {
+        if (filePath.rfind(unitPath, 0) != 0) {
+            return std::nullopt;
+        }
+        return FormUnitName(unitName) + "." + FormRelativeModuleName(filePath.substr(unitPath.size()));
+    };
+    if (auto res = tryFormModuleName(arktsConfig_->Package(), arktsConfig_->BaseUrl()); res) {
+        return util::UString(res.value(), allocator_).View();
+    }
+    if (!stdLib_.empty()) {
+        if (auto res = tryFormModuleName("std", stdLib_ + pathDelimiter_.at(0) + "std"); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+        if (auto res = tryFormModuleName("escompat", stdLib_ + pathDelimiter_.at(0) + "escompat"); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+    }
+    for (auto const &[unitName, unitPath] : arktsConfig_->Paths()) {
+        if (auto res = tryFormModuleName(unitName, unitPath[0]); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+    }
+    for (auto const &[unitName, unitPath] : arktsConfig_->DynamicPaths()) {
+        if (auto res = tryFormModuleName(unitName, unitName); res) {
+            return util::UString(res.value(), allocator_).View();
+        }
+    }
+
+    throw Error(ErrorType::GENERIC, filePath, "Unresolved module name");
 }
 
 }  // namespace ark::es2panda::util

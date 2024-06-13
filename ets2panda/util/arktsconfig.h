@@ -82,20 +82,24 @@ public:
 
     std::optional<std::string> ResolvePath(const std::string &path) const;
 
-    std::string ConfigPath() const
+    const std::string &ConfigPath() const
     {
         return configPath_;
     }
 
-    std::string BaseUrl() const
+    const std::string &Package() const
+    {
+        return package_;
+    }
+    const std::string &BaseUrl() const
     {
         return baseUrl_;
     }
-    std::string RootDir() const
+    const std::string &RootDir() const
     {
         return rootDir_;
     }
-    std::string OutDir() const
+    const std::string &OutDir() const
     {
         return outDir_;
     }
@@ -123,6 +127,7 @@ public:
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
 private:
+    static constexpr const char *PACKAGE = "package";  // CC-OFF(G.NAM.03,G.NAM.03-CPP) project code style
     static constexpr const char *BASE_URL = "baseUrl";
     static constexpr const char *COMPILER_OPTIONS = "compilerOptions";
     static constexpr const char *EXCLUDE = "exclude";
@@ -137,6 +142,7 @@ private:
     bool isParsed_ = false;
     std::string configPath_;
 
+    std::string package_ {};
     std::string baseUrl_ {};
     std::string outDir_ {};
     std::string rootDir_ {};

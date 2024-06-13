@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,29 +21,31 @@
 namespace ark::es2panda::checker {
 class ETSStringType : public ETSObjectType {
 public:
-    explicit ETSStringType(ArenaAllocator *allocator, [[maybe_unused]] ETSObjectType *super)
-        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER)
+    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super)
+        : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_STRING, nullptr,
+                        ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER)
     {
         SetSuperType(super);
-        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
     }
 
-    explicit ETSStringType(ArenaAllocator *allocator, [[maybe_unused]] ETSObjectType *super, TypeRelation *relation)
-        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
-                        relation)
+    explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation)
+        : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_STRING,
+                        std::make_tuple(nullptr,
+                                        ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
+                                        relation))
     {
         SetSuperType(super);
-        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
     }
 
     explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, TypeRelation *relation,
                            util::StringView value)
-        : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
-                        relation),
+        : ETSObjectType(allocator, "", compiler::Signatures::BUILTIN_STRING,
+                        std::make_tuple(nullptr,
+                                        ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER,
+                                        relation)),
           value_(value)
     {
         SetSuperType(super);
-        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
         AddTypeFlag(TypeFlag::CONSTANT);
         variable_ = super->Variable();
     }

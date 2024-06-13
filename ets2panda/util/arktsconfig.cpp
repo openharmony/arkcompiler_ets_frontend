@@ -62,12 +62,35 @@ static bool IsAbsolute(const std::string &path)
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
+#ifndef ARKTSCONFIG_USE_FILESYSTEM
+#else
+fs::path NormalizePath(const fs::path &p)
+{
+    fs::path result;
+    for (const auto &part : p) {
+        if (part == ".") {
+            continue;
+        }
+        if (part == "..") {
+            if (!result.empty() && result.filename() != "..") {
+                result = result.parent_path();
+            } else {
+                result /= part;
+            }
+        } else {
+            result /= part;
+        }
+    }
+    return result;
+}
+#endif  // ARKTSCONFIG_USE_FILESYSTEM
+
 std::string JoinPaths(const std::string &a, const std::string &b)
 {
 #ifndef ARKTSCONFIG_USE_FILESYSTEM
     return a + '/' + b;
 #else
-    return (fs::path(a) / b).string();
+    return NormalizePath(fs::path(a) / b).string();
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
@@ -126,6 +149,8 @@ bool ArkTsConfig::Pattern::Match(const std::string &path) const
         pattern = std::regex_replace(pattern, std::regex("([^\\.])\\*"), "$1[^/]*");
         // '?' matches any one character (excluding directory separators)
         pattern = std::regex_replace(pattern, std::regex("\\?"), "[^/]");
+        // './src' -> 'src'
+        pattern = std::regex_replace(pattern, std::regex("\\.\\/"), "");
     }
     if (!value.has_extension()) {
         // default extensions to match
@@ -185,10 +210,6 @@ static std::string ValidDynamicLanguages()
 template <class PathsMap>
 static bool ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap &pathsMap, const std::string &baseUrl)
 {
-    if (options == nullptr) {
-        return true;
-    }
-
     auto paths = options->get()->GetValue<JsonObject::JsonObjPointer>("paths");
     if (paths == nullptr) {
         return true;
@@ -223,10 +244,6 @@ static bool ParseDynamicPaths(const JsonObject::JsonObjPointer *options, PathsMa
 {
     static const std::string LANGUAGE = "language";
     static const std::string HAS_DECL = "hasDecl";
-
-    if (options == nullptr) {
-        return true;
-    }
 
     auto dynamicPaths = options->get()->GetValue<JsonObject::JsonObjPointer>("dynamicPaths");
     if (dynamicPaths == nullptr) {
@@ -304,17 +321,13 @@ static std::optional<std::string> ReadConfig(const std::string &path)
     return ss.str();
 }
 
-static void ParseRelDir(std::string &dst, const std::string &key, const JsonObject::JsonObjPointer *options,
-                        const std::string &configDir)
+static std::string ValueOrEmptyString(const JsonObject::JsonObjPointer *json, const std::string &key)
 {
-    if (options != nullptr) {
-        auto path = options->get()->GetValue<JsonObject::StringT>(key);
-        dst = ((path != nullptr) ? *path : "");
-    }
-
-    dst = MakeAbsolute(dst, configDir);
+    auto res = json->get()->GetValue<JsonObject::StringT>(key);
+    return (res != nullptr) ? *res : "";
 }
 
+// CC-OFFNXT(huge_method[C++], G.FUN.01-CPP, G.FUD.05) solid logic
 bool ArkTsConfig::Parse()
 {
     ASSERT(!isParsed_);
@@ -348,16 +361,25 @@ bool ArkTsConfig::Parse()
     }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
-    auto compilerOptions = arktsConfig->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
+    // Parse "compilerOptions"
+    if (arktsConfig->HasKey(COMPILER_OPTIONS)) {
+        auto compilerOptions = arktsConfig->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
+        // Parse "package"
+        package_ = ValueOrEmptyString(compilerOptions, PACKAGE);
 
-    // Parse "baseUrl", "outDir", "rootDir"
-    ParseRelDir(baseUrl_, BASE_URL, compilerOptions, arktsConfigDir);
-    ParseRelDir(outDir_, OUT_DIR, compilerOptions, arktsConfigDir);
-    ParseRelDir(rootDir_, ROOT_DIR, compilerOptions, arktsConfigDir);
+        // Parse "baseUrl", "outDir", "rootDir"
+        baseUrl_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, BASE_URL), arktsConfigDir);
+        outDir_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, OUT_DIR), arktsConfigDir);
+        rootDir_ = MakeAbsolute(ValueOrEmptyString(compilerOptions, ROOT_DIR), arktsConfigDir);
 
-    // Parse "paths"
-    if (!ParsePaths(compilerOptions, paths_, baseUrl_) || !ParseDynamicPaths(compilerOptions, dynamicPaths_)) {
-        return false;
+        // Parse "paths"
+        if (!ParsePaths(compilerOptions, paths_, baseUrl_)) {
+            return false;
+        }
+        // Parse "dynamicPaths"
+        if (!ParseDynamicPaths(compilerOptions, dynamicPaths_)) {
+            return false;
+        }
     }
 
     // Parse "files"
@@ -382,6 +404,7 @@ bool ArkTsConfig::Parse()
 
 void ArkTsConfig::Inherit(const ArkTsConfig &base)
 {
+    package_ = base.package_;
     baseUrl_ = base.baseUrl_;
     outDir_ = base.outDir_;
     rootDir_ = base.rootDir_;

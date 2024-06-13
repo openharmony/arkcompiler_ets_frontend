@@ -170,7 +170,8 @@ TEST_F(DynamicCall, JoinDynStaticCallMember)
 
     auto bObj = obj->AsMemberExpression()->Object()->AsMemberExpression()->Object();
     ASSERT_EQ(bObj->AsMemberExpression()->Property()->AsIdentifier()->Name(), "c");
-    auto staticType = Allocator()->New<checker::ETSObjectType>(Allocator(), checker::ETSObjectFlags::NO_OPTS);
+    auto staticType =
+        Allocator()->New<checker::ETSObjectType>(Allocator(), "", "", nullptr, checker::ETSObjectFlags::NO_OPTS);
     bObj->AsMemberExpression()->Object()->SetTsType(staticType);
 
     auto [squeezedObj, name] = checker::DynamicCall::SqueezeExpr(Allocator(), obj->AsMemberExpression());

@@ -24,4 +24,4 @@ function main() : void {
 }
 
 /* @@@ label1 Error TypeError: Type '"hello"' is not compatible with type 'Double' at index 1  */
-/* @@@ label Error TypeError: No matching construct signature for A("hello")  */
+/* @@@ label Error TypeError: No matching construct signature for genericDefaultParam_4.A("hello")  */

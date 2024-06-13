@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -94,6 +94,13 @@ static void SetupBuiltinMember(varbinder::Variable *var)
 
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 static constexpr std::string_view BUILTINS_TO_INIT[] = {
+    compiler::Signatures::BUILTIN_OBJECT_CLASS,
+    compiler::Signatures::BUILTIN_STRING_CLASS,
+    compiler::Signatures::BUILTIN_BIGINT_CLASS,
+    compiler::Signatures::BUILTIN_EXCEPTION_CLASS,
+    compiler::Signatures::BUILTIN_ERROR_CLASS,
+    compiler::Signatures::BUILTIN_TYPE_CLASS,
+    compiler::Signatures::BUILTIN_PROMISE_CLASS,
     compiler::Signatures::BUILTIN_BOOLEAN_CLASS,
     compiler::Signatures::BUILTIN_BYTE_CLASS,
     compiler::Signatures::BUILTIN_CHAR_CLASS,

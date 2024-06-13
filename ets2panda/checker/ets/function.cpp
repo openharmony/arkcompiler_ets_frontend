@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -745,7 +745,7 @@ void ETSChecker::ThrowSignatureMismatch(ArenaVector<Signature *> &signatures,
         std::stringstream ss;
 
         if (signatures[0]->Function()->IsConstructor()) {
-            ss << util::Helpers::GetClassDefiniton(signatures[0]->Function())->PrivateId().Mutf8();
+            ss << util::Helpers::GetClassDefiniton(signatures[0]->Function())->InternalName().Mutf8();
         } else {
             ss << signatures[0]->Function()->Id()->Name().Mutf8();
         }

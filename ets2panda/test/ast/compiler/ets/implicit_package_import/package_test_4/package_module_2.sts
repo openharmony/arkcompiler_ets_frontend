@@ -16,12 +16,3 @@
 package mypack;
 
 export let myvar: number = 8;
-
-// during compilation of this file, a "syntax error" is raised (which might be modified),that
-// this file is being imported by another one, so compile it with "--ets-module". This causes
-// that 'package_module_1.ets' won't be part of this compilation unit (so no error on import
-// from package is thrown) as files in the package containing 'syntax errors' are ignored
-//
-// compiled with "--ets-module" switch the same error will be thrown as for 'package_module_1.sts'
-
-/* @@? package_module_1.sts:17:21 Error Error: Please compile `package_module_2.sts` with `--ets-module` option. It is being imported by another file.  */

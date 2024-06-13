@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -85,17 +85,17 @@ public:
 
     [[nodiscard]] const util::StringView &PrivateId() const noexcept
     {
-        return privateId_;
+        return internalName_;
     }
 
     [[nodiscard]] const util::StringView &InternalName() const noexcept
     {
-        return privateId_;
+        return internalName_;
     }
 
     void SetInternalName(util::StringView internalName) noexcept
     {
-        privateId_ = internalName;
+        internalName_ = internalName;
     }
 
     [[nodiscard]] es2panda::Language Language() const noexcept
@@ -154,7 +154,7 @@ public:
 
 private:
     varbinder::LocalScope *scope_ {nullptr};
-    util::StringView privateId_ {};
+    util::StringView internalName_ {};
     Identifier *ident_ {};
     MethodDefinition *ctor_ {};
     ArenaVector<AstNode *> body_;

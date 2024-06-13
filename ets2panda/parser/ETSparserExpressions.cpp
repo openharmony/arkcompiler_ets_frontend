@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -592,11 +592,10 @@ ir::ClassDefinition *ETSParser::CreateClassDefinitionForNewExpression(ArenaVecto
         auto modifiers = ir::ClassDefinitionModifiers::ANONYMOUS | ir::ClassDefinitionModifiers::HAS_SUPER;
         auto [ctor, properties, bodyRange] = ParseClassBody(modifiers);
 
-        auto newIdent = AllocNode<ir::Identifier>("#0", Allocator());
+        auto newIdent = AllocNode<ir::Identifier>("#newexpr", Allocator());
         classDefinition = AllocNode<ir::ClassDefinition>(
-            "#0", newIdent, nullptr, nullptr, std::move(implements), ctor,  // remove name
-            typeReference->Clone(Allocator(), nullptr), std::move(properties), modifiers, ir::ModifierFlags::NONE,
-            Language(Language::Id::ETS));
+            newIdent, nullptr, nullptr, std::move(implements), ctor, typeReference->Clone(Allocator(), nullptr),
+            std::move(properties), modifiers, ir::ModifierFlags::NONE, Language(Language::Id::ETS));
 
         classDefinition->SetRange(bodyRange);
     }

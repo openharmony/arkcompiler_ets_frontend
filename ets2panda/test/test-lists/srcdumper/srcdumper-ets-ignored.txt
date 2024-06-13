@@ -139,7 +139,7 @@ parser/ets/import_tests/import_interface_test.sts
 parser/ets/import_tests/import_interface_test_2.sts
 parser/ets/import_tests/modules/module1/src/re_export_file.sts
 parser/ets/import_tests/modules/module2/src/import_file.sts
-parser/ets/import_tests/modules/module2/src/re_export_file.sts
+parser/ets/import_tests/modules/module2/src/re_export_file_2.sts
 parser/ets/import_tests/modules/test_lib2.sts
 parser/ets/import_tests/packages/aliasWithoutAlias/import1/import1.sts
 parser/ets/import_tests/packages/aliasWithoutAlias/import2/import2.sts

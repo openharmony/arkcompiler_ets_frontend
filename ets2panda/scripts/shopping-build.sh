@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2024 Huawei Device Co., Ltd.
+# Copyright (c) 2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -51,7 +51,7 @@ function do_checkout() {
 
 GIT_URL=https://gitee.com/openharmony-sig/arkcompiler_ets_frontend.git
 DEST=koala-sig
-do_checkout "${GIT_URL}" panda_rev_4-foreach "${DEST}"
+do_checkout "${GIT_URL}" panda_rev_4_qualified_names "${DEST}"
 
 cd "${DEST}" || exit 1
 

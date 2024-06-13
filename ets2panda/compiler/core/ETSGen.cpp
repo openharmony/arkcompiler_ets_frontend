@@ -248,14 +248,10 @@ void ETSGen::LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETS
 util::StringView ETSGen::FormDynamicModulePropReference(const ir::ETSImportDeclaration *import)
 {
     std::stringstream ss;
-
-    if (!VarBinder()->Program()->OmitModuleName()) {
-        ss << VarBinder()->Program()->ModuleName() << compiler::Signatures::METHOD_SEPARATOR;
-    }
-
-    ss << compiler::Signatures::DYNAMIC_MODULE_CLASS << compiler::Signatures::METHOD_SEPARATOR
-       << import->AssemblerName();
-
+    ss << VarBinder()->Program()->ModulePrefix();
+    ss << compiler::Signatures::DYNAMIC_MODULE_CLASS;
+    ss << '.';
+    ss << import->AssemblerName();
     return util::UString(ss.str(), Allocator()).View();
 }
 
@@ -355,24 +351,8 @@ void ETSGen::StoreVar(const ir::Identifier *node, const varbinder::ConstScopeFin
 util::StringView ETSGen::FormClassPropReference(const checker::ETSObjectType *classType, const util::StringView &name)
 {
     std::stringstream ss;
-
-    auto *iter = classType;
-    std::string fullName = classType->AssemblerName().Mutf8();
-    while (iter->EnclosingType() != nullptr) {
-        auto enclosingName = iter->EnclosingType()->Name().Mutf8().append(".").append(fullName);
-        if (iter->EnclosingType()->GetDeclNode()->Type() == ir::AstNodeType::IDENTIFIER) {
-            fullName = enclosingName;
-        }
-        iter = iter->EnclosingType();
-    }
-
-    if (fullName != classType->AssemblerName().Mutf8()) {
-        fullName.append(".").append(Signatures::ETS_GLOBAL);
-    }
-    ss << fullName << '.' << name;
-    auto res = ProgElement()->Strings().emplace(ss.str());
-
-    return util::StringView(*res.first);
+    ss << classType->AssemblerName().Mutf8() << Signatures::METHOD_SEPARATOR << name;
+    return util::StringView(*ProgElement()->Strings().emplace(ss.str()).first);
 }
 
 util::StringView ETSGen::FormClassPropReference(varbinder::Variable const *const var)
@@ -443,34 +423,38 @@ void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *pr
     SetAccumulatorType(propType);
 }
 
-void ETSGen::StoreUnionProperty([[maybe_unused]] const ir::AstNode *node,
-                                [[maybe_unused]] const checker::Type *propType, [[maybe_unused]] VReg objReg,
-                                [[maybe_unused]] const util::StringView &propName)
+void ETSGen::StorePropertyByName([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] VReg objReg,
+                                 [[maybe_unused]] checker::ETSChecker::NamedAccessMeta const &fieldMeta)
 {
 #ifdef PANDA_WITH_ETS
+    auto [metaObj, propType, propName] = fieldMeta;
+    const auto fullName = FormClassPropReference(metaObj, propName);
+
     if (propType->IsETSReferenceType()) {
-        Ra().Emit<EtsStobjNameObj>(node, objReg, propName);
+        Ra().Emit<EtsStobjNameObj>(node, objReg, fullName);
     } else if (IsWidePrimitiveType(propType)) {
-        Ra().Emit<EtsStobjNameWide>(node, objReg, propName);
+        Ra().Emit<EtsStobjNameWide>(node, objReg, fullName);
     } else {
-        Ra().Emit<EtsStobjName>(node, objReg, propName);
+        Ra().Emit<EtsStobjName>(node, objReg, fullName);
     }
 #else
     UNREACHABLE();
 #endif  // PANDA_WITH_ETS
 }
 
-void ETSGen::LoadUnionProperty([[maybe_unused]] const ir::AstNode *const node,
-                               [[maybe_unused]] const checker::Type *propType, [[maybe_unused]] const VReg objReg,
-                               [[maybe_unused]] const util::StringView &propName)
+void ETSGen::LoadPropertyByName([[maybe_unused]] const ir::AstNode *const node, [[maybe_unused]] VReg objReg,
+                                [[maybe_unused]] checker::ETSChecker::NamedAccessMeta const &fieldMeta)
 {
 #ifdef PANDA_WITH_ETS
+    auto [metaObj, propType, propName] = fieldMeta;
+    const auto fullName = FormClassPropReference(metaObj, propName);
+
     if (propType->IsETSReferenceType()) {
-        Ra().Emit<EtsLdobjNameObj>(node, objReg, propName);
+        Ra().Emit<EtsLdobjNameObj>(node, objReg, fullName);
     } else if (IsWidePrimitiveType(propType)) {
-        Ra().Emit<EtsLdobjNameWide>(node, objReg, propName);
+        Ra().Emit<EtsLdobjNameWide>(node, objReg, fullName);
     } else {
-        Ra().Emit<EtsLdobjName>(node, objReg, propName);
+        Ra().Emit<EtsLdobjName>(node, objReg, fullName);
     }
     SetAccumulatorType(propType);
 #else

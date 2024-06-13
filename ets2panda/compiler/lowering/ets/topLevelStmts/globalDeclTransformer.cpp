@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,10 +25,8 @@ void GlobalDeclTransformer::FilterDeclarations(ArenaVector<ir::Statement *> &stm
     stmts.erase(std::remove_if(stmts.begin(), stmts.end(), isDeclCb), stmts.end());
 }
 
-GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts,
-                                                                          bool addInitializer)
+GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts)
 {
-    addInitializer_ = addInitializer;
     result_.classProperties.clear();
     result_.initStatements.clear();
     for (auto stmt : stmts) {
@@ -99,35 +97,33 @@ ir::Identifier *GlobalDeclTransformer::RefIdent(const util::StringView &name)
 
 ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassProperty *classProperty)
 {
-    ir::ExpressionStatement *initStmt = nullptr;
     const auto initializer = classProperty->Value();
-    if (addInitializer_ && !classProperty->IsConst() && initializer != nullptr) {
-        auto *ident = RefIdent(classProperty->Id()->Name());
-        ident->SetRange(classProperty->Id()->Range());
-
-        initializer->SetParent(nullptr);
-        auto *assignmentExpression = util::NodeAllocator::Alloc<ir::AssignmentExpression>(
-            allocator_, ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-        assignmentExpression->SetRange({ident->Start(), initializer->End()});
-        assignmentExpression->SetTsType(initializer->TsType());
-
-        auto expressionStatement =
-            util::NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, assignmentExpression);
-        expressionStatement->SetRange(classProperty->Range());
-
-        classProperty->SetRange({ident->Start(), initializer->End()});
-
-        if (classProperty->TypeAnnotation() != nullptr) {
-            classProperty->SetValue(nullptr);
-        } else {
-            // Code will be ignored, but checker is going to deduce the type.
-            classProperty->SetValue(initializer->Clone(allocator_, classProperty)->AsExpression());
-        }
-        initStmt = expressionStatement;
-    } else {
+    if (classProperty->IsConst() || initializer == nullptr) {
         classProperty->SetStart(classProperty->Id()->Start());
+        return nullptr;
     }
-    return initStmt;
+
+    auto const ident = RefIdent(classProperty->Id()->Name());
+    ident->SetRange(classProperty->Id()->Range());
+
+    initializer->SetParent(nullptr);
+    auto *assignmentExpression = util::NodeAllocator::Alloc<ir::AssignmentExpression>(
+        allocator_, ident, initializer, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    assignmentExpression->SetRange({ident->Start(), initializer->End()});
+    assignmentExpression->SetTsType(initializer->TsType());
+
+    auto expressionStatement = util::NodeAllocator::Alloc<ir::ExpressionStatement>(allocator_, assignmentExpression);
+    expressionStatement->SetRange(classProperty->Range());
+
+    classProperty->SetRange({ident->Start(), initializer->End()});
+
+    if (classProperty->TypeAnnotation() != nullptr) {
+        classProperty->SetValue(nullptr);
+    } else {
+        // Code will be ignored, but checker is going to deduce the type.
+        classProperty->SetValue(initializer->Clone(allocator_, classProperty)->AsExpression());
+    }
+    return expressionStatement;
 }
 
 void GlobalDeclTransformer::HandleNode(ir::AstNode *node)

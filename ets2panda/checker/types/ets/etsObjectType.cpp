@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -328,20 +328,14 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         return;
     }
 
-    const bool isReadonlyType = HasTypeFlag(TypeFlag::READONLY);
-    if (isReadonlyType) {
+    if (HasTypeFlag(TypeFlag::READONLY)) {
         ss << "Readonly" << compiler::Signatures::GENERIC_BEGIN;
     }
-    const bool isRequiredType = HasObjectFlag(ETSObjectFlags::REQUIRED);
-    if (isRequiredType) {
+    if (HasObjectFlag(ETSObjectFlags::REQUIRED)) {
         ss << "Required" << compiler::Signatures::GENERIC_BEGIN;
     }
 
-    if (precise) {
-        ss << assemblerName_;  // NOTE(gogabr): need full qualified name
-    } else {
-        ss << name_;
-    }
+    ss << (precise ? internalName_ : name_);
 
     if (!typeArguments_.empty()) {
         ss << compiler::Signatures::GENERIC_BEGIN;
@@ -355,10 +349,10 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         ss << compiler::Signatures::GENERIC_END;
     }
 
-    if (isRequiredType) {
+    if (HasObjectFlag(ETSObjectFlags::REQUIRED)) {
         ss << compiler::Signatures::GENERIC_END;
     }
-    if (isReadonlyType) {
+    if (HasTypeFlag(TypeFlag::READONLY)) {
         ss << compiler::Signatures::GENERIC_END;
     }
 }
@@ -862,11 +856,12 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     }
     relation->IncreaseTypeRecursionCount(base);
 
-    auto *const copiedType = checker->CreateNewETSObjectType(name_, declNode_, flags_);
+    auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
+    ASSERT(copiedType->internalName_ == internalName_);
+    ASSERT(copiedType->name_ == name_);
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
-    copiedType->SetAssemblerName(assemblerName_);
     copiedType->SetVariable(variable_);
     copiedType->SetSuperType(superType_);
 
@@ -1039,7 +1034,7 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
     }
     relation->IncreaseTypeRecursionCount(base);
 
-    auto *const copiedType = checker->CreateNewETSObjectType(name_, declNode_, flags_);
+    auto *const copiedType = checker->CreateETSObjectType(declNode_, flags_);
     SetCopiedTypeProperties(relation, copiedType, std::move(newTypeArgs), base);
 
     if (cache) {
@@ -1138,14 +1133,14 @@ void ETSObjectType::InstantiateProperties() const
     }
 }
 
-void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringView asmName)
+std::string ETSObjectType::NameToDescriptor(util::StringView name)
 {
-    ss << compiler::Signatures::CLASS_REF_BEGIN;
-    auto copied = asmName.Mutf8();
-    std::replace(copied.begin(), copied.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
+    auto desc = std::string(compiler::Signatures::CLASS_REF_BEGIN)
+                    .append(name.Utf8())
+                    .append(std::string(compiler::Signatures::MANGLE_SEPARATOR));
+    std::replace(desc.begin(), desc.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
                  *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
-    ss << copied;
-    ss << compiler::Signatures::MANGLE_SEPARATOR;
+    return desc;
 }
 
 std::uint32_t ETSObjectType::GetPrecedence(checker::ETSChecker *checker, ETSObjectType const *type) noexcept
@@ -1219,18 +1214,18 @@ const ArenaVector<ETSObjectType *> &ETSObjectType::ReExports() const
 
 void ETSObjectType::ToAssemblerType([[maybe_unused]] std::stringstream &ss) const
 {
-    ss << assemblerName_;
+    ss << internalName_;
 }
 
 void ETSObjectType::ToDebugInfoType(std::stringstream &ss) const
 {
-    DebugInfoTypeFromName(ss, assemblerName_);
+    ss << NameToDescriptor(internalName_);
 }
 
 void ETSObjectType::ToDebugInfoSignatureType(std::stringstream &ss) const
 {
     ss << compiler::Signatures::GENERIC_BEGIN;
-    ss << assemblerName_;
+    ss << internalName_;
     ss << compiler::Signatures::GENERIC_END;
 }
 

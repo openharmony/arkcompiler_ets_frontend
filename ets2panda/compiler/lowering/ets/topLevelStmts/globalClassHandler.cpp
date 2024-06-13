@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,16 +36,6 @@ namespace ark::es2panda::compiler {
 
 using util::NodeAllocator;
 
-static bool FunctionExists(const ArenaVector<ir::Statement *> &statements, const std::string_view name)
-{
-    for (auto stmt : statements) {
-        if (stmt->IsFunctionDeclaration() && stmt->AsFunctionDeclaration()->Function()->Id()->Name().Is(name)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &programs,
                                           const ModuleDependencies *moduleDependencies)
 {
@@ -65,22 +55,15 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
         }
     };
 
-    ArenaVector<GlobalStmts> statements(allocator_->Adapter());
-    bool mainExists = false;
-    bool topLevelStatementsExist = false;
     parser::Program *const globalProgram = programs.front();
+    // NOTE(vpukhov): a clash inside program list is possible
+    ASSERT(globalProgram->IsPackage() || programs.size() == 1);
 
-    bool isEntrypoint = programs.size() == 1 ? globalProgram->IsEntryPoint() : false;
+    ArenaVector<GlobalStmts> statements(allocator_->Adapter());
+
     for (auto program : programs) {
         program->Ast()->IterateRecursively(addStaticBlock);
-        if (program->IsEntryPoint() && !mainExists &&
-            FunctionExists(program->Ast()->Statements(), compiler::Signatures::MAIN)) {
-            mainExists = true;
-        }
-        auto stmts = CollectProgramGlobalStatements(program, globalClass, isEntrypoint);
-        if (!topLevelStatementsExist && !stmts.empty()) {
-            topLevelStatementsExist = true;
-        }
+        auto stmts = CollectProgramGlobalStatements(program, globalClass);
         statements.emplace_back(GlobalStmts {program, std::move(stmts)});
         program->SetGlobalClass(globalClass);
     }
@@ -94,7 +77,7 @@ void GlobalClassHandler::SetupGlobalClass(const ArenaVector<parser::Program *> &
         addStaticBlock(globalClass);
         if (!util::Helpers::IsStdLib(globalProgram)) {
             auto initStatements = FormInitMethodStatements(globalProgram, moduleDependencies, std::move(statements));
-            SetupGlobalMethods(globalProgram, std::move(initStatements), mainExists, topLevelStatementsExist);
+            SetupGlobalMethods(globalProgram, std::move(initStatements));
         }
     }
 }
@@ -233,7 +216,7 @@ void GlobalClassHandler::FormDependentInitTriggers(ArenaVector<ir::Statement *> 
             initialized = true;
             sequence(parser_->CreateFormattedStatement("const __linker = Class.ofCaller().getLinker();"));
         }
-        std::string name = (prog->OmitModuleName() ? "" : std::string(prog->ModuleName()) + ".") + "ETSGLOBAL";
+        auto name = std::string(prog->ModulePrefix()).append(Signatures::ETS_GLOBAL);
         sequence(parser_->CreateFormattedStatement("__linker.loadClass(\"" + name + "\", true);"));
     };
 
@@ -284,12 +267,11 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateStaticBlock(ir::ClassDefinition 
 }
 
 ArenaVector<ir::Statement *> GlobalClassHandler::CollectProgramGlobalStatements(parser::Program *program,
-                                                                                ir::ClassDefinition *classDef,
-                                                                                bool addInitializer)
+                                                                                ir::ClassDefinition *classDef)
 {
     auto ast = program->Ast();
     auto globalDecl = GlobalDeclTransformer(allocator_);
-    auto statements = globalDecl.TransformStatements(ast->Statements(), addInitializer);
+    auto statements = globalDecl.TransformStatements(ast->Statements());
     classDef->AddProperties(util::Helpers::ConvertVector<ir::AstNode>(statements.classProperties));
     globalDecl.FilterDeclarations(ast->Statements());
     return std::move(statements.initStatements);
@@ -306,8 +288,14 @@ ir::ClassDeclaration *GlobalClassHandler::CreateGlobalClass()
     return classDecl;
 }
 
-void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements,
-                                            bool mainExists, bool topLevelStatementsExist)
+static bool HasMethod(ir::ClassDefinition const *cls, const std::string_view name)
+{
+    return std::any_of(cls->Body().begin(), cls->Body().end(), [name](ir::AstNode const *node) {
+        return node->IsMethodDefinition() && node->AsMethodDefinition()->Key()->AsIdentifier()->Name().Is(name);
+    });
+}
+
+void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVector<ir::Statement *> &&initStatements)
 {
     ir::ClassDefinition *const globalClass = program->GlobalClass();
 
@@ -326,13 +314,10 @@ void GlobalClassHandler::SetupGlobalMethods(parser::Program *program, ArenaVecto
         }
     }
 
-    // NOTE(rsipka): unclear call, OmitModuleName() used to determine the entry points without --ets-module option
-    if (program->OmitModuleName()) {
-        if (!mainExists && topLevelStatementsExist) {
-            ir::MethodDefinition *mainMethod =
-                CreateGlobalMethod(compiler::Signatures::MAIN, ArenaVector<ir::Statement *>(allocator_->Adapter()));
-            insertInGlobal(mainMethod);
-        }
+    if (program->IsSeparateModule() && !HasMethod(globalClass, compiler::Signatures::MAIN)) {
+        ir::MethodDefinition *mainMethod =
+            CreateGlobalMethod(compiler::Signatures::MAIN, ArenaVector<ir::Statement *>(allocator_->Adapter()));
+        insertInGlobal(mainMethod);
     }
 }
 

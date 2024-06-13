@@ -77,10 +77,10 @@ public:
     void StoreElementDynamic(const ir::AstNode *node, VReg objectReg, VReg index);
     void LoadElementDynamic(const ir::AstNode *node, VReg objectReg);
 
-    void StoreUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                            const util::StringView &propName);
-    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *propType, VReg objReg,
-                           const util::StringView &propName);
+    void StorePropertyByName(const ir::AstNode *node, VReg objReg,
+                             checker::ETSChecker::NamedAccessMeta const &fieldMeta);
+    void LoadPropertyByName(const ir::AstNode *node, VReg objReg,
+                            checker::ETSChecker::NamedAccessMeta const &fieldMeta);
 
     void LoadUndefinedDynamic(const ir::AstNode *node, Language lang);
 

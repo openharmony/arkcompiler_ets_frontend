@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,8 +29,6 @@ namespace ark::es2panda::evaluate {
 
 namespace {
 
-constexpr std::string_view OBJECT_NAME = "std.core.Object";
-
 std::string GetFullSuperClassName(panda_file::ClassDataAccessor &cda)
 {
     return panda_file::ClassDataAccessor::DemangledName(cda.GetPandaFile().GetStringData(cda.GetSuperClassId()));
@@ -42,8 +40,8 @@ std::optional<std::pair<util::StringView, FileDebugInfo *>> GetSuperClassModuleA
     ASSERT(debugInfoStorage);
 
     auto fullSuperClassName = GetFullSuperClassName(cda);
-    if (fullSuperClassName == OBJECT_NAME) {
-        // Must stop iterating upon reaching std.core.Object.
+    if (fullSuperClassName == compiler::Signatures::BUILTIN_OBJECT) {
+        // Must stop iterating upon reaching BUILTIN_OBJECT.
         return {};
     }
 
@@ -174,7 +172,7 @@ util::StringView DebugInfoDeserializer::CollectChainInfo(ArenaVector<ChainEntryI
         auto optClassInfo = GetSuperClassModuleAndClassName(*cda, debugInfoStorage);
         if (!optClassInfo) {
             // Go until reach Object:
-            // std.core.Object <-- A1 <-- A2 <-- ... <-- An
+            // BUILTIN_OBJECT <-- A1 <-- A2 <-- ... <-- An
             return "";
         }
         std::tie(abcSuperName, debugInfo) = *optClassInfo;

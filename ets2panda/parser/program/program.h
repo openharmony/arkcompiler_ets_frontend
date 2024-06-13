@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,7 @@ class VarBinder;
 
 namespace ark::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
+enum class ModuleKind { MODULE, DECLARATION, PACKAGE };
 
 class Program {
 public:
@@ -144,6 +145,7 @@ public:
     void SetAst(ir::BlockStatement *ast)
     {
         ast_ = ast;
+        MaybeTransformToDeclarationModule();
     }
 
     ir::ClassDefinition *GlobalClass()
@@ -207,41 +209,31 @@ public:
         resolvedFilePath_ = util::UString(sourceFile.resolvedPath, Allocator()).View();
     }
 
-    void SetModuleInfo(const util::StringView &name, bool isPackage, bool omitName = false)
-    {
-        moduleInfo_.moduleName = name;
-        moduleInfo_.isPackageModule = isPackage;
-        moduleInfo_.omitModuleName = omitName;
-    }
+    void SetPackageInfo(const util::StringView &name, ModuleKind kind);
 
-    const util::StringView &ModuleName() const
+    util::StringView ModuleName() const
     {
         return moduleInfo_.moduleName;
     }
 
-    bool IsPackageModule() const
+    util::StringView ModulePrefix() const
     {
-        return moduleInfo_.isPackageModule;
+        return moduleInfo_.modulePrefix;
+    }
+
+    bool IsSeparateModule() const
+    {
+        return moduleInfo_.kind == ModuleKind::MODULE;
     }
 
     bool IsDeclarationModule() const
     {
-        return moduleInfo_.isDeclModule;
+        return moduleInfo_.kind == ModuleKind::DECLARATION;
     }
 
-    bool OmitModuleName() const
+    bool IsPackage() const
     {
-        return moduleInfo_.omitModuleName;
-    }
-
-    const bool &IsEntryPoint() const
-    {
-        return entryPoint_;
-    }
-
-    void MarkEntry()
-    {
-        entryPoint_ = true;
+        return moduleInfo_.kind == ModuleKind::PACKAGE;
     }
 
     void MarkASTAsChecked()
@@ -261,8 +253,6 @@ public:
                (FileName().Is("etsstdlib"));
     }
 
-    void SetDeclarationModuleInfo();
-
     varbinder::ClassScope *GlobalClassScope();
     const varbinder::ClassScope *GlobalClassScope() const;
 
@@ -277,19 +267,17 @@ public:
     bool NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning);
 
 private:
-    struct ModuleInfo {
-        explicit ModuleInfo(util::StringView name = util::StringView(), bool isPackage = false, bool omitName = false)
-            : moduleName(name), isPackageModule(isPackage), omitModuleName(omitName)
-        {
-        }
+    struct ModuleInfo {          // NOLINT(cppcoreguidelines-pro-type-member-init)
+        ModuleInfo() = default;  // NOLINT(cppcoreguidelines-pro-type-member-init)
 
         // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
         util::StringView moduleName;
-        bool isPackageModule;
-        bool omitModuleName;  // unclear naming, used to determine the entry point without --ets-module option
-        bool isDeclModule = false;
+        util::StringView modulePrefix;
+        ModuleKind kind;  // NOLINT(cppcoreguidelines-pro-type-member-init)
         // NOLINTEND(misc-non-private-member-variables-in-classes)
     };
+
+    void MaybeTransformToDeclarationModule();
 
     ArenaAllocator *allocator_ {};
     varbinder::VarBinder *varbinder_ {};
@@ -303,9 +291,8 @@ private:
     DirectExternalSource directExternalSources_;
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
-    bool entryPoint_ {};
     ETSNolintsCollectionMap etsnolintCollection_;
-    ModuleInfo moduleInfo_ {};
+    ModuleInfo moduleInfo_;
     bool isASTchecked_ {};
     lexer::SourcePosition packageStartPosition_ {};
 };
