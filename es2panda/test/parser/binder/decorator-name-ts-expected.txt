@@ -130,7 +130,7 @@ slot _0
 {
   index: 1
     tag: 5
-    val: Greeter
+    val: enumerable
 },
 {
   index: 2
@@ -140,7 +140,7 @@ slot _0
 {
   index: 3
     tag: 5
-    val: enumerable
+    val: Greeter
 },
 ------------------------------------
 slot _1

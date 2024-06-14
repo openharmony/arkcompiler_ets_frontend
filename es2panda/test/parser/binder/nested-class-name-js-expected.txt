@@ -144,7 +144,7 @@ slot _0
 {
   index: 1
     tag: 5
-    val: B_withPrivateField
+    val: B_withoutPrivateField
 },
 {
   index: 2
@@ -164,7 +164,7 @@ slot _0
 {
   index: 5
     tag: 5
-    val: B_withoutPrivateField
+    val: B_withPrivateField
 },
 ------------------------------------
 slot _1

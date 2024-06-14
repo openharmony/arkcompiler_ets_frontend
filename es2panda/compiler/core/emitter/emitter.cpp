@@ -343,7 +343,7 @@ void FunctionEmitter::GenConcurrentFunctionModuleRequests()
 
 // Emitter
 
-Emitter::Emitter(const CompilerContext *context)
+Emitter::Emitter(CompilerContext *context)
 {
     prog_ = new panda::pandasm::Program();
     prog_->lang = LANG_EXT;
@@ -368,7 +368,7 @@ Emitter::Emitter(const CompilerContext *context)
         AddHasTopLevelAwaitRecord(context->Binder()->Program()->HasTLA(), context);
     }
     AddSharedModuleRecord(context);
-    AddScopeNamesRecord(const_cast<CompilerContext *>(context));
+    AddScopeNamesRecord(context);
 }
 
 Emitter::~Emitter()
@@ -429,21 +429,24 @@ void Emitter::AddScopeNamesRecord(CompilerContext *context)
 {
     std::lock_guard<std::mutex> lock(m_);
     // make literalarray for scope names
-    const auto &scopeNamesVec = context->Binder()->GetScopeNames();
     if (context->Binder()->Program()->TargetApiVersion() < 12) {
         return;
     }
+    const auto &scopeNamesMap = context->Binder()->GetScopeNames();
+
     panda::pandasm::LiteralArray array;
+    const int32_t DOUBLE_SIZE = 2;
+    array.literals_.resize(scopeNamesMap.size() * DOUBLE_SIZE);
     auto strTag = panda_file::LiteralTag::STRING;
-    for (const auto &[scopeName, index] : scopeNamesVec) {  // index is unused, only need keys
+    for (const auto &[scopeName, index] : scopeNamesMap) {
         panda::pandasm::LiteralArray::Literal tag;
         tag.tag_ = panda_file::LiteralTag::TAGVALUE;
         tag.value_ = static_cast<uint8_t>(strTag);
-        array.literals_.emplace_back(tag);
+        array.literals_.at(index * DOUBLE_SIZE) = std::move(tag);
         panda::pandasm::LiteralArray::Literal val;
         val.tag_ = strTag;
         val.value_ = std::string(scopeName);
-        array.literals_.emplace_back(val);
+        array.literals_.at(index * DOUBLE_SIZE + 1) = std::move(val);
     }
     auto literalKey = std::string(context->Binder()->Program()->RecordName()) +
                       "_" + std::to_string(context->NewLiteralIndex());

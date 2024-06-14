@@ -1,0 +1,220 @@
+.language ECMAScript
+
+.function any .#&#LongNameScace(any a0, any a1, any a2, any a3) {
+label_4: 
+label_0: 
+	ldundefined
+	sta v0
+	definefunc 0x0, .#&@0%#LongEnum, 0x1
+	sta v1
+	lda v0
+	callruntime.istrue 0x1
+	jnez label_3
+label_2: 
+	createemptyobject
+	sta v0
+label_3: 
+	lda v1
+	callarg1 0x3, v0
+	ldhole
+	sta v0
+	defineclasswithbuffer 0x5, .#&@0~@2=#LongClass, _2, 0x0, v0
+	ldobjbyname 0x6, prototype
+	ldundefined
+	returnundefined
+label_5: 
+}
+
+.function any .#&@0%#LongEnum(any a0, any a1, any a2, any a3) {
+label_1: 
+label_0: 
+	newlexenv 0x2
+	lda a1
+	stlexvar 0x0, 0x0
+	lda a2
+	stlexvar 0x0, 0x1
+	lda.str b
+	sta v0
+	definefunc 0x0, .#&@0%@1*#, 0x0
+	callarg0 0x1
+	sta v1
+	stobjbyvalue 0x3, a3, v0
+	lda.str b
+	stobjbyvalue 0x5, a3, v1
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#&@0%@1*#(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldai 0x1
+	return
+label_2: 
+}
+
+.function any .#&@0~@2=#LongClass(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	lda a2
+	return
+label_2: 
+}
+
+.function any .#&@0~@2>#LongFunction1(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	definefunc 0x0, .#&@0~@2>@3*#LongFunction2, 0x0
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .#&@0~@2>@3*#LongFunction2(any a0, any a1, any a2) {
+label_1: 
+label_0: 
+	ldundefined
+	returnundefined
+label_2: 
+}
+
+.function any .func_main_0(any a0, any a1, any a2) {
+label_4: 
+label_0: 
+	ldundefined
+	sta v0
+	definefunc 0x0, .#&#LongNameScace, 0x1
+	sta v1
+	lda v0
+	callruntime.istrue 0x1
+	jnez label_3
+label_2: 
+	createemptyobject
+	sta v0
+label_3: 
+	lda v1
+	callarg1 0x3, v0
+	ldundefined
+	returnundefined
+label_5: 
+}
+
+
+======> literal array buffer <======
+------------------------------------
+slot _0
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: LongNameScace
+},
+{
+  index: 2
+    tag: 0
+    val: 5
+},
+{
+  index: 3
+    tag: 5
+    val: LongEnum
+},
+{
+  index: 4
+    tag: 0
+    val: 5
+},
+{
+  index: 5
+    tag: 5
+    val: LongClass
+},
+{
+  index: 6
+    tag: 0
+    val: 5
+},
+{
+  index: 7
+    tag: 5
+    val: LongFunction1
+},
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _2
+{
+  index: 0
+    tag: 0
+    val: 5
+},
+{
+  index: 1
+    tag: 5
+    val: LongFunction1
+},
+{
+  index: 2
+    tag: 0
+    val: 6
+},
+{
+  index: 3
+    tag: 6
+    val: .#&@0~@2>#LongFunction1
+},
+{
+  index: 4
+    tag: 0
+    val: 9
+},
+{
+  index: 5
+    tag: 9
+    val: 0
+},
+{
+  index: 6
+    tag: 0
+    val: 2
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
