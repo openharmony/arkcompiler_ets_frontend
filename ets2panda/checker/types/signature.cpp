@@ -38,25 +38,19 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     auto *allocator = checker->Allocator();
     bool anyChange = false;
     SignatureInfo *newSigInfo = allocator->New<SignatureInfo>(allocator);
-    const Substitution *newSubstitution = substitution;
 
     if (!signatureInfo_->typeParams.empty()) {
-        auto *newSubstitutionSeed = checker->CopySubstitution(substitution);
         for (auto *tparam : signatureInfo_->typeParams) {
-            auto *newTparam = tparam->Substitute(relation, newSubstitutionSeed);
+            auto *newTparam = tparam->Substitute(relation, substitution);
             newSigInfo->typeParams.push_back(newTparam);
             anyChange |= (newTparam != tparam);
-            if (newTparam != tparam && tparam->IsETSTypeParameter()) {
-                newSubstitutionSeed->insert({tparam->AsETSTypeParameter(), newTparam});
-            }
         }
-        newSubstitution = newSubstitutionSeed;
     }
     newSigInfo->minArgCount = signatureInfo_->minArgCount;
 
     for (auto *param : signatureInfo_->params) {
         auto *newParam = param;
-        auto *newParamType = param->TsType()->Substitute(relation, newSubstitution);
+        auto *newParamType = param->TsType()->Substitute(relation, substitution);
         if (newParamType != param->TsType()) {
             anyChange = true;
             newParam = param->Copy(allocator, param->Declaration());
@@ -66,7 +60,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     }
 
     if (signatureInfo_->restVar != nullptr) {
-        auto *newRestType = signatureInfo_->restVar->TsType()->Substitute(relation, newSubstitution);
+        auto *newRestType = signatureInfo_->restVar->TsType()->Substitute(relation, substitution);
         if (newRestType != signatureInfo_->restVar->TsType()) {
             anyChange = true;
             newSigInfo->restVar = signatureInfo_->restVar->Copy(allocator, signatureInfo_->restVar->Declaration());
@@ -78,7 +72,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
         newSigInfo = signatureInfo_;
     }
 
-    auto *newReturnType = returnType_->Substitute(relation, newSubstitution);
+    auto *newReturnType = returnType_->Substitute(relation, substitution);
     if (newReturnType != returnType_) {
         anyChange = true;
     }
