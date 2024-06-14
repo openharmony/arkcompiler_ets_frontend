@@ -606,6 +606,25 @@ checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bi
     return bindingVar->TsType();
 }
 
+checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)
+{
+    if (!annotationType->IsETSUnionType()) {
+        return annotationType;
+    }
+
+    checker::Type *resolvedType = nullptr;
+    for (auto constituentType : annotationType->AsETSUnionType()->ConstituentTypes()) {
+        if (constituentType->IsETSObjectType()) {
+            if (resolvedType != nullptr) {
+                return nullptr;
+            }
+            resolvedType = constituentType;
+        }
+    }
+
+    return resolvedType;
+}
+
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
                                                     ir::Expression *init, ir::ModifierFlags const flags)
 {
@@ -656,7 +675,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (init->IsObjectExpression()) {
-        init->AsObjectExpression()->SetPreferredType(annotationType);
+        init->AsObjectExpression()->SetPreferredType(PreferredObjectTypeFromAnnotation(annotationType));
     }
 
     if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
@@ -781,7 +800,7 @@ checker::Type *ETSChecker::ResolveSmartType(checker::Type *sourceType, checker::
 std::pair<Type *, Type *> ETSChecker::CheckTestNullishCondition(Type *testedType, Type *actualType, bool const strict)
 {
     if (!strict) {
-        return {GlobalETSNullishType(), GetNonNullishType(actualType)};
+        return RemoveNullishTypes(actualType);
     }
 
     if (testedType->IsETSNullType()) {
@@ -1908,6 +1927,13 @@ util::StringView ETSChecker::GetHashFromTypeArguments(const ArenaVector<Type *> 
     for (auto *it : typeArgTypes) {
         it->ToString(ss, true);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
+
+        // In case of ETSTypeParameters storing the name might not be sufficient as there can
+        // be multiple different type parameters with the same name. For those we test identity based
+        // on their memory address equality, so we store them in the hash to keep it unique.
+        // To make it consistent we store it for every type.
+        // NOTE (mmartin): change bare address to something more appropriate unique representation
+        ss << it << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
     return util::UString(ss.str(), Allocator()).View();
@@ -1921,6 +1947,8 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
         k->ToString(ss, true);
         ss << ":";
         v->ToString(ss, true);
+        // NOTE (mmartin): change bare address to something more appropriate unique representation
+        ss << ":" << k << ":" << v;
         fields.push_back(ss.str());
     }
     std::sort(fields.begin(), fields.end());

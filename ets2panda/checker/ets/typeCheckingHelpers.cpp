@@ -156,6 +156,42 @@ Type *ETSChecker::RemoveUndefinedType(Type *const type)
                                : CreateETSUnionType(std::move(copiedTypes));
 }
 
+std::pair<Type *, Type *> ETSChecker::RemoveNullishTypes(Type *type)
+{
+    if (type->DefinitelyNotETSNullish()) {
+        return {GetGlobalTypesHolder()->GlobalBuiltinNeverType(), type};
+    }
+
+    if (type->IsETSTypeParameter()) {
+        return {GetGlobalTypesHolder()->GlobalETSNullishType(),
+                Allocator()->New<ETSNonNullishType>(type->AsETSTypeParameter())};
+    }
+
+    if (type->IsETSUndefinedType() || type->IsETSNullType()) {
+        return {type, GetGlobalTypesHolder()->GlobalBuiltinNeverType()};
+    }
+
+    ASSERT(type->IsETSUnionType());
+    ArenaVector<Type *> nullishTypes(Allocator()->Adapter());
+    ArenaVector<Type *> notNullishTypes(Allocator()->Adapter());
+
+    for (auto *constituentType : type->AsETSUnionType()->ConstituentTypes()) {
+        if (constituentType->IsETSUndefinedType() || constituentType->IsETSNullType()) {
+            nullishTypes.push_back(constituentType);
+        } else {
+            notNullishTypes.push_back(!constituentType->IsETSTypeParameter()
+                                          ? constituentType
+                                          : Allocator()->New<ETSNonNullishType>(constituentType->AsETSTypeParameter()));
+        }
+    }
+
+    Type *nullishType = nullishTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+                                             : CreateETSUnionType(std::move(nullishTypes));
+    Type *notNullishType = notNullishTypes.empty() ? GetGlobalTypesHolder()->GlobalBuiltinNeverType()
+                                                   : CreateETSUnionType(std::move(notNullishTypes));
+    return {nullishType, notNullishType};
+}
+
 // NOTE(vpukhov): can be implemented with relation if etscompiler will support it
 template <typename Pred, typename Trv>
 static bool MatchConstituentOrConstraint(const Type *type, Pred const &pred, Trv const &trv)

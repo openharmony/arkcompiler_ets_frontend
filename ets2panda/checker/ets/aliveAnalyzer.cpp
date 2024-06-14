@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -74,10 +74,6 @@ void AliveAnalyzer::AnalyzeNode(const ir::AstNode *node)
         }
         case ir::AstNodeType::CLASS_DECLARATION: {
             AnalyzeClassDecl(node->AsClassDeclaration());
-            break;
-        }
-        case ir::AstNodeType::CLASS_DEFINITION: {
-            AnalyzeClassDef(node->AsClassDefinition());
             break;
         }
         case ir::AstNodeType::METHOD_DEFINITION: {
@@ -187,27 +183,6 @@ void AliveAnalyzer::AnalyzeStats(const ArenaVector<ir::Statement *> &stats)
     }
 }
 
-static bool IsStaticMember(const ir::AstNode *node)
-{
-    switch (node->Type()) {
-        case ir::AstNodeType::CLASS_PROPERTY: {
-            return node->IsStatic();
-        }
-        case ir::AstNodeType::STRUCT_DECLARATION: {
-            return node->AsETSStructDeclaration()->Definition()->IsStatic();
-        }
-        case ir::AstNodeType::CLASS_DECLARATION: {
-            return node->AsClassDeclaration()->Definition()->IsStatic();
-        }
-        case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
-            return node->IsStatic();
-        }
-        default: {
-            return false;
-        }
-    }
-}
-
 void AliveAnalyzer::AnalyzeStructDecl(const ir::ETSStructDeclaration *structDecl)
 {
     for (const auto *it : structDecl->Definition()->Body()) {
@@ -217,48 +192,12 @@ void AliveAnalyzer::AnalyzeStructDecl(const ir::ETSStructDeclaration *structDecl
 
 void AliveAnalyzer::AnalyzeClassDecl(const ir::ClassDeclaration *classDecl)
 {
+    LivenessStatus prevStatus = status_;
+
     for (const auto *it : classDecl->Definition()->Body()) {
         AnalyzeNode(it);
     }
-}
 
-void AliveAnalyzer::AnalyzeClassDef(const ir::ClassDefinition *classDef)
-{
-    if (classDef->Variable() == nullptr) {
-        return;
-    }
-
-    LivenessStatus prevStatus = status_;
-    SetOldPendingExits(PendingExits());
-
-    for (const auto *it : classDef->Body()) {
-        if (!it->IsMethodDefinition() && IsStaticMember(it)) {
-            AnalyzeDef(it);
-            ClearPendingExits();
-        }
-    }
-
-    for (const auto *it : classDef->Body()) {
-        if (!it->IsMethodDefinition() && !IsStaticMember(it)) {
-            AnalyzeDef(it);
-            ClearPendingExits();
-        }
-    }
-
-    for (const auto *it : classDef->Body()) {
-        if (it->IsClassStaticBlock()) {
-            AnalyzeDef(it);
-            break;
-        }
-    }
-
-    for (const auto *it : classDef->Body()) {
-        if (it->IsMethodDefinition()) {
-            AnalyzeNode(it);
-        }
-    }
-
-    SetPendingExits(OldPendingExits());
     status_ = prevStatus;
 }
 

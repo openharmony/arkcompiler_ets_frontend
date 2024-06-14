@@ -53,10 +53,10 @@ public:
 
     [[nodiscard]] checker::Type const *TypeForVar(varbinder::Variable const *var) const noexcept override;
 
-    void LoadVar(const ir::AstNode *node, varbinder::Variable const *var);
+    void LoadVar(const ir::Identifier *node, varbinder::Variable const *var);
     void LoadDynamicModuleVariable(const ir::AstNode *node, varbinder::Variable const *var);
     void LoadDynamicNamespaceVariable(const ir::AstNode *node, varbinder::Variable const *var);
-    void StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result);
+    void StoreVar(const ir::Identifier *node, const varbinder::ConstScopeFindResult &result);
 
     void LoadStaticProperty(const ir::AstNode *node, const checker::Type *propType, const util::StringView &fullName);
     void StoreStaticProperty(const ir::AstNode *node, const checker::Type *propType, const util::StringView &fullName);

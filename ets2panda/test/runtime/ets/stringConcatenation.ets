@@ -41,4 +41,10 @@ function main() {
     assert a + udef + a == "A_undefinedA_";
     assert udef + s + n == "undefined_str_null";
 
+    let p1 = 1
+    let p2 = 2
+    let p3 = "*"
+
+    let res = p1+p2+p3;
+    assert (res == "3*")
 }

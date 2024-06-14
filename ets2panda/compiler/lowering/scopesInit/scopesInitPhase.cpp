@@ -953,7 +953,7 @@ void InitScopesPhaseETS::VisitMethodDefinition(ir::MethodDefinition *method)
 void InitScopesPhaseETS::VisitETSFunctionType(ir::ETSFunctionType *funcType)
 {
     auto typeParamsCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), funcType->TypeParams());
-    auto lexicalScope = LexicalScopeCreateOrEnter<varbinder::FunctionParamScope>(VarBinder(), funcType);
+    varbinder::LexicalScope<varbinder::FunctionParamScope> lexicalScope(VarBinder());
     auto *funcParamScope = lexicalScope.GetScope();
     BindScopeNode(funcParamScope, funcType);
     Iterate(funcType);

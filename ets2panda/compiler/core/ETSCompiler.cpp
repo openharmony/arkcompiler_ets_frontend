@@ -45,7 +45,7 @@ void ETSCompiler::Compile(const ir::CatchClause *st) const
 {
     ETSGen *etsg = GetETSGen();
     compiler::LocalRegScope lrs(etsg, st->Scope()->ParamScope());
-    etsg->SetAccumulatorType(etsg->Checker()->GlobalETSObjectType());
+    etsg->SetAccumulatorType(st->TsType());
     auto lref = compiler::ETSLReference::Create(etsg, st->Param(), true);
     lref.SetValue();
     st->Body()->Compile(etsg);
@@ -1019,24 +1019,22 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
         return;
     }
 
-    auto *const smartType = expr->TsType();
+    auto const *const smartType = expr->TsType();
     auto ttctx = compiler::TargetTypeContext(etsg, smartType);
 
     ASSERT(expr->Variable() != nullptr);
     if (!expr->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
         etsg->LoadVar(expr, expr->Variable());
     }
-    etsg->SetAccumulatorType(smartType);
 
-    //  In case when smart cast type of identifier differs from initial variable type perform cast if required
-    if (!etsg->Checker()->AsETSChecker()->Relation()->IsIdenticalTo(smartType, expr->Variable()->TsType())) {
-        if (smartType->IsETSReferenceType() && (expr->Parent() == nullptr || !expr->Parent()->IsTSAsExpression())) {
+    if (smartType->IsETSReferenceType() && (expr->Parent() == nullptr || !expr->Parent()->IsTSAsExpression())) {
+        //  In case when smart cast type of identifier differs from initial variable type perform cast if required
+        if (!etsg->Checker()->AsETSChecker()->Relation()->IsSupertypeOf(smartType, etsg->GetAccumulatorType())) {
             etsg->CastToReftype(expr, smartType, false);
-            etsg->SetAccumulatorType(smartType);
         }
     }
 
-    ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), smartType));
+    etsg->SetAccumulatorType(smartType);
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
@@ -1408,12 +1406,7 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->Argument()->TsType()));
 
     lref.SetValue();
-
     etsg->LoadAccumulator(expr->Argument(), originalValueReg);
-    if (expr->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG | ir::BoxingUnboxingFlags::BOXING_FLAG)) {
-        etsg->ApplyConversion(expr, expr->TsType());
-    }
-    ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::YieldExpression *expr) const

@@ -66,25 +66,36 @@ bool RecordLowering::Perform(public_lib::Context *ctx, parser::Program *program)
     return true;
 }
 
-void RecordLowering::CheckKeyType(checker::Type *keyType, ir::ObjectExpression *expr, public_lib::Context *ctx) const
+void RecordLowering::CheckDuplicateKey(ir::ObjectExpression *expr, public_lib::Context *ctx)
 {
-    // NOTE(kkonsw): also check unions and primitives
-    // The Record key type should be restricted to number types and string types
-    if (keyType->IsETSObjectType()) {
-        if (keyType->IsETSStringType() ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_BYTE) ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_CHAR) ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_SHORT) ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_INT) ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_LONG) ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_FLOAT) ||
-            keyType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_DOUBLE)) {
-            return;
+    std::unordered_set<std::variant<int32_t, int64_t, float, double, util::StringView>> keySet;
+    for (auto *it : expr->Properties()) {
+        auto *prop = it->AsProperty();
+        switch (prop->Key()->Type()) {
+            case ir::AstNodeType::NUMBER_LITERAL: {
+                auto number = prop->Key()->AsNumberLiteral()->Number();
+                if ((number.IsInt() && keySet.insert(number.GetInt()).second) ||
+                    (number.IsLong() && keySet.insert(number.GetLong()).second) ||
+                    (number.IsFloat() && keySet.insert(number.GetFloat()).second) ||
+                    (number.IsDouble() && keySet.insert(number.GetDouble()).second)) {
+                    continue;
+                }
+                ctx->checker->AsETSChecker()->ThrowTypeError(
+                    "An object literal cannot mulitiple properties with same name", expr->Start());
+            }
+            case ir::AstNodeType::STRING_LITERAL: {
+                if (keySet.insert(prop->Key()->AsStringLiteral()->Str()).second) {
+                    continue;
+                }
+                ctx->checker->AsETSChecker()->ThrowTypeError(
+                    "An object literal cannot mulitiple properties with same name", expr->Start());
+            }
+            default: {
+                UNREACHABLE();
+                break;
+            }
         }
     }
-
-    ctx->checker->AsETSChecker()->ThrowTypeError("Incorrect property type in Record Object Literal expression",
-                                                 expr->Start());
 }
 
 ir::Statement *RecordLowering::CreateStatement(const std::string &src, ir::Expression *ident, ir::Expression *key,
@@ -127,7 +138,7 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
 
     std::stringstream ss;
     expr->TsType()->ToAssemblerType(ss);
-    if (ss.str() != "escompat.Map") {
+    if (!(ss.str() == "escompat.Record" || ss.str() == "escompat.Map")) {
         // Only update object expressions for Map/Record types
         return expr;
     }
@@ -136,7 +147,9 @@ ir::Expression *RecordLowering::UpdateObjectExpression(ir::ObjectExpression *exp
     [[maybe_unused]] size_t constexpr NUM_ARGUMENTS = 2;
     auto typeArguments = expr->PreferredType()->AsETSObjectType()->TypeArguments();
     ASSERT(typeArguments.size() == NUM_ARGUMENTS);
-    CheckKeyType(typeArguments[0], expr, ctx);
+
+    // check Duplicate key
+    CheckDuplicateKey(expr, ctx);
 
     auto *const scope = NearestScope(expr);
     checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY};
@@ -170,13 +183,25 @@ ir::Expression *RecordLowering::CreateBlockExpression(ir::ObjectExpression *expr
 
     // Initialize map with provided type arguments
     auto *ident = Gensym(checker->Allocator());
-    const std::string createMapSrc =
-        "let @@I1 = new Map<" + TypeToString(keyType) + "," + TypeToString(valueType) + ">()";
+    std::stringstream ss;
+    expr->TsType()->ToAssemblerType(ss);
 
-    // Build statements from properties
     ArenaVector<ir::Statement *> statements(ctx->allocator->Adapter());
     auto &properties = expr->Properties();
-    statements.push_back(CreateStatement(createMapSrc, ident, nullptr, nullptr, ctx));
+    // currently we only have Map and Record in this if branch
+    std::string containerType;
+    if (ss.str() == "escompat.Map") {
+        containerType = "Map";
+    } else {
+        containerType = "Record";
+    }
+
+    const std::string createSrc =
+        "let @@I1 = new " + containerType + "<" + TypeToString(keyType) + "," + TypeToString(valueType) + ">()";
+    statements.push_back(CreateStatement(createSrc, ident, nullptr, nullptr, ctx));
+
+    // Build statements from properties
+
     for (const auto &property : properties) {
         ASSERT(property->IsProperty());
         auto p = property->AsProperty();

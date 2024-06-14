@@ -1375,6 +1375,22 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
         implements = ParseClassImplementClause();
     }
 
+    if ((flags & ir::ModifierFlags::DECLARE) != 0U &&
+        Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        ArenaVector<ir::AstNode *> properties(Allocator()->Adapter());
+        ir::MethodDefinition *ctor = nullptr;
+
+        auto *classDefinition = AllocNode<ir::ClassDefinition>(
+            util::StringView(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
+            std::move(properties), modifiers, flags, GetContext().GetLanguage());
+
+        classDefinition->SetEnd(identNode->End());
+
+        GetContext().Status() &= ~ParserStatus::ALLOW_SUPER;
+
+        return classDefinition;
+    }
+
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
 
     // Parse ClassBody

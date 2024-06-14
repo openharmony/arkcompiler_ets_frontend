@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,7 +62,6 @@ private:
     void AnalyzeStats(const ArenaVector<ir::Statement *> &stats);
     void AnalyzeStructDecl(const ir::ETSStructDeclaration *structDecl);
     void AnalyzeClassDecl(const ir::ClassDeclaration *classDecl);
-    void AnalyzeClassDef(const ir::ClassDefinition *classDef);
     void AnalyzeMethodDef(const ir::MethodDefinition *methodDef);
     void AnalyzeVarDef(const ir::VariableDeclaration *varDef);
     void AnalyzeDoLoop(const ir::DoWhileStatement *doWhile);
