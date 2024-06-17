@@ -22,21 +22,51 @@ import copy
 import logging
 import os
 import time
-import zipfile
 
 import pandas
 
 import options
 
+full_compile_tests = ["full_compile",
+                      "import_ordinary_ohpm_package",
+                      "import_special_ohpm_package",
+                      "import_static_library",
+                      "import_share_library",
+                      "import_so_file",
+                      "has_syntax_error_in_js",
+                      "use_normalize_ohmurl",
+                      "module_name_is_inconsistent",
+                      ]
 
-incremetal_compile_tests = ["no_change",
-                            "add_oneline",
-                            "add_file",
-                            "add_nonexistent_file",
-                            "delete_file",
-                            "reverse_hap_mode",
-                            "change_module_name"
-                            ]
+incremental_compile_tests = ["no_change",
+                             "add_oneline",
+                             "add_file",
+                             "add_nonexistent_file",
+                             "delete_file",
+                             "modify_error_then_fix",
+                             "add_error_page_then_fix",
+                             "add_error_non_page_then_fix",
+                             "build_entry_then_har",
+                             "build_har_then_entry",
+                             "build_entry_then_hsp",
+                             "build_hsp_then_entry",
+                             "build_hsp_then_ohos",
+                             "build_entry_then_ohos",
+                             "build_entry_then_preview_build",
+                             "reverse_hap_mode",
+                             "change_module_name",
+                             "modify_sdk_version",
+                             ]
+
+preview_compile_tests = ["preview_compile",
+                         "build_entry_then_preview",
+                         "build_modify_file_name",
+                         "build_generate_sourcemap",
+                         "tigger_incremental_build",
+                         "has_arkui_error",
+                         "sdk_path_has_special_char",
+                         "modify_hello_world_then_fix"
+                         ]
 
 other_tests = ["binary_consistency",
                "break_continue_compile",
@@ -72,16 +102,18 @@ def print_result(test_result, test_tasks):
         logging.info("task type: %s", task.type)
         # print full compile result
         logging.info("--full compilation result:")
-        logging.info("debug: %s, abc_size(byte) %s, time(s) %s, error message: %s",
-                     task.full_compilation_info.debug_info.result,
-                     task.full_compilation_info.debug_info.abc_size,
-                     task.full_compilation_info.debug_info.time,
-                     task.full_compilation_info.debug_info.error_message)
-        logging.info("release: %s, abc_size(byte) %s, time(s) %s, error message: %s",
-                     task.full_compilation_info.release_info.result,
-                     task.full_compilation_info.release_info.abc_size,
-                     task.full_compilation_info.release_info.time,
-                     task.full_compilation_info.debug_info.error_message)
+        for full_task in task.full_compilation_info.values():
+            logging.info("full test: %s", full_task.name)
+            logging.info("debug: %s, abc_size(byte) %s, time(s) %s, error message: %s",
+                         full_task.debug_info.result,
+                         full_task.debug_info.abc_size,
+                         full_task.debug_info.time,
+                         full_task.debug_info.error_message)
+            logging.info("release: %s, abc_size(byte) %s, time(s) %s, error message: %s",
+                         full_task.release_info.result,
+                         full_task.release_info.abc_size,
+                         full_task.release_info.time,
+                         full_task.debug_info.error_message)
 
         # print incremental compile result
         logging.info("--incremental compilation result:")
@@ -98,6 +130,13 @@ def print_result(test_result, test_tasks):
                          inc_task.release_info.time,
                          inc_task.release_info.error_message)
 
+        # print preview compile result
+        for name, task_info in task.preview_compilation_info.items():
+            logging.info("--test name: %s", name)
+            logging.info("result: %s, error message: %s",
+                         task_info.result,
+                         task_info.error_message)
+
         # print other tests result
         for name, task_info in task.other_tests.items():
             logging.info("--test name: %s", name)
@@ -109,23 +148,8 @@ def print_result(test_result, test_tasks):
         logging.info("========================================")
 
 
-def is_full_compilation_passed(task_info):
-    if not options.arguments.compile_mode in ['all', 'full']:
-        return True
-
-    passed_debug = True
-    passed_release = True
-
-    if options.arguments.hap_mode in ['all', 'release']:
-        passed_release = task_info.release_info.result == options.TaskResult.passed
-    if options.arguments.hap_mode == ['all', 'debug']:
-        passed_debug = task_info.debug_info.result == options.TaskResult.passed
-
-    return passed_debug and passed_release
-
-
-def is_incremental_compilation_passed(task_info):
-    if not options.arguments.compile_mode in ['all', 'incremental']:
+def is_compilation_passed(task_info, compile_mode):
+    if options.arguments.compile_mode not in ['all', compile_mode]:
         return True
 
     if len(task_info) == 0:
@@ -133,18 +157,25 @@ def is_incremental_compilation_passed(task_info):
 
     passed_debug = True
     passed_release = True
-    for inc_task in task_info.values():
+    for task_name, inc_task in task_info.items():
         if options.arguments.hap_mode in ['all', 'release']:
+            if inc_task.release_info.result == options.TaskResult.undefined:
+                continue
             passed_release = passed_release and inc_task.release_info.result == options.TaskResult.passed
         if options.arguments.hap_mode == ['all', 'debug']:
+            if inc_task.debug_info.result == options.TaskResult.undefined:
+                continue
             passed_debug = passed_debug and inc_task.debug_info.result == options.TaskResult.passed
 
     return passed_debug and passed_release
 
 
 def is_task_passed(task):
-    passed = is_full_compilation_passed(task.full_compilation_info) and \
-        is_incremental_compilation_passed(task.incre_compilation_info)
+    passed = is_compilation_passed(task.full_compilation_info, 'full') and \
+        is_compilation_passed(task.incre_compilation_info, 'incremental')
+
+    for test in task.preview_compilation_info.values():
+        passed = passed and (test.result == options.TaskResult.passed)
 
     for test in task.other_tests.values():
         passed = passed and (test.result == options.TaskResult.passed)
@@ -209,7 +240,10 @@ def generate_detail_data(test_tasks):
 
         full_compilation_debug, full_compilation_release = get_full_build_test_result(task, task_result_data,
                                                                                       task_time_size_data)
+
         get_incremental_build_test_result(task, task_result_data, task_time_size_data)
+
+        get_preview_build_test_result(task, task_result_data)
 
         get_other_test_result(task, task_result_data)
 
@@ -225,44 +259,51 @@ def generate_detail_data(test_tasks):
     return detail_data
 
 
+def get_test_tesult(test, task_result_data, compilation_info):
+    debug_result = options.TaskResult.undefined
+    debug_runtime_result = options.TaskResult.undefined
+    release_result = options.TaskResult.undefined
+    release_runtime_result = options.TaskResult.undefined
+    if test in compilation_info.keys():
+        task_info = compilation_info[test]
+        debug_result = task_info.debug_info.result
+        debug_runtime_result = task_info.debug_info.runtime_result
+        release_result = task_info.release_info.result
+        release_runtime_result = task_info.release_info.runtime_result
+    task_result_data[f'[Debug]\n{test}'] = get_result_symbol(
+        debug_result)
+    task_result_data[f'[Debug-runtime]\n{test}'] = get_result_symbol(
+        debug_runtime_result)
+    task_result_data[f'[Release]\n{test}'] = get_result_symbol(
+        release_result)
+    task_result_data[f'[Release-runtime]\n{test}'] = get_result_symbol(
+        release_runtime_result)
+
+
 def get_full_build_test_result(task, task_result_data, task_time_size_data):
-    full_compilation_debug = task.full_compilation_info.debug_info
-    full_compilation_release = task.full_compilation_info.release_info
-    task_time_size_data[
-        '[Full Compilation]\n[Debug]\n[Compilation Time(s)]'] = full_compilation_debug.time
-    task_time_size_data[
-        '[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = full_compilation_release.time
-    task_result_data['[Debug]'] = get_result_symbol(
-        full_compilation_debug.result)
-    task_result_data['[Debug-runtime]'] = get_result_symbol(
-        full_compilation_debug.runtime_result)
-    task_result_data['[Release]'] = get_result_symbol(
-        full_compilation_release.result)
-    task_result_data['[Release-runtime]'] = get_result_symbol(
-        full_compilation_release.runtime_result)
-    return full_compilation_debug, full_compilation_release
+    for test in full_compile_tests:
+        get_test_tesult(test, task_result_data, task.full_compilation_info)
+
+        if test == 'full_compile':
+            debug_test_time = 0
+            release_test_time = 0
+            if test in task.full_compilation_info.keys():
+                full_task_info = task.full_compilation_info[test]
+                debug_test_time = full_task_info.debug_info.time
+                release_test_time = full_task_info.release_info.time
+
+            task_time_size_data[
+                '[Full Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
+            task_time_size_data[
+                '[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
+
+    return (task.full_compilation_info['full_compile'].debug_info,
+            task.full_compilation_info['full_compile'].release_info)
 
 
 def get_incremental_build_test_result(task, task_result_data, task_time_size_data):
-    for test in incremetal_compile_tests:
-        debug_result = options.TaskResult.undefind
-        debug_runtime_result = options.TaskResult.undefind
-        release_result = options.TaskResult.undefind
-        release_runtime_result = options.TaskResult.undefind
-        if test in task.incre_compilation_info.keys():
-            inc_task_info = task.incre_compilation_info[test]
-            debug_result = inc_task_info.debug_info.result
-            debug_runtime_result = inc_task_info.debug_info.runtime_result
-            release_result = inc_task_info.release_info.result
-            release_runtime_result = inc_task_info.release_info.runtime_result
-        task_result_data[f'[Debug]\n{test}'] = get_result_symbol(
-            debug_result)
-        task_result_data[f'[Debug-runtime]\n{test}'] = get_result_symbol(
-            debug_runtime_result)
-        task_result_data[f'[Release]\n{test}'] = get_result_symbol(
-            release_result)
-        task_result_data[f'[Release-runtime]\n{test}'] = get_result_symbol(
-            release_runtime_result)
+    for test in incremental_compile_tests:
+        get_test_tesult(test, task_result_data, task.incre_compilation_info)
 
         if test == 'add_oneline':
             debug_test_time = 0
@@ -278,10 +319,23 @@ def get_incremental_build_test_result(task, task_result_data, task_time_size_dat
                 '[Incremental Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
 
 
+def get_preview_build_test_result(task, task_result_data):
+    for test in preview_compile_tests:
+        result = options.TaskResult.undefined
+        runtime_result = options.TaskResult.undefined
+        if test in task.preview_compilation_info.keys():
+            task_info = task.preview_compilation_info[test]
+            result = task_info.result
+            runtime_result = task_info.runtime_result
+
+        task_result_data[f'{test}'] = get_result_symbol(result)
+        task_result_data[f'{test}-runtime'] = get_result_symbol(runtime_result)
+
+
 def get_other_test_result(task, task_result_data):
     for test in other_tests:
-        result = options.TaskResult.undefind
-        runtime_result = options.TaskResult.undefind
+        result = options.TaskResult.undefined
+        runtime_result = options.TaskResult.undefined
         if test in task.other_tests.keys():
             task_info = task.other_tests[test]
             result = task_info.result
@@ -308,23 +362,40 @@ def get_merge_data(rotated_df):
     return merged_data
 
 
+def generate_content_section(section_title, tests, start_index, merged_data):
+    section_content = f'<tr><th rowspan={len(tests) * 2}>{section_title}</th>'
+    for index, item in enumerate(tests):
+        debug_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
+        section_content = ''.join(
+            [section_content, f'<th rowspan="2">{item}</th><th>[Debug]</th>', debug_result, '</tr>'])
+        release_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index + 1]])
+        section_content = ''.join([section_content, '<tr><th>[Release]</th>', release_result, '</tr>'])
+        start_index += 2
+    return section_content, start_index
+
+
 def get_result_table_content(result_df_rotate):
+    start_index = 0
     merged_data = get_merge_data(result_df_rotate)
-    content = '<tr><th colspan="2" rowspan="2">Full Compilation</th><th>[Debug]</th>' + \
-    ''.join(
-        [f'<th>{column}</th>' for column in merged_data[0]]) + '</tr>'
-    content += '<tr><th>[Release]</th>' + \
-              ''.join(
-                  [f'<th>{column}</th>' for column in merged_data[1]]) + '</tr>'
-    content += f'<tr><th rowspan={len(incremetal_compile_tests) * 2}>Incremental Compilation</th>'
-    start_index = 2
-    for index, item in enumerate(incremetal_compile_tests):
-        incre_debug_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
-        content = ''.join([content, f'<th rowspan="2">{item}</th><th>[Debug]</th>', incre_debug_result, '</tr>'])
-        incre_release_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index+1]])
-        content = ''.join([content, '<tr><th>[Release]</th>', incre_release_result, '</tr>'])
-        start_index = start_index + 2
-    content += f'<tr><th colspan=2 rowspan={len(other_tests) * 2}>Other Tests</th>'
+    # Full Compilation section
+    full_compile_section, start_index = generate_content_section("Full Compilation", full_compile_tests, start_index,
+                                                                 merged_data)
+    content = full_compile_section
+
+    # Incremental Compilation section
+    incremental_compile_section, start_index = generate_content_section("Incremental Compilation",
+                                                                        incremental_compile_tests, start_index,
+                                                                        merged_data)
+    content += incremental_compile_section
+
+    content += f'<tr><th colspan=2 rowspan={len(preview_compile_tests)}>Preview Compilation</th>'
+    for index, item in enumerate(preview_compile_tests):
+        preview_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
+        content = ''.join([content, f'<th>{item}</th>', preview_result, '</tr>'])
+        start_index = start_index + 1
+
+    # Other Test section
+    content += f'<tr><th colspan=2 rowspan={len(other_tests)}>Other Tests</th>'
     for index, item in enumerate(other_tests):
         other_result = ''.join([f'<th>{column}</th>' for column in merged_data[start_index]])
         content = ''.join([content, f'<th>{item}</th>', other_result, '</tr>'])

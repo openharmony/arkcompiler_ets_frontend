@@ -95,7 +95,7 @@ def add_executable_permission_for_mac(sdk_path):
 
 def get_output_path_api_version(output_path):
     api_version = os.path.basename(output_path)
-    if api_version == 'base':
+    if api_version == 'openharmony':
         parts = output_path.split(os.sep)
         if len(parts) >= 2:
             filename = parts[-2]
@@ -124,12 +124,12 @@ def modify_package_json(file_path, output_path):
                 continue
             package_json_path = os.path.join(output_path, rf'{file_name}/oh-uni-package.json')
             with open(package_json_path, 'r+') as json_file:
-                json_file.seek(0) 
+                json_file.seek(0)
                 data = json.load(json_file)
                 data['apiVersion'] = get_output_path_api_version(output_path)
-                json_file.seek(0) 
+                json_file.seek(0)
                 json.dump(data, json_file, indent=2)
-                json_file.truncate()  
+                json_file.truncate()
 
 
 async def update_sdk_to_output_path(file_path, output_path):

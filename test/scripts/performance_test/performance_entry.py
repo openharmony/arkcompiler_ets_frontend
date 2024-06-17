@@ -123,7 +123,7 @@ class MailHelper():
         mail_zip.close()
 
     @staticmethod
-    def draw_pic(df, pic_name, title_name, y_lable):
+    def draw_pic(df, pic_name, title_name, y_label):
         ax = df.plot(
                     linestyle='-',
                     linewidth=2,
@@ -131,7 +131,7 @@ class MailHelper():
                     markersize=6,
                     markeredgecolor='black',
                     title=title_name,
-                    ylabel=y_lable,
+                    ylabel=y_label,
                     grid=True,
                     rot=30
         )
@@ -145,14 +145,14 @@ class MailHelper():
                     ax.text(i - 0.1, pos_y, k)
             i += 1
         ax.get_figure().savefig(pic_name, bbox_inches='tight')
-        
+
     def create_pic(self):
         for build_mode in range(2):
             for log_type in range(3):
                 title_name = MailHelper.find_in_double_map(build_mode,
                                                            log_type,
-                                                           performance_config.MailPicConfig.mail_pic_table_lable,
-                                                           "mail_pic_table_lable")
+                                                           performance_config.MailPicConfig.mail_pic_table_label,
+                                                           "mail_pic_table_label")
                 if not title_name:
                     continue
                 pic_name = MailHelper.find_in_double_map(build_mode,
@@ -182,8 +182,8 @@ class MailHelper():
                 if df_length > self.data_count_in_line_graph:
                     df = df[(df_length - self.data_count_in_line_graph) : df_length]
                 df.to_csv(csv_filename)
-                y_lable = 'build time (s)' if log_type < performance_config.LogType.SIZE else 'size (Byte)'
-                self.draw_pic(df, pic_name, title_name, y_lable)
+                y_label = 'build time (s)' if log_type < performance_config.LogType.SIZE else 'size (Byte)'
+                self.draw_pic(df, pic_name, title_name, y_label)
 
     def create_mail_files(self):
         self.create_msg_file()
@@ -201,7 +201,6 @@ class PerformanceEntry():
         projects = performance_config.Config.run_list
         for prj in projects:
             self.start_test(prj)
-        os.chdir(os.path.dirname(__file__))
         self.create_mail_files()
 
     def start_test(self, index):
