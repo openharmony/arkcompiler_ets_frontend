@@ -820,14 +820,6 @@ private:
             return true;
         }
 
-        // NOTE(kkonkuznetsov): skip unions/async lambdas
-        if (ast->IsIdentifier()) {
-            auto id = ast->AsIdentifier();
-            if (id->TypeAnnotation() != nullptr && id->TypeAnnotation()->IsETSUnionType()) {
-                return true;
-            }
-        }
-
         // NOTE(kkonkuznetsov): lambdas
         auto parent = ast->Parent();
         while (parent != nullptr) {
@@ -1034,15 +1026,6 @@ private:
             // loop: for (let i = 0; i < 10; i++) {
             // }
             return true;
-        }
-
-        // NOTE(kkonkuznetsov): skip, something with unions
-        if (ast->IsIdentifier()) {
-            auto id = ast->AsIdentifier();
-            auto annotation = id->TypeAnnotation();
-            if (annotation != nullptr && annotation->IsETSUnionType()) {
-                return true;
-            }
         }
 
         // NOTE(kkonkuznetsov): skip lambdas

@@ -52,3 +52,42 @@ TEST_F(ASTVerifierTest, ParametersInAsyncFunction)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, TestUnions)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        function assert_ccexc(f: () => void) {
+            try {
+                f();
+                assert false : "exception expected";
+            } catch (e) {
+                assert(e instanceof ClassCastError);
+            }
+        }
+
+        class A { }
+
+        function test_unions() {
+            assert_ccexc(() => { let f = ((x: A | undefined) => x as A | null); f(undefined); });
+        }
+
+        function main() {
+            test_unions();
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}
