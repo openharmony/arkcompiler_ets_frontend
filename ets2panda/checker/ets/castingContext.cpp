@@ -27,7 +27,7 @@ CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Typ
     relation->SetNode(node);
     relation->Result(false);
 
-    if (!relation->IsIdenticalTo(source, target)) {
+    if (!relation->IsSupertypeOf(target, source)) {
         relation->IsCastableTo(source, target);
         if (!relation->IsTrue() && source->ToString() == target->ToString()) {
             relation->Result(true);

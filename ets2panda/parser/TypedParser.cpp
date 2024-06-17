@@ -1239,6 +1239,8 @@ ir::AstNode *TypedParser::ParseTypeParameterInstantiationImpl(TypeAnnotationPars
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
         TypeAnnotationParsingOptions tmpOptions = *options &= ~TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
+        // Need to parse correctly the cases like `x: T|C<T|U>`
+        tmpOptions &= ~TypeAnnotationParsingOptions::DISALLOW_UNION;
         ir::TypeNode *currentParam = ParseTypeAnnotation(&tmpOptions);
 
         if (currentParam == nullptr) {

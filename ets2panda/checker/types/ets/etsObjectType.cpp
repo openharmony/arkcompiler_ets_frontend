@@ -643,7 +643,7 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
     ASSERT(HasTypeFlag(TypeFlag::GENERIC));
 
     auto *sourceType = source->AsETSObjectType();
-    auto const sourceTypeArguments = sourceType->TypeArguments();
+    auto const &sourceTypeArguments = sourceType->TypeArguments();
     auto const typeArgumentsNumber = typeArguments_.size();
     if (typeArgumentsNumber > sourceTypeArguments.size()) {
         relation->Result(false);
