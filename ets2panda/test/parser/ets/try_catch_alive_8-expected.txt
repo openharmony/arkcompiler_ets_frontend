@@ -455,4 +455,5 @@
     }
   }
 }
+Warning: Finally clause cannot complete normally [try_catch_alive_8.ets:21:15]
 TypeError: Unreachable statement. [try_catch_alive_8.ets:24:5]

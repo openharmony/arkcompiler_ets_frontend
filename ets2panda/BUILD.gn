@@ -36,6 +36,7 @@ libes2panda_sources = [
   "checker/checkerContext.cpp",
   "checker/ets/aliveAnalyzer.cpp",
   "checker/ets/arithmetic.cpp",
+  "checker/ets/assignAnalyzer.cpp",
   "checker/ets/baseAnalyzer.cpp",
   "checker/ets/boxingConverter.cpp",
   "checker/ets/castingContext.cpp",

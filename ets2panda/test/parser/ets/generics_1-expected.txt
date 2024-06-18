@@ -1317,3 +1317,5 @@
     }
   }
 }
+Warning: Variable 'd' is used before being assigned. [generics_1.ets:30:5]
+TypeError: There were errors during assign analysis (1) [generics_1.ets:1:1]

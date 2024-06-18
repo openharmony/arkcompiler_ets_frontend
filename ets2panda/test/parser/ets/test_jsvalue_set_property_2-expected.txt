@@ -431,3 +431,5 @@
     }
   }
 }
+Warning: Variable 'v' is used before being assigned. [test_jsvalue_set_property_2.ets:18:5]
+TypeError: There were errors during assign analysis (1) [test_jsvalue_set_property_2.ets:1:1]

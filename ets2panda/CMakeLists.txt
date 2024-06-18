@@ -370,6 +370,7 @@ set(ES2PANDA_LIB_SRC
   checker/ets/aliveAnalyzer.cpp
   checker/ets/etsWarningAnalyzer.cpp
   checker/ets/arithmetic.cpp
+  checker/ets/assignAnalyzer.cpp
   checker/ets/baseAnalyzer.cpp
   checker/ets/boxingConverter.cpp
   checker/ets/castingContext.cpp
