@@ -62,7 +62,7 @@
                 {
                     "start": 969,
                     "end": 1007,
-                    "replacementText": "interface Point {\n    x: number;\n    y: number;\n}\n"
+                    "replacementText": "interface Point {\n    x: number;\n    y: number;\n}"
                 }
             ],
             "suggest": "",
@@ -125,7 +125,7 @@
                 {
                     "start": 1405,
                     "end": 1570,
-                    "replacementText": "interface ComputedPropertyT {\n    a: string; // String-like name\n    5: string; // Number-like name\n    [c]: string; // String-like name\n    [d]: string; // Number-like name\n}\n"
+                    "replacementText": "interface ComputedPropertyT {\n    a: string; // String-like name\n    5: string; // Number-like name\n    [c]: string; // String-like name\n    [d]: string; // Number-like name\n}"
                 }
             ],
             "suggest": "",
@@ -191,7 +191,7 @@
                 {
                     "start": 1710,
                     "end": 1758,
-                    "replacementText": "interface Dictionary {\n    [key: string]: unknown;\n}\n"
+                    "replacementText": "interface Dictionary {\n    [key: string]: unknown;\n}"
                 }
             ],
             "suggest": "",
@@ -247,7 +247,7 @@
                 {
                     "start": 1999,
                     "end": 2083,
-                    "replacementText": "interface DescribableFunction {\n    description: string;\n    (someArg: number): boolean;\n}\n"
+                    "replacementText": "interface DescribableFunction {\n    description: string;\n    (someArg: number): boolean;\n}"
                 }
             ],
             "suggest": "",

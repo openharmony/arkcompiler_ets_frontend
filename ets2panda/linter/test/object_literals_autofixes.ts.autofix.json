@@ -760,7 +760,7 @@
                 {
                     "start": 3779,
                     "end": 3819,
-                    "replacementText": "interface LocalType {\n    a: number;\n    b: string;\n}\n"
+                    "replacementText": "interface LocalType {\n    a: number;\n    b: string;\n}"
                 }
             ],
             "suggest": "",

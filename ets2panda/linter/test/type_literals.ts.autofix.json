@@ -22,7 +22,7 @@
                 {
                     "start": 605,
                     "end": 621,
-                    "replacementText": "interface Type1 {\n}\n"
+                    "replacementText": "interface Type1 {\n}"
                 }
             ],
             "suggest": "",
@@ -36,7 +36,7 @@
                 {
                     "start": 622,
                     "end": 659,
-                    "replacementText": "interface Type2 {\n    a: number;\n    b: string;\n}\n"
+                    "replacementText": "interface Type2 {\n    a: number;\n    b: string;\n}"
                 }
             ],
             "suggest": "",
@@ -107,7 +107,7 @@
                 {
                     "start": 770,
                     "end": 813,
-                    "replacementText": "interface Type5<T, K> {\n    a: T;\n    b: K;\n    c: number;\n}\n"
+                    "replacementText": "interface Type5<T, K> {\n    a: T;\n    b: K;\n    c: number;\n}"
                 }
             ],
             "suggest": "",
@@ -121,7 +121,7 @@
                 {
                     "start": 814,
                     "end": 907,
-                    "replacementText": "interface Type6 {\n    a: number;\n    b: string;\n    c: {\n        x: number;\n        y: string;\n        z: Type1;\n    };\n}\n"
+                    "replacementText": "interface Type6 {\n    a: number;\n    b: string;\n    c: {\n        x: number;\n        y: string;\n        z: Type1;\n    };\n}"
                 }
             ],
             "suggest": "",
@@ -154,7 +154,7 @@
                 {
                     "start": 908,
                     "end": 940,
-                    "replacementText": "export interface Type7 {\n    a: number;\n}\n"
+                    "replacementText": "export interface Type7 {\n    a: number;\n}"
                 }
             ],
             "suggest": "",
@@ -573,7 +573,7 @@
                 {
                     "start": 1790,
                     "end": 2037,
-                    "replacementText": "interface TypeMembers {\n    a: number;\n    'b': string;\n    3: boolean;\n    ['x']: number;\n    m: (p: string) => number;\n    n(p: number): void;\n    get val(): number;\n    set val(p: number);\n    (p: number): string;\n    new (p: string): C;\n    [key: string]: unknown;\n}\n"
+                    "replacementText": "interface TypeMembers {\n    a: number;\n    'b': string;\n    3: boolean;\n    ['x']: number;\n    m: (p: string) => number;\n    n(p: number): void;\n    get val(): number;\n    set val(p: number);\n    (p: number): string;\n    new (p: string): C;\n    [key: string]: unknown;\n}"
                 }
             ],
             "suggest": "",
@@ -676,7 +676,7 @@
                 {
                     "start": 2558,
                     "end": 2598,
-                    "replacementText": "interface LocalType {\n    a: number;\n    b: string;\n}\n"
+                    "replacementText": "interface LocalType {\n    a: number;\n    b: string;\n}"
                 }
             ],
             "suggest": "",
