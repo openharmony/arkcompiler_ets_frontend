@@ -623,7 +623,7 @@ export class Autofixer {
       return;
     }
 
-    if (TsUtils.hasAccessModifier(param)) {
+    if (this.utils.hasAccessModifier(param)) {
       const propIdent = ts.factory.createIdentifier(param.name.text);
 
       const newFieldNode = ts.factory.createPropertyDeclaration(
@@ -660,7 +660,8 @@ export class Autofixer {
 
     const memberDecl = classMember.valueDeclaration as ts.ClassElement;
     const parentDecl = memberDecl.parent;
-    if (!ts.isClassLike(parentDecl) || this.utils.classMemberHasDuplicateName(memberDecl, parentDecl)) {
+    if (!ts.isClassLike(parentDecl) ||
+    this.utils.classMemberHasDuplicateName(memberDecl, parentDecl, true)) {
       this.privateIdentifierCache.set(classMember, undefined);
       return undefined;
     }
