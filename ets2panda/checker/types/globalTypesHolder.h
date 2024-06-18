@@ -89,7 +89,7 @@ enum class GlobalTypeId : std::size_t {
     ETS_ASSERTION_ERROR_BUILTIN,
     ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN,
     ETS_NULL_POINTER_ERROR_BUILTIN,
-    ETS_UNCATCHED_EXCEPTION_ERROR_BUILTIN,
+    ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN,
     ETS_STRING_BUILTIN,
     ETS_STRING_BUILDER_BUILTIN,
     ETS_TYPE_BUILTIN,
@@ -234,7 +234,7 @@ public:
     Type *GlobalAssertionErrorBuiltinType();
     Type *GlobalDivideByZeroErrorBuiltinType();
     Type *GlobalNullPointerErrorBuiltinType();
-    Type *GlobalUncatchedExceptionErrorBuiltinType();
+    Type *GlobalUncaughtExceptionErrorBuiltinType();
     Type *GlobalMapBuiltinType();
     Type *GlobalRegExpBuiltinType();
     Type *GlobalSetBuiltinType();

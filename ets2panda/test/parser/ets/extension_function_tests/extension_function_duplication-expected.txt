@@ -795,4 +795,4 @@
     }
   }
 }
-TypeError: Function already declared. [extension_function_duplication.ets:24:1]
+TypeError: Function name is already declared. [extension_function_duplication.ets:24:1]

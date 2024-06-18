@@ -960,4 +960,4 @@
     }
   }
 }
-TypeError: Function already declared. [rest_parameter_02.ets:20:1]
+TypeError: Function foo is already declared. [rest_parameter_02.ets:20:1]

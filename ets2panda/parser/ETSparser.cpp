@@ -245,6 +245,7 @@ std::vector<Program *> ETSParser::ParseSources()
 
         auto currentLang = GetContext().SetLanguage(data.lang);
         auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
+        importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
         auto newProg = ParseSource(
             {parseList[idx].sourcePath.Utf8(), extSrc->View().Utf8(), parseList[idx].sourcePath.Utf8(), false});
 

@@ -914,10 +914,11 @@ void ETSChecker::CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType 
 
     Relation()->IsIdenticalTo(func, overload);
     if (Relation()->IsTrue()) {
-        ThrowTypeError("Function already declared.", currentFunc->Start());
+        ThrowTypeError("Function " + func->Name().Mutf8() + " is already declared.", currentFunc->Start());
     }
     if (HasSameAssemblySignature(func, overload)) {
-        ThrowTypeError("Function with this assembly signature already declared.", currentFunc->Start());
+        ThrowTypeError("Function " + func->Name().Mutf8() + " with this assembly signature already declared.",
+                       currentFunc->Start());
     }
 }
 

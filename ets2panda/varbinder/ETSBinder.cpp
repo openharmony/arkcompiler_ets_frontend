@@ -453,6 +453,58 @@ void ETSBinder::InsertForeignBinding(ir::AstNode *const specifier, const ir::ETS
     TopScope()->InsertForeignBinding(name, var);
 }
 
+std::string RedeclarationErrorMessageAssembler(const Variable *const var, const Variable *const variable,
+                                               util::StringView localName)
+{
+    auto type = var->Declaration()->Node()->IsClassDefinition() ? "Class '"
+                : var->Declaration()->IsFunctionDecl()          ? "Function '"
+                                                                : "Variable '";
+    auto str = util::Helpers::AppendAll(type, localName.Utf8(), "'");
+    str += variable->Declaration()->Type() == var->Declaration()->Type() ? " is already defined."
+                                                                         : " is already defined with different type.";
+
+    return str;
+}
+
+static const util::StringView &GetPackageName(varbinder::Variable *var)
+{
+    Scope *scope = var->GetScope();
+
+    while (scope->Parent() != nullptr) {
+        scope = scope->Parent();
+    }
+
+    ASSERT(scope->Node()->IsETSScript());
+
+    return scope->Node()->AsETSScript()->Program()->GetPackageName();
+}
+
+void AddOverloadFlag(bool isStdLib, varbinder::Variable *var, varbinder::Variable *variable)
+{
+    auto *const currentNode = variable->Declaration()->Node()->AsMethodDefinition();
+    auto *const method = var->Declaration()->Node()->AsMethodDefinition();
+
+    // Necessary because stdlib and escompat handled as same package, it can be removed after fixing package handling
+    if (isStdLib && (GetPackageName(var) != GetPackageName(variable))) {
+        return;
+    }
+
+    if (!method->Overloads().empty() && !method->HasOverload(currentNode)) {
+        method->AddOverload(currentNode);
+        currentNode->Function()->Id()->SetVariable(var);
+        currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+        currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+        return;
+    }
+
+    if (!currentNode->HasOverload(method)) {
+        currentNode->AddOverload(method);
+        method->Function()->Id()->SetVariable(variable);
+        method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+        method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+    }
+}
+
 void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
                                          const varbinder::Scope::VariableMap &globalBindings,
                                          const parser::Program *const importProgram,
@@ -466,7 +518,19 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             continue;
         }
 
-        if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported()) {
+        if (!importGlobalScope->IsForeignBinding(bindingName) && !var->Declaration()->Node()->IsDefaultExported() &&
+            (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
+             var->AsLocalVariable()->Declaration()->Node()->IsExportedType())) {
+            auto variable = Program()->GlobalClassScope()->FindLocal(bindingName, ResolveBindingOptions::ALL);
+            if (variable != nullptr && var != variable && variable->Declaration()->IsFunctionDecl() &&
+                var->Declaration()->IsFunctionDecl()) {
+                bool isStdLib = util::Helpers::IsStdLib(Program());
+                AddOverloadFlag(isStdLib, var, variable);
+                continue;
+            }
+            if (variable != nullptr && var != variable) {
+                ThrowError(import->Source()->Start(), RedeclarationErrorMessageAssembler(var, variable, bindingName));
+            }
             InsertForeignBinding(specifier, import, bindingName, var);
         }
     }
@@ -657,6 +721,16 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         ThrowError(importPath->Start(), "Imported element not exported '" + var->Declaration()->Name().Mutf8() + "'");
     }
 
+    auto variable = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
+    if (variable != nullptr && var != variable) {
+        if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
+            bool isStdLib = util::Helpers::IsStdLib(Program());
+            AddOverloadFlag(isStdLib, var, variable);
+            return true;
+        }
+        ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, variable, localName));
+    }
+
     InsertForeignBinding(specifier, import, localName, var);
     return true;
 }
@@ -716,11 +790,8 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     const auto &globalBindings = importGlobalScope->Bindings();
 
     if (AddImportNamespaceSpecifiersToTopBindings(specifier, globalBindings, importProgram, importGlobalScope,
-                                                  import)) {
-        return;
-    }
-
-    if (AddImportSpecifiersToTopBindings(specifier, globalBindings, import, record, std::move(viewedReExport))) {
+                                                  import) ||
+        AddImportSpecifiersToTopBindings(specifier, globalBindings, import, record, std::move(viewedReExport))) {
         return;
     }
 
@@ -995,28 +1066,28 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
         return false;
     }
 
+    auto variable = Program()->GlobalClassScope()->FindLocal(name, ResolveBindingOptions::ALL);
+
+    bool isStdLib = util::Helpers::IsStdLib(Program());
+    if (variable != nullptr && var != variable) {
+        if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
+            AddOverloadFlag(isStdLib, var, variable);
+            return true;
+        }
+
+        ThrowError(classElement->Id()->Start(), RedeclarationErrorMessageAssembler(var, variable, name.Utf8()));
+    }
+
     const auto insRes = TopScope()->InsertForeignBinding(name, var);
     if (!(!insRes.second && insRes.first != TopScope()->Bindings().end()) || !(insRes.first->second != var)) {
         return true;
     }
     if (insRes.first->second->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-        auto *const currentNode = insRes.first->second->Declaration()->Node();
-        auto *const method = var->Declaration()->Node()->AsMethodDefinition();
-        if (!currentNode->AsMethodDefinition()->HasOverload(method)) {
-            currentNode->AsMethodDefinition()->AddOverload(method);
-            method->Function()->Id()->SetVariable(insRes.first->second);
-            method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
-        }
+        AddOverloadFlag(isStdLib, var, insRes.first->second);
         return true;
     }
 
-    auto str = util::Helpers::AppendAll("Variable '", name.Utf8(), "'");
-    if (insRes.first->second->Declaration()->Type() == var->Declaration()->Type()) {
-        str += " is already defined.";
-    } else {
-        str += " is already defined with different type.";
-    }
-    ThrowError(classElement->Id()->Start(), str);
+    ThrowError(classElement->Id()->Start(), RedeclarationErrorMessageAssembler(var, insRes.first->second, name.Utf8()));
 }
 
 void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const classDef)

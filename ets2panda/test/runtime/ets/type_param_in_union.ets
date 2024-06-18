@@ -42,17 +42,17 @@ class X<T> {
     }
 }
 
-export class PromiseFulfilledResult<T> {
+export class TestPromiseFulfilledResult<T> {
     status: string;
     value: T;
 }
 
-export class PromiseRejectedResult {
+export class TestPromiseRejectedResult {
     status: string;
     reason: Object;
 }
 
-type PromiseSettledResult<T> = PromiseFulfilledResult<T> | PromiseRejectedResult;
+type TestPromiseSettledResult<T> = TestPromiseFulfilledResult<T> | TestPromiseRejectedResult;
 
 function functionOverValue<Value>(value: Value | (() => Value)): boolean {
     return Type.of(value) instanceof FunctionType
@@ -65,7 +65,7 @@ function main() {
     let x = new X<number>();
     x.method(x, 123, x.method(321));
 
-    let res: PromiseSettledResult<number | Error> = new PromiseFulfilledResult<number | Error>();
+    let res: TestPromiseSettledResult<number | Error> = new TestPromiseFulfilledResult<number | Error>();
 
     assert(!functionOverValue(123));
     assert(functionOverValue((() => 123) as () => number));

@@ -1879,4 +1879,4 @@
     }
   }
 }
-TypeError: Function with this assembly signature already declared. [lambda-type-inference-overloaded-1.ets:20:1]
+TypeError: Function foo with this assembly signature already declared. [lambda-type-inference-overloaded-1.ets:20:1]

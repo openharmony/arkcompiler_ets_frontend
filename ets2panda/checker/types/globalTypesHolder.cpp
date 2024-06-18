@@ -144,7 +144,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("NoSuchMethodError", GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN);
     builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
     builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("UncatchedExceptionError", GlobalTypeId::ETS_UNCATCHED_EXCEPTION_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("UncaughtExceptionError", GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN);
     builtinNameMappings_.emplace("Map", GlobalTypeId::ETS_MAP_BUILTIN);
     builtinNameMappings_.emplace("RegExp", GlobalTypeId::ETS_REGEXP_BUILTIN);
     builtinNameMappings_.emplace("Set", GlobalTypeId::ETS_SET_BUILTIN);
@@ -506,9 +506,9 @@ Type *GlobalTypesHolder::GlobalNullPointerErrorBuiltinType()
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN));
 }
 
-Type *GlobalTypesHolder::GlobalUncatchedExceptionErrorBuiltinType()
+Type *GlobalTypesHolder::GlobalUncaughtExceptionErrorBuiltinType()
 {
-    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_UNCATCHED_EXCEPTION_ERROR_BUILTIN));
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN));
 }
 
 Type *GlobalTypesHolder::GlobalETSStringBuiltinType()

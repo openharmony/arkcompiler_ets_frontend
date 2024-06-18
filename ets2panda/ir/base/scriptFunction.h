@@ -165,6 +165,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::OVERLOAD) != 0;
     }
 
+    [[nodiscard]] bool IsExternalOverload() const
+    {
+        return (funcFlags_ & ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD) != 0;
+    }
+
     [[nodiscard]] bool IsConstructor() const noexcept
     {
         return (funcFlags_ & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0;
