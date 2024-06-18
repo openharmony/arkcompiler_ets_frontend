@@ -41,7 +41,6 @@ void DepsRelationResolver::FillRecord2ProgramMap(std::unordered_map<std::string,
     for (const auto &progInfo : progsInfo_) {
         for (const auto &record : progInfo.second->program.record_table) {
             if (record.second.field_list.empty()) {
-                generatedRecords_.insert(record.second.name);
                 continue;
             }
             if (progInfo.first.find(util::NPM_ENTRIES) != std::string::npos) {
@@ -77,9 +76,10 @@ void DepsRelationResolver::DumpDepsRelations()
     ss << "All Dependency Files:" << std::endl;
     for (auto dep : resolvedDepsRelation_) {
         auto fileName = dep.first;
-        size_t pos = dep.first.rfind(util::SLASH_TAG);
+        size_t abcFileNameSeparatorPos = dep.first.rfind(util::CHAR_VERTICAL_LINE);
+        size_t pos = dep.first.rfind(util::SLASH_TAG, abcFileNameSeparatorPos);
         if (pos != std::string::npos) {
-            fileName = dep.first.substr(pos + 1);
+            fileName = dep.first.substr(pos + 1, abcFileNameSeparatorPos - pos - 1);
         }
         ss << "program_file: " << fileName << std::endl;
         for (auto r : dep.second) {

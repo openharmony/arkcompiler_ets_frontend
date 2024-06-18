@@ -85,15 +85,6 @@ public:
     static constexpr std::string_view DYLIB = ".dylib";
 };
 
-struct DepsRelationInfo {
-    const std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
-    const std::unordered_set<std::string> generatedRecords {};
-
-    DepsRelationInfo(const std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation,
-                     const std::unordered_set<std::string> generatedRecords)
-        : resolvedDepsRelation(resolvedDepsRelation), generatedRecords(generatedRecords) {};
-};
-
 using AopTransformFuncDef = int (*)(const char *);
 
 class Helpers {
@@ -161,12 +152,8 @@ public:
     static bool IsSpecialScopeName(const util::StringView &str);
     static bool BelongingToRecords(const std::string &name, const std::unordered_set<std::string> &retainRecordSet,
                                    const std::string &delimiter = std::string(DOT));
-    static void RemoveProgramRedundantData(panda::pandasm::Program &program,
-                                           const std::unordered_set<std::string> &retainRecordSet,
-                                           const std::unordered_set<std::string> &generatedRecords);
     static void RemoveProgramsRedundantData(std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-        const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation,
-        const std::unordered_set<std::string> &generatedRecords);
+        const std::map<std::string, std::unordered_set<std::string>> &resolveDepsRelation);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;

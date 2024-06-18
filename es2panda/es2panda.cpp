@@ -32,6 +32,7 @@ namespace panda::es2panda {
 // Compiler
 
 constexpr size_t DEFAULT_THREAD_COUNT = 2;
+size_t Compiler::expectedProgsCount_ = 0;
 
 Compiler::Compiler(ScriptExtension ext) : Compiler(ext, DEFAULT_THREAD_COUNT) {}
 
@@ -73,7 +74,9 @@ void Compiler::ChecktargetApiVersionIsSupportedForAbcInput(const CompilerOptions
     }
 }
 
-panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, const CompilerOptions &options)
+void Compiler::AbcToAsmProgram(const std::string &fname, const CompilerOptions &options,
+                               std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                               panda::ArenaAllocator *allocator)
 {
     if (!options.enableAbcInput) {
         throw Error(ErrorType::GENERIC, "\"--enable-abc-input\" is not enabled, abc file " + fname +
@@ -87,44 +90,27 @@ panda::pandasm::Program *Compiler::AbcToAsmProgram(const std::string &fname, con
                                                         options.targetApiVersion)) {
         throw Error(ErrorType::GENERIC, "The input abc file " + fname + "'s version is not supported.");
     }
-    panda::pandasm::Program *prog = new panda::pandasm::Program();
-    (void)abcToAsmCompiler_->FillProgramData(*prog);
-    return prog;
-}
-
-void Compiler::UpdateDynamicImportPackageVersion(panda::pandasm::Program *prog,
-                                                 const panda::es2panda::CompilerOptions &options)
-{
-    for (auto &[name, function] : prog->function_table) {
-        util::VisitDyanmicImports<false>(function, [&prog, options](std::string &ohmurl) {
-            const auto &newOhmurl = util::UpdatePackageVersionIfNeeded(ohmurl, options.compileContextInfo);
-            prog->strings.insert(newOhmurl);
-            ohmurl = newOhmurl;
-        });
+    auto *compileAbcClassQueue = new compiler::CompileAbcClassQueue(options.abcClassThreadCount,
+                                                                    options,
+                                                                    *abcToAsmCompiler_,
+                                                                    progsInfo,
+                                                                    allocator);
+    try {
+        compileAbcClassQueue->Schedule();
+        compileAbcClassQueue->Consume();
+        compileAbcClassQueue->Wait();
+    } catch (const class Error &e) {
+        throw;
     }
-}
 
-void Compiler::UpdateStaticImportPackageVersion(panda::pandasm::Program *prog,
-                                                const panda::es2panda::CompilerOptions &options)
-{
-    for (auto &[recordName, record] : prog->record_table) {
-        util::VisitStaticImports<false>(*prog, record, [options](std::string &ohmurl) {
-            ohmurl = util::UpdatePackageVersionIfNeeded(ohmurl, options.compileContextInfo);
-        });
-    }
-}
-
-void Compiler::UpdatePackageVersion(panda::pandasm::Program *prog, const panda::es2panda::CompilerOptions &options)
-{
-    // Replace for esm module static import
-    UpdateStaticImportPackageVersion(prog, options);
-    // Replace for dynamic import
-    UpdateDynamicImportPackageVersion(prog, options);
+    delete compileAbcClassQueue;
+    compileAbcClassQueue = nullptr;
 }
 
 panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,
     util::SymbolTable *symbolTable)
 {
+    ASSERT(input.isSourceMode);
     /* TODO(dbatyai): pass string view */
     std::string fname(input.fileName);
     std::string src(input.source);
@@ -139,10 +125,6 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     }
 
     try {
-        if (fname.substr(fname.find_last_of(".") + 1) == "abc") {
-            return AbcToAsmProgram(fname, options);
-        }
-
         auto ast = parser_->Parse(input, options);
         ast.Binder()->SetProgram(&ast);
 
@@ -283,7 +265,6 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
     auto *program = Compile(*src, options, symbolTable);
     if (!program) {
         const auto &err = GetError();
-
         if (err.Message().empty() && options.parseOnly) {
             return nullptr;
         }

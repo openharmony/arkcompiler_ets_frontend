@@ -31,10 +31,9 @@ class DepsRelationResolver {
 public:
     explicit DepsRelationResolver(const std::map<std::string, panda::es2panda::util::ProgramCache *> &progsInfo,
                                   const std::unique_ptr<panda::es2panda::aot::Options> &options,
-                                  std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation,
-                                  std::unordered_set<std::string> &generatedRecords)
+                                  std::map<std::string, std::unordered_set<std::string>> &resolvedDepsRelation)
         : progsInfo_(progsInfo), resolvedDepsRelation_(resolvedDepsRelation),
-        compileContextInfo_(options->CompilerOptions().compileContextInfo), generatedRecords_(generatedRecords),
+        compileContextInfo_(options->CompilerOptions().compileContextInfo),
         dumpDepsInfo_(options->CompilerOptions().dumpDepsInfo)
     {
     }
@@ -56,7 +55,6 @@ private:
     CompileContextInfo &compileContextInfo_;
     std::queue<std::string> depsToBeResolved_ {};
     std::unordered_set<std::string> resolvedRecords_ {};
-    std::unordered_set<std::string> &generatedRecords_;
     bool dumpDepsInfo_ {false};
 };
 } // namespace panda::es2panda::aot

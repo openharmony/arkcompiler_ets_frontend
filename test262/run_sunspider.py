@@ -449,6 +449,7 @@ class ArkProgram():
             files_info_list.append(f"{dependency};{record_name};{compile_mode};xxx;yyy\n")
 
         mix_compiler = mix_compile.MixCompiler(out_file, files_info_list, self.opt_level,
+                                               self.es2abc_thread_count, self.es2abc_thread_count, 
                                                self.es2abc_thread_count, self.ark_frontend_binary)
 
         retcode = mix_compiler.mix_compile()

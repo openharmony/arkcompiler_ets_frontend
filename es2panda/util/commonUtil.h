@@ -42,6 +42,7 @@ const std::string MODULE_RECORD_IDX = "moduleRecordIdx";
 constexpr char NORMALIZED_OHMURL_SEPARATOR = '&';
 constexpr char NORMALIZED_OHMURL_PREFIX = '@';
 constexpr char SLASH_TAG = '/';
+constexpr char CHAR_VERTICAL_LINE = '|';
 
 constexpr size_t BUNDLE_NAME_POS = 2U;
 constexpr size_t NORMALIZED_IMPORT_POS = 3U;

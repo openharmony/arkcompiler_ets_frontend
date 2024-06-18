@@ -30,26 +30,6 @@ record_name: &sourcehar/sourcehar-file1&2.0.0
 	returnundefined
 }
 
-.function any &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test(any a0, any a1, any a2) {
-	tryldglobalbyname 0x0, print
-	sta v0
-	lda.str bytecodehar1.file2.test
-	sta v1
-	lda v0
-	callarg1 0x1, v1
-	lda.str @normalized:N&&&sourcehar/sourcehar-file2&2.0.0
-	dynamicimport
-	ldundefined
-	returnundefined
-}
-
-.function any &bytecodehar1/bytecodehar1-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
-	definefunc 0x0, &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test, 0x0
-	stmodulevar 0x0
-	ldundefined
-	returnundefined
-}
-
 
 ======> literal array buffer <======
 ------------------------------------
@@ -114,6 +94,32 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_782
     tag: 2
     val: 0
 },
+======> strings <======
+"&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "bytecodehar1.file1.test"; "print"; 
+.language ECMAScript
+
+.function any &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test(any a0, any a1, any a2) {
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str bytecodehar1.file2.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	lda.str @normalized:N&&&sourcehar/sourcehar-file2&2.0.0
+	dynamicimport
+	ldundefined
+	returnundefined
+}
+
+.function any &bytecodehar1/bytecodehar1-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &bytecodehar1/bytecodehar1-file2&2.0.0.#*#test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+
+======> literal array buffer <======
 ------------------------------------
 slot &bytecodehar1/bytecodehar1-file2&2.0.0_1314
 {
@@ -177,7 +183,19 @@ slot &bytecodehar1/bytecodehar1-file2&2.0.0_1314
     val: 0
 },
 ======> strings <======
-"&bytecodehar1/bytecodehar1-file1&2.0.0.#*#test"; "&bytecodehar1/bytecodehar1-file2&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file1&2.0.0"; "@normalized:N&&&sourcehar/sourcehar-file2&2.0.0"; "bytecodehar1.file1.test"; "bytecodehar1.file2.test"; "print"; 
+"&bytecodehar1/bytecodehar1-file2&2.0.0.#*#test"; "@normalized:N&&&sourcehar/sourcehar-file2&2.0.0"; "bytecodehar1.file2.test"; "print"; 
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
 .language ECMAScript
 
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test(any a0, any a1, any a2) {
@@ -193,24 +211,6 @@ slot &bytecodehar1/bytecodehar1-file2&2.0.0_1314
 
 .function any &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.func_main_0(any a0, any a1, any a2) {
 	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test, 0x0
-	stmodulevar 0x0
-	ldundefined
-	returnundefined
-}
-
-.function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test(any a0, any a1, any a2) {
-	tryldglobalbyname 0x0, print
-	sta v0
-	lda.str bytecodehar2.file2.test
-	sta v1
-	lda v0
-	callarg1 0x1, v1
-	ldundefined
-	returnundefined
-}
-
-.function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
-	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test, 0x0
 	stmodulevar 0x0
 	ldundefined
 	returnundefined
@@ -260,6 +260,30 @@ slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_743
     tag: 2
     val: 0
 },
+======> strings <======
+"&@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test"; "bytecodehar2.file1.test"; "print"; 
+.language ECMAScript
+
+.function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test(any a0, any a1, any a2) {
+	tryldglobalbyname 0x0, print
+	sta v0
+	lda.str bytecodehar2.file2.test
+	sta v1
+	lda v0
+	callarg1 0x1, v1
+	ldundefined
+	returnundefined
+}
+
+.function any &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.func_main_0(any a0, any a1, any a2) {
+	definefunc 0x0, &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test, 0x0
+	stmodulevar 0x0
+	ldundefined
+	returnundefined
+}
+
+
+======> literal array buffer <======
 ------------------------------------
 slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1162
 {
@@ -303,7 +327,19 @@ slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1162
     val: 0
 },
 ======> strings <======
-"&@ohos/bytecodehar2/bytecodehar2-file1&2.0.0.#*#test"; "&@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test"; "bytecodehar2.file1.test"; "bytecodehar2.file2.test"; "print"; 
+"&@ohos/bytecodehar2/bytecodehar2-file2&2.0.0.#*#test"; "bytecodehar2.file2.test"; "print"; 
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
+.language ECMAScript
+
+
+======> literal array buffer <======
+======> strings <======
+
 .language ECMAScript
 
 .function any &myapp/hap-file-exec&.#*#main(any a0, any a1, any a2) {
