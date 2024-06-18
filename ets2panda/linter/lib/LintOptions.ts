@@ -30,4 +30,5 @@ export interface LintOptions {
   reportAutofixCb?: ReportAutofixCallback;
   isFileFromModuleCb?: IsFileFromModuleCallback;
   isEtsFileCb?: IsEtsFileCallback;
+  isEtsFile?: boolean;
 }

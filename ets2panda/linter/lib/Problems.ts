@@ -106,6 +106,12 @@ export enum FaultID {
   SharedNoSideEffectImport,
   SharedModuleExports,
   SharedModuleNoWildcardExport,
+  NoTsImportEts,
+  SendableTypeInheritance,
+  SendableTypeExported,
+  NoTsReExportEts,
+  NoNameSpaceImportEtsToTs,
+  NoSIdeEffectImportEtsToTs,
   // this should always be last enum
   LAST_ID
 }
