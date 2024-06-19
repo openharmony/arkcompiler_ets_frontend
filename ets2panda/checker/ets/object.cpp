@@ -14,38 +14,38 @@
  */
 
 #include "boxingConverter.h"
-#include "varbinder/variableFlags.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
+#include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classElement.h"
 #include "ir/base/classProperty.h"
-#include "ir/base/methodDefinition.h"
 #include "ir/base/classStaticBlock.h"
+#include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/variableDeclarator.h"
-#include "ir/statements/expressionStatement.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/ts/tsClassImplements.h"
-#include "ir/ts/tsInterfaceHeritage.h"
-#include "ir/ts/tsInterfaceDeclaration.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
-#include "ir/ets/etsNewClassInstanceExpression.h"
-#include "varbinder/declaration.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/ets/etsDynamicType.h"
-#include "checker/types/ets/etsTupleType.h"
-#include "checker/ets/typeRelationContext.h"
 #include "ir/ets/etsUnionType.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/callExpression.h"
+#include "ir/expressions/functionExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/expressionStatement.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/ts/tsClassImplements.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/ts/tsInterfaceHeritage.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "varbinder/declaration.h"
+#include "varbinder/variableFlags.h"
 
 namespace ark::es2panda::checker {
 ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
@@ -160,7 +160,9 @@ ArenaVector<Type *> ETSChecker::CreateUnconstrainedTypeParameters(ir::TSTypePara
 
     // Note: we have to run pure check loop first to avoid endless loop because of possible circular dependencies
     Type2TypeMap extends {};
+    TypeSet typeParameterDecls {};
     for (auto *const typeParam : typeParams->Params()) {
+        CheckDefaultTypeParameter(typeParam, typeParameterDecls);
         if (auto *const constraint = typeParam->Constraint();
             constraint != nullptr && constraint->IsETSTypeReference() &&
             constraint->AsETSTypeReference()->Part()->Name()->IsIdentifier()) {
@@ -185,32 +187,47 @@ void ETSChecker::AssignTypeParameterConstraints(ir::TSTypeParameterDeclaration c
     ctScope.TryCheckConstraints();
 }
 
+void ETSChecker::CheckDefaultTypeParameter(const ir::TSTypeParameter *param, TypeSet &typeParameterDecls)
+{
+    const auto typeParamVar = param->Name()->Variable();
+    if (typeParameterDecls.count(typeParamVar) != 0U) {
+        ThrowTypeError({"Duplicate type parameter '", param->Name()->Name().Utf8(), "'."}, param->Start());
+    }
+
+    std::function<void(ir::AstNode *)> checkDefault = [&typeParameterDecls, this, &checkDefault](ir::AstNode *node) {
+        if (node->IsETSTypeReferencePart()) {
+            ir::ETSTypeReferencePart *defaultTypePart = node->AsETSTypeReferencePart();
+            if (defaultTypePart->Name()->Variable()->TsType() == nullptr &&
+                (defaultTypePart->Name()->Variable()->Flags() & varbinder::VariableFlags::TYPE_PARAMETER) != 0U &&
+                typeParameterDecls.count(defaultTypePart->Name()->Variable()) == 0U) {
+                ThrowTypeError({"Type Parameter ", defaultTypePart->Name()->AsIdentifier()->Name().Utf8(),
+                                " should be defined before use."},
+                               node->Start());
+            }
+        }
+        node->Iterate(checkDefault);
+    };
+
+    if (param->DefaultType() != nullptr) {
+        param->DefaultType()->Iterate(checkDefault);
+    }
+
+    typeParameterDecls.emplace(typeParamVar);
+}
+
 void ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends)
 {
-    const auto typeParamName = param->Name()->Name().Utf8();
-    const auto constraintName =
-        param->Constraint()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Utf8();
-    if (typeParamName == constraintName) {
-        ThrowTypeError({"Type parameter '", typeParamName, "' cannot extend/implement itself."},
-                       param->Constraint()->Start());
-    }
-
-    auto it = extends.find(typeParamName);
-    if (it != extends.cend()) {
-        ThrowTypeError({"Type parameter '", typeParamName, "' is duplicated in the list."},
-                       param->Constraint()->Start());
-    }
-
-    it = extends.find(constraintName);
+    const auto typeParamVar = param->Name()->Variable();
+    const auto constraintVar = param->Constraint()->AsETSTypeReference()->Part()->Name()->Variable();
+    extends.emplace(typeParamVar, constraintVar);
+    auto it = extends.find(constraintVar);
     while (it != extends.cend()) {
-        if (it->second == typeParamName) {
-            ThrowTypeError({"Type parameter '", typeParamName, "' has circular constraint dependency."},
+        if (it->second == typeParamVar) {
+            ThrowTypeError({"Type parameter '", param->Name()->Name().Utf8(), "' has circular constraint dependency."},
                            param->Constraint()->Start());
         }
         it = extends.find(it->second);
     }
-
-    extends.emplace(typeParamName, constraintName);
 }
 
 void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)

@@ -742,8 +742,10 @@ private:
 
     ir::ClassDeclaration *GetDynamicClass(Language lang, bool isConstruct);
 
-    using Type2TypeMap = std::unordered_map<std::string_view, std::string_view>;
+    using Type2TypeMap = std::unordered_map<varbinder::Variable *, varbinder::Variable *>;
+    using TypeSet = std::unordered_set<varbinder::Variable *>;
     void CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends);
+    void CheckDefaultTypeParameter(const ir::TSTypeParameter *param, TypeSet &typeParameterDecls);
 
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);
