@@ -1,0 +1,1 @@
+SyntaxError: Return type of index signature from exported class or interface need to be identifier [ambient_indexer_5.ets:17:22]

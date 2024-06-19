@@ -21,6 +21,7 @@
 #include "parser/parserFlags.h"
 #include "util/helpers.h"
 #include "util/language.h"
+#include "utils/arena_containers.h"
 #include "varbinder/varbinder.h"
 #include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
@@ -42,6 +43,7 @@
 #include "ir/statements/classDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/variableDeclaration.h"
+#include "ir/expressions/dummyNode.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/typeofExpression.h"
@@ -984,6 +986,15 @@ ir::AstNode *ETSParser::ParseInnerRest(const ArenaVector<ir::AstNode *> &propert
             ident->SetReference(false);
             ident->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
             return parseClassMethod(ident);
+        }
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+            auto const savePos = Lexer()->Save();
+            Lexer()->NextToken();
+            if (Lexer()->GetToken().Ident().Is("Symbol")) {
+                Lexer()->Rewind(savePos);
+            } else {
+                return ParseAmbientSignature();
+            }
         }
     }
 
@@ -3619,6 +3630,50 @@ ir::ModifierFlags ETSParser::ParseTypeVarianceModifier(TypeAnnotationParsingOpti
             return ir::ModifierFlags::NONE;
         }
     }
+}
+
+ir::AstNode *ETSParser::ParseAmbientSignature()
+{
+    auto const startPos = Lexer()->GetToken().Start();
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        ThrowSyntaxError("Unexpected token at", Lexer()->GetToken().Start());
+    }
+    auto const indexName = Lexer()->GetToken().Ident();
+
+    Lexer()->NextToken();
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        ThrowSyntaxError("Index type expected in index signature", Lexer()->GetToken().Start());
+    }
+
+    Lexer()->NextToken();  // eat ":"
+    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_NUMBER) {
+        ThrowSyntaxError("Index type must be number in index signature", Lexer()->GetToken().Start());
+    }
+
+    Lexer()->NextToken();  // eat indexType
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+        ThrowSyntaxError("] expected in index signature", Lexer()->GetToken().Start());
+    }
+
+    Lexer()->NextToken();  // eat "]"
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        ThrowSyntaxError("An index signature must have a type annotation.", Lexer()->GetToken().Start());
+    }
+
+    Lexer()->NextToken();  // eat ":"
+    if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        ThrowSyntaxError("Return type of index signature from exported class or interface need to be identifier",
+                         Lexer()->GetToken().Start());
+    }
+    auto const returnType =
+        AllocNode<ir::ETSTypeReferencePart>(AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator()));
+
+    auto dummyNode = AllocNode<ir::DummyNode>(compiler::Signatures::AMBIENT_INDEXER, indexName, returnType,
+                                              ir::DummyNodeFlag::INDEXER);
+    dummyNode->SetRange({startPos, Lexer()->GetToken().End()});
+    Lexer()->NextToken();  // eat return type
+    return dummyNode;
 }
 
 ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotationParsingOptions *options)

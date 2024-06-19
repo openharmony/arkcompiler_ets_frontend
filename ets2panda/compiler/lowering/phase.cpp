@@ -16,6 +16,7 @@
 #include "phase.h"
 #include "checker/checker.h"
 #include "compiler/core/ASTVerifier.h"
+#include "ets/ambientLowering.h"
 #include "ets/defaultParameterLowering.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
@@ -54,6 +55,7 @@ std::vector<Phase *> GetTrivialPhaseList()
     };
 }
 
+static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
@@ -97,6 +99,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_pluginsAfterParse,
         &g_topLevelStatements,
         &g_defaultParameterLowering,
+        &g_ambientLowering,
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,

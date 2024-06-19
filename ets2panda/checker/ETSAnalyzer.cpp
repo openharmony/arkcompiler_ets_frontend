@@ -2726,4 +2726,8 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) cons
     UNREACHABLE();
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::DummyNode *expr) const
+{
+    UNREACHABLE();
+}
 }  // namespace ark::es2panda::checker

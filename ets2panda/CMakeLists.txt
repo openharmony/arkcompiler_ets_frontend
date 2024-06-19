@@ -161,6 +161,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/objectIterator.cpp
   compiler/lowering/ets/interfacePropertyDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
+  compiler/lowering/ets/ambientLowering.cpp
   compiler/lowering/ets/bigintLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
   compiler/lowering/ets/tupleLowering.cpp
@@ -209,6 +210,7 @@ set(ES2PANDA_LIB_SRC
   ir/expressions/directEvalExpression.cpp
   ir/expressions/functionExpression.cpp
   ir/expressions/identifier.cpp
+  ir/expressions/dummyNode.cpp
   ir/expressions/importExpression.cpp
   ir/expressions/literal.cpp
   ir/expressions/literals/bigIntLiteral.cpp
