@@ -45,3 +45,54 @@ let c = Math.random()>0.5 ? SendableClass5 : NonSendableClass3;
 
 let ins4 = new b<number, NonSendableClass3>; // ERROR, sendable class generic type cannot be non-sendable-class
 let ins5 = new c<number, NonSendableClass3>; // OK, skip checker
+
+@Sendable
+class SendableClassA<T> {
+    var1: number = 1;
+    var2: string = '1';
+}
+
+@Sendable
+class SendableClassB {
+    var1: number = 1;
+    var2: string = '1';
+}
+
+class NoneSendableClassA {
+  var1: number = 1;
+  var2: string = '1';
+}
+
+let ObjectA1: SendableClassA<SendableClassB> = new SendableClassA<SendableClassB>(); // OK
+let ObjectA2: SendableClassA<number> = new SendableClassA<number>(); // OK
+let ObjectA3: SendableClassA<string> = new SendableClassA<string>(); // OK
+let ObjectA4: SendableClassA<boolean> = new SendableClassA<boolean>(); // OK
+let ObjectA5: SendableClassA<bigint> = new SendableClassA<bigint>(); // OK
+let ObjectA6: SendableClassA<null> = new SendableClassA<null>(); // OK
+let ObjectA7: SendableClassA<undefined> = new SendableClassA<undefined>(); // OK
+
+let NoneSendableObjectA1: SendableClassA<NoneSendableClassA> = new SendableClassA<NoneSendableClassA>(); // error
+
+namespace collections {
+  @Sendable
+  export class Array<T> {
+      constructor(){};
+  }
+
+  @Sendable
+  export class Map<K, V> {
+      constructor(){};
+  }
+}
+
+let arr1: collections.Array<NoneSendableClassA> = new collections.Array<NoneSendableClassA>(); // error
+let arr2: collections.Array<NoneSendableClassA> = new collections.Array(); // error
+let arr3: collections.Array<NoneSendableClassA> = new collections.Array<SendableClassB>(); //error
+let arr4: collections.Array<SendableClassB> = new collections.Array<SendableClassB>();
+let arr5: collections.Array<SendableClassB> = new collections.Array();
+
+let map1: collections.Map<string,NoneSendableClassA> = new collections.Map<string,NoneSendableClassA>(); // error
+let map2: collections.Map<string,NoneSendableClassA> = new collections.Map(); // error
+let map3: collections.Map<string,NoneSendableClassA> = new collections.Map<string,SendableClassB>(); // error
+let map4: collections.Map<string,SendableClassB> = new collections.Map<string,SendableClassB>();
+let map5: collections.Map<string,SendableClassB> = new collections.Map();

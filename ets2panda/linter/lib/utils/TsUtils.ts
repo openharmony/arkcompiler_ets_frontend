@@ -2384,4 +2384,19 @@ export class TsUtils {
     }
     return true;
   }
+
+  isClassNodeReference(node: ts.Node): boolean {
+    // handle union type node
+    if (ts.isUnionTypeNode(node)) {
+      return node.types.every((elemType) => {
+        return this.isClassNode(elemType);
+      });
+    }
+    return this.isClassNode(node);
+  }
+
+  isClassNode(node: ts.Node): boolean {
+    const decl = this.getDeclarationNode(node);
+    return decl ? ts.isClassDeclaration(decl) : false;
+  }
 }
