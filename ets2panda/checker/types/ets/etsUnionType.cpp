@@ -649,8 +649,9 @@ Type *ETSUnionType::FindUnboxableType() const
 
 bool ETSUnionType::HasObjectType(ETSObjectFlags flag) const
 {
-    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(),
-                           [flag](Type *t) { return t->AsETSObjectType()->HasObjectFlag(flag); });
+    auto it = std::find_if(constituentTypes_.begin(), constituentTypes_.end(), [flag](Type *t) {
+        return t->IsETSObjectType() && t->AsETSObjectType()->HasObjectFlag(flag);
+    });
     return it != constituentTypes_.end();
 }
 

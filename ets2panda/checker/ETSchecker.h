@@ -300,8 +300,9 @@ public:
     checker::Type *CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                               lexer::SourcePosition pos, checker::Type *leftType,
                                               checker::Type *rightType, Type *unboxedL, Type *unboxedR);
-    std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::SourcePosition pos,
-                                                              checker::Type *leftType, checker::Type *rightType);
+    std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::TokenType operationType,
+                                                              lexer::SourcePosition pos, checker::Type *leftType,
+                                                              checker::Type *rightType);
     std::optional<std::tuple<Type *, Type *>> CheckBinaryOperatorEqualError(checker::Type *const leftType,
                                                                             checker::Type *const rightType,
                                                                             checker::Type *tsType,
@@ -597,6 +598,8 @@ public:
                                                   checker::ETSObjectType *lastObjectType, ir::Identifier *ident);
     checker::ETSObjectType *CreateSyntheticType(util::StringView const &syntheticName,
                                                 checker::ETSObjectType *lastObjectType, ir::Identifier *id);
+    bool CheckValidUnionEqual(checker::Type *const leftType, checker::Type *const rightType);
+    bool CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType);
     void CheckVoidAnnotation(const ir::ETSPrimitiveType *typeAnnotation);
 
     // Utility type handler functions
@@ -723,6 +726,8 @@ private:
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     [[noreturn]] void ThrowError(ir::Identifier *ident);
+    [[noreturn]] void ThrowOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
+                                                   checker::Type *const rightType, lexer::SourcePosition pos);
     void WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *resolved);
     void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id, ir::TypeNode const *annotation);
     [[noreturn]] void NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,

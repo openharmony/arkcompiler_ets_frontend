@@ -352,7 +352,51 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
     UNREACHABLE();
 }
 
-std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::SourcePosition pos,
+void ETSChecker::ThrowOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
+                                              checker::Type *const rightType, lexer::SourcePosition pos)
+{
+    ThrowTypeError(
+        {"Operator '", operationType, "' cannot be applied to types '", leftType, "' and '", rightType, "'."}, pos);
+}
+
+bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType)
+{
+    auto isGlobalObjectType {[](checker::Type *const type) -> bool {
+        return type->IsETSObjectType() && type->AsETSObjectType()->IsGlobalETSObjectType();
+    }};
+
+    // Equality expression is always allowed for Object, undefined and null
+    if (isGlobalObjectType(leftType) || isGlobalObjectType(rightType) || leftType->IsETSUndefinedType() ||
+        rightType->IsETSUndefinedType() || leftType->IsETSNullType() || rightType->IsETSNullType()) {
+        return true;
+    }
+
+    // NOTE (mxlgv): Skip for unions. Required implementation of the specification section:
+    // 7.25.6 Reference Equality Based on Actual Type (Union Equality Operators)
+    if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
+        return true;
+    }
+
+    // NOTE (mxlgv): Skip for generic. Required implementation of the specification section:
+    // 7.25.6 Reference Equality Based on Actual Type (Type Parameter Equality Operators)
+    if (leftType->HasTypeFlag(TypeFlag::GENERIC) || rightType->HasTypeFlag(TypeFlag::GENERIC)) {
+        return true;
+    }
+
+    // Equality expression can only be applied to String and String, and BigInt and BigInt
+    if (leftType->IsETSStringType() || rightType->IsETSStringType() || leftType->IsETSBigIntType() ||
+        rightType->IsETSBigIntType()) {
+        if (!Relation()->IsIdenticalTo(leftType, rightType) && !Relation()->IsIdenticalTo(rightType, leftType)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expression *left,
+                                                                      lexer::TokenType operationType,
+                                                                      lexer::SourcePosition pos,
                                                                       checker::Type *const leftType,
                                                                       checker::Type *const rightType)
 {
@@ -362,13 +406,19 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
     }
 
     Relation()->SetNode(left);
-    if (!Relation()->IsCastableTo(leftType, rightType) && !Relation()->IsCastableTo(rightType, leftType)) {
-        ThrowTypeError("The operands of strict equality are not compatible with each other", pos);
+    if (!CheckValidEqualReferenceType(leftType, rightType)) {
+        ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
     }
+
+    if (!Relation()->IsCastableTo(leftType, rightType) && !Relation()->IsCastableTo(rightType, leftType)) {
+        ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+    }
+
     tsType = GlobalETSBooleanType();
     if (rightType->IsETSDynamicType() && leftType->IsETSDynamicType()) {
         return {tsType, GlobalBuiltinJSValueType()};
     }
+
     return {tsType, GlobalETSObjectType()};
 }
 
@@ -412,6 +462,11 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
     }
 
     if (IsReferenceType(leftType) && IsReferenceType(rightType)) {
+        Relation()->SetNode(left);
+        if (!CheckValidEqualReferenceType(leftType, rightType)) {
+            ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        }
+
         tsType = GlobalETSBooleanType();
         return {tsType, CreateETSUnionType({leftType, rightType})};
     }
@@ -486,8 +541,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
 
     if ((unboxedL != nullptr) && (unboxedR != nullptr) &&
         (unboxedL->IsETSBooleanType() != unboxedR->IsETSBooleanType())) {
-        ThrowTypeError(
-            {"Operator '", operationType, "' cannot be applied to types '", leftType, "' and '", rightType, "'."}, pos);
+        ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
     }
 
     if (promotedType == nullptr && !bothConst) {
@@ -645,7 +699,7 @@ static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            return checker->CheckBinaryOperatorStrictEqual(left, pos, leftType, rightType);
+            return checker->CheckBinaryOperatorStrictEqual(left, binaryParams.operationType, pos, leftType, rightType);
         }
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
