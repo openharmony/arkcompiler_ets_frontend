@@ -15,6 +15,14 @@
 
 export const NON_INITIALIZABLE_PROPERTY_DECORATORS = ['Link', 'Consume', 'ObjectLink', 'Prop', 'BuilderParam'];
 
-export const NON_INITIALIZABLE_PROPERTY_DECORATORS_TSC = ['Link', 'Consume', 'ObjectLink', 'Prop', 'BuilderParam', 'Param', 'Event'];
+export const NON_INITIALIZABLE_PROPERTY_DECORATORS_TSC = [
+  'Link',
+  'Consume',
+  'ObjectLink',
+  'Prop',
+  'BuilderParam',
+  'Param',
+  'Event'
+];
 
 export const NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS = ['CustomDialog'];

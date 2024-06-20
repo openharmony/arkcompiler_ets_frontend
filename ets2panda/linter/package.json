@@ -16,7 +16,7 @@
     "build": "npm run clean && npm run compile && npm run webpack && npm run pack:linter",
     "postinstall": "node scripts/install-ohos-typescript.mjs && npm run build",
     "pack:linter": "rimraf bundle && mkdir bundle && npm pack --pack-destination bundle",
-    "pretest": "npm run eslint-check",
+    "pretest": " npm run fix",
     "test": "npm run test_main && npm run test_rules && npm run test_regression",
     "test_main": "npm run compile && rimraf test/results && node build/src/TestRunner.js test",
     "test_regression": "npm run compile && rimraf test_regression/results && node build/src/TestRunner.js test_regression",

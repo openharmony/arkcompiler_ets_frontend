@@ -13,56 +13,52 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
 import * as path from 'node:path';
-import {
-  TsUtils,
-  SYMBOL,
-  SYMBOL_CONSTRUCTOR
-} from './utils/TsUtils';
-import { FaultID } from './Problems';
+import * as ts from 'typescript';
+import { cookBookMsg, cookBookTag } from './CookBookMsg';
 import { faultsAttrs } from './FaultAttrs';
 import { faultDesc } from './FaultDesc';
-import { cookBookMsg, cookBookTag } from './CookBookMsg';
-import { LinterConfig } from './TypeScriptLinterConfig';
-import type { Autofix } from './autofixes/Autofixer';
-import { Autofixer } from './autofixes/Autofixer';
+import type { IncrementalLintInfo } from './IncrementalLintInfo';
+import type { IsEtsFileCallback } from './IsEtsFileCallback';
+import { Logger } from './Logger';
 import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
-import { Logger } from './Logger';
+import { FaultID } from './Problems';
+import { LinterConfig } from './TypeScriptLinterConfig';
+import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
+import type { Autofix } from './autofixes/Autofixer';
+import { Autofixer } from './autofixes/Autofixer';
+import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
+import { SYMBOL, SYMBOL_CONSTRUCTOR, TsUtils } from './utils/TsUtils';
+import { ALLOWED_STD_SYMBOL_API } from './utils/consts/AllowedStdSymbolAPI';
+import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
+import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { LIMITED_STD_GLOBAL_FUNC } from './utils/consts/LimitedStdGlobalFunc';
 import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
-import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
 import { LIMITED_STD_PROXYHANDLER_API } from './utils/consts/LimitedStdProxyHandlerAPI';
-import { ALLOWED_STD_SYMBOL_API } from './utils/consts/AllowedStdSymbolAPI';
+import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
 import {
+  NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
-  NON_INITIALIZABLE_PROPERTY_DECORATORS_TSC,
-  NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS
+  NON_INITIALIZABLE_PROPERTY_DECORATORS_TSC
 } from './utils/consts/NonInitializablePropertyDecorators';
 import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunctionDecorators';
-import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
-import { FUNCTION_HAS_NO_RETURN_ERROR_CODE } from './utils/consts/FunctionHasNoReturnErrorCode';
-import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
-import { hasPredecessor } from './utils/functions/HasPredecessor';
-import { isStructDeclaration, isStruct } from './utils/functions/IsStruct';
-import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
-import type { IncrementalLintInfo } from './IncrementalLintInfo';
-import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
-import { isStdLibraryType } from './utils/functions/IsStdLibrary';
-import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
+import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
+import { hasPredecessor } from './utils/functions/HasPredecessor';
+import { isStdLibraryType } from './utils/functions/IsStdLibrary';
+import { isStruct, isStructDeclaration } from './utils/functions/IsStruct';
 import {
   ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
-  OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE,
+  LibraryTypeCallDiagnosticChecker,
   NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE,
-  TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE,
-  LibraryTypeCallDiagnosticChecker
+  OBJECT_IS_POSSIBLY_UNDEFINED_ERROR_CODE,
+  TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
-import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
-import type { IsEtsFileCallback } from './IsEtsFileCallback';
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
+import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
+import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -221,11 +217,7 @@ export class TypeScriptLinter {
     return { line: line + 1, character: character + 1 };
   }
 
-  incrementCounters(
-    node: ts.Node | ts.CommentRange,
-    faultId: number,
-    autofix?: Autofix[]
-  ): void {
+  incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (TypeScriptLinter.ideMode) {
@@ -257,11 +249,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private incrementCountersIdeMode(
-    node: ts.Node | ts.CommentRange,
-    faultId: number,
-    autofix?: Autofix[]
-  ): void {
+  private incrementCountersIdeMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     if (!TypeScriptLinter.ideMode) {
       return;
     }
@@ -610,9 +598,10 @@ export class TypeScriptLinter {
   private checkForLoopDestructuring(forInit: ts.ForInitializer): void {
     if (ts.isVariableDeclarationList(forInit) && forInit.declarations.length === 1) {
       const varDecl = forInit.declarations[0];
-      if (!TypeScriptLinter.useSdkLogic &&
-        (ts.isArrayBindingPattern(varDecl.name) ||
-        ts.isObjectBindingPattern(varDecl.name))) {
+      if (
+        !TypeScriptLinter.useSdkLogic &&
+        (ts.isArrayBindingPattern(varDecl.name) || ts.isObjectBindingPattern(varDecl.name))
+      ) {
         this.incrementCounters(varDecl, FaultID.DestructuringDeclaration);
       }
     }
@@ -668,7 +657,7 @@ export class TypeScriptLinter {
     this.handleSharedModuleNoSideEffectImport(importDeclNode);
   }
 
-  private handleSharedModuleNoSideEffectImport(node : ts.ImportDeclaration):void {
+  private handleSharedModuleNoSideEffectImport(node: ts.ImportDeclaration): void {
     // check 'use shared'
     if (TypeScriptLinter.inSharedModule(node) && !node.importClause) {
       this.incrementCounters(node, FaultID.SharedNoSideEffectImport);
@@ -828,10 +817,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private filterOutDiagnostics(
-    range: { begin: number; end: number },
-    code: number
-  ): void {
+  private filterOutDiagnostics(range: { begin: number; end: number }, code: number): void {
     // Filter out strict diagnostics within the given range with the given code.
     if (!this.tscStrictDiagnostics || !this.sourceFile) {
       return;
@@ -907,7 +893,11 @@ export class TypeScriptLinter {
     const isGenerator = funcExpr.asteriskToken !== undefined;
     const [hasUnfixableReturnType, newRetTypeNode] = this.handleMissingReturnType(funcExpr);
     const autofix = this.autofixer?.fixFunctionExpression(
-      funcExpr, newRetTypeNode, ts.getModifiers(funcExpr), isGenerator, hasUnfixableReturnType
+      funcExpr,
+      newRetTypeNode,
+      ts.getModifiers(funcExpr),
+      isGenerator,
+      hasUnfixableReturnType
     );
     this.incrementCounters(funcExpr, FaultID.FunctionExpression, autofix);
     if (isGenerator) {
@@ -1123,7 +1113,10 @@ export class TypeScriptLinter {
         this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple);
       const hasNestedObjectDestructuring = TsUtils.hasNestedObjectDestructuring(tsLhsExpr);
 
-      if (!TypeScriptLinter.useRelaxedRules || !isArrayOrTuple || hasNestedObjectDestructuring ||
+      if (
+        !TypeScriptLinter.useRelaxedRules ||
+        !isArrayOrTuple ||
+        hasNestedObjectDestructuring ||
         TsUtils.destructuringAssignmentHasSpreadOperator(tsLhsExpr)
       ) {
         this.incrementCounters(node, FaultID.DestructuringAssignment);
@@ -1200,9 +1193,10 @@ export class TypeScriptLinter {
 
   private handleVariableDeclaration(node: ts.Node): void {
     const tsVarDecl = node as ts.VariableDeclaration;
-    if (TypeScriptLinter.useSdkLogic ||
-      ts.isVariableDeclarationList(tsVarDecl.parent) &&
-      ts.isVariableStatement(tsVarDecl.parent.parent)) {
+    if (
+      TypeScriptLinter.useSdkLogic ||
+      ts.isVariableDeclarationList(tsVarDecl.parent) && ts.isVariableStatement(tsVarDecl.parent.parent)
+    ) {
       this.handleDeclarationDestructuring(tsVarDecl);
     }
 
@@ -1234,13 +1228,15 @@ export class TypeScriptLinter {
 
       // Array destructuring is allowed only for Arrays/Tuples and without spread operator.
       const rhsType = this.tsTypeChecker.getTypeAtLocation(decl.initializer ?? decl.name);
-      const isArrayOrTuple = rhsType && (
-        this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) ||
-          this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple)
-      );
+      const isArrayOrTuple =
+        rhsType &&
+        (this.tsUtils.isOrDerivedFrom(rhsType, this.tsUtils.isArray) ||
+          this.tsUtils.isOrDerivedFrom(rhsType, TsUtils.isTuple));
       const hasNestedObjectDestructuring = TsUtils.hasNestedObjectDestructuring(decl.name);
 
-      if (!isArrayOrTuple || hasNestedObjectDestructuring ||
+      if (
+        !isArrayOrTuple ||
+        hasNestedObjectDestructuring ||
         TsUtils.destructuringDeclarationHasSpreadOperator(decl.name)
       ) {
         this.incrementCounters(decl, faultId);
@@ -1940,9 +1936,11 @@ export class TypeScriptLinter {
       return;
     }
     const lookup = TypeScriptLinter.LimitedApis.get(parName);
-    if (lookup !== undefined && (lookup.arr === null || lookup.arr.includes(name)) &&
+    if (
+      lookup !== undefined &&
+      (lookup.arr === null || lookup.arr.includes(name)) &&
       (!TypeScriptLinter.useRelaxedRules ||
-       !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name))
+        !this.supportedStdCallApiChecker.isSupportedStdCallAPI(callExpr, parName, name))
     ) {
       this.incrementCounters(callExpr, lookup.fault);
     }
@@ -2127,10 +2125,13 @@ export class TypeScriptLinter {
      */
     if (ts.isSpreadElement(node)) {
       const spreadExprType = this.tsUtils.getTypeOrTypeConstraintAtLocation(node.expression);
-      if (spreadExprType &&
+      if (
+        spreadExprType &&
         (!TypeScriptLinter.useSdkLogic ||
-          (ts.isCallLikeExpression(node.parent) || ts.isArrayLiteralExpression(node.parent))) &&
-        this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
+          ts.isCallLikeExpression(node.parent) ||
+          ts.isArrayLiteralExpression(node.parent)) &&
+        this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)
+      ) {
         return;
       }
     }
@@ -2191,6 +2192,35 @@ export class TypeScriptLinter {
     });
   }
 
+  /*
+   * issue 13987:
+   * When variable have no type annotation and no initial value, and 'noImplicitAny'
+   * option is enabled, compiler attempts to infer type from variable references:
+   * see https://github.com/microsoft/TypeScript/pull/11263.
+   * In this case, we still want to report the error, since ArkTS doesn't allow
+   * to omit both type annotation and initializer.
+   */
+  private proceedVarPropDeclaration(
+    decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
+  ): boolean | undefined {
+    if (
+      (ts.isVariableDeclaration(decl) && ts.isVariableStatement(decl.parent.parent) ||
+        ts.isPropertyDeclaration(decl)) &&
+      !decl.initializer
+    ) {
+      if (
+        ts.isPropertyDeclaration(decl) &&
+        this.tsUtils.skipPropertyInferredTypeCheck(decl, this.sourceFile, this.isEtsFileCb)
+      ) {
+        return true;
+      }
+
+      this.incrementCounters(decl, FaultID.AnyType);
+      return true;
+    }
+    return undefined;
+  }
+
   private handleDeclarationInferredType(
     decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
   ): void {
@@ -2214,25 +2244,7 @@ export class TypeScriptLinter {
       return;
     }
 
-    /*
-     * issue 13987:
-     * When variable have no type annotation and no initial value, and 'noImplicitAny'
-     * option is enabled, compiler attempts to infer type from variable references:
-     * see https://github.com/microsoft/TypeScript/pull/11263.
-     * In this case, we still want to report the error, since ArkTS doesn't allow
-     * to omit both type annotation and initializer.
-     */
-    if (
-      (ts.isVariableDeclaration(decl) && ts.isVariableStatement(decl.parent.parent) ||
-        ts.isPropertyDeclaration(decl)) && !decl.initializer
-    ) {
-      if (ts.isPropertyDeclaration(decl) &&
-        this.tsUtils.skipPropertyInferredTypeCheck(decl, this.sourceFile, this.isEtsFileCb)
-      ) {
-        return;
-      }
-
-      this.incrementCounters(decl, FaultID.AnyType);
+    if (this.proceedVarPropDeclaration(decl)) {
       return;
     }
 
@@ -2386,9 +2398,11 @@ export class TypeScriptLinter {
 
   private handleConstructorDeclaration(node: ts.Node): void {
     const ctorDecl = node as ts.ConstructorDeclaration;
-    if (ctorDecl.parameters.some((x) => {
-      return this.tsUtils.hasAccessModifier(x);
-    })) {
+    if (
+      ctorDecl.parameters.some((x) => {
+        return this.tsUtils.hasAccessModifier(x);
+      })
+    ) {
       let paramTypes: ts.TypeNode[] | undefined;
       if (ctorDecl.body) {
         paramTypes = this.collectCtorParamTypes(ctorDecl);
@@ -2477,8 +2491,10 @@ export class TypeScriptLinter {
 
   private checkLocalDeclWithSendableClosure(node: ts.Identifier, scope: ts.Node, decl: ts.Declaration): void {
     const declPosition = decl.getStart();
-    if (decl.getSourceFile().fileName !== node.getSourceFile().fileName ||
-        declPosition !== undefined && declPosition >= scope.getStart() && declPosition < scope.getEnd()) {
+    if (
+      decl.getSourceFile().fileName !== node.getSourceFile().fileName ||
+      declPosition !== undefined && declPosition >= scope.getStart() && declPosition < scope.getEnd()
+    ) {
       return;
     }
     if (this.isTopSendableClosure(decl)) {
@@ -2491,16 +2507,23 @@ export class TypeScriptLinter {
      * 1. ImportEqualDecalration
      * 2. BindingElement
      */
-    if (ts.isVariableDeclaration(decl) || ts.isFunctionDeclaration(decl) || ts.isClassDeclaration(decl) ||
-        ts.isInterfaceDeclaration(decl) || ts.isEnumDeclaration(decl) || ts.isModuleDeclaration(decl) ||
-        ts.isParameter(decl)) {
+    if (
+      ts.isVariableDeclaration(decl) ||
+      ts.isFunctionDeclaration(decl) ||
+      ts.isClassDeclaration(decl) ||
+      ts.isInterfaceDeclaration(decl) ||
+      ts.isEnumDeclaration(decl) ||
+      ts.isModuleDeclaration(decl) ||
+      ts.isParameter(decl)
+    ) {
       this.incrementCounters(node, FaultID.SendableCapturedVars);
     }
   }
 
   private isTopSendableClosure(decl: ts.Declaration): boolean {
     return (
-      ts.isSourceFile(decl.parent) && ts.isClassDeclaration(decl) &&
+      ts.isSourceFile(decl.parent) &&
+      ts.isClassDeclaration(decl) &&
       this.tsUtils.isSendableClassOrInterface(this.tsTypeChecker.getTypeAtLocation(decl))
     );
   }

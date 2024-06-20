@@ -20,10 +20,12 @@ import { isStructDeclaration } from '../utils/functions/IsStruct';
 import type { TsUtils } from '../utils/TsUtils';
 
 export class SymbolCache {
-  constructor(private readonly typeChecker: ts.TypeChecker,
+  constructor(
+    private readonly typeChecker: ts.TypeChecker,
     private readonly utils: TsUtils,
     readonly sourceFile: ts.SourceFile,
-    readonly cancellationToken?: ts.CancellationToken) {
+    readonly cancellationToken?: ts.CancellationToken
+  ) {
     const callback = (node: ts.Node): void => {
       if (isStructDeclaration(node)) {
         // early exit via exception if cancellation was requested

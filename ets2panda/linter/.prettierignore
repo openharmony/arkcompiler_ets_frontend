@@ -24,5 +24,6 @@
 /test_extended_features/**
 /test_rules/**
 /test_regression/**
+/third_party/**
 **.json
 **.js

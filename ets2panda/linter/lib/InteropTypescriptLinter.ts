@@ -30,12 +30,7 @@ import type { IncrementalLintInfo } from './IncrementalLintInfo';
 import { cookBookRefToFixTitle } from './autofixes/AutofixTitles';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { ARKTS_COLLECTIONS_D_ETS, ARKTS_LANG_D_ETS } from './utils/consts/SupportedDetsIndexableTypes';
-import {
-  D_TS,
-  D_ETS,
-  ETS,
-  KIT
-} from './utils/consts/TsSuffix';
+import { D_TS, D_ETS, ETS, KIT } from './utils/consts/TsSuffix';
 
 export function consoleLog(...args: unknown[]): void {
   if (InteropTypescriptLinter.ideMode) {
@@ -49,8 +44,8 @@ export function consoleLog(...args: unknown[]): void {
 }
 
 export interface KitSymbol {
-  source: string
-  bindings: string
+  source: string;
+  bindings: string;
 }
 
 export type KitSymbols = Record<string, KitSymbol>;
@@ -132,11 +127,7 @@ export class InteropTypescriptLinter {
     return { line: line + 1, character: character + 1 };
   }
 
-  incrementCounters(
-    node: ts.Node | ts.CommentRange,
-    faultId: number,
-    autofix?: Autofix[]
-  ): void {
+  incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     this.nodeCounters[faultId]++;
     const { line, character } = this.getLineAndCharacterOfNode(node);
     if (InteropTypescriptLinter.ideMode) {
@@ -168,11 +159,7 @@ export class InteropTypescriptLinter {
     }
   }
 
-  private incrementCountersIdeMode(
-    node: ts.Node | ts.CommentRange,
-    faultId: number,
-    autofix?: Autofix[]
-  ): void {
+  private incrementCountersIdeMode(node: ts.Node | ts.CommentRange, faultId: number, autofix?: Autofix[]): void {
     if (!InteropTypescriptLinter.ideMode) {
       return;
     }
@@ -280,8 +267,7 @@ export class InteropTypescriptLinter {
     }
 
     if (
-      resolvedModule?.extension !== ETS &&
-      resolvedModule?.extension !== D_ETS ||
+      resolvedModule?.extension !== ETS && resolvedModule?.extension !== D_ETS ||
       TsUtils.isInImportWhiteList(resolvedModule)
     ) {
       return;
@@ -295,12 +281,7 @@ export class InteropTypescriptLinter {
   }
 
   private getResolveModule(moduleSpecifier: string, fileName: string): ts.ResolvedModuleFull | undefined {
-    const resolveModuleName = ts.resolveModuleName(
-      moduleSpecifier,
-      fileName,
-      this.compileOptions,
-      ts.sys
-    );
+    const resolveModuleName = ts.resolveModuleName(moduleSpecifier, fileName, this.compileOptions, ts.sys);
     return resolveModuleName.resolvedModule;
   }
 
@@ -318,9 +299,7 @@ export class InteropTypescriptLinter {
         continue;
       }
       if (
-        ts.isModuleDeclaration(decl) &&
-        fileName !== ARKTS_COLLECTIONS_D_ETS &&
-        fileName !== ARKTS_LANG_D_ETS ||
+        ts.isModuleDeclaration(decl) && fileName !== ARKTS_COLLECTIONS_D_ETS && fileName !== ARKTS_LANG_D_ETS ||
         !this.tsUtils.isSendableClassOrInterfaceEntity(element.name)
       ) {
         this.incrementCounters(element, FaultID.NoTsImportEts);
@@ -356,7 +335,11 @@ export class InteropTypescriptLinter {
     const resolvedModuleIsInSdk = InteropTypescriptLinter.etsLoaderPath ?
       path.normalize(resolvedModule.resolvedFileName).startsWith(InteropTypescriptLinter.sdkPath) :
       false;
-    return !!this.isInSdk && resolvedModuleIsInSdk && path.basename(resolvedModule.resolvedFileName).indexOf('sendable') !== -1;
+    return (
+      !!this.isInSdk &&
+      resolvedModuleIsInSdk &&
+      path.basename(resolvedModule.resolvedFileName).indexOf('sendable') !== -1
+    );
   }
 
   private handleClassDeclaration(node: ts.Node): void {
@@ -564,7 +547,8 @@ export class InteropTypescriptLinter {
   }
 
   private static getKitModuleFileNames(
-    fileName: string, node: ts.NamedImports | ts.NamedExports,
+    fileName: string,
+    node: ts.NamedImports | ts.NamedExports,
     index: number
   ): string {
     if (!InteropTypescriptLinter.kitInfos.has(fileName)) {
