@@ -17,16 +17,6 @@ export const ARKTS_COLLECTIONS_D_ETS = '@arkts.collections.d.ets';
 
 export const COLLECTIONS_NAMESPACE = 'collections';
 
-export const ARKTS_COLLECTIONS_TYPES = [
-  'Array',
-  'Int8Array',
-  'Uint8Array',
-  'Int16Array',
-  'Uint16Array',
-  'Int32Array',
-  'Uint32Array'
-];
-
 export const ARKTS_LANG_D_ETS = '@arkts.lang.d.ets';
 
 export const LANG_NAMESPACE = 'lang';

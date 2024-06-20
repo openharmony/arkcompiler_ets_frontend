@@ -1638,7 +1638,7 @@ export class TypeScriptLinter {
 
     const typeNode = this.tsTypeChecker.typeToTypeNode(type, undefined, ts.NodeBuilderFlags.None);
 
-    if (TsUtils.isArkTSCollectionsArrayLikeType(type)) {
+    if (this.tsUtils.isArkTSCollectionsArrayLikeType(type)) {
       return TsUtils.isNumberLikeType(argType);
     }
 
