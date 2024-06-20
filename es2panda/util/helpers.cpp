@@ -856,9 +856,13 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
         return true;
     }
 
-    if (strLit->Str().Is(USE_SENDABLE) && func->IsConstructor()) {
-        auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
-        classDef->SetSendable();
+    if (strLit->Str().Is(USE_SENDABLE)) {
+        if (func->IsConstructor()) {
+            auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
+            classDef->SetSendable();
+        } else {
+            func->AddFlag(ir::ScriptFunctionFlags::SENDABLE);
+        }
         return true;
     }
 

@@ -127,6 +127,8 @@ public:
 
     bool IsSendableClassDecl() const;
 
+    bool IsSendableFunctionDecl() const;
+
     bool NeedSetInSendableEnv(Scope *scope) const;
 
 protected:

@@ -51,6 +51,7 @@ namespace panda::es2panda::compiler {
 
 void PandaGen::SetFunctionKind()
 {
+    int targetApiVersion = Binder()->Program()->TargetApiVersion();
     if (rootNode_->IsProgram()) {
         funcKind_ = panda::panda_file::FunctionKind::FUNCTION;
         return;
@@ -81,6 +82,10 @@ void PandaGen::SetFunctionKind()
         }
 
         funcKind_ = panda::panda_file::FunctionKind::ASYNC_FUNCTION;
+        
+        if (func->IsSendable() && targetApiVersion >= util::Helpers::SENDABLE_FUNCTION_MIN_SUPPORTED_API_VERSION) {
+            funcKind_ |= panda::panda_file::FunctionKind::SENDABLE_FUNCTION;
+        }
         return;
     }
 
@@ -95,6 +100,10 @@ void PandaGen::SetFunctionKind()
     }
 
     funcKind_ = panda::panda_file::FunctionKind::FUNCTION;
+
+    if (func->IsSendable() && targetApiVersion >= util::Helpers::SENDABLE_FUNCTION_MIN_SUPPORTED_API_VERSION) {
+        funcKind_ |= panda::panda_file::FunctionKind::SENDABLE_FUNCTION;
+    }
 }
 
 void PandaGen::SetInSendable()

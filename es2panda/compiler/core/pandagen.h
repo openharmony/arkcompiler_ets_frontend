@@ -25,6 +25,7 @@
 #include <lexer/token/tokenType.h>
 #include <libpandafile/file_items.h>
 #include <macros.h>
+#include <util/enumbitops.h>
 
 #include <regex>
 
@@ -43,8 +44,9 @@ class Expression;
 class Identifier;
 }  // namespace panda::es2panda::ir
 
-namespace panda::es2panda::compiler {
+DEFINE_BITOPS(panda::panda_file::FunctionKind);
 
+namespace panda::es2panda::compiler {
 class FunctionBuilder;
 class CompilerContext;
 class LiteralBuffer;
@@ -225,6 +227,11 @@ public:
     bool IsConcurrent() const
     {
         return funcKind_ == panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+    }
+
+    bool IsSendable() const
+    {
+        return (funcKind_ & panda::panda_file::FunctionKind::SENDABLE_FUNCTION) != 0;
     }
 
     void SetFunctionKind();

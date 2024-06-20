@@ -239,7 +239,8 @@ private:
     ArenaUnorderedMap<std::string, std::string> specialFuncNameIndexMap_;
     ResolveBindingFlags bindingFlags_ {ResolveBindingFlags::ALL};
     ScriptExtension extension_;
-    bool inSendable_ {false};
+    bool inSendableClass_ {false};
+    bool inSendableFunction_ {false};
 };
 
 template <typename T>

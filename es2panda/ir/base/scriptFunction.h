@@ -213,6 +213,11 @@ public:
         return (flags_ & ir::ScriptFunctionFlags::CONCURRENT) != 0;
     }
 
+    bool IsSendable() const
+    {
+        return (flags_ & ir::ScriptFunctionFlags::SENDABLE) != 0;
+    }
+
     bool ShowSource() const
     {
         return (flags_ & ir::ScriptFunctionFlags::SHOW_SOURCE) != 0;
