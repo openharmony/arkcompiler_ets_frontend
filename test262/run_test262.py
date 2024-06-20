@@ -67,6 +67,10 @@ def parse_args():
                         nargs='?', choices=['intl'],
                         help='Run test262 - Intltest. ' +
                         'intl: Only include use cases for intlcsae')
+    parser.add_argument('--other', default=False, const='other',
+                        nargs='?', choices=['other'],
+                        help='Run test262 - other_tests ' +
+                        'other_tests: Only include use cases for other_tests')
     parser.add_argument('--es2015', default=False, const='es2015',
                         nargs='?', choices=['es2015'],
                         help='Run test262 - es2015. ' +
@@ -289,6 +293,8 @@ class TestPrepare():
                 self.args.es2022 = "all"
             elif TEST_ES2023_DIR in self.args.dir:
                 self.args.es2023 = "all"
+            elif TEST_OTHERTESTS_DIR in self.args.dir:
+                self.args.other = "other"
 
         if self.args.file:
             if TEST_ES5_DIR in self.args.file:
@@ -303,6 +309,8 @@ class TestPrepare():
                 self.args.es2022 = "all"
             elif TEST_ES2023_DIR in self.args.file:
                 self.args.es2023 = "all"
+            elif TEST_OTHERTESTS_DIR in self.args.dir:
+                self.args.other = "other"
 
     def prepare_out_dir(self):
         if self.args.es51:
@@ -319,6 +327,8 @@ class TestPrepare():
             self.out_dir = os.path.join(BASE_OUT_DIR, "test_es2023")
         elif self.args.ci_build:
             self.out_dir = os.path.join(BASE_OUT_DIR, "test_CI")
+        elif self.args.other:
+            self.out_dir = os.path.join(BASE_OUT_DIR, "other_tests")
         else:
             self.out_dir = os.path.join(BASE_OUT_DIR, "test")
 
@@ -338,6 +348,8 @@ class TestPrepare():
             self.args.dir = TEST_ES2022_DIR
         elif self.args.es2023:
             self.args.dir = TEST_ES2023_DIR
+        elif self.args.other:
+            self.args.dir = TEST_OTHERTESTS_DIR
         elif self.args.ci_build:
             self.args.dir = TEST_CI_DIR
         else:
@@ -364,6 +376,8 @@ class TestPrepare():
             dstdir = os.path.join(TEST_ES2022_DIR, file)
         elif self.args.es2023:
             dstdir = os.path.join(TEST_ES2023_DIR, file)
+        elif self.args.other:
+            dstdir = os.path.join(TEST_OTHERTESTS_DIR, file)
         elif self.args.ci_build:
             dstdir = os.path.join(TEST_CI_DIR, file)
 
@@ -432,7 +446,12 @@ class TestPrepare():
         if self.args.intl:
             files = self.get_tests_from_file(INTL_LIST_FILE)
         return files
-
+    def prepare_other_tests(self):
+        files = []
+        files = self.collect_tests()
+        if self.args.other:
+            files = self.get_tests_from_file(OTHER_LIST_FILE)
+        return files
     def prepare_es2015_tests(self):
         files = []
         files = self.collect_tests()
@@ -452,6 +471,9 @@ class TestPrepare():
         elif self.args.intl:
             test_dir = TEST_INTL_DIR
             files = self.prepare_intl_tests()
+        elif self.args.other:
+            test_dir = TEST_OTHERTESTS_DIR
+            files = self.prepare_other_tests()
         elif self.args.es2021:
             test_dir = TEST_ES2021_DIR
             files = self.prepare_es2021_tests()
@@ -483,6 +505,9 @@ class TestPrepare():
         elif self.args.intl:
             self.prepare_test_suit()
             src_dir = TEST_INTL_DIR
+        elif self.args.other:
+            self.prepare_test_suit()
+            src_dir = TEST_OTHERTESTS_DIR
         elif self.args.es2021:
             self.prepare_test_suit()
             src_dir = TEST_ES2021_DIR
