@@ -322,7 +322,9 @@ static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::E
             }
             auto *arrayExpression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
             arrayExpression->SetParent(const_cast<ir::ETSNewClassInstanceExpression *>(expr));
-            arrayExpression->SetTsType(expr->GetSignature()->RestVar()->TsType());
+            auto restType = expr->GetSignature()->RestVar()->TsType()->AsETSArrayType();
+            arrayExpression->SetTsType(restType);
+            arrayExpression->SetPreferredType(restType->ElementType());
             arguments.erase(expr->GetArguments().begin() + parameterCount, expr->GetArguments().end());
             arguments.emplace_back(arrayExpression);
         }
