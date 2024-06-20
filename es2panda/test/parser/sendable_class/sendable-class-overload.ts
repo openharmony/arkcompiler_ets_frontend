@@ -25,7 +25,7 @@ class Cat {
   
     static greet1(): string;
     static greet1(msg?: string): string {
-        return msg? msg:'hello';
+      return msg? msg:'hello';
     }
   
     greet2(): string;
