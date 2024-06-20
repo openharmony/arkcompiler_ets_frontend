@@ -1645,4 +1645,4 @@
     }
   }
 }
-TypeError: Function already declared. [default_parameter7.ets:1:1]
+TypeError: Function foo is already declared. [default_parameter7.ets:1:1]

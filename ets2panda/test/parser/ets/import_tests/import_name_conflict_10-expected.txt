@@ -5,44 +5,59 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./re_export_5",
+        "value": "import_tests/packages/subpackage-1",
         "loc": {
           "start": {
             "line": 16,
-            "column": 15
+            "column": 19
           },
           "end": {
             "line": 16,
-            "column": 30
+            "column": 55
           }
         }
       },
       "specifiers": [
         {
-          "type": "ImportNamespaceSpecifier",
+          "type": "ImportSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "",
+            "name": "foo",
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 9
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 12
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "foo",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 9
+              },
+              "end": {
+                "line": 16,
+                "column": 12
               }
             }
           },
           "loc": {
             "start": {
               "line": 16,
-              "column": 8
+              "column": 9
             },
             "end": {
               "line": 16,
-              "column": 14
+              "column": 12
             }
           }
         }
@@ -54,7 +69,7 @@
         },
         "end": {
           "line": 16,
-          "column": 30
+          "column": 56
         }
       }
     },
@@ -177,7 +192,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "main",
+              "name": "foo",
               "decorators": [],
               "loc": {
                 "start": {
@@ -186,7 +201,7 @@
                 },
                 "end": {
                   "line": 18,
-                  "column": 14
+                  "column": 13
                 }
               }
             },
@@ -201,7 +216,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "main",
+                  "name": "foo",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -210,7 +225,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 14
+                      "column": 13
                     }
                   }
                 },
@@ -223,11 +238,11 @@
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 19
+                      "column": 17
                     },
                     "end": {
                       "line": 18,
-                      "column": 23
+                      "column": 20
                     }
                   }
                 },
@@ -235,74 +250,28 @@
                   "type": "BlockStatement",
                   "statements": [
                     {
-                      "type": "ExpressionStatement",
-                      "expression": {
-                        "type": "CallExpression",
-                        "callee": {
-                          "type": "MemberExpression",
-                          "object": {
-                            "type": "Identifier",
-                            "name": "all",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 22,
-                                "column": 5
-                              },
-                              "end": {
-                                "line": 22,
-                                "column": 8
-                              }
-                            }
-                          },
-                          "property": {
-                            "type": "Identifier",
-                            "name": "foo",
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 22,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 22,
-                                "column": 12
-                              }
-                            }
-                          },
-                          "computed": false,
-                          "optional": false,
-                          "loc": {
-                            "start": {
-                              "line": 22,
-                              "column": 5
-                            },
-                            "end": {
-                              "line": 22,
-                              "column": 12
-                            }
-                          }
-                        },
-                        "arguments": [],
-                        "optional": false,
+                      "type": "ReturnStatement",
+                      "argument": {
+                        "type": "NumberLiteral",
+                        "value": 42,
                         "loc": {
                           "start": {
-                            "line": 22,
-                            "column": 5
+                            "line": 19,
+                            "column": 12
                           },
                           "end": {
-                            "line": 22,
+                            "line": 19,
                             "column": 14
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 22,
+                          "line": 19,
                           "column": 5
                         },
                         "end": {
-                          "line": 22,
+                          "line": 19,
                           "column": 15
                         }
                       }
@@ -310,11 +279,11 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 19,
-                      "column": 1
+                      "line": 18,
+                      "column": 21
                     },
                     "end": {
-                      "line": 23,
+                      "line": 20,
                       "column": 2
                     }
                   }
@@ -322,10 +291,10 @@
                 "loc": {
                   "start": {
                     "line": 18,
-                    "column": 14
+                    "column": 13
                   },
                   "end": {
-                    "line": 23,
+                    "line": 20,
                     "column": 2
                   }
                 }
@@ -333,10 +302,10 @@
               "loc": {
                 "start": {
                   "line": 18,
-                  "column": 14
+                  "column": 13
                 },
                 "end": {
-                  "line": 23,
+                  "line": 20,
                   "column": 2
                 }
               }
@@ -349,7 +318,7 @@
                 "column": 1
               },
               "end": {
-                "line": 23,
+                "line": 20,
                 "column": 2
               }
             }
@@ -384,9 +353,9 @@
       "column": 1
     },
     "end": {
-      "line": 24,
-      "column": 1
+      "line": 22,
+      "column": 50
     }
   }
 }
-TypeError: Function foo is already declared. [export.ets:16:13]
+SyntaxError: Variable 'foo' is already defined with different type. [import_name_conflict_10.ets:16:19]

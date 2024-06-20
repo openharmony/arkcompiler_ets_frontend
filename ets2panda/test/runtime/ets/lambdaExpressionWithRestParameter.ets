@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-type LambdaType = (prefix: string, ...args: string[]) => string;
+type LambdaTypeTest = (prefix: string, ...args: string[]) => string;
 
 
 function main(): void {
 
-  let lam: LambdaType = (prefix: string, ...args: string[]): string => {
+  let lam: LambdaTypeTest = (prefix: string, ...args: string[]): string => {
     let ret = prefix;
     for (let arg of args) {
       ret += arg;

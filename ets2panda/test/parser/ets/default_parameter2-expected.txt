@@ -965,4 +965,4 @@
     }
   }
 }
-TypeError: Function with this assembly signature already declared. [default_parameter2.ets:26:1]
+TypeError: Function foo with this assembly signature already declared. [default_parameter2.ets:26:1]

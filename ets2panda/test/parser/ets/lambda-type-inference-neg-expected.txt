@@ -788,4 +788,4 @@
     }
   }
 }
-TypeError: Function with this assembly signature already declared. [lambda-type-inference-neg.ets:19:1]
+TypeError: Function foo with this assembly signature already declared. [lambda-type-inference-neg.ets:19:1]

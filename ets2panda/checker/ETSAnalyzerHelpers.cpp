@@ -84,7 +84,8 @@ void DoBodyTypeChecking(ETSChecker *checker, ir::MethodDefinition *node, ir::Scr
         checker->ThrowTypeError("Native, Abstract and Declare methods cannot have body.", scriptFunc->Body()->Start());
     }
 
-    if (!scriptFunc->IsAsyncFunc() && scriptFunc->HasBody() && !scriptFunc->IsExternal()) {
+    if (!scriptFunc->IsAsyncFunc() && scriptFunc->HasBody() &&
+        (!scriptFunc->IsExternal() || scriptFunc->IsExternalOverload())) {
         checker::ScopeContext scopeCtx(checker, scriptFunc->Scope());
         checker::SavedCheckerContext savedContext(checker, checker->Context().Status(),
                                                   checker->Context().ContainingClass());
