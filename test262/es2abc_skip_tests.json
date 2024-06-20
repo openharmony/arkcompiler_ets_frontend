@@ -11,78 +11,39 @@
             "language/expressions/async-function/nameless-dflt-params-ref-later.js",
             "language/expressions/async-function/nameless-dflt-params-ref-self.js",
             "language/statements/async-function/dflt-params-ref-later.js",
-            "language/statements/async-function/dflt-params-ref-self.js",
-            "language/statements/async-function/evaluation-this-value-passed.js",
-            "language/statements/async-function/syntax-declaration-line-terminators-allowed.js"
+            "language/statements/async-function/dflt-params-ref-self.js"
         ]
     },
     {
         "reason": "Dynamic Import failed testcases : nesting",
         "files": [
-            "language/expressions/dynamic-import/syntax/valid/nested-if-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-else-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-if-braceless-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-else-braceless-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-do-while-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-block-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-block-labeled-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/top-level-nested-imports.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-while-nested-imports.js",
             "language/expressions/dynamic-import/assignment-expression/import-meta.js"
         ]
     },
     {
         "reason": "Dynamic Import failed testcases : empty string",
         "files": [
-            "language/expressions/dynamic-import/syntax/valid/new-covered-expression-is-valid.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-while-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/top-level-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-if-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-if-braceless-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-else-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-else-braceless-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-do-while-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-block-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-block-labeled-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/callexpression-arguments.js"
         ]
     },
     {
         "reason": "Dynamic Import failed testcases : lnvalid argument",
         "files": [
-            "language/expressions/dynamic-import/assignment-expression/unary-expr.js"
         ]
     },
     {
         "reason": "Dynamic Import failed testcases : async-await is not supported",
         "files": [
-            "language/expressions/dynamic-import/usage/nested-async-gen-await-eval-script-code-host-resolves-module-code.js",
-            "language/expressions/dynamic-import/usage/nested-async-gen-return-await-returns-thenable.js",
-            "language/expressions/dynamic-import/usage/nested-async-gen-return-await-is-call-expression-square-brackets.js",
-            "language/expressions/dynamic-import/usage/nested-async-gen-return-await-eval-gtbndng-indirect-update.js",
-            "language/expressions/dynamic-import/usage/nested-async-gen-await-specifier-tostring.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-await-instn-iee-err-circular.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-return-await-instn-iee-err-ambiguous-import.js",
             "language/expressions/dynamic-import/catch/nested-async-gen-return-await-eval-script-code-target.js",
             "language/expressions/dynamic-import/catch/nested-async-gen-await-file-does-not-exist.js",
             "language/expressions/dynamic-import/catch/nested-async-gen-await-eval-script-code-target.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-await-eval-rqstd-abrupt-urierror.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-return-await-file-does-not-exist.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-return-await-eval-rqstd-abrupt-typeerror.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-await-instn-iee-err-ambiguous-import.js",
-            "language/expressions/dynamic-import/catch/nested-async-gen-return-await-eval-rqstd-abrupt-urierror.js"
+            "language/expressions/dynamic-import/catch/nested-async-gen-return-await-file-does-not-exist.js"
         ]
     },
     {
         "reason" : "Dynamic Import failed testcases",
         "files": [
-            "language/expressions/dynamic-import/imported-self-update.js",
-            "language/expressions/dynamic-import/for-await-resolution-and-error-agen-yield.js",
-            "language/expressions/dynamic-import/for-await-resolution-and-error-agen.js",
             "language/expressions/dynamic-import/eval-self-once-script.js",
             "language/expressions/dynamic-import/eval-self-once-module.js",
-            "language/expressions/dynamic-import/for-await-resolution-and-error.js",
-            "language/expressions/dynamic-import/reuse-namespace-object-from-import.js",
             "language/expressions/dynamic-import/usage-from-eval.js"
         ]
     },
@@ -126,7 +87,6 @@
     {
         "reason" : "Test262Error: it returns the same namespace are the same Expected SameValue",
         "files": [
-            "language/expressions/dynamic-import/reuse-namespace-object-from-script.js",
             "language/expressions/dynamic-import/namespace/await-ns-delete-non-exported-strict.js",
             "language/expressions/dynamic-import/namespace/default-property-not-set-own.js",
             "language/expressions/dynamic-import/namespace/promise-then-ns-delete-non-exported-strict.js"
@@ -144,9 +104,7 @@
             "annexB/built-ins/RegExp/incomplete_hex_unicode_escape.js",
             "annexB/built-ins/RegExp/named-groups/non-unicode-malformed-lookbehind.js",
             "annexB/built-ins/RegExp/named-groups/non-unicode-malformed.js",
-            "built-ins/RegExp/prototype/flags/coercion-unicode.js",
             "built-ins/RegExp/match-indices/indices-array-unicode-property-names.js",
-            "built-ins/JSON/stringify/value-string-escape-unicode.js",
             "built-ins/RegExp/prototype/Symbol.match/get-unicode-error.js",
             "built-ins/RegExp/prototype/Symbol.replace/get-unicode-error.js"
         ]

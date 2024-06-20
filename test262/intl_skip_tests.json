@@ -16,7 +16,6 @@
             "intl402/DisplayNames/ctor-custom-prototype.js",
             "intl402/Segmenter/ctor-custom-get-prototype-poison-throws.js",
             "intl402/Segmenter/ctor-custom-prototype.js",
-            "intl402/DisplayNames/prototype/resolvedOptions/return-object.js",
             "intl402/NumberFormat/prototype/resolvedOptions/basic.js",
             "intl402/NumberFormat/test-option-useGrouping.js"
         ]
@@ -25,10 +24,7 @@
         "reason": "Current ICU version not support yet",
         "files": [
             "intl402/language-tags-canonicalized.js",
-            "intl402/constructors-string-and-single-element-array.js",
             "intl402/language-tags-valid.js",
-            "intl402/DateTimeFormat/prototype/resolvedOptions/hourCycle-timeStyle.js",
-            "intl402/DateTimeFormat/prototype/format/timedatestyle-en.js",
             "intl402/NumberFormat/prototype/formatToParts/main.js",
             "intl402/NumberFormat/currency-digits.js",
             "intl402/NumberFormat/prototype/format/numbering-systems.js",
