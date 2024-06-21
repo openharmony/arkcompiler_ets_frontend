@@ -309,7 +309,18 @@ bool Options::Parse(int argc, const char **argv)
 
     // compiler
     panda::PandArg<bool> opEnableAbcInput("enable-abc-input", false, "Allow abc file as input");
-    panda::PandArg<bool> opDumpAsmProgram("dump-asm-program", false, "Reserved");
+    panda::PandArg<bool> opDumpAsmProgram("dump-asm-program", false, "Dump program");
+    std::string descOfDumpNormalizedProg =
+        "Dump program in normalized form to ensure the output of source code compilation is consistent with that of "
+        "abc file compilation.\n"
+        "  The normalized form differs mainly as follows:\n"
+        "  1. all instructions will be labled consecutively and all the labels will be dumped\n"
+        "  2. the content of a literal array, rather than its id, will be dumped when the literal array appears in "
+        "an opcode or is nested in another literal array\n"
+        "  3. labels stored in catch blocks will be unified\n"
+        "  4. strings won't be dumped\n"
+        "  5. invalid opcodes won't be dumped, local variables' start and end offset will skip invalid opcodes";
+    panda::PandArg<bool> opDumpNormalizedAsmProgram("dump-normalized-asm-program", false, descOfDumpNormalizedProg);
     panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
     panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
@@ -390,6 +401,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opEnableAbcInput);
     argparser_->Add(&opDumpAsmProgram);
+    argparser_->Add(&opDumpNormalizedAsmProgram);
     argparser_->Add(&opDumpAssembly);
     argparser_->Add(&opDebugInfo);
     argparser_->Add(&opDumpDebugInfo);
@@ -596,6 +608,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.recordSource = opRecordSource.GetValue();
     compilerOptions_.enableAbcInput = opEnableAbcInput.GetValue();
     compilerOptions_.dumpAsmProgram = opDumpAsmProgram.GetValue();
+    compilerOptions_.dumpNormalizedAsmProgram = opDumpNormalizedAsmProgram.GetValue();
     compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
     compilerOptions_.dumpAst = opDumpAst.GetValue();
     compilerOptions_.dumpTransformedAst = opDumpTransformedAst.GetValue();

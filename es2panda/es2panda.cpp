@@ -60,29 +60,21 @@ panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string r
     return context.GetEmitter()->Finalize(false, nullptr);
 }
 
-void Compiler::CheckCompilerOptionsForAbcInput(const std::string &fname, const CompilerOptions &options)
-{
-    ChecktargetApiVersionIsSupportedForAbcInput(options);
-}
-
-void Compiler::ChecktargetApiVersionIsSupportedForAbcInput(const CompilerOptions &options)
-{
-    if (options.targetApiVersion < util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION) {
-        throw Error(ErrorType::GENERIC, "Target api version '" + std::to_string(options.targetApiVersion) +
-                    "' should be greater than or equal to '" +
-                    std::to_string(util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION) + "'.");
-    }
-}
-
-void Compiler::AbcToAsmProgram(const std::string &fname, const CompilerOptions &options,
-                               std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-                               panda::ArenaAllocator *allocator)
+void Compiler::CheckOptionsAndFileForAbcInput(const std::string &fname, const CompilerOptions &options)
 {
     if (!options.enableAbcInput) {
         throw Error(ErrorType::GENERIC, "\"--enable-abc-input\" is not enabled, abc file " + fname +
             "could not be used as the input.");
     }
-    CheckCompilerOptionsForAbcInput(fname, options);
+    if (options.targetApiVersion < util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION) {
+        throw Error(ErrorType::GENERIC, "Target api version '" + std::to_string(options.targetApiVersion) +
+                    "' should be greater than or equal to '" +
+                    std::to_string(util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_API_VERSION) + "'.");
+    }
+    if (!options.mergeAbc && options.sourceFiles.size() != 1) {
+        throw Error(ErrorType::GENERIC, "If an abc file is used as input, it must be the only input file "
+                    "when the option '--merge-abc' is not enabled.");
+    }
     if (!abcToAsmCompiler_->OpenAbcFile(fname)) {
         throw Error(ErrorType::GENERIC, "Open abc file " + fname + " failed.");
     }
@@ -90,6 +82,19 @@ void Compiler::AbcToAsmProgram(const std::string &fname, const CompilerOptions &
                                                         options.targetApiVersion)) {
         throw Error(ErrorType::GENERIC, "The input abc file " + fname + "'s version is not supported.");
     }
+}
+
+panda::pandasm::Program *Compiler::CompileAbcFile(const std::string &fname, const CompilerOptions &options)
+{
+    CheckOptionsAndFileForAbcInput(fname, options);
+    return abcToAsmCompiler_->CompileAbcFile();
+}
+
+void Compiler::CompileAbcFileInParallel(const std::string &fname, const CompilerOptions &options,
+                                        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                                        panda::ArenaAllocator *allocator)
+{
+    CheckOptionsAndFileForAbcInput(fname, options);
     auto *compileAbcClassQueue = new compiler::CompileAbcClassQueue(options.abcClassThreadCount,
                                                                     options,
                                                                     *abcToAsmCompiler_,
