@@ -140,3 +140,36 @@ function captureFromLocalScope<T>(t: T): void {
   
     let v6 = { z: LocalClass }; // Non-fixable, `z` references type `LocalClass` declared in local scope
 }
+
+// Record object literals
+let rec1: Record<string, any> = {
+    a: 1,
+    b: 2,
+    c: 3
+}
+
+let rec2: Record<string | number, any> = {
+    foo: 1,
+    bar: 2,
+    10: 'foo',
+    20: 'bar',
+    baz: 3,
+    'daz': 4
+}
+
+let rec3: Record<string | number, any> = { // Not fixable
+    f1: 1,
+    f2: 2,
+    f3: 3,
+    [val]: 4    // Not fixable, key is a computed value
+}
+
+interface NullableRecord {
+    params?: Record<string, string>;
+}
+let rec4: NullableRecord = {
+    params: {
+        key: '1',
+        message: '2'
+    }
+};
