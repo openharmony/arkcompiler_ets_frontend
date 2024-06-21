@@ -120,8 +120,12 @@ def parse_args():
                         help="ark's product name")
     parser.add_argument('--run-pgo', action='store_true',
                         help="Run test262 with aot pgo")
+    parser.add_argument('--enable-litecg', action='store_true',
+                        help="Run test262 with aot litecg enabled")
     parser.add_argument('--run-jit', action='store_true',
                         help="Run test262 with JIT")
+    parser.add_argument('--run-baseline-jit', action='store_true',
+                        help="Run test262 with baseline JIT")
     parser.add_argument('--abc2program', action='store_true',
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
     parser.add_argument('--disable-force-gc', action='store_true',
@@ -599,8 +603,12 @@ def get_host_args_of_host_type(args, host_args, ark_tool, ark_aot_tool, libs_dir
         host_args += f"--ark-aot "
     if args.run_pgo:
         host_args += f"--run-pgo "
+    if args.enable_litecg:
+        host_args += f"--enable-litecg "
     if args.run_jit:
         host_args += f"--run-jit "
+    if args.run_baseline_jit:
+        host_args += f"--run-baseline-jit "
     host_args += f"--ark-aot-tool={ark_aot_tool} "
     host_args += f"--libs-dir={libs_dir} "
     host_args += f"--ark-frontend={ark_frontend} "
