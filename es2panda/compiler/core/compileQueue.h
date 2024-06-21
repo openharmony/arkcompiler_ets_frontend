@@ -90,7 +90,7 @@ private:
     friend class CompileAbcClassJob;
     bool RetrieveProgramFromCacheFiles(const std::string &buffer);
 
-    static std::mutex global_m_;
+    static std::mutex globalMutex_;
     es2panda::SourceFile *src_;
     es2panda::CompilerOptions *options_;
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
@@ -197,7 +197,7 @@ public:
     void Schedule() override;
 
 private:
-    static std::mutex global_m_;
+    static std::mutex globalMutex_;
     const es2panda::CompilerOptions &options_;
     abc2program::Abc2ProgramCompiler &compiler_;
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;

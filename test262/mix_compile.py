@@ -18,6 +18,8 @@ limitations under the License.
 Description: generate abc with mix compilation
 """
 
+import os
+import stat
 from utils import *
 
 
@@ -34,6 +36,8 @@ class MixCompiler:
         self.abc_outputs = []
 
     def mix_compile(self, step=1, size=1):
+        flags = os.O_WRONLY | os.O_CREAT
+        modes = stat.S_IWUSR | stat.S_IRUSR
         files_info_list = self.files_info_list
         out_file = self.out_file
         count = 0
@@ -42,14 +46,14 @@ class MixCompiler:
         # and then mix compile it with the remained files to generate the final abc. Will do this for a cycle.
         for i in range(0, len(files_info_list), step):
             count = count + 1
-            right_bound = min(i + size , len(files_info_list))
+            right_bound = min(i + size, len(files_info_list))
             selected_file = files_info_list[i : right_bound]
             remained_file = files_info_list[0 : i]
             remained_file.extend(files_info_list[right_bound : len(files_info_list)])
 
             temp_abc = out_file.replace(ABC_EXT, f'_{count}{TEMP_ABC_EXT}')
             temp_files_info_path = out_file.replace(ABC_EXT, f'_{count}{TEMP_TXT_EXT}')
-            with open(temp_files_info_path, 'w') as f:
+            with os.fdopen(os.open(temp_files_info_path, flags, modes), 'w') as f:
                 f.write("".join(selected_file))
             cmd = [self.frontend_tool, '--opt-level', str(self.opt_level),
                    '--file-threads', str(self.file_threads),
@@ -63,7 +67,7 @@ class MixCompiler:
             remained_file.append(f'{temp_abc}\n')
             abc = out_file.replace(ABC_EXT, f'_{count}{ABC_EXT}')
             files_info_path = out_file.replace(ABC_EXT, f'_{count}{TXT_EXT}')
-            with open(files_info_path, 'w') as f:
+            with os.fdopen(os.open(files_info_path, flags, modes), 'w') as f:
                 f.write("".join(remained_file))
             cmd = [self.frontend_tool, '--opt-level', str(self.opt_level),
                    '--file-threads', str(self.file_threads),
