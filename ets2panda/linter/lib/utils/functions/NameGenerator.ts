@@ -16,7 +16,10 @@
 export class NameGenerator {
   private counter = 0;
 
-  constructor(private readonly prefix: string, private readonly treshold: number) {}
+  constructor(
+    private readonly prefix: string,
+    private readonly treshold: number
+  ) {}
 
   getName(): string | undefined {
     if (this.counter >= this.treshold) {

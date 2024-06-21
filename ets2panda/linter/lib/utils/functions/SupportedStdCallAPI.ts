@@ -28,9 +28,7 @@ export class SupportedStdCallApiChecker {
     this.typeChecker = typeChecker;
   }
 
-  stdObjectEntry = new Map<string, CheckStdCallApi>([
-    ['assign', this.checkObjectAssignCall]
-  ]);
+  stdObjectEntry = new Map<string, CheckStdCallApi>([['assign', this.checkObjectAssignCall]]);
 
   StdCallApi = new Map<string | undefined, StdCallApiEntry>([
     ['Object', this.stdObjectEntry],
