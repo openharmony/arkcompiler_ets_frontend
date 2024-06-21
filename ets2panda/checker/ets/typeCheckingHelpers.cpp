@@ -528,7 +528,7 @@ void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifie
     const auto *const targetType = GetTypeOfVariable(id->Variable());
     ASSERT(targetType != nullptr);
 
-    if (!targetType->IsETSObjectType() || !targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+    if (!targetType->IsETSObjectType()) {
         ThrowTypeError("Initializers type is not assignable to the target type", ident->Start());
     }
 }

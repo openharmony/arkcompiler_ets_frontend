@@ -577,4 +577,4 @@
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [assignment_with_wrong_type.ets:26:16]
+TypeError: Type '() => void' cannot be assigned to type 'B' [assignment_with_wrong_type.ets:26:16]

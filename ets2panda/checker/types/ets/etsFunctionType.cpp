@@ -65,6 +65,11 @@ bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
         return false;
     }
 
+    if (target->IsETSObjectType() && target == relation->GetChecker()->AsETSChecker()->GlobalETSObjectType()) {
+        relation->Result(true);
+        return true;
+    }
+
     relation->Result(false);
     return false;
 }
