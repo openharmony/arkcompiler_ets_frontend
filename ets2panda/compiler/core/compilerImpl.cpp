@@ -15,7 +15,7 @@
 
 #include "compilerImpl.h"
 
-#include "compiler/core/ASTVerifier.h"
+#include "ast_verifier/ASTVerifier.h"
 #include "es2panda.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/TSAnalyzer.h"

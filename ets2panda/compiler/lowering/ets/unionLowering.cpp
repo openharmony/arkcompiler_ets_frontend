@@ -14,7 +14,6 @@
  */
 
 #include "unionLowering.h"
-#include "compiler/core/ASTVerifier.h"
 #include "varbinder/variableFlags.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"

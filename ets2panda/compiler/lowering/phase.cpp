@@ -15,7 +15,6 @@
 
 #include "phase.h"
 #include "checker/checker.h"
-#include "compiler/core/ASTVerifier.h"
 #include "ets/ambientLowering.h"
 #include "ets/defaultParameterLowering.h"
 #include "lexer/token/sourceLocation.h"

@@ -22,68 +22,18 @@
 #include <string>
 #include <unordered_set>
 
+#include "ast_verifier/checkContext.h"
+
 #include "ir/astNode.h"
 #include "ir/statements/blockStatement.h"
 #include "lexer/token/sourceLocation.h"
 #include "parser/program/program.h"
 #include "util/ustring.h"
 #include "utils/arena_containers.h"
-#include "utils/json_builder.h"
 #include "varbinder/variable.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
-enum class CheckSeverity { ERROR, WARNING, UNKNOWN };
-inline std::string CheckSeverityString(CheckSeverity value)
-{
-    switch (value) {
-        case CheckSeverity::ERROR:
-            return "error";
-        case CheckSeverity::WARNING:
-            return "warning";
-        default:
-            UNREACHABLE();
-    }
-}
-
-class CheckMessage {
-public:
-    explicit CheckMessage(util::StringView name, util::StringView cause, util::StringView message, size_t line)
-        : invariantName_ {name}, cause_ {cause}, message_ {message}, line_ {line}
-    {
-    }
-
-    std::string Invariant() const
-    {
-        return invariantName_;
-    }
-
-    std::function<void(JsonObjectBuilder &)> DumpJSON(CheckSeverity severity, const std::string &sourceName,
-                                                      const std::string &phaseName) const
-    {
-        return [sourceName, phaseName, severity, this](JsonObjectBuilder &body) {
-            body.AddProperty("severity", CheckSeverityString(severity));
-            body.AddProperty("invariant", invariantName_);
-            body.AddProperty("cause", cause_);
-            body.AddProperty("ast", message_);
-            body.AddProperty("line", line_ + 1);
-            body.AddProperty("source", sourceName);
-            body.AddProperty("phase", phaseName);
-        };
-    }
-
-private:
-    std::string invariantName_;
-    std::string cause_;
-    std::string message_;
-    size_t line_;
-};
-using Messages = std::vector<CheckMessage>;
-
-enum class CheckDecision { CORRECT, INCORRECT };
-enum class CheckAction { CONTINUE, SKIP_SUBTREE };
-using CheckResult = std::tuple<CheckDecision, CheckAction>;
-class CheckContext;
 using InvariantCheck = std::function<CheckResult(CheckContext &ctx, const ir::AstNode *)>;
 using Invariants = std::map<std::string, InvariantCheck>;
 

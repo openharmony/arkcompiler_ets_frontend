@@ -16,7 +16,6 @@
 #ifndef ES2PANDA_COMPILER_PLUGIN_PHASE_H
 #define ES2PANDA_COMPILER_PLUGIN_PHASE_H
 
-#include "compiler/core/ASTVerifier.h"
 #include "compiler/lowering/phase.h"
 #include "util/plugin.h"
 
