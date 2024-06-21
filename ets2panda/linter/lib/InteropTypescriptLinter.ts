@@ -85,7 +85,7 @@ export class InteropTypescriptLinter {
   static kitInfos = new Map<string, KitInfo>();
   private static etsLoaderPath: string;
   private static sdkPath: string;
-
+  static useSdkLogic = false;
   static advancedClassChecks = false;
 
   private initCounters(): void {
@@ -103,7 +103,8 @@ export class InteropTypescriptLinter {
     this.tsUtils = new TsUtils(
       this.tsTypeChecker,
       InteropTypescriptLinter.testMode,
-      InteropTypescriptLinter.advancedClassChecks
+      InteropTypescriptLinter.advancedClassChecks,
+      InteropTypescriptLinter.useSdkLogic
     );
     this.currentErrorLine = 0;
     this.currentWarningLine = 0;
