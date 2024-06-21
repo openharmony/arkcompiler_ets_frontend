@@ -47,18 +47,18 @@ def parse_args():
     parser.add_argument('--es51', action='store_true',
                         help='Run test262 ES5.1 version')
     parser.add_argument('--es2021', default=False, const='all',
-                        nargs='?', choices=['all', 'only'],
+                        nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2021. ' +
                         'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests and intl_tests' +
                         'only: Only include use cases for ES2021')
     parser.add_argument('--es2022', default=False, const='all',
-                        nargs='?', choices=['all', 'only'],
+                        nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2022. ' +
                         'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
                         'and es2022_tests and intl_tests' +
                         'only: Only include use cases for ES2022')
     parser.add_argument('--es2023', default=False, const='all',
-                        nargs='?', choices=['all', 'only'],
+                        nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2023. ' +
                         'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
                         'and es2022_tests and es2023_tests and intl_tests' +
@@ -415,6 +415,11 @@ class TestPrepare():
             files.extend(self.get_tests_from_file(ES5_LIST_FILE))
             files.extend(self.get_tests_from_file(INTL_LIST_FILE))
             files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
+        if self.args.es2021 == "other":
+            files.extend(self.get_tests_from_file(ES5_LIST_FILE))
+            files.extend(self.get_tests_from_file(INTL_LIST_FILE))
+            files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
+            files.extend(self.get_tests_from_file(OTHER_LIST_FILE))
         return files
 
     def prepare_es2022_tests(self):
@@ -426,6 +431,13 @@ class TestPrepare():
             files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
             files.extend(self.collect_tests())
             files.extend(self.get_tests_from_file(ES2021_LIST_FILE))
+        if self.args.es2022 == "other":
+            files.extend(self.get_tests_from_file(ES5_LIST_FILE))
+            files.extend(self.get_tests_from_file(INTL_LIST_FILE))
+            files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
+            files.extend(self.collect_tests())
+            files.extend(self.get_tests_from_file(ES2021_LIST_FILE))
+            files.extend(self.get_tests_from_file(OTHER_LIST_FILE))
         return files
 
     def prepare_es2023_tests(self):
@@ -438,6 +450,14 @@ class TestPrepare():
             files.extend(self.collect_tests())
             files.extend(self.get_tests_from_file(ES2021_LIST_FILE))
             files.extend(self.get_tests_from_file(ES2022_LIST_FILE))
+        if self.args.es2023 == "all":
+            files.extend(self.get_tests_from_file(ES5_LIST_FILE))
+            files.extend(self.get_tests_from_file(INTL_LIST_FILE))
+            files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
+            files.extend(self.collect_tests())
+            files.extend(self.get_tests_from_file(ES2021_LIST_FILE))
+            files.extend(self.get_tests_from_file(ES2022_LIST_FILE))
+            files.extend(self.get_tests_from_file(OTHER_LIST_FILE))
         return files
 
     def prepare_intl_tests(self):
