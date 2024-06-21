@@ -1424,5 +1424,14 @@
             "built-ins/TypedArrayConstructors/ctors/buffer-arg/typedarray-backed-by-sharedarraybuffer.js",
             "built-ins/TypedArrayConstructors/ctors-bigint/buffer-arg/byteoffset-to-number-detachbuffer.js"
         ]
+    },
+    {
+        "reason": "Execution result is consistent with the latest standard behavior",
+        "files": [
+            "intl402/DateTimeFormat/constructor-options-order-dayPeriod.js",
+            "intl402/DateTimeFormat/constructor-options-order-fractionalSecondDigits.js",
+            "intl402/DateTimeFormat/constructor-options-order-timedate-style.js",
+            "intl402/DateTimeFormat/constructor-options-order.js"
+        ]
     }
 ]
