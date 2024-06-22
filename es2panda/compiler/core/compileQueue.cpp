@@ -31,8 +31,8 @@
 
 namespace panda::es2panda::compiler {
 
-std::mutex CompileFileJob::global_m_;
-std::mutex CompileAbcClassQueue::global_m_;
+std::mutex CompileFileJob::globalMutex_;
+std::mutex CompileAbcClassQueue::globalMutex_;
 
 void CompileFunctionJob::Run()
 {
@@ -88,7 +88,7 @@ bool CompileFileJob::RetrieveProgramFromCacheFiles(const std::string &buffer)
                                                                                    &allocator);
 
         if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
-            std::unique_lock<std::mutex> lock(global_m_);
+            std::unique_lock<std::mutex> lock(globalMutex_);
             auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
             progsInfo_.insert({src_->fileName, cache});
             return true;
@@ -135,7 +135,7 @@ void CompileFileJob::Run()
     }
 
     {
-        std::unique_lock<std::mutex> lock(global_m_);
+        std::unique_lock<std::mutex> lock(globalMutex_);
         auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), src_->isSourceMode);
         progsInfo_.insert({src_->fileName, cache});
         if (requireOptimizationAfterAnalysis) {
@@ -164,7 +164,7 @@ void CompileAbcClassJob::Run()
     }
 
     {
-        std::unique_lock<std::mutex> lock(CompileFileJob::global_m_);
+        std::unique_lock<std::mutex> lock(CompileFileJob::globalMutex_);
         ASSERT(compiler_.GetAbcFile().GetFilename().find(util::CHAR_VERTICAL_LINE) == std::string::npos);
         ASSERT(program->record_table.size() == 1);
         ASSERT(program->record_table.begin()->first.find(util::CHAR_VERTICAL_LINE) == std::string::npos);
@@ -269,7 +269,7 @@ void CompileAbcClassQueue::Schedule()
         expectedProgsCountInAbcFile++;
     }
     {
-        std::unique_lock<std::mutex> lock(global_m_);
+        std::unique_lock<std::mutex> lock(globalMutex_);
         Compiler::SetExpectedProgsCount(Compiler::GetExpectedProgsCount() + expectedProgsCountInAbcFile - 1);
     }
 
