@@ -50,19 +50,25 @@ def parse_args():
                         nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2021. ' +
                         'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests and intl_tests' +
-                        'only: Only include use cases for ES2021')
+                        'only: Only include use cases for ES2021' +
+                        'other: Contains all use cases for es5_tests and es2015_tests and es2021_tests and intl_tests' +
+                        'and other_tests')
     parser.add_argument('--es2022', default=False, const='all',
                         nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2022. ' +
                         'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
                         'and es2022_tests and intl_tests' +
-                        'only: Only include use cases for ES2022')
+                        'only: Only include use cases for ES2022' +
+                        'other: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
+                        'and es2022_tests and intl_tests and other_tests')
     parser.add_argument('--es2023', default=False, const='all',
                         nargs='?', choices=['all', 'only', 'other'],
                         help='Run test262 - ES2023. ' +
                         'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
                         'and es2022_tests and es2023_tests and intl_tests' +
-                        'only: Only include use cases for ES2023')
+                        'only: Only include use cases for ES2023' +
+                        'other: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
+                        'and es2022_tests and es2023_tests and intl_tests and other_tests')
     parser.add_argument('--intl', default=False, const='intl',
                         nargs='?', choices=['intl'],
                         help='Run test262 - Intltest. ' +
@@ -450,7 +456,7 @@ class TestPrepare():
             files.extend(self.collect_tests())
             files.extend(self.get_tests_from_file(ES2021_LIST_FILE))
             files.extend(self.get_tests_from_file(ES2022_LIST_FILE))
-        if self.args.es2023 == "all":
+        if self.args.es2023 == "other":
             files.extend(self.get_tests_from_file(ES5_LIST_FILE))
             files.extend(self.get_tests_from_file(INTL_LIST_FILE))
             files.extend(self.get_tests_from_file(ES2015_LIST_FILE))
