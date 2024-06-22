@@ -476,12 +476,14 @@ class TestPrepare():
         if self.args.intl:
             files = self.get_tests_from_file(INTL_LIST_FILE)
         return files
+
     def prepare_other_tests(self):
         files = []
         files = self.collect_tests()
         if self.args.other:
             files = self.get_tests_from_file(OTHER_LIST_FILE)
         return files
+        
     def prepare_es2015_tests(self):
         files = []
         files = self.collect_tests()
