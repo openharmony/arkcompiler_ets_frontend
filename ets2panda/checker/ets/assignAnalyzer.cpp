@@ -1376,7 +1376,8 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
         UNREACHABLE();
     }
 
-    return type != nullptr && (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) || type->PossiblyETSNullish());
+    return type != nullptr && (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ||
+                               (type->PossiblyETSNullish() && !type->HasTypeFlag(checker::TypeFlag::GENERIC)));
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
