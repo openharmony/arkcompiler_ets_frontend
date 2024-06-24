@@ -40,6 +40,12 @@ class FunctionParamScope;
 
 namespace ark::es2panda::checker {
 
+struct Accessor {
+    bool isGetter {false};
+    bool isSetter {false};
+    bool isExternal {false};
+};
+
 using ComputedAbstracts =
     ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, std::unordered_set<ETSObjectType *>>>;
 using ArrayMap = ArenaUnorderedMap<Type *, ETSArrayType *>;
@@ -159,7 +165,28 @@ public:
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
+    void CheckIfOverrideIsValidInInterface(const ETSObjectType *classType, Signature *sig, ir::ScriptFunction *func);
+    void CheckFunctionRedeclarationInInterface(const ETSObjectType *classType,
+                                               ArenaVector<Signature *> &similarSignatures, ir::ScriptFunction *func);
+    void ValidateAbstractMethodsToBeImplemented(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
+                                                ETSObjectType *classType,
+                                                const std::vector<Signature *> &implementedSignatures);
+    void ApplyModifiersAndRemoveImplementedAbstracts(ArenaVector<ETSFunctionType *>::iterator &it,
+                                                     ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
+                                                     ETSObjectType *classType, bool &functionOverridden,
+                                                     const Accessor &isGetSetExternal);
+    void ValidateAbstractSignature(ArenaVector<ETSFunctionType *>::iterator &it,
+                                   ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
+                                   const std::vector<Signature *> &implementedSignatures, bool &functionOverridden,
+                                   Accessor &isGetSetExternal);
+    void ValidateNonOverriddenFunction(ETSObjectType *classType, ArenaVector<ETSFunctionType *>::iterator &it,
+                                       ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
+                                       bool &functionOverridden, const Accessor &isGetSet);
+    void MaybeThrowErrorsForOverridingValidation(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
+                                                 ETSObjectType *classType, const lexer::SourcePosition &pos,
+                                                 bool throwError);
     void ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos);
+    void CheckInterfaceFunctions(ETSObjectType *classType);
     void CollectImplementedMethodsFromInterfaces(ETSObjectType *classType,
                                                  std::vector<Signature *> *implementedSignatures,
                                                  const ArenaVector<ETSFunctionType *> &abstractsToBeImplemented);
