@@ -2189,14 +2189,21 @@ export class TypeScriptLinter {
 
   private handleComputedPropertyName(node: ts.Node): void {
     const computedProperty = node as ts.ComputedPropertyName;
-    if (this.isSendableInvalidCompPropName(computedProperty)) {
+    if (this.isSendableCompPropName(computedProperty)) {
+      // cancel the '[Symbol.iterface]' restriction of 'sendable class/interface' in the 'collections.d.ts' file
+      if (this.tsUtils.isSymbolIteratorExpression(computedProperty.expression)) {
+        const declNode = computedProperty.parent?.parent;
+        if (declNode && TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(declNode)) {
+          return;
+        }
+      }
       this.incrementCounters(node, FaultID.SendableComputedPropName);
     } else if (!this.tsUtils.isValidComputedPropertyName(computedProperty, false)) {
       this.incrementCounters(node, FaultID.ComputedPropertyName);
     }
   }
 
-  private isSendableInvalidCompPropName(compProp: ts.ComputedPropertyName): boolean {
+  private isSendableCompPropName(compProp: ts.ComputedPropertyName): boolean {
     const declNode = compProp.parent?.parent;
     if (declNode && ts.isClassDeclaration(declNode) && TsUtils.hasSendableDecorator(declNode)) {
       return true;

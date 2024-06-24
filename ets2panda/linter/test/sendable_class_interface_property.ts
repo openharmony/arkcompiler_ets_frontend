@@ -100,7 +100,7 @@ class SendableClass3 {
   prop35: number | (SendableClass3 | ((string | NonSendableClass2)));
   prop36: alias19;
   prop37: alias20;
-  ["aaa"]: number; // ERROR, sendable class property name cannot be computed property
+  ["aaa"]: number; // ERROR, sendable class property name cannot be computed property 
 }
 
 type alias0 = number | null;
@@ -180,6 +180,7 @@ interface ISendableExt2 extends lang.ISendable {
   prop9: RegularEnum1; // ERROR, sendable interface property cannot be non-sendable-type
   prop10: RegularEnum2; // ERROR, sendable interface property cannot be non-sendable-type
   ["aaa"]: number; // ERROR, sendable interface property name cannot be computed property
+  [Symbol.iterator](): IterableIterator<number>;
 }
 
 interface NonSendableInterface {};
