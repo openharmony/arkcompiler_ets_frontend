@@ -49,6 +49,7 @@ import type {
   InterfaceDeclaration,
   LabeledStatement,
   ModuleDeclaration,
+  NamespaceExport,
   Node,
   ObjectBindingPattern,
   ObjectLiteralExpression,
@@ -420,6 +421,10 @@ namespace secharmony {
           analyzeExportNames(node as ExportSpecifier);
           break;
 
+        case SyntaxKind.NamespaceExport:
+          analyzeNamespaceExport(node as NamespaceExport);
+          break;
+
         case SyntaxKind.CatchClause:
           analyzeCatchClause(node as CatchClause);
           break;
@@ -510,6 +515,13 @@ namespace secharmony {
         }
       }
       forEachChild(node, analyzeScope);
+    }
+
+    function analyzeNamespaceExport(node: NamespaceExport): void {
+      let symbol = checker.getSymbolAtLocation(node.name);
+      if (symbol) {
+        current.addDefinition(symbol, true);
+      }
     }
 
     function analyzeBreakOrContinue(node: BreakOrContinueStatement): void {
