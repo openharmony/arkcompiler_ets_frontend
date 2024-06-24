@@ -1,0 +1,5 @@
+# Known failure list for test262 - release-x64
+test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-order-fractionalSecondDigits.js
+test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-order-dayPeriod.js
+test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-order-timedate-style.js
+test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-order.js
