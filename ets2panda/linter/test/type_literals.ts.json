@@ -274,6 +274,13 @@
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
         },
         {
+            "line": 85,
+            "column": 3,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
+        },
+        {
             "line": 93,
             "column": 3,
             "problem": "CallSignature",
@@ -307,6 +314,13 @@
             "problem": "ObjectTypeLiteral",
             "suggest": "",
             "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        },
+        {
+            "line": 101,
+            "column": 3,
+            "problem": "LiteralAsPropertyName",
+            "suggest": "",
+            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
             "line": 109,
