@@ -26,6 +26,7 @@ namespace ark::es2panda::varbinder {
     _(LET, LetDecl)                      \
     _(CONST, ConstDecl)                  \
     _(LABEL, LabelDecl)                  \
+    _(READONLY, ReadonlyDecl)            \
     _(FUNC, FunctionDecl)                \
     _(PARAM, ParameterDecl)              \
     _(IMPORT, ImportDecl)                \

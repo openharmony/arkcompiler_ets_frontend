@@ -1104,7 +1104,8 @@ ArenaVector<const ir::Expression *> ETSChecker::CheckMemberOrCallOrObjectExpress
 void ETSChecker::CheckConstFields(const ETSObjectType *classType)
 {
     for (const auto &prop : classType->Fields()) {
-        if (!prop->Declaration()->IsConstDecl() || !prop->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
+        if (!(prop->Declaration()->IsConstDecl() || prop->Declaration()->IsReadonlyDecl()) ||
+            !prop->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
             continue;
         }
         CheckConstFieldInitialized(classType, prop);
@@ -1182,8 +1183,9 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *classType)
 
     for (const auto &[_, it] : classType->StaticFields()) {
         (void)_;
-        if (!it->Declaration()->IsConstDecl()) {
-            ThrowTypeError("Inner class cannot have non-const static properties", it->Declaration()->Node()->Start());
+        if (!it->Declaration()->IsReadonlyDecl()) {
+            ThrowTypeError("Inner class cannot have non-readonly static properties",
+                           it->Declaration()->Node()->Start());
         }
     }
 }

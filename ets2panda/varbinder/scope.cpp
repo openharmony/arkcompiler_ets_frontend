@@ -864,6 +864,7 @@ void ClassScope::SetBindingProps(Decl *newDecl, BindingProps *props, bool isStat
 {
     switch (newDecl->Type()) {
         case DeclType::CONST:
+        case DeclType::READONLY:
         case DeclType::LET: {
             props->SetBindingProps(VariableFlags::PROPERTY, newDecl->Node()->AsClassProperty()->Id(),
                                    isStatic ? staticFieldScope_ : instanceFieldScope_);

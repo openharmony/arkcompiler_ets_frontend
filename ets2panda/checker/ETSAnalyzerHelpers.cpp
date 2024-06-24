@@ -489,6 +489,7 @@ checker::ETSObjectType *CreateSyntheticType(ETSChecker *checker, util::StringVie
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 static constexpr char const INVALID_CONST_ASSIGNMENT[] = "Cannot assign a value to a constant variable ";
+static constexpr char const INVALID_READONLY_ASSIGNMENT[] = "Cannot assign a value to a readonly variable ";
 static constexpr char const ITERATOR_TYPE_ABSENT[] = "Cannot obtain iterator type in 'for-of' statement.";
 // NOLINTEND(modernize-avoid-c-arrays)
 
@@ -512,9 +513,11 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     checker::Type *iterType = nullptr;
     if (left->IsIdentifier()) {
         if (auto *const variable = left->AsIdentifier()->Variable(); variable != nullptr) {
-            if (variable->Declaration()->IsConstDecl()) {
-                checker->ThrowTypeError({INVALID_CONST_ASSIGNMENT, variable->Name()},
-                                        variable->Declaration()->Node()->Start());
+            auto *decl = variable->Declaration();
+            if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {
+                std::string_view errorMsg =
+                    decl->IsConstDecl() ? INVALID_CONST_ASSIGNMENT : INVALID_READONLY_ASSIGNMENT;
+                checker->ThrowTypeError({errorMsg, variable->Name()}, decl->Node()->Start());
             }
         }
         iterType = left->AsIdentifier()->TsType();

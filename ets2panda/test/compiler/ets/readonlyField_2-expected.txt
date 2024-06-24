@@ -1121,4 +1121,4 @@
     }
   }
 }
-TypeError: Cannot assign to a constant variable name [readonlyField_2.ets:17:14]
+TypeError: Cannot assign to a readonly variable name [readonlyField_2.ets:17:14]

@@ -1148,6 +1148,13 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
             ThrowSyntaxError("Missing initializer in const declaration", pos);
         }
         AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
+    } else if (classProp->IsReadonly()) {
+        ASSERT(curScope->Parent() != nullptr);
+        if (curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare()) {
+            auto pos = classProp->End();
+            ThrowSyntaxError("Readonly field cannot be in Global scope", pos);
+        }
+        AddOrGetDecl<varbinder::ReadonlyDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     } else {
         AddOrGetDecl<varbinder::LetDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     }

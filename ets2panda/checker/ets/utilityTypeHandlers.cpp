@@ -481,7 +481,7 @@ Type *ETSChecker::GetReadonlyType(Type *type)
 void ETSChecker::MakePropertiesReadonly(ETSObjectType *const classType)
 {
     classType->UpdateTypeProperties(this, [this](auto *property, auto *propType) {
-        auto *newDecl = Allocator()->New<varbinder::ConstDecl>(property->Name(), property->Declaration()->Node());
+        auto *newDecl = Allocator()->New<varbinder::ReadonlyDecl>(property->Name(), property->Declaration()->Node());
         auto *const propCopy = property->Copy(Allocator(), newDecl);
         propCopy->AddFlag(varbinder::VariableFlags::READONLY);
         propCopy->SetTsType(propType);

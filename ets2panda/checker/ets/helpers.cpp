@@ -705,7 +705,7 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
                           {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
         // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
         // are assigned with CONSTANT, which would not be correct. (After feature supported)
-        if (isConst && (!isReadonly || isStatic) &&
+        if ((isConst || (isReadonly && isStatic)) &&
             ((initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) && annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) ||
              (initType->IsETSStringType() && annotationType->IsETSStringType()))) {
             bindingVar->SetTsType(init->TsType());
@@ -719,7 +719,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
                        init->Start());
     }
 
-    isConst ? bindingVar->SetTsType(initType) : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
+    (isConst || (isReadonly && isStatic)) ? bindingVar->SetTsType(initType)
+                                          : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
 
     return FixOptionalVariableType(bindingVar, flags);
 }
@@ -1727,11 +1728,15 @@ std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *caseType) co
 bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
 {
     if (expression->IsMemberExpression()) {
-        return expression->AsMemberExpression()->PropVar()->Declaration()->IsConstDecl();
+        auto *var = expression->AsMemberExpression()->PropVar();
+        return var->Declaration()->IsConstDecl() ||
+               (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC));
     }
 
     if (expression->IsIdentifier()) {
-        return expression->AsIdentifier()->Variable()->Declaration()->IsConstDecl();
+        auto *var = expression->AsIdentifier()->Variable();
+        return var->Declaration()->IsConstDecl() ||
+               (var->Declaration()->IsReadonlyDecl() && var->HasFlag(varbinder::VariableFlags::STATIC));
     }
 
     return false;

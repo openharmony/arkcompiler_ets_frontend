@@ -423,6 +423,7 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         }
         case varbinder::DeclType::ENUM_LITERAL:
         case varbinder::DeclType::CONST:
+        case varbinder::DeclType::READONLY:
         case varbinder::DeclType::LET:
         case varbinder::DeclType::VAR: {
             auto *declNode = var->Declaration()->Node();
@@ -433,9 +434,7 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
 
             return declNode->Check(this);
         }
-        case varbinder::DeclType::FUNC: {
-            return var->Declaration()->Node()->Check(this);
-        }
+        case varbinder::DeclType::FUNC:
         case varbinder::DeclType::IMPORT: {
             return var->Declaration()->Node()->Check(this);
         }

@@ -362,7 +362,8 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *classDef)
         auto fieldName = stmt->AsClassProperty()->Id()->Name();
         auto fieldVar = fieldScope->FindLocal(fieldName, varbinder::ResolveBindingOptions::BINDINGS);
         fieldVar->AddFlag(VariableFlags::INITIALIZED);
-        if (fieldVar->Declaration()->IsConstDecl() && stmt->AsClassProperty()->Value() == nullptr) {
+        if ((fieldVar->Declaration()->IsConstDecl() || fieldVar->Declaration()->IsReadonlyDecl()) &&
+            stmt->AsClassProperty()->Value() == nullptr) {
             fieldVar->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);
         }
     }

@@ -1382,4 +1382,4 @@
     }
   }
 }
-TypeError: Cannot assign to a constant variable fld [readonlyType_4.ets:17:5]
+TypeError: Cannot assign to a readonly variable fld [readonlyType_4.ets:17:5]

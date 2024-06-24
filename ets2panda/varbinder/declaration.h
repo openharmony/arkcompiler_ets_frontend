@@ -307,6 +307,17 @@ public:
     }
 };
 
+class ReadonlyDecl : public Decl {
+public:
+    explicit ReadonlyDecl(util::StringView name) : Decl(name) {}
+    explicit ReadonlyDecl(util::StringView name, ir::AstNode *declNode) : Decl(name, declNode) {}
+
+    DeclType Type() const override
+    {
+        return DeclType::READONLY;
+    }
+};
+
 class ParameterDecl : public Decl {
 public:
     explicit ParameterDecl(util::StringView name) : Decl(name) {}
