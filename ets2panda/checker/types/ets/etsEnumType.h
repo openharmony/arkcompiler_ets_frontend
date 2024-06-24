@@ -96,6 +96,8 @@ public:
     static constexpr std::string_view const VALUE_OF_METHOD_NAME {"valueOf"};
     static constexpr std::string_view const VALUES_METHOD_NAME {"values"};
     static constexpr std::string_view const FROM_INT_METHOD_NAME {"fromInt"};
+    static constexpr std::string_view const BOXED_FROM_INT_METHOD_NAME {"boxedfromInt"};
+    static constexpr std::string_view const UNBOX_METHOD_NAME {"unbox"};
 
     struct Method {
         Signature *globalSignature;
@@ -138,6 +140,18 @@ public:
         fromIntMethod_ = method;
     }
 
+    [[nodiscard]] Method BoxedFromIntMethod() const noexcept;
+    void SetBoxedFromIntMethod(Method const &method) noexcept
+    {
+        boxedFromIntMethod_ = method;
+    }
+
+    [[nodiscard]] Method UnboxMethod() const noexcept;
+    void SetUnboxMethod(Method const &method) noexcept
+    {
+        unboxMethod_ = method;
+    }
+
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
         return {true, !GetMembers().empty()};
@@ -154,6 +168,8 @@ private:
     Method valueOfMethod_ {};
     Method valuesMethod_ {};
     Method fromIntMethod_ {};
+    Method boxedFromIntMethod_ {};
+    Method unboxMethod_ {};
 
     [[nodiscard]] ir::TSEnumMember *FindMember(const util::StringView &name) const noexcept;
 

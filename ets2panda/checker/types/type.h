@@ -33,6 +33,7 @@ class ETSAsyncFuncReturnType;
 class ETSChecker;
 class ETSDynamicFunctionType;
 class ETSTypeParameter;
+class ETSEnumInterface;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_TYPENAMES(typeFlag, typeName) class typeName;
@@ -266,6 +267,18 @@ public:
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
     [[nodiscard]] virtual Type *Clone(Checker *checker);
     virtual Type *Substitute(TypeRelation *relation, const Substitution *substitution);
+
+    const ETSEnumInterface *AsEnumInterface() const
+    {
+        ASSERT(IsETSEnumType() || IsETSStringEnumType());
+        return reinterpret_cast<const ETSEnumInterface *>(this);
+    }
+
+    ETSEnumInterface *AsEnumInterface()
+    {
+        ASSERT(IsETSEnumType() || IsETSStringEnumType());
+        return reinterpret_cast<ETSEnumInterface *>(this);
+    }
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)

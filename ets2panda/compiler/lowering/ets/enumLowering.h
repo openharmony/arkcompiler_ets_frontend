@@ -29,9 +29,7 @@ public:
         return "EnumLoweringPhase";
     }
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    static util::UString GetQualifiedName(checker::ETSChecker *checker, const ir::TSEnumDeclaration *const enumDecl,
-                                          const util::StringView &name);
-
+    static util::UString GetEnumClassName(checker::ETSChecker *checker, const ir::TSEnumDeclaration *const enumDecl);
     checker::ETSChecker *Checker()
     {
         return checker_;
@@ -43,37 +41,54 @@ public:
     }
 
 private:
-    [[nodiscard]] ir::ScriptFunction *MakeFunction(varbinder::FunctionParamScope *const paramScope,
-                                                   ArenaVector<ir::Expression *> &&params,
-                                                   ArenaVector<ir::Statement *> &&body,
-                                                   ir::TypeNode *const returnTypeAnnotation,
-                                                   const ir::TSEnumDeclaration *const enumDecl);
+    struct FunctionInfo {
+        varbinder::FunctionParamScope *paramScope;
+        ArenaVector<ir::Expression *> &&params;
+        ArenaVector<ir::Statement *> &&body;
+        ir::TypeNode *returnTypeAnnotation;
+        const ir::TSEnumDeclaration *enumDecl;
+        ir::ModifierFlags flags;
+    };
 
-    void CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
-    void CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    [[nodiscard]] ir::ScriptFunction *MakeFunction(FunctionInfo &&functionInfo);
+    ir::ClassDefinition *CreateClass(ir::TSEnumDeclaration *const enumDecl);
+    ir::ClassProperty *CreateOrdinalField(ir::ClassDefinition *const enumClass);
+    void CreateCCtorForEnumClass(ir::ClassDefinition *const enumClass);
+    void CreateCtorForEnumClass(ir::ClassDefinition *const enumClass);
+
+    void CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
+    void CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration *const enumDecl);
     static void AppendParentNames(util::UString &qualifiedName, const ir::AstNode *const node);
-    [[nodiscard]] ir::Identifier *MakeQualifiedIdentifier(const ir::TSEnumDeclaration *const enumDecl,
-                                                          const util::StringView &name);
-
     template <typename ElementMaker>
-    [[nodiscard]] ir::Identifier *MakeArray(const ir::TSEnumDeclaration *const enumDecl,
-                                            ir::ClassDefinition *globalClass, const util::StringView &name,
-                                            ir::TypeNode *const typeAnnotation, ElementMaker &&elementMaker);
+    [[nodiscard]] ir::Identifier *MakeArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass,
+                                            const util::StringView &name, ir::TypeNode *const typeAnnotation,
+                                            ElementMaker &&elementMaker);
 
-    ir::Identifier *CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl);
+    ir::Identifier *CreateEnumNamesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
+    ir::Identifier *CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
+    ir::Identifier *CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl,
+                                                ir::ClassDefinition *enumClass);
+    ir::Identifier *CreateEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl, ir::ClassDefinition *enumClass);
+    ir::Identifier *CreateBoxedEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl,
+                                              ir::ClassDefinition *enumClass);
 
-    ir::Identifier *CreateEnumValuesArray(const ir::TSEnumDeclaration *const enumDecl);
-    ir::Identifier *CreateEnumStringValuesArray(const ir::TSEnumDeclaration *const enumDecl);
-    ir::Identifier *CreateEnumItemsArray(const ir::TSEnumDeclaration *const enumDecl);
-    void CreateEnumFromIntMethod(ir::TSEnumDeclaration const *const enumDecl, ir::Identifier *const itemsArrayIdent);
-
-    void CreateEnumToStringMethod(ir::TSEnumDeclaration const *const enumDecl,
+    void CreateEnumFromIntMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
+                                 ir::Identifier *const arrayIdent, const util::StringView &methodName,
+                                 const util::StringView &returnTypeName);
+    void CreateEnumToStringMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
                                   ir::Identifier *const stringValuesArrayIdent);
+    void CreateEnumGetValueMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
+                                  ir::Identifier *const valuesArrayIdent);
+    void CreateEnumGetNameMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
+                                 ir::Identifier *const namesArrayIdent);
+    void CreateEnumValueOfMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
+                                 ir::Identifier *const namesArrayIdent);
+    void CreateEnumValuesMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
+                                ir::Identifier *const itemsArrayIdent);
+    void CreateUnboxingMethod(ir::TSEnumDeclaration const *const enumDecl, ir::ClassDefinition *const enumClass,
+                              ir::Identifier *const itemsArrayIdent);
 
-    void CreateEnumGetValueMethod(ir::TSEnumDeclaration const *const enumDecl, ir::Identifier *const valuesArrayIdent);
-    void CreateEnumGetNameMethod(ir::TSEnumDeclaration const *const enumDecl, ir::Identifier *const namesArrayIdent);
-    void CreateEnumValueOfMethod(ir::TSEnumDeclaration const *const enumDecl, ir::Identifier *const namesArrayIdent);
-    void CreateEnumValuesMethod(ir::TSEnumDeclaration const *const enumDecl, ir::Identifier *const itemsArrayIdent);
+    ArenaAllocator *Allocator();
 
 private:
     checker::ETSChecker *checker_ {nullptr};

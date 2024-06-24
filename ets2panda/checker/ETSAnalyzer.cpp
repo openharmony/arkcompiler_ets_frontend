@@ -2500,9 +2500,9 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
     if (enumVar->TsType() == nullptr) {
         checker::Type *etsEnumType = nullptr;
         if (auto *const itemInit = st->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
-            etsEnumType = checker->CreateEnumIntClassFromEnumDeclaration(st);
+            etsEnumType = checker->CreateEnumIntTypeFromEnumDeclaration(st);
         } else if (itemInit->IsStringLiteral()) {
-            etsEnumType = checker->CreateEnumStringClassFromEnumDeclaration(st);
+            etsEnumType = checker->CreateEnumStringTypeFromEnumDeclaration(st);
         } else {
             checker->ThrowTypeError("Invalid enumeration value type.", st->Start());
         }

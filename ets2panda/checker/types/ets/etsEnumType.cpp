@@ -31,9 +31,16 @@ ETSEnumInterface::ETSEnumInterface(const ir::TSEnumDeclaration *const enumDecl, 
 
 bool ETSEnumInterface::AssignmentSource(TypeRelation *const relation, Type *const target)
 {
-    auto const result = target->IsETSEnumType()
-                            ? IsSameEnumType(target->AsETSEnumType())
-                            : (target->IsETSStringEnumType() ? IsSameEnumType(target->AsETSStringEnumType()) : false);
+    bool result = false;
+
+    if (target->IsETSEnumType()) {
+        result = IsSameEnumType(target->AsETSEnumType());
+    } else if (target->IsETSStringEnumType()) {
+        result = IsSameEnumType(target->AsETSStringEnumType());
+    } else if (target->IsETSObjectType()) {
+        result = true;
+        relation->GetNode()->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+    }
     relation->Result(result);
     return relation->IsTrue();
 }
@@ -57,7 +64,9 @@ void ETSEnumInterface::Cast(TypeRelation *relation, Type *target)
         relation->Result(true);
         return;
     }
-
+    if (target->IsETSObjectType()) {
+        conversion::Boxing(relation, this);
+    }
     conversion::Forbidden(relation);
 }
 
@@ -240,6 +249,18 @@ ETSEnumInterface::Method ETSEnumInterface::FromIntMethod() const noexcept
 {
     ASSERT(fromIntMethod_.globalSignature != nullptr && fromIntMethod_.memberProxyType == nullptr);
     return fromIntMethod_;
+}
+
+ETSEnumInterface::Method ETSEnumInterface::BoxedFromIntMethod() const noexcept
+{
+    ASSERT(boxedFromIntMethod_.globalSignature != nullptr && boxedFromIntMethod_.memberProxyType == nullptr);
+    return boxedFromIntMethod_;
+}
+
+ETSEnumInterface::Method ETSEnumInterface::UnboxMethod() const noexcept
+{
+    ASSERT(unboxMethod_.globalSignature != nullptr && unboxMethod_.memberProxyType == nullptr);
+    return unboxMethod_;
 }
 
 ETSEnumInterface::Method ETSEnumInterface::GetValueMethod() const noexcept

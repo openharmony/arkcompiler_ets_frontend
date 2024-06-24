@@ -825,6 +825,9 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
 void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const checker::Type *target)
 {
     target = Checker()->GetApparentType(target);
+    if (target->IsETSEnumType() || target->IsETSStringEnumType()) {
+        target = target->AsEnumInterface()->GetDecl()->BoxedClass()->TsType();
+    }
     ASSERT(target->IsETSReferenceType());
 
     if (IsAnyReferenceSupertype(target)) {  // should be IsSupertypeOf(target, source)
@@ -1087,13 +1090,6 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
 {
     auto ttctx = TargetTypeContext(this, targetType);
 
-    if (node->HasAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE)) {
-        Ra().Emit<CallAccShort, 0>(
-            node, node->AsExpression()->TsType()->AsETSEnumType()->GetValueMethod().globalSignature->InternalName(),
-            dummyReg_, 0);
-        node->RemoveAstNodeFlags(ir::AstNodeFlags::ENUM_GET_VALUE);
-    }
-
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
         ApplyBoxingConversion(node);
 
@@ -1175,6 +1171,7 @@ void ETSGen::ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnb
 void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signatureFlag,
                              const checker::Type *const targetType, const checker::Type *const boxedType)
 {
+    RegScope rs(this);
     if (node->HasAstNodeFlags(ir::AstNodeFlags::CHECKCAST)) {
         CheckedReferenceNarrowing(node, boxedType);
     }
@@ -1195,14 +1192,23 @@ void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signature
     }
 }
 
+void ETSGen::EmitUnboxEnum(const ir::AstNode *node)
+{
+    RegScope rs(this);
+    ASSERT(node->Parent()->IsTSAsExpression());
+    auto *const asExprression = node->Parent()->AsTSAsExpression();
+    auto *const enumType = asExprression->TsType();
+    auto *const enumInterface = enumType->AsEnumInterface();
+    auto assemblerType = ToAssemblerType(enumInterface->GetDecl()->BoxedClass()->TsType());
+    Sa().Emit<Checkcast>(node, assemblerType);
+    auto unboxMethod = enumInterface->UnboxMethod();
+    Ra().Emit<CallVirtAccShort, 0>(node, unboxMethod.globalSignature->InternalName(), dummyReg_, 0);
+    SetAccumulatorType(enumType);
+}
+
 void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
 {
-    const auto unboxingFlag =
-        static_cast<ir::BoxingUnboxingFlags>(ir::BoxingUnboxingFlags::UNBOXING_FLAG & node->GetBoxingUnboxingFlags());
-
-    RegScope rs(this);
-
-    switch (unboxingFlag) {
+    switch (ir::BoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG & node->GetBoxingUnboxingFlags())) {
         case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN: {
             EmitUnboxedCall(node, Signatures::BUILTIN_BOOLEAN_UNBOXED, Checker()->GlobalETSBooleanType(),
                             Checker()->GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType());
@@ -1241,6 +1247,10 @@ void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
         case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE: {
             EmitUnboxedCall(node, Signatures::BUILTIN_DOUBLE_UNBOXED, Checker()->GlobalDoubleType(),
                             Checker()->GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
+            break;
+        }
+        case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM: {
+            EmitUnboxEnum(node);
             break;
         }
         default:
@@ -1282,6 +1292,13 @@ checker::Type *ETSGen::EmitBoxedType(ir::BoxingUnboxingFlags boxingFlag, const i
         case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE: {
             Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_DOUBLE_VALUE_OF, dummyReg_, 0);
             return Checker()->GetGlobalTypesHolder()->GlobalDoubleBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_ENUM: {
+            auto *const enumInterface = node->AsExpression()->TsType()->AsEnumInterface();
+            auto boxedFromIntMethod = enumInterface->BoxedFromIntMethod();
+
+            Ra().Emit<CallAccShort, 0>(node, boxedFromIntMethod.globalSignature->InternalName(), dummyReg_, 0);
+            return enumInterface->GetDecl()->BoxedClass()->TsType();
         }
         default:
             UNREACHABLE();

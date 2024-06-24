@@ -44,6 +44,7 @@
 #include "compiler/lowering/ets/unionLowering.h"
 #include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
+#include "compiler/lowering/ets/enumPostCheckLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "public/es2panda_lib.h"
@@ -65,6 +66,7 @@ static StringConstructorLowering g_stringConstructorLowering;
 static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static EnumLoweringPhase g_enumLoweringPhase;
+static EnumPostCheckLoweringPhase g_enumPostCheckLoweringPhase;
 static SpreadConstructionPhase g_spreadConstructionPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
@@ -118,6 +120,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_interfacePropDeclPhase,
         &g_enumLoweringPhase,
         &g_checkerPhase,
+        &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,
         &g_pluginsAfterCheck,
         &g_bigintLowering,

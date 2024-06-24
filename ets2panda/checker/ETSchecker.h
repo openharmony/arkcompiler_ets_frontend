@@ -243,8 +243,8 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
-    ETSEnumType *CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
-    ETSStringEnumType *CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
 
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
@@ -701,7 +701,8 @@ public:
     void CollectReturnStatements(ir::AstNode *parent);
     ir::ETSParameterExpression *AddParam(util::StringView name, ir::TypeNode *type);
 
-    [[nodiscard]] ir::ScriptFunction *FindFunction(const util::UString &name);
+    [[nodiscard]] ir::ScriptFunction *FindFunction(ir::TSEnumDeclaration const *const enumDecl,
+                                                   const std::string_view &name);
 
     using ClassBuilder = std::function<void(ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder =
@@ -717,8 +718,8 @@ public:
     ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
 
 private:
-    ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
-                                   bool buildPorxyParam, Type *returnType, bool buildProxy = true);
+    ETSEnumInterface::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
+                                        bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     [[noreturn]] void ThrowError(ir::Identifier *ident);
@@ -752,6 +753,9 @@ private:
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
     void CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                    checker::Type *annotationType, varbinder::Variable *const bindingVar);
+
+    template <typename EnumType, bool IS_INT_ENUM>
+    EnumType *CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
 
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateStaticScriptFunction(
         ClassInitializerBuilder const &builder);

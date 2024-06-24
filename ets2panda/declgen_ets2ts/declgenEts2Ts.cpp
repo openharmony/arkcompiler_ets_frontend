@@ -75,7 +75,10 @@ void TSDeclGen::Generate()
         } else if (globalStatement->IsTSEnumDeclaration()) {
             GenEnumDeclaration(globalStatement->AsTSEnumDeclaration());
         } else if (globalStatement->IsClassDeclaration()) {
-            GenClassDeclaration(globalStatement->AsClassDeclaration());
+            if (globalStatement->AsClassDeclaration()->Definition()->Ident()->Name().Mutf8().find('#') ==
+                std::string::npos) {
+                GenClassDeclaration(globalStatement->AsClassDeclaration());
+            }
         } else if (globalStatement->IsTSInterfaceDeclaration()) {
             GenInterfaceDeclaration(globalStatement->AsTSInterfaceDeclaration());
         } else if (globalStatement->IsTSTypeAliasDeclaration()) {

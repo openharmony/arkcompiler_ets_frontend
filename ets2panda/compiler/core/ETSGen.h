@@ -670,6 +670,7 @@ private:
     void EmitUnboxedCall(const ir::AstNode *node, std::string_view signatureFlag, const checker::Type *targetType,
                          const checker::Type *boxedType);
 
+    void EmitUnboxEnum(const ir::AstNode *node);
     void LoadConstantObject(const ir::Expression *node, const checker::Type *type);
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);
     void AppendString(const ir::Expression *binExpr, VReg builder);
