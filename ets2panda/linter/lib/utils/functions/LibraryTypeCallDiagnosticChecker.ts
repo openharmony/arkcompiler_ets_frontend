@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+/* eslint prefer-named-capture-group: 0 */
+
 import type * as ts from 'typescript';
 import type { DiagnosticChecker } from './DiagnosticChecker';
 

@@ -73,6 +73,7 @@ function countProblems(linter: TypeScriptLinter | InteropTypescriptLinter): [num
       case ProblemSeverity.WARNING:
         warningNodes += linter.nodeCounters[i];
         break;
+      default:
     }
   }
 
@@ -173,6 +174,7 @@ function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter | Interop
   };
 }
 
+// eslint-disable-next-line max-lines-per-function, max-params
 function countProblemFiles(
   nodeCounters: number[],
   filesNumber: number,
@@ -193,9 +195,11 @@ function countProblemFiles(
       case ProblemSeverity.WARNING:
         warningNodes += nodeCounterDiff;
         break;
+      default:
     }
   }
   if (errorNodes > 0) {
+    // eslint-disable-next-line no-param-reassign
     filesNumber++;
     const errorRate = (errorNodes / fileNodes * 100).toFixed(2);
     const warningRate = (warningNodes / fileNodes * 100).toFixed(2);

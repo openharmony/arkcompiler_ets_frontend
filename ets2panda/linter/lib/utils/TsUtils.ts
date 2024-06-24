@@ -268,6 +268,7 @@ export class TsUtils {
 
   // does something similar to relatedByInheritanceOrIdentical function
   isOrDerivedFrom(tsType: ts.Type, checkType: CheckType, checkedBaseTypes?: Set<ts.Type>): boolean {
+    // eslint-disable-next-line no-param-reassign
     tsType = TsUtils.reduceReference(tsType);
 
     if (checkType.call(this, tsType)) {
@@ -279,6 +280,7 @@ export class TsUtils {
     }
 
     // Avoid type recursion in heritage by caching checked types.
+    // eslint-disable-next-line no-param-reassign
     (checkedBaseTypes ||= new Set<ts.Type>()).add(tsType);
 
     for (const tsTypeDecl of tsType.symbol.declarations) {
@@ -513,7 +515,9 @@ export class TsUtils {
 
   // Returns true if typeA is a subtype of typeB
   relatedByInheritanceOrIdentical(typeA: ts.Type, typeB: ts.Type): boolean {
+    // eslint-disable-next-line no-param-reassign
     typeA = TsUtils.reduceReference(typeA);
+    // eslint-disable-next-line no-param-reassign
     typeB = TsUtils.reduceReference(typeB);
 
     if (typeA === typeB || this.isObject(typeB)) {
@@ -571,7 +575,9 @@ export class TsUtils {
 
   // return true if two class types are not related by inheritance and structural identity check is needed
   needToDeduceStructuralIdentity(lhsType: ts.Type, rhsType: ts.Type, rhsExpr: ts.Expression): boolean {
+    // eslint-disable-next-line no-param-reassign
     lhsType = this.getNonNullableType(lhsType);
+    // eslint-disable-next-line no-param-reassign
     rhsType = this.getNonNullableType(rhsType);
     if (this.isLibraryType(lhsType)) {
       return false;
@@ -728,6 +734,7 @@ export class TsUtils {
     if (!type) {
       return false;
     }
+    // eslint-disable-next-line no-param-reassign
     type = TsUtils.reduceReference(type);
     return (
       type.isClassOrInterface() &&
@@ -796,6 +803,7 @@ export class TsUtils {
       return false;
     }
     // Always check with the non-nullable variant of lhs type.
+    // eslint-disable-next-line no-param-reassign
     lhsType = this.getNonNullableType(lhsType);
     if (lhsType.isUnion() && this.isObjectLiteralAssignableToUnion(lhsType, rhsExpr)) {
       return true;
@@ -820,6 +828,7 @@ export class TsUtils {
     // For Partial<T>, Required<T>, Readonly<T> types, validate their argument type.
     if (this.isStdPartialType(lhsType) || this.isStdRequiredType(lhsType) || this.isStdReadonlyType(lhsType)) {
       if (lhsType.aliasTypeArguments && lhsType.aliasTypeArguments.length === 1) {
+        // eslint-disable-next-line no-param-reassign
         lhsType = lhsType.aliasTypeArguments[0];
       } else {
         return false;
@@ -841,6 +850,7 @@ export class TsUtils {
 
   private isDynamicObjectAssignedToStdType(lhsType: ts.Type, rhsExpr: ts.Expression): boolean {
     if (isStdLibraryType(lhsType) || TsUtils.isPrimitiveType(lhsType)) {
+      // eslint-disable-next-line no-nested-ternary
       const rhsSym = ts.isCallExpression(rhsExpr) ?
         this.getSymbolOfCallExpression(rhsExpr) :
         this.useSdkLogic ?
@@ -867,6 +877,7 @@ export class TsUtils {
 
   getPropertySymbol(type: ts.Type, prop: ts.PropertyAssignment): ts.Symbol | undefined {
     const propNameSymbol = this.tsTypeChecker.getSymbolAtLocation(prop.name);
+    // eslint-disable-next-line no-nested-ternary
     const propName = propNameSymbol ?
       ts.symbolName(propNameSymbol) :
       ts.isMemberName(prop.name) ?
@@ -1312,6 +1323,7 @@ export class TsUtils {
      * Check the non-nullable version of type to eliminate 'undefined' type
      * from the union type elements.
      */
+    // eslint-disable-next-line no-param-reassign
     type = type.getNonNullableType();
 
     if (type.isUnion()) {
@@ -1784,6 +1796,7 @@ export class TsUtils {
      * symbol in case of type reference node.
      */
 
+    // eslint-disable-next-line no-param-reassign
     typeNode = TsUtils.unwrapParenthesizedTypeNode(typeNode);
 
     // Only a sendable union type is supported
@@ -2075,6 +2088,7 @@ export class TsUtils {
     }
 
     if (isFromPrivateIdentifierOrSdk) {
+      // eslint-disable-next-line no-param-reassign
       classType ??= this.tsTypeChecker.getTypeAtLocation(tsClassLikeDecl);
       const proceedClassTypeResult = this.proceedClassType(targetMember, classType, isFromPrivateIdentifier);
       if (proceedClassTypeResult) {

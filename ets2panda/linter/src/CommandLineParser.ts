@@ -106,6 +106,7 @@ export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions 
   program.parse(cmdArgs);
   if (responseFile !== '') {
     try {
+      // eslint-disable-next-line no-param-reassign
       commandLineArgs = fs.
         readFileSync(responseFile.slice(1)).
         toString().
