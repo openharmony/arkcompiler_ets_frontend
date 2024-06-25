@@ -20,6 +20,7 @@
 #include "varbinder/recordTable.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsReExportDeclaration.h"
+#include "parser/program/program.h"
 #include "util/importPathManager.h"
 
 namespace ark::es2panda::varbinder {
@@ -46,8 +47,7 @@ public:
           reExportImports_(Allocator()->Adapter()),
           lambdaObjects_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
-          importSpecifiers_(Allocator()->Adapter()),
-          moduleList_(Allocator()->Adapter())
+          importSpecifiers_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -207,18 +207,23 @@ public:
         defaultExport_ = defaultExport;
     }
 
-    void SetModuleList(const ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> &moduleList)
+    /* Returns the list of programs belonging to the same compilation unit based on a program path */
+    ArenaVector<parser::Program *> GetProgramList(const util::StringView &path) const
     {
-        moduleList_ = moduleList;
-    }
+        for (const auto &extRecords : globalRecordTable_.Program()->ExternalSources()) {
+            for (const auto &program : extRecords.second) {
+                if (program->AbsoluteName() == path) {
+                    return extRecords.second;
+                }
 
-    util::ImportPathManager::ModuleInfo GetModuleInfo(const util::StringView &path) const
-    {
-        auto it = moduleList_.find(path);
+                // in case of importing a package folder, the path could not be resolved to a specific file
+                if (program->IsPackageModule() && program->SourceFileFolder() == path) {
+                    return extRecords.second;
+                }
+            }
+        }
 
-        ASSERT(it != moduleList_.end());
-
-        return it->second;
+        return ArenaVector<parser::Program *>(Allocator()->Adapter());
     }
 
     bool IsDynamicModuleVariable(const Variable *var) const;
@@ -251,7 +256,6 @@ private:
     DynamicImportVariables dynamicImportVars_;
     ir::Identifier *thisParam_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
-    ArenaMap<util::StringView, util::ImportPathManager::ModuleInfo> moduleList_;
     ir::AstNode *defaultExport_ {};
 };
 

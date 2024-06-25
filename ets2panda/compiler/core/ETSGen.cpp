@@ -15,6 +15,7 @@
 
 #include "ETSGen.h"
 
+#include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classDefinition.h"
 #include "ir/statement.h"
@@ -244,13 +245,13 @@ void ETSGen::LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETS
 util::StringView ETSGen::FormDynamicModulePropReference(const ir::ETSImportDeclaration *import)
 {
     std::stringstream ss;
-    auto pkgName = VarBinder()->Program()->GetPackageName();
-    if (!pkgName.Empty()) {
-        ss << pkgName << '.';
+
+    if (!VarBinder()->Program()->OmitModuleName()) {
+        ss << VarBinder()->Program()->ModuleName() << compiler::Signatures::METHOD_SEPARATOR;
     }
-    ss << compiler::Signatures::DYNAMIC_MODULE_CLASS;
-    ss << '.';
-    ss << import->AssemblerName();
+
+    ss << compiler::Signatures::DYNAMIC_MODULE_CLASS << compiler::Signatures::METHOD_SEPARATOR
+       << import->AssemblerName();
 
     return util::UString(ss.str(), Allocator()).View();
 }
@@ -707,11 +708,12 @@ VReg ETSGen::GetThisReg() const
     return res.variable->AsLocalVariable()->Vreg();
 }
 
-void ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] const checker::Type *type)
+const checker::Type *ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node,
+                                              [[maybe_unused]] const checker::Type *type)
 {
     if (type->IsETSAsyncFuncReturnType()) {
         LoadDefaultValue(node, type->AsETSAsyncFuncReturnType()->GetPromiseTypeArg());
-        return;
+        return type;
     }
 
     if (type->IsETSUnionType()) {
@@ -732,6 +734,8 @@ void ETSGen::LoadDefaultValue([[maybe_unused]] const ir::AstNode *node, [[maybe_
         const auto ttctx = TargetTypeContext(this, type);
         LoadAccumulatorInt(node, 0);
     }
+
+    return type;
 }
 
 void ETSGen::EmitReturnVoid(const ir::AstNode *node)

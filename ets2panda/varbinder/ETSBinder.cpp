@@ -55,7 +55,6 @@
 #include "ir/module/importDeclaration.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/expressions/literals/stringLiteral.h"
-#include "parser/program/program.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "checker/types/type.h"
@@ -476,7 +475,7 @@ static const util::StringView &GetPackageName(varbinder::Variable *var)
 
     ASSERT(scope->Node()->IsETSScript());
 
-    return scope->Node()->AsETSScript()->Program()->GetPackageName();
+    return scope->Node()->AsETSScript()->Program()->ModuleName();
 }
 
 void AddOverloadFlag(bool isStdLib, varbinder::Variable *var, varbinder::Variable *variable)
@@ -761,14 +760,18 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
         return mainModule;
     }
 
-    const auto &extRecords = globalRecordTable_.Program()->ExternalSources();
-    auto [name, _] = GetModuleInfo(sourceName);
-    auto res = extRecords.find(name);
-    if (res == extRecords.end()) {
+    auto programList = GetProgramList(sourceName);
+    if (programList.empty()) {
+        // NOTE(rsipka): it is not clear that an error should be thrown in these cases
+        if (ark::os::file::File::IsDirectory(sourceName.Mutf8())) {
+            ThrowError(importPath->Start(),
+                       "Cannot find index.[ets|ts] or package module in folder: " + importPath->Str().Mutf8());
+        }
+
         ThrowError(importPath->Start(), "Cannot find import: " + importPath->Str().Mutf8());
     }
 
-    return res->second;
+    return programList;
 }
 
 void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
@@ -946,12 +949,13 @@ void ETSBinder::BuildLambdaObjectName(const ir::AstNode *refNode)
 
     util::StringView assemblerName(lambdaClass->Ident()->Name());
     auto *program = static_cast<const ir::ETSScript *>(refNode->GetTopStatement())->Program();
-    util::StringView prefix = program->GetPackageName();
-    if (!prefix.Empty()) {
-        util::UString fullPath(prefix, Allocator());
-        fullPath.Append('.');
-        fullPath.Append(assemblerName);
-        assemblerName = fullPath.View();
+    util::StringView moduleName = program->ModuleName();
+
+    if (!program->OmitModuleName()) {
+        assemblerName =
+            util::UString(moduleName.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() + assemblerName.Mutf8(),
+                          Allocator())
+                .View();
     }
 
     checker::ETSObjectType *lambdaObject = lambdaClass->TsType()->AsETSObjectType();

@@ -165,7 +165,7 @@ static bool IsValidTypeForBinaryOp(const ir::AstNode *ast, bool isBitwise)
                !typedAst->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_BOOLEAN);
     }
 
-    return typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC) ||
+    return typedAst->TsType()->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::NUMBER_LITERAL) ||
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::BIGINT) ||
            typedAst->TsType()->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL);
@@ -223,7 +223,7 @@ bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDec
     if (currentProgram == nullptr) {
         return false;
     }
-    util::StringView packageNameCurrent = currentProgram->GetPackageName();
+    util::StringView moduleNameCurrent = currentProgram->ModuleName();
     // NOTE(orlovskymaxim) This relies on the fact, that GetTopStatement has no bugs, that is not the case for now
     if (!objTypeDeclNode->GetTopStatement()->IsETSScript()) {
         return false;
@@ -233,9 +233,8 @@ bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *objTypeDec
     if (objectProgram == nullptr) {
         return false;
     }
-    util::StringView packageNameObject = objectProgram->GetPackageName();
-    return currentTopStatement == objectTopStatement ||
-           (packageNameCurrent == packageNameObject && !packageNameCurrent.Empty());
+    util::StringView moduleNameObject = objectProgram->ModuleName();
+    return currentTopStatement == objectTopStatement || moduleNameCurrent == moduleNameObject;
 }
 
 static const checker::Type *GetClassDefinitionType(const ir::AstNode *ast)
@@ -413,6 +412,34 @@ static bool ValidateMethodAccess(const ir::MemberExpression *memberExpression, c
     return ret;
 }
 
+class VariableNameIdentifierNameSame {
+public:
+    explicit VariableNameIdentifierNameSame([[maybe_unused]] ArenaAllocator &allocator) {}
+
+    [[nodiscard]] CheckResult operator()(CheckContext &ctx, const ir::AstNode *ast)
+    {
+        if (!ast->IsIdentifier()) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        const auto *id = ast->AsIdentifier();
+        const auto variable = ast->AsIdentifier()->Variable();
+        if (variable == nullptr || variable->Declaration() == nullptr || variable->Declaration()->Node() == nullptr) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        const auto variableNode = variable->Declaration()->Node();
+        // NOTE(psaykerone): skip because, this exceptions need to be fixed in checker and lowering
+        if (variableNode->IsExported() || variableNode->IsExportedType() || variableNode->IsDefaultExported() ||
+            id->Name().Utf8().find("field") == 0 || variable->Name().Utf8().find("field") == 0) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        if (id->Name() == variable->Name()) {
+            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+        }
+        ctx.AddCheckMessage("IDENTIFIER_NAME_DIFFERENCE", *id, id->Start());
+        return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
+    }
+};
+
 class NodeHasParent {
 public:
     explicit NodeHasParent([[maybe_unused]] ArenaAllocator &allocator) {}
@@ -519,12 +546,6 @@ private:
             }
 
             parent = parent->Parent();
-        }
-
-        // NOTE(kkonkuznetsov): skip labels identifiers
-        if (ast->Parent() != nullptr && (ast->Parent()->IsLabelledStatement() || ast->Parent()->IsBreakStatement() ||
-                                         ast->Parent()->IsContinueStatement())) {
-            return true;
         }
 
         // NOTE(kkonkuznetsov): skip reexport declarations
@@ -787,6 +808,16 @@ private:
             return true;
         }
 
+        if (ast->IsLabelledStatement()) {
+            // Labels are attached to loop scopes,
+            // however label identifier is outside of loop.
+            // Example:
+            //
+            // loop: for (let i = 0; i < 10; i++) {
+            // }
+            return true;
+        }
+
         // NOTE(kkonkuznetsov): skip parameters in async functions
         if (ast->Parent() != nullptr && ast->Parent()->IsScriptFunction()) {
             auto scriptFunction = ast->Parent()->AsScriptFunction();
@@ -900,17 +931,20 @@ public:
         if (!maybeVar) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
+
         const auto var = *maybeVar;
         const auto scope = var->GetScope();
         if (scope == nullptr) {
             // already checked
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
+
         const auto encloseScope = scope->EnclosingVariableScope();
         if (encloseScope == nullptr) {
             ctx.AddCheckMessage("NO_ENCLOSING_VAR_SCOPE", *ast, ast->Start());
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
+
         const auto node = scope->Node();
         auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
         if (!IsContainedIn(ast, node)) {
@@ -976,6 +1010,16 @@ private:
             }
 
             parent = parent->Parent();
+        }
+
+        if (ast->Parent()->IsLabelledStatement()) {
+            // Labels are attached to loop scopes,
+            // however label identifier is outside of loop.
+            // Example:
+            //
+            // loop: for (let i = 0; i < 10; i++) {
+            // }
+            return true;
         }
 
         // NOTE(kkonkuznetsov): skip, something with unions
@@ -1355,6 +1399,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<ArithmeticOperationValid>(allocator, "ArithmeticOperationValid");
     AddInvariant<SequenceExpressionHasLastType>(allocator, "SequenceExpressionHasLastType");
     AddInvariant<ReferenceTypeAnnotationIsNull>(allocator, "ReferenceTypeAnnotationIsNull");
+    AddInvariant<VariableNameIdentifierNameSame>(allocator, "VariableNameIdentifierNameSame");
 }
 
 Messages ASTVerifier::VerifyFull(const ir::AstNode *ast)

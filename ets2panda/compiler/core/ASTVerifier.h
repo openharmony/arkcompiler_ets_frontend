@@ -110,6 +110,7 @@ public:
             accumulatedChecks_.insert("VariableHasEnclosingScopeForAll");
             accumulatedChecks_.insert("ModifierAccessValidForAll");
             accumulatedChecks_.insert("ImportExportAccessValid");
+            accumulatedChecks_.insert("VariableNameIdentifierNameSameForAll");
         }
     }
 

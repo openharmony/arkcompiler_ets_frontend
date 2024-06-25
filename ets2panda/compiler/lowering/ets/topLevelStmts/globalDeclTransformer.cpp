@@ -27,9 +27,9 @@ void GlobalDeclTransformer::FilterDeclarations(ArenaVector<ir::Statement *> &stm
 }
 
 GlobalDeclTransformer::ResultT GlobalDeclTransformer::TransformStatements(const ArenaVector<ir::Statement *> &stmts,
-                                                                          bool isPackage)
+                                                                          bool addInitializer)
 {
-    isPackage_ = isPackage;
+    addInitializer_ = addInitializer;
     result_.classProperties.clear();
     result_.initStatements.clear();
     for (auto stmt : stmts) {
@@ -84,7 +84,7 @@ ir::ExpressionStatement *GlobalDeclTransformer::InitTopLevelProperty(ir::ClassPr
 {
     ir::ExpressionStatement *initStmt = nullptr;
     const auto initializer = classProperty->Value();
-    if (!isPackage_ && !classProperty->IsConst() && initializer != nullptr &&
+    if (addInitializer_ && !classProperty->IsConst() && initializer != nullptr &&
         !initializer->IsArrowFunctionExpression()) {
         auto *ident = RefIdent(classProperty->Id()->Name());
         ident->SetRange(classProperty->Id()->Range());

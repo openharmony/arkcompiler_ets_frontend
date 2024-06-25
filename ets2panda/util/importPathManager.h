@@ -39,17 +39,11 @@ public:
         bool isParsed;
     };
 
-    struct ModuleInfo {
-        StringView moduleName;
-        bool isPackageModule;
-    };
-
     ImportPathManager(ark::ArenaAllocator *allocator, std::shared_ptr<ArkTsConfig> arktsConfig, std::string stdLib)
         : allocator_(allocator),
           arktsConfig_(std::move(arktsConfig)),
           stdLib_(std::move(stdLib)),
-          parseList_(allocator->Adapter()),
-          moduleList_(allocator->Adapter())
+          parseList_(allocator->Adapter())
     {
     }
 
@@ -62,8 +56,6 @@ public:
     void AddToParseList(const StringView &path, bool isDefaultImport);
     const ArenaVector<ParseInfo> &ParseList();
     ImportData GetImportData(const util::StringView &path, const ScriptExtension &extension) const;
-    void InsertModuleInfo(const util::StringView &path, const ModuleInfo &moduleInfo);
-    const ArenaMap<StringView, ModuleInfo> &ModuleList() const;
     void MarkAsParsed(const StringView &path);
 
 private:
@@ -78,7 +70,6 @@ private:
     std::shared_ptr<ArkTsConfig> arktsConfig_ {nullptr};
     std::string stdLib_ {};
     ArenaVector<ParseInfo> parseList_;
-    ArenaMap<StringView, ModuleInfo> moduleList_;
     std::string_view pathDelimiter_ {ark::os::file::File::GetPathDelim()};
 };
 

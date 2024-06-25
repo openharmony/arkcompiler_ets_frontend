@@ -81,14 +81,18 @@ void RecordLowering::CheckDuplicateKey(ir::ObjectExpression *expr, public_lib::C
                     continue;
                 }
                 ctx->checker->AsETSChecker()->ThrowTypeError(
-                    "An object literal cannot mulitiple properties with same name", expr->Start());
+                    "An object literal cannot multiple properties with same name", expr->Start());
             }
             case ir::AstNodeType::STRING_LITERAL: {
                 if (keySet.insert(prop->Key()->AsStringLiteral()->Str()).second) {
                     continue;
                 }
                 ctx->checker->AsETSChecker()->ThrowTypeError(
-                    "An object literal cannot mulitiple properties with same name", expr->Start());
+                    "An object literal cannot multiple properties with same name", expr->Start());
+            }
+            case ir::AstNodeType::IDENTIFIER: {
+                ctx->checker->AsETSChecker()->ThrowTypeError("Object literal may only specify known properties",
+                                                             expr->Start());
             }
             default: {
                 UNREACHABLE();

@@ -214,7 +214,7 @@ void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)
     RelationTarget(relation, source, relFn);
 }
 
-static auto constexpr ETS_NORMALIZABLE_NUMERIC = TypeFlag(TypeFlag::ETS_NUMERIC & ~TypeFlag::CHAR);
+static auto constexpr ETS_NORMALIZABLE_NUMERIC = TypeFlag(TypeFlag::ETS_NUMERIC);
 
 static Type *LargestNumeric(Type *t1, Type *t2)
 {
@@ -674,5 +674,20 @@ bool ETSUnionType::HasUndefinedType() const
         }
     }
     return false;
+}
+
+bool ETSUnionType::HasType(Type *type) const
+{
+    for (const auto &cType : constituentTypes_) {
+        if (cType == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ETSUnionType::HasNullishType(const ETSChecker *checker) const
+{
+    return HasType(checker->GlobalETSNullType()) || HasType(checker->GlobalETSUndefinedType());
 }
 }  // namespace ark::es2panda::checker

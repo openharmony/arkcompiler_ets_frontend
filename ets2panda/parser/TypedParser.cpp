@@ -844,6 +844,10 @@ ArenaVector<ir::TSClassImplements *> TypedParser::ParseClassImplementClause()
             continue;
         }
 
+        if (InAmbientContext()) {
+            break;
+        }
+
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
             ThrowSyntaxError("',' expected");
         }

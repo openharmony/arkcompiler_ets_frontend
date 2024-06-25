@@ -829,6 +829,17 @@ void ParserImpl::ValidateRestParameter(ir::Expression *param)
     }
 }
 
+bool ParserImpl::ValidateBreakLabel(util::StringView label)
+{
+    return context_.FindLabel(label) != nullptr;
+}
+
+bool ParserImpl::ValidateContinueLabel(util::StringView label)
+{
+    const ParserContext *labelCtx = context_.FindLabel(label);
+    return labelCtx != nullptr && ((labelCtx->Status() & ParserStatus::IN_ITERATION) != 0);
+}
+
 ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 {
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {

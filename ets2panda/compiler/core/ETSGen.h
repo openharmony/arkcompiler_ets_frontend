@@ -87,7 +87,7 @@ public:
     void LoadThis(const ir::AstNode *node);
     [[nodiscard]] VReg GetThisReg() const;
 
-    void LoadDefaultValue(const ir::AstNode *node, const checker::Type *type);
+    const checker::Type *LoadDefaultValue(const ir::AstNode *node, const checker::Type *type);
     void EmitReturnVoid(const ir::AstNode *node);
     void ReturnAcc(const ir::AstNode *node);
 

@@ -73,7 +73,9 @@ void GlobalClassHandler::InitGlobalClass(const ArenaVector<parser::Program *> &p
         if (program->IsEntryPoint() && !mainExists && MainFunctionExists(program->Ast()->Statements())) {
             mainExists = true;
         }
-        auto stmts = MakeGlobalStatements(program->Ast(), globalClass, !program->GetPackageName().Empty());
+
+        // NOTE(rsipka): unclear naming, OmitModuleName() used to determine the entry point without --ets-module option
+        auto stmts = MakeGlobalStatements(program->Ast(), globalClass, program->OmitModuleName());
         if (!topLevelStatementsExist && !stmts.empty()) {
             topLevelStatementsExist = true;
         }
@@ -195,10 +197,11 @@ ir::ClassStaticBlock *GlobalClassHandler::CreateCCtor(const ArenaVector<ir::AstN
 }
 
 ArenaVector<ir::Statement *> GlobalClassHandler::MakeGlobalStatements(ir::BlockStatement *globalStmts,
-                                                                      ir::ClassDefinition *classDef, bool isPackage)
+                                                                      ir::ClassDefinition *classDef,
+                                                                      bool addInitializer)
 {
     auto globalDecl = GlobalDeclTransformer(allocator_);
-    auto statements = globalDecl.TransformStatements(globalStmts->Statements(), isPackage);
+    auto statements = globalDecl.TransformStatements(globalStmts->Statements(), addInitializer);
     classDef->AddProperties(util::Helpers::ConvertVector<ir::AstNode>(statements.classProperties));
     globalDecl.FilterDeclarations(globalStmts->Statements());
     return std::move(statements.initStatements);
@@ -235,7 +238,8 @@ void GlobalClassHandler::InitCallToCCTOR(parser::Program *program, const ArenaVe
     globalDecl->SetParent(program->Ast());
     InitGlobalClass(globalClass, program->Kind());
     auto &globalBody = globalClass->Body();
-    if (program->GetPackageName().Empty() && program->Kind() != parser::ScriptKind::STDLIB) {
+    // NOTE(rsipka): unclear call, OmitModuleName() used to determine the entry points without --ets-module option
+    if (program->OmitModuleName() && program->Kind() != parser::ScriptKind::STDLIB) {
         ir::MethodDefinition *initMethod = CreateAndFillTopLevelMethod(initStatements, allocator_, INIT_NAME);
         ir::MethodDefinition *mainMethod = nullptr;
         if (!mainExists && topLevelStatementsExist) {

@@ -373,6 +373,8 @@ protected:
     ir::Statement *ParseExpressionStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
     ir::LabelledStatement *ParseLabelledStatement(const lexer::LexerPosition &pos);
     virtual void ValidateRestParameter(ir::Expression *param);
+    virtual bool ValidateBreakLabel(util::StringView label);
+    virtual bool ValidateContinueLabel(util::StringView label);
     bool InAmbientContext();
 
     ir::MethodDefinition *BuildImplicitConstructor(ir::ClassDefinitionModifiers modifiers,

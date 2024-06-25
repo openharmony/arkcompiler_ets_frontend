@@ -218,7 +218,8 @@ void ETSEmitter::GenAnnotation()
 
     for (auto *signature : globalRecordTable->Signatures()) {
         auto *scriptFunc = signature->Node()->AsScriptFunction();
-        auto func = GenScriptFunction(Context(), scriptFunc);
+        auto func = scriptFunc->Declare() ? GenExternalFunction(scriptFunc->Signature(), scriptFunc->IsConstructor())
+                                          : GenScriptFunction(Context(), scriptFunc);
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));
@@ -348,7 +349,7 @@ void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *method
 void ETSEmitter::GenClassField(const ir::ClassProperty *field, pandasm::Record &classRecord, bool external)
 {
     GenField(field->TsType(), field->Id()->Name(), field->Value(), TranslateModifierFlags(field->Modifiers()),
-             classRecord, external);
+             classRecord, external || field->IsDeclare());
 }
 
 void ETSEmitter::GenField(const checker::Type *tsType, const util::StringView &name, const ir::Expression *value,

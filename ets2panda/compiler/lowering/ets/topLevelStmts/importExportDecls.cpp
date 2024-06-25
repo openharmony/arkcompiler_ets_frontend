@@ -22,7 +22,6 @@ namespace ark::es2panda::compiler {
 void ImportExportDecls::ParseDefaultSources()
 {
     auto imports = parser_->ParseDefaultSources(DEFAULT_IMPORT_SOURCE_FILE, defaultImportSource_);
-    varbinder_->SetModuleList(parser_->ModuleList());
     varbinder_->SetDefaultImports(std::move(imports));
 }
 

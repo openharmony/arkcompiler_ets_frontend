@@ -298,7 +298,8 @@ std::tuple<Type *, bool> ETSChecker::ApplyBinaryOperatorPromotion(Type *left, Ty
     };
 
     if (doPromotion) {
-        if (unboxedL->HasTypeFlag(TypeFlag::ETS_NUMERIC) && unboxedR->HasTypeFlag(TypeFlag::ETS_NUMERIC)) {
+        if (unboxedL->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+            unboxedR->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
             return numericPromotion();
         }
 
@@ -542,8 +543,9 @@ checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayEx
         for (auto element : elements) {
             auto const eType = element->Check(this);
             auto const primEType = ETSBuiltinTypeAsPrimitiveType(eType);
-            if (primEType != nullptr && primType != nullptr && primEType->HasTypeFlag(TypeFlag::ETS_NUMERIC) &&
-                primType->HasTypeFlag(TypeFlag::ETS_NUMERIC)) {
+            if (primEType != nullptr && primType != nullptr &&
+                primEType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
+                primType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
                 type = GlobalDoubleType();
             } else if (IsTypeIdenticalTo(type, eType)) {
                 continue;
@@ -634,6 +636,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     checker::Type *annotationType = nullptr;
 
     const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
+    const bool isReadonly = (flags & ir::ModifierFlags::READONLY) != 0;
+    const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
 
     if (typeAnnotation != nullptr) {
         annotationType = typeAnnotation->GetType(this);
@@ -708,7 +712,9 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
         AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
                           {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
-        if (isConst && initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) &&
+        // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
+        // are assigned with CONSTANT, which would not be correct. (After feature supported)
+        if (isConst && (!isReadonly || isStatic) && initType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) &&
             annotationType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
             bindingVar->SetTsType(init->TsType());
         }
@@ -1221,25 +1227,23 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
 {
     auto *etsBinder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
-    auto extRecords = etsBinder->GetGlobalRecordTable()->Program()->ExternalSources();
-    auto [name, isPackageModule] = etsBinder->GetModuleInfo(importPath);
-    auto res = extRecords.find(name);
-    ASSERT(res != extRecords.end());
+    auto programList = etsBinder->GetProgramList(importPath);
+    ASSERT(!programList.empty());
 
     // Check imported properties before assigning them to module object
-    res->second.front()->Ast()->Check(this);
+    programList.front()->Ast()->Check(this);
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_FIELD>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticFieldScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_METHOD>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
-        moduleObjType, importDecl, res->second.front()->GlobalClassScope()->TypeAliasScope()->Bindings());
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->TypeAliasScope()->Bindings());
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *moduleObjType)
@@ -1486,32 +1490,34 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
     return {""};
 }
 
-const ir::AstNode *ETSChecker::FindJumpTarget(const ir::AstNode *node) const
+const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNode *node)
 {
     ASSERT(node->IsBreakStatement() || node->IsContinueStatement());
 
     bool const isContinue = node->IsContinueStatement();
-    auto const *const target = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
 
+    // Look for label
+    auto label = isContinue ? node->AsContinueStatement()->Ident() : node->AsBreakStatement()->Ident();
+    if (label != nullptr) {
+        auto var = label->Variable();
+        if (var != nullptr && var->Declaration()->IsLabelDecl()) {
+            return var->Declaration()->Node();
+        }
+
+        // Failed to resolve variable for label
+        ThrowError(label);
+    }
+
+    // No label, find the nearest loop or switch statement
     const auto *iter = node->Parent();
-
     while (iter != nullptr) {
         switch (iter->Type()) {
-            case ir::AstNodeType::LABELLED_STATEMENT: {
-                if (const auto *labelled = iter->AsLabelledStatement(); labelled->Ident()->Name() == target->Name()) {
-                    return isContinue ? labelled->GetReferencedStatement() : labelled;
-                }
-                break;
-            }
             case ir::AstNodeType::DO_WHILE_STATEMENT:
             case ir::AstNodeType::WHILE_STATEMENT:
             case ir::AstNodeType::FOR_UPDATE_STATEMENT:
             case ir::AstNodeType::FOR_OF_STATEMENT:
             case ir::AstNodeType::SWITCH_STATEMENT: {
-                if (target == nullptr) {
-                    return iter;
-                }
-                break;
+                return iter;
             }
             default: {
                 break;
@@ -1574,7 +1580,6 @@ Type *ETSChecker::MaybeBoxExpression(ir::Expression *expr)
     if (promoted != expr->TsType()) {
         expr->AddBoxingUnboxingFlags(GetBoxingFlag(promoted));
     }
-    Relation()->SetNode(expr);
     return promoted;
 }
 
@@ -2493,17 +2498,19 @@ ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration
 {
     auto importPath = importDecl->ResolvedSource()->Str();
 
-    auto [moduleName, isPackageModule] = VarBinder()->AsETSBinder()->GetModuleInfo(importPath);
+    auto programList = VarBinder()->AsETSBinder()->GetProgramList(importPath);
+    ASSERT(!programList.empty());
 
-    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(moduleName);
-
+    std::vector<util::StringView> syntheticNames = GetNameForSynteticObjectType(programList.front()->ModuleName());
     ASSERT(!syntheticNames.empty());
 
     auto assemblerName = syntheticNames[0];
-    if (!isPackageModule) {
-        assemblerName =
-            util::UString(assemblerName.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL), Allocator())
-                .View();
+    if (!programList.front()->OmitModuleName()) {
+        assemblerName = util::UString(assemblerName.Mutf8()
+                                          .append(compiler::Signatures::METHOD_SEPARATOR)
+                                          .append(compiler::Signatures::ETS_GLOBAL),
+                                      Allocator())
+                            .View();
     }
 
     auto *moduleObjectType = Allocator()->New<checker::ETSObjectType>(

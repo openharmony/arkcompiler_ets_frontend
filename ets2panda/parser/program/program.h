@@ -185,14 +185,26 @@ public:
         resolvedFilePath_ = util::UString(sourceFile.resolvedPath, Allocator()).View();
     }
 
-    const util::StringView &GetPackageName() const
+    void SetModuleInfo(const util::StringView &name, bool isPackage, bool omitName = false)
     {
-        return packageName_;
+        moduleInfo_.moduleName = name;
+        moduleInfo_.isPackageModule = isPackage;
+        moduleInfo_.omitModuleName = omitName;
     }
 
-    void SetPackageName(util::StringView packageName)
+    const util::StringView &ModuleName() const
     {
-        packageName_ = packageName;
+        return moduleInfo_.moduleName;
+    }
+
+    bool IsPackageModule() const
+    {
+        return moduleInfo_.isPackageModule;
+    }
+
+    bool OmitModuleName() const
+    {
+        return moduleInfo_.omitModuleName;
     }
 
     const bool &IsEntryPoint() const
@@ -219,6 +231,19 @@ public:
     bool NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning);
 
 private:
+    struct ModuleInfo {
+        explicit ModuleInfo(util::StringView name = util::StringView(), bool isPackage = false, bool omitName = false)
+            : moduleName(name), isPackageModule(isPackage), omitModuleName(omitName)
+        {
+        }
+
+        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+        util::StringView moduleName;
+        bool isPackageModule;
+        bool omitModuleName;  // unclear naming, used to determine the entry point without --ets-module option
+        // NOLINTEND(misc-non-private-member-variables-in-classes)
+    };
+
     ArenaAllocator *allocator_ {};
     varbinder::VarBinder *varbinder_ {};
     ir::BlockStatement *ast_ {};
@@ -226,13 +251,13 @@ private:
     util::StringView sourceCode_ {};
     util::Path sourceFile_ {};
     util::StringView sourceFileFolder_ {};
-    util::StringView packageName_ {};
     util::StringView resolvedFilePath_ {};
     ExternalSource externalSources_;
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     bool entryPoint_ {};
     ETSNolintsCollectionMap etsnolintCollection_;
+    ModuleInfo moduleInfo_ {};
 };
 }  // namespace ark::es2panda::parser
 

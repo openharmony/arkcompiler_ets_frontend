@@ -406,7 +406,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_PLUS: {
-            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
                 checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
                                         expr->Argument()->Start());
             }
@@ -421,7 +421,7 @@ void SetTsTypeForUnaryExpression(ETSChecker *checker, ir::UnaryExpression *expr,
             break;
         }
         case lexer::TokenType::PUNCTUATOR_TILDE: {
-            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+            if (operandType == nullptr || !operandType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
                 checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
                                         expr->Argument()->Start());
             }

@@ -136,7 +136,7 @@ void TSDeclGen::GenType(const checker::Type *checkerType)
     DebugPrint(std::string("  Converting type: ") + GetDebugTypeName(checkerType) + " (" + var_name + ")");
 #endif
 
-    if (checkerType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+    if (checkerType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
         Out("number");
         return;
     }

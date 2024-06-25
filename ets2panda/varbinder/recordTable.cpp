@@ -64,17 +64,18 @@ BoundContext::~BoundContext()
 
 util::StringView BoundContext::FormRecordName() const
 {
-    const auto &packageName = recordTable_->program_->GetPackageName();
     if (prev_ == nullptr) {
-        if (packageName.Empty()) {
+        if (recordTable_->program_->OmitModuleName()) {
             return recordIdent_->Name();
         }
 
-        util::UString recordName(recordTable_->program_->Allocator());
-        recordName.Append(packageName);
-        recordName.Append(compiler::Signatures::METHOD_SEPARATOR);
-        recordName.Append(recordIdent_->Name());
-        return recordName.View();
+        const auto &moduleName = recordTable_->program_->ModuleName();
+
+        // concatenate the module name with the record ident
+        return util::UString(moduleName.Mutf8() + compiler::Signatures::METHOD_SEPARATOR.data() +
+                                 recordIdent_->Name().Mutf8(),
+                             recordTable_->program_->Allocator())
+            .View();
     }
 
     util::UString recordName(recordTable_->program_->Allocator());

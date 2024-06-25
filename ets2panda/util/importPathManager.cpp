@@ -198,17 +198,6 @@ ImportPathManager::ImportData ImportPathManager::GetImportData(const util::Strin
     return {ToLanguage(extension), path.Mutf8(), true};
 }
 
-void ImportPathManager::InsertModuleInfo(const util::StringView &path,
-                                         const util::ImportPathManager::ModuleInfo &moduleInfo)
-{
-    moduleList_.insert({path, moduleInfo});
-}
-
-const ArenaMap<StringView, ImportPathManager::ModuleInfo> &ImportPathManager::ModuleList() const
-{
-    return moduleList_;
-}
-
 void ImportPathManager::MarkAsParsed(const StringView &path)
 {
     for (auto &parseInfo : parseList_) {

@@ -102,7 +102,7 @@ bool ETSDynamicType::IsConvertible(Type const *target)
 {
     return target->IsETSDynamicType() || target->IsETSObjectType() || target->IsETSArrayType() ||
            target->IsETSFunctionType() ||
-           target->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
+           target->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
 }
 
 ETSFunctionType *ETSDynamicType::CreateETSFunctionType(const util::StringView &name) const

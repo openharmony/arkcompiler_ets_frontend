@@ -230,7 +230,12 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
     etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->Dimension()->TsType());
     etsg->NewArray(expr, arr, dim, expr->TsType());
 
-    if (expr->Signature() != nullptr) {
+    const auto *exprType = expr->TypeReference()->TsType();
+
+    const bool isUnionTypeContainsUndefined =
+        expr->TypeReference()->IsETSTypeReference() && exprType->IsETSUnionType() &&
+        exprType->AsETSUnionType()->HasType(etsg->Checker()->GlobalETSUndefinedType());
+    if (expr->Signature() != nullptr || isUnionTypeContainsUndefined) {
         compiler::VReg countReg = etsg->AllocReg();
         auto *startLabel = etsg->AllocLabel();
         auto *endLabel = etsg->AllocLabel();
@@ -243,14 +248,18 @@ void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 
         etsg->LoadAccumulator(expr, countReg);
         etsg->StoreAccumulator(expr, indexReg);
-        const compiler::TargetTypeContext ttctx2(etsg, expr->TypeReference()->TsType());
+
+        const compiler::TargetTypeContext ttctx2(etsg, exprType);
         ArenaVector<ir::Expression *> arguments(GetCodeGen()->Allocator()->Adapter());
-        etsg->InitObject(expr, expr->Signature(), arguments);
-        etsg->StoreArrayElement(expr, arr, indexReg, expr->TypeReference()->TsType());
+        if (isUnionTypeContainsUndefined) {
+            exprType = etsg->LoadDefaultValue(expr, exprType);
+        } else {
+            etsg->InitObject(expr, expr->Signature(), arguments);
+        }
+        etsg->StoreArrayElement(expr, arr, indexReg, exprType);
 
         etsg->IncrementImmediateRegister(expr, countReg, checker::TypeFlag::INT, static_cast<std::int32_t>(1));
         etsg->JumpTo(expr, startLabel);
-
         etsg->SetLabel(expr, endLabel);
     }
 
