@@ -822,7 +822,9 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotation(TypeAnnotationParsingOptions *
 
         typeAnnotation = element;
 
-        if ((*options & TypeAnnotationParsingOptions::BREAK_AT_NEW_LINE) && lexer_->GetToken().NewLine()) {
+        if (((*options & TypeAnnotationParsingOptions::BREAK_AT_NEW_LINE) && lexer_->GetToken().NewLine()) &&
+            !(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_AND ||
+            lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR)) {
             break;
         }
     }
