@@ -418,6 +418,7 @@ libes2panda_sources = [
   "util/arktsconfig.cpp",
   "util/bitset.cpp",
   "util/errorHandler.cpp",
+  "util/errorLogger.cpp",
   "util/helpers.cpp",
   "util/importPathManager.cpp",
   "util/path.cpp",

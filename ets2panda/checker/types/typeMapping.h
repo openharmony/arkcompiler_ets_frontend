@@ -64,7 +64,8 @@
     _(TypeFlag::ETS_ENUM, ETSEnumType)                                 \
     _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)                    \
     _(TypeFlag::ETS_EXTENSION_FUNC_HELPER, ETSExtensionFuncHelperType) \
-    _(TypeFlag::ETS_TUPLE, ETSTupleType)
+    _(TypeFlag::ETS_TUPLE, ETSTupleType)                               \
+    _(TypeFlag::TYPE_ERROR, TypeError)
 
 #define OBJECT_TYPE_MAPPING(_)                                \
     _(ObjectType::ObjectTypeKind::FUNCTION, FunctionType)     \

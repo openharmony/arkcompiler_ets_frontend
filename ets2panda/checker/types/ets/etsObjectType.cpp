@@ -157,7 +157,6 @@ varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(co
     varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varbinder::VariableFlags::SYNTHETIC |
                                                                               varbinder::VariableFlags::METHOD);
     ETSFunctionType *funcType = CreateETSFunctionType(name);
-    funcType->AddTypeFlag(TypeFlag::SYNTHETIC);
 
     varbinder::LocalVariable *functionalInterface = CollectSignaturesForSyntheticType(funcType, name, flags);
 
@@ -183,6 +182,10 @@ varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFu
                                                                            const util::StringView &name,
                                                                            PropertySearchFlags flags) const
 {
+    if (funcType == nullptr) {
+        return nullptr;
+    }
+
     auto const addSignature = [funcType, flags](varbinder::LocalVariable *found) -> void {
         for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
             if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&

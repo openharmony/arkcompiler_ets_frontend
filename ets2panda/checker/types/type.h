@@ -274,6 +274,14 @@ protected:
     uint64_t id_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
+
+// NOLINTBEGIN(readability-redundant-declaration)
+// To avoid including type.h from variable.h, astNode.h
+bool IsTypeError(Type const *tp);
+// Use this in order to avoid crashes where TypeError is not expected
+[[noreturn]] void ThrowEmptyError();
+// NOLINTEND(readability-redundant-declaration)
+
 }  // namespace ark::es2panda::checker
 
 #endif /* TYPESCRIPT_TYPES_TYPE_H */

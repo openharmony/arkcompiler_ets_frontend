@@ -185,7 +185,7 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
         CheckWarnings(Program(), options);
     }
 
-    return true;
+    return !ErrorLogger()->IsAnyError();
 }
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
@@ -428,6 +428,11 @@ GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes()
 const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 {
     return globalArraySignatures_;
+}
+
+Type *ETSChecker::GlobalTypeError() const
+{
+    return GetGlobalTypesHolder()->GlobalTypeError();
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)

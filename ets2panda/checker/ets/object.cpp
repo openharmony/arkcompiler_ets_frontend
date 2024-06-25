@@ -584,7 +584,6 @@ void ETSChecker::CreateFunctionTypesFromAbstracts(const std::vector<Signature *>
         }
 
         auto *created = CreateETSFunctionType(it);
-        created->AddTypeFlag(TypeFlag::SYNTHETIC);
         target->push_back(created);
     }
 }

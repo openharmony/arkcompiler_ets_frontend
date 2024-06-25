@@ -37,7 +37,8 @@ Checker::Checker()
     : allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
       context_(this, CheckerStatus::NO_OPTS),
       globalTypes_(allocator_.New<GlobalTypesHolder>(&allocator_)),
-      relation_(allocator_.New<TypeRelation>(this))
+      relation_(allocator_.New<TypeRelation>(this)),
+      errorLogger_(allocator_.New<util::ErrorLogger>(&allocator_))
 {
 }
 
@@ -86,6 +87,19 @@ void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePositi
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     throw Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col};
+}
+
+void Checker::LogTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+{
+    LogTypeError(FormatMsg(list), pos);
+}
+
+void Checker::LogTypeError(std::string_view message, const lexer::SourcePosition &pos)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    errorLogger_->Log(Error {ErrorType::TYPE, program_->SourceFilePath().Utf8(), message, loc.line, loc.col});
 }
 
 void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const

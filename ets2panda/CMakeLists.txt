@@ -511,6 +511,7 @@ set(ES2PANDA_LIB_SRC
   util/arktsconfig.cpp
   util/bitset.cpp
   util/errorHandler.cpp
+  util/errorLogger.cpp
   util/helpers.cpp
   util/importPathManager.cpp
   util/path.cpp

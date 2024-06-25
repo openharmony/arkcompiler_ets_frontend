@@ -799,6 +799,9 @@ bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *
     ETSGen *etsg = GetETSGen();
     auto *const calleeObject = expr->callee_->AsMemberExpression()->Object();
     auto const *const enumInterface = [calleeType = calleeObject->TsType()]() -> checker::ETSEnumInterface const * {
+        if (calleeType == nullptr) {
+            return nullptr;
+        }
         if (calleeType->IsETSEnumType()) {
             return calleeType->AsETSEnumType();
         }

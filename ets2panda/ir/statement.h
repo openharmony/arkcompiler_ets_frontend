@@ -42,44 +42,6 @@ protected:
     Statement(Statement const &other) : AstNode(static_cast<AstNode const &>(other)) {}
 };
 
-class TypedStatement : public Typed<Statement> {
-public:
-    TypedStatement() = delete;
-    ~TypedStatement() override = default;
-
-    NO_COPY_OPERATOR(TypedStatement);
-    NO_MOVE_SEMANTIC(TypedStatement);
-
-protected:
-    explicit TypedStatement(AstNodeType type) : Typed<Statement>(type) {};
-    explicit TypedStatement(AstNodeType type, ModifierFlags flags) : Typed<Statement>(type, flags) {};
-
-    TypedStatement(TypedStatement const &other) : Typed<Statement>(static_cast<Typed<Statement> const &>(other)) {}
-
-    inline static checker::Type *const CHECKED = reinterpret_cast<checker::Type *>(0x01);
-};
-
-class AnnotatedStatement : public Annotated<Statement> {
-public:
-    AnnotatedStatement() = delete;
-    ~AnnotatedStatement() override = default;
-
-    NO_COPY_OPERATOR(AnnotatedStatement);
-    NO_MOVE_SEMANTIC(AnnotatedStatement);
-
-protected:
-    explicit AnnotatedStatement(AstNodeType type, TypeNode *typeAnnotation) : Annotated<Statement>(type, typeAnnotation)
-    {
-    }
-
-    explicit AnnotatedStatement(AstNodeType type) : Annotated<Statement>(type) {}
-    explicit AnnotatedStatement(AstNodeType type, ModifierFlags flags) : Annotated<Statement>(type, flags) {}
-
-    AnnotatedStatement(AnnotatedStatement const &other)
-        : Annotated<Statement>(static_cast<Annotated<Statement> const &>(other))
-    {
-    }
-};
 }  // namespace ark::es2panda::ir
 
 #endif

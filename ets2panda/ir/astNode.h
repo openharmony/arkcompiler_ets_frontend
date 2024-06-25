@@ -525,46 +525,6 @@ private:
 };
 
 template <typename T>
-class Typed : public T {
-public:
-    Typed() = delete;
-    ~Typed() override = default;
-
-    NO_COPY_OPERATOR(Typed);
-    NO_MOVE_SEMANTIC(Typed);
-
-    [[nodiscard]] checker::Type *TsType() noexcept
-    {
-        return tsType_;
-    }
-
-    [[nodiscard]] const checker::Type *TsType() const noexcept
-    {
-        return tsType_;
-    }
-
-    void SetTsType(checker::Type *tsType) noexcept
-    {
-        tsType_ = tsType;
-    }
-
-    bool IsTyped() const override
-    {
-        return true;
-    }
-
-protected:
-    explicit Typed(AstNodeType const type) : T(type) {}
-    explicit Typed(AstNodeType const type, ModifierFlags const flags) : T(type, flags) {}
-
-    // NOTE: when cloning node its type is not copied but removed empty so that it can be re-checked further.
-    Typed(Typed const &other) : T(static_cast<T const &>(other)) {}
-
-private:
-    checker::Type *tsType_ {};
-};
-
-template <typename T>
 class Annotated : public T {
 public:
     Annotated() = delete;
@@ -597,40 +557,5 @@ private:
     TypeNode *typeAnnotation_ {};
 };
 
-class TypedAstNode : public Typed<AstNode> {
-public:
-    TypedAstNode() = delete;
-    ~TypedAstNode() override = default;
-
-    NO_COPY_OPERATOR(TypedAstNode);
-    NO_MOVE_SEMANTIC(TypedAstNode);
-
-protected:
-    explicit TypedAstNode(AstNodeType const type) : Typed<AstNode>(type) {}
-    explicit TypedAstNode(AstNodeType const type, ModifierFlags const flags) : Typed<AstNode>(type, flags) {}
-
-    TypedAstNode(TypedAstNode const &other) : Typed<AstNode>(static_cast<Typed<AstNode> const &>(other)) {}
-};
-
-class AnnotatedAstNode : public Annotated<AstNode> {
-public:
-    AnnotatedAstNode() = delete;
-    ~AnnotatedAstNode() override = default;
-
-    NO_COPY_OPERATOR(AnnotatedAstNode);
-    NO_MOVE_SEMANTIC(AnnotatedAstNode);
-
-protected:
-    explicit AnnotatedAstNode(AstNodeType const type, TypeNode *const typeAnnotation)
-        : Annotated<AstNode>(type, typeAnnotation)
-    {
-    }
-    explicit AnnotatedAstNode(AstNodeType const type) : Annotated<AstNode>(type) {}
-    explicit AnnotatedAstNode(AstNodeType const type, ModifierFlags const flags) : Annotated<AstNode>(type, flags) {}
-
-    AnnotatedAstNode(AnnotatedAstNode const &other) : Annotated<AstNode>(static_cast<Annotated<AstNode> const &>(other))
-    {
-    }
-};
 }  // namespace ark::es2panda::ir
 #endif
