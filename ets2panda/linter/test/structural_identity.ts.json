@@ -15,49 +15,42 @@
     ],
     "nodes": [
         {
-            "line": 44,
+            "line": 46,
             "column": 5,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 44,
+            "line": 46,
             "column": 19,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 47,
+            "line": 49,
             "column": 1,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 49,
+            "line": 51,
             "column": 5,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 52,
+            "line": 54,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 106,
-            "column": 4,
-            "problem": "StructuralIdentity",
-            "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
-        },
-        {
-            "line": 107,
+            "line": 108,
             "column": 4,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -71,28 +64,21 @@
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 110,
+            "line": 111,
             "column": 4,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 113,
+            "line": 112,
             "column": 4,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 136,
-            "column": 4,
-            "problem": "StructuralIdentity",
-            "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
-        },
-        {
-            "line": 137,
+            "line": 115,
             "column": 4,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -169,14 +155,14 @@
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 173,
+            "line": 148,
             "column": 4,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 174,
+            "line": 149,
             "column": 4,
             "problem": "StructuralIdentity",
             "suggest": "",
@@ -253,57 +239,197 @@
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 339,
+            "line": 185,
+            "column": 4,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 186,
+            "column": 4,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 341,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 342,
+            "line": 344,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 343,
+            "line": 345,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 346,
+            "line": 348,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 349,
+            "line": 351,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 354,
+            "line": 356,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 355,
+            "line": 357,
             "column": 3,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         },
         {
-            "line": 358,
+            "line": 360,
             "column": 3,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 502,
+            "column": 7,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 503,
+            "column": 28,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 511,
+            "column": 1,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 512,
+            "column": 6,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 520,
+            "column": 4,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 521,
+            "column": 4,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 527,
+            "column": 21,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 528,
+            "column": 21,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 542,
+            "column": 9,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 543,
+            "column": 9,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 553,
+            "column": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 554,
+            "column": 28,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 558,
+            "column": 20,
+            "problem": "ArrayLiteralNoContextType",
+            "suggest": "",
+            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)"
+        },
+        {
+            "line": 558,
+            "column": 21,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 559,
+            "column": 32,
+            "problem": "SendableAsExpr",
+            "suggest": "",
+            "rule": "Casting \"Non-sendable\" data to \"Sendable\" type is not allowed (arkts-sendable-as-expr)"
+        },
+        {
+            "line": 575,
+            "column": 44,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 578,
+            "column": 38,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 580,
+            "column": 44,
             "problem": "StructuralIdentity",
             "suggest": "",
             "rule": "Structural typing is not supported (arkts-no-structural-typing)"

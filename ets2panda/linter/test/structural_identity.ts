@@ -31,6 +31,8 @@ import {
   DynLibCI
 } from './dynamic_lib'
 
+import type { lang } from './@arkts.lang';
+
 class A {
   getName(): string { return 'A'; }
   getType(): string { return 'class'; }
@@ -470,3 +472,110 @@ function testUnionStructuralIdentityPositive(u1: U1, u2: U2, u3: U3, u4: U4) {
   u3 as C2<string>[] | C2<number>[] | C0[];
   u3 as U3 | U4;
 }
+
+
+/**
+ * Add the Sendable exception to the [arks-no-struct_typing] rule.
+ */
+@Sendable
+class TC1 implements lang.ISendable {
+  name:string = 'tc1';
+}
+
+@Sendable
+class TC2 {
+  name:string = 'tc2';
+}
+
+class TC3 {
+  name:string = 'tc3';
+}
+const t1 = new TC1();
+const t2 = new TC2();
+const t3 = new TC3();
+
+
+// Appears on SyntaxKind.VariableDeclaration node
+const a1: lang.ISendable = t1; // OK
+const a2: lang.ISendable = t2; // OK , Sendable can be thought of as implement ISendable
+const a3: lang.ISendable = t2 as lang.ISendable; // OK 
+const a4: lang.ISendable = t3; // ERROR
+const a5: lang.ISendable = t3 as lang.ISendable; // ERROR
+
+
+// Appears on SyntaxKind.BinaryExpression node
+let b1:lang.ISendable;
+b1 = t1; // OK
+b1 = t2; // OK , Sendable can be thought of as implement ISendable
+b1 = t2 as lang.ISendable; // OK
+b1 = t3; // ERROR
+b1 = t3 as lang.ISendable; // ERROR
+
+
+// Appears on SyntaxKind.CallExpression node
+function cf(value: lang.ISendable):void {}
+cf(t1); // OK
+cf(t2); // OK , Sendable can be thought of as implement ISendable
+cf(t2 as lang.ISendable); // OK
+cf(t3); // ERROR
+cf(t3 as lang.ISendable); // ERROR
+
+function cfT<T>(value: T):void {}
+cfT<lang.ISendable>(t1); // OK
+cfT<lang.ISendable>(t2); // OK , Sendable can be thought of as implement ISendable
+cfT<lang.ISendable>(t2 as lang.ISendable); // OK
+cfT<lang.ISendable>(t3); // ERROR
+cfT<lang.ISendable>(t3 as lang.ISendable); // ERROR
+
+
+// Appears on SyntaxKind.handleNewExpression node
+class DC1 {
+  name:string;
+
+  constructor(value:lang.ISendable) {
+    this.name = value.name;
+  }
+}
+new DC1(t1); // OK
+new DC1(t2); // OK , Sendable can be thought of as implement ISendable
+new DC1(t2 as lang.ISendable); // OK
+new DC1(t3); // ERROR
+new DC1(t3 as lang.ISendable); // ERROR
+
+
+// Appears on SyntaxKind.ObjectLiteralExpression/SyntaxKind.ArrayLiteralExpression node
+interface EI1 {
+  sendable: lang.ISendable;
+}
+const e1: EI1 = { sendable:t1 }; // OK
+const e2: EI1 = { sendable:t2 }; // OK , Sendable can be thought of as implement ISendable， avoid [arkts-no-untyped-obj-literals] rule
+const e3: EI1 = { sendable:t2 as lang.ISendable }; // OK
+const e4: EI1 = { sendable:t3 }; // ERROR
+const e5: EI1 = { sendable:t3 as lang.ISendable }; // ERROR
+const e1s: EI1[] = [{ sendable:t1 }]; // OK
+const e2s: EI1[] = [{ sendable:t2 }]; // OK , Sendable can be thought of as implement ISendable.  avoid [arkts-no-untyped-obj-literals] rule
+const e3s: EI1[] = [{ sendable:t2 as lang.ISendable }]; // OK
+const e4s: EI1[] = [{ sendable:t3 }]; // ERROR
+const e5s: EI1[] = [{ sendable:t3 as lang.ISendable }]; // ERROR
+
+// // Appears on SyntaxKind.PropertyDeclaration node
+// PropertyDeclaration does not do [arkts-no-structural-typing] check
+// export class FC1 {
+//   prop1: lang.ISendable = t1; // OK
+//   prop2: lang.ISendable = t2; // OK
+//   prop3: lang.ISendable = t3; // OK
+// }
+
+
+// union
+class GC1 { }
+function ff1(value: lang.ISendable):void {}
+function ff2(value: lang.ISendable | GC1):void {}
+function ff3(value: TC1 | TC2): void { ff1(value); } // OK , Sendable can be thought of as implement ISendable
+function ff4(value: TC1 | TC3): void { ff1(value); } // ERROR
+function ff5(value: TC1): void { ff2(value); } // OK
+function ff6(value: TC2): void { ff2(value); } // OK , Sendable can be thought of as implement ISendable
+function ff7(value: TC3): void { ff2(value); } // ERROR
+function ff8(value: TC1 | TC2): void { ff2(value); } // OK , Sendable can be thought of as implement ISendable
+function ff9(value: TC1 | TC3): void { ff2(value); } // ERROR
+
