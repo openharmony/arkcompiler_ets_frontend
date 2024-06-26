@@ -2095,6 +2095,15 @@ export class TypeScriptLinter {
       return;
     }
 
+    this.checkPartialType(node);
+
+    if (this.tsUtils.isClassNodeReference(typeRef.typeName) && this.tsUtils.isSendableTypeNode(typeRef)) {
+      this.checkSendableTypeArguments(typeRef);
+    }
+  }
+
+  private checkPartialType(node: ts.Node): void {
+    const typeRef = node as ts.TypeReferenceNode;
     // Using Partial<T> type is allowed only when its argument type is either Class or Interface.
     const isStdPartial = this.tsUtils.entityNameToString(typeRef.typeName) === 'Partial';
     if (!isStdPartial) {
@@ -2112,6 +2121,16 @@ export class TypeScriptLinter {
 
     if (argType && !argType.isClassOrInterface()) {
       this.incrementCounters(node, FaultID.UtilityType);
+    }
+  }
+
+  private checkSendableTypeArguments(typeRef: ts.TypeReferenceNode): void {
+    if (typeRef.typeArguments) {
+      for (const typeArg of typeRef.typeArguments) {
+        if (!this.tsUtils.isSendableTypeNode(typeArg)) {
+          this.incrementCounters(typeArg, FaultID.SendableGenericTypes);
+        }
+      }
     }
   }
 
