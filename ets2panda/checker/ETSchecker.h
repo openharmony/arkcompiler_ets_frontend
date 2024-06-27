@@ -274,6 +274,10 @@ public:
                                               checker::Type *rightType, Type *unboxedL, Type *unboxedR);
     std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::SourcePosition pos,
                                                               checker::Type *leftType, checker::Type *rightType);
+    std::optional<std::tuple<Type *, Type *>> CheckBinaryOperatorEqualError(checker::Type *const leftType,
+                                                                            checker::Type *const rightType,
+                                                                            checker::Type *tsType,
+                                                                            lexer::SourcePosition pos);
     std::tuple<Type *, Type *> CheckBinaryOperatorEqual(ir::Expression *left, ir::Expression *right,
                                                         lexer::TokenType operationType, lexer::SourcePosition pos,
                                                         checker::Type *leftType, checker::Type *rightType,

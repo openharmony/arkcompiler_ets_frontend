@@ -379,18 +379,18 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
     return {tsType, GlobalETSObjectType()};
 }
 
-std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
-    ir::Expression *left, ir::Expression *right, lexer::TokenType operationType, lexer::SourcePosition pos,
-    checker::Type *const leftType, checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
+std::optional<std::tuple<Type *, Type *>> ETSChecker::CheckBinaryOperatorEqualError(checker::Type *const leftType,
+                                                                                    checker::Type *const rightType,
+                                                                                    checker::Type *tsType,
+                                                                                    lexer::SourcePosition pos)
 {
-    checker::Type *tsType {};
     if (leftType->IsETSEnumType() && rightType->IsETSEnumType()) {
         if (!leftType->AsETSEnumType()->IsSameEnumType(rightType->AsETSEnumType())) {
             ThrowTypeError("Bad operand type, the types of the operands must be the same enum type.", pos);
         }
 
         tsType = GlobalETSBooleanType();
-        return {tsType, leftType};
+        return std::make_tuple(tsType, leftType);
     }
 
     if (leftType->IsETSStringEnumType() && rightType->IsETSStringEnumType()) {
@@ -399,9 +399,21 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
         }
 
         tsType = GlobalETSBooleanType();
-        return {tsType, leftType};
+        return std::make_tuple(tsType, leftType);
     }
+    return std::nullopt;
+}
 
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
+    ir::Expression *left, ir::Expression *right, lexer::TokenType operationType, lexer::SourcePosition pos,
+    checker::Type *const leftType, checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
+{
+    checker::Type *tsType {};
+
+    auto checkError = CheckBinaryOperatorEqualError(leftType, rightType, tsType, pos);
+    if (checkError.has_value()) {
+        return checkError.value();
+    }
     if (leftType->IsETSDynamicType() || rightType->IsETSDynamicType()) {
         return CheckBinaryOperatorEqualDynamic(left, right, pos);
     }

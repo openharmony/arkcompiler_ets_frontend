@@ -443,11 +443,8 @@ public:
         // But imported identifier name is A
         auto parent = ast->Parent();
         while (parent != nullptr) {
-            if (parent->IsETSImportDeclaration()) {
-                const auto *const import = parent->AsETSImportDeclaration();
-                if (import->IsPureDynamic()) {
-                    return {CheckDecision::CORRECT, CheckAction::CONTINUE};
-                }
+            if (parent->IsETSImportDeclaration() && parent->AsETSImportDeclaration()->IsPureDynamic()) {
+                return {CheckDecision::CORRECT, CheckAction::CONTINUE};
             }
 
             parent = parent->Parent();
