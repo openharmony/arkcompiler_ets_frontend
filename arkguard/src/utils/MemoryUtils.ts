@@ -16,7 +16,9 @@
 export class MemoryUtils {
   private static baseMemorySize: number | undefined = undefined; 
   private static allowGC: boolean = typeof global.gc === 'function';
-  private static MEMORY_BASELINE = 64 * 1024 * 1024; // 64MB
+  private static MIN_GC_THRESHOLD: number = 64 * 1024 * 1024; // 64MB
+  private static memoryGCThreshold: number = MemoryUtils.MIN_GC_THRESHOLD;
+  public static GC_THRESHOLD_RATIO: number = 0.3;
   
   /**
    * Try garbage collection if obfuscaction starts or the memory usage exceeds MEMORY_BASELINE.
@@ -27,14 +29,14 @@ export class MemoryUtils {
     }
   
     const currentMemory = process.memoryUsage().heapUsed;
-    if (MemoryUtils.baseMemorySize === undefined || (currentMemory - MemoryUtils.baseMemorySize > MemoryUtils.MEMORY_BASELINE)) {
+    if (MemoryUtils.baseMemorySize === undefined || (currentMemory - MemoryUtils.baseMemorySize > MemoryUtils.memoryGCThreshold)) {
       global.gc();
-      MemoryUtils.baseMemorySize = process.memoryUsage().heapUsed;
+      MemoryUtils.updateBaseMemory();
       return;
-    } 
+    }
 
     if (MemoryUtils.baseMemorySize > currentMemory) {
-      MemoryUtils.baseMemorySize = currentMemory;
+      MemoryUtils.updateBaseMemory(currentMemory);
       return;
     }
   }
@@ -55,7 +57,24 @@ export class MemoryUtils {
   }
 
   // For ut only
-  public static setBaseLine(baseLine: number): void {
-    MemoryUtils.MEMORY_BASELINE = baseLine;
+  public static setMinGCThreshold(threshold: number): void {
+    MemoryUtils.MIN_GC_THRESHOLD = threshold;
+  }
+
+  // For ut only
+  public static getMinGCThreshold(): number {
+    return MemoryUtils.MIN_GC_THRESHOLD;
+  }
+
+  // For ut only
+  public static getGCThreshold(): number {
+    return MemoryUtils.memoryGCThreshold;
+  }
+
+  public static updateBaseMemory(currentMemory?: number): void {
+    currentMemory = currentMemory ?? process.memoryUsage().heapUsed;
+    const targetGCThreshold: number = currentMemory * MemoryUtils.GC_THRESHOLD_RATIO;
+    MemoryUtils.memoryGCThreshold = Math.max(targetGCThreshold, MemoryUtils.MIN_GC_THRESHOLD);
+    MemoryUtils.baseMemorySize = currentMemory;
   }
 }

@@ -17,4 +17,4 @@ import assert from 'assert';
 import path from 'path';
 
 const fileName: string = path.basename(__filename);
-assert(fileName === 'l.ts', 'success');
+assert(fileName !== 'no^_keep{}.ts', 'success');

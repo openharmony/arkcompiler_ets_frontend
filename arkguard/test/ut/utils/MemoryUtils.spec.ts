@@ -35,14 +35,14 @@ describe('test for MemoryUtils', function () {
       assert.notEqual(MemoryUtils.getBaseMemorySize(), undefined);
 
       // Trigger GC
-      MemoryUtils.setBaseLine(lowBaseLine);
+      MemoryUtils.setMinGCThreshold(lowBaseLine);
       const memoryBeforeGC = process.memoryUsage().heapUsed;
       MemoryUtils.tryGC();
       assert.isAbove(MemoryUtils.getBaseMemorySize(), 0);
       assert.isBelow(MemoryUtils.getBaseMemorySize(), memoryBeforeGC);
 
       // Lower base
-      MemoryUtils.setBaseLine(highBaseLine);
+      MemoryUtils.setMinGCThreshold(highBaseLine);
       MemoryUtils.setBaseMemorySize(highBase);
       MemoryUtils.tryGC();
       assert.isBelow(MemoryUtils.getBaseMemorySize(), highBase);
@@ -54,6 +54,33 @@ describe('test for MemoryUtils', function () {
         assert.strictEqual(MemoryUtils.getBaseMemorySize(), undefined);
         MemoryUtils.tryGC();
         assert.strictEqual(MemoryUtils.getBaseMemorySize(), undefined);
+    });
+
+    it('test function tryGC for updateBaseMemory function', function() {
+      MemoryUtils.setGC(allowGC);
+      MemoryUtils.setMinGCThreshold(MemoryUtils.getMinGCThreshold()); 
+      MemoryUtils.setBaseMemorySize(undefined);
+      MemoryUtils.tryGC();
+      const currentMemory = MemoryUtils.getBaseMemorySize();
+      // currentMemory * 0.3 is greater than minGCBaseline
+      if (MemoryUtils.getMinGCThreshold() < currentMemory * MemoryUtils.GC_THRESHOLD_RATIO) {
+        assert.isAbove(MemoryUtils.getGCThreshold(), MemoryUtils.getMinGCThreshold());
+      } else {
+        assert.strictEqual(MemoryUtils.getGCThreshold(), MemoryUtils.getMinGCThreshold());
+      }
+    });
+
+    it('test function updateBaseMemory', function() {
+      // 0.35: make the value of memoryValue1 * 0.3 less than minGCBaseline
+      const memoryValue1: number = MemoryUtils.getMinGCThreshold() / 0.35;
+      MemoryUtils.updateBaseMemory(memoryValue1); 
+      assert.strictEqual(MemoryUtils.getGCThreshold(), MemoryUtils.getMinGCThreshold());
+      assert.strictEqual(MemoryUtils.getBaseMemorySize(), memoryValue1);
+      // 0.25: make the value of memoryValue2 * 0.3 greater than minGCBaseline
+      const memoryValue2: number = MemoryUtils.getMinGCThreshold() / 0.25;
+      MemoryUtils.updateBaseMemory(memoryValue2);
+      assert.isAbove(MemoryUtils.getGCThreshold(), MemoryUtils.getMinGCThreshold());
+      assert.strictEqual(MemoryUtils.getBaseMemorySize(), memoryValue2);
     });
   });
 });
