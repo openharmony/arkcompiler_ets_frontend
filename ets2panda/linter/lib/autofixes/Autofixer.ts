@@ -450,44 +450,29 @@ export class Autofixer {
 
   fixTypeAssertion(typeAssertion: ts.TypeAssertion): Autofix[] {
     const asExpr = ts.factory.createAsExpression(typeAssertion.expression, typeAssertion.type);
-    const text = this.printer.printNode(ts.EmitHint.Unspecified, asExpr, typeAssertion.getSourceFile());
+    const text = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, asExpr, typeAssertion.getSourceFile());
     return [{ start: typeAssertion.getStart(), end: typeAssertion.getEnd(), replacementText: text }];
   }
 
   fixCommaOperator(tsNode: ts.Node): Autofix[] {
     const tsExprNode = tsNode as ts.BinaryExpression;
     const text = this.recursiveCommaOperator(tsExprNode);
-    return [{ start: tsExprNode.parent.getStart(), end: tsExprNode.parent.getEnd(), replacementText: text }];
+    return [{ start: tsExprNode.parent.getFullStart(), end: tsExprNode.parent.getEnd(), replacementText: text }];
   }
 
   private recursiveCommaOperator(tsExprNode: ts.BinaryExpression): string {
     let text = '';
     if (tsExprNode.operatorToken.kind !== ts.SyntaxKind.CommaToken) {
-      const midExpr = ts.factory.createExpressionStatement(tsExprNode);
-      return this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, midExpr, tsExprNode.getSourceFile());
+      return tsExprNode.getFullText() + ';';
     }
 
     if (tsExprNode.left.kind === ts.SyntaxKind.BinaryExpression) {
       text += this.recursiveCommaOperator(tsExprNode.left as ts.BinaryExpression);
-
-      const rightExpr = ts.factory.createExpressionStatement(tsExprNode.right);
-      const rightText = this.nonCommentPrinter.printNode(
-        ts.EmitHint.Unspecified,
-        rightExpr,
-        tsExprNode.getSourceFile()
-      );
-      text += '\n' + rightText;
+      text += '\n' + tsExprNode.right.getFullText() + ';';
     } else {
-      const leftExpr = ts.factory.createExpressionStatement(tsExprNode.left);
-      const rightExpr = ts.factory.createExpressionStatement(tsExprNode.right);
-
-      const leftText = this.nonCommentPrinter.printNode(ts.EmitHint.Unspecified, leftExpr, tsExprNode.getSourceFile());
-      const rightText = this.nonCommentPrinter.printNode(
-        ts.EmitHint.Unspecified,
-        rightExpr,
-        tsExprNode.getSourceFile()
-      );
-      text = leftText + '\n' + rightText;
+      const leftText = tsExprNode.left.getFullText();
+      const rightText = tsExprNode.right.getFullText();
+      text = leftText + ';\n' + rightText + ';';
     }
 
     return text;
@@ -778,7 +763,7 @@ export class Autofixer {
     bodyStatements = bodyStatements.concat(body.statements);
     for (let i = 1; i < nodes.length; i++) {
       bodyStatements = bodyStatements.concat((nodes[i] as ts.ClassStaticBlockDeclaration).body.statements);
-      autofix[i] = { start: nodes[i].getStart(), end: nodes[i].getEnd(), replacementText: '' };
+      autofix[i] = { start: nodes[i].getFullStart(), end: nodes[i].getEnd(), replacementText: '' };
     }
     body = ts.factory.createBlock(bodyStatements, true);
     // static blocks shouldn't have modifiers
@@ -799,9 +784,11 @@ export class Autofixer {
     ) {
       // Note: 'private' modifier should always be first.
       const mods = ts.getModifiers(ident.parent);
-      let newMods: ts.Modifier[] = [ts.factory.createModifier(ts.SyntaxKind.PrivateKeyword)];
+      const newMods: ts.Modifier[] = [ts.factory.createModifier(ts.SyntaxKind.PrivateKeyword)];
       if (mods) {
-        newMods = newMods.concat(mods);
+        for (const mod of mods) {
+          newMods.push(ts.factory.createModifier(mod.kind));
+        }
       }
 
       const newName = ident.text.slice(1, ident.text.length);
@@ -1033,8 +1020,7 @@ export class Autofixer {
         undefined,
         typeLiteral.members
       );
-      const text =
-        this.printer.printNode(ts.EmitHint.Unspecified, newInterfaceDecl, typeLiteral.getSourceFile()) + '\n';
+      const text = this.printer.printNode(ts.EmitHint.Unspecified, newInterfaceDecl, typeLiteral.getSourceFile());
       return [{ start: typeAlias.getStart(), end: typeAlias.getEnd(), replacementText: text }];
     }
     return undefined;

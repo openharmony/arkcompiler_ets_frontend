@@ -4,7 +4,6 @@
             "line": 23,
             "column": 3,
             "problem": "MultipleStaticBlocks",
-            "autofixable": true,
             "autofix": [
                 {
                     "start": 642,
@@ -12,7 +11,7 @@
                     "replacementText": "static {\n    C.s = 'string';\n    C.n = C.s.length;\n}"
                 },
                 {
-                    "start": 698,
+                    "start": 695,
                     "end": 732,
                     "replacementText": ""
                 }

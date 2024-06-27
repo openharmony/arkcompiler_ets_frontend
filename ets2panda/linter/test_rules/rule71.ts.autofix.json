@@ -18,7 +18,6 @@
             "line": 24,
             "column": 6,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -26,7 +25,6 @@
             "line": 39,
             "column": 12,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -34,7 +32,6 @@
             "line": 42,
             "column": 12,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -42,7 +39,6 @@
             "line": 46,
             "column": 27,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -50,7 +46,6 @@
             "line": 49,
             "column": 15,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -58,7 +53,6 @@
             "line": 53,
             "column": 24,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -66,12 +60,11 @@
             "line": 58,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1219,
+                    "start": 1199,
                     "end": 1227,
-                    "replacementText": "x++;\nx--;"
+                    "replacementText": "\n\n// Error, autofix\nx++;\n x--;"
                 }
             ],
             "suggest": "",
@@ -81,12 +74,11 @@
             "line": 61,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1247,
+                    "start": 1227,
                     "end": 1268,
-                    "replacementText": "x++;\nx--;\n++x;\n--x;\nx;"
+                    "replacementText": "\n\n// Error, autofix\nx++;\n x--;\n ++x;\n --x;\n x;"
                 }
             ],
             "suggest": "",
@@ -96,7 +88,6 @@
             "line": 64,
             "column": 5,
             "problem": "CommaOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         },
@@ -104,12 +95,11 @@
             "line": 66,
             "column": 5,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1337,
+                    "start": 1310,
                     "end": 1358,
-                    "replacementText": "x++;\nx--;\n++x;\n--x;\nx;"
+                    "replacementText": "\n    // Error, autofix\n    x++;\n x--;\n ++x;\n --x;\n x;"
                 }
             ],
             "suggest": "",
@@ -119,12 +109,11 @@
             "line": 70,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1380,
+                    "start": 1360,
                     "end": 1400,
-                    "replacementText": "x++ + x--;\n++x;\n--x;"
+                    "replacementText": "\n\n// Error, autofix\nx++ + x--;\n ++x;\n --x;"
                 }
             ],
             "suggest": "",
@@ -134,12 +123,11 @@
             "line": 73,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1420,
+                    "start": 1400,
                     "end": 1439,
-                    "replacementText": "++x;\nx-- + x++;\n--x;"
+                    "replacementText": "\n\n// Error, autofix\n++x;\n x-- + x++;\n --x;"
                 }
             ],
             "suggest": "",
@@ -149,12 +137,11 @@
             "line": 76,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1459,
+                    "start": 1439,
                     "end": 1479,
-                    "replacementText": "++x;\n--x;\nx-- + x++;"
+                    "replacementText": "\n\n// Error, autofix\n++x;\n --x;\n x-- + x++;"
                 }
             ],
             "suggest": "",
@@ -164,12 +151,11 @@
             "line": 79,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1499,
+                    "start": 1479,
                     "end": 1534,
-                    "replacementText": "x === x;\n--x;\nx === x;\nx++;\nx === x;"
+                    "replacementText": "\n\n// Error, autofix\nx === x;\n --x;\n x === x;\n x++;\n x === x;"
                 }
             ],
             "suggest": "",
@@ -179,12 +165,11 @@
             "line": 82,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1554,
+                    "start": 1534,
                     "end": 1626,
-                    "replacementText": "x instanceof number;\n--x;\nx instanceof number;\nx++;\nx instanceof number;"
+                    "replacementText": "\n\n// Error, autofix\nx instanceof number;\n --x;\n x instanceof number;\n x++;\n x instanceof number;"
                 }
             ],
             "suggest": "",
@@ -194,7 +179,6 @@
             "line": 82,
             "column": 3,
             "problem": "InstanceofUnsupported",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
@@ -202,7 +186,6 @@
             "line": 82,
             "column": 29,
             "problem": "InstanceofUnsupported",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
@@ -210,7 +193,6 @@
             "line": 82,
             "column": 55,
             "problem": "InstanceofUnsupported",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
@@ -218,12 +200,11 @@
             "line": 85,
             "column": 1,
             "problem": "CommaOperator",
-            "autofixable": true,
             "autofix": [
                 {
-                    "start": 1646,
+                    "start": 1626,
                     "end": 1678,
-                    "replacementText": "x in x;\n--x;\nx in x;\nx++;\nx in x;"
+                    "replacementText": "\n\n// Error, autofix\nx in x;\n --x;\n x in x;\n x++;\n x in x;"
                 }
             ],
             "suggest": "",
@@ -233,7 +214,6 @@
             "line": 85,
             "column": 3,
             "problem": "InOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"in\" operator is not supported (arkts-no-in)"
         },
@@ -241,7 +221,6 @@
             "line": 85,
             "column": 16,
             "problem": "InOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"in\" operator is not supported (arkts-no-in)"
         },
@@ -249,7 +228,6 @@
             "line": 85,
             "column": 29,
             "problem": "InOperator",
-            "autofixable": false,
             "suggest": "",
             "rule": "\"in\" operator is not supported (arkts-no-in)"
         }
