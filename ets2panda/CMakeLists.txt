@@ -519,7 +519,7 @@ set(ES2PANDA_PUBLIC_SOURCES
 
 
 panda_add_library(es2panda-public ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_PUBLIC_SOURCES})
-add_dependencies(es2panda-public es2panda-lib)
+add_dependencies(es2panda-public es2panda-lib arkbytecodeopt)
 
 panda_target_include_directories(es2panda-public
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
