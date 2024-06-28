@@ -89,6 +89,7 @@ public:
 private:
     compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg) const;
     void CompileSuperCall(compiler::PandaGen *pg, bool containsSpread) const;
+    void CompileSuperCallWithSpreadArgs(compiler::PandaGen *pg) const;
 
     Expression *callee_;
     ArenaVector<Expression *> arguments_;

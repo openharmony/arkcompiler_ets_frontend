@@ -65,24 +65,37 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
     return argsObj;
 }
 
+void CallExpression::CompileSuperCallWithSpreadArgs(compiler::PandaGen *pg) const
+{
+    compiler::RegScope paramScope(pg);
+    const ir::ScriptFunction *constructorFunc = util::Helpers::GetContainingConstructor(this);
+    CHECK_NOT_NULL(constructorFunc);
+    // For super call in default constructor.
+    if (constructorFunc->HasFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR)) {
+        // Use callruntime.supercallforwardallargs to optimize super call in default constructor since api13.
+        if (pg->Binder()->Program()->TargetApiVersion() >= util::Helpers::SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION) {
+            compiler::VReg funcObj = pg->AllocReg();
+            pg->GetFunctionObject(this);
+            pg->StoreAccumulator(this, funcObj);
+            pg->SuperCallForwardAllArgs(this, funcObj);
+        } else {
+            compiler::VReg argsObj = pg->AllocReg();
+            arguments_[0]->AsSpreadElement()->Argument()->Compile(pg);
+            pg->StoreAccumulator(this, argsObj);
+            pg->GetFunctionObject(this);
+            pg->SuperCallSpread(this, argsObj);
+        }
+    } else {
+        compiler::VReg argsObj = CreateSpreadArguments(pg);
+        pg->GetFunctionObject(this);
+        pg->SuperCallSpread(this, argsObj);
+    }
+}
+
 void CallExpression::CompileSuperCall(compiler::PandaGen *pg, bool containsSpread) const
 {
     if (containsSpread) {
-        compiler::RegScope paramScope(pg);
-        compiler::VReg argsObj {};
-        // arguments_ is only ...args
-        const ir::ScriptFunction *constructorFunc = util::Helpers::GetContainingConstructor(this);
-        CHECK_NOT_NULL(constructorFunc);
-        if (constructorFunc->HasFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR)) {
-            argsObj = pg->AllocReg();
-            arguments_[0]->AsSpreadElement()->Argument()->Compile(pg);
-            pg->StoreAccumulator(this, argsObj);
-        } else {
-            argsObj = CreateSpreadArguments(pg);
-        }
-
-        pg->GetFunctionObject(this);
-        pg->SuperCallSpread(this, argsObj);
+        CompileSuperCallWithSpreadArgs(pg);
     } else {
         compiler::RegScope paramScope(pg);
         compiler::VReg argStart {};

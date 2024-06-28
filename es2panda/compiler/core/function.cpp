@@ -126,8 +126,10 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
 
             continue;
         }
-
-        if (param->IsRestElement()) {
+        // There's extra optimization for super call in default constuctor since api13,
+        // no need to generate copyrestargs in this scene.
+        if (param->IsRestElement() && (!func->HasFlag(ir::ScriptFunctionFlags::GENERATED_CONSTRUCTOR) ||
+            pg->Binder()->Program()->TargetApiVersion() < util::Helpers::SUPER_CALL_OPT_MIN_SUPPORTED_API_VERSION)) {
             pg->CopyRestArgs(param, func->Params().size() - 1);
         } else if (ref.Kind() == ReferenceKind::DESTRUCTURING) {
             pg->LoadAccumulator(func, paramReg);

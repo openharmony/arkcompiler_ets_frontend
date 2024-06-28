@@ -1031,8 +1031,10 @@ class BcVersionTest(Test):
         Test.__init__(self, "", 0)
         self.cmd = cmd
         self.api_version = api_version
+        # To avoid problems when api version is upgraded abruptly,
+        # the corresponding bytecode version of the api version not written in isa.yaml is alaways the newest version.
         self.bc_version_expect = {
-            8: "12.0.6.0",
+            8: "13.0.0.0",
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
@@ -1040,7 +1042,8 @@ class BcVersionTest(Test):
             "12_beta1": "12.0.2.0",
             "12_beta2": "12.0.2.0",
             "12_beta3": "12.0.6.0",
-            13: "12.0.6.0"
+            13: "13.0.0.0",
+            14: "13.0.0.0"
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
@@ -1051,7 +1054,8 @@ class BcVersionTest(Test):
             "12_beta1": "12.0.2.0",
             "12_beta2": "12.0.2.0",
             "12_beta3": "12.0.6.0",
-            13: "12.0.6.0"
+            13: "13.0.0.0",
+            14: "13.0.0.0"
         }
 
     def run(self):
