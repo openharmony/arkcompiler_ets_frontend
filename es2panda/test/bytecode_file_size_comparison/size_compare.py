@@ -22,15 +22,31 @@ import os
 import stat
 import subprocess
 import threading
+import shutil
 
 TEST_ROOT = os.path.dirname(os.path.abspath(__file__))
 TEST_CASES = 'test_cases'
 D8_REPO = 'd8_tool'
+R8_REPO = 'r8_tool'
+WORKLOAD_REPO = 'workload_cases'
 D8_EXECUTABLE_PROGRAM_PATH = 'd8'
+R8_EXECUTABLE_PROGRAM_PATH = 'r8.jar'
+RT_JAR_PATH = 'rt.jar'
 D8_REPO_URL = 'https://gitee.com/littleOneYuan/d8.git'
+R8_REPO_URL = 'https://gitee.com/zhengxiaoyong_panda/r8.git'
+WORKLOAD_REPO_URL = 'https://gitee.com/zhengxiaoyong_panda/workload_cases.git'
+WORKLOAD_JS_TEST = 'js'
+WORKLOAD_TS_TEST = 'ts'
+WORKLOAD_JAVA_TEST = 'java'
+WORKLOAD_CASES_DIR = 'workload'
+JAVA_CASES = 'java_cases'
+JS_TEST = 'js'
+TS_TEST = 'ts'
 JAVA_TEST_FRAMEWORK = 'java_test_framework'
 RUN_JAVA_SCRIPT = 'run_java.py'
+RUN_JAVA_R8_SCRIPT = 'run_javar8.py'
 DEX_SIZE_DATA = 'dex_size.dat'
+SOURCE_SIZE_DATA = 'source_size.dat'
 SIZE_COMPARISON_REPORT = 'size_comparison_report.html'
 HTML_CONTENT = \
 """
@@ -64,9 +80,9 @@ HTML_CONTENT = \
         <tr>
             <th>No</th>
             <th>Case Name</th>
-            <th>JS Case - ABC Size</th>
-            <th>TS Case - ABC Size</th>
-            <th>Java Case - DEX Size</th>
+            <th colspan='3'>JS Case Sources Size / ABC Size / Rate</th>
+            <th colspan='3'>TS Case Sources Size / ABC Size / Rate</th>
+            <th colspan='5'>Java Case SOURCES Size / DEX Size D8 / D8 Rate / DEX Size R8 / R8 Rate</th>
         </tr>
 """
 
@@ -74,6 +90,12 @@ HTML_CONTENT = \
 def is_file(parser, arg):
     if not os.path.isfile(arg):
         parser.error("The file '%s' does not exist" % arg)
+    return os.path.abspath(arg)
+
+
+def is_dir(parser, arg):
+    if not os.path.isdir(arg):
+        parser.error("The dir '%s' does not exist" % arg)
     return os.path.abspath(arg)
 
 
@@ -89,10 +111,15 @@ def get_args():
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('--es2abc-path', dest='es2abc_path', type=lambda arg : is_file(parser, arg),
                         help='Path to the executable program es2abc', required=True)
-    parser.add_argument('--javac-path', dest='javac_path', type=lambda arg : is_file(parser, arg),
-                        help='Path to javac compiler', required=True)
+    parser.add_argument('--java-bin-path', dest='java_bin_path', type=lambda arg : is_dir(parser, arg),
+                        help='Path to java bin where exists java/jar/javac command, \
+                            recommend using jdk17 and above versions', required=True)
     parser.add_argument('--d8-path', dest='d8_path', type=lambda arg : is_file(parser, arg),
                         help='Path to the executable program d8')
+    parser.add_argument('--r8-path', dest='r8_path', type=lambda arg : is_file(parser, arg),
+                        help='Path to the executable program r8')
+    parser.add_argument('--rt-path', dest='rt_path', type=lambda arg : is_file(parser, arg),
+                        help='Path to the jre/lib/rt.jar')
     parser.add_argument('--timeout', type=check_timeout, dest='timeout', default=180, 
                         help='Time limits for use case execution (In seconds)')
     return parser.parse_args()
@@ -108,19 +135,45 @@ def check_d8(args):
     return False
 
 
-def generate_size_comparison_report(js_output, ts_output, java_output):
+def check_r8_rt_exists(args):
+    if args.r8_path and args.rt_path:
+        return True
+    r8_path = pull_repo(R8_REPO_URL, R8_REPO)
+    if r8_path:
+        args.r8_path = os.path.join(r8_path, R8_EXECUTABLE_PROGRAM_PATH)
+        args.rt_path = os.path.join(r8_path, RT_JAR_PATH)
+        return True
+    return False
+
+
+def get_rate(abc_size, source_size):
+    if abc_size == None or source_size == None:
+        return 'N/A'
+    return '{:.2%}'.format(abc_size / source_size)
+        
+
+def generate_size_comparison_report(js_output, ts_output, java_output, java_r8output,
+                                    js_source_output, ts_source_output, java_r8source_output):
     global HTML_CONTENT
     report_path = os.path.join(TEST_ROOT, SIZE_COMPARISON_REPORT)
-    longest_output = max(js_output, ts_output, java_output, key=len)
+    longest_output = max(js_output, ts_output, java_output, js_source_output, key=len)
 
     for case_number, case_path in enumerate(longest_output.keys(), 1):
         HTML_CONTENT = ''.join([HTML_CONTENT, f"""
         <tr>
             <td>{case_number}</td>
             <td>{case_path}</td>
+            <td>{js_source_output.get(case_path, 'N/A')}</td>
             <td>{js_output.get(case_path, 'N/A')}</td>
+            <td>{get_rate(js_output.get(case_path), js_source_output.get(case_path))}</td>
+            <td>{ts_source_output.get(case_path, 'N/A')}</td>
             <td>{ts_output.get(case_path, 'N/A')}</td>
+            <td>{get_rate(ts_output.get(case_path), ts_source_output.get(case_path))}</td>
+            <td>{java_r8source_output.get(case_path, 'N/A')}</td>
             <td>{java_output.get(case_path, 'N/A')}</td>
+            <td>{get_rate(java_output.get(case_path), java_r8source_output.get(case_path))}</td>
+            <td>{java_r8output.get(case_path, 'N/A')}</td>
+            <td>{get_rate(java_r8output.get(case_path), java_r8source_output.get(case_path))}</td>
         </tr>
         """])
 
@@ -172,6 +225,7 @@ class ES2ABCRunner:
         self.cmd = [args.es2abc_path]
         self.case_list = []
         self.output = {}
+        self.source_output = {}
 
     def add_flags(self, flags:list):
         self.cmd.extend(flags)
@@ -210,6 +264,7 @@ class ES2ABCRunner:
                 abc_file_size = os.path.getsize(abc_file_path)
                 os.remove(abc_file_path)
             self.output[get_case_name(file_path)] = abc_file_size
+            self.source_output[get_case_name(file_path)] = os.path.getsize(file_path)
             print(f'[INFO]: FINISH: {file_path}!')
 
 
@@ -231,7 +286,8 @@ class JavaD8Runner:
 
     def run(self):
         if self.java_test_root:
-            cmd = [self.run_java, '--javac-path', self.args.javac_path, '--d8-path', self.args.d8_path]
+            javac_path = '/'.join([self.args.java_bin_path, 'javac'])
+            cmd = [self.run_java, '--javac-path', javac_path, '--d8-path', self.args.d8_path]
             if self.args.timeout:
                 cmd.extend(['--timeout', str(self.args.timeout)])
             try:
@@ -242,16 +298,91 @@ class JavaD8Runner:
             except Exception as e:
                 print(f"[ERROR]: {e}")
 
+class JavaR8Runner:
+    def __init__(self, args):
+        self.args = args
+        self.java_test_root = os.path.join(TEST_ROOT, TEST_CASES, JAVA_TEST_FRAMEWORK)
+        self.run_java = os.path.join(self.java_test_root, RUN_JAVA_R8_SCRIPT)
+        self.output = {}
+        self.source_output = {}
+
+    def get_output_from_file(self):
+        dex_size_data = os.path.join(self.java_test_root, DEX_SIZE_DATA)
+        source_size_data = os.path.join(self.java_test_root, SOURCE_SIZE_DATA)
+        flags = os.O_RDONLY
+        mode = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(dex_size_data, flags, mode), 'r') as f:
+            self.output = json.load(f)
+        if os.path.exists(dex_size_data):
+            os.remove(dex_size_data)
+        with os.fdopen(os.open(source_size_data, flags, mode), 'r') as f:
+            self.source_output = json.load(f)
+        if os.path.exists(source_size_data):
+            os.remove(source_size_data)
+
+    def run(self):
+        if self.java_test_root:
+            cmd = [self.run_java, '--java-bin-path', self.args.java_bin_path, '--r8-path',
+                   self.args.r8_path, '--rt-path', self.args.rt_path]
+            if self.args.timeout:
+                cmd.extend(['--timeout', str(self.args.timeout)])
+            try:
+                subprocess.run(cmd)
+                self.get_output_from_file()
+            except subprocess.CalledProcessError as e:
+                print(f'[ERROR]: Execute run_java Failed! Return Code: {e.returncode}')
+            except Exception as e:
+                print(f"[ERROR]: {e}")
+
+class Workload:
+    def __init__(self):
+        self.workload_root = os.path.join(TEST_ROOT, WORKLOAD_REPO)
+        self.workload_js_case_root = os.path.join(self.workload_root, WORKLOAD_JS_TEST)
+        self.workload_ts_case_root = os.path.join(self.workload_root, WORKLOAD_TS_TEST)
+        self.workload_java_case_root = os.path.join(self.workload_root, WORKLOAD_JAVA_TEST)
+        self.test_cases_root = os.path.join(TEST_ROOT, TEST_CASES)
+        self.js_test_root = os.path.join(self.test_cases_root, JS_TEST, WORKLOAD_CASES_DIR)
+        self.ts_test_root = os.path.join(self.test_cases_root, TS_TEST, WORKLOAD_CASES_DIR)
+        self.java_test_root = os.path.join(self.test_cases_root, JAVA_TEST_FRAMEWORK, JAVA_CASES, WORKLOAD_CASES_DIR)
+
+    def download(self):
+        # download workload cases
+        pull_repo(WORKLOAD_REPO_URL, self.workload_root)
+
+    def removecases(self):
+        if os.path.exists(self.js_test_root):
+            shutil.rmtree(self.js_test_root)
+        if os.path.exists(self.ts_test_root):
+            shutil.rmtree(self.ts_test_root)
+        if os.path.exists(self.java_test_root):
+            shutil.rmtree(self.java_test_root)
+
+    def copycases(self):
+        shutil.copytree(self.workload_js_case_root, self.js_test_root)
+        shutil.copytree(self.workload_ts_case_root, self.ts_test_root)
+        shutil.copytree(self.workload_java_case_root, self.java_test_root)
+        
+    def run(self):
+        self.download()
+        self.removecases()
+        self.copycases()
 
 def main():
     args = get_args()
     if not check_d8(args):
         print('[ERROR]: check d8 Failed!')
         return
+    if not check_r8_rt_exists(args):
+        print('[ERROR]: check r8 Failed!')
+        return
+    
+    workload = Workload()
+    workload.run()
 
     js_runner = ES2ABCRunner(args)
     ts_runner = ES2ABCRunner(args)
     java_runner = JavaD8Runner(args)
+    java_r8runner = JavaR8Runner(args)
 
     # add flags
     js_runner.add_flags(['--module'])
@@ -261,18 +392,13 @@ def main():
     js_runner.add_directory(TEST_CASES, '.js')
     ts_runner.add_directory(TEST_CASES, '.ts')
 
-    js_thread = threading.Thread(target=js_runner.run)
-    ts_thread = threading.Thread(target=ts_runner.run)
-    java_thread = threading.Thread(target=java_runner.run)
-
-    js_thread.start()
-    ts_thread.start()
-    java_thread.start()
-    js_thread.join()
-    ts_thread.join()
-    java_thread.join()
-
-    generate_size_comparison_report(js_runner.output, ts_runner.output, java_runner.output)
+    js_runner.run()
+    ts_runner.run()
+    java_runner.run()
+    java_r8runner.run()
+    
+    generate_size_comparison_report(js_runner.output, ts_runner.output, java_runner.output, java_r8runner.output,
+                                    js_runner.source_output, ts_runner.source_output, java_r8runner.source_output)
 
 
 if __name__ == "__main__":
