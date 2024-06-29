@@ -91,19 +91,8 @@ static void GenerateNewStatements(checker::ETSChecker *checker, ir::ObjectExpres
     // Generating: let <genSym>: <preferredType> = new <preferredType>();
     auto *genSymIdent = Gensym(allocator);
     auto *preferredType = checker->AllocNode<ir::OpaqueTypeNode>(classType);
-    ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(preferredType) << " = new @@I"
-       << addNode(checker->AllocNode<ir::Identifier>(classType->Name(), allocator));
-
-    // Type params of class type
-    if (!classType->TypeArguments().empty()) {
-        ss << "<";
-        for (auto *type : classType->TypeArguments()) {
-            type->ToString(ss);
-            ss << ",";
-        }
-        ss << ">";
-    }
-    ss << "();" << std::endl;
+    ss << "let @@I" << addNode(genSymIdent) << ": @@T" << addNode(preferredType) << " = new @@T"
+       << addNode(checker->AllocNode<ir::OpaqueTypeNode>(classType)) << "();" << std::endl;
 
     // Generating: <genSym>.key_i = value_i      ( i <= [0, object_literal.properties.size) )
     for (auto *propExpr : objExpr->Properties()) {

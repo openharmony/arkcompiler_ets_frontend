@@ -313,7 +313,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_0)
             return 1;
         }
     )");
-    CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL-lambda$invoke$0-i32-0.invoke:i32;");
+    CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL$lambda$invoke$0.invoke:i32;");
 }
 
 TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
@@ -323,7 +323,7 @@ TEST_F(RestParameterTest, lambda_without_rest_parameters_1)
             return 1;
         }
     )");
-    CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL-lambda$invoke$0-i64[]-i32-0.invoke:i64[];i32;");
+    CheckNoRestParameterFlag("LambdaObject-ETSGLOBAL$lambda$invoke$0.invoke:i64[];i32;");
 }
 
 // === Abstract method of abstract class ===

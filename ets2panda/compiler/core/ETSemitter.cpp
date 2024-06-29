@@ -106,7 +106,7 @@ static pandasm::Type PandasmTypeWithRank(checker::Type const *type)
     return pandasm::Type(ss.str(), type->Rank());
 }
 
-static pandasm::Function GenScriptFunction(public_lib::Context const *context, const ir::ScriptFunction *scriptFunc)
+static pandasm::Function GenScriptFunction(const ir::ScriptFunction *scriptFunc)
 {
     auto *funcScope = scriptFunc->Scope();
     auto *paramScope = funcScope->ParamScope();
@@ -115,7 +115,7 @@ static pandasm::Function GenScriptFunction(public_lib::Context const *context, c
     func.params.reserve(paramScope->Params().size());
 
     for (const auto *var : paramScope->Params()) {
-        func.params.emplace_back(PandasmTypeWithRank(context->checker->AsETSChecker()->MaybeBoxedType(var)), EXTENSION);
+        func.params.emplace_back(PandasmTypeWithRank(var->TsType()), EXTENSION);
     }
 
     if (scriptFunc->IsConstructor() || scriptFunc->IsStaticBlock()) {
@@ -139,7 +139,7 @@ static pandasm::Function GenScriptFunction(public_lib::Context const *context, c
 
 pandasm::Function *ETSFunctionEmitter::GenFunctionSignature()
 {
-    auto func = GenScriptFunction(Cg()->Context(), Cg()->RootNode()->AsScriptFunction());
+    auto func = GenScriptFunction(Cg()->RootNode()->AsScriptFunction());
 
     if (Cg()->RootNode()->AsScriptFunction()->IsExternal()) {
         func.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -219,7 +219,7 @@ void ETSEmitter::GenAnnotation()
     for (auto *signature : globalRecordTable->Signatures()) {
         auto *scriptFunc = signature->Node()->AsScriptFunction();
         auto func = scriptFunc->Declare() ? GenExternalFunction(scriptFunc->Signature(), scriptFunc->IsConstructor())
-                                          : GenScriptFunction(Context(), scriptFunc);
+                                          : GenScriptFunction(scriptFunc);
         if (scriptFunc->IsAsyncFunc()) {
             std::vector<pandasm::AnnotationData> annotations;
             annotations.push_back(GenAnnotationAsync(scriptFunc));
@@ -252,7 +252,7 @@ void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
     }
 
     for (auto *signature : recordTable->Signatures()) {
-        auto func = GenScriptFunction(Context(), signature->Node()->AsScriptFunction());
+        auto func = GenScriptFunction(signature->Node()->AsScriptFunction());
 
         if (!isGenStdLib) {
             func.metadata->SetAttribute(Signatures::EXTERNAL);
@@ -332,7 +332,7 @@ void ETSEmitter::EmitDefaultFieldValue(pandasm::Field &classField, const ir::Exp
 void ETSEmitter::GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external)
 {
     auto *scriptFunc = methodDef->Function();
-    auto func = GenScriptFunction(Context(), scriptFunc);
+    auto func = GenScriptFunction(scriptFunc);
 
     if (external) {
         func.metadata->SetAttribute(Signatures::EXTERNAL);

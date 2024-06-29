@@ -421,21 +421,6 @@
                 }
               }
             },
-            "value": {
-              "type": "Identifier",
-              "name": "void1",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 27
-                },
-                "end": {
-                  "line": 18,
-                  "column": 32
-                }
-              }
-            },
             "accessibility": "public",
             "static": true,
             "readonly": false,

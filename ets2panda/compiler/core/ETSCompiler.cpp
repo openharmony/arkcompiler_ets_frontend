@@ -191,13 +191,12 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) 
     compiler::VReg calleeReg = etsg->AllocReg();
     checker::Signature *signature = expr->expr_->Signature();
     bool isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
-    bool isReference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
-    if (!isReference && expr->expr_->Callee()->IsIdentifier()) {
+    if (expr->expr_->Callee()->IsIdentifier()) {
         if (!isStatic) {
             etsg->LoadThis(expr->expr_);
             etsg->StoreAccumulator(expr, calleeReg);
         }
-    } else if (!isReference && expr->expr_->Callee()->IsMemberExpression()) {
+    } else if (expr->expr_->Callee()->IsMemberExpression()) {
         if (!isStatic) {
             expr->expr_->Callee()->AsMemberExpression()->Object()->Compile(etsg);
             etsg->StoreAccumulator(expr, calleeReg);
@@ -434,7 +433,7 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
         etsg->LoadAccumulatorInt(expr, i);
         etsg->StoreAccumulator(expr, indexReg);
 
-        const compiler::TargetTypeContext ttctx2(etsg, expr->preferredType_);
+        const compiler::TargetTypeContext ttctx2(etsg, expr->TsType()->AsETSArrayType()->ElementType());
         if (!etsg->TryLoadConstantExpression(expression)) {
             expression->Compile(etsg);
         }
@@ -453,26 +452,10 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
-void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ArrowFunctionExpression *expr) const
 {
-    ETSGen *etsg = GetETSGen();
-    ASSERT(expr->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE));
-    ASSERT(expr->ResolvedLambda() != nullptr);
-    auto *ctor = expr->ResolvedLambda()->TsType()->AsETSObjectType()->ConstructSignatures()[0];
-    std::vector<compiler::VReg> arguments;
-
-    for (auto *it : expr->CapturedVars()) {
-        if (it->HasFlag(varbinder::VariableFlags::LOCAL)) {
-            arguments.push_back(it->AsLocalVariable()->Vreg());
-        }
-    }
-
-    if (expr->propagateThis_) {
-        arguments.push_back(etsg->GetThisReg());
-    }
-
-    etsg->InitLambdaObject(expr, ctor, arguments);
-    etsg->SetAccumulatorType(expr->TsType());
+    // Should have been handled by LambdaLowering
+    UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
@@ -765,7 +748,7 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
     for (size_t i = 0; i < argumentCount; i++) {
         checker::Type *paramType;
         if (i < signature->Params().size()) {
-            paramType = checker->MaybeBoxedType(signature->Params()[i], checker->Allocator());
+            paramType = signature->Params()[i]->TsType();
         } else {
             ASSERT(signature->RestVar() != nullptr);
             auto *restType = signature->RestVar()->TsType();
@@ -790,9 +773,18 @@ void ConvertArgumentsForFunctionalCall(checker::ETSChecker *const checker, const
 void ETSCompiler::Compile(const ir::BlockExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
+
+    // Nasty hack: current sccope may not be expr's parent scope.
+    // For example. when expr is a field initializer, the current scope will
+    // be a constructor's scope, not the class scope where the field definition resides.
+    auto *oldParent = expr->Scope()->Parent();
+    expr->Scope()->SetParent(const_cast<varbinder::Scope *>(etsg->Scope()));
+
     compiler::LocalRegScope lrs(etsg, expr->Scope());
 
     etsg->CompileStatements(expr->Statements());
+
+    expr->Scope()->SetParent(oldParent);
 }
 
 bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const
@@ -932,7 +924,7 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     }
 
     bool isStatic = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
-    bool isReference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
+    bool isReference = false;  // expr->Signature()->HasSignatureFlag(checker::SignatureFlags::TYPE);
     bool isDynamic = expr->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG);
 
     if (isReference) {
@@ -1022,11 +1014,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::FunctionExpression *expr) c
 void ETSCompiler::Compile(const ir::Identifier *expr) const
 {
     ETSGen *etsg = GetETSGen();
-    auto lambda = etsg->VarBinder()->LambdaObjects().find(expr);
-    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
-        etsg->CreateLambdaObjectFromIdentReference(expr, lambda->second.first);
-        return;
-    }
 
     auto const *const smartType = expr->TsType();
     auto ttctx = compiler::TargetTypeContext(etsg, smartType);
@@ -1088,10 +1075,6 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
 
-    if (HandleLambdaObject(expr, etsg)) {
-        return;
-    }
-
     compiler::RegScope rs(etsg);
 
     if (CompileComputed(etsg, expr)) {
@@ -1136,17 +1119,6 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->TsType());
 
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
-}
-
-bool ETSCompiler::HandleLambdaObject(const ir::MemberExpression *expr, ETSGen *etsg) const
-{
-    auto lambda = etsg->VarBinder()->LambdaObjects().find(expr);
-    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
-        etsg->CreateLambdaObjectFromMemberReference(expr, expr->object_, lambda->second.first);
-        etsg->SetAccumulatorType(expr->TsType());
-        return true;
-    }
-    return false;
 }
 
 bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr, ETSGen *etsg) const
@@ -1359,63 +1331,10 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->TsType()));
 }
 
-void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::UpdateExpression *expr) const
 {
-    ETSGen *etsg = GetETSGen();
-
-    auto lref = compiler::ETSLReference::Create(etsg, expr->Argument(), false);
-
-    const auto argumentBoxingFlags = static_cast<ir::BoxingUnboxingFlags>(expr->Argument()->GetBoxingUnboxingFlags() &
-                                                                          ir::BoxingUnboxingFlags::BOXING_FLAG);
-    const auto argumentUnboxingFlags = static_cast<ir::BoxingUnboxingFlags>(expr->Argument()->GetBoxingUnboxingFlags() &
-                                                                            ir::BoxingUnboxingFlags::UNBOXING_FLAG);
-
-    // workaround so argument_ does not get auto unboxed by lref.GetValue()
-    expr->Argument()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
-    lref.GetValue();
-
-    if (expr->IsPrefix()) {
-        expr->Argument()->SetBoxingUnboxingFlags(argumentUnboxingFlags);
-        etsg->ApplyConversion(expr->Argument(), nullptr);
-
-        if (expr->Argument()->TsType()->IsETSBigIntType()) {
-            compiler::RegScope rs(etsg);
-            compiler::VReg valueReg = etsg->AllocReg();
-            etsg->StoreAccumulator(expr->Argument(), valueReg);
-            etsg->UpdateBigInt(expr, valueReg, expr->OperatorType());
-        } else {
-            etsg->Update(expr, expr->OperatorType());
-        }
-
-        expr->Argument()->SetBoxingUnboxingFlags(argumentBoxingFlags);
-        etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
-        lref.SetValue();
-        return;
-    }
-
-    compiler::RegScope rs(etsg);
-    compiler::VReg originalValueReg = etsg->AllocReg();
-    etsg->StoreAccumulator(expr->Argument(), originalValueReg);
-
-    expr->Argument()->SetBoxingUnboxingFlags(argumentUnboxingFlags);
-    etsg->ApplyConversion(expr->Argument(), nullptr);
-
-    if (expr->Argument()->TsType()->IsETSBigIntType()) {
-        // For postfix operations copy the bigint object before running an update operation
-        compiler::VReg updatedValue = etsg->AllocReg();
-        etsg->CreateBigIntObject(expr->Argument(), originalValueReg, Signatures::BUILTIN_BIGINT_CTOR_BIGINT);
-        etsg->StoreAccumulator(expr->Argument(), updatedValue);
-        etsg->UpdateBigInt(expr, updatedValue, expr->OperatorType());
-    } else {
-        etsg->Update(expr, expr->OperatorType());
-    }
-
-    expr->Argument()->SetBoxingUnboxingFlags(argumentBoxingFlags);
-    etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
-    ASSERT(etsg->Checker()->Relation()->IsIdenticalTo(etsg->GetAccumulatorType(), expr->Argument()->TsType()));
-
-    lref.SetValue();
-    etsg->LoadAccumulator(expr->Argument(), originalValueReg);
+    // Should have been handled by OpAssignment lowering.
+    UNREACHABLE();
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::YieldExpression *expr) const
@@ -1948,12 +1867,6 @@ void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
     ETSGen *etsg = GetETSGen();
     auto lref = compiler::ETSLReference::Create(etsg, st->Id(), true);
     auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
-
-    if (st->Id()->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
-        etsg->EmitLocalBoxCtor(st->Id());
-        etsg->StoreAccumulator(st, lref.Variable()->AsLocalVariable()->Vreg());
-        etsg->SetAccumulatorType(lref.Variable()->TsType());
-    }
 
     if (st->Init() != nullptr) {
         if (!etsg->TryLoadConstantExpression(st->Init())) {

@@ -23,6 +23,8 @@
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/recordLowering.h"
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
+#include "compiler/lowering/ets/expressionLambdaLowering.h"
+#include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
@@ -54,8 +56,10 @@ std::vector<Phase *> GetTrivialPhaseList()
 
 static BigIntLowering g_bigintLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
-static LambdaConstructionPhase g_lambdaConstructionPhase;
+static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
+static BoxingForLocals g_boxingForLocals;
+static LambdaConversionPhase g_lambdaConversionPhase;
 static ObjectIndexLowering g_objectIndexLowering;
 static ObjectIteratorLowering g_objectIteratorLowering;
 static ObjectLiteralLowering g_objectLiteralLowering;
@@ -97,12 +101,14 @@ std::vector<Phase *> GetETSPhaseList()
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
         &g_structLowering,
-        &g_lambdaConstructionPhase,
+        &g_expressionLambdaConstructionPhase,
         &g_interfacePropDeclPhase,
         &g_checkerPhase,
         &g_pluginsAfterCheck,
         &g_bigintLowering,
         &g_opAssignmentLowering,
+        &g_boxingForLocals,
+        &g_lambdaConversionPhase,
         &g_recordLowering,
         &g_objectIndexLowering,
         &g_objectIteratorLowering,

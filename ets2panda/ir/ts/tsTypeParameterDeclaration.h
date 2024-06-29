@@ -43,7 +43,6 @@ public:
 
     void SetScope(varbinder::LocalScope *scope)
     {
-        ASSERT(scope_ == nullptr);
         scope_ = scope;
     }
 

@@ -372,7 +372,7 @@ void ETSLReference::SetValue() const
         return;
     }
 
-    const auto *type = etsg_->Checker()->MaybeBoxedType(memberExpr->PropVar(), etsg_->Allocator());
+    const auto *type = memberExpr->PropVar()->TsType();
 
     etsg_->StoreProperty(Node(), type, baseReg_, propName);
 }

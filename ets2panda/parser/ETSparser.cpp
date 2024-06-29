@@ -1820,6 +1820,10 @@ ir::TypeNode *ETSParser::ParseTypeReference(TypeAnnotationParsingOptions *option
     auto startPos = Lexer()->GetToken().Start();
     ir::ETSTypeReferencePart *typeRefPart = nullptr;
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
+        return ParseTypeFormatPlaceholder();
+    }
+
     while (true) {
         auto partPos = Lexer()->GetToken().Start();
         auto [typeName, typeParams] = ParseTypeReferencePart(options);
@@ -3300,7 +3304,7 @@ ir::ArrowFunctionExpression *ETSParser::ParseArrowFunctionExpression()
 {
     auto newStatus = ParserStatus::ARROW_FUNCTION;
     auto *func = ParseFunction(newStatus);
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(Allocator(), func);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func);
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;
 }
@@ -3579,7 +3583,7 @@ ir::Expression *ETSParser::ParseAsyncExpression()
 
     auto newStatus = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ARROW_FUNCTION | ParserStatus::ASYNC_FUNCTION;
     auto *func = ParseFunction(newStatus);
-    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(Allocator(), func);
+    auto *arrowFuncNode = AllocNode<ir::ArrowFunctionExpression>(func);
     arrowFuncNode->SetRange(func->Range());
     return arrowFuncNode;
 }

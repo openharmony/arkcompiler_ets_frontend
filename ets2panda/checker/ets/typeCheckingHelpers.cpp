@@ -294,7 +294,8 @@ bool Type::PossiblyETSValueTypedExceptNullish() const
 bool Type::IsETSReferenceType() const
 {
     return IsETSObjectType() || IsETSArrayType() || IsETSNullType() || IsETSUndefinedType() || IsETSStringType() ||
-           IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType();
+           IsETSTypeParameter() || IsETSUnionType() || IsETSNonNullishType() || IsETSBigIntType() ||
+           IsETSFunctionType();
 }
 
 bool Type::IsETSUnboxableObject() const
@@ -685,39 +686,6 @@ Type const *ETSChecker::MaybePromotedBuiltinType(Type const *type) const
 Type *ETSChecker::MaybePrimitiveBuiltinType(Type *type) const
 {
     return type->IsETSObjectType() ? UnboxingConverter::GlobalTypeFromSource(this, type->AsETSObjectType()) : type;
-}
-
-Type *ETSChecker::MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const
-{
-    auto *varType = var->TsType();
-    if (var->HasFlag(varbinder::VariableFlags::BOXED)) {
-        switch (TypeKind(varType)) {
-            case TypeFlag::ETS_BOOLEAN:
-                return GetGlobalTypesHolder()->GlobalBooleanBoxBuiltinType();
-            case TypeFlag::BYTE:
-                return GetGlobalTypesHolder()->GlobalByteBoxBuiltinType();
-            case TypeFlag::CHAR:
-                return GetGlobalTypesHolder()->GlobalCharBoxBuiltinType();
-            case TypeFlag::SHORT:
-                return GetGlobalTypesHolder()->GlobalShortBoxBuiltinType();
-            case TypeFlag::INT:
-                return GetGlobalTypesHolder()->GlobalIntBoxBuiltinType();
-            case TypeFlag::LONG:
-                return GetGlobalTypesHolder()->GlobalLongBoxBuiltinType();
-            case TypeFlag::FLOAT:
-                return GetGlobalTypesHolder()->GlobalFloatBoxBuiltinType();
-            case TypeFlag::DOUBLE:
-                return GetGlobalTypesHolder()->GlobalDoubleBoxBuiltinType();
-            default: {
-                Type *box = GetGlobalTypesHolder()->GlobalBoxBuiltinType()->Instantiate(allocator, Relation(),
-                                                                                        GetGlobalTypesHolder());
-                box->AddTypeFlag(checker::TypeFlag::GENERIC);
-                box->AsETSObjectType()->TypeArguments().emplace_back(varType);
-                return box;
-            }
-        }
-    }
-    return varType;
 }
 
 ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxingType)

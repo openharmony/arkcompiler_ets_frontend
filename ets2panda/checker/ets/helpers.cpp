@@ -178,11 +178,7 @@ bool ETSChecker::SaveCapturedVariableInLocalClass(varbinder::Variable *const var
 
         if (var->Declaration()->IsParameterDecl()) {
             LOG(DEBUG, ES2PANDA) << "    - Modified parameter ";
-            if (!var->HasFlag(varbinder::VariableFlags::BOXED)) {
-                scopeIter->Node()->AsClassDefinition()->AddToLocalVariableIsNeeded(var);
-            }
-        } else {
-            var->AddFlag(varbinder::VariableFlags::BOXED);
+            scopeIter->Node()->AsClassDefinition()->AddToLocalVariableIsNeeded(var);
         }
     };
 
@@ -206,10 +202,6 @@ bool ETSChecker::SaveCapturedVariableInLocalClass(varbinder::Variable *const var
 void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, ir::Identifier *ident)
 {
     const auto &pos = ident->Start();
-
-    if (SaveCapturedVariableInLocalClass(var, ident)) {
-        return;
-    }
 
     if (!HasStatus(CheckerStatus::IN_LAMBDA)) {
         return;
@@ -692,18 +684,9 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         ThrowTypeError("Cannot get the expression type", init->Start());
     }
 
-    if (typeAnnotation == nullptr &&
-        (init->IsArrowFunctionExpression() ||
-         (init->IsTSAsExpression() && init->AsTSAsExpression()->Expr()->IsArrowFunctionExpression()))) {
-        if (init->IsArrowFunctionExpression()) {
-            // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-            typeAnnotation = init->AsArrowFunctionExpression()->CreateTypeAnnotation(this);
-        } else {
-            typeAnnotation = init->AsTSAsExpression()->TypeAnnotation()->Clone(Allocator(), nullptr);
-        }
-        ident->SetTsTypeAnnotation(typeAnnotation);
-        typeAnnotation->SetParent(ident);
-        annotationType = typeAnnotation->GetType(this);
+    if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
+        ASSERT(initType->AsETSFunctionType()->CallSignatures().size() == 1);
+        annotationType = FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures()[0]);
         bindingVar->SetTsType(annotationType);
     }
 
@@ -945,7 +928,7 @@ std::optional<SmartCastTuple> CheckerContext::ResolveSmartCastTypes()
         variableScope != nullptr ? variableScope->IsGlobalScope() ||
                                        (variableScope->Parent() != nullptr && variableScope->Parent()->IsGlobalScope())
                                  : false;
-    if (topLevelVariable && testCondition_.variable->HasFlag(varbinder::VariableFlags::BOXED)) {
+    if (topLevelVariable) {
         return std::nullopt;
     }
 
@@ -2265,6 +2248,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     method->Function()->SetIdent(method->Id()->Clone(checker->Allocator(), nullptr));
     method->Function()->AddModifier(method->Modifiers());
     method->SetVariable(var);
+    method->SetParent(field->Parent());
 
     paramScope->BindNode(func);
     functionScope->BindNode(func);

@@ -44,27 +44,30 @@ struct Conversion {
 };
 
 // NOLINTNEXTLINE(readability-magic-numbers)
-static constexpr std::array<Conversion, 16> OP_TRANSLATION {
-    {{lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL, lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT},
-     {lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL, lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT},
-     {lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL, lexer::TokenType::PUNCTUATOR_LEFT_SHIFT},
-     {lexer::TokenType::PUNCTUATOR_PLUS_EQUAL, lexer::TokenType::PUNCTUATOR_PLUS},
-     {lexer::TokenType::PUNCTUATOR_MINUS_EQUAL, lexer::TokenType::PUNCTUATOR_MINUS},
-     {lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL, lexer::TokenType::PUNCTUATOR_MULTIPLY},
-     {lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL, lexer::TokenType::PUNCTUATOR_DIVIDE},
-     {lexer::TokenType::PUNCTUATOR_MOD_EQUAL, lexer::TokenType::PUNCTUATOR_MOD},
-     {lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL, lexer::TokenType::PUNCTUATOR_BITWISE_AND},
-     {lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL, lexer::TokenType::PUNCTUATOR_BITWISE_OR},
-     {lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL, lexer::TokenType::PUNCTUATOR_BITWISE_XOR},
-     {lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL, lexer::TokenType::PUNCTUATOR_LOGICAL_AND},
-     {lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL, lexer::TokenType::PUNCTUATOR_LOGICAL_OR},
-     {lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL, lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING},
-     {lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL, lexer::TokenType::PUNCTUATOR_EXPONENTIATION}}};
+static constexpr std::array<Conversion, 18> OP_TRANSLATION {{
+    {lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL, lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT},
+    {lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL, lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT},
+    {lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL, lexer::TokenType::PUNCTUATOR_LEFT_SHIFT},
+    {lexer::TokenType::PUNCTUATOR_PLUS_EQUAL, lexer::TokenType::PUNCTUATOR_PLUS},
+    {lexer::TokenType::PUNCTUATOR_MINUS_EQUAL, lexer::TokenType::PUNCTUATOR_MINUS},
+    {lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL, lexer::TokenType::PUNCTUATOR_MULTIPLY},
+    {lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL, lexer::TokenType::PUNCTUATOR_DIVIDE},
+    {lexer::TokenType::PUNCTUATOR_MOD_EQUAL, lexer::TokenType::PUNCTUATOR_MOD},
+    {lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL, lexer::TokenType::PUNCTUATOR_BITWISE_AND},
+    {lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL, lexer::TokenType::PUNCTUATOR_BITWISE_OR},
+    {lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL, lexer::TokenType::PUNCTUATOR_BITWISE_XOR},
+    {lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL, lexer::TokenType::PUNCTUATOR_LOGICAL_AND},
+    {lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL, lexer::TokenType::PUNCTUATOR_LOGICAL_OR},
+    {lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL, lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING},
+    {lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL, lexer::TokenType::PUNCTUATOR_EXPONENTIATION},
+    {lexer::TokenType::PUNCTUATOR_PLUS_PLUS, lexer::TokenType::PUNCTUATOR_PLUS},
+    {lexer::TokenType::PUNCTUATOR_MINUS_MINUS, lexer::TokenType::PUNCTUATOR_MINUS},
+}};
 
-static lexer::TokenType OpEqualToOp(const lexer::TokenType opEqual)
+static lexer::TokenType CombinedOpToOp(const lexer::TokenType combinedOp)
 {
     for (const auto &conv : OP_TRANSLATION) {
-        if (conv.from == opEqual) {
+        if (conv.from == combinedOp) {
             return conv.to;
         }
     }
@@ -73,14 +76,13 @@ static lexer::TokenType OpEqualToOp(const lexer::TokenType opEqual)
 
 void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Expression *oldExpr)
 {
-    ir::AssignmentExpression *newAssignment = nullptr;
+    ir::Expression *exprToProcess = nullptr;
     if (loweringResult->IsAssignmentExpression()) {
-        newAssignment = loweringResult->AsAssignmentExpression();
+        exprToProcess = loweringResult->AsAssignmentExpression();
     } else if (loweringResult->IsBlockExpression() && !loweringResult->AsBlockExpression()->Statements().empty()) {
         auto *statement = loweringResult->AsBlockExpression()->Statements().back();
-        if (statement->IsExpressionStatement() &&
-            statement->AsExpressionStatement()->GetExpression()->IsAssignmentExpression()) {
-            newAssignment = statement->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
+        if (statement->IsExpressionStatement()) {
+            exprToProcess = statement->AsExpressionStatement()->GetExpression();
         }
     } else {
         UNREACHABLE();
@@ -93,10 +95,10 @@ void AdjustBoxingUnboxingFlags(ir::Expression *loweringResult, const ir::Express
     const ir::BoxingUnboxingFlags oldUnboxingFlag {oldExpr->GetBoxingUnboxingFlags() &
                                                    ir::BoxingUnboxingFlags::UNBOXING_FLAG};
 
-    if (newAssignment->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        newAssignment->SetBoxingUnboxingFlags(oldBoxingFlag);
-    } else if (newAssignment->TsType()->IsETSObjectType()) {
-        newAssignment->SetBoxingUnboxingFlags(oldUnboxingFlag);
+    if (exprToProcess->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        loweringResult->SetBoxingUnboxingFlags(oldBoxingFlag);
+    } else if (exprToProcess->TsType()->IsETSObjectType()) {
+        loweringResult->SetBoxingUnboxingFlags(oldUnboxingFlag);
     }
 }
 
@@ -109,49 +111,45 @@ static ir::OpaqueTypeNode *CreateProxyTypeNode(checker::ETSChecker *checker, ir:
     return checker->AllocNode<ir::OpaqueTypeNode>(lcType);
 }
 
-static std::string GenerateStringForLoweredAssignment(lexer::TokenType opEqual, bool hasProperty, ir::Expression *expr)
+static std::string GenFormatForExpression(ir::Expression *expr, size_t ix1, size_t ix2)
 {
-    std::string leftHand = "@@I5";
-    std::string rightHand = "@@I7";
-
-    if (hasProperty) {
+    std::string res = "@@I" + std::to_string(ix1);
+    if (expr->IsMemberExpression()) {
         auto const kind = expr->AsMemberExpression()->Kind();
         if (kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
-            leftHand += ".@@I6";
-            rightHand += ".@@I8";
+            res += ".@@I" + std::to_string(ix2);
         } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
-            leftHand += "[@@I6]";
-            rightHand += "[@@I8]";
-        } else {
-            UNREACHABLE();
+            res += "[@@I" + std::to_string(ix2) + "]";
         }
     }
+    return res;
+}
 
-    return leftHand + " = (" + rightHand + ' ' + std::string {lexer::TokenToString(OpEqualToOp(opEqual))} +
+static std::string GenerateStringForLoweredAssignment(lexer::TokenType opEqual, ir::Expression *expr)
+{
+    std::string leftHand = GenFormatForExpression(expr, 5, 6);
+    std::string rightHand = GenFormatForExpression(expr, 7, 8);
+
+    return leftHand + " = (" + rightHand + ' ' + std::string {lexer::TokenToString(CombinedOpToOp(opEqual))} +
            " (@@E9)) as @@T10";
 }
 
 static ir::Identifier *GetClone(ArenaAllocator *allocator, ir::Identifier *node)
 {
-    return node != nullptr ? node->Clone(allocator, nullptr) : nullptr;
+    return node == nullptr ? nullptr : node->Clone(allocator, nullptr);
 }
 
-ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker *checker, parser::ETSParser *parser,
-                                   ir::AssignmentExpression *assignment)
+static ir::Expression *ConstructOpAssignmentResult(public_lib::Context *ctx, ir::AssignmentExpression *assignment)
 {
-    if (assignment->TsType() == nullptr) {  // hasn't been through checker
-        return assignment;
-    }
+    auto *allocator = ctx->allocator;
+    auto *parser = ctx->parser->AsETSParser();
+    auto *checker = ctx->checker->AsETSChecker();
 
     const auto opEqual = assignment->OperatorType();
     ASSERT(opEqual != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    ASSERT(parser != nullptr);
-
-    auto *const allocator = checker->Allocator();
 
     auto *const left = assignment->Left();
     auto *const right = assignment->Right();
-    auto *const scope = NearestScope(assignment);
 
     std::string newAssignmentStatements {};
 
@@ -159,8 +157,6 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     ir::Identifier *ident2 = nullptr;
     ir::Expression *object = nullptr;
     ir::Expression *property = nullptr;
-
-    checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY};
 
     // Create temporary variable(s) if left hand of assignment is not defined by simple identifier[s]
     if (left->IsIdentifier()) {
@@ -172,14 +168,14 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
             ident1 = object->AsIdentifier();
         } else {
             ident1 = Gensym(allocator);
-            newAssignmentStatements = "let @@I1 = (@@E2); ";
+            newAssignmentStatements = "const @@I1 = (@@E2); ";
         }
 
         if (property = memberExpression->Property(); property->IsIdentifier()) {
             ident2 = property->AsIdentifier();
         } else {
             ident2 = Gensym(allocator);
-            newAssignmentStatements += "let @@I3 = (@@E4); ";
+            newAssignmentStatements += "const @@I3 = (@@E4); ";
         }
     } else {
         UNREACHABLE();
@@ -188,21 +184,130 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
     auto *exprType = CreateProxyTypeNode(checker, left);
 
     // Generate ArkTS code string for new lowered assignment expression:
-    newAssignmentStatements += GenerateStringForLoweredAssignment(opEqual, ident2 != nullptr, left);
+    newAssignmentStatements += GenerateStringForLoweredAssignment(opEqual, left);
 
-    // Parse ArkTS code string and create and process corresponding AST node(s)
-    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+    // Parse ArkTS code string and create corresponding AST node(s)
+    return parser->CreateFormattedExpression(newAssignmentStatements, ident1, object, ident2, property,
+                                             GetClone(allocator, ident1), GetClone(allocator, ident2),
+                                             GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
+}
 
-    auto *loweringResult = parser->CreateFormattedExpression(
-        newAssignmentStatements, ident1, object, ident2, property, GetClone(allocator, ident1),
-        GetClone(allocator, ident2), GetClone(allocator, ident1), GetClone(allocator, ident2), right, exprType);
+ir::AstNode *HandleOpAssignment(public_lib::Context *ctx, ir::AssignmentExpression *assignment)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+
+    if (assignment->TsType() == nullptr) {  // hasn't been through checker
+        return assignment;
+    }
+
+    auto *loweringResult = ConstructOpAssignmentResult(ctx, assignment);
+
     loweringResult->SetParent(assignment->Parent());
-    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->parserProgram->VarBinder());
 
-    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, NearestScope(loweringResult));
+    auto *const scope = NearestScope(assignment);
+
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->parserProgram->VarBinder());
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(loweringResult, scope);
+
+    checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY, ContainingClass(assignment)};
+    checker::ScopeContext sc {checker, scope};
+
     loweringResult->Check(checker);
 
     AdjustBoxingUnboxingFlags(loweringResult, assignment);
+
+    return loweringResult;
+}
+
+static ir::Expression *ConstructUpdateResult(public_lib::Context *ctx, ir::UpdateExpression *upd)
+{
+    auto *allocator = ctx->allocator;
+    auto *parser = ctx->parser->AsETSParser();
+    auto *argument = upd->Argument();
+    auto *checker = ctx->checker->AsETSChecker();
+
+    std::string newAssignmentStatements {};
+
+    ir::Identifier *id1;
+    ir::Identifier *id2 = nullptr;
+    ir::Identifier *id3 = nullptr;
+    ir::Expression *object = nullptr;
+    ir::Expression *property = nullptr;
+    checker::Type *objType = checker->GlobalVoidType();  // placeholder
+    checker::Type *propType = checker->GlobalVoidType();
+
+    // Parse ArkTS code string and create the corresponding AST node(s)
+    // We have to use extra caution with types and `as` conversions because of smart types, which we cannot reproduce in
+    // re-checking.
+
+    if (argument->IsIdentifier()) {
+        id1 = GetClone(allocator, argument->AsIdentifier());
+    } else if (argument->IsMemberExpression()) {
+        auto *memberExpression = argument->AsMemberExpression();
+
+        if (object = memberExpression->Object(); object->IsIdentifier()) {
+            id1 = GetClone(allocator, object->AsIdentifier());
+        } else {
+            id1 = Gensym(allocator);
+            newAssignmentStatements = "const @@I1 = (@@E2) as @@T3; ";
+            objType = object->TsType();
+        }
+
+        if (property = memberExpression->Property(); property->IsIdentifier()) {
+            id2 = GetClone(allocator, property->AsIdentifier());
+        } else {
+            id2 = Gensym(allocator);
+            newAssignmentStatements += "const @@I4 = (@@E5) as @@T6; ";
+            propType = property->TsType();
+        }
+    }
+
+    std::string opSign = lexer::TokenToString(CombinedOpToOp(upd->OperatorType()));
+
+    std::string suffix = (argument->TsType() == checker->GlobalETSBigIntType()) ? "n" : "";
+
+    // NOLINTBEGIN(readability-magic-numbers)
+    if (upd->IsPrefix()) {
+        newAssignmentStatements += GenFormatForExpression(argument, 7U, 8U) + " = (" +
+                                   GenFormatForExpression(argument, 9U, 10U) + opSign + " 1" + suffix + ") as @@T11;";
+        return parser->CreateFormattedExpression(
+            newAssignmentStatements, id1, object, objType, id2, property, propType, GetClone(allocator, id1),
+            GetClone(allocator, id2), GetClone(allocator, id1), GetClone(allocator, id2), argument->TsType());
+    }
+
+    // upd is postfix
+    id3 = Gensym(allocator);
+    newAssignmentStatements += "const @@I7 = " + GenFormatForExpression(argument, 8, 9) + " as @@T10;" +
+                               GenFormatForExpression(argument, 11U, 12U) + " = (@@I13 " + opSign + " 1" + suffix +
+                               ") as @@T14; @@I15;";
+    return parser->CreateFormattedExpression(newAssignmentStatements, id1, object, objType, id2, property, propType,
+                                             id3, GetClone(allocator, id1), GetClone(allocator, id2),
+                                             argument->TsType(), GetClone(allocator, id1), GetClone(allocator, id2),
+                                             GetClone(allocator, id3), argument->TsType(), GetClone(allocator, id3));
+    // NOLINTEND(readability-magic-numbers)
+}
+
+static ir::AstNode *HandleUpdate(public_lib::Context *ctx, ir::UpdateExpression *upd)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+
+    auto *const scope = NearestScope(upd);
+
+    ir::Expression *loweringResult = ConstructUpdateResult(ctx, upd);
+
+    auto expressionCtx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+    checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY, ContainingClass(upd)};
+    checker::ScopeContext sc {checker, scope};
+
+    loweringResult->SetParent(upd->Parent());
+    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->checker->VarBinder());
+
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScopeWithContext(loweringResult,
+                                                                              NearestScope(loweringResult));
+    loweringResult->Check(checker);
+
+    AdjustBoxingUnboxingFlags(loweringResult, upd);
 
     return loweringResult;
 }
@@ -218,14 +323,14 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
         }
     }
 
-    auto *const parser = ctx->parser->AsETSParser();
-    checker::ETSChecker *checker = ctx->checker->AsETSChecker();
-
     program->Ast()->TransformChildrenRecursively(
-        [ctx, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
+        [ctx](ir::AstNode *ast) {
             if (ast->IsAssignmentExpression() &&
                 ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-                return HandleOpAssignment(ctx, checker, parser, ast->AsAssignmentExpression());
+                return HandleOpAssignment(ctx, ast->AsAssignmentExpression());
+            }
+            if (ast->IsUpdateExpression()) {
+                return HandleUpdate(ctx, ast->AsUpdateExpression());
             }
 
             return ast;
@@ -249,8 +354,9 @@ bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser:
     }
 
     return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
-        return ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->TsType() != nullptr &&
-               ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION;
+        return (ast->IsAssignmentExpression() && ast->AsAssignmentExpression()->TsType() != nullptr &&
+                ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) ||
+               ast->IsUpdateExpression();
     });
 }
 

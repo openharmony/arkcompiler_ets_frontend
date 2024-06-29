@@ -15,6 +15,7 @@
 
 #include "util.h"
 
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/expressions/identifier.h"
 
 namespace ark::es2panda::compiler {
@@ -26,6 +27,15 @@ varbinder::Scope *NearestScope(const ir::AstNode *ast)
     }
 
     return ast == nullptr ? nullptr : ast->Scope();
+}
+
+checker::ETSObjectType const *ContainingClass(const ir::AstNode *ast)
+{
+    while (ast != nullptr && !ast->IsClassDefinition()) {
+        ast = ast->Parent();
+    }
+
+    return ast == nullptr ? nullptr : ast->AsClassDefinition()->TsType()->AsETSObjectType();
 }
 
 ir::Identifier *Gensym(ArenaAllocator *const allocator)
@@ -45,21 +55,73 @@ util::UString GenName(ArenaAllocator *const allocator)
 // Function to clear expression node types and identifier node variables (for correct re-binding and re-checking)
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept
 {
-    node->Iterate([](ir::AstNode *child) -> void {
-        if (child->IsScopeBearer()) {
-            child->ClearScope();
+    auto doNode = [](ir::AstNode *nn) {
+        if (nn->IsScopeBearer()) {
+            nn->ClearScope();
         }
-        if (child->IsExpression()) {
-            auto *expression = child->AsExpression();
-            if (!expression->IsTypeNode()) {
-                expression->SetTsType(nullptr);
-            }
-            if (expression->IsIdentifier()) {
-                expression->AsIdentifier()->SetVariable(nullptr);
-                return;
-            }
+        if (nn->IsTyped() && !(nn->IsExpression() && nn->AsExpression()->IsTypeNode())) {
+            nn->AsTyped()->SetTsType(nullptr);
         }
+        if (nn->IsIdentifier()) {
+            nn->AsIdentifier()->SetVariable(nullptr);
+        }
+    };
+
+    doNode(node);
+    node->Iterate([doNode](ir::AstNode *child) -> void {
+        doNode(child);
         ClearTypesVariablesAndScopes(child);
     });
 }
+
+ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept
+{
+    auto result = ArenaSet<varbinder::Variable *> {allocator->Adapter()};
+    auto scopes = ArenaSet<varbinder::Scope *> {allocator->Adapter()};
+    scopeBearer->IterateRecursivelyPreorder([&result, &scopes](ir::AstNode *ast) {
+        if (ast->IsScopeBearer() && ast->Scope() != nullptr) {
+            scopes.insert(ast->Scope());
+            if (ast->Scope()->IsFunctionScope()) {
+                scopes.insert(ast->Scope()->AsFunctionScope()->ParamScope());
+            } else if (ast->IsForUpdateStatement() || ast->IsForInStatement() || ast->IsForOfStatement() ||
+                       ast->IsCatchClause()) {
+                // NOTE(gogabr) LoopScope _does not_ currently respond to IsLoopScope().
+                // For now, this is the way to reach LoopDeclarationScope.
+                scopes.insert(ast->Scope()->Parent());
+            }
+        }
+        if (ast->IsIdentifier()) {
+            auto *var = ast->AsIdentifier()->Variable();
+            if (var == nullptr || !var->HasFlag(varbinder::VariableFlags::LOCAL)) {
+                return;
+            }
+            auto *sc = var->GetScope();
+            if (sc != nullptr && !sc->IsClassScope() && !sc->IsGlobalScope() && scopes.count(var->GetScope()) == 0) {
+                result.insert(var);
+            }
+        }
+    });
+    return result;
+}
+
+// Rerun varbinder and checker on the node.
+void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node)
+{
+    auto *scope = NearestScope(node);
+    auto bscope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
+
+    ClearTypesVariablesAndScopes(node);
+    InitScopesPhaseETS::RunExternalNode(node, varBinder);
+    varBinder->ResolveReferencesForScopeWithContext(node, scope);
+
+    auto *containingClass = ContainingClass(node);
+    // NOTE(gogabr: should determine checker status more finely.
+    auto checkerCtx = checker::SavedCheckerContext(
+        checker, (containingClass == nullptr) ? checker::CheckerStatus::NO_OPTS : checker::CheckerStatus::IN_CLASS,
+        containingClass);
+    auto scopeCtx = checker::ScopeContext(checker, scope);
+
+    node->Check(checker);
+}
+
 }  // namespace ark::es2panda::compiler

@@ -374,6 +374,7 @@ ir::AstNode *ETSParser::CreateClassElement(std::string_view sourceCode, const Ar
     SavedClassPrivateContext classContext(this);
 
     lexer->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
+
     return ParseClassElement(properties, modifiers, ir::ModifierFlags::NONE);
 }
 
@@ -515,6 +516,26 @@ ir::Expression *ETSParser::CreateFormattedExpression(std::string_view const sour
 
     insertingNodes_.swap(insertingNodes);
     return returnExpression;
+}
+
+ir::Statement *ETSParser::CreateTopLevelStatement(std::string_view const sourceCode)
+{
+    util::UString source {sourceCode, Allocator()};
+    auto const isp = InnerSourceParser(this);
+    auto const lexer = InitLexer({GetContext().FormattingFileName(), source.View().Utf8()});
+
+    lexer->NextToken();
+
+    return ParseTopLevelStatement();
+}
+
+ir::Statement *ETSParser::CreateFormattedTopLevelStatement(std::string_view const sourceCode,
+                                                           std::vector<ir::AstNode *> &insertingNodes)
+{
+    insertingNodes_.swap(insertingNodes);
+    auto const statement = CreateTopLevelStatement(sourceCode);
+    insertingNodes_.swap(insertingNodes);
+    return statement;
 }
 
 ir::TypeNode *ETSParser::CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view const sourceCode)

@@ -15,7 +15,6 @@
 
 #include "es2panda_lib.h"
 #include <memory>
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 
 #include "varbinder/varbinder.h"
 #include "varbinder/scope.h"
@@ -33,7 +32,8 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/regSpiller.h"
 #include "compiler/lowering/phase.h"
-#include "compiler/lowering/util.h"
+#include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/astNode.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/ts/tsAsExpression.h"
@@ -522,7 +522,7 @@ static Context *InitScopes(Context *ctx)
                 break;
             }
             ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-        } while (ctx->phases[ctx->currentPhase++]->Name() != "scopes");
+        } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::ScopesInitPhase::NAME);
         ctx->state = ES2PANDA_STATE_SCOPE_INITED;
     } catch (Error &e) {
         std::stringstream ss;
@@ -552,7 +552,7 @@ static Context *Check(Context *ctx)
             }
 
             ctx->phases[ctx->currentPhase]->Apply(ctx, ctx->parserProgram);
-        } while (ctx->phases[ctx->currentPhase++]->Name() != "checker");
+        } while (ctx->phases[ctx->currentPhase++]->Name() != compiler::CheckerPhase::NAME);
         ctx->state = ES2PANDA_STATE_CHECKED;
     } catch (Error &e) {
         std::stringstream ss;
@@ -882,7 +882,7 @@ extern "C" es2panda_AstNode *CreateArrowFunctionExpression(es2panda_Context *con
     auto *func = reinterpret_cast<ir::AstNode *>(scriptFunction)->AsScriptFunction();
     auto *allocator = ctx->allocator;
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ArrowFunctionExpression>(allocator, func));
+    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ArrowFunctionExpression>(func));
 }
 
 extern "C" es2panda_AstNode *ArrowFunctionExpressionScriptFunction(es2panda_AstNode *ast)

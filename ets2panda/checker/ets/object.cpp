@@ -251,6 +251,11 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 
 ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
 {
+    if (param->Name()->Variable() != nullptr && param->Name()->Variable()->TsType() != nullptr) {
+        ASSERT(param->Name()->Variable()->TsType()->IsETSTypeParameter());
+        return param->Name()->Variable()->TsType()->AsETSTypeParameter();
+    }
+
     auto *const paramType = CreateTypeParameter();
 
     paramType->AddTypeFlag(TypeFlag::GENERIC);
@@ -850,7 +855,6 @@ void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &c
         if (!classDef->Parent()->Parent()->IsBlockStatement()) {
             ThrowTypeError("Local classes must be defined between balanced braces", classDef->Start());
         }
-        localClasses_.push_back(classDef);
     }
 }
 
@@ -883,7 +887,11 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
         AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
     }
 
-    ValidateOverriding(classType, classDef->Start());
+    // NOTE(gogabr): temporary, until we have proper bridges, see #16485
+    // Don't check overriding for synthetic functional classes.
+    if ((static_cast<ir::AstNode *>(classDef)->Modifiers() & ir::ModifierFlags::FUNCTIONAL) == 0) {
+        ValidateOverriding(classType, classDef->Start());
+    }
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     TransformProperties(classType);
 
@@ -904,9 +912,6 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
     }
 
     CheckConstructors(classDef, classType);
-    ValidateOverriding(classType, classDef->Start());
-    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-    TransformProperties(classType);
     CheckValidInheritance(classType, classDef);
     CheckConstFields(classType);
     CheckGetterSetterProperties(classType);

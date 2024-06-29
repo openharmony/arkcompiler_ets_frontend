@@ -182,6 +182,8 @@ public:
         return ResolveBindingOptions::BINDINGS;
     }
 
+    LocalVariable *AddMandatoryParam(const std::string_view &name);
+
     static constexpr std::string_view FUNCTION_ARGUMENTS = "arguments";
     static constexpr std::string_view MANDATORY_PARAM_FUNC = "=f";
     static constexpr std::string_view MANDATORY_PARAM_NEW_TARGET = "=nt";
@@ -218,7 +220,6 @@ protected:
         LEXICAL_MANDATORY_PARAM_FUNC, LEXICAL_MANDATORY_PARAM_NEW_TARGET, LEXICAL_MANDATORY_PARAM_THIS};
 
     void LookUpMandatoryReferences(const FunctionScope *funcScope, bool needLexicalFuncObj);
-    LocalVariable *AddMandatoryParam(const std::string_view &name);
     template <size_t N>
     void AddMandatoryParams(const MandatoryParams<N> &params);
     void AddMandatoryParams();

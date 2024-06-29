@@ -73,20 +73,9 @@ checker::Type *ArrowFunctionExpression::Check(checker::ETSChecker *checker)
 }
 
 ArrowFunctionExpression::ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *const allocator)
-    : Expression(static_cast<Expression const &>(other)),
-      capturedVars_(allocator->Adapter()),
-      childLambdas_(allocator->Adapter()),
-      propagateThis_(other.propagateThis_)
+    : Expression(static_cast<Expression const &>(other))
 {
     func_ = other.func_->Clone(allocator, this)->AsScriptFunction();
-
-    for (auto *const variable : other.capturedVars_) {
-        capturedVars_.emplace_back(variable);
-    }
-
-    if (other.resolvedLambda_ != nullptr) {
-        resolvedLambda_ = other.resolvedLambda_->Clone(allocator, this)->AsClassDefinition();
-    }
 }
 
 ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
@@ -147,21 +136,6 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
     return funcType;
 }
 
-void ArrowFunctionExpression::AddCapturedVar(varbinder::Variable *var)
-{
-    if (IsVarFromSubscope(var)) {
-        return;
-    }
-    // Not using an ArenaSet for now, simpler to do it this way.
-    if (std::find(capturedVars_.begin(), capturedVars_.end(), var) != capturedVars_.end()) {
-        return;
-    }
-    capturedVars_.push_back(var);
-    if (parentLambda_ != nullptr) {
-        parentLambda_->AddCapturedVar(var);
-    }
-}
-
 bool ArrowFunctionExpression::IsVarFromSubscope(const varbinder::Variable *var) const
 {
     // The parameter scope's and the function scope's common ancestor lives outside the function, so we have to check
@@ -170,8 +144,4 @@ bool ArrowFunctionExpression::IsVarFromSubscope(const varbinder::Variable *var) 
            Function()->Scope()->ParamScope()->IsSuperscopeOf(var->GetScope());
 }
 
-void ArrowFunctionExpression::AddChildLambda(ArrowFunctionExpression *childLambda)
-{
-    childLambdas_.push_back(childLambda);
-}
 }  // namespace ark::es2panda::ir

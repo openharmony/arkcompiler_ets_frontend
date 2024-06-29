@@ -125,16 +125,19 @@ void ClassDefinition::Iterate(const NodeTraverser &cb) const
         cb(superTypeParams_);
     }
 
-    for (auto *it : implements_) {
-        cb(it);
+    // Survives adding new elements to the end
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t ix = 0; ix < implements_.size(); ix++) {
+        cb(implements_[ix]);
     }
 
     if (ctor_ != nullptr) {
         cb(ctor_);
     }
 
-    for (auto *it : body_) {
-        cb(it);
+    // NOLINTNEXTLINE(modernize-loop-convert)
+    for (size_t ix = 0; ix < body_.size(); ix++) {
+        cb(body_[ix]);
     }
 }
 

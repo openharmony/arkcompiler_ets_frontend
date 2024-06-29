@@ -1170,7 +1170,7 @@ signatures:
   - callee: BUILTIN_BOX
     method_name: set
     params: [BUILTIN_OBJECT]
-    return_type: PRIMITIVE_VOID
+    return_type: BUILTIN_OBJECT
     ref: BUILTIN_BOX_SET
 
   - callee: BUILTIN_BOOLEAN_BOX
@@ -1188,7 +1188,7 @@ signatures:
   - callee: BUILTIN_BOOLEAN_BOX
     method_name: set
     params: [PRIMITIVE_BOOLEAN]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_BOOLEAN
     ref: BUILTIN_BOOLEAN_BOX_SET
 
   - callee: BUILTIN_BYTE_BOX
@@ -1206,7 +1206,7 @@ signatures:
   - callee: BUILTIN_BYTE_BOX
     method_name: set
     params: [PRIMITIVE_BYTE]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_BYTE
     ref: BUILTIN_BYTE_BOX_SET
 
   - callee: BUILTIN_CHAR_BOX
@@ -1224,7 +1224,7 @@ signatures:
   - callee: BUILTIN_CHAR_BOX
     method_name: set
     params: [PRIMITIVE_CHAR]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_CHAR
     ref: BUILTIN_CHAR_BOX_SET
 
   - callee: BUILTIN_SHORT_BOX
@@ -1242,7 +1242,7 @@ signatures:
   - callee: BUILTIN_SHORT_BOX
     method_name: set
     params: [PRIMITIVE_SHORT]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_SHORT
     ref: BUILTIN_SHORT_BOX_SET
 
   - callee: BUILTIN_INT_BOX
@@ -1260,7 +1260,7 @@ signatures:
   - callee: BUILTIN_INT_BOX
     method_name: set
     params: [PRIMITIVE_INT]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_INT
     ref: BUILTIN_INT_BOX_SET
 
   - callee: BUILTIN_LONG_BOX
@@ -1278,7 +1278,7 @@ signatures:
   - callee: BUILTIN_LONG_BOX
     method_name: set
     params: [PRIMITIVE_LONG]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_LONG
     ref: BUILTIN_LONG_BOX_SET
 
   - callee: BUILTIN_FLOAT_BOX
@@ -1296,7 +1296,7 @@ signatures:
   - callee: BUILTIN_FLOAT_BOX
     method_name: set
     params: [PRIMITIVE_FLOAT]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_FLOAT
     ref: BUILTIN_FLOAT_BOX_SET
 
   - callee: BUILTIN_DOUBLE_BOX
@@ -1314,7 +1314,7 @@ signatures:
   - callee: BUILTIN_DOUBLE_BOX
     method_name: set
     params: [PRIMITIVE_DOUBLE]
-    return_type: PRIMITIVE_VOID
+    return_type: PRIMITIVE_DOUBLE
     ref: BUILTIN_DOUBLE_BOX_SET
 
   - callee: BUILTIN_JSRUNTIME

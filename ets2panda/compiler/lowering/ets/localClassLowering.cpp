@@ -25,112 +25,72 @@ std::string_view LocalClassConstructionPhase::Name() const
     return "LocalClassConstructionPhase";
 }
 
-void LocalClassConstructionPhase::ReplaceReferencesFromTheParametersToTheLocalVariavbles(
-    ir::ClassDefinition *classDef, const ArenaMap<varbinder::Variable *, varbinder::Variable *> &newLocalVariablesMap,
-    const ArenaSet<ir::Identifier *> &initializers)
+static ir::ClassProperty *CreateCapturedField(checker::ETSChecker *checker, const varbinder::Variable *capturedVar,
+                                              varbinder::ClassScope *scope, size_t &idx,
+                                              const lexer::SourcePosition &pos)
 {
-    // Replace the parameter variables with the newly created temporal variables and change all the references to
-    // the new temporal variable
-    for (auto boxedVarParamsIt = newLocalVariablesMap.begin(); boxedVarParamsIt != newLocalVariablesMap.end();
-         ++boxedVarParamsIt) {
-        auto paramVar = boxedVarParamsIt->first;
-        auto newVar = boxedVarParamsIt->second;
+    auto *allocator = checker->Allocator();
+    auto *varBinder = checker->VarBinder();
 
-        classDef->EraseCapturedVariable(paramVar);
-        classDef->CaptureVariable(newVar);
+    // Enter the lambda class instance field scope, every property will be bound to the lambda instance itself
+    auto fieldCtx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, scope->InstanceFieldScope());
 
-        auto *scope = paramVar->GetScope();
-        scope = scope->AsFunctionParamScope()->GetFunctionScope();
+    // Create the name for the synthetic property node
+    util::UString fieldName(util::StringView("field#"), allocator);
+    fieldName.Append(std::to_string(idx));
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    auto *fieldIdent = allocator->New<ir::Identifier>(fieldName.View(), allocator);
 
-        auto *block = scope->AsFunctionScope()->Node()->AsScriptFunction()->Body()->AsBlockStatement();
+    // Create the synthetic class property node
+    auto *field =
+        allocator->New<ir::ClassProperty>(fieldIdent, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
+    fieldIdent->SetParent(field);
 
-        block->IterateRecursively([&newLocalVariablesMap, &initializers](ir::AstNode *childNode) {
-            if (childNode->Type() != ir::AstNodeType::IDENTIFIER ||
-                initializers.find(childNode->AsIdentifier()) != initializers.end()) {
-                return;
-            }
-            const auto &newMapIt = newLocalVariablesMap.find(childNode->AsIdentifier()->Variable());
-            if (newMapIt != newLocalVariablesMap.end()) {
-                LOG(DEBUG, ES2PANDA) << "      Remap param variable: " << childNode->AsIdentifier()->Name()
-                                     << " (identifier:" << (void *)childNode
-                                     << ") variable:" << (void *)childNode->AsIdentifier()->Variable()
-                                     << " -> temporal variable:" << (void *)newMapIt->second;
-                childNode->AsIdentifier()->SetVariable(newMapIt->second);
-            }
-        });
-    }
+    // Add the declaration to the scope, and set the type based on the captured variable's scope
+    auto [decl, var] = varBinder->NewVarDecl<varbinder::LetDecl>(pos, fieldIdent->Name());
+    var->SetScope(scope->InstanceFieldScope());
+    var->AddFlag(varbinder::VariableFlags::PROPERTY);
+    var->SetTsType(capturedVar->TsType());
+
+    fieldIdent->SetVariable(var);
+    field->SetTsType(capturedVar->TsType());
+    decl->BindNode(field);
+    return field;
 }
 
-void LocalClassConstructionPhase::CreateTemporalLocalVariableForModifiedParameters(public_lib::Context *ctx,
-                                                                                   ir::ClassDefinition *classDef)
+static ir::Statement *CreateCtorFieldInit(checker::ETSChecker *checker, util::StringView name, varbinder::Variable *var)
 {
-    // Store the new variables created for the function parameters needed to be boxed
-    ArenaMap<varbinder::Variable *, varbinder::Variable *> newLocalVariablesMap(ctx->allocator->Adapter());
+    // Create synthetic field initializers for the local class fields
+    // The node structure is the following: this.field0 = field0, where the left hand side refers to the local
+    // classes field, and the right hand side is refers to the constructors parameter
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    auto *allocator = checker->Allocator();
 
-    // Store the new variables created for the function parameters needed to be boxed
-    ArenaSet<ir::Identifier *> initializers(ctx->allocator->Adapter());
-
-    // Create local variables for modified parameters since the parameters can not be boxed
-    for (auto var : classDef->CapturedVariables()) {
-        if (var->Declaration() != nullptr && var->Declaration()->IsParameterDecl() &&
-            classDef->IsLocalVariableNeeded(var)) {
-            auto *scope = var->GetScope();
-            ASSERT(scope->IsFunctionParamScope());
-            scope = scope->AsFunctionParamScope()->GetFunctionScope();
-            ASSERT(scope->AsFunctionScope()->Node()->IsScriptFunction());
-            ASSERT(scope->AsFunctionScope()->Node()->AsScriptFunction()->Body()->IsBlockStatement());
-            auto *param = var->Declaration()->AsParameterDecl();
-            auto *block = scope->AsFunctionScope()->Node()->AsScriptFunction()->Body()->AsBlockStatement();
-
-            auto *newVarIdentifier = Gensym(ctx->allocator);
-
-            auto *newVar = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
-                ctx->allocator, newVarIdentifier->Name(), varbinder::VariableFlags::LOCAL);
-
-            newVarIdentifier->SetVariable(newVar);
-            newVar->SetTsType(var->TsType());
-            newVar->AddFlag(varbinder::VariableFlags::BOXED);
-
-            auto *initializer = ctx->allocator->New<ir::Identifier>(param->Name(), ctx->allocator);
-            initializer->SetVariable(var);
-            initializer->SetTsType(var->TsType());
-
-            initializers.insert(initializer);
-            auto *declarator = ctx->allocator->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET,
-                                                                           newVarIdentifier, initializer);
-
-            newVarIdentifier->SetParent(declarator);
-            initializer->SetParent(declarator);
-
-            ArenaVector<ir::VariableDeclarator *> declarators(ctx->allocator->Adapter());
-            declarators.push_back(declarator);
-
-            auto *newVariableDeclaration = ctx->allocator->New<ir::VariableDeclaration>(
-                ir::VariableDeclaration::VariableDeclarationKind::LET, ctx->allocator, std::move(declarators), false);
-
-            declarator->SetParent(newVariableDeclaration);
-            newVariableDeclaration->SetParent(block);
-            block->Statements().insert(block->Statements().begin(), newVariableDeclaration);
-
-            newLocalVariablesMap[var] = newVar;
-        }
-    }
-
-    ReplaceReferencesFromTheParametersToTheLocalVariavbles(classDef, newLocalVariablesMap, initializers);
+    auto *thisExpr = allocator->New<ir::ThisExpression>();
+    auto *fieldAccessExpr = allocator->New<ir::Identifier>(name, allocator);
+    fieldAccessExpr->SetReference();
+    auto *leftHandSide = util::NodeAllocator::ForceSetParent<ir::MemberExpression>(
+        allocator, thisExpr, fieldAccessExpr, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    auto *rightHandSide = allocator->New<ir::Identifier>(name, allocator);
+    rightHandSide->SetVariable(var);
+    auto *initializer = util::NodeAllocator::ForceSetParent<ir::AssignmentExpression>(
+        allocator, leftHandSide, rightHandSide, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    initializer->SetTsType(var->TsType());
+    return util::NodeAllocator::ForceSetParent<ir::ExpressionStatement>(allocator, initializer);
 }
 
 void LocalClassConstructionPhase::CreateClassPropertiesForCapturedVariables(
-    public_lib::Context *ctx, ir::ClassDefinition *classDef,
+    public_lib::Context *ctx, ir::ClassDefinition *classDef, ArenaSet<varbinder::Variable *> const &capturedVars,
     ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap,
     ArenaMap<varbinder::Variable *, ir::ClassProperty *> &propertyMap)
 {
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
     size_t idx = 0;
     ArenaVector<ir::AstNode *> properties(ctx->allocator->Adapter());
-    for (auto var : classDef->CapturedVariables()) {
+    for (auto var : capturedVars) {
         ASSERT(classDef->Scope()->Type() == varbinder::ScopeType::CLASS);
-        auto *property = checker->CreateLambdaCapturedField(
-            var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()), idx, classDef->Start());
+        auto *property = CreateCapturedField(checker, var, reinterpret_cast<varbinder::ClassScope *>(classDef->Scope()),
+                                             idx, classDef->Start());
         LOG(DEBUG, ES2PANDA) << "  - Creating property (" << property->Id()->Name()
                              << ") for captured variable: " << var->Name();
         properties.push_back(property);
@@ -158,7 +118,7 @@ ir::ETSParameterExpression *LocalClassConstructionPhase::CreateParam(checker::ET
 }
 
 void LocalClassConstructionPhase::ModifyConstructorParameters(
-    public_lib::Context *ctx, ir::ClassDefinition *classDef,
+    public_lib::Context *ctx, ir::ClassDefinition *classDef, ArenaSet<varbinder::Variable *> const &capturedVars,
     ArenaMap<varbinder::Variable *, varbinder::Variable *> &variableMap,
     ArenaMap<varbinder::Variable *, varbinder::Variable *> &parameterMap)
 
@@ -171,12 +131,11 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
         auto constructor = signature->Function();
         auto &parameters = constructor->Params();
         auto &sigParams = signature->Params();
-        signature->GetSignatureInfo()->minArgCount += classDef->CapturedVariables().size();
+        signature->GetSignatureInfo()->minArgCount += capturedVars.size();
 
         ASSERT(signature == constructor->Signature());
-        for (auto var : classDef->CapturedVariables()) {
-            auto *newParam =
-                CreateParam(checker, constructor->Scope()->ParamScope(), var->Name(), checker->MaybeBoxedType(var));
+        for (auto var : capturedVars) {
+            auto *newParam = CreateParam(checker, constructor->Scope()->ParamScope(), var->Name(), var->TsType());
             newParam->SetParent(constructor);
             // NOTE(psiket) : Moving the parameter after the 'this'. Should modify the AddParam
             // to be able to insert after the this.
@@ -195,9 +154,9 @@ void LocalClassConstructionPhase::ModifyConstructorParameters(
 
         auto *body = constructor->Body();
         ArenaVector<ir::Statement *> initStatements(ctx->allocator->Adapter());
-        for (auto var : classDef->CapturedVariables()) {
+        for (auto var : capturedVars) {
             auto *propertyVar = variableMap[var];
-            auto *initStatement = checker->CreateLambdaCtorFieldInit(propertyVar->Name(), propertyVar);
+            auto *initStatement = CreateCtorFieldInit(checker, propertyVar->Name(), propertyVar);
             auto *fieldInit = initStatement->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
             auto *ctorParamVar = parameterMap[var];
             auto *fieldVar = variableMap[var];
@@ -252,11 +211,15 @@ void LocalClassConstructionPhase::RemapReferencesFromCapturedVariablesToClassPro
     }
 }
 
-bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Program * /*program*/)
+bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
+    auto *allocator = ctx->allocator;
     checker::ETSChecker *const checker = ctx->checker->AsETSChecker();
-    for (auto *classDef : checker->GetLocalClasses()) {
+    ArenaUnorderedMap<ir::ClassDefinition *, ArenaSet<varbinder::Variable *>> capturedVarsMap {allocator->Adapter()};
+
+    auto handleLocalClass = [this, ctx, &capturedVarsMap](ir::ClassDefinition *classDef) {
         LOG(DEBUG, ES2PANDA) << "Altering local class with the captured variables: " << classDef->InternalName();
+        auto capturedVars = FindCaptured(ctx->allocator, classDef);
         // Map the captured variable to the variable of the class property
         ArenaMap<varbinder::Variable *, varbinder::Variable *> variableMap(ctx->allocator->Adapter());
         // Map the captured variable to the class property
@@ -264,29 +227,48 @@ bool LocalClassConstructionPhase::Perform(public_lib::Context *ctx, parser::Prog
         // Map the captured variable to the constructor parameter
         ArenaMap<varbinder::Variable *, varbinder::Variable *> parameterMap(ctx->allocator->Adapter());
 
-        CreateTemporalLocalVariableForModifiedParameters(ctx, classDef);
-        CreateClassPropertiesForCapturedVariables(ctx, classDef, variableMap, propertyMap);
-        ModifyConstructorParameters(ctx, classDef, variableMap, parameterMap);
+        CreateClassPropertiesForCapturedVariables(ctx, classDef, capturedVars, variableMap, propertyMap);
+        ModifyConstructorParameters(ctx, classDef, capturedVars, variableMap, parameterMap);
         RemapReferencesFromCapturedVariablesToClassProperties(classDef, variableMap);
-    }
+        capturedVarsMap.emplace(classDef, std::move(capturedVars));
+    };
+
+    program->Ast()->IterateRecursivelyPostorder([&](ir::AstNode *ast) {
+        if (ast->IsClassDefinition() && ast->AsClassDefinition()->IsLocal()) {
+            handleLocalClass(ast->AsClassDefinition());
+        }
+    });
 
     // Alter the instantiations
-    for (auto *newExpr : checker->GetLocalClassInstantiations()) {
-        checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
-        auto *calleeObj = calleeType->AsETSObjectType();
-        auto *classDef = calleeObj->GetDeclNode()->AsClassDefinition();
+    auto handleLocalClassInstantiation = [ctx, checker, &capturedVarsMap](ir::ClassDefinition *classDef,
+                                                                          ir::ETSNewClassInstanceExpression *newExpr) {
         LOG(DEBUG, ES2PANDA) << "Instantiating local class: " << classDef->Ident()->Name();
-        for (auto *var : classDef->CapturedVariables()) {
+        auto capturedVarsIt = capturedVarsMap.find(classDef);
+        ASSERT(capturedVarsIt != capturedVarsMap.cend());
+        auto &capturedVars = capturedVarsIt->second;
+        for (auto *var : capturedVars) {
             LOG(DEBUG, ES2PANDA) << "  - Extending constructor argument with captured variable: " << var->Name();
 
             auto *param = checker->AllocNode<ir::Identifier>(var->Name(), ctx->allocator);
             param->SetVariable(var);
             param->SetIgnoreBox();
-            param->SetTsType(checker->AsETSChecker()->MaybeBoxedType(param->Variable()));
+            param->SetTsType(param->Variable()->TsType());
             param->SetParent(newExpr);
             newExpr->AddToArgumentsFront(param);
         }
-    }
+    };
+
+    program->Ast()->IterateRecursivelyPostorder([&](ir::AstNode *ast) {
+        if (ast->IsETSNewClassInstanceExpression()) {
+            auto *newExpr = ast->AsETSNewClassInstanceExpression();
+            checker::Type *calleeType = newExpr->GetTypeRef()->Check(checker);
+            auto *calleeObj = calleeType->AsETSObjectType();
+            auto *classDef = calleeObj->GetDeclNode()->AsClassDefinition();
+            if (classDef->IsLocal()) {
+                handleLocalClassInstantiation(classDef, newExpr);
+            }
+        }
+    });
 
     return true;
 }

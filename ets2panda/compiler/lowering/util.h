@@ -17,13 +17,20 @@
 #define ES2PANDA_COMPILER_LOWERING_UTIL_H
 
 #include "ir/astNode.h"
+#include "checker/types/ets/etsObjectType.h"
+#include "varbinder/ETSBinder.h"
 
 namespace ark::es2panda::compiler {
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
+checker::ETSObjectType const *ContainingClass(const ir::AstNode *ast);
 ir::Identifier *Gensym(ArenaAllocator *allocator);
 util::UString GenName(ArenaAllocator *allocator);
 void ClearTypesVariablesAndScopes(ir::AstNode *node) noexcept;
+ArenaSet<varbinder::Variable *> FindCaptured(ArenaAllocator *allocator, ir::AstNode *scopeBearer) noexcept;
+
+// Rerun varbinder and checker on the node.
+void Recheck(varbinder::ETSBinder *varBinder, checker::ETSChecker *checker, ir::AstNode *node);
 
 }  // namespace ark::es2panda::compiler
 

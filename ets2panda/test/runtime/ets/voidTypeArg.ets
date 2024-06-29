@@ -18,9 +18,8 @@ function foo<T>(a0: T): T {
 }
 
 function main() : void {
-    let afoo = foo<void>(undefined);
+    foo<void>(undefined);
     let bfoo = foo<undefined>(undefined);
 
-    assert(afoo == undefined);
     assert(bfoo == undefined);
 }

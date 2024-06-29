@@ -48,7 +48,8 @@ void ETSLaunchExpression::Dump(ir::AstDumper *dumper) const
 
 void ETSLaunchExpression::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("ETSLaunchExpression");
+    dumper->Add("launch ");
+    expr_->Dump(dumper);
 }
 
 void ETSLaunchExpression::Compile(compiler::PandaGen *pg) const

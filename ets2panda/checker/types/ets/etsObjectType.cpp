@@ -416,14 +416,12 @@ bool ETSObjectType::AssignmentSource(TypeRelation *const relation, [[maybe_unuse
 
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
-    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+    if (HasObjectFlag(ETSObjectFlags::FUNCTIONAL) && source->IsETSFunctionType()) {
         EnsurePropertiesInstantiated();
         auto found = properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].find(
             FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
         ASSERT(found != properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].end());
-        if (source->IsETSFunctionType()) {
-            source = source->AsETSFunctionType()->BoxPrimitives(relation->GetChecker()->AsETSChecker());
-        }
+        source = source->AsETSFunctionType()->BoxPrimitives(relation->GetChecker()->AsETSChecker());
         relation->IsAssignableTo(source, found->second->TsType());
         return;
     }
@@ -880,6 +878,26 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
 ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution)
 {
     return Substitute(relation, substitution, true);
+}
+
+ETSObjectType *ETSObjectType::SubstituteArguments(TypeRelation *relation, ArenaVector<Type *> const &arguments)
+{
+    if (arguments.empty()) {
+        return this;
+    }
+
+    auto *checker = relation->GetChecker()->AsETSChecker();
+    auto *substitution = checker->NewSubstitution();
+
+    ASSERT(baseType_ == nullptr);
+    ASSERT(typeArguments_.size() == arguments.size());
+
+    for (size_t ix = 0; ix < typeArguments_.size(); ix++) {
+        substitution->emplace(typeArguments_[ix]->AsETSTypeParameter(),
+                              checker->MaybePromotedBuiltinType(arguments[ix]));
+    }
+
+    return Substitute(relation, substitution);
 }
 
 void ETSObjectType::InstantiateProperties() const

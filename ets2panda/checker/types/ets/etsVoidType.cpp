@@ -34,7 +34,14 @@ bool ETSVoidType::AssignmentSource(TypeRelation *relation, Type *target)
     return relation->IsTrue();
 }
 
-void ETSVoidType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
+void ETSVoidType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
+{
+    if (!source->IsETSUndefinedType()) {
+        Identical(relation, source);
+    } else {
+        relation->Result(true);
+    }
+}
 
 Type *ETSVoidType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                                [[maybe_unused]] GlobalTypesHolder *globalTypes)

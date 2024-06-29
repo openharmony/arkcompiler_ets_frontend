@@ -95,17 +95,17 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     return result;
 }
 
-void Signature::ToAssemblerType(public_lib::Context *context, std::stringstream &ss) const
+void Signature::ToAssemblerType(std::stringstream &ss) const
 {
     ss << compiler::Signatures::MANGLE_BEGIN;
 
     for (const auto *param : signatureInfo_->params) {
-        MaybeBoxedType(context->checker, param)->ToAssemblerTypeWithRank(ss);
+        param->TsType()->ToAssemblerTypeWithRank(ss);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
     if (signatureInfo_->restVar != nullptr) {
-        MaybeBoxedType(context->checker, signatureInfo_->restVar)->ToAssemblerTypeWithRank(ss);
+        signatureInfo_->restVar->TsType()->ToAssemblerTypeWithRank(ss);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
     }
 

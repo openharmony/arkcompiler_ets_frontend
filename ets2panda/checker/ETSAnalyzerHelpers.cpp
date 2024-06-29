@@ -57,6 +57,26 @@ void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETS
     CheckExtensionIsShadowedByMethod(checker, objType->SuperType(), extensionFunc, signature);
 }
 
+static void ReplaceThisInExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc)
+{
+    ASSERT(!extensionFunc->Params().empty());
+    ASSERT(extensionFunc->Params()[0]->AsETSParameterExpression()->Ident()->Name() ==
+           varbinder::TypedBinder::MANDATORY_PARAM_THIS);
+    auto thisVariable = extensionFunc->Params()[0]->Variable();
+    extensionFunc->Body()->TransformChildrenRecursively(
+        [=](ir::AstNode *ast) {
+            if (ast->IsThisExpression()) {
+                auto *thisParam = checker->Allocator()->New<ir::Identifier>(
+                    varbinder::TypedBinder::MANDATORY_PARAM_THIS, checker->Allocator());
+                thisParam->SetParent(ast->Parent());
+                thisParam->SetVariable(thisVariable);
+                return static_cast<ir::AstNode *>(thisParam);
+            }
+            return ast;
+        },
+        "replace-this-in-extension-method");
+}
+
 void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *extensionFunc, ir::MethodDefinition *node)
 {
     auto *const classType = checker->GetApparentType(extensionFunc->Signature()->Params()[0]->TsType());
@@ -66,7 +86,8 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
         checker->ThrowTypeError("Extension function can only defined for class and interface type.", node->Start());
     }
 
-    checker->AddStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD);
+    // NOTE(gogabr): should be done in a lowering
+    ReplaceThisInExtensionMethod(checker, extensionFunc);
 
     checker::SignatureInfo *originalExtensionSigInfo = checker->Allocator()->New<checker::SignatureInfo>(
         extensionFunc->Signature()->GetSignatureInfo(), checker->Allocator());
@@ -256,14 +277,10 @@ checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir::Expre
     if (typeAnnotation != nullptr) {
         typeAnnotation = typeAnnotation->Clone(checker->Allocator(), nullptr);
         typeAnnotation->SetTsType(arrowFunc->ReturnTypeAnnotation()->TsType());
-    } else {
-        if ((arrowFunc->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0) {
-            InferReturnType(checker, arrowFunc, funcReturnType, callee);
-        } else if (arrowFunc->Signature()->ReturnType() != nullptr) {
-            auto newTypeAnnotation = callee->AsArrowFunctionExpression()->CreateTypeAnnotation(checker);
-            typeAnnotation = arrowFunc->ReturnTypeAnnotation();
-            funcReturnType = newTypeAnnotation->GetType(checker);
-        }
+    } else if (arrowFunc->Signature()->ReturnType() != nullptr) {
+        auto newTypeAnnotation = callee->AsArrowFunctionExpression()->CreateTypeAnnotation(checker);
+        typeAnnotation = arrowFunc->ReturnTypeAnnotation();
+        funcReturnType = newTypeAnnotation->GetType(checker);
     }
 
     auto signature = ir::FunctionSignature(nullptr, std::move(params), typeAnnotation);

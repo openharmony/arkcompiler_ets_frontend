@@ -341,21 +341,6 @@
                 }
               }
             },
-            "value": {
-              "type": "Identifier",
-              "name": "bar",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 20,
-                  "column": 21
-                },
-                "end": {
-                  "line": 20,
-                  "column": 24
-                }
-              }
-            },
             "accessibility": "public",
             "static": true,
             "readonly": false,

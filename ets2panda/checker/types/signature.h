@@ -25,8 +25,6 @@ struct Context;
 }  // namespace ark::es2panda::public_lib
 
 namespace ark::es2panda::checker {
-// For use in Signature::ToAssemblerType
-Type const *MaybeBoxedType(Checker *checker, varbinder::Variable const *var);
 
 class SignatureInfo {
 public:
@@ -123,6 +121,16 @@ public:
     SignatureInfo *GetSignatureInfo()
     {
         return signatureInfo_;
+    }
+
+    const ArenaVector<Type *> &TypeParams() const
+    {
+        return signatureInfo_->typeParams;
+    }
+
+    ArenaVector<Type *> &TypeParams()
+    {
+        return signatureInfo_->typeParams;
     }
 
     const ArenaVector<varbinder::LocalVariable *> &Params() const
@@ -238,7 +246,7 @@ public:
         return HasSignatureFlag(SignatureFlags::FINAL);
     }
 
-    void ToAssemblerType(public_lib::Context *context, std::stringstream &ss) const;
+    void ToAssemblerType(std::stringstream &ss) const;
 
     util::StringView InternalName() const;
 

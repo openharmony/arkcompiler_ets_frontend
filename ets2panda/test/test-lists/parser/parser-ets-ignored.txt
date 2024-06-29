@@ -26,14 +26,15 @@ compiler/ets/rethrowingMethodCheck1.ets
 compiler/ets/rethrowingMethodCheck2.ets
 compiler/ets/rethrowingMethodCheck3.ets
 
-parser/ets/async_with_lambda.ets
+# Local class access from lambdas
+compiler/ets/lambdaWithLocalClassAccess.ets
 
 # Skipped until #16329 is done. It is not properly checked and does not cause a CTE when using namespace import with alias.
 parser/ets/re_export/import_5.ets
 
 # Some tests within recursive import folder should run with `--ets-module` flag. These files has "__module" in their
-# name. Tests below are ignored because they should result in the ats provided in their -expected.txt. Currently they 
-# result in an error message due to not compiling with `--ets-module` flag. 
+# name. Tests below are ignored because they should result in the ats provided in their -expected.txt. Currently they
+# result in an error message due to not compiling with `--ets-module` flag.
 parser/ets/recursive_import/case_0/foo2__module.ets
 parser/ets/recursive_import/case_0/main__foo1_as__module.ets
 parser/ets/recursive_import/case_1_fail_not_called_w_module/foo2__module.ets
@@ -46,3 +47,6 @@ parser/ets/recursive_import/case_4_3-sources-in-circle_no-ets-module-compile_2/f
 parser/ets/recursive_import/case_4_3-sources-in-circle_no-ets-module-compile_2/main__foo1_as__module.ets
 parser/ets/recursive_import/case_5_main-is-not-part-of-circle/foo2__module.ets
 parser/ets/recursive_import/case_5_main-is-not-part-of-circle/foo3__module.ets
+
+# No conversion from enum to Object
+compiler/ets/lambda_infer_type/lambda_infer_type_retrun_enum.ets

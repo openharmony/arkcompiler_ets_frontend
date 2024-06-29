@@ -107,6 +107,7 @@ enum class PropertyType {
 
 /* Invoke method name in functional interfaces */
 constexpr char const *FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME = "invoke0";
+constexpr char const *FUNCTIONAL_INTERFACE_SUBSTITUTED_INVOKE_METHOD_NAME = "invoke";
 
 }  // namespace ark::es2panda::checker
 

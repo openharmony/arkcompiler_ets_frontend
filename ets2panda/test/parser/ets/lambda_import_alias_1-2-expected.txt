@@ -469,51 +469,6 @@
                 }
               }
             },
-            "value": {
-              "type": "MemberExpression",
-              "object": {
-                "type": "Identifier",
-                "name": "lib",
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 31
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 34
-                  }
-                }
-              },
-              "property": {
-                "type": "Identifier",
-                "name": "createA",
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 35
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 42
-                  }
-                }
-              },
-              "computed": false,
-              "optional": false,
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 31
-                },
-                "end": {
-                  "line": 18,
-                  "column": 42
-                }
-              }
-            },
             "accessibility": "public",
             "static": true,
             "readonly": false,

@@ -56,7 +56,9 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 
 void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
 {
-    dumper->Add("FunctionDeclaration");
+    dumper->Add("function ");
+    func_->Id()->Dump(dumper);
+    func_->Dump(dumper);
 }
 
 void FunctionDeclaration::Compile(compiler::PandaGen *pg) const
