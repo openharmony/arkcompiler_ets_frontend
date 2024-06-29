@@ -10,9 +10,6 @@ StringFasta.ets
 # panda#10423
 generics_1.ets
 
-# panda#10623
-generic-set.ets
-
 # panda#11502
 nullCoalesc.ets
 
