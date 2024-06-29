@@ -2092,7 +2092,8 @@ export class TypeScriptLinter {
 
     this.checkPartialType(node);
 
-    if (this.tsUtils.isClassNodeReference(typeRef.typeName) && this.tsUtils.isSendableTypeNode(typeRef)) {
+    const typeNameType = this.tsTypeChecker.getTypeAtLocation(typeRef.typeName);
+    if (this.tsUtils.isSendableClassOrInterface(typeNameType)) {
       this.checkSendableTypeArguments(typeRef);
     }
   }

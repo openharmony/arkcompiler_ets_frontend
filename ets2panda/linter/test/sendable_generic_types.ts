@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import {lang} from './@arkts.lang';
 class NonSendableClass3 {}
 
 @Sendable
@@ -96,3 +96,28 @@ let map2: collections.Map<string,NoneSendableClassA> = new collections.Map(); //
 let map3: collections.Map<string,NoneSendableClassA> = new collections.Map<string,SendableClassB>(); // error
 let map4: collections.Map<string,SendableClassB> = new collections.Map<string,SendableClassB>();
 let map5: collections.Map<string,SendableClassB> = new collections.Map();
+
+interface SI<T> extends lang.ISendable {
+  var1: number;
+  var2: string;
+}
+
+@Sendable
+class SendableClassC implements SI<SendableClassB> {
+    var1: number = 1;
+    var2: string = '1';
+}
+
+let ObjectC1: SI<NoneSendableClassA> = new SendableClassC(); // ERROR
+
+interface NSI<T> {
+  var1: number;
+  var2: string;
+}
+
+class NoneSendableClassC implements NSI<NoneSendableClassA> {
+  var1: number = 1;
+  var2: string = '1';
+}
+
+let ObjectC2: NSI<NoneSendableClassA> = new NoneSendableClassC();
