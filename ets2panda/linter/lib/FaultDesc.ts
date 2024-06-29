@@ -116,3 +116,4 @@ faultDesc[FaultID.SendableTypeExported] = 'Sendable type exported';
 faultDesc[FaultID.NoTsReExportEts] = 'No ts re-export ets';
 faultDesc[FaultID.NoSIdeEffectImportEtsToTs] = 'No side effect import ets to ts';
 faultDesc[FaultID.NoNameSpaceImportEtsToTs] = 'No namespace import ets to ts';
+faultDesc[FaultID.SendableExplicitFieldType] = 'Field in sendable class must have type annotation';
