@@ -811,7 +811,7 @@ class CompilerProjectTest(Test):
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
         es2abc_cmd.extend(self.flags)
         es2abc_cmd.extend(['%s%s' % ("--output=", output_file)])
-        es2abc_cmd.append('@' + input_file)
+        es2abc_cmd.append(input_file)
         return es2abc_cmd
 
     def gen_merged_abc_for_abc_input(self, runner, files_info_name):
@@ -821,7 +821,14 @@ class CompilerProjectTest(Test):
         abc_input_files_info_path = path.join(self.generated_abc_inputs_path, files_info_name)
         abc_input_merged_abc_path = path.join(self.generated_abc_inputs_path,
                                               '%s-abcinput.abc' % (files_info_name[:-len('-filesInfo.txt')]))
-        es2abc_cmd = self.gen_es2abc_cmd(runner, abc_input_files_info_path, abc_input_merged_abc_path)
+
+        abc_input_file_path = '@' + abc_input_files_info_path
+        if "unmerged_abc_input" in self.generated_abc_inputs_path:
+            self.flags.remove("--merge-abc")
+            with open(abc_input_files_info_path, 'r') as fp:
+                abc_input_file_path = fp.read().split(';')[0]
+
+        es2abc_cmd = self.gen_es2abc_cmd(runner, abc_input_file_path, abc_input_merged_abc_path)
         self.log_cmd(es2abc_cmd)
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
@@ -849,7 +856,14 @@ class CompilerProjectTest(Test):
                 test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
                 output_abc_name = path.join(file_absolute_path, test_abc_name)
 
-        es2abc_cmd = self.gen_es2abc_cmd(runner, self.files_info_path, output_abc_name)
+        # reverse merge-abc flag
+        if "merge_abc_consistence_check" in self.path:
+            if "--merge-abc" in self.flags:
+                self.flags.remove("--merge-abc")
+            else:
+                self.flags.append("--merge-abc")
+
+        es2abc_cmd = self.gen_es2abc_cmd(runner, '@' + self.files_info_path, output_abc_name)
         compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
         if path.exists(compile_context_info_path):
             es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
@@ -858,11 +872,17 @@ class CompilerProjectTest(Test):
         process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
 
+        # restore merge-abc flag
+        if "merge_abc_consistence_check" in self.path and "--merge-abc" not in self.flags:
+                self.flags.append("--merge-abc")
+
         # Check dump-assembly outputs when required
         if "--dump-assembly" in self.flags:
             pa_expected_path = "".join([self.get_path_to_expected()[:self.get_path_to_expected().rfind(".txt")],
                                         ".pa.txt"])
             self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+            if "merge_abc_consistence_check" in self.path:
+                self.output = self.output.split('.')[0]
             try:
                 with open(pa_expected_path, 'r') as fp:
                     expected = fp.read()
@@ -872,6 +892,8 @@ class CompilerProjectTest(Test):
             if not self.passed:
                 self.error = err.decode("utf-8", errors="ignore")
                 self.remove_project(runner)
+                return self
+            else:
                 return self
 
         if err:
@@ -1492,6 +1514,9 @@ def add_directory_for_compiler(runners, args):
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--dump-deps-info", "--remove-redundant-file",
                                                  "--dump-literal-buffer", "--dump-string", "--abc-class-threads=4"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/merge_abc_consistence_check/projects", "js",
+                                                ["--merge-abc", "--dump-assembly", "--enable-abc-input",
+                                                 "--abc-class-threads=4"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)

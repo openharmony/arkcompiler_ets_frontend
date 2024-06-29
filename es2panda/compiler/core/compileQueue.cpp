@@ -167,7 +167,7 @@ void CompileAbcClassJob::Run()
         std::unique_lock<std::mutex> lock(CompileFileJob::globalMutex_);
         ASSERT(compiler_.GetAbcFile().GetFilename().find(util::CHAR_VERTICAL_LINE) == std::string::npos);
         ASSERT(program->record_table.size() == 1);
-        ASSERT(program->record_table.begin()->first.find(util::CHAR_VERTICAL_LINE) == std::string::npos);
+        ASSERT(util::RecordNotGeneratedFromBytecode(program->record_table.begin()->first));
         auto name = compiler_.GetAbcFile().GetFilename();
         name += util::CHAR_VERTICAL_LINE + program->record_table.begin()->first;
         auto *cache = allocator_->New<util::ProgramCache>(std::move(*program));

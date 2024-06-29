@@ -112,5 +112,9 @@ std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const panda:
     return ohmurl.substr(0, versionStart + 1) + iter->second.version;
 }
 
+bool RecordNotGeneratedFromBytecode(std::string recordName)
+{
+    return recordName.find(util::CHAR_VERTICAL_LINE) == std::string::npos;
+}
 
 } // namespace panda::es2panda::util
