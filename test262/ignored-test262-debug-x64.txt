@@ -42,3 +42,6 @@ test262/data/test_es2021/language/identifiers/start-unicode-9.0.0.js
 test262/data/test_es2021/language/identifiers/start-unicode-9.0.0-escaped.js
 test262/data/test_es2021/built-ins/TypedArray/prototype/sort/stability.js
 # --- end of Issue #17827
+# Issue #18004
+test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
+# --- end of Issue #18004
