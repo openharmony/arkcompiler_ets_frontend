@@ -41,7 +41,8 @@ cookBookTag[17] = 'Indexed signatures are not supported (arkts-no-indexed-signat
 cookBookTag[18] = '';
 cookBookTag[19] = 'Use inheritance instead of intersection types (arkts-no-intersection-types)';
 cookBookTag[20] = '';
-cookBookTag[21] = 'Type notation using "this" is only supported for methods, that return "this" explicitly (arkts-this-typing)';
+cookBookTag[21] =
+  'Type notation using "this" is only supported for methods, that return "this" explicitly (arkts-this-typing)';
 cookBookTag[22] = 'Conditional types are not supported (arkts-no-conditional-types)';
 cookBookTag[23] = '';
 cookBookTag[24] = '';
@@ -207,3 +208,18 @@ cookBookTag[169] =
 cookBookTag[170] =
   'Side effect import are not allowed for importing from ets to ts file (arkts-no-side-effect-import-in-ts-import-ets)';
 cookBookTag[171] = 'Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)';
+cookBookTag[172] =
+  'Only imported variables can be captured by "Sendable" function (arkts-sendable-function-imported-variables)';
+cookBookTag[173] = 'Only "@Sendable" decorator can be used on "Sendable" function (arkts-sendable-function-decorator)';
+cookBookTag[174] =
+  'Only "@Sendable" decorator can be used on "Sendable" typeAlias (arkts-sendable-typeAlias-decorator)';
+cookBookTag[175] = 'Only "FunctionType" can declare "Sendable" typeAlias (arkts-sendable-typeAlias-declaration)';
+cookBookTag[176] =
+  'Only "Sendable" function or "Sendable" typeAlias object can be assigned to "Sendable" typeAlias (arkts-sendable-function-assignment)';
+cookBookTag[177] =
+  'When declaring "@Sendable" overloaded function, needs to add "@Sendable" decorator on each function (arkts-sendable-function-overload-decorator)';
+cookBookTag[178] = 'The property of "Sendable" function is limited (arkts-sendable-function-property)';
+cookBookTag[179] =
+  'Casting "Non-sendable" function to "Sendable" typeAlias is not allowed (arkts-sendable-function-as-expr)';
+cookBookTag[180] =
+  'The "@Sendable" decorator can only be used on "class", "function", "typeAlias" (arkts-sendable-decorator-limited)';

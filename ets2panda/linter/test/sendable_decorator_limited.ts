@@ -13,12 +13,41 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+@Sendable // OK
+class SendableClass {
+}
 
-export const SENDABLE_DECORATOR = 'Sendable';
+@Sendable // OK
+function sendableFunction(): void {
+};
 
-export const SENDABLE_DECORATOR_NODES = [
-  ts.SyntaxKind.ClassDeclaration,
-  ts.SyntaxKind.FunctionDeclaration,
-  ts.SyntaxKind.TypeAliasDeclaration
-];
+@Sendable // OK
+type SendableType = () => void;
+
+@Sendable // ERROR
+struct SendableStruct {
+};
+
+
+class NormalClass {
+  @Sendable // ERROR
+  name: string = 'name';
+
+  @Sendable // ERROR
+  handle() {
+
+  };
+
+  handle2(@Sendable param: string) { // ERROR
+
+  }
+
+  @Sendable // ERROR
+  get age(): number {
+    return 1;
+  }
+
+  @Sendable // ERROR
+  set age(value: number): void {
+  }
+}
