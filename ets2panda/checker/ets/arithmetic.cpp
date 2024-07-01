@@ -16,6 +16,24 @@
 #include "arithmetic.h"
 
 namespace ark::es2panda::checker {
+
+static inline void RepairTypeErrorsInOperands(Type **left, Type **right)
+{
+    if (IsTypeError(*left)) {
+        *left = *right;
+    }
+    if (IsTypeError(*right)) {
+        *right = *left;
+    }
+}
+
+static inline void RepairTypeErrorWithDefault(Type **type, Type *dflt)
+{
+    if (IsTypeError(*type)) {
+        *type = dflt;
+    }
+}
+
 Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
 {
     ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC));
@@ -158,22 +176,25 @@ bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, lexer::To
     return true;
 }
 
-void ETSChecker::CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
+bool ETSChecker::CheckBinaryPlusMultDivOperandsForUnionType(const Type *leftType, const Type *rightType,
                                                             const ir::Expression *left, const ir::Expression *right)
 {
     std::stringstream ss;
     if (leftType->IsETSUnionType()) {
         leftType->AsETSUnionType()->ToString(ss, false);
-        ThrowTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
-                           "). Unions are not allowed in binary expressions except equality.",
-                       left->Start());
+        LogTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
+                         "). Unions are not allowed in binary expressions except equality.",
+                     left->Start());
+        return false;
     }
     if (rightType->IsETSUnionType()) {
         rightType->AsETSUnionType()->ToString(ss, false);
-        ThrowTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
-                           "). Unions are not allowed in binary expressions except equality.",
-                       right->Start());
+        LogTypeError("Bad operand type: multiple types left in the normalized union type (" + ss.str() +
+                         "). Unions are not allowed in binary expressions except equality.",
+                     right->Start());
+        return false;
     }
+    return true;
 }
 
 checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
@@ -183,6 +204,13 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
     auto [left, right, operationType, pos] = op;
     auto [leftType, rightType, unboxedL, unboxedR] = types;
 
+    // Try to handle errors on a lower level
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
+    if (leftType->IsTypeError()) {  // both are errors
+        return GlobalTypeError();
+    }
+
     checker::Type *tsType {};
     auto [promotedType, bothConst] =
         ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC, !isEqualOp);
@@ -190,10 +218,13 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
-    CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right);
+    if (!CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right)) {
+        return GlobalTypeError();
+    }
 
     if (promotedType == nullptr && !bothConst) {
-        ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        return GlobalTypeError();
     }
 
     if (bothConst) {
@@ -210,16 +241,27 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(
 {
     auto [left, right, operationType, pos] = op;
     auto [leftType, rightType, unboxedL, unboxedR] = types;
+
+    // Try to handle errors on a lower level
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
+    if (leftType->IsTypeError()) {  // both are errors
+        return GlobalTypeError();
+    }
+
     if (leftType->IsETSStringType() || rightType->IsETSStringType()) {
         if (operationType == lexer::TokenType::PUNCTUATOR_MINUS ||
             operationType == lexer::TokenType::PUNCTUATOR_MINUS_EQUAL) {
-            ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+            LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+            return GlobalTypeError();
         }
 
         return HandleStringConcatenation(leftType, rightType);
     }
 
-    CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right);
+    if (!CheckBinaryPlusMultDivOperandsForUnionType(leftType, rightType, left, right)) {
+        return GlobalTypeError();
+    }
 
     auto [promotedType, bothConst] =
         ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC, !isEqualOp);
@@ -228,7 +270,8 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
     if (promotedType == nullptr && !bothConst) {
-        ThrowTypeError("Bad operand type, the types of the operands must be numeric type or String.", pos);
+        LogTypeError("Bad operand type, the types of the operands must be numeric type or String.", pos);
+        return GlobalTypeError();
     }
 
     if (bothConst) {
@@ -244,8 +287,15 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
 {
     auto [left, right, operationType, pos] = op;
     auto [leftType, rightType, unboxedL, unboxedR] = types;
+
+    RepairTypeErrorWithDefault(&leftType, GlobalIntType());
+    RepairTypeErrorWithDefault(&rightType, GlobalIntType());
+    RepairTypeErrorWithDefault(&unboxedL, GlobalIntType());
+    RepairTypeErrorWithDefault(&unboxedR, GlobalIntType());
+
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        return GlobalTypeError();
     }
 
     auto promotedLeftType = ApplyUnaryOperatorPromotion(unboxedL, false, !isEqualOp);
@@ -257,7 +307,8 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(
     if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) ||
         promotedRightType == nullptr ||
         !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-        ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        return GlobalTypeError();
     }
 
     if (promotedLeftType->HasTypeFlag(TypeFlag::CONSTANT) && promotedRightType->HasTypeFlag(TypeFlag::CONSTANT)) {
@@ -296,8 +347,15 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
     auto [left, right, operationType, pos] = op;
     auto [leftType, rightType, unboxedL, unboxedR] = types;
 
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
+    if (leftType->IsTypeError()) {  // both are errors
+        return GlobalTypeError();
+    }
+
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        return GlobalTypeError();
     }
 
     if (unboxedL != nullptr && unboxedL->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN) && unboxedR != nullptr &&
@@ -314,7 +372,8 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
     if (promotedType == nullptr && !bothConst) {
-        ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        LogTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        return GlobalTypeError();
     }
 
     if (bothConst) {
@@ -325,16 +384,24 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(
 }
 
 checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
-                                                      lexer::SourcePosition pos, checker::Type *const leftType,
-                                                      checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
+                                                      lexer::SourcePosition pos, checker::Type *leftType,
+                                                      checker::Type *rightType, Type *unboxedL, Type *unboxedR)
 {
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
+    if (leftType->IsTypeError()) {  // both are errors
+        return GlobalTypeError();
+    }
+
     if (leftType->IsETSUnionType() || rightType->IsETSUnionType()) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        return GlobalTypeError();
     }
 
     if (unboxedL == nullptr || !unboxedL->IsConditionalExprType() || unboxedR == nullptr ||
         !unboxedR->IsConditionalExprType()) {
-        ThrowTypeError("Bad operand type, the types of the operands must be of possible condition type.", pos);
+        LogTypeError("Bad operand type, the types of the operands must be of possible condition type.", pos);
+        return GlobalTypeError();
     }
 
     if (unboxedL->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
@@ -352,11 +419,11 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
     UNREACHABLE();
 }
 
-void ETSChecker::ThrowOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
-                                              checker::Type *const rightType, lexer::SourcePosition pos)
+void ETSChecker::LogOperatorCannotBeApplied(lexer::TokenType operationType, checker::Type *const leftType,
+                                            checker::Type *const rightType, lexer::SourcePosition pos)
 {
-    ThrowTypeError(
-        {"Operator '", operationType, "' cannot be applied to types '", leftType, "' and '", rightType, "'."}, pos);
+    LogTypeError({"Operator '", operationType, "' cannot be applied to types '", leftType, "' and '", rightType, "'."},
+                 pos);
 }
 
 bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, checker::Type *const rightType)
@@ -397,21 +464,29 @@ bool ETSChecker::CheckValidEqualReferenceType(checker::Type *const leftType, che
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expression *left,
                                                                       lexer::TokenType operationType,
                                                                       lexer::SourcePosition pos,
-                                                                      checker::Type *const leftType,
-                                                                      checker::Type *const rightType)
+                                                                      checker::Type *leftType, checker::Type *rightType)
 {
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    if (leftType->IsTypeError()) {  // both are errors
+        // We still know that operation result should be boolean, so recover.
+        return {GlobalETSBooleanType(), GlobalETSObjectType()};
+    }
+
     checker::Type *tsType {};
     if (!IsReferenceType(leftType) || !IsReferenceType(rightType)) {
-        ThrowTypeError("Both operands have to be reference types", pos);
+        LogTypeError("Both operands have to be reference types", pos);
+        return {GlobalETSBooleanType(), GlobalETSObjectType()};
     }
 
     Relation()->SetNode(left);
     if (!CheckValidEqualReferenceType(leftType, rightType)) {
-        ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        LogOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        return {GlobalETSBooleanType(), GlobalETSObjectType()};
     }
 
     if (!Relation()->IsCastableTo(leftType, rightType) && !Relation()->IsCastableTo(rightType, leftType)) {
-        ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        LogOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        return {GlobalETSBooleanType(), GlobalETSObjectType()};
     }
 
     tsType = GlobalETSBooleanType();
@@ -429,7 +504,9 @@ std::optional<std::tuple<Type *, Type *>> ETSChecker::CheckBinaryOperatorEqualEr
 {
     if (leftType->IsETSEnumType() && rightType->IsETSEnumType()) {
         if (!leftType->AsETSEnumType()->IsSameEnumType(rightType->AsETSEnumType())) {
-            ThrowTypeError("Bad operand type, the types of the operands must be the same enum type.", pos);
+            // We still know that operation result should be boolean, so recover.
+            LogTypeError("Bad operand type, the types of the operands must be the same enum type.", pos);
+            return {{GlobalETSBooleanType(), leftType}};
         }
 
         tsType = GlobalETSBooleanType();
@@ -438,7 +515,8 @@ std::optional<std::tuple<Type *, Type *>> ETSChecker::CheckBinaryOperatorEqualEr
 
     if (leftType->IsETSStringEnumType() && rightType->IsETSStringEnumType()) {
         if (!leftType->AsETSStringEnumType()->IsSameEnumType(rightType->AsETSStringEnumType())) {
-            ThrowTypeError("Bad operand type, the types of the operands must be the same enum type.", pos);
+            LogTypeError("Bad operand type, the types of the operands must be the same enum type.", pos);
+            return {{GlobalETSBooleanType(), leftType}};
         }
 
         tsType = GlobalETSBooleanType();
@@ -447,10 +525,18 @@ std::optional<std::tuple<Type *, Type *>> ETSChecker::CheckBinaryOperatorEqualEr
     return std::nullopt;
 }
 
-std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
-    ir::Expression *left, ir::Expression *right, lexer::TokenType operationType, lexer::SourcePosition pos,
-    checker::Type *const leftType, checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(ir::Expression *left, ir::Expression *right,
+                                                                lexer::TokenType operationType,
+                                                                lexer::SourcePosition pos, checker::Type *leftType,
+                                                                checker::Type *rightType, Type *unboxedL,
+                                                                Type *unboxedR)
 {
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
+    if (leftType->IsTypeError()) {  // both are errors
+        return {GlobalETSBooleanType(), GlobalTypeError()};
+    }
+
     checker::Type *tsType {};
 
     auto checkError = CheckBinaryOperatorEqualError(leftType, rightType, tsType, pos);
@@ -464,7 +550,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
     if (IsReferenceType(leftType) && IsReferenceType(rightType)) {
         Relation()->SetNode(left);
         if (!CheckValidEqualReferenceType(leftType, rightType)) {
-            ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+            LogOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+            return {GlobalETSBooleanType(), leftType};
         }
 
         tsType = GlobalETSBooleanType();
@@ -515,17 +602,36 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqualDynamic(ir::Expre
         // have to prevent casting dyn_exp via ApplyCast without nullish flag
         return {GlobalETSBooleanType(), GlobalETSNullishObjectType()};
     }
-    ThrowTypeError("Unimplemented case in dynamic type comparison.", pos);
+    LogTypeError("Unimplemented case in dynamic type comparison.", pos);
+    return {GlobalETSBooleanType(), GlobalETSNullishObjectType()};
 }
 
-std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
-    ir::Expression *left, ir::Expression *right, lexer::TokenType operationType, lexer::SourcePosition pos,
-    bool isEqualOp, checker::Type *const leftType, checker::Type *const rightType, Type *unboxedL, Type *unboxedR)
+// Satisfying the Chinese checker
+static bool NonNumericTypesAreAppropriateForComparison(Type *leftType, Type *rightType)
 {
+    return (rightType->IsETSStringType() && leftType->IsETSStringType()) ||
+           (((leftType->IsETSEnumType() && rightType->IsETSEnumType()) ||
+             (leftType->IsETSStringEnumType() && rightType->IsETSStringEnumType())) &&
+            leftType->AsEnumInterface()->IsSameEnumType(rightType->AsEnumInterface()));
+}
+
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(ir::Expression *left, ir::Expression *right,
+                                                                      lexer::TokenType operationType,
+                                                                      lexer::SourcePosition pos, bool isEqualOp,
+                                                                      checker::Type *leftType, checker::Type *rightType,
+                                                                      Type *unboxedL, Type *unboxedR)
+{
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    RepairTypeErrorsInOperands(&unboxedL, &unboxedR);
+    if (leftType->IsTypeError()) {  // both are errors
+        return {GlobalETSBooleanType(), GlobalTypeError()};
+    }
+
     if ((leftType->IsETSUnionType() || rightType->IsETSUnionType()) &&
         operationType != lexer::TokenType::PUNCTUATOR_EQUAL &&
         operationType != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
-        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        LogTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+        return {GlobalETSBooleanType(), leftType};
     }
 
     checker::Type *tsType {};
@@ -541,20 +647,18 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
 
     if ((unboxedL != nullptr) && (unboxedR != nullptr) &&
         (unboxedL->IsETSBooleanType() != unboxedR->IsETSBooleanType())) {
-        ThrowOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        LogOperatorCannotBeApplied(operationType, leftType, rightType, pos);
+        return {GlobalETSBooleanType(), leftType};
     }
 
     if (promotedType == nullptr && !bothConst) {
-        if (rightType->IsETSStringType() && leftType->IsETSStringType()) {
+        if (NonNumericTypesAreAppropriateForComparison(leftType, rightType)) {
             return {GlobalETSBooleanType(), GlobalETSBooleanType()};
         }
-        if (((leftType->IsETSEnumType() && rightType->IsETSEnumType()) ||
-             (leftType->IsETSStringEnumType() && rightType->IsETSStringEnumType())) &&
-            leftType->AsEnumInterface()->IsSameEnumType(rightType->AsEnumInterface())) {
-            return {GlobalETSBooleanType(), GlobalETSBooleanType()};
-        }
-        ThrowTypeError(
-            "Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.", pos);
+
+        LogTypeError("Bad operand type, the types of the operands must be numeric, same enumeration, or boolean type.",
+                     pos);
+        return {GlobalETSBooleanType(), GlobalETSBooleanType()};
     }
 
     if (bothConst) {
@@ -567,18 +671,24 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
     return {tsType, opType};
 }
 
-std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::SourcePosition pos,
-                                                                     checker::Type *const leftType,
-                                                                     checker::Type *const rightType)
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::SourcePosition pos, checker::Type *leftType,
+                                                                     checker::Type *rightType)
 {
+    RepairTypeErrorsInOperands(&leftType, &rightType);
+    if (leftType->IsTypeError()) {  // both are errors
+        return {GlobalETSBooleanType(), GlobalTypeError()};
+    }
+
     checker::Type *tsType {};
     if (!IsReferenceType(leftType) ||
         (!IsReferenceType(rightType) && !rightType->IsETSStringEnumType() && !rightType->IsETSEnumType())) {
-        ThrowTypeError("Bad operand type, the types of the operands must be same type.", pos);
+        LogTypeError("Bad operand type, the types of the operands must be same type.", pos);
+        return {GlobalETSBooleanType(), leftType};
     }
 
     if (rightType->IsETSDynamicType() && !rightType->AsETSDynamicType()->HasDecl()) {
-        ThrowTypeError("Right-hand side of instanceof expression must represent a type.", pos);
+        LogTypeError("Right-hand side of instanceof expression must represent a type.", pos);
+        return {GlobalETSBooleanType(), leftType};
     }
 
     tsType = GlobalETSBooleanType();
@@ -609,7 +719,8 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *left, ir:
 {
     auto *leftType = left->TsType();
     if (!IsReferenceType(leftType)) {
-        ThrowTypeError("Left-hand side of nullish-coalescing expression must be a reference type.", pos);
+        LogTypeError("Left-hand side of nullish-coalescing expression must be a reference type.", pos);
+        return leftType;
     }
 
     leftType = GetNonNullishType(leftType);
@@ -742,7 +853,9 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     checker::Type *const leftType = left->Check(this);
 
     if (leftType == nullptr) {
-        ThrowTypeError("Unexpected type error in binary expression", left->Start());
+        LogTypeError("Unexpected type error in binary expression", left->Start());
+        auto rightType = right->Check(this);
+        return {rightType, rightType};
     }
 
     if (operationType == lexer::TokenType::KEYW_INSTANCEOF) {
@@ -757,7 +870,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
     }
 
     if (rightType == nullptr) {
-        ThrowTypeError("Unexpected type error in binary expression", pos);
+        LogTypeError("Unexpected type error in binary expression", pos);
+        return {leftType, leftType};
     }
 
     const bool isLogicalExtendedOperator = (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) ||
@@ -792,9 +906,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
         return {tsType, tsType};
     }
 
-    BinaryOperatorParams binaryParams {left, right, expr, operationType, pos, isEqualOp};
-    TypeParams typeParams {leftType, rightType, unboxedL, unboxedR};
-    return CheckBinaryOperatorHelper(this, binaryParams, typeParams);
+    return CheckBinaryOperatorHelper(this, {left, right, expr, operationType, pos, isEqualOp},
+                                     {leftType, rightType, unboxedL, unboxedR});
 }
 
 Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)

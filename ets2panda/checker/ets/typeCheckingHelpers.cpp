@@ -57,19 +57,21 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     auto *const testType = expr->Check(this);
     auto *const conditionType = ETSBuiltinTypeAsConditionalType(testType);
 
-    if (conditionType == nullptr || !conditionType->IsConditionalExprType()) {
-        ThrowTypeError("Condition must be of possible condition type", expr->Start());
+    expr->SetTsType(conditionType);
+
+    if (conditionType == nullptr || (!conditionType->IsTypeError() && !conditionType->IsConditionalExprType())) {
+        LogTypeError("Condition must be of possible condition type", expr->Start());
+        return;
     }
 
     if (conditionType->IsETSVoidType()) {
-        ThrowTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
+        LogTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
+        return;
     }
 
     if (conditionType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         FlagExpressionWithUnboxing(testType, conditionType, expr);
     }
-
-    expr->SetTsType(conditionType);
 }
 
 void ETSChecker::CheckNonNullish(ir::Expression const *expr)
@@ -399,8 +401,8 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         return GetTypeOfSetterGetter(var);
     }
 
-    if (var->TsType() != nullptr) {
-        return var->TsType();
+    if (var->TsTypeOrError() != nullptr) {
+        return var->TsTypeOrError();
     }
 
     // NOTE: kbaladurin. forbid usage of imported entities as types without declarations
@@ -646,6 +648,10 @@ Type *ETSChecker::ETSBuiltinTypeAsPrimitiveType(Type *objectType)
 
 Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *const objectType)
 {
+    if (objectType->IsTypeError()) {
+        return objectType;
+    }
+
     if ((objectType == nullptr) || !objectType->IsConditionalExprType()) {
         return nullptr;
     }

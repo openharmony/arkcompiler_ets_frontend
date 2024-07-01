@@ -22,9 +22,9 @@ namespace ark::es2panda::util {
 
 class ErrorLogger {
 public:
-    explicit ErrorLogger(ArenaAllocator *allocator) : log_(allocator->Adapter()) {}
+    explicit ErrorLogger() : ostream_(&std::cout) {}
 
-    ArenaVector<Error> const &Log() const
+    std::vector<Error> const &Log() const
     {
         return log_;
     }
@@ -34,10 +34,16 @@ public:
         return !log_.empty();
     }
 
-    void Log(Error &&error, std::ostream &ostream = std::cerr);
+    void WriteLog(Error &&error);
+
+    void SetOstream(std::ostream *ostream)
+    {
+        ostream_ = ostream;
+    }
 
 private:
-    ArenaVector<Error> log_;
+    std::vector<Error> log_;
+    std::ostream *ostream_;
 };
 
 }  // namespace ark::es2panda::util

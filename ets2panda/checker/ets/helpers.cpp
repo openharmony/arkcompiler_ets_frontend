@@ -63,7 +63,7 @@ bool ETSChecker::IsVariableStatic(const varbinder::Variable *var)
 
 bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var)
 {
-    return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
+    return var->TsTypeOrError() != nullptr && var->TsTypeOrError()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
 
 void ETSChecker::ThrowError(ir::Identifier *const ident)
@@ -591,7 +591,7 @@ void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::Arr
 checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bindingVar, ir::ModifierFlags flags)
 {
     if ((flags & ir::ModifierFlags::OPTIONAL) != 0) {
-        auto type = bindingVar->TsType();
+        auto type = bindingVar->TsTypeOrError();
         if (type->IsETSUnionType()) {
             auto constituentTypes = type->AsETSUnionType()->ConstituentTypes();
             constituentTypes.push_back(GlobalETSUndefinedType());
@@ -601,7 +601,7 @@ checker::Type *ETSChecker::FixOptionalVariableType(varbinder::Variable *const bi
         }
         bindingVar->SetTsType(type);
     }
-    return bindingVar->TsType();
+    return bindingVar->TsTypeOrError();
 }
 
 checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)

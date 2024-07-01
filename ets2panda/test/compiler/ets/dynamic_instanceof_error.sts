@@ -19,7 +19,7 @@ flags: [dynamic-ast]
 
 import { A, } from "dynamic_js_import_tests"
 
-function foo(): int {
+function foo(): void {
   let a = 42;
   let b = a instanceof A;
 }

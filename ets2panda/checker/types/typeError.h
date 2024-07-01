@@ -25,6 +25,13 @@ class TypeError : public Type {
 public:
     explicit TypeError() : Type(TypeFlag::TYPE_ERROR) {}
 
+    bool AssignmentSource(TypeRelation *relation, [[maybe_unused]] Type *target) override
+    {
+        // Don't spread the error
+        relation->Result(RelationResult::TRUE);
+        return true;
+    }
+
     void AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *source) override
     {
         // Don't spread the error

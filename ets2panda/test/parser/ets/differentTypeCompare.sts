@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-function foo(a: boolean): boolean {
+function foo(a: boolean): void {
 }
 
 function main(): void {

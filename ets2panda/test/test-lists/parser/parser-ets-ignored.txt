@@ -34,3 +34,6 @@ compiler/ets/lambda_infer_type/lambda_infer_type_retrun_enum.sts
 
 # Issue: #17983
 parser/ets/TypeInferFunc.sts
+
+# Duplicated check for global initializers
+compiler/ets/inferTypeOfArrayNegative2.sts

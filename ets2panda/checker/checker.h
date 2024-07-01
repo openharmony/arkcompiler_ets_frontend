@@ -198,14 +198,15 @@ public:
 
     varbinder::VarBinder *VarBinder() const;
 
+    util::ErrorLogger *ErrorLogger()
+    {
+        return &errorLogger_;
+    }
+
 protected:
     void Initialize(varbinder::VarBinder *varbinder);
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
-    util::ErrorLogger *ErrorLogger()
-    {
-        return errorLogger_;
-    }
 
 private:
     ArenaAllocator allocator_;
@@ -216,7 +217,7 @@ private:
     varbinder::VarBinder *varbinder_ {};
     parser::Program *program_ {};
     varbinder::Scope *scope_ {};
-    util::ErrorLogger *errorLogger_ {};
+    util::ErrorLogger errorLogger_;
 
     RelationHolder identicalResults_ {{}, RelationType::IDENTICAL};
     RelationHolder assignableResults_ {{}, RelationType::ASSIGNABLE};

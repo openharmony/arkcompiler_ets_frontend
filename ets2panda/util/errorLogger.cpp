@@ -14,13 +14,16 @@
  */
 
 #include "errorLogger.h"
+#include "util/options.h"
 
 namespace ark::es2panda::util {
 
-void ErrorLogger::Log(Error &&error, std::ostream &stream)
+void ErrorLogger::WriteLog(Error &&error)
 {
-    stream << error.TypeString() << ": " << error.Message() << " [" << error.File() << ":" << error.Line() << ":"
-           << error.Col() << "]" << std::endl;
+    if (ostream_ != nullptr) {
+        *ostream_ << error.TypeString() << ": " << error.Message() << " [" << util::BaseName(error.File()) << ":"
+                  << error.Line() << ":" << error.Col() << "]" << std::endl;
+    }
     log_.push_back(std::move(error));
 }
 
