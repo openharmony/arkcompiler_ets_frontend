@@ -1111,7 +1111,11 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
     ASSERT(expr->PropVar()->TsType() != nullptr);
     const checker::Type *const variableType = expr->PropVar()->TsType();
     if (variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-        etsg->CallVirtual(expr, variableType->AsETSFunctionType()->FindGetter(), objReg);
+        if (expr->Object()->IsSuperExpression()) {
+            etsg->CallExact(expr, variableType->AsETSFunctionType()->FindGetter()->InternalName(), objReg);
+        } else {
+            etsg->CallVirtual(expr, variableType->AsETSFunctionType()->FindGetter(), objReg);
+        }
     } else if (objectType->IsETSDynamicType()) {
         etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, propName);
     } else if (objectType->IsETSUnionType()) {
