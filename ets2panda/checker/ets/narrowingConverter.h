@@ -103,21 +103,6 @@ private:
         }
     }
 
-    template <typename SType>
-    int CalculateIntValue(SType value)
-    {
-        if (std::isinf(value)) {
-            if (std::signbit(value)) {
-                return std::numeric_limits<int32_t>::min();
-            }
-            return std::numeric_limits<int32_t>::max();
-        }
-        if (std::isnan(value)) {
-            return 0;
-        }
-        return static_cast<int32_t>(value);
-    }
-
     template <typename From, typename To>
     To CastFloatingPointToIntOrLong(From value)
     {
@@ -153,7 +138,10 @@ private:
             case TypeFlag::BYTE:
             case TypeFlag::CHAR:
             case TypeFlag::SHORT: {
-                return CalculateIntValue<SType>(value);
+                if (source->HasTypeFlag(checker::TypeFlag::DOUBLE) || source->HasTypeFlag(checker::TypeFlag::FLOAT)) {
+                    return static_cast<TType>(CastFloatingPointToIntOrLong<SType, int32_t>(value));
+                }
+                return static_cast<TType>(value);
             }
             case TypeFlag::INT:
             case TypeFlag::LONG: {
