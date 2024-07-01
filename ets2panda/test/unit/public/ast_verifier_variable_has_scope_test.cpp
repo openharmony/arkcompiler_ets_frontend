@@ -91,3 +91,32 @@ TEST_F(ASTVerifierTest, TestUnions)
 
     impl_->DestroyContext(ctx);
 }
+
+TEST_F(ASTVerifierTest, LambdasHaveCorrectScope)
+{
+    ASTVerifier verifier {Allocator()};
+
+    char const *text = R"(
+        type BenchmarkFunc = () => void;
+
+        function main() {
+            const arr: number[] = [1, 2, 3, 4];
+            const ITERATE_FUNC: BenchmarkFunc = () => {
+                const length = arr.length;
+            };
+        }
+    )";
+
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "dummy.ets");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_CHECKED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_CHECKED);
+
+    auto *ast = reinterpret_cast<AstNode *>(impl_->ProgramAst(impl_->ContextProgram(ctx)));
+
+    InvariantNameSet checks;
+    checks.insert("VariableHasScopeForAll");
+    const auto &messages = verifier.Verify(ast, checks);
+    ASSERT_EQ(messages.size(), 0);
+
+    impl_->DestroyContext(ctx);
+}

@@ -29,11 +29,6 @@ CheckResult VariableHasScope::operator()(CheckContext &ctx, const ir::AstNode *a
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 
-    // NOTE(kkonkuznetsov): lambdas
-    if (ast->AsIdentifier()->Name().Utf8().find("lambda$invoke$") == 0) {
-        return {CheckDecision::CORRECT, CheckAction::CONTINUE};
-    }
-
     // we will check invariant for only local variables of identifiers
     if (const auto maybeVar = GetLocalScopeVariable(allocator_, ctx, ast); maybeVar.has_value()) {
         const auto var = *maybeVar;
@@ -129,6 +124,11 @@ bool VariableHasScope::ScopeEncloseVariable(CheckContext &ctx, const varbinder::
 
 bool VariableHasScope::CheckAstExceptions(const ir::AstNode *ast)
 {
+    // NODE(kkonkuznetsov): scope warnings with async lambdas
+    if (ast->IsETSParameterExpression()) {
+        return true;
+    }
+
     // NOTE(kkonkuznetsov): in some cases with lambdas scope node is null
     if (ast->Parent() != nullptr && ast->Parent()->IsETSFunctionType()) {
         return true;
@@ -142,21 +142,6 @@ bool VariableHasScope::CheckAstExceptions(const ir::AstNode *ast)
         // loop: for (let i = 0; i < 10; i++) {
         // }
         return true;
-    }
-
-    // NOTE(kkonkuznetsov): lambdas
-    auto parent = ast->Parent();
-    while (parent != nullptr) {
-        if (parent->IsScriptFunction()) {
-            auto script = parent->AsScriptFunction();
-            if (script->Id() != nullptr && script->Id()->Name().Utf8().find("lambda$invoke$") == 0) {
-                return true;
-            }
-
-            break;
-        }
-
-        parent = parent->Parent();
     }
 
     return false;

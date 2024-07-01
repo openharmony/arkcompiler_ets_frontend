@@ -81,11 +81,6 @@ bool IdentifierHasVariable::CheckMoreAstExceptions(const ir::Identifier *ast) co
         parent = parent->Parent();
     }
 
-    // NOTE(kkonkuznetsov): lambdas
-    if (ast->Name().Utf8().find("lambda$invoke$") == 0) {
-        return true;
-    }
-
     // NOTE(kkonkuznetsov): some identifiers have empty names
     if (ast->Name().Empty()) {
         return true;

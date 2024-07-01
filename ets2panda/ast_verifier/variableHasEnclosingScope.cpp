@@ -47,10 +47,6 @@ namespace ark::es2panda::compiler::ast_verifier {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
 
-        if (CheckScopeNodeExceptions(node)) {
-            return {CheckDecision::CORRECT, CheckAction::CONTINUE};
-        }
-
         if (CheckAstExceptions(ast)) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
@@ -88,30 +84,6 @@ bool VariableHasEnclosingScope::CheckCatchClause(const ir::AstNode *ast, const i
     return false;
 }
 
-bool VariableHasEnclosingScope::CheckScopeNodeExceptions(const ir::AstNode *node) const
-{
-    if (node == nullptr) {
-        return false;
-    }
-
-    // NOTE(kkonkuznetsov): lambdas
-    auto parent = node->Parent();
-    while (parent != nullptr) {
-        if (parent->IsFunctionExpression()) {
-            auto script = parent->AsFunctionExpression()->Function();
-            if (script->Id()->Name().Utf8().find("lambda$invoke$") == 0) {
-                return true;
-            }
-
-            break;
-        }
-
-        parent = parent->Parent();
-    }
-
-    return false;
-}
-
 bool VariableHasEnclosingScope::CheckAstExceptions(const ir::AstNode *ast) const
 {
     // NOTE(kkonkuznetsov): skip parameter expression inside arrow function expression
@@ -124,32 +96,13 @@ bool VariableHasEnclosingScope::CheckAstExceptions(const ir::AstNode *ast) const
         parent = parent->Parent();
     }
 
-    if (ast->Parent()->IsLabelledStatement()) {
-        // Labels are attached to loop scopes,
-        // however label identifier is outside of loop.
-        // Example:
-        //
-        // loop: for (let i = 0; i < 10; i++) {
-        // }
-        return true;
-    }
-
-    // NOTE(kkonkuznetsov): skip lambdas
-    parent = ast->Parent();
-    while (parent != nullptr) {
-        if (parent->IsFunctionExpression()) {
-            auto script = parent->AsFunctionExpression()->Function();
-            if (script->Id()->Name().Utf8().find("lambda$invoke$") == 0) {
-                return true;
-            }
-
-            break;
-        }
-
-        parent = parent->Parent();
-    }
-
-    return false;
+    // Labels are attached to loop scopes,
+    // however label identifier is outside of loop.
+    // Example:
+    //
+    // loop: for (let i = 0; i < 10; i++) {
+    // }
+    return (ast->Parent()->IsLabelledStatement());
 }
 
 }  // namespace ark::es2panda::compiler::ast_verifier
