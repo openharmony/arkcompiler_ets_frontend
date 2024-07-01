@@ -35,7 +35,6 @@ public:
     void NextToken(NextTokenFlags flags = NextTokenFlags::NONE) override;
     void ScanHashMark() override;
     bool ScanCharLiteral() override;
-    void SkipMultiLineComment() override;
     void ScanAsteriskPunctuator() override;
 
     void ScanNumberLeadingZero() override
