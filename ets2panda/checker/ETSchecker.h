@@ -697,6 +697,7 @@ public:
 
     ETSObjectType *GetCachedFunctionalInterface(ir::ETSFunctionType *type);
     void CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType);
+    void CollectReturnStatements(ir::AstNode *parent);
     ir::ETSParameterExpression *AddParam(util::StringView name, ir::TypeNode *type);
 
     [[nodiscard]] ir::ScriptFunction *FindFunction(const util::UString &name);

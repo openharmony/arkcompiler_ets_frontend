@@ -2192,6 +2192,9 @@ void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, A
     memberExpression->SetTsType(field->TsType());
     memberExpression->SetPropVar(field->Key()->Variable()->AsLocalVariable());
     memberExpression->SetRange(classDef->Range());
+    if (memberExpression->ObjType() == nullptr && classDef->TsType() != nullptr) {
+        memberExpression->SetObjectType(classDef->TsType()->AsETSObjectType());
+    }
 
     if (!isSetter) {
         stmts.push_back(AllocNode<ir::ReturnStatement>(memberExpression));

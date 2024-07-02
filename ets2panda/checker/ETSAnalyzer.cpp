@@ -65,11 +65,15 @@ checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
 checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
 {
     ETSChecker *checker = GetETSChecker();
+
     if (node->TsType() == nullptr) {
         checker->BuildBasicClassProperties(node);
     }
 
-    checker->CheckClassDefinition(node);
+    if (!node->IsClassDefinitionChecked()) {
+        checker->CheckClassDefinition(node);
+    }
+
     return nullptr;
 }
 
@@ -1103,6 +1107,10 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
         checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
         expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
+        if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
+            expr->Signature()->Function()->HasBody()) {
+            checker->CollectReturnStatements(expr->Signature()->Function());
+        }
         returnType = expr->Signature()->ReturnType();
         // NOTE(vpukhov): #14902 substituted signature is not updated
     }
@@ -2528,13 +2536,15 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 
     checker::ETSObjectType *interfaceType {};
 
-    if (st->TsType() == nullptr) {
-        interfaceType = checker->BuildBasicInterfaceProperties(st);
-        ASSERT(interfaceType != nullptr);
-        interfaceType->SetSuperType(checker->GlobalETSObjectType());
-        checker->CheckInvokeMethodsLegitimacy(interfaceType);
-        st->SetTsType(interfaceType);
+    if (st->TsType() != nullptr) {
+        return st->TsType();
     }
+
+    interfaceType = checker->BuildBasicInterfaceProperties(st);
+    ASSERT(interfaceType != nullptr);
+    interfaceType->SetSuperType(checker->GlobalETSObjectType());
+    checker->CheckInvokeMethodsLegitimacy(interfaceType);
+    st->SetTsType(interfaceType);
 
     checker::ScopeContext scopeCtx(checker, st->Scope());
     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, interfaceType);

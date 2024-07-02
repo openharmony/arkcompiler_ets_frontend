@@ -85,6 +85,10 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
          !classType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE))) {
         checker->ThrowTypeError("Extension function can only defined for class and interface type.", node->Start());
     }
+    if (classType->Variable()->Declaration()->Node()->IsClassDefinition() &&
+        !classType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
+        classType->Variable()->Declaration()->Node()->Check(checker);
+    }
 
     // NOTE(gogabr): should be done in a lowering
     ReplaceThisInExtensionMethod(checker, extensionFunc);
