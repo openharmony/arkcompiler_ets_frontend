@@ -20,7 +20,12 @@ Description: Execute 262 test suite configuration file
 
 
 import os
+import sys
+import platform
 from multiprocessing import cpu_count
+
+IS_LINUX_ARM64 = (sys.platform == "linux" and platform.machine().lower() == "aarch64")
+CLANG_TOOLCHAIN = "clang_arm64" if IS_LINUX_ARM64 else "clang_x64"
 
 DATA_DIR = os.path.join("test262", "data")
 ESHOST_DIR = os.path.join("test262", "eshost")
@@ -30,7 +35,10 @@ BASE_OUT_DIR = os.path.join("out", "test262")
 
 CUR_FILE_DIR = os.path.dirname(__file__)
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
-LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-x86_64/llvm/lib/"
+if IS_LINUX_ARM64:
+    LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-aarch64/llvm/lib/"
+else:
+    LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-x86_64/llvm/lib/"
 
 DEFAULT_MODE = 2
 
