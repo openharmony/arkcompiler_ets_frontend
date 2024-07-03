@@ -157,6 +157,7 @@ export class Autofixer {
 
   fixFunctionExpression(
     funcExpr: ts.FunctionExpression,
+    // eslint-disable-next-line default-param-last
     retType: ts.TypeNode | undefined = funcExpr.type,
     modifiers: readonly ts.Modifier[] | undefined,
     isGenerator: boolean,
@@ -241,6 +242,7 @@ export class Autofixer {
       if (node.kind === ts.SyntaxKind.Block || node.kind === ts.SyntaxKind.SourceFile) {
         break;
       }
+      // eslint-disable-next-line no-param-reassign
       node = node.parent;
     }
     return node;
@@ -251,6 +253,7 @@ export class Autofixer {
       if (node === scope) {
         return true;
       }
+      // eslint-disable-next-line no-param-reassign
       node = node.parent;
     }
     return false;
@@ -261,6 +264,7 @@ export class Autofixer {
       if (Autofixer.isFunctionLikeDeclarationKind(node)) {
         break;
       }
+      // eslint-disable-next-line no-param-reassign
       node = node.parent;
     }
     // node now Function like declaration
@@ -286,6 +290,7 @@ export class Autofixer {
           return true;
         }
       }
+      // eslint-disable-next-line no-param-reassign
       ident = ident.parent;
     }
     return false;

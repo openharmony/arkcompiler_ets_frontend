@@ -65,6 +65,7 @@ function runTests(testDirs: string[]): number {
   let failed = 0;
   // Get tests from test directory
   if (!testDirs?.length) {
+    // eslint-disable-next-line no-param-reassign
     testDirs = [TEST_DIR];
   }
   for (const testDir of testDirs) {

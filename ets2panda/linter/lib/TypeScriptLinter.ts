@@ -126,6 +126,7 @@ export class TypeScriptLinter {
     }
   }
 
+  // eslint-disable-next-line max-params
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly enableAutofix: boolean,
@@ -246,6 +247,7 @@ export class TypeScriptLinter {
         this.warningLineNumbersString += line + ', ';
         break;
       }
+      default:
     }
   }
 
@@ -275,6 +277,7 @@ export class TypeScriptLinter {
       severity: severity,
       problem: FaultID[faultId],
       suggest: isMsgNumValid ? cookBookMsg[cookBookMsgNum] : '',
+      // eslint-disable-next-line no-nested-ternary
       rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
       ruleTag: cookBookMsgNum,
       autofix: autofix,
@@ -2245,6 +2248,7 @@ export class TypeScriptLinter {
     return undefined;
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private handleDeclarationInferredType(
     decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
   ): void {

@@ -156,6 +156,7 @@ export class InteropTypescriptLinter {
         this.warningLineNumbersString += line + ', ';
         break;
       }
+      default:
     }
   }
 
@@ -185,6 +186,7 @@ export class InteropTypescriptLinter {
       severity: severity,
       problem: FaultID[faultId],
       suggest: isMsgNumValid ? cookBookMsg[cookBookMsgNum] : '',
+      // eslint-disable-next-line no-nested-ternary
       rule: isMsgNumValid && cookBookTg !== '' ? cookBookTg : faultDescr ? faultDescr : faultType,
       ruleTag: cookBookMsgNum,
       autofix: autofix,

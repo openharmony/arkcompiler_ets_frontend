@@ -6,31 +6,52 @@
     "sourceType": "module",
     "project": true
   },
-  "plugins": ["@typescript-eslint", "@stylistic"],
+  "plugins": ["@typescript-eslint", "@stylistic", "import", "n"],
   "rules": {
     // suggestions
+    "accessor-pairs": "error",
     "arrow-body-style": ["error", "always"],
     "camelcase": "off", // we use naming-convention rule to enforce naming scheme
     "class-methods-use-this": ["error", { "exceptMethods": [], "enforceForClassFields": true }],
     "complexity": ["error", { "max": 15 }],
     "consistent-return": ["error", { "treatUndefinedAsUnspecified": false }],
     "curly": ["error", "all"],
+    "default-case": "error",
+    "default-param-last": "warn",
     "dot-notation": "error",
     "eqeqeq": ["error", "smart"],
+    "func-style": ["error", "declaration", {"allowArrowFunctions": true}],
     "max-depth": ["error", { "max": 4 }],
+    "max-lines-per-function": ["error", { "max": 50 }],
+    "max-params": ["error", 5],
     "multiline-comment-style": ["error", "starred-block"],
-    "@stylistic/no-confusing-arrow": "error",
     "no-else-return": ["error", { "allowElseIf": true }],
+    "no-eval": ["error", {"allowIndirect": false} ],
     "no-extra-bind": "error",
-    "@stylistic/no-floating-decimal": "error",
+    "no-implied-eval": "error",
     "no-lonely-if": "error",
+    "no-nested-ternary": "warn",
+    "no-param-reassign": "warn",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-return-await": "error",
+    "no-throw-literal": "error",
+    "no-undef-init": "error",
     "no-unneeded-ternary": "error",
     "no-useless-return": "error",
     "no-var": "error",
-    "prefer-const": "error",
-    "spaced-comment": ["error", "always"],
     "one-var": ["error", "never"],
-    "max-lines-per-function": ["error", { "max": 50 }],
+    "one-var-declaration-per-line": "error",
+    "prefer-const": "error",
+    "prefer-named-capture-group": "warn",
+    "prefer-rest-params": "error",
+    "strict": "error",
+    "spaced-comment": ["error", "always"],
+    "vars-on-top": "error",
+
+     // imports
+    "import/no-absolute-path": "error",
+    "n/file-extension-in-import": ["error", "never"],
 
     // style
     "@stylistic/array-bracket-newline": ["error", "consistent"],
@@ -55,6 +76,8 @@
     "@stylistic/computed-property-spacing": ["error", "never", { "enforceForClassMembers": true }],
     "@stylistic/dot-location": ["error", "object"],
     "@stylistic/eol-last": ["error", "always"],
+    "@stylistic/no-confusing-arrow": "error",
+    "@stylistic/no-floating-decimal": "error",
     "@stylistic/func-call-spacing": ["error", "never"],
     "@stylistic/function-call-argument-newline": ["error", "consistent"],
     "@stylistic/function-paren-newline": ["error", "consistent"],
@@ -141,6 +164,10 @@
     // typescript
     "@typescript-eslint/explicit-function-return-type": "error",
     "@typescript-eslint/adjacent-overload-signatures": "error",
+    "@typescript-eslint/consistent-type-exports": "error",
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/no-dynamic-delete": "error",
+    "@typescript-eslint/no-this-alias": "error",
     "@typescript-eslint/explicit-member-accessibility": [
       "error",
       {
@@ -153,6 +180,13 @@
     // FIXME(knazarov)
     // need to do something about this
     "@typescript-eslint/no-explicit-any": "warn",
+    // Produce too many warning caused by 'any' usage
+//    "@typescript-eslint/no-unsafe-member-access": "warn",
+//    "@typescript-eslint/no-unsafe-assignment": "warn",
+    "@typescript-eslint/no-unsafe-call": "warn",
+    "@typescript-eslint/no-unsafe-argument": "warn",
+    "@typescript-eslint/no-unsafe-return": "warn",
+    "no-unsafe-finally": "error",
     "@typescript-eslint/no-extra-non-null-assertion": "error",
     "@typescript-eslint/no-meaningless-void-operator": "error",
     "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
