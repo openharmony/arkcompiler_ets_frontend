@@ -420,7 +420,6 @@ set(ES2PANDA_LIB_SRC
   parser/TSparser.cpp
   parser/TypedParser.cpp
   parser/program/entityNameVisitor.cpp
-  parser/program/moduleDebugInfo.cpp
   parser/program/program.cpp
   parser/statementParser.cpp
   parser/statementTSParser.cpp
@@ -535,12 +534,18 @@ set(ES2PANDA_LIB_SRC
   util/path.cpp
   util/ustring.cpp
   test/utils/panda_executable_path_getter.cpp
-  evaluate/classDeclarationCreator.cpp
+  evaluate/debugInfoDeserialization/debugInfoDeserializer.cpp
+  evaluate/debugInfoDeserialization/inheritanceResolution.cpp
+  evaluate/debugInfoDeserialization/methodBuilder.cpp
+  evaluate/debugInfoDeserialization/classBuilder.cpp
   evaluate/debugInfoStorage.cpp
   evaluate/helpers.cpp
-  evaluate/nonRecursiveIrChecker.cpp
-  evaluate/proxyProgramsMap.cpp
+  evaluate/pathResolver.cpp
+  evaluate/irCheckHelper.cpp
+  evaluate/proxyProgramsCache.cpp
   evaluate/scopedDebugInfoPlugin.cpp
+  evaluate/entityDeclarator.cpp
+  evaluate/evaluateContext.cpp
 )
 
 # libes2panda does not include bytecode optimizer, because it is used in

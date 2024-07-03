@@ -13,63 +13,90 @@
  * limitations under the License.
  */
 
-#include "evaluate/scopedDebugInfoPlugin.h"
+#include "evaluate/helpers.h"
+#include "evaluate/entityDeclarator-inl.h"
+#include "evaluate/scopedDebugInfoPlugin-inl.h"
+#include "evaluate/debugInfoDeserialization/debugInfoDeserializer.h"
 
 #include "checker/ETSchecker.h"
-#include "compiler/lowering/ets/topLevelStmts/globalClassHandler.h"
-#include "compiler/lowering/phase.h"
-#include "compiler/lowering/scopesInit/scopesInitPhase.h"
-#include "compiler/lowering/util.h"
-#include "evaluate/classDeclarationCreator.h"
-#include "evaluate/helpers.h"
-#include "ir/ets/etsImportDeclaration.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/classDeclaration.h"
-#include "ir/statements/variableDeclarator.h"
-#include "parser/ETSparser.h"
 #include "parser/program/program.h"
-#include "varbinder/ETSBinder.h"
-
-#include "libpandafile/class_data_accessor-inl.h"
+#include "compiler/lowering/phase.h"
+#include "compiler/lowering/util.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "ir/statements/blockStatement.h"
 
 namespace ark::es2panda::evaluate {
 
-static std::string GetVarDeclSourceCode(std::string_view varName, ScopedDebugInfoPlugin::RegisterNumber regNumber,
-                                        const std::string &typeSignature, panda_file::Type::TypeId typeId,
-                                        checker::GlobalTypesHolder *globalTypes)
+namespace {
+
+ir::VariableDeclaration *CreateVariableDeclaration(checker::ETSChecker *checker, ir::Identifier *ident,
+                                                   ir::Expression *init)
 {
-    auto returnType = ToTypeName(typeSignature, globalTypes);
-    ASSERT(returnType.has_value());
-    std::stringstream sstream;
-    sstream << "let " << varName << ':' << *returnType << '=' << DEBUGGER_API_CLASS_NAME << '.'
-            << CreateGetterName(typeId) << '(' << regNumber << ')';
-    // Must add cast from Object.
-    if (typeId == panda_file::Type::TypeId::REFERENCE) {
-        sstream << " as " << *returnType;
-    }
-    return sstream.str();
+    auto *declarator = checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::CONST, ident, init);
+
+    ArenaVector<ir::VariableDeclarator *> declarators(1, declarator, checker->Allocator()->Adapter());
+    auto *declaration = checker->AllocNode<ir::VariableDeclaration>(
+        ir::VariableDeclaration::VariableDeclarationKind::CONST, checker->Allocator(), std::move(declarators), false);
+
+    declarator->SetParent(declaration);
+    return declaration;
 }
 
-static std::string GetVarUpdateSourceCode(std::string_view varName, ScopedDebugInfoPlugin::RegisterNumber regNumber,
-                                          panda_file::Type::TypeId typeId)
+/**
+ * @brief Break function's last statement into variable declaration and return statement.
+ * Hence we ensure that expression will return result, and local variables
+ * could be updated by inserting `DebuggerAPI.setLocal<>` calls between result and return.
+ * @param checker used for allocation purposes only.
+ * @param methodName used for returned variable name generation.
+ * @param lastStatement function's last statement to break.
+ * @returns pair of created AST nodes for variable declaration and return statement.
+ */
+std::pair<ir::VariableDeclaration *, ir::ReturnStatement *> BreakLastStatement(checker::ETSChecker *checker,
+                                                                               util::StringView methodName,
+                                                                               ir::ExpressionStatement *lastStatement)
 {
-    std::stringstream sstream;
-    sstream << DEBUGGER_API_CLASS_NAME << '.' << CreateSetterName(typeId) << '(' << regNumber << ',' << varName << ')';
-    return sstream.str();
+    static constexpr std::string_view GENERATED_VAR_SUFFIX = "_generated_var";
+
+    ASSERT(checker);
+    ASSERT(lastStatement);
+    auto *allocator = checker->Allocator();
+
+    auto returnVariableNameView = [methodName, allocator]() {
+        std::stringstream ss;
+        ss << methodName << GENERATED_VAR_SUFFIX;
+        util::UString variableName(ss.str(), allocator);
+        return variableName.View();
+    }();
+    auto *variableIdent = checker->AllocNode<ir::Identifier>(returnVariableNameView, allocator);
+    auto *exprInit = lastStatement->AsExpressionStatement()->GetExpression();
+    auto *variableDeclaration = CreateVariableDeclaration(checker, variableIdent, exprInit);
+
+    auto *returnStatement = checker->AllocNode<ir::ReturnStatement>(variableIdent->Clone(allocator, nullptr));
+
+    // Unattach previous statement.
+    lastStatement->SetParent(nullptr);
+
+    return std::make_pair(variableDeclaration, returnStatement);
 }
+
+}  // namespace
 
 ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, checker::ETSChecker *checker,
                                              const CompilerOptions &options)
-    : checker_(checker),
+    : globalProgram_(globalProgram),
+      checker_(checker),
       context_(options),
+      irCheckHelper_(checker, globalProgram->VarBinder()->AsETSBinder()),
       debugInfoStorage_(options, checker->Allocator()),
-      proxyProgramsMap_(checker->Allocator()),
-      irChecker_(checker->Allocator()),
-      classDeclCreator_(checker, irChecker_),
+      debugInfoDeserializer_(*this),
+      pathResolver_(debugInfoStorage_),
       prologueEpilogueMap_(checker->Allocator()->Adapter()),
-      createdEntities_(checker->Allocator()->Adapter())
+      proxyProgramsCache_(checker->Allocator()),
+      entityDeclarator_(*this)
 {
+    ASSERT(globalProgram_);
+    ASSERT(checker_);
+
     ValidateEvaluationOptions(options);
 
     auto isContextValid = debugInfoStorage_.FillEvaluateContext(context_);
@@ -77,17 +104,89 @@ ScopedDebugInfoPlugin::ScopedDebugInfoPlugin(parser::Program *globalProgram, che
         LOG(FATAL, ES2PANDA) << "Can't create evaluate context" << std::endl;
     }
 
-    CreateContextPrograms(globalProgram);
+    CreateContextPrograms();
 }
 
 void ScopedDebugInfoPlugin::PreCheck()
 {
-    irChecker_.PreCheck(checker_);
+    irCheckHelper_.PreCheck();
+
+    // Find evaluation method after parse and before any checks.
+    context_.FindEvaluationMethod(GetEvaluatedExpressionProgram());
 }
 
 void ScopedDebugInfoPlugin::PostCheck()
 {
     ASSERT(prologueEpilogueMap_.empty());
+
+    [[maybe_unused]] auto inserted = InsertReturnStatement();
+    LOG(DEBUG, ES2PANDA) << "Evaluation method will return: " << std::boolalpha << inserted << std::noboolalpha;
+}
+
+bool ScopedDebugInfoPlugin::InsertReturnStatement()
+{
+    auto *lastStatement = context_.lastStatement;
+    if (lastStatement == nullptr) {
+        // Last evaluation statement cannot return a value.
+        return false;
+    }
+    auto *returnType = lastStatement->GetExpression()->TsType();
+    if (returnType == nullptr || !returnType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN)) {
+        // NOTE(dslynko): currently expression evaluation supports only primitives.
+        // In future this condition might be replaced with `returnType is not void`.
+        return false;
+    }
+
+    // As an example, the code below will transform
+    // ```
+    // localVar += 1                        // This expression returns new value of `localVar`.
+    // DebuggerAPI.setLocalInt(0, localVar) // Already generated by plugin.
+    // ```
+    // into
+    // ```
+    // const eval_file_generated_var = (localVar += 1)
+    // DebuggerAPI.setLocalInt(0, localVar)
+    // return eval_file_generated_var
+    // ```
+    // which will also modify method signature's return type.
+
+    auto *evalMethodStatements = context_.methodStatements;
+    auto &statementsList = evalMethodStatements->Statements();
+    // Omit the emplaced `DebuggerAPI.setLocal<>` calls and find the original last statement.
+    auto lastStatementIter = std::find(statementsList.rbegin(), statementsList.rend(), lastStatement);
+    ASSERT(lastStatementIter != statementsList.rend());
+
+    // Break the last user's statement into variable declaration and return statement.
+    auto *scope = compiler::NearestScope(lastStatement);
+    auto *scriptFunction = evalMethodStatements->Parent()->AsScriptFunction();
+    auto [variableDeclaration, returnStatement] =
+        BreakLastStatement(checker_, scriptFunction->Id()->Name(), lastStatement);
+
+    // Attach new nodes to statements block.
+    variableDeclaration->SetParent(evalMethodStatements);
+    *lastStatementIter = variableDeclaration;
+    returnStatement->SetParent(evalMethodStatements);
+    statementsList.emplace_back(returnStatement);
+
+    scriptFunction->AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
+    auto *signature = scriptFunction->Signature();
+    signature->AddSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
+    signature->SetReturnType(returnType);
+
+    auto newNodeInitializer = [this, scope](ir::AstNode *node) {
+        auto *varBinder = GetETSBinder();
+        helpers::DoScopedAction(checker_, varBinder, GetEvaluatedExpressionProgram(), scope, nullptr,
+                                [this, varBinder, scope, node]() {
+                                    compiler::InitScopesPhaseETS::RunExternalNode(node, varBinder);
+                                    varBinder->HandleCustomNodes(node);
+                                    varBinder->ResolveReferencesForScope(node, scope);
+                                    node->Check(checker_);
+                                });
+    };
+    newNodeInitializer(variableDeclaration);
+    newNodeInitializer(returnStatement);
+
+    return true;
 }
 
 void ScopedDebugInfoPlugin::AddPrologueEpilogue(ir::BlockStatement *block)
@@ -97,10 +196,13 @@ void ScopedDebugInfoPlugin::AddPrologueEpilogue(ir::BlockStatement *block)
         return;
     }
 
+    // Prepend prologue.
     auto &statements = block->Statements();
     for (auto *stmt : iter->second.first) {
         statements.insert(statements.begin(), stmt);
     }
+
+    // Append epilogue.
     for (auto *stmt : iter->second.second) {
         statements.emplace_back(stmt);
     }
@@ -112,18 +214,18 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindIdentifier(ir::Identifier *ident
 {
     ASSERT(ident);
 
-    SafeStateScope s(checker_);
+    helpers::SafeStateScope s(checker_, GetETSBinder());
 
     auto *var = FindLocalVariable(ident);
-    if (var) {
+    if (var != nullptr) {
         return var;
     }
     var = FindGlobalVariable(ident);
-    if (var) {
+    if (var != nullptr) {
         return var;
     }
     var = FindClass(ident);
-    if (var) {
+    if (var != nullptr) {
         return var;
     }
     return FindGlobalFunction(ident);
@@ -133,7 +235,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
 {
     // The following algorithm is used:
     // - Search for `import * as B from "C"` statements.
-    //   - If found, TODO
+    //   - If found, [Not implemented yet]
     //   - Else, proceed.
     // - Search classes which defined in the context file:
     //   - If found, recreate its structure and return.
@@ -143,17 +245,17 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
     //     where the class could be recreated.
     //   - Else, return nullptr.
 
-    // TODO: support "import * as X".
+    // NOTE: support "import * as X".
 
     ASSERT(ident);
+    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindClass " << ident->Name();
 
-    auto *importerProgram = checker_->VarBinder()->Program();
+    auto *importerProgram = GetETSBinder()->Program();
     const auto &identName = ident->Name();
-    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindClass " << identName;
 
     // Search "import * as B" statements.
-    // TODO: separate this into a method.
-    auto importPath = debugInfoStorage_.FindNamedImportAll(context_.sourceFilePath.Utf8(), identName.Utf8());
+    // NOTE: separate this into a method.
+    auto importPath = pathResolver_.FindNamedImportAll(context_.sourceFilePath.Utf8(), identName.Utf8());
     if (!importPath.empty()) {
         UNREACHABLE();
         return nullptr;
@@ -162,14 +264,15 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
     // Search in the context file.
     auto classId = debugInfoStorage_.FindClass(context_.sourceFilePath.Utf8(), identName.Utf8());
     if (classId.IsValid()) {
-        return ImportGlobalEntity(context_.sourceFilePath, identName, importerProgram, identName,
-                                  [classId](auto *self, auto *program, auto declSourcePath, auto declName) {
-                                      return self->CreateIrClass(classId, program, declSourcePath, declName);
-                                  });
+        return entityDeclarator_.ImportGlobalEntity(
+            context_.sourceFilePath, identName, importerProgram, identName,
+            [classId](auto *deserializer, auto *program, auto declSourcePath, auto declName) {
+                return deserializer->CreateIrClass(classId, program, declSourcePath, declName);
+            });
     }
 
     // Search in imported entities.
-    auto optFoundEntity = debugInfoStorage_.FindImportedEntity(context_.sourceFilePath.Utf8(), identName.Utf8());
+    auto optFoundEntity = pathResolver_.FindImportedEntity(context_.sourceFilePath.Utf8(), identName.Utf8());
     if (!optFoundEntity) {
         return nullptr;
     }
@@ -183,10 +286,11 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindClass(ir::Identifier *ident)
     }
 
     // Must pass the name of class as declared in the found file.
-    return ImportGlobalEntity(entitySourceFile, entitySourceName, importerProgram, identName,
-                              [classId](auto *self, auto *program, auto declSourcePath, auto declName) {
-                                  return self->CreateIrClass(classId, program, declSourcePath, declName);
-                              });
+    return entityDeclarator_.ImportGlobalEntity(
+        entitySourceFile, entitySourceName, importerProgram, identName,
+        [classId](auto *deserializer, auto *program, auto declSourcePath, auto declName) {
+            return deserializer->CreateIrClass(classId, program, declSourcePath, declName);
+        });
 }
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *ident)
@@ -194,12 +298,12 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
     // Correct overload resolution requires us to create all reachable functions with the given name,
     // so that Checker later could choose the correct one.
     ASSERT(ident);
+    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalFunction " << ident->Name();
 
     auto *allocator = Allocator();
 
-    auto *importerProgram = checker_->VarBinder()->Program();
+    auto *importerProgram = GetETSBinder()->Program();
     auto identName = ident->Name();
-    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalFunction " << identName;
 
     ArenaVector<std::pair<parser::Program *, ArenaVector<ir::AstNode *>>> createdMethods(allocator->Adapter());
 
@@ -207,26 +311,26 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
     createdMethods.emplace_back(GetProgram(context_.sourceFilePath), ArenaVector<ir::AstNode *>(allocator->Adapter()));
     auto &fromContextFile = createdMethods.back().second;
 
-    auto *var =
-        ImportGlobalEntity(context_.sourceFilePath, identName, importerProgram, identName,
-                           [&fromContextFile](auto *self, auto *program, auto declSourcePath, auto declName) {
-                               return self->CreateIrGlobalMethods(fromContextFile, program, declSourcePath, declName);
-                           });
+    auto *var = entityDeclarator_.ImportGlobalEntity(
+        context_.sourceFilePath, identName, importerProgram, identName,
+        [&fromContextFile](auto *deserializer, auto *program, auto declSourcePath, auto declName) {
+            return deserializer->CreateIrGlobalMethods(fromContextFile, program, declSourcePath, declName);
+        });
 
     // Then search in imports.
     ArenaVector<EntityInfo> importedFunctions(allocator->Adapter());
-    debugInfoStorage_.FindImportedFunctions(importedFunctions, context_.sourceFilePath.Utf8(), identName.Utf8());
+    pathResolver_.FindImportedFunctions(importedFunctions, context_.sourceFilePath.Utf8(), identName.Utf8());
 
     // Build all the found functions.
     for (const auto &[funcSourceFile, funcSourceName] : importedFunctions) {
         createdMethods.emplace_back(GetProgram(funcSourceFile), ArenaVector<ir::AstNode *>(allocator->Adapter()));
         auto &fromImported = createdMethods.back().second;
 
-        auto *importedVar =
-            ImportGlobalEntity(funcSourceFile, funcSourceName, importerProgram, identName,
-                               [&fromImported](auto *self, auto *program, auto declSourcePath, auto declName) {
-                                   return self->CreateIrGlobalMethods(fromImported, program, declSourcePath, declName);
-                               });
+        auto *importedVar = entityDeclarator_.ImportGlobalEntity(
+            funcSourceFile, funcSourceName, importerProgram, identName,
+            [&fromImported](auto *deserializer, auto *program, auto declSourcePath, auto declName) {
+                return deserializer->CreateIrGlobalMethods(fromImported, program, declSourcePath, declName);
+            });
         if (importedVar != nullptr) {
             ASSERT(var == nullptr || var == importedVar);
             var = importedVar;
@@ -238,7 +342,7 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
         auto *globalClass = program->GlobalClass();
         auto *globalClassScope = program->GlobalClassScope();
         for (auto *method : methods) {
-            irChecker_.CheckNewNode(checker_, method, globalClassScope, globalClass, program);
+            irCheckHelper_.CheckNewNode(method, globalClassScope, globalClass, program);
         }
     }
 
@@ -248,20 +352,20 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalFunction(ir::Identifier *i
 varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalVariable(ir::Identifier *ident)
 {
     ASSERT(ident);
+    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalVariable " << ident->Name();
 
-    auto *importerProgram = checker_->VarBinder()->Program();
+    auto *importerProgram = GetETSBinder()->Program();
     auto identName = ident->Name();
-    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindGlobalVariable " << identName;
 
     // Search in the context file.
-    auto *var = ImportGlobalEntity(context_.sourceFilePath, identName, importerProgram, identName,
-                                   &ScopedDebugInfoPlugin::CreateIrGlobalVariable);
+    auto *var = entityDeclarator_.ImportGlobalEntity(context_.sourceFilePath, identName, importerProgram, identName,
+                                                     &DebugInfoDeserializer::CreateIrGlobalVariable);
     if (var != nullptr) {
         return var;
     }
 
     // Search within the imports.
-    auto optFoundEntity = debugInfoStorage_.FindImportedEntity(context_.sourceFilePath.Utf8(), identName.Utf8());
+    auto optFoundEntity = pathResolver_.FindImportedEntity(context_.sourceFilePath.Utf8(), identName.Utf8());
     if (!optFoundEntity) {
         return nullptr;
     }
@@ -269,35 +373,23 @@ varbinder::Variable *ScopedDebugInfoPlugin::FindGlobalVariable(ir::Identifier *i
     const auto &[entitySourceFile, entitySourceName] = optFoundEntity.value();
 
     // Search once again, but in the exported source. Must pass the name of entity as declared in the found file.
-    return ImportGlobalEntity(entitySourceFile, entitySourceName, importerProgram, identName,
-                              &ScopedDebugInfoPlugin::CreateIrGlobalVariable);
+    return entityDeclarator_.ImportGlobalEntity(entitySourceFile, entitySourceName, importerProgram, identName,
+                                                &DebugInfoDeserializer::CreateIrGlobalVariable);
 }
 
 varbinder::Variable *ScopedDebugInfoPlugin::FindLocalVariable(ir::Identifier *ident)
 {
-    // TODO: verify that function arguments are included.
-    const auto &variables = context_.extractor->GetLocalVariableTable(context_.methodId);
-    auto typedVarIter = variables.end();
-    uint32_t startOffset = 0;
-
-    const auto &identName = ident->Name();
-    for (auto iter = variables.begin(); iter != variables.end(); ++iter) {
-        const auto &varInfo = *iter;
-        // std::cerr << "@@@@@@ " << varInfo.name << " [" << varInfo.startOffset << ", " << varInfo.endOffset << ')'
-        //           << std::endl;
-        // Must select the most nested variable for correct scope.
-        if (identName.Is(varInfo.name) && varInfo.startOffset <= context_.bytecodeOffset &&
-            context_.bytecodeOffset < varInfo.endOffset && startOffset <= varInfo.startOffset) {
-            typedVarIter = iter;
-            startOffset = varInfo.startOffset;
-        }
-    }
-    if (typedVarIter != variables.end()) {
-        // std::cerr << "@@@@@@@ " << typedVarIter->typeSignature << " vs " << typedVarIter->type << std::endl;
-        return CreateVarDecl(ident, typedVarIter->regNumber, typedVarIter->typeSignature);
+    ASSERT(ident);
+    // Search local variables only in evaluation method.
+    if (helpers::GetEnclosingBlock(ident) != context_.methodStatements) {
+        return nullptr;
     }
 
-    return nullptr;
+    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: FindLocalVariable " << ident->Name();
+
+    // NOTE: verify that function arguments are included.
+    const auto &localVariableTable = context_.extractor->GetLocalVariableTable(context_.methodId);
+    return debugInfoDeserializer_.CreateIrLocalVariable(ident, localVariableTable, context_.bytecodeOffset);
 }
 
 void ScopedDebugInfoPlugin::ValidateEvaluationOptions(const CompilerOptions &options)
@@ -307,229 +399,55 @@ void ScopedDebugInfoPlugin::ValidateEvaluationOptions(const CompilerOptions &opt
     }
 }
 
-void ScopedDebugInfoPlugin::CreateContextPrograms(parser::Program *globalProgram)
+void ScopedDebugInfoPlugin::CreateContextPrograms()
 {
-    debugInfoStorage_.EnumerateContextFiles([this, globalProgram](auto sourceFilePath, auto, auto, auto moduleName) {
-        CreateEmptyProgram(globalProgram, sourceFilePath, moduleName);
+    debugInfoStorage_.EnumerateContextFiles([this](auto sourceFilePath, auto, auto, auto moduleName) {
+        CreateEmptyProgram(sourceFilePath, moduleName);
         return true;
     });
 }
 
-parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(parser::Program *globalProgram,
-                                                           std::string_view sourceFilePath, std::string_view moduleName)
+parser::Program *ScopedDebugInfoPlugin::CreateEmptyProgram(std::string_view sourceFilePath, std::string_view moduleName)
 {
-    ASSERT(globalProgram);
     auto *allocator = Allocator();
 
-    parser::Program *program = allocator->New<parser::Program>(allocator, globalProgram->VarBinder());
-    program->SetSource({sourceFilePath, sourceFilePath, globalProgram->SourceFileFolder().Utf8(), false});
-    program->SetModuleInfo(moduleName, false, moduleName.empty());
+    // Checker doesn't yet have `VarBinder`, must retrieve it from `globalProgram_`.
+    parser::Program *program = allocator->New<parser::Program>(allocator, GetETSBinder());
+    auto omitModuleName = moduleName.empty();
+    program->SetSource({sourceFilePath, "", globalProgram_->SourceFileFolder().Utf8(), !omitModuleName});
+    program->SetModuleInfo(moduleName, false, omitModuleName);
     auto *etsScript =
         allocator->New<ir::ETSScript>(allocator, ArenaVector<ir::Statement *>(allocator->Adapter()), program);
     program->SetAst(etsScript);
 
-    AddExternalProgram(globalProgram, program, moduleName);
-    proxyProgramsMap_.AddProgram(program);
+    helpers::AddExternalProgram(globalProgram_, program, moduleName);
+    proxyProgramsCache_.AddProgram(program);
 
     return program;
 }
 
 parser::Program *ScopedDebugInfoPlugin::GetProgram(util::StringView fileName)
 {
-    auto *program = proxyProgramsMap_.GetProgram(fileName);
+    auto *program = proxyProgramsCache_.GetProgram(fileName);
     ASSERT(program);
     return program;
 }
 
-varbinder::Variable *ScopedDebugInfoPlugin::CreateIrGlobalMethods(ArenaVector<ir::AstNode *> &createdMethods,
-                                                                  parser::Program *program,
-                                                                  util::StringView pathToSource,
-                                                                  util::StringView methodDeclName)
+parser::Program *ScopedDebugInfoPlugin::GetEvaluatedExpressionProgram()
 {
-    varbinder::Variable *var = nullptr;
-
-    auto *cda = debugInfoStorage_.GetGlobalClassAccessor(pathToSource.Utf8());
-    cda->EnumerateMethods([this, &var, &createdMethods, program, methodDeclName](panda_file::MethodDataAccessor &mda) {
-        if (!methodDeclName.Is(mda.GetFullName())) {
-            return;
-        }
-
-        auto *method = classDeclCreator_.CreateClassMethod(mda);
-        method->SetParent(program->GlobalClass());
-        createdMethods.emplace_back(method);
-
-        // Postpone Checker until the whole overload set is created.
-        CheckGlobalEntity(program, method, false);
-
-        // Sanity checks.
-        auto *methodVar = method->AsClassElement()->Value()->AsFunctionExpression()->Function()->Id()->Variable();
-        ASSERT(methodVar != nullptr);
-        ASSERT(var == nullptr || var == methodVar);
-        var = methodVar;
-    });
-
-    return var;
+    auto *program = GetETSBinder()->GetContext()->parserProgram;
+    ASSERT(program);
+    return program;
 }
 
-varbinder::Variable *ScopedDebugInfoPlugin::CreateIrGlobalVariable(parser::Program *program,
-                                                                   util::StringView pathToSource,
-                                                                   util::StringView varDeclName)
+varbinder::ETSBinder *ScopedDebugInfoPlugin::GetETSBinder()
 {
-    const auto *pf = debugInfoStorage_.GetPandaFile(pathToSource.Utf8());
-    ASSERT(pf);
-    varbinder::Variable *var = nullptr;
-
-    auto *cda = debugInfoStorage_.GetGlobalClassAccessor(pathToSource.Utf8());
-    cda->EnumerateFields([this, program, varDeclName, pf, &var](panda_file::FieldDataAccessor &fda) {
-        // All ETSGLOBAL fields must be static.
-        ASSERT(fda.IsStatic());
-
-        const char *name = utf::Mutf8AsCString(pf->GetStringData(fda.GetNameId()).data);
-        if (!varDeclName.Is(name)) {
-            return;
-        }
-        // Must be unique within global variables.
-        ASSERT(var == nullptr);
-
-        auto *typeNode = PandaTypeToTypeNode(*pf, fda, checker_);
-        ASSERT(typeNode);
-
-        // Global variable is found - add it into source module's global class properties.
-        // TODO: ensure that everything is declared as public.
-        auto modFlags = GetModifierFlags(fda) | ir::ModifierFlags::EXPORT;
-        auto *field = classDeclCreator_.CreateClassProperty(name, typeNode, modFlags);
-        // Fields parent will be set in `AddProperties`.
-        program->GlobalClass()->AddProperties(ArenaVector<ir::AstNode *>(1, field, Allocator()->Adapter()));
-
-        CheckGlobalEntity(program, field);
-        var = field->Key()->AsIdentifier()->Variable();
-    });
-
-    return var;
-}
-
-varbinder::Variable *ScopedDebugInfoPlugin::CreateIrClass(panda_file::File::EntityId classId, parser::Program *program,
-                                                          util::StringView pathToSource, util::StringView classDeclName)
-{
-    const auto *pf = debugInfoStorage_.GetPandaFile(pathToSource.Utf8());
-    ASSERT(pf);
-    // TODO: may cache the created `ClassDataAccessor`.
-    auto cda = panda_file::ClassDataAccessor(*pf, classId);
-    // Checker will be called directly in creator.
-    const auto *classDecl = classDeclCreator_.CreateClassDeclaration(classDeclName, cda, program);
-    return classDecl->Definition()->Ident()->Variable();
-}
-
-ir::ETSImportDeclaration *ScopedDebugInfoPlugin::CreateIrImport(util::StringView pathToDeclSourceFile,
-                                                                util::StringView classDeclName,
-                                                                util::StringView classImportedName)
-{
-    auto *binder = checker_->VarBinder()->AsETSBinder();
-    auto *allocator = Allocator();
-
-    auto *resolvedSource = checker_->AllocNode<ir::StringLiteral>(pathToDeclSourceFile);
-    auto *source = checker_->AllocNode<ir::StringLiteral>(debugInfoStorage_.GetModuleName(pathToDeclSourceFile.Utf8()));
-    auto *importSource =
-        allocator->New<ir::ImportSource>(source, resolvedSource, ToLanguage(binder->Extension()), true);
-
-    auto *local = checker_->AllocNode<ir::Identifier>(classDeclName, allocator);
-    auto *imported = checker_->AllocNode<ir::Identifier>(classImportedName, allocator);
-    auto *spec = checker_->AllocNode<ir::ImportSpecifier>(imported, local);
-    ArenaVector<ir::AstNode *> specifiers(1, spec, allocator->Adapter());
-
-    return checker_->AllocNode<ir::ETSImportDeclaration>(importSource, specifiers);
+    return globalProgram_->VarBinder()->AsETSBinder();
 }
 
 ArenaAllocator *ScopedDebugInfoPlugin::Allocator()
 {
     return checker_->Allocator();
-}
-
-ArenaUnorderedMap<util::StringView, varbinder::Variable *> &ScopedDebugInfoPlugin::GetOrCreateEntitiesMap(
-    parser::Program *program)
-{
-    ASSERT(program);
-    auto iter = createdEntities_.find(program);
-    if (iter == createdEntities_.end()) {
-        return createdEntities_
-            .emplace(program, ArenaUnorderedMap<util::StringView, varbinder::Variable *>(Allocator()->Adapter()))
-            .first->second;
-    }
-    return iter->second;
-}
-
-void ScopedDebugInfoPlugin::InsertImportStatement(ir::Statement *importStatement, parser::Program *importerProgram)
-{
-    auto *topStatement = importerProgram->Ast();
-    importStatement->SetParent(topStatement);
-    // Can't insert right away until block's statements iteration ends.
-    RegisterPrologueEpilogue<true>(topStatement, importStatement);
-
-    CheckGlobalEntity(importerProgram, importStatement);
-}
-
-varbinder::Variable *ScopedDebugInfoPlugin::CreateVarDecl(ir::Identifier *ident, RegisterNumber regNumber,
-                                                          const std::string &typeSignature)
-{
-    auto *binder = checker_->VarBinder();
-    auto identName = ident->Name().Utf8();
-    LOG(DEBUG, ES2PANDA) << "ScopedDebugInfoPlugin: CreateVarDecl " << identName << ", type " << typeSignature;
-
-    auto typeId = GetTypeId(typeSignature);
-    auto varDeclSource =
-        GetVarDeclSourceCode(identName, regNumber, typeSignature, typeId, checker_->GetGlobalTypesHolder());
-
-    // Set up correct scope before parsing statements.
-    auto *topStatement = GetEnclosingBlock(ident);
-    checker::ScopeContext ctx(checker_, topStatement->Scope());
-    auto statementScope = varbinder::LexicalScope<varbinder::Scope>::Enter(binder, topStatement->Scope());
-
-    parser::Program p(Allocator(), binder);
-    auto parser =
-        parser::ETSParser(&p, binder->GetContext()->config->options->CompilerOptions(), parser::ParserStatus::NO_OPTS);
-
-    auto *varDecl = parser.CreateFormattedStatement(varDeclSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
-    ASSERT(varDecl != nullptr);
-    varDecl->SetParent(topStatement);
-    // Declaration will be placed at start of current scope.
-    // Can't insert right away until block's statements iteration ends.
-    RegisterPrologueEpilogue<true>(topStatement, varDecl);
-    CheckLocalEntity(varDecl);
-
-    // Yet don't track whether the value was modified, so store result unconditionally in the end of the scope.
-    auto varUpdateSource = GetVarUpdateSourceCode(identName, regNumber, typeId);
-
-    auto *varUpdate = parser.CreateFormattedStatement(varUpdateSource, parser::ParserContext::DEFAULT_SOURCE_FILE);
-    ASSERT(varUpdate != nullptr);
-    varUpdate->SetParent(topStatement);
-    // Can't insert right away until block's statements iteration ends.
-    RegisterPrologueEpilogue<false>(topStatement, varUpdate);
-    CheckLocalEntity(varUpdate);
-
-    // Local variables are not registered, as they can be found in local scope.
-    ASSERT(varDecl->AsVariableDeclaration()->Declarators().size() == 1);
-    return varDecl->AsVariableDeclaration()->Declarators()[0]->Id()->Variable();
-}
-
-void ScopedDebugInfoPlugin::CheckGlobalEntity(parser::Program *program, ir::AstNode *node, bool mustCheck)
-{
-    auto *globalClass = program->GlobalClass();
-    auto *globalClassScope = program->GlobalClassScope();
-
-    DoScopedAction(checker_, program, globalClassScope, globalClass, [this, globalClassScope, node]() {
-        auto *binder = checker_->VarBinder()->AsETSBinder();
-        compiler::InitScopesPhaseETS::RunExternalNode(node, binder);
-        binder->ResolveReferencesForScope(node, globalClassScope);
-    });
-    if (mustCheck) {
-        irChecker_.CheckNewNode(checker_, node, globalClassScope, globalClass, program);
-    }
-}
-
-void ScopedDebugInfoPlugin::CheckLocalEntity(ir::AstNode *node)
-{
-    compiler::InitScopesPhaseETS::RunExternalNode(node, checker_->VarBinder());
-    irChecker_.CheckNewNode(checker_, node, nullptr, nullptr, nullptr);
 }
 
 }  // namespace ark::es2panda::evaluate

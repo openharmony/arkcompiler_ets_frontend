@@ -19,7 +19,6 @@
 #include "macros.h"
 #include "mem/pool_manager.h"
 #include "os/filesystem.h"
-#include "parser/program/moduleDebugInfo.h"
 #include "util/ustring.h"
 #include "util/path.h"
 #include "varbinder/varbinder.h"
@@ -59,8 +58,7 @@ public:
           externalSources_(allocator_->Adapter()),
           directExternalSources_(allocator_->Adapter()),
           extension_(varbinder->Extension()),
-          etsnolintCollection_(allocator_->Adapter()),
-          debugInfo_(allocator)
+          etsnolintCollection_(allocator_->Adapter())
     {
     }
 
@@ -227,16 +225,6 @@ public:
         return moduleInfo_.omitModuleName;
     }
 
-    ModuleDebugInfo &GetModuleDebugInfo()
-    {
-        return debugInfo_;
-    }
-
-    const ModuleDebugInfo &GetModuleDebugInfo() const
-    {
-        return debugInfo_;
-    }
-
     const bool &IsEntryPoint() const
     {
         return entryPoint_;
@@ -310,7 +298,6 @@ private:
     ETSNolintsCollectionMap etsnolintCollection_;
     ModuleInfo moduleInfo_ {};
     bool isASTchecked_ {};
-    ModuleDebugInfo debugInfo_;
 };
 }  // namespace ark::es2panda::parser
 

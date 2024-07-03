@@ -254,7 +254,6 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *ident)
         // If the reference is not found already in the current class, then it is not bound to the class, so we have to
         // find the reference in the global class first, then in the global scope
         resolved = FindVariableInGlobal(ident, options);
-
         if (UNLIKELY(resolved == nullptr && debugInfoPlugin_ != nullptr)) {
             resolved = debugInfoPlugin_->FindIdentifier(ident);
         }

@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include "checker/ETSchecker.h"
-#include "checker/types/globalTypesHolder.h"
 #include "evaluate/helpers.h"
+#include "checker/types/globalTypesHolder.h"
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
@@ -26,48 +25,60 @@
 
 #include "assembler/assembly-type.h"
 #include "libpandafile/field_data_accessor-inl.h"
+#include "libpandafile/file-inl.h"
 
 #include <algorithm>
 #include <unordered_map>
 
-namespace ark::es2panda::evaluate {
+namespace ark::es2panda::evaluate::helpers {
 
-static ir::TypeNode *PrimitiveToTypeNode(panda_file::Type::TypeId typeId, checker::ETSChecker *checker)
+namespace {
+
+ir::TypeNode *PrimitiveToTypeNode(panda_file::Type::TypeId typeId, checker::ETSChecker *checker)
 {
-    static std::unordered_map<panda_file::Type::TypeId, ir::PrimitiveType> primitivesMap = {
-        {panda_file::Type::TypeId::VOID, ir::PrimitiveType::VOID},
-        {panda_file::Type::TypeId::U1, ir::PrimitiveType::BOOLEAN},
-        {panda_file::Type::TypeId::I8, ir::PrimitiveType::CHAR},
-        {panda_file::Type::TypeId::U8, ir::PrimitiveType::BYTE},
-        {panda_file::Type::TypeId::I16, ir::PrimitiveType::SHORT},
-        {panda_file::Type::TypeId::U16, ir::PrimitiveType::SHORT},
-        {panda_file::Type::TypeId::I32, ir::PrimitiveType::INT},
-        {panda_file::Type::TypeId::U32, ir::PrimitiveType::INT},
-        {panda_file::Type::TypeId::F32, ir::PrimitiveType::FLOAT},
-        {panda_file::Type::TypeId::F64, ir::PrimitiveType::DOUBLE},
-        {panda_file::Type::TypeId::I64, ir::PrimitiveType::LONG},
-        {panda_file::Type::TypeId::U64, ir::PrimitiveType::LONG},
-    };
-
-    auto it = primitivesMap.find(typeId);
-    if (it != primitivesMap.end()) {
-        return checker->AllocNode<ir::ETSPrimitiveType>(it->second);
+    ir::PrimitiveType irType;
+    switch (typeId) {
+        case panda_file::Type::TypeId::VOID:
+            irType = ir::PrimitiveType::VOID;
+            break;
+        case panda_file::Type::TypeId::U1:
+            irType = ir::PrimitiveType::BOOLEAN;
+            break;
+        case panda_file::Type::TypeId::I8:
+            irType = ir::PrimitiveType::BYTE;
+            break;
+        case panda_file::Type::TypeId::U16:
+            irType = ir::PrimitiveType::CHAR;
+            break;
+        case panda_file::Type::TypeId::I16:
+            irType = ir::PrimitiveType::SHORT;
+            break;
+        case panda_file::Type::TypeId::I32:
+            irType = ir::PrimitiveType::INT;
+            break;
+        case panda_file::Type::TypeId::I64:
+            irType = ir::PrimitiveType::LONG;
+            break;
+        case panda_file::Type::TypeId::F32:
+            irType = ir::PrimitiveType::FLOAT;
+            break;
+        case panda_file::Type::TypeId::F64:
+            irType = ir::PrimitiveType::DOUBLE;
+            break;
+        default:
+            UNREACHABLE();
     }
-    UNREACHABLE();
-    return nullptr;
+
+    return checker->AllocNode<ir::ETSPrimitiveType>(irType);
 }
 
-static ir::TypeNode *ClassReferenceToTypeNode(std::string_view name, checker::ETSChecker *checker)
+ir::TypeNode *ClassReferenceToTypeNode(std::string_view name, checker::ETSChecker *checker)
 {
     util::UString typeName(name, checker->Allocator());
-    auto *ident = checker->AllocNode<ir::Identifier>(typeName.View(), checker->Allocator());
-    ident->SetReference();
-
-    auto *typeRefPart = checker->AllocNode<ir::ETSTypeReferencePart>(ident, nullptr, nullptr);
-    return checker->AllocNode<ir::ETSTypeReference>(typeRefPart);
+    return CreateETSTypeReference(checker, typeName.View());
 }
 
-static ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker::ETSChecker *checker)
+ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker::ETSChecker *checker)
 {
     ASSERT(checker);
     ASSERT(!typeSignature.empty());
@@ -89,7 +100,7 @@ static ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker
             // Variable is an array.
             size_t rank = std::count(typeSignature.begin(), typeSignature.end(), '[');
             auto *elementType = ToTypeNode(typeSignature.substr(rank), checker);
-            if (elementType) {
+            if (elementType != nullptr) {
                 for (size_t i = 0; i < rank; ++i) {
                     elementType = checker->AllocNode<ir::TSArrayType>(elementType);
                 }
@@ -102,6 +113,8 @@ static ir::TypeNode *ReferenceToTypeNode(std::string_view typeSignature, checker
     }
     return nullptr;
 }
+
+}  // namespace
 
 ir::TypeNode *ToTypeNode(std::string_view typeSignature, checker::ETSChecker *checker)
 {
@@ -125,10 +138,8 @@ ir::TypeNode *PandaTypeToTypeNode(const panda_file::File &pf, panda_file::FieldD
         auto typeId = panda_file::FieldDataAccessor::GetTypeId(pf, fda.GetFieldId());
         std::string_view refSignature = utf::Mutf8AsCString(pf.GetStringData(typeId).data);
         return ReferenceToTypeNode(refSignature, checker);
-    } else {
-        return PrimitiveToTypeNode(pandaType.GetId(), checker);
     }
-    return nullptr;
+    return PrimitiveToTypeNode(pandaType.GetId(), checker);
 }
 
 ir::TypeNode *PandaTypeToTypeNode(const panda_file::File &pf, panda_file::Type pandaType,
@@ -138,10 +149,8 @@ ir::TypeNode *PandaTypeToTypeNode(const panda_file::File &pf, panda_file::Type p
         ASSERT(classId.IsValid());
         std::string_view refSignature = utf::Mutf8AsCString(pf.GetStringData(classId).data);
         return ReferenceToTypeNode(refSignature, checker);
-    } else {
-        return PrimitiveToTypeNode(pandaType.GetId(), checker);
     }
-    return nullptr;
+    return PrimitiveToTypeNode(pandaType.GetId(), checker);
 }
 
 static checker::Type *PrimitiveToCheckerType(panda_file::Type::TypeId typeId, checker::GlobalTypesHolder *globalTypes)
@@ -181,8 +190,11 @@ static checker::Type *PrimitiveToCheckerType(panda_file::Type::TypeId typeId, ch
 static std::optional<std::string> ReferenceToName(std::string_view typeSignature,
                                                   checker::GlobalTypesHolder *globalTypes)
 {
+    static constexpr const size_t ARRAY_RANK_SYMBOLS = 2;
+
     ASSERT(globalTypes);
     ASSERT(!typeSignature.empty());
+
     switch (typeSignature[0]) {
         case 'L': {
             // Variable is a reference.
@@ -206,8 +218,8 @@ static std::optional<std::string> ReferenceToName(std::string_view typeSignature
 
             auto &arrayType = *elementType;
             auto subtypeSize = arrayType.size();
-            arrayType.resize(subtypeSize + rank * 2);
-            for (size_t i = subtypeSize, end = arrayType.size(); i < end; i += 2) {
+            arrayType.resize(subtypeSize + rank * ARRAY_RANK_SYMBOLS);
+            for (size_t i = subtypeSize, end = arrayType.size(); i < end; i += ARRAY_RANK_SYMBOLS) {
                 arrayType[i] = '[';
                 arrayType[i + 1] = ']';
             }
@@ -253,7 +265,7 @@ ir::BlockStatement *GetEnclosingBlock(ir::Identifier *ident)
 
     ir::AstNode *iter = ident;
 
-    while (iter->Parent() && !iter->IsBlockStatement()) {
+    while (iter->Parent() != nullptr && !iter->IsBlockStatement()) {
         iter = iter->Parent();
     }
 
@@ -261,50 +273,34 @@ ir::BlockStatement *GetEnclosingBlock(ir::Identifier *ident)
     return iter->AsBlockStatement();
 }
 
-// TODO: make this method template for both fields and methods.
-ir::ModifierFlags GetModifierFlags(panda_file::FieldDataAccessor &fda)
-{
-    auto flags = ir::ModifierFlags::NONE;
-    if (fda.IsStatic()) {
-        flags |= ir::ModifierFlags::STATIC;
-    }
-    if (fda.IsPublic()) {
-        flags |= ir::ModifierFlags::PUBLIC;
-    }
-    if (fda.IsProtected()) {
-        flags |= ir::ModifierFlags::PROTECTED;
-    }
-    if (fda.IsPrivate()) {
-        flags |= ir::ModifierFlags::PRIVATE;
-    }
-    if (fda.IsFinal()) {
-        flags |= ir::ModifierFlags::FINAL;
-    }
-    if (fda.IsReadonly()) {
-        flags |= ir::ModifierFlags::READONLY;
-    }
-    return flags;
-}
-
-SafeStateScope::SafeStateScope(checker::ETSChecker *checker)
+SafeStateScope::SafeStateScope(checker::ETSChecker *checker, varbinder::ETSBinder *varBinder)
     : checker_(checker),
+      varBinder_(varBinder),
       checkerScope_(checker->Scope()),
-      binderTopScope_(checker->VarBinder()->TopScope()),
-      binderVarScope_(checker->VarBinder()->VarScope()),
-      binderScope_(checker->VarBinder()->GetScope()),
-      binderProgram_(checker->VarBinder()->AsETSBinder()->Program()),
-      recordTable_(checker->VarBinder()->AsETSBinder()->GetRecordTable())
+      binderTopScope_(varBinder->TopScope()),
+      binderVarScope_(varBinder->VarScope()),
+      binderScope_(varBinder->GetScope()),
+      binderProgram_(varBinder->Program()),
+      recordTable_(varBinder->GetRecordTable())
 {
 }
 
 SafeStateScope::~SafeStateScope()
 {
+    (void)checker_;
+    (void)varBinder_;
+    (void)checkerScope_;
+    (void)binderTopScope_;
+    (void)binderVarScope_;
+    (void)binderScope_;
+    (void)binderProgram_;
+    (void)recordTable_;
     ASSERT(checkerScope_ == checker_->Scope());
-    ASSERT(binderTopScope_ == checker_->VarBinder()->TopScope());
-    ASSERT(binderVarScope_ == checker_->VarBinder()->VarScope());
-    ASSERT(binderScope_ == checker_->VarBinder()->GetScope());
-    ASSERT(binderProgram_ == checker_->VarBinder()->AsETSBinder()->Program());
-    ASSERT(recordTable_ == checker_->VarBinder()->AsETSBinder()->GetRecordTable());
+    ASSERT(binderTopScope_ == varBinder_->TopScope());
+    ASSERT(binderVarScope_ == varBinder_->VarScope());
+    ASSERT(binderScope_ == varBinder_->GetScope());
+    ASSERT(binderProgram_ == varBinder_->Program());
+    ASSERT(recordTable_ == varBinder_->GetRecordTable());
 }
 
 void AddExternalProgram(parser::Program *program, parser::Program *extProgram, std::string_view moduleName)
@@ -319,4 +315,53 @@ void AddExternalProgram(parser::Program *program, parser::Program *extProgram, s
     extSources.at(moduleName).emplace_back(extProgram);
 }
 
-}  // namespace ark::es2panda::evaluate
+ir::ETSTypeReference *CreateETSTypeReference(checker::ETSChecker *checker, util::StringView name)
+{
+    auto *identRef = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+    identRef->AsIdentifier()->SetReference();
+
+    auto *typeRefPart = checker->AllocNode<ir::ETSTypeReferencePart>(identRef);
+    return checker->AllocNode<ir::ETSTypeReference>(typeRefPart);
+}
+
+std::pair<std::string_view, std::string_view> SplitRecordName(std::string_view recordName)
+{
+    std::string_view moduleName;
+    std::string_view newRecordName;
+
+    if (auto pos = recordName.find_last_of('.'); pos != std::string_view::npos) {
+        moduleName = recordName.substr(0, pos);
+        newRecordName = recordName.substr(pos + 1, recordName.size());
+    } else {
+        newRecordName = recordName;
+    }
+
+    return std::make_pair(moduleName, newRecordName);
+}
+
+ir::ClassProperty *CreateClassProperty(checker::ETSChecker *checker, std::string_view name, ir::TypeNode *type,
+                                       ir::ModifierFlags modifiers)
+{
+    ASSERT(type);
+
+    auto *fieldIdent = checker->AllocNode<ir::Identifier>(name, checker->Allocator());
+    auto *field =
+        checker->AllocNode<ir::ClassProperty>(fieldIdent, nullptr, type, modifiers, checker->Allocator(), false);
+
+    return field;
+}
+
+ir::ModifierFlags GetModifierFlags(panda_file::ClassDataAccessor &da)
+{
+    auto modifierFlags = ir::ModifierFlags::NONE;
+    auto accFlags = da.GetAccessFlags();
+    if ((accFlags & ACC_ABSTRACT) != 0) {
+        modifierFlags |= ir::ModifierFlags::ABSTRACT;
+    }
+    if ((accFlags & ACC_FINAL) != 0) {
+        modifierFlags |= ir::ModifierFlags::FINAL;
+    }
+    return modifierFlags;
+}
+
+}  // namespace ark::es2panda::evaluate::helpers

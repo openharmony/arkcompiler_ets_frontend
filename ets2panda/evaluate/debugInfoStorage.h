@@ -17,9 +17,9 @@
 #define ES2PANDA_EVALUATE_DEBUG_INFO_STORAGE_H
 
 #include "evaluate/evaluateContext.h"
+#include "evaluate/importExportTable.h"
 #include "util/ustring.h"
 
-#include "libpandabase/utils/arena_containers.h"
 #include "libpandafile/debug_info_extractor.h"
 #include "libpandafile/file.h"
 #include "libpandafile/class_data_accessor.h"
@@ -32,33 +32,25 @@
 
 namespace ark::es2panda::evaluate {
 
-struct EntityInfo final {
-    EntityInfo(std::string_view path, std::string_view entity) : filePath(path), entityName(entity) {}
+struct FileDebugInfo final {
+    using RecordsMap = ArenaUnorderedMap<util::StringView, panda_file::File::EntityId>;
 
-    std::string_view filePath;
-    std::string_view entityName;
-};
-
-class ImportExportTable final {
-public:
-    using AliasMap = ArenaUnorderedMap<std::string_view, ArenaVector<EntityInfo>>;
-
-public:
-    explicit ImportExportTable(ArenaAllocator *allocator);
-
-    const AliasMap &GetImports() const
+    FileDebugInfo() = delete;
+    explicit FileDebugInfo(std::unique_ptr<const panda_file::File> &&pandaFile, panda_file::File::EntityId classId,
+                           std::string_view module)
+        : pf(std::move(pandaFile)), globalClassAcc(*pf, classId), moduleName(module)
     {
-        return imports_;
+        ASSERT(pf);
     }
 
-    const AliasMap &GetExports() const
-    {
-        return exports_;
-    }
-
-private:
-    AliasMap imports_;
-    AliasMap exports_;
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    std::unique_ptr<const panda_file::File> pf {nullptr};
+    panda_file::ClassDataAccessor globalClassAcc;
+    std::string_view moduleName;
+    std::string_view sourceFilePath;
+    std::optional<ImportExportTable> importExportTable;
+    std::optional<RecordsMap> records;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 // Context-independent debug info lazy-loading storage.
@@ -72,6 +64,11 @@ public:
 
     ~DebugInfoStorage() = default;
 
+    ArenaAllocator *Allocator()
+    {
+        return allocator_;
+    }
+
     [[nodiscard]] bool FillEvaluateContext(EvaluateContext &context);
 
     const panda_file::File *GetPandaFile(std::string_view filePath);
@@ -79,14 +76,7 @@ public:
     panda_file::ClassDataAccessor *GetGlobalClassAccessor(std::string_view filePath);
     std::string_view GetModuleName(std::string_view filePath);
 
-    /**
-     * @brief Returns import path on success, empty string otherwise
-     */
-    std::string_view FindNamedImportAll(std::string_view filePath, std::string_view bindingName);
-
-    std::optional<EntityInfo> FindImportedEntity(std::string_view filePath, std::string_view entityName);
-    void FindImportedFunctions(ArenaVector<EntityInfo> &overloadSet, std::string_view filePath,
-                               std::string_view entityName);
+    FileDebugInfo *GetDebugInfoByModuleName(std::string_view moduleName) const;
 
     /**
      * @brief Returns class'es panda file Id on success, invalid EntityId otherwise
@@ -97,32 +87,13 @@ public:
     void EnumerateContextFiles(const Callback &cb)
     {
         for (const auto &[sourceFilePath, debugInfo] : sourceFileToDebugInfo_) {
-            if (!cb(sourceFilePath, debugInfo->pf.get(), debugInfo->globalClassAcc,
-                    std::string_view(debugInfo->moduleName))) {
+            if (!cb(sourceFilePath, debugInfo->pf.get(), debugInfo->globalClassAcc, debugInfo->moduleName)) {
                 return;
             }
         }
     }
 
 private:
-    struct FileDebugInfo final {
-        using RecordsMap = ArenaUnorderedMap<util::StringView, panda_file::File::EntityId>;
-
-        FileDebugInfo() = delete;
-        explicit FileDebugInfo(std::unique_ptr<const panda_file::File> &&pandaFile, panda_file::ClassDataAccessor &&cda,
-                               std::string &&module)
-            : pf(std::move(pandaFile)), globalClassAcc(std::move(cda)), moduleName(std::move(module))
-        {
-            ASSERT(pf);
-        }
-
-        std::unique_ptr<const panda_file::File> pf {nullptr};
-        panda_file::ClassDataAccessor globalClassAcc;
-        std::string moduleName;
-        std::optional<ImportExportTable> importExportTable;
-        std::optional<RecordsMap> records;
-    };
-
     using DebugInfoMap = ArenaUnorderedMap<std::string_view, FileDebugInfo *>;
 
 private:
@@ -131,14 +102,8 @@ private:
     const ImportExportTable &LazyLoadImportExportTable(FileDebugInfo *info);
     const FileDebugInfo::RecordsMap &LazyLoadRecords(FileDebugInfo *info);
 
-    std::optional<EntityInfo> FindExportedEntity(std::string_view filePath, std::string_view entityName);
-    void FindExportedFunctions(ArenaVector<EntityInfo> &overloadSet, std::string_view filePath,
-                               std::string_view entityName);
-
 private:
-    static constexpr std::string_view STAR_IMPORT = "*";
-
-    ArenaAllocator *allocator_;
+    ArenaAllocator *allocator_ {nullptr};
 
     // Mapping from sources' files names into the corresponding debug information struct.
     // Used for fast lookups basing on imports/exports tables.

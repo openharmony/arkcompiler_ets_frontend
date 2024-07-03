@@ -240,6 +240,17 @@ static bool RunPhases(CompilerImpl *compilerImpl, public_lib::Context &context, 
     return true;
 }
 
+static void CreateDebuggerEvaluationPlugin(checker::ETSChecker &checker, ArenaAllocator &allocator,
+                                           parser::Program *program, const CompilerOptions &options)
+{
+    // Sometimes evaluation mode might work without project context.
+    // In this case, users might omit context files.
+    if (options.debuggerEvalMode && !options.debuggerEvalPandaFiles.empty()) {
+        auto *plugin = allocator.New<evaluate::ScopedDebugInfoPlugin>(program, &checker, options);
+        checker.SetDebugInfoPlugin(plugin);
+    }
+}
+
 using EmitCb = std::function<pandasm::Program *(public_lib::Context *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
 
@@ -274,13 +285,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     varbinder->SetProgram(&program);
 
     if constexpr (std::is_same_v<Checker, checker::ETSChecker>) {
-        // Sometimes evaluation mode might work without project context.
-        // In this case, users might omit context files.
-        const auto &compilerOptions = unit.options.CompilerOptions();
-        if (compilerOptions.evalMode && !compilerOptions.evalContextPandaFiles.empty()) {
-            auto plugin = std::make_unique<evaluate::ScopedDebugInfoPlugin>(&program, &checker, compilerOptions);
-            checker.SetDebugInfoPlugin(std::move(plugin));
-        }
+        CreateDebuggerEvaluationPlugin(checker, allocator, &program, unit.options.CompilerOptions());
     }
 
     public_lib::Context context;

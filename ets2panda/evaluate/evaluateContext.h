@@ -26,20 +26,47 @@
 #include <memory>
 #include <string_view>
 
+namespace ark::es2panda::parser {
+class Program;
+}  // namespace ark::es2panda::parser
+
+namespace ark::es2panda::ir {
+class BlockStatement;
+class ClassDefinition;
+class ExpressionStatement;
+class MethodDefinition;
+class ScriptFunction;
+}  // namespace ark::es2panda::ir
+
 namespace ark::es2panda::evaluate {
 
 struct EvaluateContext {
     explicit EvaluateContext(const CompilerOptions &options)
-        : sourceFilePath(options.evalContextSource), lineNumber(options.evalContextLine)
+        : sourceFilePath(options.debuggerEvalSource), lineNumber(options.debuggerEvalLine)
     {
     }
 
+    /**
+     * @brief Searches Program for evaluation method according to convention.
+     * Initializes `methodStatements`, which are always non-null after this function,
+     * as well as `lastStatement`, which is non-null only if the last statement have expression.
+     * Must be called once after parser and before checker phase.
+     * @param evalMethodProgram compiler Program corresponding to expression file.
+     */
+    void FindEvaluationMethod(parser::Program *evalMethodProgram);
+
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     util::StringView sourceFilePath;
     uint64_t lineNumber {0};
     const panda_file::File *file {nullptr};
     std::unique_ptr<panda_file::DebugInfoExtractor> extractor {nullptr};
     panda_file::File::EntityId methodId;
     uint32_t bytecodeOffset {0};
+
+    // es2panda specific information about the compiled expression's static method.
+    ir::BlockStatement *methodStatements {nullptr};
+    ir::ExpressionStatement *lastStatement {nullptr};
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
 }  // namespace ark::es2panda::evaluate

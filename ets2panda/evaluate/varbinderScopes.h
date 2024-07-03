@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,29 +25,32 @@ namespace ark::es2panda::evaluate {
 // This scope must be used before running VarBinder or Checker on nodes from another Program.
 class ProgramScope final {
 public:
-    explicit ProgramScope(varbinder::ETSBinder *binder, parser::Program *program)
-        : binder_(binder),
-          prevProgram_(binder->Program()),
-          prevRecordTable_(binder->GetRecordTable()),
-          prevTopScope_(binder->TopScope()),
-          prevVarScope_(binder->VarScope()),
-          prevScope_(binder->GetScope())
+    explicit ProgramScope(varbinder::ETSBinder *varBinder, parser::Program *program)
+        : varBinder_(varBinder),
+          prevProgram_(varBinder->Program()),
+          prevRecordTable_(varBinder->GetRecordTable()),
+          prevTopScope_(varBinder->TopScope()),
+          prevVarScope_(varBinder->VarScope()),
+          prevScope_(varBinder->GetScope())
     {
-        binder_->SetProgram(program);
+        ASSERT(varBinder);
+        ASSERT(program);
 
-        auto &extTables = binder_->GetExternalRecordTable();
+        varBinder_->SetProgram(program);
+
+        auto &extTables = varBinder_->GetExternalRecordTable();
         auto iter = extTables.find(program);
         ASSERT(iter != extTables.end());
-        binder_->SetRecordTable(iter->second);
+        varBinder_->SetRecordTable(iter->second);
 
-        binder_->ResetAllScopes(program->GlobalScope(), program->GlobalScope(), program->GlobalScope());
+        varBinder_->ResetAllScopes(program->GlobalScope(), program->GlobalScope(), program->GlobalScope());
     }
 
     ~ProgramScope() noexcept
     {
-        binder_->SetProgram(prevProgram_);
-        binder_->SetRecordTable(prevRecordTable_);
-        binder_->ResetAllScopes(prevTopScope_, prevVarScope_, prevScope_);
+        varBinder_->SetProgram(prevProgram_);
+        varBinder_->SetRecordTable(prevRecordTable_);
+        varBinder_->ResetAllScopes(prevTopScope_, prevVarScope_, prevScope_);
     }
 
     NO_COPY_SEMANTIC(ProgramScope);
@@ -57,7 +60,7 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    varbinder::ETSBinder *binder_ {nullptr};
+    varbinder::ETSBinder *varBinder_ {nullptr};
     parser::Program *prevProgram_ {nullptr};
     varbinder::RecordTable *prevRecordTable_ {nullptr};
     varbinder::GlobalScope *prevTopScope_ {nullptr};
@@ -69,9 +72,11 @@ private:
 // so that entities will be registered with correct names in record table.
 class RecordTableClassScope final {
 public:
-    explicit RecordTableClassScope(varbinder::ETSBinder *binder, ir::AstNode *recordClass) : binder_(binder)
+    explicit RecordTableClassScope(varbinder::ETSBinder *varBinder, ir::AstNode *recordClass) : varBinder_(varBinder)
     {
-        auto *recordTable = binder->GetRecordTable();
+        ASSERT(varBinder_);
+
+        auto *recordTable = varBinder_->GetRecordTable();
         ASSERT(recordTable);
 
         prevRecordClass_ = recordTable->ClassDefinition();
@@ -91,10 +96,11 @@ public:
         }
     }
 
+    // NOLINTNEXTLINE(bugprone-exception-escape)
     ~RecordTableClassScope() noexcept
     {
-        auto *recordTable = binder_->GetRecordTable();
-        ASSERT(recordTable);
+        auto *recordTable = varBinder_->GetRecordTable();
+        ASSERT(recordTable != nullptr);
 
         if (prevRecordClass_ != nullptr) {
             if (prevRecordClass_->IsClassDefinition()) {
@@ -115,7 +121,7 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    varbinder::ETSBinder *binder_ {nullptr};
+    varbinder::ETSBinder *varBinder_ {nullptr};
     ir::AstNode *prevRecordClass_ {nullptr};
 };
 

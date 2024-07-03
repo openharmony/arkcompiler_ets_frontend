@@ -178,7 +178,10 @@ public:
         return dynamicImports_;
     }
 
-    void AddReExportImport(ir::ETSReExportDeclaration *reExport);
+    void AddReExportImport(ir::ETSReExportDeclaration *reExport)
+    {
+        reExportImports_.push_back(reExport);
+    }
 
     const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const
     {

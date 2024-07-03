@@ -19,6 +19,7 @@
 
 #include "arktsconfig.h"
 
+#include <random>
 #include <utility>
 
 #ifdef PANDA_WITH_BYTECODE_OPTIMIZER
@@ -143,6 +144,51 @@ static inline bool ETSWarningsGroupSetter(const ark::PandArg<bool> &option)
     return !option.WasSet() || (option.WasSet() && option.GetValue());
 }
 
+static std::tuple<std::string_view, std::string_view, std::string_view> SplitPath(std::string_view path)
+{
+    std::string_view fileDirectory;
+    std::string_view fileBaseName = path;
+    auto lastDelimPos = fileBaseName.find_last_of(ark::os::file::File::GetPathDelim());
+    if (lastDelimPos != std::string_view::npos) {
+        ++lastDelimPos;
+        fileDirectory = fileBaseName.substr(0, lastDelimPos);
+        fileBaseName = fileBaseName.substr(lastDelimPos);
+    }
+
+    // Save all extensions.
+    std::string_view fileExtensions;
+    auto fileBaseNamePos = fileBaseName.find_first_of('.');
+    if (fileBaseNamePos > 0 && fileBaseNamePos != std::string_view::npos) {
+        fileExtensions = fileBaseName.substr(fileBaseNamePos);
+        fileBaseName = fileBaseName.substr(0, fileBaseNamePos);
+    }
+
+    return {fileDirectory, fileBaseName, fileExtensions};
+}
+
+/**
+ * @brief Generate evaluated expression wrapping code.
+ * @param sourceFilePath used for generating a unique package name.
+ * @param input expression source code file stream.
+ * @param output stream for generating expression wrapper.
+ */
+static void GenerateEvaluationWrapper(std::string_view sourceFilePath, std::ifstream &input, std::stringstream &output)
+{
+    static constexpr std::string_view EVAL_PREFIX = "eval_";
+    static constexpr std::string_view EVAL_SUFFIX = "_eval";
+
+    auto splittedPath = SplitPath(sourceFilePath);
+    auto fileBaseName = std::get<1>(splittedPath);
+
+    std::random_device rd;
+    std::stringstream ss;
+    ss << EVAL_PREFIX << fileBaseName << '_' << rd() << EVAL_SUFFIX;
+    auto methodName = ss.str();
+
+    output << "package " << methodName << "; class " << methodName << " { private static " << methodName << "() { "
+           << input.rdbuf() << " } }";
+}
+
 static auto constexpr DEFAULT_THREAD_COUNT = 0;
 
 struct AllArgs {
@@ -189,13 +235,14 @@ struct AllArgs {
         "ets-implicit-boxing-unboxing", false,
         "Check if a program contains implicit boxing or unboxing - ETS Subset Warning"};
 
-    // ArkTS debugger evaluation mode options
-    ark::PandArg<bool> opEvalMode {"eval-mode", false, "Compile in evaluation mode"};
-    ark::PandArg<uint64_t> opEvalContextLine {"eval-context-line", 0, "Evaluation mode context source code line"};
-    ark::PandArg<std::string> opEvalContextSource {"eval-context-source", "",
-                                                   "Path to evaluation mode context source file"};
-    ark::PandArg<std::string> opEvalContextPandaFiles {
-        "eval-context-panda-files", "", "Paths to evaluation mode context (.abc) files, must be accessible"};
+    ark::PandArg<bool> opDebuggerEvalMode {"debugger-eval-mode", false, "Compile given file in evaluation mode"};
+    ark::PandArg<uint64_t> opDebuggerEvalLine {
+        "debugger-eval-line", 0, "Debugger evaluation mode, line in the source file code where evaluate occurs."};
+    ark::PandArg<std::string> opDebuggerEvalSource {"debugger-eval-source", "",
+                                                    "Debugger evaluation mode, path to evaluation mode source file"};
+    ark::PandArg<std::string> opDebuggerEvalPandaFiles {
+        "debugger-eval-panda-files", "",
+        "Debugger evaluation mode, paths to evaluation mode (.abc) files, must be accessible"};
 
     ark::PandArg<int> opThreadCount {"thread", DEFAULT_THREAD_COUNT, "Number of worker threads"};
     ark::PandArg<bool> opSizeStat {"dump-size-stat", false, "Dump size statistics"};
@@ -262,6 +309,12 @@ struct AllArgs {
     bool ParseInputOutput(CompilationMode compilationMode, std::string &errorMsg, std::string &sourceFile,
                           std::string &parserInput, std::string &compilerOutput) const
     {
+        auto isDebuggerEvalMode = opDebuggerEvalMode.GetValue();
+        if (isDebuggerEvalMode && compilationMode != CompilationMode::SINGLE_FILE) {
+            errorMsg = "Error: When compiling with --debugger-eval-mode single input file must be provided";
+            return false;
+        }
+
         sourceFile = inputFile.GetValue();
         if (compilationMode == CompilationMode::SINGLE_FILE) {
             std::ifstream inputStream(sourceFile.c_str());
@@ -272,7 +325,11 @@ struct AllArgs {
             }
 
             std::stringstream ss;
-            ss << inputStream.rdbuf();
+            if (isDebuggerEvalMode) {
+                GenerateEvaluationWrapper(sourceFile, inputStream, ss);
+            } else {
+                ss << inputStream.rdbuf();
+            }
             parserInput = ss.str();
         }
 
@@ -301,11 +358,6 @@ struct AllArgs {
         argparser.Add(&opDumpAssembly);
         argparser.Add(&opDebugInfo);
         argparser.Add(&opDumpDebugInfo);
-
-        argparser.Add(&opEvalMode);
-        argparser.Add(&opEvalContextLine);
-        argparser.Add(&opEvalContextSource);
-        argparser.Add(&opEvalContextPandaFiles);
 
         argparser.Add(&opOptLevel);
         argparser.Add(&opEtsModule);
@@ -346,6 +398,8 @@ struct AllArgs {
         argparser.Add(&opEtsSuggestFinal);
         argparser.Add(&opEtsRemoveAsync);
 
+        AddDebuggerEvaluationOptions(argparser);
+
         argparser.PushBackTail(&inputFile);
         argparser.EnableTail();
         argparser.EnableRemainder();
@@ -372,12 +426,6 @@ struct AllArgs {
         compilerOptions.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
         compilerOptions.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
         compilerOptions.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
-
-        // ArkTS debugger evaluation mode options
-        compilerOptions.evalMode = opEvalMode.GetValue();
-        compilerOptions.evalContextLine = opEvalContextLine.GetValue();
-        compilerOptions.evalContextSource = opEvalContextSource.GetValue();
-        compilerOptions.evalContextPandaFiles = SplitToStringVector(opEvalContextPandaFiles.GetValue());
 
         // ETS-Warnings
         compilerOptions.etsSubsetWarnings = opEtsSubsetWarnings.GetValue();
@@ -410,6 +458,8 @@ struct AllArgs {
             compilerOptions.etsImplicitBoxingUnboxing = opEtsImplicitBoxingUnboxing.GetValue();
         }
 
+        InitDebuggerEvaluationCompilerOptions(compilerOptions);
+
         // Pushing enabled warnings to warning collection
         PushingEnabledWarnings(compilerOptions);
 
@@ -440,6 +490,24 @@ private:
         }
         if (!compilerOptions.etsWarningCollection.empty()) {
             compilerOptions.etsHasWarnings = true;
+        }
+    }
+
+    void AddDebuggerEvaluationOptions(ark::PandArgParser &argparser)
+    {
+        argparser.Add(&opDebuggerEvalMode);
+        argparser.Add(&opDebuggerEvalLine);
+        argparser.Add(&opDebuggerEvalSource);
+        argparser.Add(&opDebuggerEvalPandaFiles);
+    }
+
+    void InitDebuggerEvaluationCompilerOptions(es2panda::CompilerOptions &compilerOptions) const
+    {
+        compilerOptions.debuggerEvalMode = opDebuggerEvalMode.GetValue();
+        if (compilerOptions.debuggerEvalMode) {
+            compilerOptions.debuggerEvalLine = opDebuggerEvalLine.GetValue();
+            compilerOptions.debuggerEvalSource = opDebuggerEvalSource.GetValue();
+            compilerOptions.debuggerEvalPandaFiles = SplitToStringVector(opDebuggerEvalPandaFiles.GetValue());
         }
     }
 };

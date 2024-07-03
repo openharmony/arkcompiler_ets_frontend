@@ -13,25 +13,26 @@
  * limitations under the License.
  */
 
-#include "evaluate/proxyProgramsMap.h"
-
+#include "evaluate/proxyProgramsCache.h"
 #include "parser/program/program.h"
 
 namespace ark::es2panda::evaluate {
 
-ProxyProgramsMap::ProxyProgramsMap(ArenaAllocator *allocator) : cache_(allocator->Adapter()) {}
+ProxyProgramsCache::ProxyProgramsCache(ArenaAllocator *allocator) : cache_(allocator->Adapter()) {}
 
-parser::Program *ProxyProgramsMap::GetProgram(util::StringView fileName)
+parser::Program *ProxyProgramsCache::GetProgram(util::StringView fileName)
 {
     auto iter = cache_.find(fileName);
     return (iter == cache_.end()) ? nullptr : iter->second;
 }
 
-void ProxyProgramsMap::AddProgram(parser::Program *program)
+void ProxyProgramsCache::AddProgram(parser::Program *program)
 {
     ASSERT(program);
+
     auto filePath = program->SourceFilePath();
     ASSERT(cache_.find(filePath) == cache_.end());
+
     cache_.emplace(filePath, program);
 }
 

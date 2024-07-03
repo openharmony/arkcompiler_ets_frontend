@@ -144,11 +144,11 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allowDynamicName
     auto *debugInfoPlugin = checker->GetDebugInfoPlugin();
     if (UNLIKELY(debugInfoPlugin)) {
         auto *var = debugInfoPlugin->FindClass(ident);
-        if (var) {
+        if (var != nullptr) {
             ident->SetVariable(var);
             return;
         }
-        // TODO: search an imported module's name
+        // NOTE: search an imported module's name in case of 'import "file" as xxx'.
     }
 
     ThrowUnresolvableType(ident->Start(), name);
@@ -824,8 +824,6 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
 
     const util::StringView sourceName = import->ResolvedSource()->Str();
 
-    Program()->GetModuleDebugInfo().AddImport(sourceName, specifier);
-
     auto record = GetExternalProgram(sourceName, importPath);
     const auto *const importProgram = record.front();
     const auto *const importGlobalScope = importProgram->GlobalScope();
@@ -987,12 +985,6 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     util::UString internalName(ss.str(), Allocator());
     funcScope->BindInternalName(internalName.View());
-}
-
-void ETSBinder::AddReExportImport(ir::ETSReExportDeclaration *reExport)
-{
-    reExportImports_.push_back(reExport);
-    Program()->GetModuleDebugInfo().AddExports(reExport);
 }
 
 void ETSBinder::InitImplicitThisParam()

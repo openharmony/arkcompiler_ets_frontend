@@ -27,11 +27,13 @@ class Program;
 
 namespace ark::es2panda::evaluate {
 
-class ProxyProgramsMap final {
+class ProxyProgramsCache final {
 public:
-    explicit ProxyProgramsMap(ArenaAllocator *allocator);
-    NO_COPY_SEMANTIC(ProxyProgramsMap);
-    NO_MOVE_SEMANTIC(ProxyProgramsMap);
+    explicit ProxyProgramsCache(ArenaAllocator *allocator);
+    NO_COPY_SEMANTIC(ProxyProgramsCache);
+    NO_MOVE_SEMANTIC(ProxyProgramsCache);
+
+    ~ProxyProgramsCache() = default;
 
     parser::Program *GetProgram(util::StringView fileName);
 

@@ -32,6 +32,7 @@ class Program;
 }  // namespace ark::es2panda::parser
 
 namespace ark::es2panda::varbinder {
+class ETSBinder;
 class Scope;
 }  // namespace ark::es2panda::varbinder
 
@@ -42,46 +43,64 @@ namespace ark::es2panda::evaluate {
  * All newly created IR nodes from debug-info must be checked through this class,
  * otherwise recursive class creations can lead to varbinder scopes errors.
  */
-class NonRecursiveIrChecker final {
+class IrCheckHelper final {
 public:
-    struct ScopedAstNode {
+    struct ScopedAstNode final {
         ScopedAstNode(parser::Program *p, varbinder::Scope *s, ir::AstNode *parent, ir::AstNode *n)
             : program(p), scope(s), parentClass(parent), node(n)
         {
         }
 
+        // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
         parser::Program *program {nullptr};
         varbinder::Scope *scope {nullptr};
         ir::AstNode *parentClass {nullptr};
         ir::AstNode *node {nullptr};
+        // NOLINTEND(misc-non-private-member-variables-in-classes)
     };
 
 public:
-    NonRecursiveIrChecker(ArenaAllocator *allocator);
-    NO_COPY_SEMANTIC(NonRecursiveIrChecker);
-    NO_MOVE_SEMANTIC(NonRecursiveIrChecker);
-    ~NonRecursiveIrChecker() noexcept = default;
+    explicit IrCheckHelper(checker::ETSChecker *checker, varbinder::ETSBinder *varBinder);
+    NO_COPY_SEMANTIC(IrCheckHelper);
+    NO_MOVE_SEMANTIC(IrCheckHelper);
+    ~IrCheckHelper() noexcept = default;
 
     /**
      * @brief Runs scope and type checks on the given IR node
-     * Returns false if check was delayed until recursion end, true if check was done immediately.
+     * @param node to check, must not be null.
+     * @param scope to which node is relative to - if null, current checker scope is taken.
+     * @param parentClass class to use record table from, might be null.
+     * @param program relative to node - if null, current varbinder program is taken;
+     * either it or `scope` must be non-null.
+     * @returns false if check was delayed until recursion end, true if check was done immediately.
      */
-    bool CheckNewNode(checker::ETSChecker *checker, ir::AstNode *node, varbinder::Scope *scope,
-                      ir::AstNode *parentClass, parser::Program *program);
+    bool CheckNewNode(ir::AstNode *node, varbinder::Scope *scope, ir::AstNode *parentClass, parser::Program *program);
 
-    void PreCheck(checker::ETSChecker *checker);
+    void PreCheck();
+
+    void CheckGlobalEntity(parser::Program *program, ir::AstNode *node, bool mustCheck = true);
+    void CheckLocalEntity(ir::AstNode *node);
+
+    checker::ETSChecker *GetChecker() const
+    {
+        return checker_;
+    }
 
 private:
-    void HandleCustomNodes(checker::ETSChecker *checker);
-    void CheckDecls(checker::ETSChecker *checker);
+    void HandleCustomNodes();
+    void CheckDecls();
+
+private:
+    checker::ETSChecker *checker_ {nullptr};
+    varbinder::ETSBinder *varBinder_ {nullptr};
 
     bool isRecursive_ {false};
     // List is required due to possible push-backs during iteration.
     ArenaList<ScopedAstNode> recursiveDecls_;
     // Indicates that PreCheck was called from ETSChecker::StartChecker()
-    bool isPrecheckPassed_ = {false};
+    bool isPrecheckPassed_ {false};
 };
 
 }  // namespace ark::es2panda::evaluate
 
-#endif /* NON_RECURSIVE_IR_CHECKER_H */
+#endif  // ES2PANDA_EVALUATE_NON_RECURSIVE_IR_CHECKER_H

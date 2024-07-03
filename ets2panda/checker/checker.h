@@ -203,7 +203,7 @@ public:
         return &errorLogger_;
     }
 
-    // TODO: required only for evaluate, might be used better with inheritance
+    // NOTE: required only for evaluate.
     void Initialize(varbinder::VarBinder *varbinder);
 
 protected:

@@ -209,7 +209,7 @@ void ETSEmitter::GenAnnotation()
     auto *globalRecordTable = varbinder->GetGlobalRecordTable();
 
     for (auto *classDecl : globalRecordTable->ClassDefinitions()) {
-        GenClassRecord(varbinder->Program(), classDecl, false);
+        GenClassRecord(classDecl, false);
     }
 
     for (auto *interfaceDecl : globalRecordTable->InterfaceDeclarations()) {
@@ -229,7 +229,8 @@ void ETSEmitter::GenAnnotation()
     }
 
     for (auto [extProg, recordTable] : varbinder->GetExternalRecordTable()) {
-        GenExternalRecord(extProg, recordTable);
+        (void)extProg;
+        GenExternalRecord(recordTable);
     }
 
     const auto *checker = static_cast<checker::ETSChecker *>(Context()->checker);
@@ -239,11 +240,11 @@ void ETSEmitter::GenAnnotation()
     }
 }
 
-void ETSEmitter::GenExternalRecord(const parser::Program *program, varbinder::RecordTable *recordTable)
+void ETSEmitter::GenExternalRecord(varbinder::RecordTable *recordTable)
 {
     bool isGenStdLib = recordTable->Program()->VarBinder()->IsGenStdLib();
     for (auto *classDecl : recordTable->ClassDefinitions()) {
-        GenClassRecord(program, classDecl, !isGenStdLib);
+        GenClassRecord(classDecl, !isGenStdLib);
     }
 
     for (auto *interfaceDecl : recordTable->InterfaceDeclarations()) {
@@ -428,20 +429,6 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceD
     Program()->recordTable.emplace(interfaceRecord.name, std::move(interfaceRecord));
 }
 
-static void AddModuleDebugInfo(const parser::Program *program, pandasm::Record &classRecord)
-{
-    const auto &debugInfo = program->GetModuleDebugInfo();
-    auto encoder = [](util::StringView modulePath, util::StringView alias, util::StringView entity) {
-        return std::string(modulePath) + ";" + std::string(alias) + ";" + std::string(entity) + ";";
-    };
-    debugInfo.EnumerateImports([&classRecord, &encoder](auto modulePath, auto alias, auto entity) {
-        classRecord.metadata->SetAttributeValue(Signatures::DEBUG_IMPORT_ATTRIBUTE, encoder(modulePath, alias, entity));
-    });
-    debugInfo.EnumerateExports([&classRecord, &encoder](auto modulePath, auto alias, auto entity) {
-        classRecord.metadata->SetAttributeValue(Signatures::DEBUG_EXPORT_ATTRIBUTE, encoder(modulePath, alias, entity));
-    });
-}
-
 std::vector<pandasm::AnnotationData> ETSEmitter::GenAnnotations(const ir::ClassDefinition *classDef)
 {
     std::vector<pandasm::AnnotationData> annotations;
@@ -487,7 +474,7 @@ static uint32_t GetAccessFlags(const ir::ClassDefinition *classDef)
     return accessFlags;
 }
 
-void ETSEmitter::GenClassRecord(const parser::Program *program, const ir::ClassDefinition *classDef, bool external)
+void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool external)
 {
     auto classRecord = pandasm::Record(classDef->InternalName().Mutf8(), Program()->lang);
     if (external) {
@@ -523,10 +510,6 @@ void ETSEmitter::GenClassRecord(const parser::Program *program, const ir::ClassD
         }
         std::string name = declNode->AsTSInterfaceDeclaration()->InternalName().Mutf8();
         classRecord.metadata->SetAttributeValue(Signatures::IMPLEMENTS_ATTRIBUTE, name);
-    }
-
-    if (classDef->Ident()->Name().Is(compiler::Signatures::ETS_GLOBAL)) {
-        AddModuleDebugInfo(program, classRecord);
     }
 
     GenClassInheritedFields(baseType, classRecord);

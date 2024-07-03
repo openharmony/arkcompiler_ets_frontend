@@ -134,27 +134,6 @@ static constexpr std::string_view BUILTINS_TO_INIT[] = {
     compiler::Signatures::BUILTIN_RETHROWING_FUNCTIONN_CLASS,
 };
 
-ETSChecker::ETSChecker()
-    // NOLINTNEXTLINE(readability-redundant-member-init)
-    : Checker(),
-      arrayTypes_(Allocator()->Adapter()),
-      pendingConstraintCheckRecords_(Allocator()->Adapter()),
-      globalArraySignatures_(Allocator()->Adapter()),
-      primitiveWrappers_(Allocator()),
-      cachedComputedAbstracts_(Allocator()->Adapter()),
-      dynamicIntrinsics_ {DynamicCallIntrinsicsMap {Allocator()->Adapter()},
-                          DynamicCallIntrinsicsMap {Allocator()->Adapter()}},
-      dynamicClasses_ {DynamicClassIntrinsicsMap(Allocator()->Adapter()),
-                       DynamicClassIntrinsicsMap(Allocator()->Adapter())},
-      dynamicLambdaSignatureCache_(Allocator()->Adapter()),
-      functionalInterfaceCache_(Allocator()->Adapter()),
-      apparentTypes_(Allocator()->Adapter()),
-      dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}}
-{
-}
-
-ETSChecker::~ETSChecker() = default;
-
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
     if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
@@ -283,17 +262,17 @@ bool ETSChecker::StartChecker(varbinder::VarBinder *varbinder, const CompilerOpt
 
 evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin()
 {
-    return debugInfoPlugin_.get();
+    return debugInfoPlugin_;
 }
 
 const evaluate::ScopedDebugInfoPlugin *ETSChecker::GetDebugInfoPlugin() const
 {
-    return debugInfoPlugin_.get();
+    return debugInfoPlugin_;
 }
 
-void ETSChecker::SetDebugInfoPlugin(std::unique_ptr<evaluate::ScopedDebugInfoPlugin> &&debugInfo)
+void ETSChecker::SetDebugInfoPlugin(evaluate::ScopedDebugInfoPlugin *debugInfo)
 {
-    debugInfoPlugin_ = std::move(debugInfo);
+    debugInfoPlugin_ = debugInfo;
 }
 
 void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)

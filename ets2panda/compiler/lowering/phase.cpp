@@ -102,7 +102,7 @@ static void CheckOptionsBeforePhase(const CompilerOptions &options, const parser
 static void CheckOptionsAfterPhase(const CompilerOptions &options, const parser::Program *program,
                                    const std::string &name);
 
-static std::vector<Phase *> GetETSPhaseList()
+std::vector<Phase *> GetETSPhaseList()
 {
     // clang-format off
     return {
@@ -146,7 +146,7 @@ static std::vector<Phase *> GetETSPhaseList()
     // clang-format on
 }
 
-static std::vector<Phase *> GetASPhaseList()
+std::vector<Phase *> GetASPhaseList()
 {
     return {
         &g_initScopesPhaseAs,
@@ -154,7 +154,7 @@ static std::vector<Phase *> GetASPhaseList()
     };
 }
 
-static std::vector<Phase *> GetTSPhaseList()
+std::vector<Phase *> GetTSPhaseList()
 {
     return {
         &g_initScopesPhaseTs,
@@ -162,7 +162,7 @@ static std::vector<Phase *> GetTSPhaseList()
     };
 }
 
-static std::vector<Phase *> GetJSPhaseList()
+std::vector<Phase *> GetJSPhaseList()
 {
     return {
         &g_initScopesPhaseJs,

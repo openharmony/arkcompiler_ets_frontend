@@ -118,12 +118,12 @@ struct CompilerOptions {
     bool parseOnly {};
     bool verifierAllChecks {};
     bool verifierFullProgram {};
-    bool evalMode {};
-    uint64_t evalContextLine {};
-    std::string evalContextSource {};
+    bool debuggerEvalMode {};
+    uint64_t debuggerEvalLine {};
+    std::string debuggerEvalSource {};
     std::string stdLib {};
     std::vector<std::string> plugins {};
-    std::vector<std::string> evalContextPandaFiles {};
+    std::vector<std::string> debuggerEvalPandaFiles {};
     std::unordered_set<std::string> skipPhases {};
     std::unordered_set<std::string> verifierWarnings {};
     std::unordered_set<std::string> verifierErrors {};

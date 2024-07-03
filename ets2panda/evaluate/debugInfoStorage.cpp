@@ -16,10 +16,16 @@
 #include "evaluate/debugInfoStorage.h"
 #include "assembler/assembly-type.h"
 #include "generated/signatures.h"
+#include "evaluate/helpers.h"
+
+#include "libpandafile/class_data_accessor-inl.h"
+#include "libpandafile/file-inl.h"
 
 namespace ark::es2panda::evaluate {
 
-static std::string GetFullRecordName(const panda_file::File &pf, const panda_file::File::EntityId &classId)
+namespace {
+
+std::string GetFullRecordName(const panda_file::File &pf, const panda_file::File::EntityId &classId)
 {
     std::string name = utf::Mutf8AsCString(pf.GetStringData(classId).data);
 
@@ -29,11 +35,13 @@ static std::string GetFullRecordName(const panda_file::File &pf, const panda_fil
     return type.GetPandasmName();
 }
 
-static bool EndsWith(std::string_view str, std::string_view suffix)
+bool EndsWith(std::string_view str, std::string_view suffix)
 {
     auto pos = str.rfind(suffix);
     return pos != std::string::npos && (str.size() - pos) == suffix.size();
 }
+
+}  // namespace
 
 ImportExportTable::ImportExportTable(ArenaAllocator *allocator)
     : imports_(allocator->Adapter()), exports_(allocator->Adapter())
@@ -43,7 +51,7 @@ ImportExportTable::ImportExportTable(ArenaAllocator *allocator)
 DebugInfoStorage::DebugInfoStorage(const CompilerOptions &options, ArenaAllocator *allocator)
     : allocator_(allocator), sourceFileToDebugInfo_(allocator->Adapter()), moduleNameToDebugInfo_(allocator->Adapter())
 {
-    for (const auto &pfPath : options.evalContextPandaFiles) {
+    for (const auto &pfPath : options.debuggerEvalPandaFiles) {
         LoadFileDebugInfo(pfPath);
     }
 }
@@ -66,20 +74,15 @@ void DebugInfoStorage::LoadFileDebugInfo(std::string_view pfPath)
             continue;
         }
 
-        std::string moduleName = "";
-        auto pos = recordName.find_last_of('.');
-        if (pos != std::string::npos) {
-            moduleName = recordName.substr(0, pos);
-        }
-
-        panda_file::ClassDataAccessor cda(*pf, classId);
-        auto sourceFileId = cda.GetSourceFileId();
+        std::string_view moduleName = helpers::SplitRecordName(recordName).first;
+        auto *debugInfo = allocator_->New<FileDebugInfo>(std::move(pf), classId, moduleName);
+        auto sourceFileId = debugInfo->globalClassAcc.GetSourceFileId();
         ASSERT(sourceFileId.has_value());
-        std::string_view sourceFileName = utf::Mutf8AsCString(pf->GetStringData(*sourceFileId).data);
+        std::string_view sourceFileName = utf::Mutf8AsCString(debugInfo->pf->GetStringData(*sourceFileId).data);
+        debugInfo->sourceFilePath = sourceFileName;
 
-        auto *debugInfo = allocator_->New<FileDebugInfo>(std::move(pf), std::move(cda), std::move(moduleName));
         sourceFileToDebugInfo_.emplace(sourceFileName, debugInfo);
-        moduleNameToDebugInfo_.emplace(std::string_view(debugInfo->moduleName), debugInfo);
+        moduleNameToDebugInfo_.emplace(moduleName, debugInfo);
         return;
     }
 
@@ -117,32 +120,9 @@ std::string_view DebugInfoStorage::GetModuleName(std::string_view filePath)
 {
     auto iter = sourceFileToDebugInfo_.find(filePath);
     if (iter == sourceFileToDebugInfo_.end()) {
-        return "";
-    }
-    return iter->second->moduleName;
-}
-
-std::string_view DebugInfoStorage::FindNamedImportAll(std::string_view filePath, std::string_view bindingName)
-{
-    auto *table = GetImportExportTable(filePath);
-    if (table == nullptr) {
-        LOG(WARNING, ES2PANDA) << "Failed to find import/export table for " << filePath;
         return {};
     }
-
-    const auto &imports = table->GetImports();
-    auto optEntity = imports.find(bindingName);
-    if (optEntity == imports.end()) {
-        return "";
-    }
-
-    ASSERT(!optEntity->second.empty());
-    for (const auto &[path, entity] : optEntity->second) {
-        if (entity == STAR_IMPORT) {
-            return path;
-        }
-    }
-    return "";
+    return iter->second->moduleName;
 }
 
 panda_file::File::EntityId DebugInfoStorage::FindClass(std::string_view filePath, std::string_view className)
@@ -156,139 +136,6 @@ panda_file::File::EntityId DebugInfoStorage::FindClass(std::string_view filePath
 
     auto classIter = records.find(className);
     return classIter == records.end() ? panda_file::File::EntityId() : classIter->second;
-}
-
-std::optional<EntityInfo> DebugInfoStorage::FindImportedEntity(std::string_view filePath, std::string_view entityName)
-{
-    // TODO: cache all the resolved paths.
-    auto *table = GetImportExportTable(filePath);
-    if (table == nullptr) {
-        LOG(WARNING, ES2PANDA) << "Failed to find import/export table for " << filePath;
-        return {};
-    }
-
-    // `import * as B from "C"` should not be searched, as it handled differently in compiler.
-    const auto &imports = table->GetImports();
-    auto optEntity = imports.find(entityName);
-    if (optEntity == imports.end()) {
-        return {};
-    }
-
-    ASSERT(!optEntity->second.empty());
-    if (optEntity->second.size() > 1) {
-        // Have more than one imports for the given name - it could not be a variable.
-        return {};
-    }
-    // `import {A as B} from "C"`
-    auto [path, entity] = optEntity->second[0];
-    return FindExportedEntity(path, entity);
-}
-
-void DebugInfoStorage::FindImportedFunctions(ArenaVector<EntityInfo> &overloadSet, std::string_view filePath,
-                                             std::string_view entityName)
-{
-    // TODO: cache all the resolved paths.
-    auto *table = GetImportExportTable(filePath);
-    if (table == nullptr) {
-        LOG(WARNING, ES2PANDA) << "Failed to find import/export table for " << filePath;
-        return;
-    }
-
-    // `import * as B from "C"` should not be searched, as it handled differently in compiler.
-    const auto &imports = table->GetImports();
-    auto optOverloadSet = imports.find(entityName);
-    if (optOverloadSet == imports.end()) {
-        return;
-    }
-
-    ASSERT(!optOverloadSet->second.empty());
-    for (const auto &[path, entity] : optOverloadSet->second) {
-        // `import {A as B} from "C"`
-        FindExportedFunctions(overloadSet, path, entity);
-    }
-}
-
-// Note that the current implementation does not guarantee that the found entity is indeed a variable,
-// so users must check it manually by traversing the found file's ETSGLOBAL fields.
-std::optional<EntityInfo> DebugInfoStorage::FindExportedEntity(std::string_view filePath, std::string_view entityName)
-{
-    // TODO: cache all the resolved paths.
-    auto *table = GetImportExportTable(filePath);
-    if (table == nullptr) {
-        LOG(WARNING, ES2PANDA) << "Failed to find import/export table for " << filePath;
-        return {};
-    }
-
-    const auto &exports = table->GetExports();
-    const auto optOverloadSet = exports.find(entityName);
-    if (optOverloadSet != exports.end()) {
-        ASSERT(!optOverloadSet->second.empty());
-        if (optOverloadSet->second.size() > 1) {
-            // Have more than one imports for the given name, but we search for the single one - variable or class.
-            return {};
-        }
-        // export {A as B} from "C"
-        const auto &[path, entity] = optOverloadSet->second[0];
-        if (path == "") {
-            return EntityInfo(filePath, entity);
-        }
-        return FindExportedEntity(path, entity);
-    }
-
-    const auto optReExportAll = exports.find(STAR_IMPORT);
-    if (optReExportAll != exports.end()) {
-        ASSERT(!optReExportAll->second.empty());
-        for (const auto &[path, entity] : optReExportAll->second) {
-            // export * from "C"
-            (void)entity;
-            ASSERT(entity == STAR_IMPORT);
-
-            auto optResult = FindExportedEntity(path, entityName);
-            if (optResult) {
-                return optResult;
-            }
-        }
-    }
-
-    return {};
-}
-
-void DebugInfoStorage::FindExportedFunctions(ArenaVector<EntityInfo> &overloadSet, std::string_view filePath,
-                                             std::string_view entityName)
-{
-    // TODO: cache all the resolved paths.
-    auto *table = GetImportExportTable(filePath);
-    if (table == nullptr) {
-        LOG(WARNING, ES2PANDA) << "Failed to find import/export table for " << filePath;
-        return;
-    }
-
-    const auto &exports = table->GetExports();
-    const auto optOverloadSet = exports.find(entityName);
-    if (optOverloadSet != exports.end()) {
-        ASSERT(!optOverloadSet->second.empty());
-        for (const auto &[path, entity] : optOverloadSet->second) {
-            // `export {A as B} from "C"`
-            if (path == "") {
-                overloadSet.push_back(EntityInfo(filePath, entity));
-            } else {
-                FindExportedFunctions(overloadSet, path, entity);
-            }
-        }
-    }
-
-    // Still need to traverse re-export-all statements to fill the complete overload set.
-    const auto optReExportAll = exports.find(STAR_IMPORT);
-    if (optReExportAll != exports.end()) {
-        ASSERT(!optReExportAll->second.empty());
-        for (const auto &[path, entity] : optReExportAll->second) {
-            // export * from "C"
-            (void)entity;
-            ASSERT(entity == STAR_IMPORT);
-
-            FindExportedFunctions(overloadSet, path, entityName);
-        }
-    }
 }
 
 bool DebugInfoStorage::FillEvaluateContext(EvaluateContext &context)
@@ -319,17 +166,21 @@ bool DebugInfoStorage::FillEvaluateContext(EvaluateContext &context)
 
 const ImportExportTable &DebugInfoStorage::LazyLoadImportExportTable(FileDebugInfo *info)
 {
+    ASSERT(info);
+
     if (info->importExportTable.has_value()) {
         return *info->importExportTable;
     }
 
-    // TODO: load table after it is implemented in compiler.
+    // NOTE: load table after it is implemented in compiler.
     info->importExportTable.emplace(allocator_);
     return info->importExportTable.value();
 }
 
-const DebugInfoStorage::FileDebugInfo::RecordsMap &DebugInfoStorage::LazyLoadRecords(FileDebugInfo *info)
+const FileDebugInfo::RecordsMap &DebugInfoStorage::LazyLoadRecords(FileDebugInfo *info)
 {
+    ASSERT(info);
+
     if (info->records.has_value()) {
         return *info->records;
     }
@@ -346,14 +197,24 @@ const DebugInfoStorage::FileDebugInfo::RecordsMap &DebugInfoStorage::LazyLoadRec
             continue;
         }
 
-        auto recordName = GetFullRecordName(*pf, classId);
+        auto recordName = helpers::SplitRecordName(GetFullRecordName(*pf, classId)).second;
         auto recordNameView = util::UString(recordName, allocator_).View();
-        auto inserted = records.emplace(recordNameView, std::move(classId));
-        // There should be only one declaration of the same class.
-        ASSERT(inserted.second);
+        if (!records.emplace(recordNameView, classId).second) {
+            LOG(FATAL, ES2PANDA) << "Failed to emplace class '" << recordNameView << "' in records."
+                                 << "There should be only one declaration of the same class.";
+        }
     }
 
     return records;
+}
+
+FileDebugInfo *DebugInfoStorage::GetDebugInfoByModuleName(std::string_view moduleName) const
+{
+    auto find = moduleNameToDebugInfo_.find(moduleName);
+    if (find != moduleNameToDebugInfo_.end()) {
+        return find->second;
+    }
+    return nullptr;
 }
 
 }  // namespace ark::es2panda::evaluate

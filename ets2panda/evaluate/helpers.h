@@ -22,8 +22,10 @@
 #include "varbinder/ETSBinder.h"
 
 #include "libpandafile/field_data_accessor.h"
+#include "libpandafile/method_data_accessor.h"
+#include "libpandafile/class_data_accessor.h"
 #include "libpandafile/file.h"
-#include "libpandafile/include/type.h"
+#include "type.h"
 
 #include <optional>
 #include <string>
@@ -36,17 +38,19 @@ namespace ark::es2panda::ir {
 class BlockStatement;
 class Identifier;
 class TypeNode;
+class ETSTypeReference;
+class ClassProperty;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::parser {
 class Program;
 }  // namespace ark::es2panda::parser
 
-namespace ark::es2panda::evaluate {
+namespace ark::es2panda::evaluate::helpers {
 
 class SafeStateScope final {
 public:
-    explicit SafeStateScope(checker::ETSChecker *checker);
+    explicit SafeStateScope(checker::ETSChecker *checker, varbinder::ETSBinder *varBinder);
 
     ~SafeStateScope();
 
@@ -58,6 +62,7 @@ public:
 
 private:
     checker::ETSChecker *checker_ {nullptr};
+    varbinder::ETSBinder *varBinder_ {nullptr};
     varbinder::Scope *checkerScope_ {nullptr};
     varbinder::GlobalScope *binderTopScope_ {nullptr};
     varbinder::VariableScope *binderVarScope_ {nullptr};
@@ -68,37 +73,47 @@ private:
 
 static inline constexpr std::string_view DEBUGGER_API_CLASS_NAME = "DebuggerAPI";
 
-#define TYPED_ACCESSOR_NAME_SWITCH(TYPE_NAME_BASE) \
-    switch (typeId) {                              \
-        case panda_file::Type::TypeId::U1:         \
-            return #TYPE_NAME_BASE "Boolean";      \
-        case panda_file::Type::TypeId::I8:         \
-            return #TYPE_NAME_BASE "Byte";         \
-        case panda_file::Type::TypeId::U8:         \
-            return #TYPE_NAME_BASE "Short";        \
-        case panda_file::Type::TypeId::I16:        \
-            [[fallthrough]];                       \
-        case panda_file::Type::TypeId::U16:        \
-            return #TYPE_NAME_BASE "Char";         \
-        case panda_file::Type::TypeId::I32:        \
-            [[fallthrough]];                       \
-        case panda_file::Type::TypeId::U32:        \
-            return #TYPE_NAME_BASE "Int";          \
-        case panda_file::Type::TypeId::F32:        \
-            return #TYPE_NAME_BASE "Float";        \
-        case panda_file::Type::TypeId::F64:        \
-            return #TYPE_NAME_BASE "Double";       \
-        case panda_file::Type::TypeId::I64:        \
-            [[fallthrough]];                       \
-        case panda_file::Type::TypeId::U64:        \
-            return #TYPE_NAME_BASE "Long";         \
-        case panda_file::Type::TypeId::REFERENCE:  \
-            return #TYPE_NAME_BASE "Object";       \
-        default:                                   \
-            UNREACHABLE();                         \
-            return "";                             \
-    }                                              \
-    return ""
+// CC-OFFNXT(G.PRE.02-CPP) code generation
+// CC-OFFNXT(G.PRE.06) solid logic
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define TYPED_ACCESSOR_NAME_SWITCH(TYPE_NAME_BASE)     \
+    do {                                               \
+        switch (typeId) {                              \
+            case panda_file::Type::TypeId::U1:         \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Boolean";      \
+            case panda_file::Type::TypeId::I8:         \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Byte";         \
+            case panda_file::Type::TypeId::U16:        \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Char";         \
+            case panda_file::Type::TypeId::I16:        \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Short";        \
+            case panda_file::Type::TypeId::I32:        \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Int";          \
+            case panda_file::Type::TypeId::I64:        \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Long";         \
+            case panda_file::Type::TypeId::F32:        \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Float";        \
+            case panda_file::Type::TypeId::F64:        \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Double";       \
+            case panda_file::Type::TypeId::REFERENCE:  \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return #TYPE_NAME_BASE "Object";       \
+            default:                                   \
+                UNREACHABLE();                         \
+                /* CC-OFFNXT(G.PRE.05) function gen */ \
+                return {};                             \
+        }                                              \
+        /* CC-OFFNXT(G.PRE.05) function gen */         \
+        return {};                                     \
+    } while (false)
 
 constexpr inline std::string_view CreateGetterName(panda_file::Type::TypeId typeId)
 {
@@ -113,21 +128,20 @@ constexpr inline std::string_view CreateSetterName(panda_file::Type::TypeId type
 #undef TYPED_ACCESSOR_NAME_SWITCH
 
 template <typename F>
-void DoScopedAction(checker::ETSChecker *checker, parser::Program *program, varbinder::Scope *scope,
-                    ir::AstNode *parentClass, F &&action)
+void DoScopedAction(checker::ETSChecker *checker, varbinder::ETSBinder *varBinder, parser::Program *program,
+                    varbinder::Scope *scope, ir::AstNode *parentClass, F &&action)
 {
     ASSERT(checker);
+    ASSERT(varBinder);
     // Must enter either program global scope or a local scope.
     ASSERT(program != nullptr || scope != nullptr);
 
-    SafeStateScope s(checker);
+    SafeStateScope s(checker, varBinder);
 
-    auto *binder = checker->VarBinder()->AsETSBinder();
-
-    auto runInScope = [checker, binder, scope, parentClass](auto &&f) {
-        RecordTableClassScope recordTableScope(binder, parentClass);
+    auto runInScope = [checker, varBinder, scope, parentClass](auto &&f) {
+        RecordTableClassScope recordTableScope(varBinder, parentClass);
         if (scope != nullptr) {
-            auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(binder, scope);
+            auto lexScope = varbinder::LexicalScope<varbinder::Scope>::Enter(varBinder, scope);
             checker::ScopeContext checkerScope(checker, scope);
             f();
         } else {
@@ -135,19 +149,19 @@ void DoScopedAction(checker::ETSChecker *checker, parser::Program *program, varb
         }
     };
 
-    if (program != nullptr && program != binder->Program()) {
-        // Save checker scope because it can differ from binder's scope.
+    if (program != nullptr && program != varBinder->Program()) {
+        // Save checker scope because it can differ from VarBinder's scope.
         checker::ScopeContext savedCheckerScope(checker, checker->Scope());
         {
-            ProgramScope rcScope(binder, program);
-            checker->Initialize(binder);
+            ProgramScope rcScope(varBinder, program);
+            checker->Initialize(varBinder);
 
-            runInScope(std::move(action));
+            runInScope(std::forward<F>(action));
         }
         // Switch checker's state back after leaving another program's context.
-        checker->Initialize(binder);
+        checker->Initialize(varBinder);
     } else {
-        runInScope(std::move(action));
+        runInScope(std::forward<F>(action));
     }
 }
 
@@ -165,11 +179,61 @@ panda_file::Type::TypeId GetTypeId(std::string_view typeSignature);
 
 ir::BlockStatement *GetEnclosingBlock(ir::Identifier *ident);
 
-ir::ModifierFlags GetModifierFlags(panda_file::FieldDataAccessor &fda);
+template <typename AccessorType>
+ir::ModifierFlags GetModifierFlags(AccessorType &da, bool forceAddPublicFlag)
+{
+    auto flags = ir::ModifierFlags::NONE;
+    if (da.IsStatic()) {
+        flags |= ir::ModifierFlags::STATIC;
+    }
+    if (da.IsFinal()) {
+        flags |= ir::ModifierFlags::FINAL;
+    }
+
+    if (forceAddPublicFlag) {
+        flags |= ir::ModifierFlags::PUBLIC;
+    } else {
+        if (da.IsPublic()) {
+            flags |= ir::ModifierFlags::PUBLIC;
+        }
+        if (da.IsProtected()) {
+            flags |= ir::ModifierFlags::PROTECTED;
+        }
+        if (da.IsPrivate()) {
+            flags |= ir::ModifierFlags::PRIVATE;
+        }
+    }
+
+    if constexpr (std::is_same_v<AccessorType, panda_file::FieldDataAccessor>) {
+        if (da.IsReadonly()) {
+            flags |= ir::ModifierFlags::READONLY;
+        }
+    } else if constexpr (std::is_same_v<AccessorType, panda_file::MethodDataAccessor>) {
+        if (da.IsNative()) {
+            flags |= ir::ModifierFlags::NATIVE;
+        }
+        if (da.IsAbstract()) {
+            flags |= ir::ModifierFlags::ABSTRACT;
+        }
+    } else {
+        LOG(FATAL, ES2PANDA) << "Should be passed only reference on FieldDataAccessor or MethodDataAccessor.";
+    }
+
+    return flags;
+}
+
+ir::ModifierFlags GetModifierFlags(panda_file::ClassDataAccessor &da);
 
 // Adds `extProgram` into external programs list of the given `program`.
 void AddExternalProgram(parser::Program *program, parser::Program *extProgram, std::string_view moduleName);
 
-}  // namespace ark::es2panda::evaluate
+ir::ETSTypeReference *CreateETSTypeReference(checker::ETSChecker *checker, util::StringView name);
 
-#endif /* HELPERS_H */
+std::pair<std::string_view, std::string_view> SplitRecordName(std::string_view recordName);
+
+ir::ClassProperty *CreateClassProperty(checker::ETSChecker *checker, std::string_view name, ir::TypeNode *type,
+                                       ir::ModifierFlags modifiers);
+
+}  // namespace ark::es2panda::evaluate::helpers
+
+#endif  // ES2PANDA_EVALUATE_HELPERS_H

@@ -241,7 +241,6 @@ ReferenceKind ETSLReference::ResolveReferenceKind(const varbinder::Variable *var
     }
 
     auto *declNode = variable->Declaration()->Node();
-    ASSERT(declNode != nullptr);
 
     switch (declNode->Type()) {
         case ir::AstNodeType::CLASS_PROPERTY: {
