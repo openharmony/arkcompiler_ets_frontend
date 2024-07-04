@@ -541,7 +541,6 @@ export class TsUtils {
         }
       }
     }
-
     return false;
   }
 
@@ -552,12 +551,13 @@ export class TsUtils {
   private needToDeduceStructuralIdentityHandleUnions(
     lhsType: ts.Type,
     rhsType: ts.Type,
-    rhsExpr: ts.Expression
+    rhsExpr: ts.Expression,
+    isStrict: boolean
   ): boolean {
     if (rhsType.isUnion()) {
       // Each Class/Interface of the RHS union type must be compatible with LHS type.
       for (const compType of rhsType.types) {
-        if (this.needToDeduceStructuralIdentity(lhsType, compType, rhsExpr)) {
+        if (this.needToDeduceStructuralIdentity(lhsType, compType, rhsExpr, isStrict)) {
           return true;
         }
       }
@@ -566,7 +566,7 @@ export class TsUtils {
     if (lhsType.isUnion()) {
       // RHS type needs to be compatible with at least one type of the LHS union.
       for (const compType of lhsType.types) {
-        if (!this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr)) {
+        if (!this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr, isStrict)) {
           return false;
         }
       }
@@ -577,7 +577,12 @@ export class TsUtils {
   }
 
   // return true if two class types are not related by inheritance and structural identity check is needed
-  needToDeduceStructuralIdentity(lhsType: ts.Type, rhsType: ts.Type, rhsExpr: ts.Expression): boolean {
+  needToDeduceStructuralIdentity(
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression,
+    isStrict: boolean = false
+  ): boolean {
     // eslint-disable-next-line no-param-reassign
     lhsType = this.getNonNullableType(lhsType);
     // eslint-disable-next-line no-param-reassign
@@ -593,7 +598,7 @@ export class TsUtils {
       return false;
     }
     if (rhsType.isUnion() || lhsType.isUnion()) {
-      return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr);
+      return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr, isStrict);
     }
     if (
       this.advancedClassChecks &&
@@ -604,11 +609,49 @@ export class TsUtils {
       // missing exact rule
       return true;
     }
+    // if isStrict, things like generics need to be checked
+    if (isStrict) {
+      if (TsUtils.isTypeReference(rhsType) && !!(rhsType.objectFlags & ts.ObjectFlags.ArrayLiteral)) {
+        // The 'arkts-sendable-obj-init' rule already exists. Wait for the new 'strict type' to be modified.
+        return false;
+      }
+      lhsType = TsUtils.reduceReference(lhsType);
+      rhsType = TsUtils.reduceReference(rhsType);
+    }
     return (
       lhsType.isClassOrInterface() &&
       rhsType.isClassOrInterface() &&
       !this.relatedByInheritanceOrIdentical(rhsType, lhsType)
     );
+  }
+
+  // Does the 'arkts-no-structure-typing' rule need to be strictly enforced to complete previously missed scenarios
+  needStrictMatchType(lhsType: ts.Type, rhsType: ts.Type): boolean {
+    if (this.isStrictSendableMatch(lhsType, rhsType)) {
+      return true;
+    }
+    // add other requirements with strict type requirements here
+    return false;
+  }
+
+  // For compatibility, left must all ClassOrInterface is sendable, right must has non-sendable ClassorInterface
+  private isStrictSendableMatch(lhsType: ts.Type, rhsType: ts.Type): boolean {
+    let isStrictLhs = false;
+    if (lhsType.isUnion()) {
+      for (let compType of lhsType.types) {
+        compType = TsUtils.reduceReference(compType);
+        if (!compType.isClassOrInterface()) {
+          continue;
+        }
+        if (!this.isSendableClassOrInterface(compType)) {
+          return false;
+        }
+        isStrictLhs = true;
+      }
+    } else {
+      isStrictLhs = this.isSendableClassOrInterface(lhsType);
+    }
+    return isStrictLhs && this.typeContainsNonSendableClassOrInterface(rhsType);
   }
 
   private processParentTypes(
@@ -899,12 +942,18 @@ export class TsUtils {
 
     const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(propSym, propSym.declarations[0]);
     const initExpr = TsUtils.unwrapParenthesized(prop.initializer);
+    const tsInitType = this.tsTypeChecker.getTypeAtLocation(initExpr);
     if (ts.isObjectLiteralExpression(initExpr)) {
       if (!this.isObjectLiteralAssignable(propType, initExpr)) {
         return false;
       }
     } else if (
-      this.needToDeduceStructuralIdentity(propType, this.tsTypeChecker.getTypeAtLocation(initExpr), initExpr)
+      this.needToDeduceStructuralIdentity(
+        propType,
+        tsInitType,
+        initExpr,
+        this.needStrictMatchType(propType, tsInitType)
+      )
     ) {
       // Only check for structural sub-typing.
       return false;
@@ -1889,6 +1938,16 @@ export class TsUtils {
     }
 
     return this.isSendableClassOrInterface(type);
+  }
+
+  typeContainsNonSendableClassOrInterface(type: ts.Type): boolean {
+    if (type.isUnion()) {
+      return type.types.some((compType) => {
+        return this.typeContainsNonSendableClassOrInterface(compType);
+      });
+    }
+    type = TsUtils.reduceReference(type);
+    return type.isClassOrInterface() && !this.isSendableClassOrInterface(type);
   }
 
   static isConstEnum(sym: ts.Symbol | undefined): boolean {
