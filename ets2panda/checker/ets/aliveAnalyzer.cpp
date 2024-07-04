@@ -223,7 +223,11 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *methodDef)
     }
 
     if (status_ == LivenessStatus::ALIVE && !isVoid && !isPromiseVoid && !checker_->IsAsyncImplMethod(methodDef)) {
-        checker_->ThrowTypeError("Function with a non void return type must return a value.", func->Id()->Start());
+        if (!methodDef->Function()->HasReturnStatement()) {
+            checker_->ThrowTypeError("Function with a non void return type must return a value.", func->Id()->Start());
+        }
+
+        checker_->ThrowTypeError("Not all code paths return a value.", func->Id()->Start());
     }
 
     ClearPendingExits();

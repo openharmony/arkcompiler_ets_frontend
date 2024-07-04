@@ -511,4 +511,4 @@
     }
   }
 }
-TypeError: Function with a non void return type must return a value. [try_catch_alive_4.ets:16:10]
+TypeError: Not all code paths return a value. [try_catch_alive_4.ets:16:10]
