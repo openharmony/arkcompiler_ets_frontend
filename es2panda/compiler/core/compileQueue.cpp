@@ -113,11 +113,17 @@ void CompileFileJob::Run()
     }
 
     es2panda::Compiler compiler(src_->scriptExtension, options_->functionThreadCount);
-    if (!src_->isSourceMode) {
-        compiler.AbcToAsmProgram(src_->fileName, *options_, progsInfo_, allocator_);
+    panda::pandasm::Program *prog = nullptr;
+    if (src_->isSourceMode) {
+        prog = compiler.CompileFile(*options_, src_, symbolTable_);
+    } else if (!options_->mergeAbc) {
+        // If input is an abc file, in non merge-abc mode, compile classes one by one.
+        prog = compiler.CompileAbcFile(src_->fileName, *options_);
+    } else {
+        // If input is an abc file, in merge-abc mode, compile each class parallelly.
+        compiler.CompileAbcFileInParallel(src_->fileName, *options_, progsInfo_, allocator_);
         return;
     }
-    auto *prog = compiler.CompileFile(*options_, src_, symbolTable_);
     if (prog == nullptr) {
         return;
     }

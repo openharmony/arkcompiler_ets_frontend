@@ -35,6 +35,8 @@ record_name: &sourcehar/sourcehar-file2&2.0.0
 
 ======> literal array buffer <======
 ------------------------------------
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_784
+------------------------------------
 slot &bytecodehar1/bytecodehar1-file1&2.0.0_788
 {
   index: 0
@@ -122,6 +124,8 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_788
 
 
 ======> literal array buffer <======
+------------------------------------
+slot &bytecodehar1/bytecodehar1-file2&2.0.0_1322
 ------------------------------------
 slot &bytecodehar1/bytecodehar1-file2&2.0.0_1326
 {
@@ -221,6 +225,8 @@ slot &bytecodehar1/bytecodehar1-file2&2.0.0_1326
 
 ======> literal array buffer <======
 ------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_745
+------------------------------------
 slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_749
 {
   index: 0
@@ -286,6 +292,8 @@ slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_749
 
 
 ======> literal array buffer <======
+------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1170
 ------------------------------------
 slot &@ohos/bytecodehar2/bytecodehar2-file2&2.0.0_1174
 {
@@ -617,6 +625,8 @@ slot &sourcehar/sourcehar-file2&2.0.0_1
 
 ======> literal array buffer <======
 ------------------------------------
+slot &bytecodehar1/bytecodehar1-file1&2.0.0_784
+------------------------------------
 slot &bytecodehar1/bytecodehar1-file1&2.0.0_788
 {
   index: 0
@@ -702,6 +712,8 @@ slot &bytecodehar1/bytecodehar1-file1&2.0.0_788
 
 
 ======> literal array buffer <======
+------------------------------------
+slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_745
 ------------------------------------
 slot &@ohos/bytecodehar2/bytecodehar2-file1&2.0.0_749
 {

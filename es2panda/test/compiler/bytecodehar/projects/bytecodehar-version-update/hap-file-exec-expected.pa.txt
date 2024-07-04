@@ -78,6 +78,8 @@ record_name: &@ohos/lib2/importfile4&
 
 ======> literal array buffer <======
 ------------------------------------
+slot &bytecodehar/bytecodehar-dynamic-import&_1608
+------------------------------------
 slot &bytecodehar/bytecodehar-dynamic-import&_1612
 {
   index: 0
@@ -213,6 +215,8 @@ slot &bytecodehar/bytecodehar-dynamic-import&_1612
 
 
 ======> literal array buffer <======
+------------------------------------
+slot &bytecodehar/bytecodehar-static-import&_2034
 ------------------------------------
 slot &bytecodehar/bytecodehar-static-import&_2038
 {
@@ -809,6 +813,8 @@ slot &@ohos/lib2/importfile4&_1
 
 ======> literal array buffer <======
 ------------------------------------
+slot &bytecodehar/bytecodehar-dynamic-import&_1608
+------------------------------------
 slot &bytecodehar/bytecodehar-dynamic-import&_1612
 {
   index: 0
@@ -944,6 +950,8 @@ slot &bytecodehar/bytecodehar-dynamic-import&_1612
 
 
 ======> literal array buffer <======
+------------------------------------
+slot &bytecodehar/bytecodehar-static-import&_2034
 ------------------------------------
 slot &bytecodehar/bytecodehar-static-import&_2038
 {

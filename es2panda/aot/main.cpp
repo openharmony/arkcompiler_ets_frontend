@@ -135,15 +135,24 @@ static bool GenerateProgramsByWorkers(const std::map<std::string, panda::es2pand
     return emitResult;
 }
 
+static void DumpProgram(const pandasm::Program &program, bool isNormalized)
+{
+    panda::abc2program::PandasmProgramDumper dumper;
+    if (isNormalized) {
+        dumper.SetDumperSource(abc2program::PandasmDumperSource::ECMASCRIPT);
+    }
+    dumper.Dump(std::cout, program);
+}
+
 static void DumpProgramInfos(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
     const std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
     const es2panda::CompilerOptions &compilerOptions = options->CompilerOptions();
-    if (compilerOptions.dumpAsm || compilerOptions.dumpLiteralBuffer || compilerOptions.dumpAsmProgram) {
+    if (compilerOptions.dumpAsm || compilerOptions.dumpLiteralBuffer || compilerOptions.dumpAsmProgram ||
+        compilerOptions.dumpNormalizedAsmProgram) {
         for (const auto &progInfo : programsInfo) {
-            if (compilerOptions.dumpAsmProgram) {
-                panda::abc2program::PandasmProgramDumper dumper;
-                dumper.Dump(std::cout, progInfo.second->program);
+            if (compilerOptions.dumpAsmProgram || compilerOptions.dumpNormalizedAsmProgram) {
+                DumpProgram(progInfo.second->program, compilerOptions.dumpNormalizedAsmProgram);
             }
 
             if (compilerOptions.dumpAsm) {
