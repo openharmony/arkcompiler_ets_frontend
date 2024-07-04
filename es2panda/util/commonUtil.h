@@ -38,6 +38,7 @@ const std::string IS_COMMONJS = "isCommonjs";
 // The format of ohmurl for non-SO files are start with '@normalized:N'.
 const std::string NORMALIZED_OHMURL_NOT_SO = "@normalized:N";
 const std::string MODULE_RECORD_IDX = "moduleRecordIdx";
+const std::string GLOBAL_TYPE_NAME = "_GLOBAL";
 
 constexpr char NORMALIZED_OHMURL_SEPARATOR = '&';
 constexpr char NORMALIZED_OHMURL_PREFIX = '@';
@@ -53,6 +54,7 @@ bool IsExternalPkgNames(const std::string &ohmurl, const std::set<std::string> &
 std::string GetRecordNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string GetPkgNameFromNormalizedOhmurl(const std::string &ohmurl);
 std::string UpdatePackageVersionIfNeeded(const std::string &ohmurl, const CompileContextInfo &info);
+bool RecordNotGeneratedFromBytecode(std::string recordName);
 
 template<bool isConst, typename T>
 using ConstReferenceIf = typename std::conditional<isConst, const T &, T &>::type;

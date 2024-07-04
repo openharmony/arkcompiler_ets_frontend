@@ -1,0 +1,1 @@
+Current compile mode is non merge-abc, all input abc files must be unmerged mode
