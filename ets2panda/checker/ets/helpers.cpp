@@ -2263,7 +2263,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
     auto *decl = checker->Allocator()->New<varbinder::FunctionDecl>(
         checker->Allocator(), property->Key()->AsIdentifier()->Name(),
         property->Key()->AsIdentifier()->Variable()->Declaration()->Node());
-    auto *var = functionScope->AddDecl(checker->Allocator(), decl, ScriptExtension::ETS);
+    auto *var = checker->Allocator()->New<varbinder::LocalVariable>(decl, varbinder::VariableFlags::VAR);
     var->AddFlag(varbinder::VariableFlags::METHOD);
 
     methodIdent->SetVariable(var);
