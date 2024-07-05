@@ -12,7 +12,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function c6(d6: number, e6: number) {
-    return d6 / e6;
+
+
+export default function add(a: number, b: number): number {
+  return a + b;
 }
-export { c6 as default };
+
+function subtract(a: number, b: number): number {
+  return a - b;
+}
+
+export function multiply(a: number, b: number): number {
+  return a * b;
+}
+
+export { multiply as times };
+
+export const PI: number = 3.14;
+
+export class Student {
+  name: string;
+  age: number;
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  };
+}
+
+interface Lesson {
+  id: number,
+  date: string
+}
+
+type customType = string;
+
+export { subtract, customType, Lesson };

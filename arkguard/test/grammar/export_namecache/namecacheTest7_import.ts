@@ -12,7 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function c6(d6: number, e6: number) {
-    return d6 / e6;
-}
-export { c6 as default };
+
+
+import add from './namecacheTest7_export';
+import { multiply, times } from './namecacheTest7_export';
+import { PI, Student } from './namecacheTest7_export';
+import { subtract, Lesson } from './namecacheTest7_export';
+import type { customType } from './namecacheTest7_export';
+
+let xiaoming = new Student("xiaoming", 12);
+let xiaohong: Student = new Student("xiaohong", 11);
+var value: customType = "hello";
+const factor: number = 5;
+let equal = (times(factor, PI) == multiply(factor, PI));
+let math: Lesson = {
+    id: 1,
+    date: "2023"
+};

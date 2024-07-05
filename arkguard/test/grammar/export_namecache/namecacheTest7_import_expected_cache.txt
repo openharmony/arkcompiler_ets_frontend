@@ -1,0 +1,19 @@
+{
+  "IdentifierCache": {
+    "#add": "add",
+    "#multiply": "multiply",
+    "#times": "m",
+    "#PI": "PI",
+    "#Student": "j",
+    "#subtract": "i",
+    "#Lesson": "k",
+    "#customType": "l",
+    "#xiaoming": "v",
+    "#xiaohong": "a1",
+    "#value": "value",
+    "#factor": "b1",
+    "#equal": "c1",
+    "#math": "d1"
+  },
+  "MemberMethodCache": {}
+}

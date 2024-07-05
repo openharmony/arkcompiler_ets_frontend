@@ -12,7 +12,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function c6(d6: number, e6: number) {
-    return d6 / e6;
-}
-export { c6 as default };
+
+
+export default class Student {
+  name: string;
+  age: number;
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  };
+};
+
+class Particle {
+  public row: number = 0;
+  public col: number = 0;
+};
+
+interface Lesson {
+  id: number,
+  date: string,
+  students: Student[]
+};
+
+export type Klass = {
+  date: number;
+  name: string;
+};
+
+export type customType = Student;
+
+export type { Particle };
+export { Lesson };

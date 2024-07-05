@@ -12,7 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function c6(d6: number, e6: number) {
-    return d6 / e6;
+
+
+import Student from './namecacheTest8_export';
+import type { Particle, Lesson, Klass, customType } from './namecacheTest8_export';
+
+function test(s: Student, p: Particle, l: Lesson, k: Klass, c: customType): void {
 }
-export { c6 as default };
+
+function init(p: Particle): void {
+  p.row = 1;
+  p.col = 2;
+}
+
+let students: Student[];
+const math: Lesson = {
+  id: 0,
+  date: "2023",
+  students: []
+};

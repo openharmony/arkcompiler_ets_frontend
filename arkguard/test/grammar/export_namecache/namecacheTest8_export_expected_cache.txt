@@ -1,0 +1,14 @@
+{
+  "IdentifierCache": {
+    "#default": "default",
+    "#Particle": "e1",
+    "#Lesson": "k",
+    "#Klass": "f1",
+    "#customType": "l",
+    "Student#$0#name": "g1",
+    "Student#$0#age": "h1"
+  },
+  "MemberMethodCache": {
+    "Student:20:23": "Student"
+  }
+}
