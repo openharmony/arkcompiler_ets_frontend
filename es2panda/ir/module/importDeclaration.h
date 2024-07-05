@@ -36,12 +36,13 @@ class StringLiteral;
 class ImportDeclaration : public Statement {
 public:
     explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers,
-                               AssertClause *assertClause, bool isType)
+                               AssertClause *assertClause, bool isType, bool isLazy)
         : Statement(AstNodeType::IMPORT_DECLARATION),
           source_(source),
           specifiers_(std::move(specifiers)),
           assertClause_(assertClause),
-          isType_(isType)
+          isType_(isType),
+          isLazy_(isLazy)
     {
     }
 
@@ -71,6 +72,7 @@ private:
     ArenaVector<AstNode *> specifiers_;
     AssertClause *assertClause_;
     bool isType_;
+    bool isLazy_ { false };
 };
 
 }  // namespace panda::es2panda::ir

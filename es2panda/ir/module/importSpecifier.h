@@ -33,8 +33,8 @@ class Identifier;
 
 class ImportSpecifier : public Statement {
 public:
-    explicit ImportSpecifier(Identifier *imported, Identifier *local, bool isType)
-        : Statement(AstNodeType::IMPORT_SPECIFIER), imported_(imported), local_(local), isType_(isType)
+    explicit ImportSpecifier(Identifier *imported, Identifier *local, bool isType, bool isLazy)
+        : Statement(AstNodeType::IMPORT_SPECIFIER), imported_(imported), local_(local), isType_(isType), isLazy_(isLazy)
     {
     }
 
@@ -53,6 +53,11 @@ public:
         return isType_;
     }
 
+    bool IsLazy() const
+    {
+        return isLazy_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -63,6 +68,7 @@ private:
     Identifier *imported_;
     Identifier *local_;
     bool isType_ { false };
+    bool isLazy_ { false };
 };
 
 }  // namespace panda::es2panda::ir

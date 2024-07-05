@@ -450,10 +450,10 @@ private:
                                 binder::DeclarationFlags flag);
 
     ir::StringLiteral *ParseFromClause(bool requireFrom = true);
-    void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType);
+    void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
     ir::Expression *ParseModuleReference();
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType);
-    ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType);
+    ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
     void ValidateAssignmentTarget(ExpressionParseFlags flags, ir::Expression *node);
     void ValidateLvalueAssignmentTarget(ir::Expression *node) const;
     void ValidateArrowParameterBindings(const ir::Expression *node);
@@ -491,8 +491,10 @@ private:
 
     bool IsLabelFollowedByIterationStatement();
 
-    void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers, bool isType);
-    void AddImportEntryItemForImportSpecifier(const ir::StringLiteral *source, const ir::AstNode *specifier);
+    void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers, bool isType,
+        bool isLazy);
+    void AddImportEntryItemForImportSpecifier(const ir::StringLiteral *source, const ir::AstNode *specifier,
+        bool isLazy);
     void AddImportEntryItemForImportDefaultOrNamespaceSpecifier(const ir::StringLiteral *source,
                                                                 const ir::AstNode *specifier, bool isType);
     void AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers,

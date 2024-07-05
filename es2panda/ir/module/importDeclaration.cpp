@@ -39,7 +39,8 @@ void ImportDeclaration::Dump(ir::AstDumper *dumper) const
                  {"source", source_},
                  {"specifiers", specifiers_},
                  {"assertClause", AstDumper::Optional(assertClause_)},
-                 {"isType", AstDumper::Optional(IsType())}});
+                 {"isType", AstDumper::Optional(IsType())},
+                 {"isLazy", AstDumper::Optional(isLazy_)}});
 }
 
 void ImportDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
