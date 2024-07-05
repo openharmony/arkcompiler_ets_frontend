@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class j {
-    g: string = '1';
-    h: number = 1;
-    i() {
+class g {
+    h: string = '1';
+    i: number = 1;
+    j() {
         return `function name should be obfuscated.`;
     }
 }

@@ -16,9 +16,9 @@
 import {
   ArkObfuscator,
   ObfuscationResultType,
+  PropCollections,
   performancePrinter,
-  renameIdentifierModule,
-  renamePropertyModule
+  renameIdentifierModule
 } from './ArkObfuscator';
 import { readProjectProperties } from './common/ApiReader';
 import { FileUtils } from './utils/FileUtils';
@@ -240,7 +240,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
       this.mCustomProfiles.mNameObfuscation.mRenameProperties &&
       this.mCustomProfiles.mEnableNameCache) {
       const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
-      writeCache(renamePropertyModule.globalMangledTable, propertyCachePath);
+      writeCache(PropCollections.globalMangledTable, propertyCachePath);
     }
   }
 
@@ -255,6 +255,6 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
       return;
     }
 
-    renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
+    PropCollections.historyMangledTable = getMapFromJson(propertyCache);
   }
 }

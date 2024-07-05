@@ -84,18 +84,10 @@ import {TypeUtils} from '../../utils/TypeUtils';
 import { needToBeReserved } from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
-import {
-  globalMangledTable,
-  historyMangledTable,
-  reservedProperties,
-  globalSwappedMangledTable,
-  universalReservedProperties,
-  newlyOccupiedMangledProps,
-  mangledPropsInNameCache
-} from './RenamePropertiesTransformer';
 import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
+import { PropCollections } from '../../utils/CommonCollections'
 
 namespace secharmony {
   /**
@@ -125,12 +117,25 @@ namespace secharmony {
 
     const openTopLevel: boolean = option?.mNameObfuscation?.mTopLevel;
     const exportObfuscation: boolean = option?.mExportObfuscation;
+    let isInitializedReservedList = false;
     return renameIdentifierFactory;
 
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
+      if (profile?.mRenameProperties) {
+        if (!isInitializedReservedList) {
+          const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
+          tmpReservedProps.forEach(item => {
+            PropCollections.reservedProperties.add(item);
+          });
+          PropCollections.mangledPropsInNameCache = new Set(PropCollections.historyMangledTable?.values());
+          PropCollections.universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
+          isInitializedReservedList = true;
+        }
+      }
+
       let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', '__global'];
-      profile?.mReservedToplevelNames?.forEach(item => reservedProperties.add(item));
-      profile?.mUniversalReservedToplevelNames?.forEach(item => universalReservedProperties.push(item));
+      profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
+      profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       noSymbolIdentifier.clear();
@@ -270,29 +275,33 @@ namespace secharmony {
       }
 
       function getPropertyMangledName(original: string): string {
-        if (needToBeReserved(reservedProperties, universalReservedProperties, original)) {
+        if (needToBeReserved(PropCollections.reservedProperties, PropCollections.universalReservedProperties, original)) {
           return original;
         }
 
-        const historyName: string = historyMangledTable?.get(original);
-        let mangledName: string = historyName ? historyName : globalMangledTable.get(original);
+        const historyName: string = PropCollections.historyMangledTable?.get(original);
+        let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
 
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (needToBeReserved(reservedProperties, universalReservedProperties, tmpName) ||
+          if (needToBeReserved(PropCollections.reservedProperties, PropCollections.universalReservedProperties, tmpName) ||
             tmpName === original) {
             continue;
           }
 
-          if (newlyOccupiedMangledProps.has(tmpName) || mangledPropsInNameCache.has(tmpName)) {
+          if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
+            continue;
+          }
+
+          if (ApiExtractor.mConstructorPropertySet?.has(tmpName)) {
             continue;
           }
 
           mangledName = tmpName;
         }
 
-        globalMangledTable.set(original, mangledName);
-        newlyOccupiedMangledProps.add(mangledName);
+        PropCollections.globalMangledTable.set(original, mangledName);
+        PropCollections.newlyOccupiedMangledProps.add(mangledName);
         return mangledName;
       }
 
@@ -352,8 +361,7 @@ namespace secharmony {
             continue;
           }
 
-          if ((profile.mRenameProperties && manager.getRootScope().constructorReservedParams.has(mangled)) ||
-            ApiExtractor.mConstructorPropertySet?.has(mangled)) {
+          if (ApiExtractor.mConstructorPropertySet?.has(mangled)) {
             mangled = '';
           }
         } while (mangled === '');
@@ -506,20 +514,16 @@ namespace secharmony {
         }
         let valueName: string = escapedText.toString();
         let originalName: string = valueName;
-        if (globalSwappedMangledTable.size !== 0 && globalSwappedMangledTable.has(valueName)) {
-          originalName = globalSwappedMangledTable.get(valueName);
-        }
+        let keyName = originalName + lineAndColum;
         if (node.kind === SyntaxKind.Constructor && classMangledName.has(gotNode.name)) {
           valueName = classMangledName.get(gotNode.name);
+          classInfoInMemberMethodCache.add(keyName);
         }
-        let keyName = originalName + lineAndColum;
         let memberMethodCache = nameCache?.get(MEM_METHOD_CACHE);
         if (memberMethodCache) {
           (memberMethodCache as Map<string, string>).set(keyName, valueName);
         }
       }
-
-      
 
       function updateNameNode(node: Identifier): Node {
         // skip property in property access expression
@@ -623,9 +627,18 @@ namespace secharmony {
 
   export let nameCache: Map<string, string | Map<string, string>> = new Map();
   export let historyNameCache: Map<string, string> = undefined;
-  export let globalNameCache: Map<string, string> = new Map();
   export let identifierLineMap: Map<Identifier, string> = new Map();
   export let classMangledName: Map<Node, string> = new Map();
+  // Record the original class name and line number range to distinguish between class names and member method names.
+  export let classInfoInMemberMethodCache: Set<string> = new Set();
+
+  export function clearCaches() {
+    nameCache.clear();
+    historyNameCache = undefined;
+    identifierLineMap.clear();
+    classMangledName.clear();
+    classInfoInMemberMethodCache.clear();
+  }
 }
 
 export = secharmony;

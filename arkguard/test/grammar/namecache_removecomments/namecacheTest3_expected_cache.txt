@@ -3,6 +3,6 @@
     "#testClass": "l"
   },
   "MemberMethodCache": {
-    "foo:21:23": "g"
+    "foo:21:23": "h"
   }
 }

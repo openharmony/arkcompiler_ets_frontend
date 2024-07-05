@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 const assert = require('assert');
-const m5 = require('./xcommonjs-exports_2');
-assert.strictEqual(m5.y4, 20);
-assert.strictEqual(m5.z4(), 'Hello, world2!');
-assert.strictEqual(m5.i5.p2, 22);
+const l5 = require('./xcommonjs-exports_2');
+assert.strictEqual(l5.w4, 20);
+assert.strictEqual(l5.g5(), 'Hello, world2!');
+assert.strictEqual(l5.h5.p2, 22);

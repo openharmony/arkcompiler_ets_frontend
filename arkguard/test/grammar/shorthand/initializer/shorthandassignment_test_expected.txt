@@ -12,14 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class d1 {
-    o: number = 0;
-    t: number = 0;
+class f1 {
+    k: number = 0;
+    l: number = 0;
 }
-let e1: Array<d1> = [{ o: 1, t: 2 }, { o: 3, t: 4 }];
-function c1() {
-    for (let { o: f1, t: g1 } of e1) {
-        console.log("x = ", f1, "y = ", g1);
+let g1: Array<f1> = [{ k: 1, l: 2 }, { k: 3, l: 4 }];
+function e1() {
+    for (let { k: h1, l: i1 } of g1) {
+        console.log("x = ", h1, "y = ", i1);
     }
 }
-c1();
+e1();

@@ -2,18 +2,18 @@
   "IdentifierCache": {
     "#add": "add",
     "#multiply": "multiply",
-    "#times": "m",
+    "#times": "k",
     "#PI": "PI",
-    "#Student": "j",
-    "#subtract": "i",
-    "#Lesson": "k",
-    "#customType": "l",
-    "#xiaoming": "v",
-    "#xiaohong": "a1",
+    "#Student": "h",
+    "#subtract": "g",
+    "#Lesson": "i",
+    "#customType": "j",
+    "#xiaoming": "t",
+    "#xiaohong": "u",
     "#value": "value",
-    "#factor": "b1",
-    "#equal": "c1",
-    "#math": "d1"
+    "#factor": "v",
+    "#equal": "a1",
+    "#math": "b1"
   },
   "MemberMethodCache": {}
 }

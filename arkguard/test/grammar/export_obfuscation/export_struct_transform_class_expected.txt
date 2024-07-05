@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class w1 {
+class ViewPU {
 }
-export class z1 extends w1 {
+export class w1 extends ViewPU {
     constructor() {
         super();
     }
@@ -23,7 +23,7 @@ export class z1 extends w1 {
     callMethod1(): void { }
     ;
 }
-class a2 extends w1 {
+class z1 extends ViewPU {
     constructor() {
         super();
     }

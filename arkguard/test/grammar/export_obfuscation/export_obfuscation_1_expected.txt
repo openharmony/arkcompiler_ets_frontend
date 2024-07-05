@@ -12,17 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export class j {
+export class i {
     name: string;
-    g: number;
+    j: number;
 }
-export function h(o: number, p: number) {
-    const q = 1;
-    const r = 2;
-    return o + p + q + r;
+export function g(n: number, o: number) {
+    const p = 1;
+    const q = 2;
+    return n + o + p + q;
 }
-function i(k: string, l: number) {
-    const m = 4;
-    const n = 5;
-    return k + l.toString();
+function h(j: string, k: number) {
+    const l = 4;
+    const m = 5;
+    return j + k.toString();
 }

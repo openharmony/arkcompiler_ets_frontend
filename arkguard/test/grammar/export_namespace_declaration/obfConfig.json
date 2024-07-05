@@ -1,0 +1,28 @@
+{
+    "mCompact": false,
+    "mRemoveComments": false,
+    "mOutputDir": "../../local",
+    "mDisableHilog": false,
+    "mDisableConsole": false,
+    "mSimplify": false,
+    "mNameObfuscation": {
+        "mEnable": true,
+        "mNameGeneratorType": 1,
+        "mDictionaryList": [],
+        "mReservedNames": [],
+        "mRenameProperties": false,
+        "mReservedToplevelNames": [
+            "foo_default_0", "className_default_0",
+            "foo11", "className11","foo12", "className12", "foo13", "className13", "foo14", "className14", "foo15", "className15", "foo16", "className16","foo12", "className12",
+            "foo17", "className17", "foo18",
+            "foo19", "className19", "foo20",
+            "foo21", "structName21", "ns22"
+        ],
+        "mReservedProperties": [ "strictEqual" ],
+        "mKeepStringProperty": false,
+        "mTopLevel": true
+    },
+    "mEnableSourceMap": false,
+    "mEnableNameCache": false,
+    "mExportObfuscation": true
+}

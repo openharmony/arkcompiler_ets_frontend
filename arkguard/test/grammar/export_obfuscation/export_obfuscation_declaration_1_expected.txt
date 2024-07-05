@@ -12,13 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export declare class j {
+export declare class i {
     e1: string | undefined;
     f1: number;
     g1: string;
     constructor(o1?: l1);
 }
-export declare function h(m1: number, n1: number): number;
+export declare function g(m1: number, n1: number): number;
 declare class l1 {
     h1: string;
     i1: number;

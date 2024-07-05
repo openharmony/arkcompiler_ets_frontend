@@ -22,12 +22,23 @@ export interface TransformPlugin {
   createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
 }
 
+// The order of identifier obfuscation should be as early as possible, because create or update nodes will cause the NodeFlags of the parent node 
+// on the ast to be cleared. NodeFlags will affect the binding result. The following scenarios have been found to affect the obfuscation function:
+// Problem scenario: A export name in a namespace scope within a declaration file
+// ```
+// declare namespace ns {
+//   class A { // -keep-global-name A is invalid.
+//       temp: number;
+//   }
+// }
+// ```
+// Problem description: because the property temp is obfuscated, a node update occurs, causing -keep-global-name A to be invalid.
 export enum TransformerOrder {
-  VIRTUAL_CONSTRUCTOR_TRANSFORMER,
   SHORTHAND_PROPERTY_TRANSFORMER,
-  DISABLE_CONSOLE_TRANSFORMER,
   SIMPLIFY_TRANSFORMER,
-  RENAME_PROPERTIES_TRANSFORMER,
   RENAME_IDENTIFIER_TRANSFORMER,
+  VIRTUAL_CONSTRUCTOR_TRANSFORMER,
+  DISABLE_CONSOLE_TRANSFORMER,
+  RENAME_PROPERTIES_TRANSFORMER,
   RENAME_FILE_NAME_TRANSFORMER
 }

@@ -13,7 +13,8 @@
         "mRenameProperties": true,
         "mReservedProperties": [ "strictEqual" ],
         "mKeepStringProperty": false,
-        "mTopLevel": true
+        "mTopLevel": true,
+        "mReservedToplevelNames": ["ViewPU"]
     },
     "mEnableSourceMap": false,
     "mEnableNameCache": false,

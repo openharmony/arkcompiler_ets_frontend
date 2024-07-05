@@ -1,43 +1,43 @@
-class e1 {
+class a1 {
     data: string[] = ["a", "b", "c", "d", "e"];
-    public a1(): number {
+    public e1(): number {
         return this.data.length;
     }
-    public getData(b2: number): string {
-        return this.data[b2];
+    public getData(x1: number): string {
+        return this.data[x1];
     }
 }
-class f1 {
-    create(w1: string, x1: any, y1: any, z1: any, a2: any): void { }
+class b1 {
+    create(s1: string, t1: any, u1: any, v1: any, w1: any): void { }
     ;
 }
-let g1: f1 = new f1();
-class h1 {
-    constructor(u1, v1) {
-        this.source = new e1();
-        this.b1(u1);
+let c1: b1 = new b1();
+class d1 {
+    constructor(q1, r1) {
+        this.source = new a1();
+        this.f1(q1);
     }
-    b1(t1) {
-        if (t1.source !== undefined) {
-            this.source = t1.source;
+    f1(p1) {
+        if (p1.source !== undefined) {
+            this.source = p1.source;
         }
     }
-    c1() { }
+    g1() { }
     ;
-    private source: e1;
-    d1() {
-        this.c1();
+    private source: a1;
+    h1() {
+        this.g1();
         {
-            const i1 = (o1, p1?: number) => {
-                const q1 = o1;
+            const e1 = (k1, l1?: number) => {
+                const m1 = k1;
                 {
-                    const r1 = () => {
+                    const n1 = () => {
                     };
-                    r1();
+                    n1();
                 }
             };
-            const j1 = (m1: string, n1?: number) => n1?.toString() + m1;
-            g1.create("1", this, this.source, i1, j1);
+            const f1 = (i1: string, j1?: number) => j1?.toString() + i1;
+            c1.create("1", this, this.source, e1, f1);
         }
     }
 }

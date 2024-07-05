@@ -143,7 +143,6 @@ namespace secharmony {
     importNames: Set<string>;
     exportNames: Set<string>;
     mangledNames: Set<string>;
-    constructorReservedParams: Set<string>;
     // location path
     loc: string;
 
@@ -158,7 +157,6 @@ namespace secharmony {
       this.importNames = new Set<string>();
       this.exportNames = new Set<string>();
       this.mangledNames = new Set<string>();
-      this.constructorReservedParams = new Set<string>();
       this.loc = this.parent?.loc ? this.parent.loc + '#' + this.name : this.name;
 
       this.parent?.addChild(this);
@@ -651,7 +649,6 @@ namespace secharmony {
           if (isIdentifier(param.name) && (def.name === param.name.escapedText)) {
             current.defs.delete(def);
             current.mangledNames.add(def.name);
-            root.constructorReservedParams.add(def.name);
           }
         });
       };

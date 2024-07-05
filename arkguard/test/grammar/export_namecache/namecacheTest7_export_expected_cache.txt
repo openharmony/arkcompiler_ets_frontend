@@ -2,22 +2,22 @@
   "IdentifierCache": {
     "#default": "default",
     "#PI": "PI",
-    "#Student": "j",
-    "#Lesson": "k",
-    "#customType": "l",
-    "#times": "m",
-    "Student#$0#name": "n",
-    "Student#$0#age": "o",
-    "multiply#a": "p",
-    "multiply#b": "q",
-    "subtract#a": "r",
-    "subtract#b": "s",
-    "add#a": "t",
-    "add#b": "u",
-    "#subtract:21:23": "i",
+    "#Student": "h",
+    "#Lesson": "i",
+    "#customType": "j",
+    "#times": "k",
+    "Student#$0#name": "l",
+    "Student#$0#age": "m",
+    "multiply#a": "n",
+    "multiply#b": "o",
+    "subtract#a": "p",
+    "subtract#b": "q",
+    "add#a": "r",
+    "add#b": "s",
+    "#subtract:21:23": "g",
     "#multiply:25:27": "multiply"
   },
   "MemberMethodCache": {
-    "Student:36:39": "j"
+    "Student:36:39": "h"
   }
 }
