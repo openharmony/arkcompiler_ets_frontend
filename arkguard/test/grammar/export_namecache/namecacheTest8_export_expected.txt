@@ -1,0 +1,28 @@
+export default class Student {
+    name: string;
+    g: number;
+    constructor(g1: string, h1: number) {
+        this.name = g1;
+        this.g = h1;
+    }
+    ;
+}
+;
+class e1 {
+    public o: number = 0;
+    public p: number = 0;
+}
+;
+interface k {
+    id: number;
+    h: string;
+    q: Student[];
+}
+;
+export type f1 = {
+    h: number;
+    name: string;
+};
+export type l = Student;
+export type { e1 };
+export { k };

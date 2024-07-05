@@ -1,0 +1,26 @@
+export default function add(t: number, u: number): number {
+    return t + u;
+}
+function i(r: number, s: number): number {
+    return r - s;
+}
+export function multiply(p: number, q: number): number {
+    return p * q;
+}
+export { multiply as m };
+export const PI: number = 3.14;
+export class j {
+    name: string;
+    g: number;
+    constructor(n: string, o: number) {
+        this.name = n;
+        this.g = o;
+    }
+    ;
+}
+interface k {
+    id: number;
+    h: string;
+}
+type l = string;
+export { i, l, k };

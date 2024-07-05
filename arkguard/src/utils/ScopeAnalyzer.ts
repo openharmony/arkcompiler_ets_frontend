@@ -317,9 +317,9 @@ namespace secharmony {
         if (def.exportSymbol) {
           current.exportNames.add(def.name);
           current.addDefinition(def.exportSymbol, true);
+        } else {
+          current.addDefinition(def);
         }
-
-        current.addDefinition(def);
       });
     }
 

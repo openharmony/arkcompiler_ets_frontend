@@ -1,0 +1,4 @@
+import type { o1 } from "./namecacheTest9_export";
+import { type q1 } from "./namecacheTest9_export";
+function test(r1: o1, s1: q1): void { }
+;

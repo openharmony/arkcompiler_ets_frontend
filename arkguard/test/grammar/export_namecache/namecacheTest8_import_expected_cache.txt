@@ -1,0 +1,20 @@
+{
+  "IdentifierCache": {
+    "#Student": "j",
+    "#Particle": "e1",
+    "#Lesson": "k",
+    "#Klass": "f1",
+    "#customType": "l",
+    "#students": "q",
+    "#math": "d1",
+    "init#p": "i1",
+    "test#s": "j1",
+    "test#p": "k1",
+    "test#l": "l1",
+    "test#k": "m1",
+    "test#c": "n1",
+    "#test:20:21": "test",
+    "#init:23:26": "init"
+  },
+  "MemberMethodCache": {}
+}

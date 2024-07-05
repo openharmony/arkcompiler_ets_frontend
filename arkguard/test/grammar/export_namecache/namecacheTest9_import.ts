@@ -12,7 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function c6(d6: number, e6: number) {
-    return d6 / e6;
-}
-export { c6 as default };
+
+
+import type { I } from "./namecacheTest9_export";
+import { type A } from "./namecacheTest9_export";
+
+
+function test(i: I, a: A): void { };

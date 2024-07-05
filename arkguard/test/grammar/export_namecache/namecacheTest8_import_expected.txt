@@ -1,0 +1,14 @@
+import j from './namecacheTest8_export';
+import type { e1, k, f1, l } from './namecacheTest8_export';
+function test(j1: j, k1: e1, l1: k, m1: f1, n1: l): void {
+}
+function init(i1: e1): void {
+    i1.o = 1;
+    i1.p = 2;
+}
+let q: j[];
+const d1: k = {
+    id: 0,
+    h: "2023",
+    q: []
+};

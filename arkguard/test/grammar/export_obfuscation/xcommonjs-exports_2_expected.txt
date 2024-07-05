@@ -17,5 +17,5 @@ module.exports = {
     z4: function () {
         return 'Hello, world2!';
     },
-    a5: { p2: 22 }
+    i5: { p2: 22 }
 };
