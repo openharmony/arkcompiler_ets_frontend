@@ -15,6 +15,7 @@
 
 import type {
   EnumDeclaration,
+  ExportDeclaration,
   ModifiersArray,
   ModuleDeclaration,
   Node,
@@ -67,6 +68,7 @@ import path from 'path';
 import json5 from 'json5';
 
 import {
+  exportOriginalNameSet,
   getClassProperties,
   getElementAccessExpressionProperties,
   getEnumProperties, getInterfaceProperties,
@@ -97,7 +99,7 @@ export namespace ApiExtractor {
   let mCurrentExportedPropertySet: Set<string> = new Set<string>();
   let mCurrentExportNameSet: Set<string> = new Set<string>();
   export let mPropertySet: Set<string> = new Set<string>();
-  export let mLibExportNameSet: Set<string> = new Set<string>();
+  export let mExportNames: Set<string> = new Set<string>();
   export let mConstructorPropertySet: Set<string> = undefined;
   export let mSystemExportSet: Set<string> = new Set<string>();
   /**
@@ -128,7 +130,7 @@ export namespace ApiExtractor {
    * get export name list
    * @param astNode
    */
-  const visitExport = function (astNode): void {
+  const visitExport = function (astNode, isSystemApi: boolean): void {
     /**
      * export = exportClass //collect exportClass
      * 
@@ -177,7 +179,7 @@ export namespace ApiExtractor {
 
     let {hasExport, hasDeclare} = getKeyword(astNode.modifiers);
     if (!hasExport) {
-      addCommonJsExports(astNode);
+      addCommonJsExports(astNode, isSystemApi);
       return;
     }
 
@@ -298,7 +300,7 @@ export namespace ApiExtractor {
    * - module.exports = {G: {}}
    * - ...
    */
-  const addCommonJsExports = function (astNode): void {
+  const addCommonJsExports = function (astNode: Node, isRemoteHarOrSystemApi: boolean = false): void {
     if (!isExpressionStatement(astNode) || !astNode.expression) {
       return;
     }
@@ -331,7 +333,16 @@ export namespace ApiExtractor {
     }
 
     if (isIdentifier(expression.right)) {
-      mCurrentExportNameSet.add(expression.right.getText());
+      let originalName = expression.right.getText();
+      if (isRemoteHarOrSystemApi) {
+        // To achieve compatibility changes, originalName is still collected into mCurrentExportNameSet 
+        // for both remoteHar and system API files.
+
+        // NOTE: This logic will be optimized later to avoid collecting originalName into mCurrentExportNameSet under any circumstances.
+        mCurrentExportNameSet.add(originalName);
+      } else {
+        exportOriginalNameSet.add(originalName);
+      }
       return;
     }
 
@@ -367,21 +378,21 @@ export namespace ApiExtractor {
    * - ...
    * @param astNode
    */
-  const visitProjectExport = function (astNode): void {
+  const visitProjectExport = function (astNode, isRemoteHarFile: boolean): void {
     if (isExportAssignment(astNode)) {
       handleExportAssignment(astNode);
       return;
     }
 
     if (isExportDeclaration(astNode)) {
-      handleExportDeclaration(astNode);
+      handleExportDeclaration(astNode, isRemoteHarFile);
       return;
     }
 
     let {hasExport} = getKeyword(astNode.modifiers);
     if (!hasExport) {
-      addCommonJsExports(astNode);
-      forEachChild(astNode, visitProjectExport);
+      addCommonJsExports(astNode, isRemoteHarFile);
+      forEachChild(astNode, node => visitProjectExport(node, isRemoteHarFile));
       return;
     }
 
@@ -391,7 +402,7 @@ export namespace ApiExtractor {
         mCurrentExportedPropertySet.add(astNode.name.getText());
       }
 
-      forEachChild(astNode, visitProjectExport);
+      forEachChild(astNode, node => visitProjectExport(node, isRemoteHarFile));
       return;
     }
 
@@ -411,7 +422,7 @@ export namespace ApiExtractor {
       return;
     }
 
-    forEachChild(astNode, visitProjectExport);
+    forEachChild(astNode, node => visitProjectExport(node, isRemoteHarFile));
   };
 
   function handleExportAssignment(astNode): void {
@@ -444,7 +455,7 @@ export namespace ApiExtractor {
     }
   }
 
-  function handleExportDeclaration(astNode): void {
+  function handleExportDeclaration(astNode: ExportDeclaration, isRemoteHarFile: boolean): void {
     if (astNode.exportClause) {
       if (astNode.exportClause.kind === SyntaxKind.NamedExports) {
         astNode.exportClause.forEachChild((child) => {
@@ -453,7 +464,27 @@ export namespace ApiExtractor {
           }
 
           if (child.propertyName) {
-            mCurrentExportNameSet.add(child.propertyName.getText());
+            let originalName = child.propertyName.getText();
+            if (isRemoteHarFile || astNode.moduleSpecifier) {
+              // For the first condition, this ensures that for remoteHar files, 
+              // originalName is still collected into mCurrentExportNameSet to maintain compatibility.
+              // NOTE: This specification needs to be revised to determine whether to add originalName 
+              // to mCurrentExportNameSet should be independent of whether it is in a remoteHar file.
+
+              // The second condition indicates that for `export {A as B} from './filePath'` statements,
+              // the original name (A) needs to be added to the export whitelist.
+              mCurrentExportNameSet.add(originalName);
+            } else {
+              /**
+               * In project source code:
+               * class A {
+               *   prop1 = 1;
+               *   prop2 = 2;
+               * }
+               * export {A as B}; // collect A to ensure we can collect prop1 and prop2
+               */
+              exportOriginalNameSet.add(originalName);
+            }
           }
 
           let exportName = child.name.getText();
@@ -505,7 +536,7 @@ export namespace ApiExtractor {
       getClassProperties(astNode, currentPropsSet);
     }
 
-    if (nodeName && mCurrentExportNameSet.has(nodeName)) {
+    if (nodeName && (mCurrentExportNameSet.has(nodeName) || exportOriginalNameSet.has(nodeName))) {
       addElement(currentPropsSet);
     }
 
@@ -548,7 +579,7 @@ export namespace ApiExtractor {
         break;
       case ApiType.API:
         mCurrentExportNameSet.clear();
-        forEachChild(sourceFile, visitExport);
+        forEachChild(sourceFile, node => visitExport(node, true));
         mCurrentExportNameSet.forEach(item => mSystemExportSet.add(item));
 
         forEachChild(sourceFile, visitPropertyAndName);
@@ -561,9 +592,11 @@ export namespace ApiExtractor {
           forEachChild(sourceFile, visitChildNode);
         }
 
-        forEachChild(sourceFile, visitProjectExport);
+        let isRemoteHarFile = isRemoteHar(fileName);
+        forEachChild(sourceFile, node => visitProjectExport(node, isRemoteHarFile));
         forEachChild(sourceFile, visitProjectNode);
         mCurrentExportedPropertySet = handleWhiteListWhenExportObfs(fileName, mCurrentExportedPropertySet);
+        mCurrentExportNameSet = handleWhiteListWhenExportObfs(fileName, mCurrentExportNameSet);
         break;
       case ApiType.CONSTRUCTOR_PROPERTY:
         forEachChild(sourceFile, visitNodeForConstructorProperty);
@@ -572,30 +605,31 @@ export namespace ApiExtractor {
         break;
     }
 
+    // collect export names.
+    mCurrentExportNameSet.forEach(item => mExportNames.add(item));
     mCurrentExportNameSet.clear();
+    // collect export names and properties.
     mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
     mCurrentExportedPropertySet.clear();
+    exportOriginalNameSet.clear();
   };
 
-  function handleWhiteListWhenExportObfs(fileName: string, mCurrentExportedPropertySet: Set<string>): Set<string> {
+  function handleWhiteListWhenExportObfs(fileName: string, collectedExportNamesAndProperties: Set<string>): Set<string> {
     // If mExportObfuscation is not enabled, collect the export names and their properties into the whitelist.
     if (!scanProjectConfig.mExportObfuscation) {
-      return mCurrentExportedPropertySet;
+      return collectedExportNamesAndProperties;
     }
     // If the current file is a keep file or its dependent file, collect the export names and their properties into the whitelist.
     if (scanProjectConfig.mkeepFilesAndDependencies?.has(fileName)) {
-      return mCurrentExportedPropertySet;
+      return collectedExportNamesAndProperties;
     }
     // If it is a project source code file, the names and their properties of the export will not be collected.
     if (!isRemoteHar(fileName)) {
-      mCurrentExportedPropertySet.clear();
-      return mCurrentExportedPropertySet;
+      collectedExportNamesAndProperties.clear();
+      return collectedExportNamesAndProperties;
     }
-    // If it is a third-party library file, collect the export names.
-    mCurrentExportNameSet.forEach((element) => {
-      mLibExportNameSet.add(element);
-    });
-    return mCurrentExportedPropertySet;
+    // If it is a third-party library file.
+    return collectedExportNamesAndProperties;
   }
 
   const projectExtensions: string[] = ['.ets', '.ts', '.js'];
@@ -720,12 +754,13 @@ export namespace ApiExtractor {
   }
 
   /**
+   * only for ut
    * parse api of third party libs like libs in node_modules
    * @param libPath
    */
   export function parseThirdPartyLibs(libPath: string, scanningApiType: ApiType): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
     mPropertySet.clear();
-    mLibExportNameSet.clear();
+    mExportNames.clear();
     if (fs.lstatSync(libPath).isFile()) {
       if (libPath.endsWith('.ets') || libPath.endsWith('.ts') || libPath.endsWith('.js')) {
         parseFile(libPath, scanningApiType);
@@ -738,8 +773,8 @@ export namespace ApiExtractor {
     }
     let reservedLibExportNames: string[] = undefined;
     if (scanProjectConfig.mExportObfuscation) {
-      reservedLibExportNames = [...mLibExportNameSet];
-      mLibExportNameSet.clear();
+      reservedLibExportNames = [...mExportNames];
+      mExportNames.clear();
     }
     const reservedProperties: string[] = [...mPropertySet];
     mPropertySet.clear();
@@ -770,39 +805,27 @@ export namespace ApiExtractor {
   }
 
   /**
-   * parse common project or file to extract exported api list
-   * @return reserved api names
-   */
-  export function parseProjectSourceByPaths(projectPaths: string[], customProfiles: IOptions, scanningApiType: ApiType): string[] {
+  * parse common project or file to extract exported api list
+  * @return reserved api names
+  */
+  export function parseFileByPaths(projectPaths: Set<string>, scanningApiType: ApiType): 
+    {reservedProperties: string[]; reservedExportNames: string[]} {
     mPropertySet.clear();
+    mExportNames.clear();
     projectPaths.forEach(path => {
       parseFile(path, scanningApiType);
-    });
-    let reservedProperties: string[] = [...mPropertySet];
-    mPropertySet.clear();
-    return reservedProperties;
-  }
-
-  /**
-   * parse api of third party libs like libs in node_modules
-   * @param libPath
-   */
-  export function parseThirdPartyLibsByPaths(libPaths: string[], scanningApiType: ApiType): {reservedProperties: string[];
-    reservedLibExportNames: string[] | undefined} {
-    mPropertySet.clear();
-    mLibExportNameSet.clear();
-    libPaths.forEach(path => {
-      parseFile(path, scanningApiType);
-    });
-    let reservedLibExportNames: string[] = undefined;
-    if (scanProjectConfig.mExportObfuscation) {
-      reservedLibExportNames = [...mLibExportNameSet];
-      mLibExportNameSet.clear();
+    })
+    let reservedProperties: string[] = [];
+    let reservedExportNames: string[] = [];
+    if (scanProjectConfig.mPropertyObfuscation) {
+      reservedProperties = [...mPropertySet];
     }
-    const reservedProperties: string[] = [...mPropertySet];
+    if (scanProjectConfig.mExportObfuscation) {
+      reservedExportNames = [...mExportNames];
+    }
     mPropertySet.clear();
-
-    return {reservedProperties: reservedProperties, reservedLibExportNames: reservedLibExportNames};
+    mExportNames.clear();
+    return {reservedProperties: reservedProperties, reservedExportNames: reservedExportNames};
   }
 
   /**
