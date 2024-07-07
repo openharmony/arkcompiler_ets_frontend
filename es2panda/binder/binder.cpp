@@ -603,6 +603,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
         classDef->Ident()->SetParent(classDef);
     }
+    bool previousInSendableClass = inSendableClass_;
 
     ResolveReference(classDef, classDef->Ctor());
 
@@ -621,7 +622,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
     for (auto *iter : classDef->IndexSignatures()) {
         ResolveReference(classDef, iter);
     }
-    inSendable_ = false;
+    inSendableClass_ = previousInSendableClass;
 }
 
 void Binder::BuildForUpdateLoop(ir::ForUpdateStatement *forUpdateStmt)
@@ -715,9 +716,10 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::SCRIPT_FUNCTION: {
+            bool previousInSendableFunction = inSendableFunction_;
             auto *scriptFunc = childNode->AsScriptFunction();
             // Static initializer only be executed once. Treat it as unshared method.
-            if (inSendable_ && !scriptFunc->IsStaticInitializer()) {
+            if ((inSendableClass_ && !scriptFunc->IsStaticInitializer()) || inSendableFunction_) {
                 scriptFunc->SetInSendable();
             }
             util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc),
@@ -725,8 +727,12 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
 
             if (scriptFunc->IsConstructor() && util::Helpers::GetClassDefiniton(scriptFunc)->IsSendable()) {
                 scriptFunc->SetInSendable();
-                inSendable_ = true;
+                inSendableClass_ = true;
+            } else if (scriptFunc->IsSendable()) {
+                scriptFunc->SetInSendable();
+                inSendableFunction_ = true;
             }
+
             auto *funcScope = scriptFunc->Scope();
 
             auto *outerScope = scope_;
@@ -767,6 +773,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             BuildScriptFunction(outerScope, scriptFunc);
 
             ResolveReference(scriptFunc, scriptFunc->Body());
+            inSendableFunction_ = previousInSendableFunction;
             break;
         }
         case ir::AstNodeType::VARIABLE_DECLARATOR: {

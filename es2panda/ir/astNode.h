@@ -95,6 +95,7 @@ enum class ScriptFunctionFlags {
     STATIC_INITIALIZER = 1 << 9,
     INSTANCE_INITIALIZER = 1 << 10,
     GENERATED_CONSTRUCTOR = 1 << 11,
+    SENDABLE = 1 << 12,
 };
 
 DEFINE_BITOPS(ScriptFunctionFlags)
