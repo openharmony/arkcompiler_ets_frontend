@@ -1282,6 +1282,9 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjT
         moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticMethodScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
+        moduleObjType, importDecl, programList.front()->GlobalClassScope()->StaticDeclScope()->Bindings());
+
+    BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
         moduleObjType, importDecl, programList.front()->GlobalClassScope()->InstanceDeclScope()->Bindings());
 
     BindingsModuleObjectAddProperty<checker::PropertyType::STATIC_DECL>(
