@@ -70,7 +70,7 @@ faultDesc[FaultID.EnumMemberNonConstInit] = 'Enum members with non-constant init
 faultDesc[FaultID.ImplementsClass] = 'Class type mentioned in "implements" clause';
 faultDesc[FaultID.MethodReassignment] = 'Access to undefined field';
 faultDesc[FaultID.MultipleStaticBlocks] = 'Multiple static blocks';
-faultDesc[FaultID.ThisType] = '"this" type';
+faultDesc[FaultID.ThisTyping] = '"this" typing is supported only for methods with explicit "this" return';
 faultDesc[FaultID.IntefaceExtendDifProps] = 'Extends same properties with different types';
 faultDesc[FaultID.StructuralIdentity] = 'Use of type structural identity';
 faultDesc[FaultID.ExportAssignment] = 'Export assignments (export = ..)';

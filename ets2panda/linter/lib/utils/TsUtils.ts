@@ -2475,4 +2475,12 @@ export class TsUtils {
     }
     return true;
   }
+
+  static isMethodWithThisReturnType(node: ts.Node | undefined): boolean {
+    if (node?.kind !== ts.SyntaxKind.MethodDeclaration) {
+      return false;
+    }
+    const method = node as ts.MethodDeclaration;
+    return method.type?.kind === ts.SyntaxKind.ThisType;
+  }
 }

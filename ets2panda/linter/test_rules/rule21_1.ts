@@ -14,12 +14,11 @@
  */
 
 interface ListItem {
-    getHead(): ListItem
+    getHead(): this
 }
-
+  
 class ListItemImpl implements ListItem {
     n: number = 0
 
-    getHead(): this { return this }
+    getHead(): this { return new D() }
 }
-

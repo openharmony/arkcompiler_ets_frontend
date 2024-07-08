@@ -120,7 +120,6 @@ export class LinterConfig {
   static incrementOnlyTokens: Map<ts.SyntaxKind, FaultID> = new Map([
     [ts.SyntaxKind.AnyKeyword, FaultID.AnyType],
     [ts.SyntaxKind.SymbolKeyword, FaultID.SymbolType],
-    [ts.SyntaxKind.ThisType, FaultID.ThisType],
     [ts.SyntaxKind.TypeQuery, FaultID.TypeQuery],
     [ts.SyntaxKind.DeleteExpression, FaultID.DeleteOperator],
     [ts.SyntaxKind.TypePredicate, FaultID.IsOperator],

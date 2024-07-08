@@ -1,28 +1,30 @@
-#  Type notation using ``this`` is not supported
+# ``this`` typing is supported only for methods with explicit ``this`` return
 
-Rule ``arkts-no-typing-with-this``
+Rule ``arkts-this-typing``
 
 **Severity: error**
 
-ArkTS does not support type notation using the ``this`` keyword (for example,
-specifying a method's return type ``this`` is not allowed). Use explicit type
-instead.
-
+ArkTS allows type notation using the ``this`` keyword only for a return type
+of an instance method of a class or struct.
+Such methods can only return ``this`` explicitly (``return this``).
 
 ## TypeScript
 
 
 ```
-
-    interface ListItem {
-        getHead(): this
-    }
-
     class C {
         n: number = 0
 
         m(c: this) {
             console.log(c)
+        }
+
+        foo(): this {
+            return this.bar();
+        }
+
+        bar(): this {
+            return this;
         }
     }
 
@@ -32,16 +34,19 @@ instead.
 
 
 ```
-
-    interface ListItem {
-        getHead(): ListItem
-    }
-
     class C {
         n: number = 0
 
         m(c: C) {
             console.log(c)
+        }
+
+        foo(): this {
+            return this;
+        }
+
+        bar(): this {
+            return this;
         }
     }
 
