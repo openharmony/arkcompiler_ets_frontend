@@ -19,10 +19,11 @@ import {FileUtils} from '../utils/FileUtils';
 import {ApiExtractor} from './ApiExtractor';
 import {ListUtil} from '../utils/ListUtil';
 import type {IOptions} from '../configs/IOptions';
-import { stringPropsSet, structPropsSet } from '../utils/OhsUtil';
-import { sys } from 'typescript';
+import { stringPropsSet, structPropsSet, enumPropsSet } from '../utils/OhsUtil';
+import { INameObfuscationOption } from '../configs/INameObfuscationOption';
 
 export const scanProjectConfig: {
+  mPropertyObfuscation?: boolean,
   mKeepStringProperty?: boolean,
   mExportObfuscation?: boolean,
   mkeepFilesAndDependencies?: Set<string>,
@@ -128,6 +129,7 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
 }
 
 function initScanProjectConfig(customProfiles: IOptions, isHarCompiled?: boolean) {
+  scanProjectConfig.mPropertyObfuscation = customProfiles.mNameObfuscation?.mRenameProperties;
   scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
   scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
   scanProjectConfig.mkeepFilesAndDependencies = customProfiles.mKeepFileSourceCode?.mkeepFilesAndDependencies;
@@ -177,20 +179,11 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
 
   const nameObfuscationConfig = customProfiles.mNameObfuscation;
   if (isEnabledPropertyObfuscation(customProfiles)) {
-    // read project code export names
-    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(projProperties, nameObfuscationConfig.mReservedProperties, [...structPropsSet]);
-
-    // read project lib export names
-    if (sdkProperties && sdkProperties.length > 0) {
-      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties, nameObfuscationConfig.mReservedProperties);
-    }
-
-    if (scanProjectConfig.mKeepStringProperty && stringPropsSet.size > 0) {
-      nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet], nameObfuscationConfig.mReservedProperties);
-    }
+    mergeReservedProperties(nameObfuscationConfig, projProperties, sdkProperties);
   }
   structPropsSet.clear();
   stringPropsSet.clear();
+  enumPropsSet.clear();
 
   if (scanProjectConfig.mExportObfuscation && libExportNamesAndReservedProps?.reservedLibExportNames) {
     nameObfuscationConfig.mReservedNames = ListUtil.uniqueMergeList(libExportNamesAndReservedProps.reservedLibExportNames,
@@ -201,6 +194,24 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
     projectAndLibsReservedProperties: nameObfuscationConfig.mReservedProperties ?? [],
     libExportNames: nameObfuscationConfig.mReservedNames ?? []
   };
+}
+
+function mergeReservedProperties(nameObfuscationConfig: INameObfuscationOption, projProperties: string[], sdkProperties: string[]): void {
+  // read project code export names
+  nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(projProperties, nameObfuscationConfig.mReservedProperties, [...structPropsSet]);
+
+  // read project lib export names
+  if (sdkProperties && sdkProperties.length > 0) {
+    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties, nameObfuscationConfig.mReservedProperties);
+  }
+
+  if (scanProjectConfig.mKeepStringProperty && stringPropsSet.size > 0) {
+    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...stringPropsSet], nameObfuscationConfig.mReservedProperties);
+  }
+
+  if (enumPropsSet.size > 0) {
+    nameObfuscationConfig.mReservedProperties = ListUtil.uniqueMergeList([...enumPropsSet], nameObfuscationConfig.mReservedProperties);
+  }
 }
 
 function readThirdPartyLibProperties(projectPath: string, scanningApiType: ApiExtractor.ApiType): {reservedProperties: string[];

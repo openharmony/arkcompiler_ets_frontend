@@ -75,7 +75,7 @@ import {
   isParameterPropertyModifier,
 } from '../utils/OhsUtil';
 import { scanProjectConfig } from './ApiReader';
-import { stringPropsSet } from '../utils/OhsUtil';
+import { stringPropsSet, enumPropsSet } from '../utils/OhsUtil';
 import type { IOptions } from '../configs/IOptions';
 import { FileUtils } from '../utils/FileUtils';
 import { supportedParsingExtension } from './type';
@@ -507,9 +507,12 @@ export namespace ApiExtractor {
 
     if (nodeName && mCurrentExportNameSet.has(nodeName)) {
       addElement(currentPropsSet);
-    } else if (isEnumDeclaration(astNode) && scanProjectConfig.isHarCompiled) {
-      addElement(currentPropsSet);
     }
+
+    if (scanProjectConfig.isHarCompiled && scanProjectConfig.mPropertyObfuscation && isEnumDeclaration(astNode)) {
+      addEnumElement(currentPropsSet);
+    }
+
     forEachChild(astNode, visitProjectNode);
   };
 
@@ -518,7 +521,12 @@ export namespace ApiExtractor {
     currentPropsSet.forEach((element: string) => {
       mCurrentExportedPropertySet.add(element);
     });
-    currentPropsSet.clear();
+  }
+
+  function addEnumElement(currentPropsSet: Set<string>): void {
+    currentPropsSet.forEach((element: string) => {
+      enumPropsSet.add(element);
+    });
   }
   /**
    * parse file to api list and save to json object
