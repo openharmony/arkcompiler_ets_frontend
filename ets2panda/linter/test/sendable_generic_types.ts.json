@@ -140,6 +140,13 @@
             "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
         },
         {
+            "line": 111,
+            "column": 18,
+            "problem": "SendableGenericTypes",
+            "suggest": "",
+            "rule": "Type arguments of generic \"Sendable\" type must be a \"Sendable\" data type (arkts-sendable-generic-types)"
+        },
+        {
             "line": 23,
             "column": 3,
             "problem": "StrictDiagnostic",
