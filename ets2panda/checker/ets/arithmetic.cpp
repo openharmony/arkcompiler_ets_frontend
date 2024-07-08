@@ -426,6 +426,13 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
         tsType = GlobalETSBooleanType();
         return {tsType, tsType};
     }
+
+    // Temporary workaround before == and === refactoring
+    if ((rightType->IsETSNullType() && leftType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) ||
+        (leftType->IsETSNullType() && rightType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE))) {
+        return {GlobalETSBooleanType(), CreateETSUnionType({leftType, rightType})};
+    }
+
     return {nullptr, nullptr};
 }
 
