@@ -46,6 +46,7 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "varbinder/declaration.h"
 #include "varbinder/variableFlags.h"
+#include "generated/signatures.h"
 
 namespace ark::es2panda::checker {
 ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
@@ -1643,6 +1644,32 @@ const varbinder::Variable *ETSChecker::GetTargetRef(const ir::MemberExpression *
     return nullptr;
 }
 
+void ETSChecker::ValidateReadonlyProperty(const ir::MemberExpression *const memberExpr, const ETSFunctionType *propType,
+                                          const lexer::SourcePosition sourcePos)
+{
+    ir::ClassProperty *classProp = nullptr;
+    ETSObjectType *currentObj = memberExpr->ObjType();
+    bool foundInThis = false;
+    while (classProp == nullptr && currentObj != nullptr) {
+        classProp = FindClassProperty(currentObj, propType);
+        if (classProp != nullptr && currentObj == memberExpr->ObjType()) {
+            foundInThis = true;
+        }
+
+        currentObj = currentObj->SuperType();
+    }
+
+    if (classProp != nullptr && this->Context().ContainingSignature() != nullptr && classProp->IsReadonly()) {
+        if (!foundInThis || (!this->Context().ContainingSignature()->Function()->IsConstructor())) {
+            ThrowTypeError("Cannot assign to this property because it is readonly.", sourcePos);
+        }
+
+        if (IsInitializedProperty(memberExpr->ObjType()->GetDeclNode()->AsClassDefinition(), classProp)) {
+            ThrowTypeError("Readonly field already initialized at declaration.", sourcePos);
+        }
+    }
+}
+
 void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const memberExpr,
                                       const varbinder::LocalVariable *const prop, PropertySearchFlags searchFlag)
 {
@@ -1661,11 +1688,52 @@ void ETSChecker::ValidateGetterSetter(const ir::MemberExpression *const memberEx
     }
 
     if ((searchFlag & PropertySearchFlags::IS_SETTER) != 0) {
-        if (!propType->HasTypeFlag(TypeFlag::SETTER)) {
-            ThrowTypeError("Cannot assign to this property because it is readonly.", sourcePos);
-        }
+        ValidateReadonlyProperty(memberExpr, propType, sourcePos);
         ValidateSignatureAccessibility(memberExpr->ObjType(), callExpr, propType->FindSetter(), sourcePos);
     }
+}
+
+ir::ClassProperty *ETSChecker::FindClassProperty(const ETSObjectType *const objectType, const ETSFunctionType *propType)
+{
+    auto propName =
+        util::UString(std::string(compiler::Signatures::PROPERTY) + propType->Name().Mutf8(), Allocator()).View();
+
+    ir::ClassProperty *classProp = nullptr;
+    if (objectType->GetDeclNode()->IsClassDefinition()) {
+        auto body = objectType->GetDeclNode()->AsClassDefinition()->Body();
+        auto foundValue = std::find_if(body.begin(), body.end(), [propName](ir::AstNode *node) {
+            return node->IsClassProperty() && node->AsClassProperty()->Key()->AsIdentifier()->Name() == propName;
+        });
+        if (foundValue != body.end()) {
+            classProp = (*foundValue)->AsClassProperty();
+        }
+    }
+
+    return classProp;
+}
+
+bool ETSChecker::IsInitializedProperty(const ir::ClassDefinition *classDefinition, const ir::ClassProperty *prop)
+{
+    std::string targetName = prop->Key()->AsIdentifier()->Name().Mutf8();
+    if (targetName.find(compiler::Signatures::PROPERTY) == 0) {
+        targetName = targetName.substr(compiler::Signatures::PROPERTY.size());
+    }
+
+    for (auto *it : classDefinition->Body()) {
+        if (it->IsClassProperty() && it->AsClassProperty()->Value() != nullptr) {
+            return FindPropertyInAssignment(it, targetName);
+        }
+    }
+
+    return false;
+}
+
+bool ETSChecker::FindPropertyInAssignment(const ir::AstNode *it, const std::string &targetName)
+{
+    return it->AsClassProperty()->Value()->FindChild([&targetName](ir::AstNode *node) {
+        return node->IsIdentifier() && node->AsIdentifier()->Name().Is(targetName) && node->Parent() != nullptr &&
+               node->Parent()->IsMemberExpression();
+    }) != nullptr;
 }
 
 void ETSChecker::ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *const memberExpr,

@@ -727,6 +727,11 @@ private:
     bool ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type);
     void ValidateGetterSetter(const ir::MemberExpression *const memberExpr, const varbinder::LocalVariable *const prop,
                               PropertySearchFlags searchFlag);
+    ir::ClassProperty *FindClassProperty(const ETSObjectType *objectType, const ETSFunctionType *propType);
+    bool IsInitializedProperty(const ir::ClassDefinition *classDefinition, const ir::ClassProperty *prop);
+    bool FindPropertyInAssignment(const ir::AstNode *it, const std::string &targetName);
+    void ValidateReadonlyProperty(const ir::MemberExpression *memberExpr, const ETSFunctionType *propType,
+                                  lexer::SourcePosition sourcePos);
     void ValidateVarDeclaratorOrClassProperty(const ir::MemberExpression *memberExpr, varbinder::LocalVariable *prop);
     void ResolveMemberReferenceValidate(varbinder::LocalVariable *prop, PropertySearchFlags searchFlag,
                                         const ir::MemberExpression *const memberExpr);

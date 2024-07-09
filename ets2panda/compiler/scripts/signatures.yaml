@@ -134,6 +134,8 @@ defines:
     ref: PARTIAL_TYPE_NAME
   - name: 'Required'
     ref: REQUIRED_TYPE_NAME
+  - name: '<property>'
+    ref: PROPERTY
 
 packages:
   - name: 'std.core'

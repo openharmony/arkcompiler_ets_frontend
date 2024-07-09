@@ -24,6 +24,7 @@
 #include "checker/types/globalTypesHolder.h"
 
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
+#include "generated/signatures.h"
 
 namespace ark::es2panda::checker {
 varbinder::Variable *ETSChecker::FindVariableInFunctionScope(const util::StringView name,
@@ -2155,7 +2156,9 @@ ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVaria
 ir::ClassProperty *ETSChecker::ClassPropToImplementationProp(ir::ClassProperty *classProp, varbinder::ClassScope *scope)
 {
     classProp->Key()->AsIdentifier()->SetName(
-        util::UString("<property>" + classProp->Key()->AsIdentifier()->Name().Mutf8(), Allocator()).View());
+        util::UString(std::string(compiler::Signatures::PROPERTY) + classProp->Key()->AsIdentifier()->Name().Mutf8(),
+                      Allocator())
+            .View());
     classProp->AddModifier(ir::ModifierFlags::PRIVATE);
 
     auto *fieldDecl = Allocator()->New<varbinder::LetDecl>(classProp->Key()->AsIdentifier()->Name());
@@ -2351,18 +2354,12 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     auto *const decl = Allocator()->New<varbinder::FunctionDecl>(Allocator(), name, getter);
     auto *var = methodScope->AddDecl(Allocator(), decl, ScriptExtension::ETS);
 
-    ir::MethodDefinition *setter =
-        !classProp->IsConst() ? GenerateSetterForProperty(originalProp, interfaceProp, classProp, classType, getter)
-                              : nullptr;
+    ir::MethodDefinition *setter = GenerateSetterForProperty(originalProp, interfaceProp, classProp, classType, getter);
 
     if (var == nullptr) {
         auto *const prevDecl = methodScope->FindDecl(name);
         prevDecl->Node()->AsMethodDefinition()->AddOverload(getter);
-
-        if (setter != nullptr) {
-            prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
-        }
-
+        prevDecl->Node()->AsMethodDefinition()->AddOverload(setter);
         var = methodScope->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
     }
 
@@ -2395,7 +2392,6 @@ ir::MethodDefinition *ETSChecker::GenerateSetterForProperty(ir::ClassProperty *o
         setter->TsType()->AsETSFunctionType()->CallSignatures()[0]);
     classType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(setter->Variable()->AsLocalVariable());
     getter->AddOverload(setter);
-
     return setter;
 }
 
