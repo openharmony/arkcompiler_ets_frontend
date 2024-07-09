@@ -441,6 +441,11 @@ public:
     static Signature *GetSignatureFromMethodDefinition(const ir::MethodDefinition *methodDef);
     void CheckIdenticalOverloads(ETSFunctionType *func, ETSFunctionType *overload,
                                  const ir::MethodDefinition *currentFunc);
+    static bool CmpAssemblerTypesWithRank(Signature const *const sig1, Signature const *const sig2) noexcept;
+    static bool HasSameAssemblySignature(Signature const *const sig1, Signature const *const sig2) noexcept;
+    static bool HasSameAssemblySignatures(ETSFunctionType const *const func1,
+                                          ETSFunctionType const *const func2) noexcept;
+
     Signature *AdjustForTypeParameters(Signature *source, Signature *target);
     void ReportOverrideError(Signature *signature, Signature *overriddenSignature, const OverrideErrorCode &errorCode);
     void CheckOverride(Signature *signature);

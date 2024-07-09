@@ -124,9 +124,13 @@ void ETSTypeParameter::ToDebugInfoType(std::stringstream &ss) const
     GetConstraintType()->ToDebugInfoType(ss);
 }
 
-ETSTypeParameter *ETSTypeParameter::GetOriginal() const
+ETSTypeParameter *ETSTypeParameter::GetOriginal() const noexcept
 {
     return GetDeclNode()->Name()->Variable()->TsType()->AsETSTypeParameter();
 }
 
+util::StringView const &ETSTypeParameter::Name() const noexcept
+{
+    return GetDeclNode()->Name()->Name();
+}
 }  // namespace ark::es2panda::checker

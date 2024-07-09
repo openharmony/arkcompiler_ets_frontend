@@ -74,8 +74,7 @@ bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
 bool TypeRelation::IsCompatibleTo(Signature *source, Signature *target)
 {
     if (source == target) {
-        Result(true);
-        return true;
+        return Result(true);
     }
 
     result_ = RelationResult::FALSE;

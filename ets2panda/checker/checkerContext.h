@@ -54,6 +54,7 @@ enum class CheckerStatus : uint32_t {
     MEET_CONTINUE = 1U << 22U,
     MEET_THROW = 1U << 23U,
     IN_EXTERNAL = 1U << 24U,
+    IN_BRIDGE_TEST = 1U << 25U,
 };
 
 }  // namespace ark::es2panda::checker

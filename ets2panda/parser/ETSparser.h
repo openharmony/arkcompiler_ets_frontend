@@ -224,7 +224,6 @@ private:
 
     ir::Statement *CreateStatement(std::string_view sourceCode);
 
-    ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
     ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode);
 
     ir::ClassDeclaration *CreateClassDeclaration(std::string_view sourceCode, bool allowStatic = false);

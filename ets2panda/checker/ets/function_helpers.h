@@ -18,13 +18,10 @@
 
 #include "varbinder/varbinder.h"
 #include "varbinder/declaration.h"
-#include "varbinder/ETSBinder.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
-#include "varbinder/variableFlags.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
-#include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/type.h"
 #include "checker/types/typeFlag.h"
@@ -36,36 +33,21 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
-#include "ir/ets/etsFunctionType.h"
-#include "ir/ets/etsParameterExpression.h"
-#include "ir/ets/etsTypeReference.h"
-#include "ir/ets/etsTypeReferencePart.h"
 #include "ir/expressions/arrowFunctionExpression.h"
-#include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/callExpression.h"
 #include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/memberExpression.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/expressions/thisExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/forInStatement.h"
 #include "ir/statements/forOfStatement.h"
 #include "ir/statements/forUpdateStatement.h"
-#include "ir/statements/returnStatement.h"
 #include "ir/statements/switchStatement.h"
 #include "ir/statements/whileStatement.h"
-#include "ir/ts/tsArrayType.h"
-#include "ir/ts/tsInterfaceBody.h"
-#include "ir/ts/tsTypeAliasDeclaration.h"
-#include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
-#include "util/language.h"
 
 namespace ark::es2panda::checker {
 
@@ -198,52 +180,6 @@ static Signature *MaybeSubstituteTypeParameters(ETSChecker *checker, Signature *
             : BuildImplicitSubstitutionForArguments(checker, signature, arguments);
 
     return (substitution == nullptr) ? nullptr : signature->Substitute(checker->Relation(), substitution);
-}
-
-static bool CmpAssemblerTypesWithRank(Signature *sig1, Signature *sig2)
-{
-    for (size_t ix = 0; ix < sig1->MinArgCount(); ix++) {
-        std::stringstream s1;
-        std::stringstream s2;
-        sig1->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s1);
-        sig2->Params()[ix]->TsType()->ToAssemblerTypeWithRank(s2);
-        if (s1.str() != s2.str()) {
-            return false;
-            break;
-        }
-    }
-    return true;
-}
-
-static bool HasSameAssemblySignature(ETSFunctionType *func1, ETSFunctionType *func2)
-{
-    for (auto *sig1 : func1->CallSignatures()) {
-        for (auto *sig2 : func2->CallSignatures()) {
-            if (sig1->MinArgCount() != sig2->MinArgCount()) {
-                continue;
-            }
-            bool allSame = CmpAssemblerTypesWithRank(sig1, sig2);
-            if (!allSame) {
-                continue;
-            }
-            auto *rv1 = sig1->RestVar();
-            auto *rv2 = sig2->RestVar();
-            if (rv1 == nullptr && rv2 == nullptr) {
-                return true;
-            }
-            if (rv1 == nullptr || rv2 == nullptr) {  // exactly one of them is null
-                return false;
-            }
-            std::stringstream s1;
-            std::stringstream s2;
-            rv1->TsType()->ToAssemblerTypeWithRank(s1);
-            rv2->TsType()->ToAssemblerTypeWithRank(s2);
-            if (s1.str() == s2.str()) {
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 static bool CheckInterfaceOverride(ETSChecker *const checker, ETSObjectType *const interface,

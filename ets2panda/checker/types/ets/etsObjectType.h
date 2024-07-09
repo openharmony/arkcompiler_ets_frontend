@@ -462,20 +462,6 @@ private:
     void UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop, PropertyType fieldType,
                             PropertyProcesser const &func);
 
-    ir::TSTypeParameterDeclaration *GetTypeParams() const
-    {
-        if (HasObjectFlag(ETSObjectFlags::ENUM) || !HasTypeFlag(TypeFlag::GENERIC)) {
-            return nullptr;
-        }
-
-        if (HasObjectFlag(ETSObjectFlags::CLASS)) {
-            ASSERT(declNode_->IsClassDefinition() && declNode_->AsClassDefinition()->TypeParams());
-            return declNode_->AsClassDefinition()->TypeParams();
-        }
-
-        ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
-        return declNode_->AsTSInterfaceDeclaration()->TypeParams();
-    }
     varbinder::LocalVariable *SearchFieldsDecls(const util::StringView &name, PropertySearchFlags flags) const;
 
     void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &&newTypeArgs,
@@ -486,6 +472,8 @@ private:
     bool TryCastIntegral(TypeRelation *const relation, Type *const target);
     bool TryCastFloating(TypeRelation *const relation, Type *const target);
     bool TryCastUnboxable(TypeRelation *const relation, Type *const target);
+
+    ir::TSTypeParameterDeclaration *GetTypeParams() const;
 
     ArenaAllocator *allocator_;
     util::StringView name_;
