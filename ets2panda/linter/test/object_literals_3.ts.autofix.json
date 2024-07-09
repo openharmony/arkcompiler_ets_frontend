@@ -259,6 +259,43 @@
             "line": 205,
             "column": 39,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 4174,
+                    "end": 4179,
+                    "replacementText": "\"field\""
+                },
+                {
+                    "start": 4198,
+                    "end": 4204,
+                    "replacementText": "\"field1\""
+                },
+                {
+                    "start": 4224,
+                    "end": 4230,
+                    "replacementText": "\"field2\""
+                },
+                {
+                    "start": 4250,
+                    "end": 4256,
+                    "replacementText": "\"field3\""
+                },
+                {
+                    "start": 4276,
+                    "end": 4282,
+                    "replacementText": "\"field4\""
+                },
+                {
+                    "start": 4302,
+                    "end": 4308,
+                    "replacementText": "\"field5\""
+                },
+                {
+                    "start": 4328,
+                    "end": 4334,
+                    "replacementText": "\"field6\""
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -266,6 +303,43 @@
             "line": 215,
             "column": 39,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 4403,
+                    "end": 4408,
+                    "replacementText": "\"field\""
+                },
+                {
+                    "start": 4421,
+                    "end": 4427,
+                    "replacementText": "\"field1\""
+                },
+                {
+                    "start": 4440,
+                    "end": 4446,
+                    "replacementText": "\"field2\""
+                },
+                {
+                    "start": 4459,
+                    "end": 4465,
+                    "replacementText": "\"field3\""
+                },
+                {
+                    "start": 4478,
+                    "end": 4484,
+                    "replacementText": "\"field4\""
+                },
+                {
+                    "start": 4497,
+                    "end": 4503,
+                    "replacementText": "\"field5\""
+                },
+                {
+                    "start": 4516,
+                    "end": 4522,
+                    "replacementText": "\"field6\""
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
@@ -273,6 +347,53 @@
             "line": 225,
             "column": 58,
             "problem": "ObjectLiteralNoContextType",
+            "autofix": [
+                {
+                    "start": 4602,
+                    "end": 4607,
+                    "replacementText": "\"field\""
+                },
+                {
+                    "start": 4626,
+                    "end": 4632,
+                    "replacementText": "\"field1\""
+                },
+                {
+                    "start": 4645,
+                    "end": 4651,
+                    "replacementText": "\"field2\""
+                },
+                {
+                    "start": 4671,
+                    "end": 4677,
+                    "replacementText": "\"field3\""
+                },
+                {
+                    "start": 4690,
+                    "end": 4696,
+                    "replacementText": "\"field4\""
+                },
+                {
+                    "start": 4716,
+                    "end": 4722,
+                    "replacementText": "\"field5\""
+                },
+                {
+                    "start": 4735,
+                    "end": 4741,
+                    "replacementText": "\"field6\""
+                },
+                {
+                    "start": 4761,
+                    "end": 4767,
+                    "replacementText": "\"field7\""
+                },
+                {
+                    "start": 4783,
+                    "end": 4789,
+                    "replacementText": "\"field8\""
+                }
+            ],
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         }

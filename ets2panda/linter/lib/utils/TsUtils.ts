@@ -964,16 +964,18 @@ export class TsUtils {
 
   validateRecordObjectKeys(objectLiteral: ts.ObjectLiteralExpression): boolean {
     for (const prop of objectLiteral.properties) {
-      if (!prop.name) {
-        return false;
-      }
-      const isValidComputedProperty =
-        ts.isComputedPropertyName(prop.name) && this.isValidComputedPropertyName(prop.name, true);
-      if (!ts.isStringLiteral(prop.name) && !ts.isNumericLiteral(prop.name) && !isValidComputedProperty) {
+      if (!prop.name || !this.isValidRecordObjectLiteralKey(prop.name)) {
         return false;
       }
     }
     return true;
+  }
+
+  isValidRecordObjectLiteralKey(propName: ts.PropertyName): boolean {
+    if (ts.isComputedPropertyName(propName)) {
+      return this.isValidComputedPropertyName(propName, true);
+    }
+    return ts.isStringLiteral(propName) || ts.isNumericLiteral(propName);
   }
 
   private static isSupportedTypeNodeKind(kind: ts.SyntaxKind): boolean {
