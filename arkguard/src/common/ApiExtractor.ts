@@ -809,7 +809,7 @@ export namespace ApiExtractor {
    * Visit elements that can contain properties.
    * @param node The current AST node.
    */
-  function visitElementsWithProperties(node: Node) {
+  function visitElementsWithProperties(node: Node): void {
     switch (node.kind) {
       case SyntaxKind.ClassDeclaration:
         forEachChild(node, visitClass);
@@ -831,8 +831,8 @@ export namespace ApiExtractor {
     forEachChild(node, visitElementsWithProperties);
   }
 
-  function visitClass(node: Node) {
-    if (isPropertyDeclaration(node)  || isMethodDeclaration(node)) {
+  function visitClass(node: Node): void {
+    if (isPropertyDeclaration(node) || isMethodDeclaration(node)) {
       if (isIdentifier(node.name)) {
         mCurrentExportedPropertySet.add(node.name.escapedText.toString());
       }
@@ -840,7 +840,7 @@ export namespace ApiExtractor {
     forEachChild(node, visitClass);
   }
 
-  function visitInterfaceOrType(node: Node) {
+  function visitInterfaceOrType(node: Node): void {
     if (isPropertySignature(node) || isMethodSignature(node)) {
       if (isIdentifier(node.name)) {
         mCurrentExportedPropertySet.add(node.name.escapedText.toString());
@@ -849,13 +849,13 @@ export namespace ApiExtractor {
     forEachChild(node, visitInterfaceOrType);
   }
 
-  function visitEnum(node: Node) {
+  function visitEnum(node: Node): void {
     if (isEnumMember(node) && isIdentifier(node.name)) {
       mCurrentExportedPropertySet.add(node.name.escapedText.toString());
     }
   }
 
-  function visitObjectLiteral(node: Node) {
+  function visitObjectLiteral(node: Node): void {
     if (isPropertyAssignment(node)) {
       if (isIdentifier(node.name)) {
         mCurrentExportedPropertySet.add(node.name.escapedText.toString());
@@ -864,7 +864,7 @@ export namespace ApiExtractor {
     forEachChild(node, visitObjectLiteral);
   }
 
-  function visitModule(node: Node) {
+  function visitModule(node: Node): void {
     forEachChild(node, visitElementsWithProperties);
   }
 
