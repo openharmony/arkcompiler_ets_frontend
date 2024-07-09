@@ -1243,9 +1243,25 @@ void ETSChecker::BindingsModuleObjectAddProperty(checker::ETSObjectType *moduleO
             if (!aliasedName.Empty()) {
                 moduleObjType->AddReExportAlias(var->Declaration()->Name(), aliasedName);
             }
-            moduleObjType->AddProperty<TYPE>(var->AsLocalVariable());
+            moduleObjType->AddProperty<TYPE>(var->AsLocalVariable(),
+                                             FindPropNameForNamespaceImport(var->AsLocalVariable()->Name()));
         }
     }
+}
+
+util::StringView ETSChecker::FindPropNameForNamespaceImport(const util::StringView &originalName)
+{
+    if (auto relatedMapItem =
+            VarBinder()->AsETSBinder()->GetSelectiveExportAliasMultimap().find(Program()->SourceFilePath());
+        relatedMapItem != VarBinder()->AsETSBinder()->GetSelectiveExportAliasMultimap().end()) {
+        if (auto result = std::find_if(relatedMapItem->second.begin(), relatedMapItem->second.end(),
+                                       [originalName](const auto &item) { return item.second == originalName; });
+            result != relatedMapItem->second.end()) {
+            return result->first;
+        }
+    }
+
+    return originalName;
 }
 
 void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *moduleObjType, const util::StringView &importPath,

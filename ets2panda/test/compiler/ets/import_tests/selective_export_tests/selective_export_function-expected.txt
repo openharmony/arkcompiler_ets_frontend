@@ -2,78 +2,6 @@
   "type": "Program",
   "statements": [
     {
-      "type": "ImportDeclaration",
-      "source": {
-        "type": "StringLiteral",
-        "value": "./type",
-        "loc": {
-          "start": {
-            "line": 16,
-            "column": 17
-          },
-          "end": {
-            "line": 16,
-            "column": 25
-          }
-        }
-      },
-      "specifiers": [
-        {
-          "type": "ImportSpecifier",
-          "local": {
-            "type": "Identifier",
-            "name": "A",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 16,
-                "column": 9
-              },
-              "end": {
-                "line": 16,
-                "column": 10
-              }
-            }
-          },
-          "imported": {
-            "type": "Identifier",
-            "name": "A",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 16,
-                "column": 9
-              },
-              "end": {
-                "line": 16,
-                "column": 10
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 16,
-              "column": 9
-            },
-            "end": {
-              "line": 16,
-              "column": 10
-            }
-          }
-        }
-      ],
-      "loc": {
-        "start": {
-          "line": 16,
-          "column": 1
-        },
-        "end": {
-          "line": 16,
-          "column": 25
-        }
-      }
-    },
-    {
       "type": "ClassDeclaration",
       "definition": {
         "id": {
@@ -189,79 +117,109 @@
             }
           },
           {
-            "type": "ClassProperty",
+            "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "aa",
+              "name": "test_func",
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 18,
-                  "column": 5
+                  "line": 16,
+                  "column": 10
                 },
                 "end": {
-                  "line": 18,
-                  "column": 7
+                  "line": 16,
+                  "column": 19
                 }
               }
             },
+            "kind": "method",
             "accessibility": "public",
             "static": true,
-            "readonly": false,
-            "declare": false,
             "optional": false,
             "computed": false,
-            "typeAnnotation": {
-              "type": "ETSTypeReference",
-              "part": {
-                "type": "ETSTypeReferencePart",
-                "name": {
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
                   "type": "Identifier",
-                  "name": "A",
+                  "name": "test_func",
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 18,
-                      "column": 8
+                      "line": 16,
+                      "column": 10
                     },
                     "end": {
-                      "line": 18,
-                      "column": 9
+                      "line": 16,
+                      "column": 19
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSPrimitiveType",
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 23
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 27
+                    }
+                  }
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 28
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 30
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 18,
-                    "column": 8
+                    "line": 16,
+                    "column": 19
                   },
                   "end": {
-                    "line": 18,
-                    "column": 10
+                    "line": 16,
+                    "column": 30
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 18,
-                  "column": 8
+                  "line": 16,
+                  "column": 19
                 },
                 "end": {
-                  "line": 18,
-                  "column": 10
+                  "line": 16,
+                  "column": 30
                 }
               }
             },
-            "definite": false,
+            "overloads": [],
             "decorators": [],
             "loc": {
               "start": {
-                "line": 18,
-                "column": 5
+                "line": 16,
+                "column": 1
               },
               "end": {
-                "line": 18,
-                "column": 7
+                "line": 16,
+                "column": 30
               }
             }
           }
@@ -295,9 +253,8 @@
       "column": 1
     },
     "end": {
-      "line": 19,
+      "line": 21,
       "column": 1
     }
   }
 }
-SyntaxError: Cannot find imported element 'A' [import_type_1.sts:16:9]

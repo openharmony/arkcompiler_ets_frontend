@@ -5,15 +5,15 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./type",
+        "value": "./selective_export_interface",
         "loc": {
           "start": {
             "line": 16,
-            "column": 17
+            "column": 32
           },
           "end": {
             "line": 16,
-            "column": 25
+            "column": 62
           }
         }
       },
@@ -22,7 +22,7 @@
           "type": "ImportSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "A",
+            "name": "InterfaceToAlias",
             "decorators": [],
             "loc": {
               "start": {
@@ -31,13 +31,13 @@
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 25
               }
             }
           },
           "imported": {
             "type": "Identifier",
-            "name": "A",
+            "name": "InterfaceToAlias",
             "decorators": [],
             "loc": {
               "start": {
@@ -46,7 +46,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 25
               }
             }
           },
@@ -57,7 +57,7 @@
             },
             "end": {
               "line": 16,
-              "column": 10
+              "column": 25
             }
           }
         }
@@ -69,7 +69,7 @@
         },
         "end": {
           "line": 16,
-          "column": 25
+          "column": 63
         }
       }
     },
@@ -187,83 +187,6 @@
                 "column": 1
               }
             }
-          },
-          {
-            "type": "ClassProperty",
-            "key": {
-              "type": "Identifier",
-              "name": "aa",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 5
-                },
-                "end": {
-                  "line": 18,
-                  "column": 7
-                }
-              }
-            },
-            "accessibility": "public",
-            "static": true,
-            "readonly": false,
-            "declare": false,
-            "optional": false,
-            "computed": false,
-            "typeAnnotation": {
-              "type": "ETSTypeReference",
-              "part": {
-                "type": "ETSTypeReferencePart",
-                "name": {
-                  "type": "Identifier",
-                  "name": "A",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 8
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 9
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 8
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 10
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 8
-                },
-                "end": {
-                  "line": 18,
-                  "column": 10
-                }
-              }
-            },
-            "definite": false,
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 18,
-                "column": 5
-              },
-              "end": {
-                "line": 18,
-                "column": 7
-              }
-            }
           }
         ],
         "loc": {
@@ -295,9 +218,9 @@
       "column": 1
     },
     "end": {
-      "line": 19,
+      "line": 17,
       "column": 1
     }
   }
 }
-SyntaxError: Cannot find imported element 'A' [import_type_1.sts:16:9]
+SyntaxError: Cannot find imported element 'InterfaceToAlias' [import_interface_wrong_name.ets:16:9]

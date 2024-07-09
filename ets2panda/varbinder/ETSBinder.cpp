@@ -575,71 +575,33 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
     return true;
 }
 
-void ETSBinder::AddExportSelectiveAlias(const util::StringView &path, const util::StringView &key,
-                                        const util::StringView &value)
-{
-    auto it = selectiveExportsWithAlias_.find(path);
-    if (it == selectiveExportsWithAlias_.end()) {
-        AliasesByExportedNames aliasesByExportedNames(Allocator()->Adapter());
-        aliasesByExportedNames.insert({key, value});
-        selectiveExportsWithAlias_.insert({path, aliasesByExportedNames});
-        return;
-    }
-    it->second.insert({key, value});
-}
-
-util::StringView ETSBinder::GetExportSelectiveAliasValue(util::StringView const &path,
-                                                         util::StringView const &key) const
-{
-    if (auto alias = selectiveExportsWithAlias_.find(path); selectiveExportsWithAlias_.end() != alias) {
-        auto ret = alias->second.find(key);
-        if (alias->second.end() != ret) {
-            return ret->second;
-        }
-    }
-    return key;
-}
-
 Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &imported,
                                                   const varbinder::Scope::VariableMap &globalBindings,
                                                   const ArenaVector<parser::Program *> &recordRes)
 {
-    auto const checkVar = [this, &imported](const util::StringView &searchImported,
-                                            varbinder::Variable *foundVariable) {
-        if (imported.Is(searchImported.Mutf8()) && foundVariable->Declaration()->Node()->HasAliasExport()) {
-            ThrowError(foundVariable->Declaration()->Node()->Start(),
-                       "Cannot find imported element '" + imported.Mutf8() + "' exported with alias");
-        }
-
-        return foundVariable;
-    };
-
-    util::StringView searchImported = GetExportSelectiveAliasValue(recordRes.front()->SourceFilePath(), imported);
-    auto foundVar = globalBindings.find(searchImported);
+    auto foundVar = globalBindings.find(imported);
     if (foundVar == globalBindings.end()) {
         const auto &staticMethodBindings = recordRes.front()->GlobalClassScope()->StaticMethodScope()->Bindings();
-        foundVar = staticMethodBindings.find(searchImported);
+        foundVar = staticMethodBindings.find(imported);
         if (foundVar != staticMethodBindings.end()) {
-            return checkVar(searchImported, foundVar->second);
+            return foundVar->second;
         }
         bool found = false;
         for (auto res : recordRes) {
-            searchImported = GetExportSelectiveAliasValue(res->SourceFilePath(), imported);
             const auto &staticFieldBindings = res->GlobalClassScope()->StaticFieldScope()->Bindings();
-            foundVar = staticFieldBindings.find(searchImported);
+            foundVar = staticFieldBindings.find(imported);
             if (foundVar != staticFieldBindings.end()) {
                 found = true;
                 foundVar->second->AsLocalVariable()->AddFlag(VariableFlags::INITIALIZED);
                 break;
             }
         }
-
         if (!found) {
             return nullptr;
         }
     }
 
-    return checkVar(searchImported, foundVar->second);
+    return foundVar->second;
 }
 
 ir::ETSImportDeclaration *ETSBinder::FindImportDeclInReExports(const ir::ETSImportDeclaration *const import,
@@ -740,7 +702,12 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         }
     }
 
-    auto *const var = FindImportSpecifiersVariable(imported, globalBindings, recordRes);
+    util::StringView nameToSearchFor = FindNameInAliasMap(import->ResolvedSource()->Str(), imported);
+    if (nameToSearchFor.Empty()) {
+        nameToSearchFor = imported;
+    }
+
+    auto *const var = FindImportSpecifiersVariable(nameToSearchFor, globalBindings, recordRes);
     importSpecifier->Imported()->SetVariable(var);
     importSpecifier->Local()->SetVariable(var);
 
@@ -753,11 +720,28 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
             return true;
         }
 
-        ThrowError(importPath->Start(), "Cannot find imported element " + imported.Mutf8());
+        ThrowError(importPath->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
     }
 
     ValidateImportVariable(var, import, imported, importPath);
 
+    if (CheckForRedeclarationError(localName, var, importPath)) {
+        return true;
+    }
+
+    // The first part of the condition will be true, if something was given an alias when exported, but we try
+    // to import it using its original name.
+    if (nameToSearchFor == imported && var->Declaration()->Node()->HasExportAlias()) {
+        ThrowError(specifier->Start(), "Cannot find imported element '" + imported.Mutf8() + "'");
+    }
+
+    InsertForeignBinding(specifier, import, localName, var);
+    return true;
+}
+
+bool ETSBinder::CheckForRedeclarationError(const util::StringView &localName, Variable *const var,
+                                           const ir::StringLiteral *const importPath)
+{
     auto variable = Program()->GlobalClassScope()->FindLocal(localName, ResolveBindingOptions::ALL);
     if (variable != nullptr && var != variable) {
         if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
@@ -768,8 +752,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
         ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, variable, localName));
     }
 
-    InsertForeignBinding(specifier, import, localName, var);
-    return true;
+    return false;
 }
 
 varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Program *> &recordRes,

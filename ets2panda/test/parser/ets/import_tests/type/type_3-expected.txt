@@ -1,1 +1,1 @@
-SyntaxError: Cannot redeclare exported variable 'foo' [type_3.sts:20:27]
+SyntaxError: The given name 'foo' is already used in another export [type_3.sts:20:27]

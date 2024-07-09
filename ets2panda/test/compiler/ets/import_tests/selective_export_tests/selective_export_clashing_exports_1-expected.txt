@@ -1,0 +1,1 @@
+SyntaxError: Cannot export 'foo', it was already exported [selective_export_clashing_exports_1.ets:19:10]

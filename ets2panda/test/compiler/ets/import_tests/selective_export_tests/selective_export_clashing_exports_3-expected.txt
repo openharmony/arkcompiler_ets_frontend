@@ -1,0 +1,1 @@
+SyntaxError: The given name 'foo' is already used in another export [selective_export_clashing_exports_3.ets:21:10]

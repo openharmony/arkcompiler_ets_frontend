@@ -5,15 +5,15 @@
       "type": "ImportDeclaration",
       "source": {
         "type": "StringLiteral",
-        "value": "./type",
+        "value": "./selective_export_interface",
         "loc": {
           "start": {
             "line": 16,
-            "column": 17
+            "column": 51
           },
           "end": {
             "line": 16,
-            "column": 25
+            "column": 81
           }
         }
       },
@@ -22,22 +22,22 @@
           "type": "ImportSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "A",
+            "name": "NotAliasInterface",
             "decorators": [],
             "loc": {
               "start": {
                 "line": 16,
-                "column": 9
+                "column": 27
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 44
               }
             }
           },
           "imported": {
             "type": "Identifier",
-            "name": "A",
+            "name": "AliasInterface",
             "decorators": [],
             "loc": {
               "start": {
@@ -46,7 +46,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 10
+                "column": 23
               }
             }
           },
@@ -57,7 +57,7 @@
             },
             "end": {
               "line": 16,
-              "column": 10
+              "column": 44
             }
           }
         }
@@ -69,7 +69,199 @@
         },
         "end": {
           "line": 16,
-          "column": 25
+          "column": 81
+        }
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "TestClass",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 18,
+              "column": 7
+            },
+            "end": {
+              "line": 18,
+              "column": 16
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [
+          {
+            "type": "TSClassImplements",
+            "expression": {
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "NotAliasInterface",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 18,
+                      "column": 28
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 45
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 18,
+                    "column": 28
+                  },
+                  "end": {
+                    "line": 18,
+                    "column": 47
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 28
+                },
+                "end": {
+                  "line": 18,
+                  "column": 47
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 28
+              },
+              "end": {
+                "line": 18,
+                "column": 47
+              }
+            }
+          }
+        ],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "constructor",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 48
+              },
+              "end": {
+                "line": 18,
+                "column": 48
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 18,
+            "column": 46
+          },
+          "end": {
+            "line": 18,
+            "column": 48
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 18,
+          "column": 1
+        },
+        "end": {
+          "line": 18,
+          "column": 48
         }
       }
     },
@@ -187,83 +379,6 @@
                 "column": 1
               }
             }
-          },
-          {
-            "type": "ClassProperty",
-            "key": {
-              "type": "Identifier",
-              "name": "aa",
-              "decorators": [],
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 5
-                },
-                "end": {
-                  "line": 18,
-                  "column": 7
-                }
-              }
-            },
-            "accessibility": "public",
-            "static": true,
-            "readonly": false,
-            "declare": false,
-            "optional": false,
-            "computed": false,
-            "typeAnnotation": {
-              "type": "ETSTypeReference",
-              "part": {
-                "type": "ETSTypeReferencePart",
-                "name": {
-                  "type": "Identifier",
-                  "name": "A",
-                  "decorators": [],
-                  "loc": {
-                    "start": {
-                      "line": 18,
-                      "column": 8
-                    },
-                    "end": {
-                      "line": 18,
-                      "column": 9
-                    }
-                  }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 8
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 10
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 8
-                },
-                "end": {
-                  "line": 18,
-                  "column": 10
-                }
-              }
-            },
-            "definite": false,
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 18,
-                "column": 5
-              },
-              "end": {
-                "line": 18,
-                "column": 7
-              }
-            }
           }
         ],
         "loc": {
@@ -300,4 +415,3 @@
     }
   }
 }
-SyntaxError: Cannot find imported element 'A' [import_type_1.sts:16:9]

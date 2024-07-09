@@ -27,7 +27,26 @@ AstNode::AstNode(AstNode const &other)
         variable_ = other.variable_;
     }
     flags_ = other.flags_;
+    astNodeFlags_ = other.astNodeFlags_;
     // boxing_unboxing_flags_ {};  leave default value!
+}
+
+[[nodiscard]] bool AstNode::IsExported() const noexcept
+{
+    if (UNLIKELY(IsClassDefinition())) {
+        return parent_->IsExported();
+    }
+
+    return (flags_ & ModifierFlags::EXPORT) != 0;
+}
+
+[[nodiscard]] bool AstNode::IsDefaultExported() const noexcept
+{
+    if (UNLIKELY(IsClassDefinition())) {
+        return parent_->IsDefaultExported();
+    }
+
+    return (flags_ & ModifierFlags::DEFAULT_EXPORT) != 0;
 }
 
 [[nodiscard]] bool AstNode::IsExportedType() const noexcept
@@ -39,10 +58,10 @@ AstNode::AstNode(AstNode const &other)
     return (flags_ & ModifierFlags::EXPORT_TYPE) != 0;
 }
 
-[[nodiscard]] bool AstNode::HasAliasExport() const noexcept
+[[nodiscard]] bool AstNode::HasExportAlias() const noexcept
 {
     if (UNLIKELY(IsClassDefinition())) {
-        return parent_->HasAliasExport();
+        return parent_->HasExportAlias();
     }
 
     return (astNodeFlags_ & AstNodeFlags::HAS_EXPORT_ALIAS) != 0;

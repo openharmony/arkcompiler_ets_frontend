@@ -65,11 +65,17 @@ public:
                           lexer::SourcePosition pos);
 
     void VerifySingleExportDefault(const ArenaVector<parser::Program *> &programs);
+    void HandleSelectiveExportWithAlias(util::StringView originalFieldName, util::StringView exportName,
+                                        lexer::SourcePosition startLoc);
+    void PopulateAliasMap(const ir::ExportNamedDeclaration *decl, const util::StringView &path);
 
 private:
     void VisitFunctionDeclaration(ir::FunctionDeclaration *funcDecl) override;
     void VisitVariableDeclaration(ir::VariableDeclaration *varDecl) override;
     void VisitExportNamedDeclaration(ir::ExportNamedDeclaration *exportDecl) override;
+    void VisitClassDeclaration(ir::ClassDeclaration *classDecl) override;
+    void VisitTSTypeAliasDeclaration(ir::TSTypeAliasDeclaration *typeAliasDecl) override;
+    void VisitTSInterfaceDeclaration(ir::TSInterfaceDeclaration *interfaceDecl) override;
 
 private:
     varbinder::ETSBinder *varbinder_ {nullptr};

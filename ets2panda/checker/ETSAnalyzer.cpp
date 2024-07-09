@@ -2658,10 +2658,14 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         // clang-format off
         auto searchName =
             importDecl->IsETSImportDeclaration()
-                ? checker->VarBinder()->AsETSBinder()->GetExportSelectiveAliasValue(
+                ? checker->VarBinder()->AsETSBinder()->FindNameInAliasMap(
                     importDecl->AsETSImportDeclaration()->ResolvedSource()->Str(), expr->Right()->Name())
                 : expr->Right()->Name();
         // clang-format on
+        // NOTE (oeotvos) This should be done differently in the follow-up patch.
+        if (searchName.Empty()) {
+            searchName = expr->Right()->Name();
+        }
         varbinder::Variable *prop =
             baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_DECL);
 
@@ -2669,7 +2673,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
             checker->ThrowTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
         }
 
-        if (expr->Right()->Name().Is(searchName.Mutf8()) && prop->Declaration()->Node()->HasAliasExport()) {
+        if (expr->Right()->Name().Is(searchName.Mutf8()) && prop->Declaration()->Node()->HasExportAlias()) {
             checker->ThrowTypeError({"Cannot find imported element '", searchName, "' exported with alias"},
                                     expr->Right()->Start());
         }
