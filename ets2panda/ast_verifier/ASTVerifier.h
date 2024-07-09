@@ -56,6 +56,7 @@ public:
             accumulatedChecks_.insert("ReferenceTypeAnnotationIsNullForAll");
             accumulatedChecks_.insert("ArithmeticOperationValidForAll");
             accumulatedChecks_.insert("SequenceExpressionHasLastTypeForAll");
+            accumulatedChecks_.insert("CheckInfiniteLoopForAll");
             accumulatedChecks_.insert("ForLoopCorrectlyInitializedForAll");
             accumulatedChecks_.insert("VariableHasEnclosingScopeForAll");
             accumulatedChecks_.insert("ModifierAccessValidForAll");

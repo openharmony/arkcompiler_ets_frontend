@@ -14,8 +14,8 @@
  */
 
 #include "ASTVerifier.h"
-#include "ast_verifier/helpers.h"
 #include "ast_verifier/sequenceExpressionHasLastType.h"
+#include "ast_verifier/checkInfiniteLoop.h"
 #include "ast_verifier/checkContext.h"
 #include "ast_verifier/everyChildHasValidParent.h"
 #include "ast_verifier/everyChildInParentRange.h"
@@ -44,6 +44,7 @@ ASTVerifier::ASTVerifier(ArenaAllocator *allocator)
     AddInvariant<EveryChildHasValidParent>(allocator, "EveryChildHasValidParent");
     AddInvariant<EveryChildInParentRange>(allocator, "EveryChildInParentRange");
     AddInvariant<VariableHasEnclosingScope>(allocator, "VariableHasEnclosingScope");
+    AddInvariant<CheckInfiniteLoop>(allocator, "CheckInfiniteLoop");
     AddInvariant<ForLoopCorrectlyInitialized>(allocator, "ForLoopCorrectlyInitialized");
     AddInvariant<ModifierAccessValid>(allocator, "ModifierAccessValid");
     AddInvariant<ImportExportAccessValid>(allocator, "ImportExportAccessValid");

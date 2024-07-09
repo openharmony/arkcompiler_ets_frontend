@@ -50,6 +50,11 @@ public:
         return invariantName_;
     }
 
+    std::string Cause() const
+    {
+        return cause_;
+    }
+
     std::function<void(JsonObjectBuilder &)> DumpJSON(CheckSeverity severity, const std::string &sourceName,
                                                       const std::string &phaseName) const
     {

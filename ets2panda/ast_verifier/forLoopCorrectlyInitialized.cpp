@@ -71,8 +71,6 @@ namespace ark::es2panda::compiler::ast_verifier {
 [[nodiscard]] CheckResult ForLoopCorrectlyInitialized::HandleForUpdateStatement(CheckContext &ctx,
                                                                                 const ir::AstNode *ast)
 {
-    // The most important part of for-loop is the test.
-    // But it also can be null. Then there must be break;(return) in the body.
     auto const *test = ast->AsForUpdateStatement()->Test();
     if (test == nullptr) {
         auto const *body = ast->AsForUpdateStatement()->Body();
@@ -80,13 +78,7 @@ namespace ark::es2panda::compiler::ast_verifier {
             ctx.AddCheckMessage("NULL FOR-TEST AND FOR-BODY", *ast, ast->Start());
             return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
         }
-        bool hasExit = body->IsBreakStatement() || body->IsReturnStatement();
-        body->IterateRecursively(
-            [&hasExit](ir::AstNode *child) { hasExit |= child->IsBreakStatement() || child->IsReturnStatement(); });
-        if (!hasExit) {
-            // an infinite loop
-            ctx.AddCheckMessage("NULL FOR-TEST AND FOR-BODY doesn't exit", *ast, ast->Start());
-        }
+
         return {CheckDecision::CORRECT, CheckAction::CONTINUE};
     }
 

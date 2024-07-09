@@ -198,11 +198,12 @@ struct AllArgs {
     ark::PandArg<std::string> plugins {"plugins", "", "Plugins"};
     ark::PandArg<std::string> skipPhases {"skip-phases", "", "Phases to skip"};
     ark::PandArg<std::string> verifierWarnings {
-        "verifier-warnings", "",
+        "verifier-warnings", "CheckInfiniteLoopForAll",
         "Print errors and continue compilation if AST tree is incorrect. "
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
-        "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
+        "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll, "
+        "CheckInfiniteLoopForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
         "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll"};
@@ -216,6 +217,7 @@ struct AllArgs {
         "Possible values: "
         "NodeHasParentForAll,EveryChildHasValidParentForAll,VariableHasScopeForAll,NodeHasTypeForAll,"
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
+        "CheckInfiniteLoopForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
         "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll"};
