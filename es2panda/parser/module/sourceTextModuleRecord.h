@@ -33,7 +33,6 @@ public:
     explicit SourceTextModuleRecord(ArenaAllocator *allocator)
         : allocator_(allocator),
           moduleRequestsMap_(allocator_->Adapter()),
-          moduleRequestsIdxMap_(allocator_->Adapter()),
           moduleRequests_(allocator_->Adapter()),
           localExportEntries_(allocator_->Adapter()),
           regularImportEntries_(allocator_->Adapter()),
@@ -88,13 +87,32 @@ public:
         }
     };
 
+    struct ModuleRequestRecord {
+        util::StringView source_;
+        bool isLazy_ {false};
+
+        explicit ModuleRequestRecord(util::StringView source) : source_{source} {}
+        ModuleRequestRecord(util::StringView source, bool isLazy) : source_{source}, isLazy_{isLazy} {}
+
+        bool operator<(const ModuleRequestRecord &mrr) const
+        {
+            return source_ < mrr.source_ || (source_ == mrr.source_ && isLazy_ && !mrr.isLazy_);
+        }
+    };
+
     template <typename T, typename... Args>
     T *NewEntry(Args &&... args)
     {
         return allocator_->New<T>(std::forward<Args>(args)...);
     }
 
-    int AddModuleRequest(const util::StringView source);
+    template <typename... Args>
+    int AddModuleRequest(Args &&... args)
+    {
+        const auto *record = allocator_->New<ModuleRequestRecord>(std::forward<Args>(args)...);
+        return AddModuleRequest(*record);
+    }
+    int AddModuleRequest(const ModuleRequestRecord record);
     void AddImportEntry(ImportEntry *entry);
     void AddStarImportEntry(ImportEntry *entry);
     bool AddLocalExportEntry(ExportEntry *entry);
@@ -108,22 +126,16 @@ public:
     void AssignIndexToModuleVariable(binder::ModuleScope *moduleScope);
     int GetModuleRequestIdx(const util::StringView localName);
 
-    using ModuleRequestList = ArenaVector<util::StringView>;
-    using ModuleRequestMap = ArenaMap<const util::StringView, uint32_t>;
-    using ModuleRequestIdxMap = ArenaMap<uint32_t, const util::StringView>;
+    using ModuleRequestList = ArenaVector<ModuleRequestRecord>;
+    using ModuleRequestMap = ArenaMap<const ModuleRequestRecord, uint32_t>;
     using LocalExportEntryMap = ArenaMultiMap<const util::StringView, ExportEntry *>;
     using RegularImportEntryMap = ArenaMap<const util::StringView, ImportEntry *>;
     using NamespaceImportEntryList = ArenaVector<ImportEntry *>;
     using SpecialExportEntryList = ArenaVector<ExportEntry *>;
 
-    const ArenaVector<util::StringView> &GetModuleRequests() const
+    const ModuleRequestList &GetModuleRequests() const
     {
         return moduleRequests_;
-    }
-
-    const ModuleRequestIdxMap &GetModuleRequestIdxMap()  const
-    {
-        return moduleRequestsIdxMap_;
     }
 
     const LocalExportEntryMap &GetLocalExportEntries() const
@@ -151,6 +163,11 @@ public:
         return indirectExportEntries_;
     }
 
+    bool HasLazyImport() const
+    {
+        return hasLazyImport_;
+    }
+
     static constexpr std::string_view DEFAULT_LOCAL_NAME = "*default*";
     static constexpr std::string_view DEFAULT_EXTERNAL_NAME = "default";
     static constexpr std::string_view ANONY_NAMESPACE_NAME = "=ens";
@@ -163,13 +180,13 @@ private:
 
     ArenaAllocator *allocator_;
     ModuleRequestMap moduleRequestsMap_;
-    ModuleRequestIdxMap moduleRequestsIdxMap_;
     ModuleRequestList moduleRequests_;
     LocalExportEntryMap localExportEntries_;
     RegularImportEntryMap regularImportEntries_;
     NamespaceImportEntryList namespaceImportEntries_;
     SpecialExportEntryList starExportEntries_;
     SpecialExportEntryList indirectExportEntries_;
+    bool hasLazyImport_ { false };
 };
 } // namespace panda::es2panda::parser
 

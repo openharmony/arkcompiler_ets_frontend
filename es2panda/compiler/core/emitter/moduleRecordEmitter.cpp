@@ -25,8 +25,15 @@ void ModuleRecordEmitter::GenModuleRequests()
     buffer_.emplace_back(moduleSize);
     for (auto request : moduleRequests) {
         panda::pandasm::LiteralArray::Literal moduleRequest = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = request.Mutf8()};
+            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = (request.source_).Mutf8()};
         buffer_.emplace_back(moduleRequest);
+
+        if (!NeedEmitPhaseRecord()) {
+            continue;
+        }
+        panda::pandasm::LiteralArray::Literal moduleRequestPhase = {
+            .tag_ = panda::panda_file::LiteralTag::INTEGER_8, .value_ = static_cast<uint8_t>(request.isLazy_)};
+        phaseBuffer_.emplace_back(moduleRequestPhase);
     }
 }
 

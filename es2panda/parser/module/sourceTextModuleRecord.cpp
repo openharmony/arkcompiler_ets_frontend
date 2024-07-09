@@ -17,15 +17,16 @@
 #include <binder/scope.h>
 
 namespace panda::es2panda::parser {
-    int SourceTextModuleRecord::AddModuleRequest(const util::StringView source)
+    int SourceTextModuleRecord::AddModuleRequest(const ModuleRequestRecord record)
     {
-        ASSERT(!source.Empty());
+        ASSERT(!record.source_.Empty());
+        hasLazyImport_ = hasLazyImport_ || record.isLazy_;
+
         int moduleRequestsSize = static_cast<int>(moduleRequestsMap_.size());
-        if (moduleRequestsMap_.find(source) == moduleRequestsMap_.end()) {
-            moduleRequests_.emplace_back(source);
+        if (moduleRequestsMap_.find(record) == moduleRequestsMap_.end()) {
+            moduleRequests_.emplace_back(record);
         }
-        auto insertedRes = moduleRequestsMap_.insert(std::make_pair(source, moduleRequestsSize));
-        moduleRequestsIdxMap_.insert(std::make_pair(insertedRes.first->second, source));
+        auto insertedRes = moduleRequestsMap_.insert(std::make_pair(record, moduleRequestsSize));
         return insertedRes.first->second;
     }
 

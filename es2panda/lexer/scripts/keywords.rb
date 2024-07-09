@@ -97,6 +97,7 @@ keywords = [
 
     # keywords start with 'l'
     {
+        "lazy" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_LAZY"],
         "let" => ["TokenType::KEYW_LET", "TokenType::KEYW_LET"],
     },
 

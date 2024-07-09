@@ -59,7 +59,9 @@ void CompileModuleRecordJob::Run()
     std::unique_lock<std::mutex> lock(m_);
     cond_.wait(lock, [this] { return dependencies_ == 0; });
 
-    ModuleRecordEmitter moduleEmitter(context_->Binder()->Program()->ModuleRecord(), context_->NewLiteralIndex());
+    bool hasLazyImport = context_->Binder()->Program()->ModuleRecord()->HasLazyImport();
+    ModuleRecordEmitter moduleEmitter(context_->Binder()->Program()->ModuleRecord(), context_->NewLiteralIndex(),
+        hasLazyImport ? context_->NewLiteralIndex() : -1);
     moduleEmitter.Generate();
 
     context_->GetEmitter()->AddSourceTextModuleRecord(&moduleEmitter, context_);

@@ -188,6 +188,8 @@ public:
     static constexpr std::array<uint8_t, panda_file::File::VERSION_SIZE>
         ABC_TO_PROGRAM_MIN_SUPPORTED_BYTECODE_VERSION {12, 0, 4, 0};
     static const int32_t SENDABLE_FUNCTION_MIN_SUPPORTED_API_VERSION = 12;
+    static const int32_t LAZY_IMPORT_MIN_SUPPORTED_API_VERSION = 12;
+    static const int32_t SENDABLE_LAZY_LOADING_MIN_SUPPORTED_API_VERSION = 12;
 private:
     static bool SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
                                           const lexer::LineIndex &lineIndex);

@@ -989,20 +989,20 @@ class BcVersionTest(Test):
         self.cmd = cmd
         self.api_version = api_version
         self.bc_version_expect = {
-            8: "12.0.5.0",
+            8: "12.0.6.0",
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
-            12: "12.0.5.0",
-            13: "12.0.5.0"
+            12: "12.0.6.0",
+            13: "12.0.6.0"
         }
         self.es2abc_script_expect = {
             8: "0.0.0.2",
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
-            12: "12.0.5.0",
-            13: "12.0.5.0"
+            12: "12.0.6.0",
+            13: "12.0.6.0"
         }
 
     def run(self):
@@ -1427,6 +1427,8 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
+    runner.add_directory("parser/js/language/import/syntax", "js", ["--parse-only", "--module"])
+    runner.add_directory("parser/js/language/import", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
     runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
     runner.add_directory("parser/unicode", "js", ["--parse-only"])
     runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])

@@ -486,6 +486,10 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
 {
     std::lock_guard<std::mutex> lock(m_);
 
+    if (module->NeedEmitPhaseRecord()) {
+        AddModuleRequestPhaseRecord(module, context);
+    }
+
     auto moduleLiteral = std::string(context->Binder()->Program()->RecordName()) + "_" +
          std::to_string(module->Index());
     if (context->IsMergeAbc()) {
@@ -521,6 +525,37 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
     prog_->literalarray_table.emplace(static_cast<std::string_view>(moduleLiteral), std::move(literalArrayInstance));
     constant_local_export_slots_ = module->GetConstantLocalExportSlots();
+}
+
+void Emitter::AddModuleRequestPhaseRecord(ModuleRecordEmitter *module, CompilerContext *context)
+{
+    auto phaseLiteral = std::string(context->Binder()->Program()->RecordName()) + "_" +
+         std::to_string(module->PhaseIndex());
+    if (context->IsMergeAbc()) {
+        auto phaseIdxField = panda::pandasm::Field(LANG_EXT);
+        phaseIdxField.name = "moduleRequestPhaseIdx";
+        phaseIdxField.type = panda::pandasm::Type("u32", 0);
+        phaseIdxField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
+            static_cast<std::string_view>(phaseLiteral)));
+        rec_->field_list.emplace_back(std::move(phaseIdxField));
+    } else {
+        auto moduleRequestPhaseRecord = panda::pandasm::Record("_ModuleRequestPhaseRecord", LANG_EXT);
+        moduleRequestPhaseRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+
+        auto phaseIdxField = panda::pandasm::Field(LANG_EXT);
+        phaseIdxField.name = "moduleRequestPhaseIdx";
+        phaseIdxField.type = panda::pandasm::Type("u32", 0);
+        phaseIdxField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
+            static_cast<std::string_view>(phaseLiteral)));
+        moduleRequestPhaseRecord.field_list.emplace_back(std::move(phaseIdxField));
+
+        prog_->record_table.emplace(moduleRequestPhaseRecord.name, std::move(moduleRequestPhaseRecord));
+    }
+    auto &moduleRequestPhaseLiteralsBuffer = module->PhaseBuffer();
+    auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleRequestPhaseLiteralsBuffer));
+    prog_->literalarray_table.emplace(static_cast<std::string_view>(phaseLiteral), std::move(literalArrayInstance));
 }
 
 void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context)

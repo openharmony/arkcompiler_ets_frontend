@@ -132,6 +132,7 @@ enum class TokenType {
     KEYW_FUNCTION,
     KEYW_IF,
     KEYW_IMPORT,
+    KEYW_LAZY,
     KEYW_NEVER,
     KEYW_NEW,
     KEYW_NULL,
