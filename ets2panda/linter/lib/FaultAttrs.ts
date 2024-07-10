@@ -123,3 +123,4 @@ faultsAttrs[FaultID.SendableTypeExported] = new FaultAttributes(167);
 faultsAttrs[FaultID.NoTsReExportEts] = new FaultAttributes(168);
 faultsAttrs[FaultID.NoNameSpaceImportEtsToTs] = new FaultAttributes(169);
 faultsAttrs[FaultID.NoSIdeEffectImportEtsToTs] = new FaultAttributes(170);
+faultsAttrs[FaultID.SendableExplicitFieldType] = new FaultAttributes(171);

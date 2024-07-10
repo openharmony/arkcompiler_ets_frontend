@@ -113,6 +113,20 @@
             "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
         },
         {
+            "line": 52,
+            "column": 3,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)"
+        },
+        {
+            "line": 53,
+            "column": 3,
+            "problem": "SendableExplicitFieldType",
+            "suggest": "",
+            "rule": "Field in sendable class must have type annotation (arkts-sendable-explicit-field-type)"
+        },
+        {
             "line": 56,
             "column": 3,
             "problem": "SendablePropType",

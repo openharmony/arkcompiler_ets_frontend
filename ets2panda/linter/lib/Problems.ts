@@ -112,6 +112,7 @@ export enum FaultID {
   NoTsReExportEts,
   NoNameSpaceImportEtsToTs,
   NoSIdeEffectImportEtsToTs,
+  SendableExplicitFieldType,
   // this should always be last enum
   LAST_ID
 }
