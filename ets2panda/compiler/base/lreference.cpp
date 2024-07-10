@@ -66,6 +66,9 @@ LReference::LReferenceBase LReference::CreateBase(CodeGen *cg, const ir::AstNode
         case ir::AstNodeType::REST_ELEMENT: {
             return CreateBase(cg, node->AsRestElement()->Argument(), true);
         }
+        case ir::AstNodeType::TS_NON_NULL_EXPRESSION: {
+            return CreateBase(cg, node->AsTSNonNullExpression()->Expr(), isDeclaration);
+        }
         default: {
             UNREACHABLE();
         }

@@ -13,6 +13,34 @@
  * limitations under the License.
  */
 
+function joinSpread(first: double, ...rest: double[]): double[] {
+    let res = new double[rest.length + 1]
+    let i = 0
+    res[i] = first
+    i++
+    for (let it of rest) {
+        res[i] = it
+        i++
+    }
+    return res;
+}
+
+function bar(a: int, b: int, c: int) {
+    let res = joinSpread(a, b, c)
+    assert(res.length == 3)
+    assert(res[0] == a)
+    assert(res[1] == b)
+    assert(res[2] == c)
+}
+
+function first(...values: number[]): number {
+    return values[0]
+}
+
+function foo(a: int, b: int) {
+    return first(a, b)
+}
+
 function main(): void {
 
     let f: float =  1000000001.044
@@ -56,4 +84,7 @@ function main(): void {
     let d_f2 = l2 as double
     assert(l_f2 == 2147483600)
     assert(d_f2 == 2147483647)
+
+    bar(314, 27182, 2)
+    assert(foo(2, 1) == 2)
 }

@@ -53,6 +53,7 @@
     _(FUNCTION_DECLARATION, FunctionDeclaration)                                          \
     _(FUNCTION_EXPRESSION, FunctionExpression)                                            \
     _(IDENTIFIER, Identifier)                                                             \
+    _(DUMMYNODE, DummyNode)                                                               \
     _(IF_STATEMENT, IfStatement)                                                          \
     _(IMPORT_DECLARATION, ImportDeclaration)                                              \
     _(IMPORT_EXPRESSION, ImportExpression)                                                \

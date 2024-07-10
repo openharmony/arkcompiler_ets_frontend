@@ -70,6 +70,8 @@ public:
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName);
 
+    [[nodiscard]] FunctionSignature Clone(ArenaAllocator *allocator);
+
 private:
     TSTypeParameterDeclaration *typeParams_;
     ArenaVector<Expression *> params_;

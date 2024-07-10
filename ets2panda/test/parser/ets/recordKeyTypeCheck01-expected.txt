@@ -561,4 +561,4 @@
     }
   }
 }
-TypeError: Type 'Char|String' is not assignable to constraint type 'Numeric|String'. [recordKeyTypeCheck01.ets:17:19]
+TypeError: Type Char|String is not assignable to constraint type Numeric|String [recordKeyTypeCheck01.ets:17:18]

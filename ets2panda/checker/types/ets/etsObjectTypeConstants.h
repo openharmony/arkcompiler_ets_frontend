@@ -39,6 +39,7 @@ enum class ETSObjectFlags : std::uint32_t {
     DYNAMIC = 1U << 14U,
     ASYNC_FUNC_RETURN_TYPE = 1U << 15U,
     CHECKED_INVOKE_LEGITIMACY = 1U << 16U,
+    READONLY = 1U << 18U,
 
     BUILTIN_BIGINT = 1U << 22U,
     BUILTIN_STRING = 1U << 23U,

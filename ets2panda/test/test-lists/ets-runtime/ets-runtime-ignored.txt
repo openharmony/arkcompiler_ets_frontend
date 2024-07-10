@@ -55,3 +55,25 @@ type_param_in_union.ets
 # verifier false positive for 64 bit instructions on union types.
 # Issue: #16216
 union_wide_property_access.ets
+
+# Issue: #16049
+increment-on-nullish-type.ets
+
+# Issue: #17711
+annotation_tests/AnnotationDeclare01.ets
+annotation_tests/AnnotationDeclare02.ets
+annotation_tests/AnnotationForAbstractClass.ets
+annotation_tests/AnnotationForFunction01.ets
+annotation_tests/AnnotationForFunction02.ets
+annotation_tests/AnnotationNoNeedToSetProperties01.ets
+annotation_tests/AnnotationNoNeedToSetProperties02.ets
+annotation_tests/AnnotationNoNeedToSetProperties03.ets
+annotation_tests/AnnotationsDefineAndUseForClass.ets
+annotation_tests/AnnotationsFieldType01.ets
+annotation_tests/AnnotationsFieldType02.ets
+annotation_tests/AnnotationsFieldType03.ets
+annotation_tests/AnnotationsFieldType04.ets
+annotation_tests/ExportForAnnotation01.ets
+annotation_tests/ImportForAnnotation01.ets
+annotation_tests/ImportForAnnotation02.ets
+annotation_tests/Muti-AnnotationsDefineAndUseForClass.ets

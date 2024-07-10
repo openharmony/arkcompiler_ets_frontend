@@ -57,4 +57,20 @@ void FunctionSignature::TransformChildren(const NodeTransformer &cb, std::string
         }
     }
 }
+
+FunctionSignature FunctionSignature::Clone(ArenaAllocator *allocator)
+{
+    ArenaVector<Expression *> clonedParams(allocator->Adapter());
+
+    for (auto *const param : params_) {
+        clonedParams.emplace_back(param->Clone(allocator, param->Parent())->AsExpression());
+    }
+
+    auto *const typeParamClone =
+        typeParams_ != nullptr ? typeParams_->Clone(allocator, nullptr)->AsTSTypeParameterDeclaration() : nullptr;
+    auto *const returnTypeAnnotationClone =
+        returnTypeAnnotation_ != nullptr ? returnTypeAnnotation_->Clone(allocator, nullptr) : nullptr;
+
+    return {typeParamClone, std::move(clonedParams), returnTypeAnnotationClone};
+}
 }  // namespace ark::es2panda::ir

@@ -50,6 +50,7 @@ using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
 using DynamicCallNamesMap = ArenaMap<const ArenaVector<util::StringView>, uint32_t>;
+using ConstraintCheckRecord = std::tuple<const ArenaVector<Type *> *, const Substitution *, lexer::SourcePosition>;
 
 class ETSChecker final : public Checker {
 public:
@@ -57,6 +58,7 @@ public:
         // NOLINTNEXTLINE(readability-redundant-member-init)
         : Checker(),
           arrayTypes_(Allocator()->Adapter()),
+          pendingConstraintCheckRecords_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
           primitiveWrappers_(Allocator()),
           cachedComputedAbstracts_(Allocator()->Adapter()),
@@ -212,6 +214,9 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
+    ETSEnumType *CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSStringEnumType *CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
     template <size_t N>
     Type *CreateETSUnionType(Type *const (&arr)[N])  // NOLINT(modernize-avoid-c-arrays)
@@ -232,8 +237,6 @@ public:
     ETSObjectType *FunctionTypeToFunctionalInterfaceType(Signature *signature);
     ETSTypeParameter *CreateTypeParameter();
     ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
-    ETSEnumType *CreateETSEnumType(ir::TSEnumDeclaration const *enumDecl);
-    ETSStringEnumType *CreateETSStringEnumType(ir::TSEnumDeclaration const *enumDecl);
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType, size_t dim);
     Signature *CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim);
     IntType *CreateIntTypeFromType(Type *type);
@@ -271,6 +274,10 @@ public:
                                               checker::Type *rightType, Type *unboxedL, Type *unboxedR);
     std::tuple<Type *, Type *> CheckBinaryOperatorStrictEqual(ir::Expression *left, lexer::SourcePosition pos,
                                                               checker::Type *leftType, checker::Type *rightType);
+    std::optional<std::tuple<Type *, Type *>> CheckBinaryOperatorEqualError(checker::Type *const leftType,
+                                                                            checker::Type *const rightType,
+                                                                            checker::Type *tsType,
+                                                                            lexer::SourcePosition pos);
     std::tuple<Type *, Type *> CheckBinaryOperatorEqual(ir::Expression *left, ir::Expression *right,
                                                         lexer::TokenType operationType, lexer::SourcePosition pos,
                                                         checker::Type *leftType, checker::Type *rightType,
@@ -321,6 +328,8 @@ public:
     static void EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg);
     [[nodiscard]] bool EnhanceSubstitutionForType(const ArenaVector<Type *> &typeParams, Type *paramType,
                                                   Type *argumentType, Substitution *substitution);
+    [[nodiscard]] bool EnhanceSubstitutionForReadonly(const ArenaVector<Type *> &typeParams, ETSReadonlyType *paramType,
+                                                      Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForObject(const ArenaVector<Type *> &typeParams, ETSObjectType *paramType,
                                                     Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForUnion(const ArenaVector<Type *> &typeParams, ETSUnionType *paramUn,
@@ -329,12 +338,11 @@ public:
                                                    Type *argumentType, Substitution *substitution);
     [[nodiscard]] bool EnhanceSubstitutionForGenericType(const ArenaVector<Type *> &typeParams, const Type *argType,
                                                          const Type *paramType, Substitution *substitution);
-    ArenaVector<Type *> GetSourceParameters(const ETSObjectType *object, const Type *paramType,
-                                            const ArenaVector<Type *> &requiredOrder);
     [[nodiscard]] static bool HasTypeArgsOfObject(Type *argType, Type *paramType);
     [[nodiscard]] bool InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParams, const Type *typeParam,
                                                   const size_t index, Substitution *substitution, Type *objectParam);
-    ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
+    ArenaVector<Type *> CreateUnconstrainedTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
+    void AssignTypeParameterConstraints(ir::TSTypeParameterDeclaration const *typeParams);
     Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                 TypeRelationFlag flags);
     Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
@@ -357,6 +365,14 @@ public:
                                   const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
                                   std::string_view signatureKind,
                                   TypeRelationFlag resolveFlags = TypeRelationFlag::NONE);
+    Signature *FindMostSpecificSignature(const ArenaVector<Signature *> &signatures,
+                                         const ArenaMultiMap<size_t, Signature *> &bestSignaturesForParameter,
+                                         size_t paramCount);
+    void EvaluateMostSpecificSearch(Type *&mostSpecificType, Signature *&prevSig, const lexer::SourcePosition &pos,
+                                    Signature *sig, Type *sigType);
+    void SearchAmongMostSpecificTypes(Type *&mostSpecificType, Signature *&prevSig, const lexer::SourcePosition &pos,
+                                      size_t argumentsSize, size_t paramCount, size_t idx, Signature *sig,
+                                      bool lookForClassType);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
                                            const std::vector<bool> &argTypeInferenceRequired,
                                            const lexer::SourcePosition &pos, size_t argumentsSize = ULONG_MAX);
@@ -430,7 +446,26 @@ public:
     Type *GetTypeFromClassReference(varbinder::Variable *var);
     void ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *typeAliasNode,
                                                const ir::TSTypeParameterInstantiation *exactTypeParams);
+    void MakePropertiesReadonly(ETSObjectType *classType);
+    Type *HandleReadonlyType(const ir::TSTypeParameterInstantiation *typeParams);
+    void MakePropertiesNullish(ETSObjectType *classType);
+    ir::ClassProperty *CreateNullishProperty(ir::ClassProperty *prop, ir::ClassDefinition *newClassDefinition);
+    ir::ClassDefinition *CreatePartialClassDeclaration(ir::ClassDefinition *newClassDefinition,
+                                                       const ir::ClassDefinition *classDef);
+    Type *HandlePartialTypeNode(ir::TypeNode *typeParamNode);
+    void CreateConstructorForPartialType(ir::ClassDefinition *partialClassDef, checker::ETSObjectType *partialType,
+                                         varbinder::RecordTable *recordTable);
+    ir::TypeNode *GetPartialTypeBaseTypeNode(const ir::TSTypeParameterInstantiation *typeParams);
+    ir::ClassDefinition *CreateClassPrototype(util::StringView name, parser::Program *classDeclProgram);
+    varbinder::Variable *SearchNamesInMultiplePrograms(const std::set<const parser::Program *> &programs,
+                                                       const std::set<util::StringView> &classNamesToFind);
+    util::StringView GetQualifiedClassName(const parser::Program *classDefProgram, util::StringView className);
+    Type *HandleUnionForPartialType(ETSUnionType *typeToBePartial);
+    Type *CreatePartialTypeClassDef(ir::ClassDefinition *partialClassDef, ir::ClassDefinition *classDef,
+                                    const Type *typeToBePartial, varbinder::RecordTable *recordTableToUse);
+    Type *HandlePartialType(Type *typeToBePartial);
     Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *typeParams);
+    Type *GetReadonlyType(Type *type);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantTypeFromPrimitiveType(Type *type) const;
@@ -571,24 +606,6 @@ public:
 
     static Type *TryToInstantiate(Type *type, ArenaAllocator *allocator, TypeRelation *relation,
                                   GlobalTypesHolder *globalTypes);
-    // Enum
-    [[nodiscard]] ir::Identifier *CreateEnumNamesArray(ETSEnumInterface const *enumType);
-    [[nodiscard]] ir::Identifier *CreateEnumValuesArray(ETSEnumType *enumType);
-    [[nodiscard]] ir::Identifier *CreateEnumStringValuesArray(ETSEnumInterface *enumType);
-    [[nodiscard]] ir::Identifier *CreateEnumItemsArray(ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumFromIntMethod(ir::Identifier *namesArrayIdent,
-                                                              ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumGetValueMethod(ir::Identifier *valuesArrayIdent, ETSEnumType *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumToStringMethod(ir::Identifier *stringValuesArrayIdent,
-                                                               ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumGetNameMethod(ir::Identifier *namesArrayIdent,
-                                                              ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumValueOfMethod(ir::Identifier *namesArrayIdent,
-                                                              ETSEnumInterface *enumType);
-    [[nodiscard]] ETSEnumType::Method CreateEnumValuesMethod(ir::Identifier *itemsArrayIdent,
-                                                             ETSEnumInterface *enumType);
-    [[nodiscard]] ir::StringLiteral *CreateEnumStringLiteral(ETSEnumInterface *const enumType,
-                                                             const ir::TSEnumMember *const member);
 
     // Dynamic interop
     template <typename T>
@@ -631,16 +648,23 @@ public:
         return util::NodeAllocator::ForceSetParent<T>(Allocator(), std::forward<Args>(args)...);
     }
 
+    ArenaVector<ConstraintCheckRecord> &PendingConstraintCheckRecords();
+    size_t &ConstraintCheckScopesCount();
+
     ETSObjectType *GetCachedFunctionalInterface(ir::ETSFunctionType *type);
     void CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType);
-
     ir::ETSParameterExpression *AddParam(util::StringView name, ir::TypeNode *type);
+
+    [[nodiscard]] ir::ScriptFunction *FindFunction(const util::UString &name);
 
 private:
     using ClassBuilder = std::function<void(ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder =
         std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *)>;
     using MethodBuilder = std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *, Type **)>;
+
+    ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
+                                   bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     [[noreturn]] void ThrowError(ir::Identifier *ident);
@@ -692,9 +716,15 @@ private:
     ir::MethodDefinition *CreateLambdaObjectClassInvokeMethod(Signature *invokeSignature,
                                                               ir::TypeNode *retTypeAnnotation);
 
+    ir::ETSParameterExpression *AddParamWithScope(varbinder::FunctionParamScope *paramScope, util::StringView name,
+                                                  checker::Type *type);
+    std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunctionForConstructor(
+        varbinder::FunctionScope *scope);
+    ir::MethodDefinition *CreateNonStaticClassInitializer(varbinder::ClassScope *classScope,
+                                                          varbinder::RecordTable *recordTable);
+
     void ClassInitializerFromImport(ir::ETSImportDeclaration *import, ArenaVector<ir::Statement *> *statements);
     void EmitDynamicModuleClassInitCall();
-
     DynamicCallIntrinsicsMap *DynamicCallIntrinsics(bool isConstruct)
     {
         return &dynamicIntrinsics_[static_cast<size_t>(isConstruct)];
@@ -739,6 +769,8 @@ private:
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
 
     ArrayMap arrayTypes_;
+    ArenaVector<ConstraintCheckRecord> pendingConstraintCheckRecords_;
+    size_t constraintCheckScopesCount_ {0};
     GlobalArraySignatureMap globalArraySignatures_;
     PrimitiveWrappers primitiveWrappers_;
     ComputedAbstracts cachedComputedAbstracts_;

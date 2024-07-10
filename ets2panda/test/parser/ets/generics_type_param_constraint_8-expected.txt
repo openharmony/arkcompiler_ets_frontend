@@ -747,4 +747,4 @@
     }
   }
 }
-TypeError: Type 'Char' is not assignable to constraint type 'Comparable<String>'. [generics_type_param_constraint_8.ets:19:31]
+TypeError: Type Char is not assignable to constraint type Comparable<String> [generics_type_param_constraint_8.ets:19:30]

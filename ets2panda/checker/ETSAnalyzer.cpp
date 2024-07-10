@@ -306,7 +306,8 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
     ArenaVector<checker::Type *> typeArgTypes(checker->Allocator()->Adapter());
     typeArgTypes.push_back(exprType);  // NOTE: Box it if it's a primitive type
 
-    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), typeArgTypes, expr->Range().start);
+    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), std::move(typeArgTypes),
+                                      expr->Range().start);
     expr->SetTsType(ctx.Result());
 
     return expr->TsType();
@@ -949,8 +950,9 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
     if (st->TsType() == nullptr) {
-        for (auto *const node : st->Statements()) {
-            node->Check(checker);
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (std::size_t idx = 0; idx < st->Statements().size(); idx++) {
+            st->Statements()[idx]->Check(checker);
         }
 
         auto lastStmt = st->Statements().back();
@@ -977,6 +979,8 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                         isUnionTypeWithFunctionalInterface);
     // Remove static signatures if the callee is a member expression and the object is initialized
     if (expr->Callee()->IsMemberExpression() &&
+        !(expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
+          expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType()) &&
         (expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression() ||
          (expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
           expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
@@ -1063,6 +1067,12 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
         calleeType = checker->GetApparentType(expr->Callee()->Check(checker));
     }
     checker->CheckNonNullish(expr->Callee());
+    if (expr->Callee()->IsMemberExpression() && expr->Callee()->AsMemberExpression()->Object() != nullptr &&
+        expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSObjectType() &&
+        expr->Callee()->AsMemberExpression()->Object()->TsType()->AsETSObjectType()->HasObjectFlag(
+            ETSObjectFlags::READONLY)) {
+        checker->ThrowTypeError("Cannot call readonly type methods.", expr->Start());
+    }
     checker::Type *returnType;
     if (calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl()) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
@@ -1595,6 +1605,11 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
         if (auto *const asExprVar = expr->Argument()->AsTSAsExpression()->Variable(); asExprVar != nullptr) {
             checker->ValidateUnaryOperatorOperand(asExprVar);
         }
+    } else if (expr->Argument()->IsTSNonNullExpression()) {
+        if (auto *const nonNullExprVar = expr->Argument()->AsTSNonNullExpression()->Variable();
+            nonNullExprVar != nullptr) {
+            checker->ValidateUnaryOperatorOperand(nonNullExprVar);
+        }
     } else {
         ASSERT(expr->Argument()->IsMemberExpression());
         varbinder::LocalVariable *propVar = expr->argument_->AsMemberExpression()->PropVar();
@@ -1793,15 +1808,19 @@ checker::Type *ETSAnalyzer::Check(ir::BlockStatement *st) const
     ETSChecker *checker = GetETSChecker();
     checker::ScopeContext scopeCtx(checker, st->Scope());
 
-    for (size_t i = 0; i < st->Statements().size(); i++) {
-        auto el = st->Statements()[i];
-        el->Check(checker);
+    // Iterator type checking of statements is modified to index type, to allow modifying the statement list during
+    // checking without invalidating the iterator
+    //---- Don't modify this to iterator, as it may break things during checking
+    for (std::size_t idx = 0; idx < st->Statements().size(); ++idx) {
+        auto *stmt = st->Statements()[idx];
+        stmt->Check(checker);
 
         //  NOTE! Processing of trailing blocks was moved here so that smart casts could be applied correctly
-        if (auto const tb = st->trailingBlocks_.find(el); tb != st->trailingBlocks_.end()) {
+        if (auto const tb = st->trailingBlocks_.find(stmt); tb != st->trailingBlocks_.end()) {
             auto *const trailingBlock = tb->second;
             trailingBlock->Check(checker);
-            st->Statements().emplace(std::next(st->Statements().begin() + i), trailingBlock);
+            st->Statements().emplace(std::next(st->Statements().begin() + idx), trailingBlock);
+            ++idx;
         }
     }
 
@@ -2414,11 +2433,11 @@ checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
     ASSERT(enumVar != nullptr);
 
     if (enumVar->TsType() == nullptr) {
-        checker::Type *etsEnumType;
+        checker::Type *etsEnumType = nullptr;
         if (auto *const itemInit = st->Members().front()->AsTSEnumMember()->Init(); itemInit->IsNumberLiteral()) {
-            etsEnumType = checker->CreateETSEnumType(st);
+            etsEnumType = checker->CreateEnumIntClassFromEnumDeclaration(st);
         } else if (itemInit->IsStringLiteral()) {
-            etsEnumType = checker->CreateETSStringEnumType(st);
+            etsEnumType = checker->CreateEnumStringClassFromEnumDeclaration(st);
         } else {
             checker->ThrowTypeError("Invalid enumeration value type.", st->Start());
         }
@@ -2594,6 +2613,7 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
         varbinder::Variable *prop =
             baseType->AsETSObjectType()->GetProperty(expr->Right()->Name(), checker::PropertySearchFlags::SEARCH_DECL);
 
+        expr->Right()->SetVariable(prop);
         if (prop != nullptr) {
             return checker->GetTypeOfVariable(prop);
         }
@@ -2632,7 +2652,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     }
 
     if (st->TypeParameterTypes().empty()) {
-        st->SetTypeParameterTypes(checker->CreateTypeForTypeParameters(st->TypeParams()));
+        st->SetTypeParameterTypes(checker->CreateUnconstrainedTypeParameters(st->TypeParams()));
+        checker->AssignTypeParameterConstraints(st->TypeParams());
     }
 
     for (auto *const param : st->TypeParams()->Params()) {
@@ -2726,4 +2747,8 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) cons
     UNREACHABLE();
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::DummyNode *expr) const
+{
+    UNREACHABLE();
+}
 }  // namespace ark::es2panda::checker

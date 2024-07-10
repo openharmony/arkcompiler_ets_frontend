@@ -148,7 +148,7 @@ void ETSFunction::CompileAsConstructor(ETSGen *etsg, const ir::ScriptFunction *s
 
 void ETSFunction::CompileFunction(ETSGen *etsg)
 {
-    if (const auto *decl = etsg->RootNode()->AsScriptFunction(); !decl->IsDeclare()) {
+    if (const auto *decl = etsg->RootNode()->AsScriptFunction(); !decl->IsDeclare() && !decl->IsExternal()) {
         if (auto *const body = decl->Body(); body != nullptr && body->IsBlockStatement()) {
             CompileSourceBlock(etsg, body->AsBlockStatement());
         }

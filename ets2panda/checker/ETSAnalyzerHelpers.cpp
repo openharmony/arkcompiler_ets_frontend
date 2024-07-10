@@ -322,6 +322,12 @@ checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensi
         type->ClassMethodType()->CallSignatures(), expr, expr->Start(), checker::TypeRelationFlag::NO_THROW);
 
     if (signature != nullptr) {
+        if (expr->Callee()->IsMemberExpression()) {
+            auto memberExpr = expr->Callee()->AsMemberExpression();
+            auto var = type->ClassMethodType()->Variable();
+            memberExpr->Property()->AsIdentifier()->SetVariable(var);
+        }
+
         return signature;
     }
 

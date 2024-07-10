@@ -435,6 +435,21 @@ public:
         if (id->Name() == variable->Name()) {
             return {CheckDecision::CORRECT, CheckAction::CONTINUE};
         }
+
+        // For dynamic imports imported identifier name does not match variable name
+        // Example:
+        // import { A as AA } from "dynamic_js_import_tests"
+        // Variable name will be AA
+        // But imported identifier name is A
+        auto parent = ast->Parent();
+        while (parent != nullptr) {
+            if (parent->IsETSImportDeclaration() && parent->AsETSImportDeclaration()->IsPureDynamic()) {
+                return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+            }
+
+            parent = parent->Parent();
+        }
+
         ctx.AddCheckMessage("IDENTIFIER_NAME_DIFFERENCE", *id, id->Start());
         return {CheckDecision::INCORRECT, CheckAction::CONTINUE};
     }
@@ -524,15 +539,6 @@ public:
 private:
     bool CheckMoreAstExceptions(const ir::Identifier *ast) const
     {
-        // NOTE(kkonkuznetsov): skip extension functions
-        if (ast->Parent() != nullptr && ast->Parent()->IsMemberExpression()) {
-            // Only properties cause verifier warnings
-            auto property = ast->Parent()->AsMemberExpression()->Property();
-            if (property == ast) {
-                return true;
-            }
-        }
-
         // NOTE(kkonkuznetsov): skip async functions
         auto parent = ast->Parent();
         while (parent != nullptr) {
@@ -576,8 +582,8 @@ private:
             return true;
         }
 
-        // NOTE(kkonkuznetsov): skip import alias
-        if (ast->Parent()->IsTSQualifiedName()) {
+        // NOTE(mmartin): find a better solution to handle partial type resolution
+        if (ast->Name().Is(Signatures::PARTIAL_TYPE_NAME)) {
             return true;
         }
 
@@ -586,6 +592,11 @@ private:
 
     bool CheckAstExceptions(const ir::Identifier *ast) const
     {
+        // NOTE(lujiahui): skip Readonly property
+        if (ast->Parent()->IsETSTypeReferencePart() && ast->Name().Is("Readonly")) {
+            return true;
+        }
+        // E
         // NOTE(kkonkuznetsov): skip enums
         if (ast->Parent()->IsMemberExpression() &&
             (ast->Parent()->AsMemberExpression()->Object()->TsType() == nullptr ||
@@ -599,6 +610,11 @@ private:
             return true;
         }
 
+        // NOTE(kkonkuznetsov): skip anonymous class id
+        if (ast->Parent()->Parent() != nullptr && ast->Parent()->Parent()->IsETSNewClassInstanceExpression()) {
+            return true;
+        }
+
         // NOTE(kkonkuznetsov): skip package declarations
         auto parent = ast->Parent();
         while (parent != nullptr) {
@@ -607,16 +623,6 @@ private:
             }
 
             parent = parent->Parent();
-        }
-
-        // NOTE(kkonkuznetsov): skip imports
-        if (IsImportLike(ast->Parent())) {
-            return true;
-        }
-
-        // NOTE(kkonkuznetsov): skip anonymous class id
-        if (ast->Parent()->Parent() != nullptr && ast->Parent()->Parent()->IsETSNewClassInstanceExpression()) {
-            return true;
         }
 
         return false;
@@ -948,6 +954,10 @@ public:
         const auto node = scope->Node();
         auto result = std::make_tuple(CheckDecision::CORRECT, CheckAction::CONTINUE);
         if (!IsContainedIn(ast, node)) {
+            if (CheckCatchClause(ast, node)) {
+                return {CheckDecision::CORRECT, CheckAction::CONTINUE};
+            }
+
             if (CheckScopeNodeExceptions(node)) {
                 return {CheckDecision::CORRECT, CheckAction::CONTINUE};
             }
@@ -971,15 +981,31 @@ public:
 private:
     ArenaAllocator &allocator_;
 
-    bool CheckScopeNodeExceptions(const ir::AstNode *node) const
+    bool CheckCatchClause(const ir::AstNode *ast, const ir::AstNode *node) const
     {
         if (node == nullptr) {
             return false;
         }
 
-        // NOTE(kkonkuznetsov): skip catch clause
+        // Check that ast node is contained within node parent for Catch Clause:
+        // Catch Clause {
+        //      Catch Body {
+        //          AST that we need to check
+        //      }
+        //      Param (Scope Node) {
+        //      }
+        // }
         if (node->Parent() != nullptr && node->Parent()->IsCatchClause()) {
-            return true;
+            return IsContainedIn(ast, node->Parent());
+        }
+
+        return false;
+    }
+
+    bool CheckScopeNodeExceptions(const ir::AstNode *node) const
+    {
+        if (node == nullptr) {
+            return false;
         }
 
         // NOTE(kkonkuznetsov): lambdas

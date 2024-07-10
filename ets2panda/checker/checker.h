@@ -135,6 +135,11 @@ public:
         return typeStack_;
     }
 
+    [[nodiscard]] std::unordered_set<Type *> &NamedTypeStack() noexcept
+    {
+        return namedTypeStack_;
+    }
+
     [[nodiscard]] virtual bool IsETSChecker() const noexcept
     {
         return false;
@@ -184,7 +189,9 @@ public:
 
     friend class ScopeContext;
     friend class TypeStackElement;
+    friend class NamedTypeStackElement;
     friend class SavedCheckerContext;
+    friend class NamedTypeStackElement;
 
     varbinder::VarBinder *VarBinder() const;
 
@@ -210,6 +217,26 @@ private:
     RelationHolder supertypeResults_ {{}, RelationType::SUPERTYPE};
 
     std::unordered_set<const void *> typeStack_;
+    std::unordered_set<Type *> namedTypeStack_;
+};
+
+class NamedTypeStackElement {
+public:
+    explicit NamedTypeStackElement(Checker *checker, Type *element) : checker_(checker), element_(element)
+    {
+        checker_->namedTypeStack_.insert(element);
+    }
+
+    ~NamedTypeStackElement()
+    {
+        checker_->namedTypeStack_.erase(element_);
+    }
+    NO_COPY_SEMANTIC(NamedTypeStackElement);
+    NO_MOVE_SEMANTIC(NamedTypeStackElement);
+
+private:
+    Checker *checker_;
+    Type *element_;
 };
 
 class TypeStackElement {

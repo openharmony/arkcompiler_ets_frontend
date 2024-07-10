@@ -2437,4 +2437,8 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) const
     return nullptr;
 }
 
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DummyNode *node) const
+{
+    UNREACHABLE();
+}
 }  // namespace ark::es2panda::checker

@@ -50,7 +50,7 @@ namespace ark::es2panda::compiler {
 static constexpr auto TYPE_FLAG_BYTECODE_REF =
     checker::TypeFlag::ETS_ARRAY | checker::TypeFlag::ETS_OBJECT | checker::TypeFlag::FUNCTION |
     checker::TypeFlag::ETS_UNION | checker::TypeFlag::ETS_TYPE_PARAMETER | checker::TypeFlag::ETS_NONNULLISH |
-    checker::TypeFlag::ETS_NULL | checker::TypeFlag::ETS_UNDEFINED;
+    checker::TypeFlag::ETS_NULL | checker::TypeFlag::ETS_UNDEFINED | checker::TypeFlag::ETS_READONLY;
 
 ETSGen::ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, public_lib::Context *context,
                std::tuple<varbinder::FunctionScope *, ProgramElement *, AstCompiler *> toCompile) noexcept

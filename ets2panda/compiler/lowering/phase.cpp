@@ -16,6 +16,7 @@
 #include "phase.h"
 #include "checker/checker.h"
 #include "compiler/core/ASTVerifier.h"
+#include "ets/ambientLowering.h"
 #include "ets/defaultParameterLowering.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
@@ -33,12 +34,14 @@
 #include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/objectLiteralLowering.h"
 #include "compiler/lowering/ets/optionalLowering.h"
+#include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/stringComparison.h"
 #include "compiler/lowering/ets/structLowering.h"
 #include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
+#include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "public/es2panda_lib.h"
@@ -54,8 +57,10 @@ std::vector<Phase *> GetTrivialPhaseList()
     };
 }
 
+static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
+static EnumLoweringPhase g_enumLoweringPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
 static BoxingForLocals g_boxingForLocals;
@@ -74,6 +79,7 @@ static DefaultParameterLowering g_defaultParameterLowering;
 static TopLevelStatements g_topLevelStatements;
 static LocalClassConstructionPhase g_localClassLowering;
 static StringComparisonLowering g_stringComparisonLowering;
+static PartialExportClassGen g_partialExportClassGen;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
 static PluginPhase g_pluginsAfterLowerings {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
@@ -97,12 +103,14 @@ std::vector<Phase *> GetETSPhaseList()
         &g_pluginsAfterParse,
         &g_topLevelStatements,
         &g_defaultParameterLowering,
+        &g_ambientLowering,
         &g_initScopesPhaseEts,
         &g_optionalLowering,
         &g_promiseVoidInferencePhase,
         &g_structLowering,
         &g_expressionLambdaConstructionPhase,
         &g_interfacePropDeclPhase,
+        &g_enumLoweringPhase,
         &g_checkerPhase,
         &g_pluginsAfterCheck,
         &g_bigintLowering,
@@ -118,6 +126,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_localClassLowering,
         &g_objectLiteralLowering,
         &g_stringComparisonLowering,
+        &g_partialExportClassGen,
         &g_pluginsAfterLowerings,
     };
     // clang-format on

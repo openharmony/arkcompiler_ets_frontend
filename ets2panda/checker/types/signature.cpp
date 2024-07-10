@@ -298,6 +298,10 @@ void Signature::Compatible(TypeRelation *relation, Signature *other)
         3. == this->Params().size(), must be < otherToCheckParametersNumber as described in 2, and
         we need to check the remaining mandatory parameters of "other" against the RestVar of "this".
     */
+    if (other->RestVar() != nullptr && this->RestVar() != nullptr) {
+        relation->IsIdenticalTo(this->RestVar()->TsType(), other->RestVar()->TsType());
+    }
+
     if (i == toCheckParametersNumber) {
         return;
     }

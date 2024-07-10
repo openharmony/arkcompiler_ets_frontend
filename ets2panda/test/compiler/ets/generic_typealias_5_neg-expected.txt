@@ -983,4 +983,4 @@
     }
   }
 }
-TypeError: Type 'B' is not assignable to constraint type 'Comparable<B>'. [generic_typealias_5_neg.ets:22:14]
+TypeError: Type B is not assignable to constraint type Comparable<B> [generic_typealias_5_neg.ets:22:13]

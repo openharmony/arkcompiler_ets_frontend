@@ -28,6 +28,8 @@ defines:
     ref: SET_INDEX_METHOD
   - name: $_iterator
     ref: ITERATOR_METHOD
+  - name: 'ambient_indexer'
+    ref: AMBIENT_INDEXER
   - name: 'ETSGLOBAL.main:'
     ref: ETS_MAIN_WITH_MANGLE_BEGIN
   - name: 'main'
@@ -126,6 +128,10 @@ defines:
     ref: UNDEFINED
   - name: 'null'
     ref: NULL_LITERAL
+  - name: 'Readonly'
+    ref: READONLY_TYPE_NAME
+  - name: 'Partial'
+    ref: PARTIAL_TYPE_NAME
 
 packages:
   - name: 'std.core'
