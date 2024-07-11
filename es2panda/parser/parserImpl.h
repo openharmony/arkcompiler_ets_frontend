@@ -451,6 +451,7 @@ private:
 
     ir::StringLiteral *ParseFromClause(bool requireFrom = true);
     void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
+    bool HandleTypeImportOrExportSpecifier();
     ir::Expression *ParseModuleReference();
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType);
     ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType, bool isLazy);
