@@ -1076,6 +1076,11 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
             ASSERT(paramVar);
 
             auto *const paramTypeAnnotation = param->TypeAnnotation();
+            if (paramIdent->TsType() == nullptr && paramTypeAnnotation == nullptr) {
+                ThrowTypeError({"The type of parameter '", paramIdent->Name(), "' cannot be determined"},
+                               param->Start());
+            }
+
             if (paramIdent->TsType() == nullptr) {
                 ASSERT(paramTypeAnnotation);
 
