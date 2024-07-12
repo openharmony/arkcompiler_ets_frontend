@@ -55,6 +55,7 @@
 #include "ir/module/importDeclaration.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/expressions/literals/stringLiteral.h"
+#include "mem/arena_allocator.h"
 #include "util/helpers.h"
 #include "util/ustring.h"
 #include "checker/types/type.h"
@@ -458,21 +459,24 @@ static const util::StringView &GetPackageName(varbinder::Variable *var)
     return scope->Node()->AsETSScript()->Program()->ModuleName();
 }
 
-void AddOverloadFlag(bool isStdLib, varbinder::Variable *var, varbinder::Variable *variable)
+void AddOverloadFlag(ArenaAllocator *allocator, bool isStdLib, varbinder::Variable *importedVar,
+                     varbinder::Variable *variable)
 {
     auto *const currentNode = variable->Declaration()->Node()->AsMethodDefinition();
-    auto *const method = var->Declaration()->Node()->AsMethodDefinition();
+    auto *const method = importedVar->Declaration()->Node()->AsMethodDefinition();
 
     // Necessary because stdlib and escompat handled as same package, it can be removed after fixing package handling
-    if (isStdLib && (GetPackageName(var) != GetPackageName(variable))) {
+    if (isStdLib && (GetPackageName(importedVar) != GetPackageName(variable))) {
         return;
     }
 
     if (!method->Overloads().empty() && !method->HasOverload(currentNode)) {
         method->AddOverload(currentNode);
-        currentNode->Function()->Id()->SetVariable(var);
+        currentNode->Function()->Id()->SetVariable(importedVar);
         currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
         currentNode->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+        util::UString newInternalName(currentNode->Function()->Scope()->Name(), allocator);
+        currentNode->Function()->Scope()->BindInternalName(newInternalName.View());
         return;
     }
 
@@ -481,6 +485,8 @@ void AddOverloadFlag(bool isStdLib, varbinder::Variable *var, varbinder::Variabl
         method->Function()->Id()->SetVariable(variable);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
         method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL_OVERLOAD);
+        util::UString newInternalName(method->Function()->Scope()->Name(), allocator);
+        method->Function()->Scope()->BindInternalName(newInternalName.View());
     }
 }
 
@@ -504,7 +510,7 @@ void ETSBinder::ImportAllForeignBindings(ir::AstNode *const specifier,
             if (variable != nullptr && var != variable && variable->Declaration()->IsFunctionDecl() &&
                 var->Declaration()->IsFunctionDecl()) {
                 bool isStdLib = util::Helpers::IsStdLib(Program());
-                AddOverloadFlag(isStdLib, var, variable);
+                AddOverloadFlag(Allocator(), isStdLib, var, variable);
                 continue;
             }
             if (variable != nullptr && var != variable) {
@@ -756,7 +762,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     if (variable != nullptr && var != variable) {
         if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
             bool isStdLib = util::Helpers::IsStdLib(Program());
-            AddOverloadFlag(isStdLib, var, variable);
+            AddOverloadFlag(Allocator(), isStdLib, var, variable);
             return true;
         }
         ThrowError(importPath->Start(), RedeclarationErrorMessageAssembler(var, variable, localName));
@@ -958,7 +964,8 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     std::stringstream ss;
     ASSERT(func->IsArrow() || !funcScope->Name().Empty());
-    ss << funcScope->Name() << compiler::Signatures::METHOD_SEPARATOR;
+    ss << (func->IsExternalOverload() ? funcScope->InternalName() : funcScope->Name())
+       << compiler::Signatures::METHOD_SEPARATOR;
 
     const auto *signature = func->Signature();
 
@@ -1080,7 +1087,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
     bool isStdLib = util::Helpers::IsStdLib(Program());
     if (variable != nullptr && var != variable) {
         if (variable->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-            AddOverloadFlag(isStdLib, var, variable);
+            AddOverloadFlag(Allocator(), isStdLib, var, variable);
             return true;
         }
 
@@ -1092,7 +1099,7 @@ bool ETSBinder::ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable
         return true;
     }
     if (insRes.first->second->Declaration()->IsFunctionDecl() && var->Declaration()->IsFunctionDecl()) {
-        AddOverloadFlag(isStdLib, var, insRes.first->second);
+        AddOverloadFlag(Allocator(), isStdLib, var, insRes.first->second);
         return true;
     }
 
