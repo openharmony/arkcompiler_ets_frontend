@@ -993,7 +993,7 @@ class BcVersionTest(Test):
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
-            12: "12.0.6.0",
+            12: "12.0.2.0",
             13: "12.0.6.0"
         }
         self.es2abc_script_expect = {
@@ -1001,7 +1001,7 @@ class BcVersionTest(Test):
             9: "9.0.0.0",
             10: "9.0.0.0",
             11: "11.0.2.0",
-            12: "12.0.6.0",
+            12: "12.0.2.0",
             13: "12.0.6.0"
         }
 
@@ -1427,9 +1427,12 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
-    runner.add_directory("parser/js/language/import/syntax", "js", ["--parse-only", "--module"])
-    runner.add_directory("parser/js/language/import", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
-    runner.add_directory("parser/sendable_class", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
+    runner.add_directory("parser/js/language/import/syntax", "js",
+                         ["--parse-only", "--module", "--target-api-sub-version='beta3'"])
+    runner.add_directory("parser/js/language/import", "ts",
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version='beta3'"])
+    runner.add_directory("parser/sendable_class", "ts",
+        ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version='beta3'"])
     runner.add_directory("parser/unicode", "js", ["--parse-only"])
     runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
 
@@ -1498,7 +1501,7 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
-    compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module", "--target-api-sub-version='beta3'"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/opt-try-catch-func", "js",

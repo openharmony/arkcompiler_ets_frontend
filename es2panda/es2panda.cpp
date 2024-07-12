@@ -79,8 +79,9 @@ void Compiler::CheckOptionsAndFileForAbcInput(const std::string &fname, const Co
         throw Error(ErrorType::GENERIC, "Open abc file " + fname + " failed.");
     }
     if (!abcToAsmCompiler_->CheckFileVersionIsSupported(util::Helpers::ABC_TO_PROGRAM_MIN_SUPPORTED_BYTECODE_VERSION,
-                                                        options.targetApiVersion)) {
-        throw Error(ErrorType::GENERIC, "The input abc file " + fname + "'s version is not supported.");
+                                                        options.targetApiVersion, options.targetApiSubVersion)) {
+        throw Error(ErrorType::GENERIC, "The input abc file '" + fname + "' owns a higher api version or a higher " +
+                    "sdkReleaseType compared to current compilation process.");
     }
 }
 
@@ -220,7 +221,7 @@ int Compiler::CompileFiles(CompilerOptions &options,
     if (!options.patchFixOptions.symbolTable.empty() || !options.patchFixOptions.dumpSymbolTable.empty()) {
         symbolTable = new util::SymbolTable(options.patchFixOptions.symbolTable,
             options.patchFixOptions.dumpSymbolTable);
-        if (!symbolTable->Initialize(options.targetApiVersion)) {
+        if (!symbolTable->Initialize(options.targetApiVersion, options.targetApiSubVersion)) {
             std::cerr << "Failed to initialize for Hotfix." << std::endl;
             return 1;
         }

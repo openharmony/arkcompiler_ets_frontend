@@ -119,6 +119,7 @@ struct CompilerOptions {
     bool updatePkgVersionForAbcInput {false};
     bool removeRedundantFile {false};
     bool dumpString {false};
+    std::string targetApiSubVersion;
 };
 
 enum class ErrorType {

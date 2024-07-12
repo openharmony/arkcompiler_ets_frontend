@@ -134,6 +134,7 @@ Program ParserImpl::Parse(const SourceFile &sourceFile, const CompilerOptions &o
     program_.SetRecordName(sourceFile.recordName);
     program_.SetDebug(options.isDebug);
     program_.SetTargetApiVersion(options.targetApiVersion);
+    program_.SetTargetApiSubVersion(options.targetApiSubVersion);
     program_.SetShared(sourceFile.isSharedModule);
     if (Extension() == ScriptExtension::TS) {
         program_.SetDefineSemantic(options.useDefineSemantic);

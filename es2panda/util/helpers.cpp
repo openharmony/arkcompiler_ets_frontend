@@ -814,7 +814,7 @@ bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
     return true;
 }
 
-void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex)
+void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex, bool enableSendableFunc)
 {
     auto *body = func->Body();
     if (!body || body->IsExpression()) {
@@ -839,14 +839,14 @@ void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &l
             return;
         }
 
-        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, lineIndex);
+        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, lineIndex, enableSendableFunc);
     }
 
     return;
 }
 
 bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
-                                        const lexer::LineIndex &lineIndex)
+                                        const lexer::LineIndex &lineIndex, bool enableSendableFunc)
 {
     if (strLit->Str().Is(SHOW_SOURCE)) {
         func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
@@ -862,7 +862,7 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
         if (func->IsConstructor()) {
             auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
             classDef->SetSendable();
-        } else {
+        } else if (enableSendableFunc) {
             func->AddFlag(ir::ScriptFunctionFlags::SENDABLE);
         }
         return true;
@@ -980,6 +980,12 @@ void Helpers::RemoveProgramsRedundantData(std::map<std::string, panda::es2panda:
 
         progInfoIter++;
     }
+}
+
+bool Helpers::IsDefaultApiVersion(int apiVersion, std::string subApiVersion)
+{
+    return apiVersion < DEFAULT_TARGET_API_VERSION || ((apiVersion == DEFAULT_TARGET_API_VERSION) &&
+        (subApiVersion == SUB_API_VERSION_1 || subApiVersion == SUB_API_VERSION_2));
 }
 
 }  // namespace panda::es2panda::util
