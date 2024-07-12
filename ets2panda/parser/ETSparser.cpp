@@ -884,12 +884,13 @@ void ETSParser::ThrowIfVarDeclaration(VariableParsingFlags flags)
 ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::ModifierFlags modifiers)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
-           Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+           Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
+           Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
         ParseNameSpaceSpecifier(&specifiers, true);
-    } else {
+    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         auto specs = ParseNamedSpecifiers();
 
         if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM) {
@@ -904,6 +905,8 @@ ir::Statement *ETSParser::ParseExport(lexer::SourcePosition startLoc, ir::Modifi
             result->AddModifier(modifiers);
             return result;
         }
+    } else {
+        return ParseSingleExport(modifiers);
     }
 
     // re-export directive
@@ -1030,6 +1033,26 @@ ArenaVector<ir::ETSImportDeclaration *> ETSParser::ParseImportDeclarations()
     });
 
     return statements;
+}
+
+ir::ExportNamedDeclaration *ETSParser::ParseSingleExport(ir::ModifierFlags modifiers)
+{
+    lexer::Token token = Lexer()->GetToken();
+    auto *exported = AllocNode<ir::Identifier>(token.Ident(), Allocator());
+    exported->SetReference();
+    exported->SetRange(Lexer()->GetToken().Loc());
+
+    Lexer()->NextToken();  // eat exported variable name
+
+    ArenaVector<ir::ExportSpecifier *> exports(Allocator()->Adapter());
+
+    exports.emplace_back(AllocNode<ir::ExportSpecifier>(exported, ParseNamedExport(token)));
+    auto result = AllocNode<ir::ExportNamedDeclaration>(Allocator(), static_cast<ir::StringLiteral *>(nullptr),
+                                                        std::move(exports));
+    result->AddModifier(modifiers);
+    ConsumeSemicolon(result);
+
+    return result;
 }
 
 ArenaVector<ir::ImportSpecifier *> ETSParser::ParseNamedSpecifiers()

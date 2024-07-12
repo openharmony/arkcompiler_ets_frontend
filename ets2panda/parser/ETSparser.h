@@ -248,6 +248,7 @@ private:
     std::vector<Program *> ParseSources();
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     ArenaVector<ir::ImportSpecifier *> ParseNamedSpecifiers();
+    ir::ExportNamedDeclaration *ParseSingleExport(ir::ModifierFlags modifiers);
     ArenaVector<ir::ETSImportDeclaration *> ParseImportDeclarations();
     parser::Program *ParseSource(const SourceFile &sourceFile);
     void AddExternalSource(const std::vector<Program *> &programs);
