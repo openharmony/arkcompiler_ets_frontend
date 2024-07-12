@@ -62,6 +62,12 @@ export const stringPropsSet: Set<string> = new Set();
  */
 export const structPropsSet: Set<string> = new Set();
 
+/**
+ * Add enum elements into whitelist when compiling har module to avoid obfuscating enum elements
+ * since enum elements in js file cannot be obfuscated properly.
+ */
+export const enumPropsSet: Set<string> = new Set();
+
 function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
   if (!heritageClauses) {
     return false;
