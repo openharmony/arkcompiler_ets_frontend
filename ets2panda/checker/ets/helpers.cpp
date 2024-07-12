@@ -537,37 +537,24 @@ void ETSChecker::ResolveReturnStatement(checker::Type *funcReturnType, checker::
     }
 }
 
-checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayExpression *init)
+checker::Type *ETSChecker::CheckArrayElements(ir::ArrayExpression *init)
 {
-    ArenaVector<ir::Expression *> elements = init->AsArrayExpression()->Elements();
-    checker::Type *annotationType = nullptr;
-    if (elements.empty()) {
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        annotationType = Allocator()->New<ETSArrayType>(GlobalETSObjectType());
-    } else {
-        auto type = elements[0]->Check(this);
-        auto const primType = ETSBuiltinTypeAsPrimitiveType(type);
-        for (auto element : elements) {
-            auto const eType = element->Check(this);
-            auto const primEType = ETSBuiltinTypeAsPrimitiveType(eType);
-            if (primEType != nullptr && primType != nullptr &&
-                primEType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC) &&
-                primType->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC)) {
-                type = GlobalDoubleType();
-            } else if (IsTypeIdenticalTo(type, eType)) {
-                continue;
-            } else if (type->IsETSEnumType() && eType->IsETSEnumType() &&
-                       type->AsETSEnumType()->IsSameEnumType(eType->AsETSEnumType())) {
-                continue;
-            } else {
-                // NOTE: Create union type when implemented here
-                ThrowTypeError({"Union type is not implemented yet!"}, ident->Start());
-            }
-        }
-        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
-        annotationType = Allocator()->New<ETSArrayType>(type);
+    ArenaVector<checker::Type *> elementTypes(Allocator()->Adapter());
+    for (auto e : init->AsArrayExpression()->Elements()) {
+        elementTypes.push_back(e->Check(this));
     }
-    return annotationType;
+
+    if (elementTypes.empty()) {
+        // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+        return Allocator()->New<ETSArrayType>(GlobalETSObjectType());
+    }
+    auto const isNumeric = [](checker::Type *ct) { return ct->HasTypeFlag(TypeFlag::ETS_CONVERTIBLE_TO_NUMERIC); };
+    auto const elementType = std::all_of(elementTypes.begin(), elementTypes.end(), isNumeric)
+                                 ? GlobalDoubleType()
+                                 : CreateETSUnionType(std::move(elementTypes));
+
+    // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
+    return Allocator()->New<ETSArrayType>(elementType);
 }
 
 void ETSChecker::InferAliasLambdaType(ir::TypeNode *localTypeAnnotation, ir::ArrowFunctionExpression *init)
@@ -641,7 +628,7 @@ void ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
 {
     if (typeAnnotation == nullptr) {
         if (init->IsArrayExpression()) {
-            annotationType = CheckArrayElements(ident, init->AsArrayExpression());
+            annotationType = CheckArrayElements(init->AsArrayExpression());
             bindingVar->SetTsType(annotationType);
         }
 

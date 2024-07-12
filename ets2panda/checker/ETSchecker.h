@@ -670,7 +670,7 @@ public:
 
     // Static invoke
     void CheckInvokeMethodsLegitimacy(ETSObjectType *classType);
-    checker::Type *CheckArrayElements(ir::Identifier *ident, ir::ArrayExpression *init);
+    checker::Type *CheckArrayElements(ir::ArrayExpression *init);
     void ResolveReturnStatement(checker::Type *funcReturnType, checker::Type *argumentType,
                                 ir::ScriptFunction *containingFunc, ir::ReturnStatement *st);
 
