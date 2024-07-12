@@ -1,12 +1,5 @@
 # Known failure list for test262 - debug-x64-aot-pgo
 
-#17882
-test262/data/test_es2021/intl402/Locale/constructor-options-language-invalid.js
-test262/data/test_es2021/intl402/Locale/constructor-options-region-invalid.js
-test262/data/test_es2021/intl402/Locale/constructor-options-script-invalid.js
-test262/data/test_es2021/intl402/Locale/constructor-options-canonicalized.js
-# --- end of Issue #17882
-
 #17884
 test262/data/test_es2021/language/expressions/template-literal/literal-expr-primitive.js
 # --- end of Issue #17864
