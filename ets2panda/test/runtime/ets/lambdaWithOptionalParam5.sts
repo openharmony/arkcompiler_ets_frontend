@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-function gf(x: String, fn: (x: String = "TEST") => Int): Int {
-  return fn(x)
-}
-
 function main(): void {
-   gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
+    let func = (a: int = 1): int => {
+        return a;
+    }
+
+    assert(func() == 1);
+    assert(func(2) == 2);
 }

@@ -44,6 +44,14 @@ struct LambdaClassInvokeInfo {
     checker::Substitution *substitution = nullptr;
 };
 
+struct CalleeParameterInfo {
+    ir::ArrowFunctionExpression *lambda = nullptr;
+    ArenaSet<varbinder::Variable *> const &captured;
+    varbinder::ParamScope *paramScope = nullptr;
+    checker::Substitution *substitution = nullptr;
+    size_t limit = 0;
+};
+
 static std::pair<ir::ClassDeclaration *, ir::ScriptFunction *> FindEnclosingClassAndFunction(ir::AstNode *ast)
 {
     ir::ScriptFunction *function = nullptr;
@@ -143,9 +151,7 @@ static std::pair<ir::TSTypeParameterDeclaration *, checker::Substitution *> Clon
 
 using ParamsAndVarMap =
     std::pair<ArenaVector<ir::Expression *>, ArenaMap<varbinder::Variable *, varbinder::Variable *>>;
-ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                             ArenaSet<varbinder::Variable *> const &captured,
-                                             varbinder::ParamScope *paramScope, checker::Substitution *substitution)
+ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, const CalleeParameterInfo &calleeParameterInfo)
 {
     auto allocator = ctx->allocator;
     auto checker = ctx->checker->AsETSChecker();
@@ -153,37 +159,45 @@ ParamsAndVarMap CreateLambdaCalleeParameters(public_lib::Context *ctx, ir::Arrow
     auto resParams = ArenaVector<ir::Expression *>(allocator->Adapter());
     auto varMap = ArenaMap<varbinder::Variable *, varbinder::Variable *>(allocator->Adapter());
 
-    auto paramLexScope = varbinder::LexicalScope<varbinder::ParamScope>::Enter(varBinder, paramScope);
+    auto paramLexScope =
+        varbinder::LexicalScope<varbinder::ParamScope>::Enter(varBinder, calleeParameterInfo.paramScope);
 
-    for (auto capturedVar : captured) {
-        auto *newType = capturedVar->TsType()->Substitute(checker->Relation(), substitution);
+    for (auto capturedVar : calleeParameterInfo.captured) {
+        auto *newType = capturedVar->TsType()->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto newId = util::NodeAllocator::ForceSetParent<ir::Identifier>(
             allocator, capturedVar->Name(), allocator->New<ir::OpaqueTypeNode>(newType), allocator);
         auto param = util::NodeAllocator::ForceSetParent<ir::ETSParameterExpression>(allocator, newId, nullptr);
         auto [_, var] = varBinder->AddParamDecl(param);
         (void)_;
         var->SetTsType(newType);
-        var->SetScope(paramScope);
+        var->SetScope(calleeParameterInfo.paramScope);
         param->SetVariable(var);
         param->SetTsType(newType);
         resParams.push_back(param);
         varMap[capturedVar] = var;
     }
 
-    for (auto *oldParam : lambda->Function()->Params()) {
+    size_t i = 0;
+
+    for (auto *oldParam : calleeParameterInfo.lambda->Function()->Params()) {
+        if (i > calleeParameterInfo.limit) {
+            break;
+        }
+
         auto *oldParamType = oldParam->AsETSParameterExpression()->Ident()->TypeAnnotation()->TsType();
-        auto *newParamType = oldParamType->Substitute(checker->Relation(), substitution);
+        auto *newParamType = oldParamType->Substitute(checker->Relation(), calleeParameterInfo.substitution);
         auto *newParam = oldParam->AsETSParameterExpression()->Clone(allocator, nullptr);
         newParam->Ident()->SetVariable(nullptr);  // Remove the cloned variable.
         auto [_, var] = varBinder->AddParamDecl(newParam);
         (void)_;
         var->SetTsType(newParamType);
-        var->SetScope(paramScope);
+        var->SetScope(calleeParameterInfo.paramScope);
         newParam->SetVariable(var);
         newParam->SetTsType(newParamType);
         newParam->Ident()->SetTsType(newParamType);
         resParams.push_back(newParam);
         varMap[oldParam->AsETSParameterExpression()->Variable()] = var;
+        i++;
     }
 
     return {resParams, varMap};
@@ -193,7 +207,7 @@ static void ProcessCalleeMethodBody(ir::AstNode *body, checker::ETSChecker *chec
                                     checker::Substitution *substitution,
                                     ArenaMap<varbinder::Variable *, varbinder::Variable *> const &varMap)
 {
-    if (body == nullptr) {
+    if (body == nullptr || body->Scope() == nullptr) {
         return;
     }
     body->Scope()->SetParent(paramScope);
@@ -231,7 +245,7 @@ static void ProcessCalleeMethodBody(ir::AstNode *body, checker::ETSChecker *chec
 
 static ir::MethodDefinition *SetUpCalleeMethod(public_lib::Context *ctx, LambdaInfo const *info,
                                                CalleeMethodInfo const *cmInfo, ir::ScriptFunction *func,
-                                               varbinder::Scope *scopeForMethod)
+                                               varbinder::Scope *scopeForMethod, varbinder::Variable *variable)
 {
     auto *allocator = ctx->allocator;
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
@@ -254,34 +268,63 @@ static ir::MethodDefinition *SetUpCalleeMethod(public_lib::Context *ctx, LambdaI
     calleeClass->Definition()->Body().push_back(method);
     method->SetParent(calleeClass->Definition());
 
-    auto [_, var] = varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Start(), allocator, cmInfo->calleeName, func);
-    (void)_;
-    var->AddFlag(varbinder::VariableFlags::METHOD);
-    var->SetScope(scopeForMethod);
-    func->Id()->SetVariable(var);
-    method->Id()->SetVariable(var);
-    if (info->callReceiver != nullptr) {
-        auto paramScopeCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(varBinder, paramScope);
-        varBinder->AddMandatoryParam(varbinder::TypedBinder::MANDATORY_PARAM_THIS);
-        calleeClass->Definition()->TsType()->AsETSObjectType()->AddProperty<checker::PropertyType::INSTANCE_METHOD>(
-            var->AsLocalVariable());
+    if (variable == nullptr) {
+        auto [_, var] =
+            varBinder->NewVarDecl<varbinder::FunctionDecl>(func->Start(), allocator, cmInfo->calleeName, func);
+        (void)_;
+        var->AddFlag(varbinder::VariableFlags::METHOD);
+        var->SetScope(scopeForMethod);
+        func->Id()->SetVariable(var);
+        method->Id()->SetVariable(var);
+        if (info->callReceiver != nullptr) {
+            auto paramScopeCtx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(varBinder, paramScope);
+            varBinder->AddMandatoryParam(varbinder::TypedBinder::MANDATORY_PARAM_THIS);
+            calleeClass->Definition()->TsType()->AsETSObjectType()->AddProperty<checker::PropertyType::INSTANCE_METHOD>(
+                var->AsLocalVariable());
+        } else {
+            calleeClass->Definition()->TsType()->AsETSObjectType()->AddProperty<checker::PropertyType::STATIC_METHOD>(
+                var->AsLocalVariable());
+        }
+
+        varbinder::BoundContext bctx {varBinder->GetRecordTable(), calleeClass->Definition(), true};
+        varBinder->ResolveReferencesForScopeWithContext(func, funcScope);
+
+        auto checkerCtx = checker::SavedCheckerContext(ctx->checker, checker::CheckerStatus::IN_CLASS,
+                                                       calleeClass->Definition()->TsType()->AsETSObjectType());
+        method->Check(ctx->checker->AsETSChecker());
     } else {
-        calleeClass->Definition()->TsType()->AsETSObjectType()->AddProperty<checker::PropertyType::STATIC_METHOD>(
-            var->AsLocalVariable());
+        func->Id()->SetVariable(variable);
+        method->Id()->SetVariable(variable);
+        method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     }
-
-    varbinder::BoundContext bctx {varBinder->GetRecordTable(), calleeClass->Definition(), true};
-    varBinder->ResolveReferencesForScopeWithContext(func, funcScope);
-
-    auto checkerCtx = checker::SavedCheckerContext(ctx->checker, checker::CheckerStatus::IN_CLASS,
-                                                   calleeClass->Definition()->TsType()->AsETSObjectType());
-    method->Check(ctx->checker->AsETSChecker());
 
     return method;
 }
 
+static varbinder::FunctionScope *GetAndApplyFunctionScope(public_lib::Context *ctx, LambdaInfo const *info,
+                                                          CalleeMethodInfo const *cmInfo,
+                                                          varbinder::ParamScope *paramScope, ir::ScriptFunction *func)
+{
+    auto *allocator = ctx->allocator;
+    auto *funcScope = cmInfo->body == nullptr ? allocator->New<varbinder::FunctionScope>(allocator, paramScope)
+                                              : (cmInfo->body->Scope() == nullptr
+                                                     ? allocator->New<varbinder::FunctionScope>(allocator, paramScope)
+                                                     : cmInfo->body->Scope()->AsFunctionScope());
+    funcScope->BindName(info->calleeClass->Definition()->TsType()->AsETSObjectType()->AssemblerName());
+    func->SetScope(funcScope);
+
+    if (cmInfo->body != nullptr) {
+        cmInfo->body->AsBlockStatement()->SetScope(funcScope);
+        cmInfo->body->SetParent(func);
+    }
+
+    return funcScope;
+}
+
 static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                                LambdaInfo const *info, CalleeMethodInfo const *cmInfo)
+                                                LambdaInfo const *info, CalleeMethodInfo const *cmInfo,
+                                                size_t limit = std::numeric_limits<size_t>::max(),
+                                                varbinder::Variable *variable = nullptr)
 {
     auto *allocator = ctx->allocator;
     auto *varBinder = ctx->checker->VarBinder()->AsETSBinder();
@@ -300,7 +343,9 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
     auto lexScope = varbinder::LexicalScope<varbinder::LocalScope>::Enter(varBinder, enclosingScope);
     auto paramScope = allocator->New<varbinder::FunctionParamScope>(allocator, scopeForMethod);
 
-    auto [params, vMap] = CreateLambdaCalleeParameters(ctx, lambda, *info->capturedVars, paramScope, substitution);
+    CalleeParameterInfo cpi {lambda, *info->capturedVars, paramScope, substitution, limit};
+
+    auto [params, vMap] = CreateLambdaCalleeParameters(ctx, cpi);
     auto varMap = std::move(vMap);
 
     auto *returnType =
@@ -319,11 +364,7 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
         ir::ScriptFunction::ScriptFunctionData {
             cmInfo->body, ir::FunctionSignature(newTypeParams, std::move(params), returnTypeAnnotation), funcFlags,
             modifierFlags});
-    auto *funcScope = cmInfo->body == nullptr ? allocator->New<varbinder::FunctionScope>(allocator, paramScope)
-                                              : cmInfo->body->Scope()->AsFunctionScope();
-    funcScope->BindName(info->calleeClass->Definition()->TsType()->AsETSObjectType()->AssemblerName());
-    func->SetScope(funcScope);
-
+    auto funcScope = GetAndApplyFunctionScope(ctx, info, cmInfo, paramScope, func);
     ProcessCalleeMethodBody(cmInfo->body, checker, paramScope, substitution, varMap);
 
     for (auto *param : func->Params()) {
@@ -346,11 +387,11 @@ static ir::MethodDefinition *CreateCalleeMethod(public_lib::Context *ctx, ir::Ar
         funcScope->InsertBinding(name, nv);
     }
 
-    return SetUpCalleeMethod(ctx, info, cmInfo, func, scopeForMethod);
+    return SetUpCalleeMethod(ctx, info, cmInfo, func, scopeForMethod, variable);
 }
 
-static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
-                                          LambdaInfo const *info)
+static ir::MethodDefinition *CreateCalleeDefault(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
+                                                 LambdaInfo const *info)
 {
     auto *allocator = ctx->allocator;
     auto *checker = ctx->checker->AsETSChecker();
@@ -365,6 +406,114 @@ static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFun
     cmInfo.body = body;
     cmInfo.forcedReturnType = forcedReturnType;
     auto *method = CreateCalleeMethod(ctx, lambda, info, &cmInfo);
+
+    if (lambda->Function()->IsAsyncFunc()) {
+        CalleeMethodInfo cmInfoAsync;
+        cmInfoAsync.calleeName = info->name;
+        cmInfoAsync.body = nullptr;
+        cmInfoAsync.forcedReturnType = nullptr;
+        cmInfoAsync.auxModifierFlags = ir::ModifierFlags::NATIVE;
+        cmInfoAsync.auxFunctionFlags = ir::ScriptFunctionFlags::ASYNC;
+        auto *asyncMethod = CreateCalleeMethod(ctx, lambda, info, &cmInfoAsync);
+        return asyncMethod;
+    }
+
+    return method;
+}
+
+static ArenaVector<ir::Expression *> CreateArgsForOptionalCall(public_lib::Context *ctx,
+                                                               ir::ArrowFunctionExpression *lambda,
+                                                               ir::MethodDefinition *defaultMethod)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+
+    ArenaVector<ir::Expression *> funcCallArgs(checker->Allocator()->Adapter());
+    funcCallArgs.reserve(defaultMethod->Function()->Params().size());
+
+    size_t i = 0;
+
+    for (auto *param : defaultMethod->Function()->Params()) {
+        if (!param->AsETSParameterExpression()->IsDefault()) {
+            auto *paramName =
+                param->AsETSParameterExpression()->Ident()->Clone(checker->Allocator(), nullptr)->AsIdentifier();
+            funcCallArgs.push_back(paramName);
+        } else {
+            break;
+        }
+        i++;
+    }
+
+    for (; i < lambda->Function()->Params().size(); i++) {
+        auto *param = lambda->Function()->Params()[i]->AsETSParameterExpression();
+        if (param->Initializer() == nullptr) {
+            checker->ThrowTypeError({"Expected initializer for parameter ", param->Ident()->Name(), "."},
+                                    param->Start());
+        } else {
+            funcCallArgs.push_back(param->Initializer());
+        }
+    }
+
+    return funcCallArgs;
+}
+
+static ir::BlockStatement *CreateFunctionBody(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
+                                              ir::MethodDefinition *defaultMethod)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+    ArenaVector<ir::Statement *> statements(checker->Allocator()->Adapter());
+    ir::CallExpression *callExpression = nullptr;
+    ir::Expression *id = nullptr;
+    ir::Expression *accessor = nullptr;
+    auto *const callee = checker->AllocNode<ir::Identifier>(defaultMethod->Id()->Name(), checker->Allocator());
+    callee->SetReference();
+
+    if (defaultMethod->IsStatic() && defaultMethod->Parent()->IsClassDefinition() &&
+        (!defaultMethod->Parent()->AsClassDefinition()->IsGlobal())) {
+        id = checker->AllocNode<ir::Identifier>(defaultMethod->Parent()->AsClassDefinition()->Ident()->Name(),
+                                                checker->Allocator());
+        id->AsIdentifier()->SetReference();
+        accessor = checker->AllocNode<ir::MemberExpression>(id, callee, ir::MemberExpressionKind::PROPERTY_ACCESS,
+                                                            false, false);
+        callee->SetParent(accessor);
+    }
+
+    callExpression = checker->AllocNode<ir::CallExpression>(accessor != nullptr ? accessor : callee,
+                                                            CreateArgsForOptionalCall(ctx, lambda, defaultMethod),
+                                                            nullptr, false, false);
+    callee->SetParent(callExpression);
+    callExpression->SetSignature(defaultMethod->Function()->Signature());
+
+    if ((defaultMethod->Function()->ReturnTypeAnnotation() != nullptr) ||
+        ((defaultMethod->Function()->AsScriptFunction()->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
+        statements.push_back(checker->AllocNode<ir::ReturnStatement>(callExpression));
+    } else {
+        statements.push_back(checker->AllocNode<ir::ExpressionStatement>(callExpression));
+    }
+
+    auto blockStatement = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(statements));
+    blockStatement->Statements().front()->SetParent(blockStatement);
+
+    return blockStatement;
+}
+
+static ir::MethodDefinition *CreateCallee(public_lib::Context *ctx, ir::ArrowFunctionExpression *lambda,
+                                          LambdaInfo const *info, ir::MethodDefinition *defaultMethod,
+                                          size_t limit = std::numeric_limits<size_t>::max())
+{
+    auto *allocator = ctx->allocator;
+    auto *checker = ctx->checker->AsETSChecker();
+
+    auto calleeName = lambda->Function()->IsAsyncFunc()
+                          ? (util::UString {checker::ETSChecker::GetAsyncImplName(info->name), allocator}).View()
+                          : info->name;
+    auto *forcedReturnType = lambda->Function()->IsAsyncFunc() ? checker->GlobalETSNullishObjectType() : nullptr;
+
+    CalleeMethodInfo cmInfo;
+    cmInfo.calleeName = calleeName;
+    cmInfo.body = CreateFunctionBody(ctx, lambda, defaultMethod);
+    cmInfo.forcedReturnType = forcedReturnType;
+
+    auto *method = CreateCalleeMethod(ctx, lambda, info, &cmInfo, limit, defaultMethod->Id()->Variable());
 
     if (lambda->Function()->IsAsyncFunc()) {
         CalleeMethodInfo cmInfoAsync;
@@ -574,7 +723,28 @@ static void CreateLambdaClassInvoke(public_lib::Context *ctx, LambdaInfo const *
     invokeMethod->SetParent(lciInfo->classDefinition);
 }
 
-static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker::Signature *lambdaSig,
+static std::string BuildLambdaClass(public_lib::Context *ctx, ArenaVector<checker::Signature *> &lambdaSigs,
+                                    checker::Substitution *substitution, ArenaVector<checker::Type *> &funcInterfaces)
+{
+    auto *checker = ctx->checker->AsETSChecker();
+
+    std::string stringBuilder = "final class @@I1 implements ";
+    constexpr uint8_t OFF_SET = 2;
+
+    for (size_t i = 0; i < lambdaSigs.size(); i++) {
+        funcInterfaces.push_back(checker->FunctionTypeToFunctionalInterfaceType(
+            lambdaSigs[i]->Substitute(checker->Relation(), substitution)));
+        stringBuilder += "@@T" + std::to_string(i + OFF_SET) + ", ";
+    }
+
+    stringBuilder.pop_back();
+    stringBuilder.pop_back();
+    stringBuilder += " {}";
+
+    return stringBuilder;
+}
+
+static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, ArenaVector<checker::Signature *> &lambdaSigs,
                                                ir::MethodDefinition *callee, LambdaInfo const *info)
 {
     auto *allocator = ctx->allocator;
@@ -594,10 +764,12 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     lambdaClassName.Append("$");
     lambdaClassName.Append(info->name);
 
-    auto *funcIface =
-        checker->FunctionTypeToFunctionalInterfaceType(lambdaSig->Substitute(checker->Relation(), substitution));
+    ArenaVector<checker::Type *> funcInterfaces(allocator->Adapter());
+
     auto *classDeclaration =
-        parser->CreateFormattedTopLevelStatement("final class @@I1 implements @@T2 {}", lambdaClassName, funcIface)
+        parser
+            ->CreateFormattedTopLevelStatement(BuildLambdaClass(ctx, lambdaSigs, substitution, funcInterfaces),
+                                               lambdaClassName, funcInterfaces)
             ->AsClassDeclaration();
     auto *classDefinition = classDeclaration->Definition();
 
@@ -617,13 +789,15 @@ static ir::ClassDeclaration *CreateLambdaClass(public_lib::Context *ctx, checker
     CreateLambdaClassConstructor(ctx, classDefinition, info, substitution);
 
     LambdaClassInvokeInfo lciInfo;
-    lciInfo.lambdaSignature = lambdaSig;
     lciInfo.callee = callee;
     lciInfo.classDefinition = classDefinition;
     lciInfo.substitution = substitution;
 
-    CreateLambdaClassInvoke(ctx, info, &lciInfo, "invoke0", true);
-    CreateLambdaClassInvoke(ctx, info, &lciInfo, "invoke", false);
+    for (auto it : lambdaSigs) {
+        lciInfo.lambdaSignature = it;
+        CreateLambdaClassInvoke(ctx, info, &lciInfo, "invoke0", true);
+        CreateLambdaClassInvoke(ctx, info, &lciInfo, "invoke", false);
+    }
 
     InitScopesPhaseETS::RunExternalNode(classDeclaration, varBinder);
     varBinder->ResolveReferencesForScopeWithContext(classDeclaration, varBinder->TopScope());
@@ -674,6 +848,8 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
 {
     auto *allocator = ctx->allocator;
 
+    auto firstDefaultIndex = lambda->Function()->DefaultParamIndex();
+
     LambdaInfo info;
     std::tie(info.calleeClass, info.enclosingFunction) = FindEnclosingClassAndFunction(lambda);
     info.name = CreateCalleeName(allocator);
@@ -681,11 +857,18 @@ static ir::AstNode *ConvertLambda(public_lib::Context *ctx, ir::ArrowFunctionExp
     info.capturedVars = &capturedVars;
     info.callReceiver = CheckIfNeedThis(lambda) ? allocator->New<ir::ThisExpression>() : nullptr;
 
-    auto *callee = CreateCallee(ctx, lambda, &info);
+    auto *callee = CreateCalleeDefault(ctx, lambda, &info);
+
+    if (firstDefaultIndex < lambda->Function()->Params().size()) {
+        for (size_t i = firstDefaultIndex; i < lambda->Function()->Params().size(); i++) {
+            auto overload = CreateCallee(ctx, lambda, &info, callee, firstDefaultIndex);
+            callee->AddOverload(overload);
+        }
+    }
+
     ASSERT(lambda->TsType()->IsETSFunctionType());
     auto *lambdaType = lambda->TsType()->AsETSFunctionType();
-    ASSERT(lambdaType->CallSignatures().size() == 1);
-    auto *lambdaClass = CreateLambdaClass(ctx, lambdaType->CallSignatures()[0], callee, &info);
+    auto *lambdaClass = CreateLambdaClass(ctx, lambdaType->CallSignatures(), callee, &info);
     auto *constructorCall = CreateConstructorCall(ctx, lambda, lambdaClass, &info);
     return constructorCall;
 }
@@ -839,21 +1022,25 @@ static ir::AstNode *ConvertFunctionReference(public_lib::Context *ctx, ir::Expre
     }
 
     auto *signature = GuessSignature(ctx->checker->AsETSChecker(), funcRef);
-    auto *lambdaClass = CreateLambdaClass(ctx, signature, method, &info);
+    ArenaVector<checker::Signature *> signatures(allocator->Adapter());
+    signatures.push_back(signature);
+    auto *lambdaClass = CreateLambdaClass(ctx, signatures, method, &info);
     auto *constructorCall = CreateConstructorCall(ctx, funcRef, lambdaClass, &info);
     return constructorCall;
 }
 
-static bool IsFunctionOrMethodCall(checker::ETSChecker *checker, ir::AstNode const *node)
+static bool IsFunctionOrMethodCall(ir::AstNode const *node)
 {
     ASSERT(node->IsCallExpression());
     auto const *callee = node->AsCallExpression()->Callee();
 
-    if (callee->TsType()->IsETSExtensionFuncHelperType()) {
+    if (callee->TsType() != nullptr && callee->TsType()->IsETSExtensionFuncHelperType()) {
         return true;
     }
-    if (callee->IsMemberExpression() && (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
-                                         callee->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType())) {
+
+    if (callee->IsMemberExpression() && callee->AsMemberExpression()->Object()->TsType() != nullptr &&
+        (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
+         callee->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType())) {
         return true;
     }
 
@@ -864,7 +1051,7 @@ static bool IsFunctionOrMethodCall(checker::ETSChecker *checker, ir::AstNode con
     } else if (callee->IsIdentifier()) {
         var = callee->AsIdentifier()->Variable();
     }
-    return var != nullptr && !checker->IsVariableGetterSetter(var) &&
+    return var != nullptr && !checker::ETSChecker::IsVariableGetterSetter(var) &&
            (var->Flags() & varbinder::VariableFlags::METHOD) != 0;
 }
 
@@ -875,7 +1062,7 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
     auto *varBinder = checker->VarBinder()->AsETSBinder();
 
     auto *oldCallee = call->Callee();
-    auto *ifaceType = oldCallee->TsType()->IsETSObjectType()
+    auto *ifaceType = oldCallee->TsType() != nullptr && oldCallee->TsType()->IsETSObjectType()
                           ? oldCallee->TsType()->AsETSObjectType()
                           : checker->FunctionTypeToFunctionalInterfaceType(call->Signature());
     if (ifaceType->IsETSDynamicType()) {
@@ -966,7 +1153,6 @@ static void CallPerformForExtSources(LambdaConversionPhase *phase, public_lib::C
 bool LambdaConversionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     parser::SavedFormattingFileName savedFormattingName(ctx->parser->AsETSParser(), "lambda-conversion");
-    auto *checker = ctx->checker->AsETSChecker();
 
     // For reproducibility of results when several compilation sessions are executed during
     // the same process's lifetime.
@@ -981,8 +1167,8 @@ bool LambdaConversionPhase::Perform(public_lib::Context *ctx, parser::Program *p
     program->Ast()->TransformChildrenRecursivelyPostorder(
         [ctx](ir::AstNode *node) { return BuildLambdaClassWhenNeeded(ctx, node); }, Name());
 
-    auto insertInvokeIfNeeded = [ctx, checker](ir::AstNode *node) {
-        if (node->IsCallExpression() && !IsFunctionOrMethodCall(checker, node) &&
+    auto insertInvokeIfNeeded = [ctx](ir::AstNode *node) {
+        if (node->IsCallExpression() && !IsFunctionOrMethodCall(node) &&
             !IsRedirectingConstructorCall(node->AsCallExpression())) {
             return InsertInvokeCall(ctx, node->AsCallExpression());
         }

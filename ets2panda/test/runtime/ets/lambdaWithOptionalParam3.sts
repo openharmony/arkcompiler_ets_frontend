@@ -13,10 +13,26 @@
  * limitations under the License.
  */
 
-function gf(x: String, fn: (x: String = "TEST") => Int): Int {
-  return fn(x)
+type lambdaType = (alma?: int) => void;
+
+class Klass {
+    private variable: lambdaType;
+
+    constructor(variable: lambdaType) {
+        this.variable = variable;
+    }
+
+    public doIt(): void {
+        this.variable();
+        this.variable(10);
+    }
 }
 
 function main(): void {
-   gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
+    let foo = (a?: int) => {
+        assert(a == undefined || a == 10);
+    }
+
+    let c = new Klass(foo);
+    c.doIt();
 }

@@ -107,6 +107,16 @@ void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, v
     if (TryTransformingToStaticInvoke(ident, type)) {
         return;
     }
+
+    if (type->IsETSUnionType()) {
+        for (auto it : type->AsETSUnionType()->ConstituentTypes()) {
+            if (it->IsETSFunctionType() || it->IsETSDynamicType() ||
+                (it->IsETSObjectType() && it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+                return;
+            }
+        }
+    }
+
     ThrowTypeError({"This expression is not callable."}, ident->Start());
 }
 

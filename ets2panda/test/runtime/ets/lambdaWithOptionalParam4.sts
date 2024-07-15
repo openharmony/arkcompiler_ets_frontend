@@ -13,10 +13,19 @@
  * limitations under the License.
  */
 
-function gf(x: String, fn: (x: String = "TEST") => Int): Int {
-  return fn(x)
+type lambdaType = (a?: int) => void;
+
+function a(b: lambdaType): void {
+    b();
+    b(10);
 }
 
 function main(): void {
-   gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
+    let d : lambdaType = (c?: int) => {
+        assert(c == undefined || c == 10);
+    }
+
+    d();
+    d(10);
+    a(d);
 }

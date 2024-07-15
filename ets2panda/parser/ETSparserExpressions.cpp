@@ -153,6 +153,10 @@ ir::Expression *ETSParser::ParseFunctionParameterExpression(ir::AnnotatedExpress
         auto const lexerPos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
+        if ((GetContext().Status() & ParserStatus::ALLOW_DEFAULT_VALUE) != 0) {
+            ThrowSyntaxError("Default value is allowed only for optional parameters");
+        }
+
         if (defaultUndef != nullptr) {
             ThrowSyntaxError("Not enable default value with default undefined");
         }

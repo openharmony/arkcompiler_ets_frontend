@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-function gf(x: String, fn: (x: String = "TEST") => Int): Int {
-  return fn(x)
-}
+function main() {
+    let foo = (a?: int, b : int) => {
+        console.log(a);
+    }
 
-function main(): void {
-   gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
+    foo(2,3);
 }

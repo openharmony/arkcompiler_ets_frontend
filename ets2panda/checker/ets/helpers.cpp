@@ -694,17 +694,28 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         ThrowTypeError("Cannot get the expression type", init->Start());
     }
 
+    bool isUnionFunction = false;
+
     if (typeAnnotation == nullptr && initType->IsETSFunctionType()) {
-        ASSERT(initType->AsETSFunctionType()->CallSignatures().size() == 1);
-        annotationType = FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures()[0]);
+        if (initType->AsETSFunctionType()->CallSignatures().size() == 1) {
+            annotationType =
+                FunctionTypeToFunctionalInterfaceType(initType->AsETSFunctionType()->CallSignatures().front());
+        } else {
+            ArenaVector<Type *> types(Allocator()->Adapter());
+
+            for (auto &signature : initType->AsETSFunctionType()->CallSignatures()) {
+                types.push_back(FunctionTypeToFunctionalInterfaceType(signature));
+            }
+
+            annotationType = CreateETSUnionType(std::move(types));
+            isUnionFunction = true;
+        }
         bindingVar->SetTsType(annotationType);
     }
 
     if (annotationType != nullptr) {
-        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(annotationType);
-        const Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
-        AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
-                          {"Type '", sourceType, "' cannot be assigned to type '", targetType, "'"});
+        CheckAnnotationTypeForVariableDeclaration(annotationType, isUnionFunction, init, initType);
+
         // Note(lujiahui): It should be checked if the readonly function parameter and readonly number[] parameters
         // are assigned with CONSTANT, which would not be correct. (After feature supported)
         if ((isConst || (isReadonly && isStatic)) &&
@@ -725,6 +736,36 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
                                           : bindingVar->SetTsType(GetNonConstantTypeFromPrimitiveType(initType));
 
     return FixOptionalVariableType(bindingVar, flags);
+}
+
+void ETSChecker::CheckAnnotationTypeForVariableDeclaration(checker::Type *annotationType, bool isUnionFunction,
+                                                           ir::Expression *init, checker::Type *initType)
+{
+    Type *sourceType = TryGettingFunctionTypeFromInvokeFunction(initType);
+
+    if (!isUnionFunction && annotationType->IsETSUnionType()) {
+        for (auto it : annotationType->AsETSUnionType()->ConstituentTypes()) {
+            if (it->IsETSFunctionType() ||
+                (it->IsETSObjectType() && it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+                isUnionFunction = true;
+                break;
+            }
+        }
+    }
+
+    if (isUnionFunction) {
+        // clang-format off
+        if (!AssignmentContext(Relation(), init, initType, annotationType, init->Start(), {},
+                               TypeRelationFlag::NO_THROW).IsAssignable()) {
+            ThrowTypeError({"Type '", sourceType, "' cannot be assigned to type '", annotationType, "'"},
+                           init->Start());
+        }
+        // clang-format on
+    } else {
+        AssignmentContext(Relation(), init, initType, annotationType, init->Start(),
+                          {"Type '", sourceType, "' cannot be assigned to type '",
+                           TryGettingFunctionTypeFromInvokeFunction(annotationType), "'"});
+    }
 }
 
 //==============================================================================//
@@ -2425,7 +2466,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     }
 }
 
-const Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(const Type *type) const
+Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(Type *type)
 {
     if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         auto const propInvoke = type->AsETSObjectType()->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,

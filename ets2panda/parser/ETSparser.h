@@ -86,6 +86,10 @@ public:
             nodes.emplace_back(AllocNode<ir::SequenceExpression>(std::forward<T>(arg)));
         } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<ir::Statement *>>) {
             nodes.emplace_back(AllocNode<ir::BlockExpression>(std::forward<T>(arg)));
+        } else if constexpr (std::is_same_v<std::decay_t<T>, ArenaVector<checker::Type *>>) {
+            for (auto *type : arg) {
+                nodes.emplace_back(AllocNode<ir::OpaqueTypeNode>(type));
+            }
         } else {
             static_assert(STATIC_FALSE<T>, "Format argument has invalid type.");
         }
@@ -308,6 +312,7 @@ private:
 
     ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options, lexer::SourcePosition startLoc);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
+    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromParentheses(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
     void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
                                lexer::LexerPosition savedPos);

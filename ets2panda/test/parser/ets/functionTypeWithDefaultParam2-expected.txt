@@ -1,0 +1,1 @@
+SyntaxError: Default value is allowed only for optional parameters [functionTypeWithDefaultParam2.sts:16:42]

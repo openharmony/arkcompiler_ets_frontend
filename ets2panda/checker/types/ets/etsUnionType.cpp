@@ -170,8 +170,25 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(checker->MaybePrimitiveBuiltinType(target)));
     }
 
-    return relation->Result(std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
-                                        [relation, target](auto *t) { return relation->IsAssignableTo(t, target); }));
+    bool isAssignable = false;
+
+    if (!(target->IsETSObjectType() && target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+        isAssignable = std::all_of(constituentTypes_.begin(), constituentTypes_.end(),
+                                   [relation, target](auto *t) { return relation->IsAssignableTo(t, target); });
+    } else {
+        for (auto it : constituentTypes_) {
+            if (!it->IsETSObjectType() || !it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+                isAssignable = false;
+                break;
+            }
+
+            if (relation->IsAssignableTo(it, target)) {
+                isAssignable = true;
+            }
+        }
+    }
+
+    return relation->Result(isAssignable);
 }
 
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)

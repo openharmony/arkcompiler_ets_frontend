@@ -13,10 +13,17 @@
  * limitations under the License.
  */
 
-function gf(x: String, fn: (x: String = "TEST") => Int): Int {
-  return fn(x)
+function a(b: (c?: int) => void): void {
+    b();
+    b(10);
 }
 
 function main(): void {
-   gf("abc" as String, (x: String): Int => { return x=="TEST"?0:1})
+    let d = (c?: int) => {
+        assert(c == undefined || c == 10);
+    }
+
+    d();
+    d(10);
+    a(d);
 }
