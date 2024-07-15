@@ -473,6 +473,7 @@ declare namespace collections {
      * @since 12
      */
     at(index: number): T | undefined;
+    [Symbol.iterator](): IterableIterator<T>;
     /**
      * Returns an iterable of key, value pairs for every entry in the array
      * 

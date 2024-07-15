@@ -255,7 +255,13 @@ export class TsUtils {
       return false;
     }
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
-    return this.isGlobalSymbol(symbol) && TYPED_ARRAYS.includes(name);
+    if (this.isGlobalSymbol(symbol) && TYPED_ARRAYS.includes(name)) {
+      return true;
+    }
+    const decl = TsUtils.getDeclaration(symbol);
+    return (
+      !!decl && TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(decl) && TYPED_ARRAYS.includes(symbol.getName())
+    );
   }
 
   isArray(tsType: ts.Type): boolean {
@@ -1083,6 +1089,11 @@ export class TsUtils {
     return this.isSymbolAPI(symbol) && symbol.name === ITERATOR;
   }
 
+  isSymbolIteratorExpression(expr: ts.Expression): boolean {
+    const symbol = this.trueSymbolAtLocation(expr);
+    return !!symbol && this.isSymbolIterator(symbol);
+  }
+
   static isDefaultImport(importSpec: ts.ImportSpecifier): boolean {
     return importSpec?.propertyName?.text === 'default';
   }
@@ -1685,8 +1696,7 @@ export class TsUtils {
   isValidComputedPropertyName(computedProperty: ts.ComputedPropertyName, isRecordObjectInitializer = false): boolean {
     const expr = computedProperty.expression;
     if (!isRecordObjectInitializer) {
-      const symbol = this.trueSymbolAtLocation(expr);
-      if (!!symbol && this.isSymbolIterator(symbol)) {
+      if (this.isSymbolIteratorExpression(expr)) {
         return true;
       }
     }
@@ -2050,22 +2060,25 @@ export class TsUtils {
   }
 
   private isArkTSCollectionsArrayLikeDeclaration(decl: ts.Declaration): boolean {
-    if (!ts.isClassDeclaration(decl) && !ts.isInterfaceDeclaration(decl) || !decl.name) {
+    if (!TsUtils.isArkTSCollectionsClassOrInterfaceDeclaration(decl)) {
       return false;
     }
-
     if (!this.tsTypeChecker.getTypeAtLocation(decl).getNumberIndexType()) {
       return false;
     }
+    return true;
+  }
 
+  static isArkTSCollectionsClassOrInterfaceDeclaration(decl: ts.Node): boolean {
+    if (!ts.isClassDeclaration(decl) && !ts.isInterfaceDeclaration(decl) || !decl.name) {
+      return false;
+    }
     if (!ts.isModuleBlock(decl.parent) || decl.parent.parent.name.text !== COLLECTIONS_NAMESPACE) {
       return false;
     }
-
     if (path.basename(decl.getSourceFile().fileName).toLowerCase() !== ARKTS_COLLECTIONS_D_ETS) {
       return false;
     }
-
     return true;
   }
 
