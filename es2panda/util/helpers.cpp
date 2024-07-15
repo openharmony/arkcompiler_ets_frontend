@@ -805,7 +805,9 @@ bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
     std::ifstream inputStream = Helpers::FileStream<std::ifstream>(
         panda::os::file::File::GetExtendedFilePath(file), std::ios::binary);
     if (inputStream.fail()) {
-        std::cerr << "Failed to read file to buffer: " << file << std::endl;
+        std::cerr << "Failed to read file to buffer: " << file << std::endl <<
+                     "Solutions: > Check whether the above file exists." <<
+                     "> Check whether you have the correct access permissions for the file.";
         return false;
     }
     ss << inputStream.rdbuf();
