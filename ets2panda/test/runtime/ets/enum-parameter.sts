@@ -13,9 +13,24 @@
  * limitations under the License.
  */
 
-enum Color {Red, Green, Blue}
-enum Fruit {Apple="Apple", Pearl="Pearl", Peach="Peach"}
-let c: Color = Color.Green
-assert (typeof c == "number")
-let f: Fruit = Fruit.Pearl
-assert(typeof f == "string")
+enum Color { Red, Green = 10, Blue }
+enum Commands { Open = "fopen",  Close = "fclose" }
+
+function foo(c: Color, d: Commands): Color {
+    assert (c == Color.Green);
+    assert (d == Commands.Close);
+    return c;
+}
+
+function main() {
+    let lambda = (c: Color, d: Commands) => { 
+        assert (c == Color.Green);
+        assert (d == Commands.Close);
+        return d;
+    };
+
+    let green = Color.Green;
+    let close = Commands.Close;
+    assert (foo(green, close) == Color.Green);
+    assert (lambda(green, close) == Commands.Close);
+}

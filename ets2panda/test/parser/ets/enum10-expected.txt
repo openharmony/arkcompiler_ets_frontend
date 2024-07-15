@@ -2056,7 +2056,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "valueOf",
+              "name": "getValueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -2080,7 +2080,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "valueOf",
+                  "name": "getValueOf",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -2720,7 +2720,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "getValue",
+              "name": "valueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -2744,7 +2744,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "getValue",
+                  "name": "valueOf",
                   "decorators": [],
                   "loc": {
                     "start": {

@@ -228,6 +228,11 @@ void ETSAnalyzer::CheckMethodModifiers(ir::MethodDefinition *node) const
     }
 }
 
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
+{
+    return nullptr;
+}
+
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -903,8 +908,7 @@ checker::Signature *ETSAnalyzer::ResolveSignature(ETSChecker *checker, ir::CallE
                                         isUnionTypeWithFunctionalInterface);
     // Remove static signatures if the callee is a member expression and the object is initialized
     if (expr->Callee()->IsMemberExpression() &&
-        !(expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
-          expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType()) &&
+        !expr->Callee()->AsMemberExpression()->Object()->TsType()->IsETSEnumType() &&
         (expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression() ||
          (expr->Callee()->AsMemberExpression()->Object()->IsIdentifier() &&
           expr->Callee()->AsMemberExpression()->Object()->AsIdentifier()->Variable()->HasFlag(
@@ -1223,9 +1227,10 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
         return SetAndAdjustType(checker, expr, baseType->AsETSObjectType());
     }
 
-    if (baseType->IsETSEnumType() || baseType->IsETSStringEnumType()) {
+    if (baseType->IsETSEnumType()) {
         auto [memberType, memberVar] = expr->ResolveEnumMember(checker, baseType);
         expr->SetPropVar(memberVar);
+        expr->Property()->SetTsType(memberType);
         return expr->AdjustType(checker, memberType);
     }
 
@@ -1525,6 +1530,9 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
         }
     }
 
+    if (argType != nullptr && argType->IsETSEnumType()) {
+        expr->Argument()->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
     SetTsTypeForUnaryExpression(checker, expr, operandType);
 
     if ((argType != nullptr) && argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&

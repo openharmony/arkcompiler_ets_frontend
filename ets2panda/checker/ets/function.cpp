@@ -1705,7 +1705,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // type R2 if any of the following is true:
 
     // - If R1 is a primitive type then R2 is identical to R1.
-    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_ENUM | TypeFlag::ETS_STRING_ENUM |
+    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_INT_ENUM | TypeFlag::ETS_STRING_ENUM |
                         TypeFlag::ETS_VOID)) {
         return Relation()->IsIdenticalTo(r2, r1);
     }

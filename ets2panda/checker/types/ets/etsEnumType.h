@@ -34,18 +34,18 @@ struct ETSEnumValueType {
     using ValueType = T;
 };
 
-class ETSEnumInterface : public Type {
+class ETSEnumType : public Type {
 public:
     using UType = std::int32_t;
 
-    explicit ETSEnumInterface(const ir::TSEnumDeclaration *enumDecl, UType ordinal, const ir::TSEnumMember *member,
-                              TypeFlag typeFlag);
+    explicit ETSEnumType(const ir::TSEnumDeclaration *enumDecl, UType ordinal, const ir::TSEnumMember *member,
+                         TypeFlag typeFlag);
 
-    NO_COPY_SEMANTIC(ETSEnumInterface);
-    NO_MOVE_SEMANTIC(ETSEnumInterface);
+    NO_COPY_SEMANTIC(ETSEnumType);
+    NO_MOVE_SEMANTIC(ETSEnumType);
 
-    ETSEnumInterface() = delete;
-    ~ETSEnumInterface() override = default;
+    ETSEnumType() = delete;
+    ~ETSEnumType() override = default;
 
     [[nodiscard]] bool AssignmentSource(TypeRelation *relation, Type *target) override;
 
@@ -72,17 +72,17 @@ public:
 
     [[nodiscard]] UType GetOrdinal() const noexcept;
 
-    [[nodiscard]] ETSEnumInterface *LookupConstant(ETSChecker *checker, const ir::Expression *expression,
-                                                   const ir::Identifier *prop) const;
+    [[nodiscard]] ETSEnumType *LookupConstant(ETSChecker *checker, const ir::Expression *expression,
+                                              const ir::Identifier *prop) const;
 
     [[nodiscard]] ETSFunctionType *LookupMethod(ETSChecker *checker, const ir::Expression *expression,
                                                 const ir::Identifier *prop) const;
 
     [[nodiscard]] bool IsLiteralType() const noexcept;
 
-    [[nodiscard]] bool IsSameEnumType(const ETSEnumInterface *const other) const noexcept;
+    [[nodiscard]] bool IsSameEnumType(const ETSEnumType *const other) const noexcept;
 
-    [[nodiscard]] bool IsSameEnumLiteralType(const ETSEnumInterface *const other) const noexcept;
+    [[nodiscard]] bool IsSameEnumLiteralType(const ETSEnumType *const other) const noexcept;
 
     [[nodiscard]] bool IsEnumInstanceExpression(const ir::Expression *expression) const noexcept;
 
@@ -91,9 +91,9 @@ public:
     [[nodiscard]] bool IsEnumTypeExpression(const ir::Expression *expression) const noexcept;
 
     static constexpr std::string_view const TO_STRING_METHOD_NAME {"toString"};
-    static constexpr std::string_view const GET_VALUE_METHOD_NAME {"getValue"};
-    static constexpr std::string_view const GET_NAME_METHOD_NAME {"getName"};
     static constexpr std::string_view const VALUE_OF_METHOD_NAME {"valueOf"};
+    static constexpr std::string_view const GET_NAME_METHOD_NAME {"getName"};
+    static constexpr std::string_view const GET_VALUE_OF_METHOD_NAME {"getValueOf"};
     static constexpr std::string_view const VALUES_METHOD_NAME {"values"};
     static constexpr std::string_view const FROM_INT_METHOD_NAME {"fromInt"};
     static constexpr std::string_view const BOXED_FROM_INT_METHOD_NAME {"boxedfromInt"};
@@ -110,10 +110,10 @@ public:
         toStringMethod_ = method;
     }
 
-    [[nodiscard]] Method GetValueMethod() const noexcept;
-    void SetGetValueMethod(Method const &method) noexcept
+    [[nodiscard]] Method ValueOfMethod() const noexcept;
+    void SetValueOfMethod(Method const &method) noexcept
     {
-        getValueMethod_ = method;
+        valueOfMethod_ = method;
     }
 
     [[nodiscard]] Method GetNameMethod() const noexcept;
@@ -122,10 +122,10 @@ public:
         getNameMethod_ = method;
     }
 
-    [[nodiscard]] Method ValueOfMethod() const noexcept;
-    void SetValueOfMethod(Method const &method) noexcept
+    [[nodiscard]] Method GetValueOfMethod() const noexcept;
+    void SetGetValueOfMethod(Method const &method) noexcept
     {
-        valueOfMethod_ = method;
+        getValueOfMethod_ = method;
     }
 
     [[nodiscard]] Method ValuesMethod() const noexcept;
@@ -154,7 +154,7 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        return {true, !GetMembers().empty()};
+        return {false, false};  // NOTE (psiket) It should be true, int value != 0 | string value !empty()
     }
 
 private:
@@ -163,9 +163,9 @@ private:
     const ir::TSEnumMember *member_;
 
     Method toStringMethod_ {};
-    Method getValueMethod_ {};
-    Method getNameMethod_ {};
     Method valueOfMethod_ {};
+    Method getNameMethod_ {};
+    Method getValueOfMethod_ {};
     Method valuesMethod_ {};
     Method fromIntMethod_ {};
     Method boxedFromIntMethod_ {};
@@ -202,25 +202,26 @@ private:
     }
 };
 
-class ETSEnumType : public ETSEnumInterface, public ETSEnumValueType<std::int32_t> {
+class ETSIntEnumType : public ETSEnumType, public ETSEnumValueType<std::int32_t> {
 public:
-    explicit ETSEnumType(const ir::TSEnumDeclaration *enumDecl, UType ordinal, const ir::TSEnumMember *member = nullptr)
-        : ETSEnumInterface(enumDecl, ordinal, member, TypeFlag::ETS_ENUM)
+    explicit ETSIntEnumType(const ir::TSEnumDeclaration *enumDecl, UType ordinal,
+                            const ir::TSEnumMember *member = nullptr)
+        : ETSEnumType(enumDecl, ordinal, member, TypeFlag::ETS_INT_ENUM)
     {
     }
 
-    NO_COPY_SEMANTIC(ETSEnumType);
-    NO_MOVE_SEMANTIC(ETSEnumType);
+    NO_COPY_SEMANTIC(ETSIntEnumType);
+    NO_MOVE_SEMANTIC(ETSIntEnumType);
 
-    ETSEnumType() = delete;
-    ~ETSEnumType() override = default;
+    ETSIntEnumType() = delete;
+    ~ETSIntEnumType() override = default;
 };
 
-class ETSStringEnumType : public ETSEnumInterface, public ETSEnumValueType<std::string> {
+class ETSStringEnumType : public ETSEnumType, public ETSEnumValueType<std::string> {
 public:
     explicit ETSStringEnumType(const ir::TSEnumDeclaration *enumDecl, UType ordinal,
                                const ir::TSEnumMember *member = nullptr)
-        : ETSEnumInterface(enumDecl, ordinal, member, TypeFlag::ETS_STRING_ENUM)
+        : ETSEnumType(enumDecl, ordinal, member, TypeFlag::ETS_STRING_ENUM)
     {
     }
 

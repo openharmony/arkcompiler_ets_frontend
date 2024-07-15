@@ -25,11 +25,11 @@ enum E1 {
 function main() {
 
   assert(E1.e1_item1.toString() == "0");
-  assert(E1.e1_item1.getValue() == 0);
+  assert(E1.e1_item1.valueOf() == 0);
   assert(E1.e1_item2.toString() == "7");
-  assert(E1.e1_item2.getValue() == 7);
+  assert(E1.e1_item2.valueOf() == 7);
   assert(E1.e1_item3.toString() == "8");
-  assert(E1.e1_item3.getValue() == 8);
+  assert(E1.e1_item3.valueOf() == 8);
 
  // cons.print("First element of 'E1': '" + E1.e1_item1.toString() + "' = " + E1.e1_item1.ordinal()  + 
  //   ", second: '" + E1.e1_item2.toString() + "' = " + E1.e1_item2.ordinal() + " and third: '" + 
@@ -37,15 +37,15 @@ function main() {
 
   try {
 
-    let test1 : E1 = E1.valueOf("e1_item1");
-    let test2 : E1 = E1.valueOf("e1_item2");
-    let test3 : E1 = E1.valueOf("e1_item3");
+    let test1 : E1 = E1.getValueOf("e1_item1");
+    let test2 : E1 = E1.getValueOf("e1_item2");
+    let test3 : E1 = E1.getValueOf("e1_item3");
 
-    assert(test1.getValue() == 0);
+    assert(test1.valueOf() == 0);
     assert(test1.getName() == "e1_item1");
-    assert(test2.getValue() == 7);
+    assert(test2.valueOf() == 7);
     assert(test2.getName() == "e1_item2");
-    assert(test3.getValue() == 8);
+    assert(test3.valueOf() == 8);
     assert(test3.getName() == "e1_item3");
 
     //cons.print("First element of 'E1': '" + test1.toString() + "' = " + test1.ordinal() +

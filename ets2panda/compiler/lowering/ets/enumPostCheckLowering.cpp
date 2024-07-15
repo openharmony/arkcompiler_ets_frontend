@@ -22,13 +22,13 @@
 
 namespace ark::es2panda::compiler {
 
-ir::CallExpression *EnumPostCheckLoweringPhase::CreateGetValueCall(checker::ETSChecker *checker,
-                                                                   ir::ClassDefinition *const classDef,
-                                                                   ir::Expression *argument)
+ir::CallExpression *EnumPostCheckLoweringPhase::CreateCall(
+    checker::ETSChecker *checker, ir::ClassDefinition *const classDef,
+    checker::ETSEnumType::Method (checker::ETSEnumType::*getMethod)() const, ir::Expression *argument)
 {
     auto *classId = checker->AllocNode<ir::Identifier>(classDef->Ident()->Name(), checker->Allocator());
     auto *methodId = checker->AllocNode<ir::Identifier>(
-        argument->TsType()->AsEnumInterface()->GetValueMethod().memberProxyType->Name(), checker->Allocator());
+        (argument->TsType()->AsETSEnumType()->*getMethod)().memberProxyType->Name(), checker->Allocator());
     methodId->SetReference();
     auto *callee = checker->AllocNode<ir::MemberExpression>(classId, methodId,
                                                             ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
@@ -37,19 +37,6 @@ ir::CallExpression *EnumPostCheckLoweringPhase::CreateGetValueCall(checker::ETSC
     callArguments.push_back(argument);
     return checker->AllocNode<ir::CallExpression>(callee, std::move(callArguments), nullptr, false);
 }
-
-namespace {
-
-bool NeedToGenerateGetValueForBinaryExpression(lexer::TokenType op)
-{
-    return op == lexer::TokenType::PUNCTUATOR_GREATER_THAN || op == lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL ||
-           op == lexer::TokenType::PUNCTUATOR_LESS_THAN || op == lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL ||
-           op == lexer::TokenType::PUNCTUATOR_EQUAL || op == lexer::TokenType::PUNCTUATOR_NOT_EQUAL ||
-           op == lexer::TokenType::PUNCTUATOR_BITWISE_AND || op == lexer::TokenType::PUNCTUATOR_BITWISE_OR ||
-           op == lexer::TokenType::PUNCTUATOR_BITWISE_XOR;
-}
-
-}  // namespace
 
 bool EnumPostCheckLoweringPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
@@ -63,39 +50,47 @@ bool EnumPostCheckLoweringPhase::Perform(public_lib::Context *ctx, parser::Progr
             Perform(ctx, extProg);
         }
     }
+    program->Ast()->TransformChildrenRecursivelyPostorder(
+        // clang-format off
+        [this, ctx](ir::AstNode *const node) -> ir::AstNode* {
+            if (node->HasAstNodeFlags(ir::AstNodeFlags::RECHECK)) {
+                if (node->IsExpression()) {
+                    node->AsExpression()->SetTsType(nullptr);  // force recheck
+                }
+                node->Check(ctx->checker->AsETSChecker());
+                node->RemoveAstNodeFlags(ir::AstNodeFlags::RECHECK);
+            }
+            if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF)) {
+                ASSERT(node->IsExpression());
+                auto expr = node->AsExpression();
+                auto parent = expr->Parent();
+                parent->AddAstNodeFlags(ir::AstNodeFlags::RECHECK);
+                ASSERT((node->AsExpression()->TsType()->IsETSEnumType()));
+                auto *enumIf = expr->TsType()->AsETSEnumType();
+                auto *callExpr = CreateCall(ctx->checker->AsETSChecker(), enumIf->GetDecl()->BoxedClass(),
+                                            &checker::ETSEnumType::ValueOfMethod, expr);
+                callExpr->SetParent(parent);
+                callExpr->Check(ctx->checker->AsETSChecker());
+                node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+                return callExpr;
+            }
+            if (node->HasAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME)) {
+                ASSERT(node->IsMemberExpression());
+                auto memberExpr = node->AsMemberExpression();
 
-    program->Ast()->IterateRecursively([this, ctx](ir::AstNode *ast) -> void {
-        if (ast->IsBinaryExpression()) {
-            auto *binaryExpr = ast->AsBinaryExpression();
-            if (!NeedToGenerateGetValueForBinaryExpression(binaryExpr->OperatorType())) {
-                return;
-            }
+                auto *enumIf = memberExpr->Object()->TsType()->AsETSEnumType();
+                auto *callExpr = CreateCall(ctx->checker->AsETSChecker(), enumIf->GetDecl()->BoxedClass(),
+                                            &checker::ETSEnumType::GetNameMethod, memberExpr->Property());
 
-            auto *left = binaryExpr->Left();
-            auto *right = binaryExpr->Right();
-            auto *leftType = left->TsType();
-            auto *rightType = right->TsType();
-
-            if (leftType != nullptr && (leftType->IsETSEnumType() || leftType->IsETSStringEnumType())) {
-                auto *enumIf = leftType->AsEnumInterface();
-                auto *callExpr =
-                    CreateGetValueCall(ctx->checker->AsETSChecker(), enumIf->GetDecl()->BoxedClass(), left);
-                callExpr->SetParent(binaryExpr);
-                binaryExpr->SetLeft(callExpr);
+                callExpr->SetParent(node->Parent());
+                callExpr->Check(ctx->checker->AsETSChecker());
+                node->RemoveAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME);
+                return callExpr;
             }
-            if (rightType != nullptr && (rightType->IsETSEnumType() || rightType->IsETSStringEnumType())) {
-                auto *enumIf = rightType->AsEnumInterface();
-                auto *callExpr =
-                    CreateGetValueCall(ctx->checker->AsETSChecker(), enumIf->GetDecl()->BoxedClass(), right);
-                callExpr->SetParent(binaryExpr);
-                binaryExpr->SetRight(callExpr);
-            }
-            if (leftType != nullptr || rightType != nullptr) {
-                binaryExpr->SetTsType(nullptr);  // force recheck
-                binaryExpr->Check(ctx->checker->AsETSChecker());
-            }
-        }
-    });
+            return node;
+        },
+        // clang-format on
+        Name());
     return true;
 }
 

@@ -343,10 +343,10 @@ void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclarat
     CreateEnumGetNameMethod(enumDecl, enumClass, identClone);
 
     identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumValueOfMethod(enumDecl, enumClass, identClone);
+    CreateEnumGetValueOfMethod(enumDecl, enumClass, identClone);
 
     identClone = valuesArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumGetValueMethod(enumDecl, enumClass, identClone);
+    CreateEnumValueOfMethod(enumDecl, enumClass, identClone);
 
     identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
     CreateEnumToStringMethod(enumDecl, enumClass, identClone);
@@ -355,14 +355,14 @@ void EnumLoweringPhase::CreateEnumIntClassFromEnumDeclaration(ir::TSEnumDeclarat
     CreateEnumValuesMethod(enumDecl, enumClass, identClone);
 
     identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumInterface::FROM_INT_METHOD_NAME,
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::FROM_INT_METHOD_NAME,
                             enumDecl->Key()->Name());
 
     identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
     CreateUnboxingMethod(enumDecl, enumClass, identClone);
 
     identClone = boxedItemsArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumInterface::BOXED_FROM_INT_METHOD_NAME,
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
                             GetEnumClassName(checker_, enumDecl).View());
 }
 
@@ -378,7 +378,7 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
     CreateEnumGetNameMethod(enumDecl, enumClass, identClone);
 
     identClone = namesArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumValueOfMethod(enumDecl, enumClass, identClone);
+    CreateEnumGetValueOfMethod(enumDecl, enumClass, identClone);
 
     identClone = stringValuesArrayIdent->Clone(Allocator(), nullptr);
     CreateEnumToStringMethod(enumDecl, enumClass, identClone);
@@ -387,14 +387,14 @@ void EnumLoweringPhase::CreateEnumStringClassFromEnumDeclaration(ir::TSEnumDecla
     CreateEnumValuesMethod(enumDecl, enumClass, identClone);
 
     identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumInterface::FROM_INT_METHOD_NAME,
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::FROM_INT_METHOD_NAME,
                             enumDecl->Key()->Name());
 
     identClone = itemsArrayIdent->Clone(Allocator(), nullptr);
     CreateUnboxingMethod(enumDecl, enumClass, identClone);
 
     identClone = boxedItemsArrayIdent->Clone(Allocator(), nullptr);
-    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumInterface::BOXED_FROM_INT_METHOD_NAME,
+    CreateEnumFromIntMethod(enumDecl, enumClass, identClone, checker::ETSEnumType::BOXED_FROM_INT_METHOD_NAME,
                             GetEnumClassName(checker_, enumDecl).View());
 }
 
@@ -444,7 +444,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumValuesArray(const ir::TSEnumDeclara
                                                 ->Init()
                                                 ->AsNumberLiteral()
                                                 ->Number()
-                                                .GetValue<checker::ETSEnumType::ValueType>()));
+                                                .GetValue<checker::ETSIntEnumType::ValueType>()));
                         return enumValueLiteral;
                     });
     // clang-format on
@@ -466,7 +466,7 @@ ir::Identifier *EnumLoweringPhase::CreateEnumStringValuesArray(const ir::TSEnumD
                             stringValue = init->AsStringLiteral()->Str();
                         } else {
                             auto str = std::to_string(
-                                init->AsNumberLiteral()->Number().GetValue<checker::ETSEnumType::ValueType>());
+                                init->AsNumberLiteral()->Number().GetValue<checker::ETSIntEnumType::ValueType>());
                             stringValue = util::UString(str, Allocator()).View();
                         }
 
@@ -658,7 +658,7 @@ void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *co
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
 
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumInterface::TO_STRING_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::TO_STRING_METHOD_NAME, Allocator());
 
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
@@ -666,9 +666,9 @@ void EnumLoweringPhase::CreateEnumToStringMethod(const ir::TSEnumDeclaration *co
     functionIdent->SetReference();
 }
 
-void EnumLoweringPhase::CreateEnumGetValueMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                 ir::ClassDefinition *const enumClass,
-                                                 ir::Identifier *const valuesArrayIdent)
+void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                ir::ClassDefinition *const enumClass,
+                                                ir::Identifier *const valuesArrayIdent)
 {
     auto *const paramScope =
         varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
@@ -686,7 +686,7 @@ void EnumLoweringPhase::CreateEnumGetValueMethod(const ir::TSEnumDeclaration *co
     auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), intTypeAnnotation, enumDecl,
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumInterface::GET_VALUE_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::VALUE_OF_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
@@ -716,7 +716,7 @@ void EnumLoweringPhase::CreateEnumGetNameMethod(const ir::TSEnumDeclaration *con
     auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), stringTypeAnnotation, enumDecl,
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumInterface::GET_NAME_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_NAME_METHOD_NAME, Allocator());
 
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
@@ -801,9 +801,9 @@ ir::IfStatement *CreateIf(EnumLoweringPhase *const elp, const ir::TSEnumDeclarat
 
 }  // namespace
 
-void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
-                                                ir::ClassDefinition *const enumClass,
-                                                ir::Identifier *const namesArrayIdent)
+void EnumLoweringPhase::CreateEnumGetValueOfMethod(const ir::TSEnumDeclaration *const enumDecl,
+                                                   ir::ClassDefinition *const enumClass,
+                                                   ir::Identifier *const namesArrayIdent)
 {
     auto *const paramScope =
         varbinder_->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), enumClass->Scope());
@@ -844,7 +844,7 @@ void EnumLoweringPhase::CreateEnumValueOfMethod(const ir::TSEnumDeclaration *con
                                          ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     function->AddFlag(ir::ScriptFunctionFlags::THROWS);
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumInterface::VALUE_OF_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::GET_VALUE_OF_METHOD_NAME, Allocator());
 
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
@@ -869,7 +869,7 @@ void EnumLoweringPhase::CreateEnumValuesMethod(const ir::TSEnumDeclaration *cons
     auto *const function = MakeFunction({paramScope, std::move(params), std::move(body), enumArrayTypeAnnotation,
                                          enumDecl, ir::ModifierFlags::PUBLIC | ir::ModifierFlags::STATIC});
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumInterface::VALUES_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::VALUES_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 
@@ -909,7 +909,7 @@ void EnumLoweringPhase::CreateUnboxingMethod(ir::TSEnumDeclaration const *const 
 
     varbinder_->AddFunctionThisParam(function);
     auto *const functionIdent =
-        checker_->AllocNode<ir::Identifier>(checker::ETSEnumInterface::UNBOX_METHOD_NAME, Allocator());
+        checker_->AllocNode<ir::Identifier>(checker::ETSEnumType::UNBOX_METHOD_NAME, Allocator());
     function->SetIdent(functionIdent);
     function->Scope()->BindInternalName(functionIdent->Name());
 

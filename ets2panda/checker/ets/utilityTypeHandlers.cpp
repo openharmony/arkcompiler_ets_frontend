@@ -151,7 +151,7 @@ ir::ClassProperty *ETSChecker::CreateNullishProperty(ir::ClassProperty *const pr
     }
 
     // NOTE (mmartin): Union type check fails if it contains ETSEnum type, workaround until fix
-    if ((classProp->TsType() != nullptr) && classProp->TsType()->IsETSEnumType()) {
+    if ((classProp->TsType() != nullptr) && classProp->TsType()->IsETSIntEnumType()) {
         propTypeAnn = Allocator()->New<ir::OpaqueTypeNode>(GlobalETSObjectType());
     }
 
@@ -333,7 +333,7 @@ Type *ETSChecker::HandleUnionForPartialType(ETSUnionType *const typeToBePartial)
     ArenaVector<checker::Type *> newTypesForUnion(Allocator()->Adapter());
 
     for (auto *const typeFromUnion : unionTypeNode->ConstituentTypes()) {
-        if (typeFromUnion->IsETSEnumType()) {
+        if (typeFromUnion->IsETSIntEnumType()) {
             // NOTE (mmartin): Union type check fails if it contains ETSEnum type, workaround until fix
             return typeFromUnion;
         }

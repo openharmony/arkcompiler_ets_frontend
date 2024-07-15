@@ -131,6 +131,10 @@ void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident,
 void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
                                           Type *const type)
 {
+    if (resolved->Declaration()->Node()->IsTSEnumDeclaration() &&
+        ident->Parent()->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::ELEMENT_ACCESS)) {
+        return;
+    }
     if (ident->Parent()->AsMemberExpression()->IsComputed()) {
         if ((resolved != nullptr) && !resolved->Declaration()->PossibleTDZ()) {
             WrongContextErrorClassifyByType(ident, resolved);
@@ -139,8 +143,7 @@ void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident, varbinder
         return;
     }
 
-    if (!IsReferenceType(type) && !type->IsETSEnumType() && !type->IsETSStringEnumType() &&
-        !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!IsReferenceType(type) && !type->IsETSEnumType() && !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         ThrowError(ident);
     }
 }

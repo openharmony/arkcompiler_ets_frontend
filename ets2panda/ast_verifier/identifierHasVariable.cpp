@@ -100,8 +100,7 @@ bool IdentifierHasVariable::CheckAstExceptions(const ir::Identifier *ast) const
     // NOTE(kkonkuznetsov): skip enums
     if (ast->Parent()->IsMemberExpression() &&
         (ast->Parent()->AsMemberExpression()->Object()->TsType() == nullptr ||
-         ast->Parent()->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
-         ast->Parent()->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType())) {
+         ast->Parent()->AsMemberExpression()->Object()->TsType()->IsETSEnumType())) {
         return true;
     }
 

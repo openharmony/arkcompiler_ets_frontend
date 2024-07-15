@@ -291,9 +291,14 @@ void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVecto
     }
     types.resize(insPos);
 
-    // Promote primitives and literal types
+    // Promote primitives, enums and literal types
     for (auto &ct : types) {
-        ct = checker->MaybePromotedBuiltinType(checker->GetNonConstantTypeFromPrimitiveType(ct));
+        if (ct->IsETSEnumType()) {
+            ct->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
+            ct = ct->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
+        } else {
+            ct = checker->MaybePromotedBuiltinType(checker->GetNonConstantTypeFromPrimitiveType(ct));
+        }
     }
     // Reduce subtypes
     for (auto cmpIt = types.begin(); cmpIt != types.end(); ++cmpIt) {
@@ -370,6 +375,11 @@ checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, che
 
     if (sourceType->IsETSUnionType() || sourceType->IsETSArrayType() || sourceType->IsETSFunctionType()) {
         return sourceType;
+    }
+
+    if (sourceType->IsETSEnumType()) {
+        sourceType->AsETSEnumType()->GetDecl()->BoxedClass()->Check(checker);
+        return sourceType->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
     }
 
     auto *objectType = sourceType->IsETSObjectType() ? sourceType->AsETSObjectType() : nullptr;

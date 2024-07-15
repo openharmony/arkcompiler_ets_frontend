@@ -825,8 +825,8 @@ void ETSGen::BranchIfIsInstance(const ir::AstNode *const node, const VReg srcReg
 void ETSGen::IsInstance(const ir::AstNode *const node, const VReg srcReg, const checker::Type *target)
 {
     target = Checker()->GetApparentType(target);
-    if (target->IsETSEnumType() || target->IsETSStringEnumType()) {
-        target = target->AsEnumInterface()->GetDecl()->BoxedClass()->TsType();
+    if (target->IsETSEnumType()) {
+        target = target->AsETSEnumType()->GetDecl()->BoxedClass()->TsType();
     }
     ASSERT(target->IsETSReferenceType());
 
@@ -953,7 +953,11 @@ void ETSGen::GuardUncheckedType(const ir::AstNode *node, const checker::Type *un
 {
     if (unchecked != nullptr) {
         SetAccumulatorType(unchecked);
-        CheckedReferenceNarrowing(node, Checker()->MaybePromotedBuiltinType(target));
+        if (target->IsETSEnumType() && (unchecked->IsETSUnionType() || unchecked->IsETSObjectType())) {
+            EmitUnboxEnum(node, target);
+        } else {
+            CheckedReferenceNarrowing(node, Checker()->MaybePromotedBuiltinType(target));
+        }
     }
     SetAccumulatorType(target);
 }
@@ -1192,16 +1196,19 @@ void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signature
     }
 }
 
-void ETSGen::EmitUnboxEnum(const ir::AstNode *node)
+void ETSGen::EmitUnboxEnum(const ir::AstNode *node, const checker::Type *enumType)
 {
     RegScope rs(this);
-    ASSERT(node->Parent()->IsTSAsExpression());
-    auto *const asExprression = node->Parent()->AsTSAsExpression();
-    auto *const enumType = asExprression->TsType();
-    auto *const enumInterface = enumType->AsEnumInterface();
-    auto assemblerType = ToAssemblerType(enumInterface->GetDecl()->BoxedClass()->TsType());
+    if (enumType == nullptr) {
+        ASSERT(node->Parent()->IsTSAsExpression());
+        const auto *const asExpression = node->Parent()->AsTSAsExpression();
+        enumType = asExpression->TsType();
+    }
+    ASSERT(enumType->IsETSEnumType());
+    const auto *const enumInterface = enumType->AsETSEnumType();
+    const auto assemblerType = ToAssemblerType(enumInterface->GetDecl()->BoxedClass()->TsType());
     Sa().Emit<Checkcast>(node, assemblerType);
-    auto unboxMethod = enumInterface->UnboxMethod();
+    const auto unboxMethod = enumInterface->UnboxMethod();
     Ra().Emit<CallVirtAccShort, 0>(node, unboxMethod.globalSignature->InternalName(), dummyReg_, 0);
     SetAccumulatorType(enumType);
 }
@@ -1250,7 +1257,7 @@ void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_ENUM: {
-            EmitUnboxEnum(node);
+            EmitUnboxEnum(node, nullptr);
             break;
         }
         default:
@@ -1294,9 +1301,8 @@ checker::Type *ETSGen::EmitBoxedType(ir::BoxingUnboxingFlags boxingFlag, const i
             return Checker()->GetGlobalTypesHolder()->GlobalDoubleBuiltinType();
         }
         case ir::BoxingUnboxingFlags::BOX_TO_ENUM: {
-            auto *const enumInterface = node->AsExpression()->TsType()->AsEnumInterface();
-            auto boxedFromIntMethod = enumInterface->BoxedFromIntMethod();
-
+            const auto *const enumInterface = node->AsExpression()->TsType()->AsETSEnumType();
+            const auto boxedFromIntMethod = enumInterface->BoxedFromIntMethod();
             Ra().Emit<CallAccShort, 0>(node, boxedFromIntMethod.globalSignature->InternalName(), dummyReg_, 0);
             return enumInterface->GetDecl()->BoxedClass()->TsType();
         }
@@ -1666,7 +1672,7 @@ void ETSGen::CastToInt(const ir::AstNode *node)
         }
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::CHAR:
-        case checker::TypeFlag::ETS_ENUM:
+        case checker::TypeFlag::ETS_INT_ENUM:
         case checker::TypeFlag::ETS_STRING_ENUM:
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::SHORT: {
@@ -2600,7 +2606,7 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg objectReg)
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
             [[fallthrough]];
-        case checker::TypeFlag::ETS_ENUM:
+        case checker::TypeFlag::ETS_INT_ENUM:
         case checker::TypeFlag::INT: {
             Ra().Emit<Ldarr>(node, objectReg);
             break;
@@ -2646,7 +2652,7 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg objectReg, VReg ind
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
             [[fallthrough]];
-        case checker::TypeFlag::ETS_ENUM:
+        case checker::TypeFlag::ETS_INT_ENUM:
         case checker::TypeFlag::INT: {
             Ra().Emit<Starr>(node, objectReg, index);
             break;

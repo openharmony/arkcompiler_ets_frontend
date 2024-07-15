@@ -712,7 +712,6 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         }
         bindingVar->SetTsType(annotationType);
     }
-
     if (annotationType != nullptr) {
         CheckAnnotationTypeForVariableDeclaration(annotationType, isUnionFunction, init, initType);
 
@@ -1707,8 +1706,8 @@ util::StringView ETSChecker::TypeToName(Type *type) const
 void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> const &cases)
 {
     //  Just to avoid extra nesting level
-    auto const checkEnumType = [this](ir::Expression const *const caseTest, ETSEnumType const *const type) -> void {
-        if (caseTest->TsType()->AsETSEnumType()->IsSameEnumLiteralType(type)) {
+    auto const checkEnumType = [this](ir::Expression const *const caseTest, ETSIntEnumType const *const type) -> void {
+        if (caseTest->TsType()->AsETSIntEnumType()->IsSameEnumLiteralType(type)) {
             ThrowTypeError("Case duplicate", caseTest->Start());
         }
     };
@@ -1729,8 +1728,8 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
                 continue;
             }
 
-            if (caseTest->TsType()->IsETSEnumType()) {
-                checkEnumType(caseTest, compareCaseTest->TsType()->AsETSEnumType());
+            if (caseTest->TsType()->IsETSIntEnumType()) {
+                checkEnumType(caseTest, compareCaseTest->TsType()->AsETSIntEnumType());
                 continue;
             }
 
@@ -2083,7 +2082,7 @@ ETSObjectType *ETSChecker::GetOriginalBaseType(Type *const object)
 
 void ETSChecker::CheckValidGenericTypeParameter(Type *const argType, const lexer::SourcePosition &pos)
 {
-    if (!argType->IsETSEnumType() && !argType->IsETSStringEnumType()) {
+    if (!argType->IsETSEnumType()) {
         return;
     }
     std::stringstream ss;

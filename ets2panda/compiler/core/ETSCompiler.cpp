@@ -747,12 +747,12 @@ bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *
 {
     ETSGen *etsg = GetETSGen();
     auto *const calleeObject = expr->callee_->AsMemberExpression()->Object();
-    auto const *const enumInterface = [calleeType = calleeObject->TsType()]() -> checker::ETSEnumInterface const * {
+    auto const *const enumInterface = [calleeType = calleeObject->TsType()]() -> checker::ETSEnumType const * {
         if (calleeType == nullptr) {
             return nullptr;
         }
-        if (calleeType->IsETSEnumType()) {
-            return calleeType->AsETSEnumType();
+        if (calleeType->IsETSIntEnumType()) {
+            return calleeType->AsETSIntEnumType();
         }
         if (calleeType->IsETSStringEnumType()) {
             return calleeType->AsETSStringEnumType();
@@ -766,24 +766,24 @@ bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *
         checker::Signature *const signature = [expr, calleeObject, enumInterface, &arguments]() {
             const auto &memberProxyMethodName = expr->Signature()->InternalName();
 
-            if (memberProxyMethodName == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
+            if (memberProxyMethodName == checker::ETSIntEnumType::TO_STRING_METHOD_NAME) {
                 arguments.push_back(calleeObject);
                 return enumInterface->ToStringMethod().globalSignature;
             }
-            if (memberProxyMethodName == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
+            if (memberProxyMethodName == checker::ETSIntEnumType::VALUE_OF_METHOD_NAME) {
                 arguments.push_back(calleeObject);
-                return enumInterface->GetValueMethod().globalSignature;
+                return enumInterface->ValueOfMethod().globalSignature;
             }
-            if (memberProxyMethodName == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
+            if (memberProxyMethodName == checker::ETSIntEnumType::GET_NAME_METHOD_NAME) {
                 arguments.push_back(calleeObject);
                 return enumInterface->GetNameMethod().globalSignature;
             }
-            if (memberProxyMethodName == checker::ETSEnumType::VALUES_METHOD_NAME) {
+            if (memberProxyMethodName == checker::ETSIntEnumType::VALUES_METHOD_NAME) {
                 return enumInterface->ValuesMethod().globalSignature;
             }
-            if (memberProxyMethodName == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
+            if (memberProxyMethodName == checker::ETSIntEnumType::GET_VALUE_OF_METHOD_NAME) {
                 arguments.push_back(expr->Arguments().front());
-                return enumInterface->ValueOfMethod().globalSignature;
+                return enumInterface->GetValueOfMethod().globalSignature;
             }
             UNREACHABLE();
         }();
@@ -921,8 +921,9 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
 
     if (expr->HasBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOXING_FLAG | ir::BoxingUnboxingFlags::BOXING_FLAG)) {
         etsg->ApplyConversion(expr, expr->TsType());
+    } else {
+        etsg->SetAccumulatorType(expr->TsType());
     }
-    etsg->SetAccumulatorType(expr->TsType());
 }
 
 void ETSCompiler::Compile(const ir::ConditionalExpression *expr) const
@@ -1076,17 +1077,10 @@ bool ETSCompiler::HandleArrayTypeLengthProperty(const ir::MemberExpression *expr
 
 bool ETSCompiler::HandleEnumTypes(const ir::MemberExpression *expr, ETSGen *etsg) const
 {
-    auto *const objectType = etsg->Checker()->GetApparentType(expr->Object()->TsType());
-    if (objectType->IsETSEnumType() || objectType->IsETSStringEnumType()) {
-        auto const *const enumInterface = [objectType, expr]() -> checker::ETSEnumInterface const * {
-            if (objectType->IsETSEnumType()) {
-                return expr->TsType()->AsETSEnumType();
-            }
-            return expr->TsType()->AsETSStringEnumType();
-        }();
-
+    auto *const exprType = etsg->Checker()->GetApparentType(expr->TsType());
+    if (exprType->IsETSEnumType() && exprType->AsETSEnumType()->IsLiteralType()) {
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
-        etsg->LoadAccumulatorInt(expr, enumInterface->GetOrdinal());
+        etsg->LoadAccumulatorInt(expr, exprType->AsETSEnumType()->GetOrdinal());
         return true;
     }
     return false;
@@ -1103,6 +1097,14 @@ bool ETSCompiler::HandleStaticProperties(const ir::MemberExpression *expr, ETSGe
             checker::Signature *sig = variable->TsType()->AsETSFunctionType()->FindGetter();
             etsg->CallExact(expr, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
+            return true;
+        }
+
+        if (expr->Object()->TsType()->IsETSEnumType() && expr->Property()->TsType()->IsETSEnumType() &&
+            expr->Property()->TsType()->AsETSEnumType()->IsLiteralType()) {
+            etsg->LoadAccumulatorInt(expr, expr->Property()->TsType()->AsETSEnumType()->GetOrdinal());
+            expr->Object()->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+            etsg->ApplyBoxingConversion(expr->Object());
             return true;
         }
 
@@ -1214,7 +1216,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TypeofExpression *expr) con
         etsg->LoadAccumulatorString(expr, "object");
         return;
     }
-    if (argType->IsETSEnumType()) {
+    if (argType->IsETSIntEnumType()) {
         etsg->LoadAccumulatorString(expr, "number");
         return;
     }
@@ -1861,12 +1863,14 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
             [[fallthrough]];
-        case checker::TypeFlag::ETS_ENUM: {
+        case checker::TypeFlag::ETS_INT_ENUM: {
             auto *const acuType = etsg->GetAccumulatorType();
-            if (acuType->IsETSEnumType() || acuType->IsETSStringEnumType()) {
+            if (acuType->IsETSEnumType()) {
                 break;
             }
-            auto *const signature = expr->TsType()->AsEnumInterface()->FromIntMethod().globalSignature;
+            ASSERT(!acuType->IsETSObjectType());
+            ASSERT(acuType->IsIntType());
+            auto *const signature = expr->TsType()->AsETSEnumType()->FromIntMethod().globalSignature;
             ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
             arguments.push_back(expr->expression_);
             etsg->CallExact(expr, signature, arguments);
@@ -1882,7 +1886,6 @@ void ETSCompiler::CompileCast(const ir::TSAsExpression *expr) const
 void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
-
     auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
     if (!etsg->TryLoadConstantExpression(expr->Expr())) {
         expr->Expr()->Compile(etsg);

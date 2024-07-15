@@ -440,7 +440,6 @@ set(ES2PANDA_LIB_SRC
   checker/ets/function.cpp
   checker/ets/validateHelpers.cpp
   checker/ets/typeCheckingHelpers.cpp
-  checker/ets/enum.cpp
   checker/ets/helpers.cpp
   checker/ets/narrowingConverter.cpp
   checker/ets/narrowingWideningConverter.cpp

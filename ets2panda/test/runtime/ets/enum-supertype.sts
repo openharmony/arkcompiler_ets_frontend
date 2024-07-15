@@ -21,3 +21,10 @@ if (o instanceof Commands) {
     let d = o as Commands // And explicitly converted back by 'as' conversion
     assert(d == Commands.Close)
 }
+
+let u : Object | Commands = Commands.Close;
+if (u instanceof Commands)
+{
+     let d = o as Commands;
+     assert(d == Commands.Close)
+}

@@ -666,13 +666,14 @@ public:
     NO_COPY_SEMANTIC(ETSGen);
     NO_MOVE_SEMANTIC(ETSGen);
 
+    void EmitUnboxEnum(const ir::AstNode *node, const checker::Type *enumType);
+
 private:
     const VReg dummyReg_ = VReg::RegStart();
 
     void EmitUnboxedCall(const ir::AstNode *node, std::string_view signatureFlag, const checker::Type *targetType,
                          const checker::Type *boxedType);
 
-    void EmitUnboxEnum(const ir::AstNode *node);
     void LoadConstantObject(const ir::Expression *node, const checker::Type *type);
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);
     void AppendString(const ir::Expression *binExpr, VReg builder);
@@ -833,7 +834,7 @@ private:
                 BinaryNumberComparison<CmpWide, CondCompare>(node, lhs, ifFalse);
                 break;
             }
-            case checker::TypeFlag::ETS_ENUM:
+            case checker::TypeFlag::ETS_INT_ENUM:
             case checker::TypeFlag::ETS_STRING_ENUM:
             case checker::TypeFlag::ETS_BOOLEAN:
             case checker::TypeFlag::BYTE:
@@ -1212,8 +1213,8 @@ void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
             [[fallthrough]];
-        case checker::TypeFlag::ETS_ENUM: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumInterface::UType>(number));
+        case checker::TypeFlag::ETS_INT_ENUM: {
+            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumType::UType>(number));
             SetAccumulatorType(Checker()->GlobalIntType());
             break;
         }

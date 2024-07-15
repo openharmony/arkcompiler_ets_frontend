@@ -150,9 +150,9 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
 std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
                                                                                            checker::Type *type) const
 {
-    auto const *const enumInterface = [type]() -> checker::ETSEnumInterface const * {
-        if (type->IsETSEnumType()) {
-            return type->AsETSEnumType();
+    auto const *const enumInterface = [type]() -> checker::ETSEnumType const * {
+        if (type->IsETSIntEnumType()) {
+            return type->AsETSIntEnumType();
         }
         return type->AsETSStringEnumType();
     }();
@@ -214,7 +214,7 @@ checker::Type *MemberExpression::TraverseUnionMember(checker::ETSChecker *checke
         if (apparent->IsETSObjectType()) {
             SetObjectType(apparent->AsETSObjectType());
             addPropType(ResolveObjectMember(checker).first);
-        } else if (apparent->IsETSEnumType() || apparent->IsETSStringEnumType()) {
+        } else if (apparent->IsETSEnumType()) {
             addPropType(ResolveEnumMember(checker, apparent).first);
         } else {
             checker->ThrowTypeError({"Type ", unionType, " is illegal in union member expression."}, Start());
@@ -392,7 +392,13 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
         SetObjectType(baseType->AsETSObjectType());
         return CheckIndexAccessMethod(checker);
     }
-
+    if ((baseType->IsETSEnumType()) && (kind_ == MemberExpressionKind::ELEMENT_ACCESS)) {
+        property_->Check(checker);
+        if (property_->TsType()->IsETSEnumType()) {
+            AddAstNodeFlags(ir::AstNodeFlags::GENERATE_GET_NAME);
+            return checker->GlobalBuiltinETSStringType();
+        }
+    }
     checker->ThrowTypeError("Indexed access is not supported for such expression type.", Object()->Start());
 }
 

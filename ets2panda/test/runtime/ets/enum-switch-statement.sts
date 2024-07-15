@@ -13,9 +13,29 @@
  * limitations under the License.
  */
 
-enum Color {Red, Green, Blue}
-enum Fruit {Apple="Apple", Pearl="Pearl", Peach="Peach"}
-let c: Color = Color.Green
-assert (typeof c == "number")
-let f: Fruit = Fruit.Pearl
-assert(typeof f == "string")
+enum Color {Red = 0, Green = 1, Blue = 0}
+enum Commands { Open = "fopen", Close = "fclose", Open2 = "fopen" }
+
+let ie : Color = Color.Blue;
+switch (ie) {
+    case Color.Red:
+        assert(false);
+        break;
+    case Color.Green:
+        assert(false)
+        break;
+    case Color.Blue:
+        break;
+}
+
+let se : Commands = Commands.Close;
+switch (se) {
+    case Commands.Open:
+        assert(false)
+        break;
+    case Commands.Close:
+        break;
+    case Commands.Open2:
+        assert(false)
+        break;
+}

@@ -1011,7 +1011,7 @@
                               },
                               "property": {
                                 "type": "Identifier",
-                                "name": "getValue",
+                                "name": "valueOf",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
@@ -1020,7 +1020,7 @@
                                   },
                                   "end": {
                                     "line": 38,
-                                    "column": 34
+                                    "column": 33
                                   }
                                 }
                               },
@@ -1033,7 +1033,7 @@
                                 },
                                 "end": {
                                   "line": 38,
-                                  "column": 34
+                                  "column": 33
                                 }
                               }
                             },
@@ -1046,7 +1046,7 @@
                               },
                               "end": {
                                 "line": 38,
-                                "column": 36
+                                "column": 35
                               }
                             }
                           },
@@ -1057,7 +1057,7 @@
                             },
                             "end": {
                               "line": 38,
-                              "column": 36
+                              "column": 35
                             }
                           }
                         }
@@ -1070,7 +1070,7 @@
                         },
                         "end": {
                           "line": 38,
-                          "column": 37
+                          "column": 36
                         }
                       }
                     },
@@ -1143,7 +1143,7 @@
                               },
                               "property": {
                                 "type": "Identifier",
-                                "name": "getValue",
+                                "name": "valueOf",
                                 "decorators": [],
                                 "loc": {
                                   "start": {
@@ -1152,7 +1152,7 @@
                                   },
                                   "end": {
                                     "line": 39,
-                                    "column": 36
+                                    "column": 35
                                   }
                                 }
                               },
@@ -1165,7 +1165,7 @@
                                 },
                                 "end": {
                                   "line": 39,
-                                  "column": 36
+                                  "column": 35
                                 }
                               }
                             },
@@ -1178,7 +1178,7 @@
                               },
                               "end": {
                                 "line": 39,
-                                "column": 38
+                                "column": 37
                               }
                             }
                           },
@@ -1189,7 +1189,7 @@
                             },
                             "end": {
                               "line": 39,
-                              "column": 38
+                              "column": 37
                             }
                           }
                         }
@@ -1202,7 +1202,7 @@
                         },
                         "end": {
                           "line": 39,
-                          "column": 39
+                          "column": 38
                         }
                       }
                     }
@@ -3233,7 +3233,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "valueOf",
+              "name": "getValueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -3257,7 +3257,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "valueOf",
+                  "name": "getValueOf",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -3897,7 +3897,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "getValue",
+              "name": "valueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -3921,7 +3921,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "getValue",
+                  "name": "valueOf",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -7441,7 +7441,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "valueOf",
+              "name": "getValueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -7465,7 +7465,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "valueOf",
+                  "name": "getValueOf",
                   "decorators": [],
                   "loc": {
                     "start": {

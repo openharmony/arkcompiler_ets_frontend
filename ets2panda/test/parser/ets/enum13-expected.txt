@@ -2299,7 +2299,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "valueOf",
+              "name": "getValueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -2323,7 +2323,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "valueOf",
+                  "name": "getValueOf",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -2963,7 +2963,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "getValue",
+              "name": "valueOf",
               "decorators": [],
               "loc": {
                 "start": {
@@ -2987,7 +2987,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "getValue",
+                  "name": "valueOf",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -4819,4 +4819,4 @@
     }
   }
 }
-TypeError: No enum item method called 'valueOf' [enum13.sts:20:26]
+TypeError: No enum type method called 'valueOf' [enum13.sts:19:26]

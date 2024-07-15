@@ -72,6 +72,10 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     if (conditionType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         FlagExpressionWithUnboxing(testType, conditionType, expr);
     }
+
+    if (conditionType->IsETSEnumType()) {
+        expr->AddAstNodeFlags(ir::AstNodeFlags::GENERATE_VALUE_OF);
+    }
 }
 
 void ETSChecker::CheckNonNullish(ir::Expression const *expr)
@@ -628,8 +632,7 @@ Type *ETSChecker::ETSBuiltinTypeAsPrimitiveType(Type *objectType)
         return nullptr;
     }
 
-    if (objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || objectType->HasTypeFlag(TypeFlag::ETS_ENUM) ||
-        objectType->HasTypeFlag(TypeFlag::ETS_STRING_ENUM)) {
+    if (objectType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || objectType->IsETSEnumType()) {
         return objectType;
     }
 
@@ -824,6 +827,14 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
                       (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE) |
                       (relation->OnlyCheckBoxingUnboxing() ? TypeRelationFlag::ONLY_CHECK_BOXING_UNBOXING
                                                            : TypeRelationFlag::NONE));
+
+    if (source->IsETSEnumType()) {
+        if (target->IsETSObjectType() && target->AsETSObjectType()->IsGlobalETSObjectType()) {
+            relation->Result(true);
+            return;
+        }
+    }
+
     auto *boxedSourceType = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
     if (boxedSourceType == nullptr) {
         return;

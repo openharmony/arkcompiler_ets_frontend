@@ -1039,8 +1039,7 @@ static bool IsFunctionOrMethodCall(ir::AstNode const *node)
     }
 
     if (callee->IsMemberExpression() && callee->AsMemberExpression()->Object()->TsType() != nullptr &&
-        (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType() ||
-         callee->AsMemberExpression()->Object()->TsType()->IsETSStringEnumType())) {
+        (callee->AsMemberExpression()->Object()->TsType()->IsETSEnumType())) {
         return true;
     }
 
@@ -1092,6 +1091,10 @@ static ir::AstNode *InsertInvokeCall(public_lib::Context *ctx, ir::CallExpressio
         auto boxingFlags = arg->GetBoxingUnboxingFlags();
         Recheck(varBinder, checker, arg);
         arg->SetBoxingUnboxingFlags(boxingFlags);
+        // NOTE (psiket) Temporal solution
+        if (arg->TsType()->IsETSEnumType()) {
+            arg->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::BOX_TO_ENUM);
+        }
     }
 
     return call;

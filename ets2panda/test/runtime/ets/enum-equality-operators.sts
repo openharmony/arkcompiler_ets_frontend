@@ -14,19 +14,14 @@
  */
 
 enum Color {Red = 0, Green = 1, Blue = 0}
-enum Color2 {First = "red", Second = "green", Third = "red"}
+enum Commands { Open = "fopen", Close = "fclose", Open2 = "fopen" }
 
-if (Color.Red < Color.Blue)                            
-    assert(false)
-if (Color.Red > Color.Blue)                            
-    assert(false)
-if (Color.Red == Color.Blue)     
-    assert(true)
+if (Color.Red != Color.Blue)
+    assert(false);
+if (Color.Red == Color.Blue)
+    assert(true);
 
-if (Color2.First < Color2.Third)                            
-    assert(false)
-if (Color2.First > Color2.Third)                            
-    assert(false)
-if (Color2.First == Color2.Third)     
-    assert(true)
-
+if (Commands.Open != Commands.Open2)
+    assert(false);
+if (Commands.Open == Commands.Open2)
+    assert(true);

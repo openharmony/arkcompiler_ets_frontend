@@ -16,7 +16,7 @@
 enum Color { Red, Green, Blue }
 
 function main(): void {
-  let x: int = Color.Red.getValue();
+  let x: int = Color.Red.valueOf();
   assert x == 0;
 
   let blue = Color.Blue;
@@ -35,13 +35,13 @@ function main(): void {
   let red: Color = Color.Red;
 
   try {
-    red = Color.valueOf("Red");
+    red = Color.getValueOf("Red");
   } catch (e) {}
 
   assert red == Color.Red;
 
   try {
-    let yellow: Color = Color.valueOf("Yellow");
+    let yellow: Color = Color.getValueOf("Yellow");
     assert false;
   } catch (e: Exception) {
     assert (e as Object).toString().startsWith("No enum constant Color.Yellow");

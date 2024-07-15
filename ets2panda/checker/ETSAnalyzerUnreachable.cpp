@@ -38,11 +38,6 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::MetaProperty *expr) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
-{
-    UNREACHABLE();
-}
-
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ScriptFunction *node) const
 {
     UNREACHABLE();

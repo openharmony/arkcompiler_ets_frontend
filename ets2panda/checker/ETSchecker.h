@@ -243,7 +243,7 @@ public:
     ETSBigIntType *CreateETSBigIntLiteralType(util::StringView value);
     ETSStringType *CreateETSStringLiteralType(util::StringView value);
     ETSArrayType *CreateETSArrayType(Type *elementType);
-    ETSEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
+    ETSIntEnumType *CreateEnumIntTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
     ETSStringEnumType *CreateEnumStringTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
 
     Type *CreateETSUnionType(Span<Type *const> constituentTypes);
@@ -289,6 +289,8 @@ public:
     checker::Type *CheckBinaryOperatorMulDivMod(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
+    checker::Type *CheckBinaryOperatorPlusForEnums(const checker::Type *const leftType,
+                                                   const checker::Type *const rightType);
     checker::Type *CheckBinaryOperatorPlus(
         std::tuple<ir::Expression *, ir::Expression *, lexer::TokenType, lexer::SourcePosition> op, bool isEqualOp,
         std::tuple<checker::Type *, checker::Type *, Type *, Type *> types);
@@ -727,8 +729,8 @@ public:
     ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
 
 private:
-    ETSEnumInterface::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
-                                        bool buildPorxyParam, Type *returnType, bool buildProxy = true);
+    ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
+                                   bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
     [[noreturn]] void ThrowError(ir::Identifier *ident);
@@ -765,7 +767,7 @@ private:
     void CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                    checker::Type *annotationType, varbinder::Variable *const bindingVar);
 
-    template <typename EnumType, bool IS_INT_ENUM>
+    template <typename EnumType>
     EnumType *CreateEnumTypeFromEnumDeclaration(ir::TSEnumDeclaration const *const enumDecl);
 
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateStaticScriptFunction(

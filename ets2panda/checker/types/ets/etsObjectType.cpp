@@ -609,7 +609,7 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         }
     }
 
-    if (target->IsETSEnumType() || target->IsETSStringEnumType()) {
+    if (target->IsETSEnumType()) {
         relation->GetNode()->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_ENUM);
         relation->Result(true);
         return;
