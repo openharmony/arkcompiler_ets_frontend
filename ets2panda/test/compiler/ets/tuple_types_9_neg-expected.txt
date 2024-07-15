@@ -709,4 +709,4 @@
     }
   }
 }
-TypeError: Type '[double, String, ...Int[]]' cannot be assigned to type '[double, String, Int]' [tuple_types_9_neg.sts:19:36]
+TypeError: Type '[Double, String, ...Int[]]' cannot be assigned to type '[Double, String, Int]' [tuple_types_9_neg.sts:19:36]

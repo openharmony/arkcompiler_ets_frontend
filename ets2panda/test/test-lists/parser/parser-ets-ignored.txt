@@ -1,6 +1,3 @@
-parser/ets/test-type-alias-call7.sts
-parser/ets/test-type-alias-call8.sts
-
 # Disabled temporarily #I8EM2T implementation struct directly expanded to class
 parser/ets/struct_init.sts
 parser/ets/struct_static_initializer.sts
