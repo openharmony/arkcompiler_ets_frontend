@@ -1,5 +1,1 @@
 # Known failure list for test262 - debug-x64
-
-# Issue #18004
-test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
-# --- end of Issue #18004
