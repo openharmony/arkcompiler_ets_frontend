@@ -19,7 +19,7 @@ class A {
         this.indices = new number[2][2];
     }
 
-    public override equals(other: Object | null | undefined): boolean {
+    public equals(other: Object | null | undefined): boolean {
         for (let i = 0; i < this.indices!.length; ++i) {
             let num: number[] = this.indices![i];
             num[0];
