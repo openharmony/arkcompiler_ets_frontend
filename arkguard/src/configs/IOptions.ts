@@ -18,7 +18,8 @@ import type {
   IPrinterOption,
   INameObfuscationOption,
   IKeepSourcePathsAndDependency,
-  IDeclarationCommentOption
+  IDeclarationCommentOption,
+  IUnobfuscationOption
 } from './INameObfuscationOption';
 
 export interface IOptions {
@@ -62,4 +63,7 @@ export interface IOptions {
 
   // The code of the file is not obfuscated, except for file name obfuscation
   mKeepFileSourceCode?: IKeepSourcePathsAndDependency
+
+  // Whether to print unobfuscation names and the print path.
+  readonly mUnobfuscationOption?: IUnobfuscationOption;
 }

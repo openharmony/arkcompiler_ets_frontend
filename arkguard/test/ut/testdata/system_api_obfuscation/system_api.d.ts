@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use rollupObject file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
@@ -13,14 +13,12 @@
  * limitations under the License.
  */
 
-export const DEBUG: string = 'debug';
-
-export const yellow: string = '\u001b[33m';
-
-export let nameCacheMap: Map<string, string | {}> = new Map();
-
-// Record all unobfuscated names and reasons for each file.
-export let unobfuscationNamesObj: Object = {};
-
-// Record all unobfuscated properties and reasons.
-export let globalUnobfuscatedPropMap: Map<string, string[]> = new Map();
+export declare class TestClass {
+  para1: number;
+  para2: string;
+  foo(): number;
+}
+export declare function TestFunction(funcPara1: number, funcPara2: string): number;
+declare namespace ns {
+}
+export default ns;

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { readProjectPropertiesByCollectedPaths } from '../../../src/common/ApiReader';
+import { readProjectPropertiesByCollectedPaths, ReseverdSetForArkguard } from '../../../src/common/ApiReader';
 import { assert } from 'chai';
 import { NameGeneratorType } from '../../../src/generator/NameFactory';
 
@@ -27,8 +27,8 @@ describe('test for ApiReader', function () {
     ]);
 
     it('-enable-export-obfuscation + -enable-property-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -43,22 +43,23 @@ describe('test for ApiReader', function () {
           mKeepFileSourceCode: {
             mKeepSourceOfPaths: new Set(),
             mkeepFilesAndDependencies: new Set(),
-          }
+          },
+          
         }, true);
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedProperties.includes('BLOCK_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('BLOCK_PARAM2'), true);
-      assert.strictEqual(reservedProperties.includes('ENUM_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('ENUM_PARAM2'), true);
-      assert.strictEqual(reservedProperties.includes('NS_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('NS_PARAM2'), true);
-      assert.strictEqual(reservedProperties.includes('EXPORT_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('EXPORT_PARAM2'), true);
+      let enumPropertySet = projectAndLibs.enumPropertySet;
+      assert.strictEqual(enumPropertySet.has('BLOCK_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('BLOCK_PARAM2'), true);
+      assert.strictEqual(enumPropertySet.has('ENUM_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('ENUM_PARAM2'), true);
+      assert.strictEqual(enumPropertySet.has('NS_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('NS_PARAM2'), true);
+      assert.strictEqual(enumPropertySet.has('EXPORT_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('EXPORT_PARAM2'), true);
     });
 
     it('-enable-property-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -75,20 +76,24 @@ describe('test for ApiReader', function () {
             mkeepFilesAndDependencies: new Set(),
           }
         }, true);
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedProperties.includes('BLOCK_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('BLOCK_PARAM2'), true);
-      assert.strictEqual(reservedProperties.includes('ENUM_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('ENUM_PARAM2'), true);
-      assert.strictEqual(reservedProperties.includes('NS_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('NS_PARAM2'), true);
-      assert.strictEqual(reservedProperties.includes('EXPORT_PARAM1'), true);
-      assert.strictEqual(reservedProperties.includes('EXPORT_PARAM2'), true);
+      let enumPropertySet = projectAndLibs.enumPropertySet;
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      assert.strictEqual(enumPropertySet.has('BLOCK_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('BLOCK_PARAM2'), true);
+      assert.strictEqual(enumPropertySet.has('ENUM_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('ENUM_PARAM2'), true);
+      assert.strictEqual(enumPropertySet.has('NS_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('NS_PARAM2'), true);
+      assert.strictEqual(enumPropertySet.has('EXPORT_PARAM1'), true);
+      assert.strictEqual(enumPropertySet.has('EXPORT_PARAM2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('ExportEnum'), true);
+      assert.strictEqual(exportNameAndPropSet.has('EXPORT_PARAM1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('EXPORT_PARAM2'), true);
     });
 
     it('-enable-export-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -105,15 +110,10 @@ describe('test for ApiReader', function () {
             mkeepFilesAndDependencies: new Set(),
           }
         }, true);
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedProperties.includes('BLOCK_PARAM1'), false);
-      assert.strictEqual(reservedProperties.includes('BLOCK_PARAM2'), false);
-      assert.strictEqual(reservedProperties.includes('ENUM_PARAM1'), false);
-      assert.strictEqual(reservedProperties.includes('ENUM_PARAM2'), false);
-      assert.strictEqual(reservedProperties.includes('NS_PARAM1'), false);
-      assert.strictEqual(reservedProperties.includes('NS_PARAM2'), false);
-      assert.strictEqual(reservedProperties.includes('EXPORT_PARAM1'), false);
-      assert.strictEqual(reservedProperties.includes('EXPORT_PARAM2'), false);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameAndPropSet, undefined);
+      assert.strictEqual(exportNameSet.has('ExportEnum'), false);
     });
   });
 
@@ -123,8 +123,8 @@ describe('test for ApiReader', function () {
     ]);
 
     it('-enable-export-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -143,42 +143,42 @@ describe('test for ApiReader', function () {
             ]),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedNames.includes('TestClass'), true);
-      assert.strictEqual(reservedNames.includes('prop1'), false);
-      assert.strictEqual(reservedNames.includes('prop2'), false);
-      assert.strictEqual(reservedNames.includes('objProp'), false);
-      assert.strictEqual(reservedNames.includes('innerProp2'), false);
-      assert.strictEqual(reservedNames.includes('var1'), true);
-      assert.strictEqual(reservedNames.includes('var2'), false);
-      assert.strictEqual(reservedNames.includes('foo'), true);
-      assert.strictEqual(reservedNames.includes('ns'), false);
-      assert.strictEqual(reservedNames.includes('var3'), true);
-      assert.strictEqual(reservedNames.includes('nsFunction'), true);
-      assert.strictEqual(reservedNames.includes('TestInterface'), true);
-      assert.strictEqual(reservedNames.includes('feature1'), false);
-      assert.strictEqual(reservedNames.includes('feature2'), false);
-      assert.strictEqual(reservedNames.includes('TestClass2'), false);
-      assert.strictEqual(reservedNames.includes('prop4'), false);
-      assert.strictEqual(reservedNames.includes('propObj'), false);
-      assert.strictEqual(reservedNames.includes('innerProp'), false);
-      assert.strictEqual(reservedNames.includes('TestClass3'), false);
-      assert.strictEqual(reservedNames.includes('exportProp1'), false);
-      assert.strictEqual(reservedNames.includes('exportPropObj'), false);
-      assert.strictEqual(reservedNames.includes('exportInnerProp'), false);
-      assert.strictEqual(reservedNames.includes('v2'), true);
-      assert.strictEqual(reservedNames.includes('default'), true);
-      assert.strictEqual(reservedNames.includes('t3'), true);
-      assert.strictEqual(reservedNames.includes('outterElement1'), true);
-      assert.strictEqual(reservedNames.includes('outterElement2'), true);
-      assert.strictEqual(reservedNames.includes('o2'), true);
-      assert.strictEqual(reservedProperties.length == 0, true);
+      let exportNameSet = projectAndLibs.exportNameSet;
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      assert.strictEqual(exportNameSet.has('TestClass'), true);
+      assert.strictEqual(exportNameSet.has('prop1'), false);
+      assert.strictEqual(exportNameSet.has('prop2'), false);
+      assert.strictEqual(exportNameSet.has('objProp'), false);
+      assert.strictEqual(exportNameSet.has('innerProp2'), false);
+      assert.strictEqual(exportNameSet.has('var1'), true);
+      assert.strictEqual(exportNameSet.has('var2'), false);
+      assert.strictEqual(exportNameSet.has('foo'), true);
+      assert.strictEqual(exportNameSet.has('ns'), false);
+      assert.strictEqual(exportNameSet.has('var3'), true);
+      assert.strictEqual(exportNameSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameSet.has('feature1'), false);
+      assert.strictEqual(exportNameSet.has('feature2'), false);
+      assert.strictEqual(exportNameSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameSet.has('prop4'), false);
+      assert.strictEqual(exportNameSet.has('propObj'), false);
+      assert.strictEqual(exportNameSet.has('innerProp'), false);
+      assert.strictEqual(exportNameSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameSet.has('exportProp1'), false);
+      assert.strictEqual(exportNameSet.has('exportPropObj'), false);
+      assert.strictEqual(exportNameSet.has('exportInnerProp'), false);
+      assert.strictEqual(exportNameSet.has('v2'), true);
+      assert.strictEqual(exportNameSet.has('default'), true);
+      assert.strictEqual(exportNameSet.has('t3'), true);
+      assert.strictEqual(exportNameSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameSet.has('outterElement2'), true);
+      assert.strictEqual(exportNameSet.has('o2'), true);
+      assert.strictEqual(exportNameAndPropSet, undefined);
     });
 
     it('-enable-property-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -197,42 +197,42 @@ describe('test for ApiReader', function () {
             ]),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedProperties.includes('TestClass'), true);
-      assert.strictEqual(reservedProperties.includes('prop1'), true);
-      assert.strictEqual(reservedProperties.includes('prop2'), true);
-      assert.strictEqual(reservedProperties.includes('objProp'), true);
-      assert.strictEqual(reservedProperties.includes('innerProp2'), true);
-      assert.strictEqual(reservedProperties.includes('var1'), true);
-      assert.strictEqual(reservedProperties.includes('var2'), false);
-      assert.strictEqual(reservedProperties.includes('foo'), true);
-      assert.strictEqual(reservedProperties.includes('ns'), false);
-      assert.strictEqual(reservedProperties.includes('var3'), true);
-      assert.strictEqual(reservedProperties.includes('nsFunction'), true);
-      assert.strictEqual(reservedProperties.includes('TestInterface'), true);
-      assert.strictEqual(reservedProperties.includes('feature1'), true);
-      assert.strictEqual(reservedProperties.includes('feature2'), true);
-      assert.strictEqual(reservedProperties.includes('TestClass2'), false);
-      assert.strictEqual(reservedProperties.includes('prop4'), false);
-      assert.strictEqual(reservedProperties.includes('propObj'), false);
-      assert.strictEqual(reservedProperties.includes('innerProp'), false);
-      assert.strictEqual(reservedProperties.includes('TestClass3'), false);
-      assert.strictEqual(reservedProperties.includes('exportProp1'), true);
-      assert.strictEqual(reservedProperties.includes('exportPropObj'), true);
-      assert.strictEqual(reservedProperties.includes('exportInnerProp'), true);
-      assert.strictEqual(reservedProperties.includes('v2'), true);
-      assert.strictEqual(reservedProperties.includes('default'), true);
-      assert.strictEqual(reservedProperties.includes('t3'), true);
-      assert.strictEqual(reservedProperties.includes('outterElement1'), true);
-      assert.strictEqual(reservedProperties.includes('outterElement2'), false);
-      assert.strictEqual(reservedProperties.includes('o2'), true);
-      assert.strictEqual(reservedNames.length == 0, true);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameAndPropSet.has('TestClass'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('objProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('var1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('var2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('foo'), true);
+      assert.strictEqual(exportNameAndPropSet.has('ns'), false);
+      assert.strictEqual(exportNameAndPropSet.has('var3'), true);
+      assert.strictEqual(exportNameAndPropSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameAndPropSet.has('feature1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('feature2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('prop4'), false);
+      assert.strictEqual(exportNameAndPropSet.has('propObj'), false);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp'), false);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameAndPropSet.has('exportProp1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('exportPropObj'), true);
+      assert.strictEqual(exportNameAndPropSet.has('exportInnerProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('v2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('default'), true);
+      assert.strictEqual(exportNameAndPropSet.has('t3'), true);
+      assert.strictEqual(exportNameAndPropSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('outterElement2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('o2'), true);
+      assert.strictEqual(exportNameSet, undefined);
     });
 
     it('-enable-toplevel-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -252,15 +252,15 @@ describe('test for ApiReader', function () {
             ]),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedProperties.length == 0, true);
-      assert.strictEqual(reservedNames.length == 0, true);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameAndPropSet, undefined);
+      assert.strictEqual(exportNameSet, undefined);
     });
 
     it('-enable-toplevel-obfuscation -enable-export-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -280,42 +280,42 @@ describe('test for ApiReader', function () {
             ]),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedNames.includes('TestClass'), true);
-      assert.strictEqual(reservedNames.includes('prop1'), false);
-      assert.strictEqual(reservedNames.includes('prop2'), false);
-      assert.strictEqual(reservedNames.includes('objProp'), false);
-      assert.strictEqual(reservedNames.includes('innerProp2'), false);
-      assert.strictEqual(reservedNames.includes('var1'), true);
-      assert.strictEqual(reservedNames.includes('var2'), false);
-      assert.strictEqual(reservedNames.includes('foo'), true);
-      assert.strictEqual(reservedNames.includes('ns'), false);
-      assert.strictEqual(reservedNames.includes('var3'), true);
-      assert.strictEqual(reservedNames.includes('nsFunction'), true);
-      assert.strictEqual(reservedNames.includes('TestInterface'), true);
-      assert.strictEqual(reservedNames.includes('feature1'), false);
-      assert.strictEqual(reservedNames.includes('feature2'), false);
-      assert.strictEqual(reservedNames.includes('TestClass2'), false);
-      assert.strictEqual(reservedNames.includes('prop4'), false);
-      assert.strictEqual(reservedNames.includes('propObj'), false);
-      assert.strictEqual(reservedNames.includes('innerProp'), false);
-      assert.strictEqual(reservedNames.includes('TestClass3'), false);
-      assert.strictEqual(reservedNames.includes('exportProp1'), false);
-      assert.strictEqual(reservedNames.includes('exportPropObj'), false);
-      assert.strictEqual(reservedNames.includes('exportInnerProp'), false);
-      assert.strictEqual(reservedNames.includes('v2'), true);
-      assert.strictEqual(reservedNames.includes('default'), true);
-      assert.strictEqual(reservedNames.includes('t3'), true);
-      assert.strictEqual(reservedNames.includes('outterElement1'), true);
-      assert.strictEqual(reservedNames.includes('outterElement2'), true);
-      assert.strictEqual(reservedNames.includes('o2'), true);
-      assert.strictEqual(reservedProperties.length == 0, true);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameSet.has('TestClass'), true);
+      assert.strictEqual(exportNameSet.has('prop1'), false);
+      assert.strictEqual(exportNameSet.has('prop2'), false);
+      assert.strictEqual(exportNameSet.has('objProp'), false);
+      assert.strictEqual(exportNameSet.has('innerProp2'), false);
+      assert.strictEqual(exportNameSet.has('var1'), true);
+      assert.strictEqual(exportNameSet.has('var2'), false);
+      assert.strictEqual(exportNameSet.has('foo'), true);
+      assert.strictEqual(exportNameSet.has('ns'), false);
+      assert.strictEqual(exportNameSet.has('var3'), true);
+      assert.strictEqual(exportNameSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameSet.has('feature1'), false);
+      assert.strictEqual(exportNameSet.has('feature2'), false);
+      assert.strictEqual(exportNameSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameSet.has('prop4'), false);
+      assert.strictEqual(exportNameSet.has('propObj'), false);
+      assert.strictEqual(exportNameSet.has('innerProp'), false);
+      assert.strictEqual(exportNameSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameSet.has('exportProp1'), false);
+      assert.strictEqual(exportNameSet.has('exportPropObj'), false);
+      assert.strictEqual(exportNameSet.has('exportInnerProp'), false);
+      assert.strictEqual(exportNameSet.has('v2'), true);
+      assert.strictEqual(exportNameSet.has('default'), true);
+      assert.strictEqual(exportNameSet.has('t3'), true);
+      assert.strictEqual(exportNameSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameSet.has('outterElement2'), true);
+      assert.strictEqual(exportNameSet.has('o2'), true);
+      assert.strictEqual(exportNameAndPropSet, undefined);
     });
 
     it('-enable-property-obfuscation -enable-export-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -335,69 +335,69 @@ describe('test for ApiReader', function () {
             ]),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedNames.includes('TestClass'), true);
-      assert.strictEqual(reservedNames.includes('prop1'), false);
-      assert.strictEqual(reservedNames.includes('prop2'), false);
-      assert.strictEqual(reservedNames.includes('objProp'), false);
-      assert.strictEqual(reservedNames.includes('innerProp2'), false);
-      assert.strictEqual(reservedNames.includes('var1'), true);
-      assert.strictEqual(reservedNames.includes('var2'), false);
-      assert.strictEqual(reservedNames.includes('foo'), true);
-      assert.strictEqual(reservedNames.includes('ns'), false);
-      assert.strictEqual(reservedNames.includes('var3'), true);
-      assert.strictEqual(reservedNames.includes('nsFunction'), true);
-      assert.strictEqual(reservedNames.includes('TestInterface'), true);
-      assert.strictEqual(reservedNames.includes('feature1'), false);
-      assert.strictEqual(reservedNames.includes('feature2'), false);
-      assert.strictEqual(reservedNames.includes('TestClass2'), false);
-      assert.strictEqual(reservedNames.includes('prop4'), false);
-      assert.strictEqual(reservedNames.includes('propObj'), false);
-      assert.strictEqual(reservedNames.includes('innerProp'), false);
-      assert.strictEqual(reservedNames.includes('TestClass3'), false);
-      assert.strictEqual(reservedNames.includes('exportProp1'), false);
-      assert.strictEqual(reservedNames.includes('exportPropObj'), false);
-      assert.strictEqual(reservedNames.includes('exportInnerProp'), false);
-      assert.strictEqual(reservedNames.includes('v2'), true);
-      assert.strictEqual(reservedNames.includes('default'), true);
-      assert.strictEqual(reservedNames.includes('t3'), true);
-      assert.strictEqual(reservedNames.includes('outterElement1'), true);
-      assert.strictEqual(reservedNames.includes('outterElement2'), true);
-      assert.strictEqual(reservedNames.includes('o2'), true);
-      assert.strictEqual(reservedProperties.includes('TestClass'), true);
-      assert.strictEqual(reservedProperties.includes('prop1'), true);
-      assert.strictEqual(reservedProperties.includes('prop2'), true);
-      assert.strictEqual(reservedProperties.includes('objProp'), true);
-      assert.strictEqual(reservedProperties.includes('innerProp2'), true);
-      assert.strictEqual(reservedProperties.includes('var1'), true);
-      assert.strictEqual(reservedProperties.includes('var2'), false);
-      assert.strictEqual(reservedProperties.includes('foo'), true);
-      assert.strictEqual(reservedProperties.includes('ns'), false);
-      assert.strictEqual(reservedProperties.includes('var3'), true);
-      assert.strictEqual(reservedProperties.includes('nsFunction'), true);
-      assert.strictEqual(reservedProperties.includes('TestInterface'), true);
-      assert.strictEqual(reservedProperties.includes('feature1'), true);
-      assert.strictEqual(reservedProperties.includes('feature2'), true);
-      assert.strictEqual(reservedProperties.includes('TestClass2'), false);
-      assert.strictEqual(reservedProperties.includes('prop4'), false);
-      assert.strictEqual(reservedProperties.includes('propObj'), false);
-      assert.strictEqual(reservedProperties.includes('innerProp'), false);
-      assert.strictEqual(reservedProperties.includes('TestClass3'), false);
-      assert.strictEqual(reservedProperties.includes('exportProp1'), true);
-      assert.strictEqual(reservedProperties.includes('exportPropObj'), true);
-      assert.strictEqual(reservedProperties.includes('exportInnerProp'), true);
-      assert.strictEqual(reservedProperties.includes('v2'), true);
-      assert.strictEqual(reservedProperties.includes('default'), true);
-      assert.strictEqual(reservedProperties.includes('t3'), true);
-      assert.strictEqual(reservedProperties.includes('outterElement1'), true);
-      assert.strictEqual(reservedProperties.includes('outterElement2'), false);
-      assert.strictEqual(reservedProperties.includes('o2'), true);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameSet.has('TestClass'), true);
+      assert.strictEqual(exportNameSet.has('prop1'), false);
+      assert.strictEqual(exportNameSet.has('prop2'), false);
+      assert.strictEqual(exportNameSet.has('objProp'), false);
+      assert.strictEqual(exportNameSet.has('innerProp2'), false);
+      assert.strictEqual(exportNameSet.has('var1'), true);
+      assert.strictEqual(exportNameSet.has('var2'), false);
+      assert.strictEqual(exportNameSet.has('foo'), true);
+      assert.strictEqual(exportNameSet.has('ns'), false);
+      assert.strictEqual(exportNameSet.has('var3'), true);
+      assert.strictEqual(exportNameSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameSet.has('feature1'), false);
+      assert.strictEqual(exportNameSet.has('feature2'), false);
+      assert.strictEqual(exportNameSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameSet.has('prop4'), false);
+      assert.strictEqual(exportNameSet.has('propObj'), false);
+      assert.strictEqual(exportNameSet.has('innerProp'), false);
+      assert.strictEqual(exportNameSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameSet.has('exportProp1'), false);
+      assert.strictEqual(exportNameSet.has('exportPropObj'), false);
+      assert.strictEqual(exportNameSet.has('exportInnerProp'), false);
+      assert.strictEqual(exportNameSet.has('v2'), true);
+      assert.strictEqual(exportNameSet.has('default'), true);
+      assert.strictEqual(exportNameSet.has('t3'), true);
+      assert.strictEqual(exportNameSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameSet.has('outterElement2'), true);
+      assert.strictEqual(exportNameSet.has('o2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('objProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('var1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('var2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('foo'), true);
+      assert.strictEqual(exportNameAndPropSet.has('ns'), false);
+      assert.strictEqual(exportNameAndPropSet.has('var3'), true);
+      assert.strictEqual(exportNameAndPropSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameAndPropSet.has('feature1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('feature2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('prop4'), false);
+      assert.strictEqual(exportNameAndPropSet.has('propObj'), false);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp'), false);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameAndPropSet.has('exportProp1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('exportPropObj'), true);
+      assert.strictEqual(exportNameAndPropSet.has('exportInnerProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('v2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('default'), true);
+      assert.strictEqual(exportNameAndPropSet.has('t3'), true);
+      assert.strictEqual(exportNameAndPropSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('outterElement2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('o2'), true);
     });
 
     it('-enable-property-obfuscation -enable-export-obfuscation -enable-toplevel-obfuscation', function () {
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(fileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(fileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -417,72 +417,72 @@ describe('test for ApiReader', function () {
             ]),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedNames.includes('TestClass'), true);
-      assert.strictEqual(reservedNames.includes('prop1'), false);
-      assert.strictEqual(reservedNames.includes('prop2'), false);
-      assert.strictEqual(reservedNames.includes('objProp'), false);
-      assert.strictEqual(reservedNames.includes('innerProp2'), false);
-      assert.strictEqual(reservedNames.includes('var1'), true);
-      assert.strictEqual(reservedNames.includes('var2'), false);
-      assert.strictEqual(reservedNames.includes('foo'), true);
-      assert.strictEqual(reservedNames.includes('ns'), false);
-      assert.strictEqual(reservedNames.includes('var3'), true);
-      assert.strictEqual(reservedNames.includes('nsFunction'), true);
-      assert.strictEqual(reservedNames.includes('TestInterface'), true);
-      assert.strictEqual(reservedNames.includes('feature1'), false);
-      assert.strictEqual(reservedNames.includes('feature2'), false);
-      assert.strictEqual(reservedNames.includes('TestClass2'), false);
-      assert.strictEqual(reservedNames.includes('prop4'), false);
-      assert.strictEqual(reservedNames.includes('propObj'), false);
-      assert.strictEqual(reservedNames.includes('innerProp'), false);
-      assert.strictEqual(reservedNames.includes('TestClass3'), false);
-      assert.strictEqual(reservedNames.includes('exportProp1'), false);
-      assert.strictEqual(reservedNames.includes('exportPropObj'), false);
-      assert.strictEqual(reservedNames.includes('exportInnerProp'), false);
-      assert.strictEqual(reservedNames.includes('v2'), true);
-      assert.strictEqual(reservedNames.includes('default'), true);
-      assert.strictEqual(reservedNames.includes('t3'), true);
-      assert.strictEqual(reservedNames.includes('outterElement1'), true);
-      assert.strictEqual(reservedNames.includes('outterElement2'), true);
-      assert.strictEqual(reservedNames.includes('o2'), true);
-      assert.strictEqual(reservedProperties.includes('TestClass'), true);
-      assert.strictEqual(reservedProperties.includes('prop1'), true);
-      assert.strictEqual(reservedProperties.includes('prop2'), true);
-      assert.strictEqual(reservedProperties.includes('objProp'), true);
-      assert.strictEqual(reservedProperties.includes('innerProp2'), true);
-      assert.strictEqual(reservedProperties.includes('var1'), true);
-      assert.strictEqual(reservedProperties.includes('var2'), false);
-      assert.strictEqual(reservedProperties.includes('foo'), true);
-      assert.strictEqual(reservedProperties.includes('ns'), false);
-      assert.strictEqual(reservedProperties.includes('var3'), true);
-      assert.strictEqual(reservedProperties.includes('nsFunction'), true);
-      assert.strictEqual(reservedProperties.includes('TestInterface'), true);
-      assert.strictEqual(reservedProperties.includes('feature1'), true);
-      assert.strictEqual(reservedProperties.includes('feature2'), true);
-      assert.strictEqual(reservedProperties.includes('TestClass2'), false);
-      assert.strictEqual(reservedProperties.includes('prop4'), false);
-      assert.strictEqual(reservedProperties.includes('propObj'), false);
-      assert.strictEqual(reservedProperties.includes('innerProp'), false);
-      assert.strictEqual(reservedProperties.includes('TestClass3'), false);
-      assert.strictEqual(reservedProperties.includes('exportProp1'), true);
-      assert.strictEqual(reservedProperties.includes('exportPropObj'), true);
-      assert.strictEqual(reservedProperties.includes('exportInnerProp'), true);
-      assert.strictEqual(reservedProperties.includes('v2'), true);
-      assert.strictEqual(reservedProperties.includes('default'), true);
-      assert.strictEqual(reservedProperties.includes('t3'), true);
-      assert.strictEqual(reservedProperties.includes('outterElement1'), true);
-      assert.strictEqual(reservedProperties.includes('outterElement2'), false);
-      assert.strictEqual(reservedProperties.includes('o2'), true);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameSet.has('TestClass'), true);
+      assert.strictEqual(exportNameSet.has('prop1'), false);
+      assert.strictEqual(exportNameSet.has('prop2'), false);
+      assert.strictEqual(exportNameSet.has('objProp'), false);
+      assert.strictEqual(exportNameSet.has('innerProp2'), false);
+      assert.strictEqual(exportNameSet.has('var1'), true);
+      assert.strictEqual(exportNameSet.has('var2'), false);
+      assert.strictEqual(exportNameSet.has('foo'), true);
+      assert.strictEqual(exportNameSet.has('ns'), false);
+      assert.strictEqual(exportNameSet.has('var3'), true);
+      assert.strictEqual(exportNameSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameSet.has('feature1'), false);
+      assert.strictEqual(exportNameSet.has('feature2'), false);
+      assert.strictEqual(exportNameSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameSet.has('prop4'), false);
+      assert.strictEqual(exportNameSet.has('propObj'), false);
+      assert.strictEqual(exportNameSet.has('innerProp'), false);
+      assert.strictEqual(exportNameSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameSet.has('exportProp1'), false);
+      assert.strictEqual(exportNameSet.has('exportPropObj'), false);
+      assert.strictEqual(exportNameSet.has('exportInnerProp'), false);
+      assert.strictEqual(exportNameSet.has('v2'), true);
+      assert.strictEqual(exportNameSet.has('default'), true);
+      assert.strictEqual(exportNameSet.has('t3'), true);
+      assert.strictEqual(exportNameSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameSet.has('outterElement2'), true);
+      assert.strictEqual(exportNameSet.has('o2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('objProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('var1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('var2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('foo'), true);
+      assert.strictEqual(exportNameAndPropSet.has('ns'), false);
+      assert.strictEqual(exportNameAndPropSet.has('var3'), true);
+      assert.strictEqual(exportNameAndPropSet.has('nsFunction'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestInterface'), true);
+      assert.strictEqual(exportNameAndPropSet.has('feature1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('feature2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('prop4'), false);
+      assert.strictEqual(exportNameAndPropSet.has('propObj'), false);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp'), false);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass3'), false);
+      assert.strictEqual(exportNameAndPropSet.has('exportProp1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('exportPropObj'), true);
+      assert.strictEqual(exportNameAndPropSet.has('exportInnerProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('v2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('default'), true);
+      assert.strictEqual(exportNameAndPropSet.has('t3'), true);
+      assert.strictEqual(exportNameAndPropSet.has('outterElement1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('outterElement2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('o2'), true);
     });
 
     it('oh_modules test', function () {
       const ohModulesFileList: Set<string> = new Set([
         "test/ut/utils/oh_modules/exportFile1.ts"
       ]);
-      let projectAndLibs: {projectAndLibsReservedProperties: string[]; libExportNames: string[]};
-      projectAndLibs = readProjectPropertiesByCollectedPaths(ohModulesFileList,
+      let projectAndLibs: ReseverdSetForArkguard =
+        readProjectPropertiesByCollectedPaths(ohModulesFileList,
         {
           mNameObfuscation: {
             mEnable: true,
@@ -500,48 +500,48 @@ describe('test for ApiReader', function () {
             mkeepFilesAndDependencies: new Set(),
           }
         }, true);
-      let reservedNames = projectAndLibs.libExportNames;
-      let reservedProperties = projectAndLibs.projectAndLibsReservedProperties;
-      assert.strictEqual(reservedNames.includes('ModuleNs'), true);
-      assert.strictEqual(reservedNames.includes('nsProp1'), true);
-      assert.strictEqual(reservedNames.includes('nsFunc'), true);
-      assert.strictEqual(reservedNames.includes('ModuleClass'), true);
-      assert.strictEqual(reservedNames.includes('classProp1'), false);
-      assert.strictEqual(reservedNames.includes('objProp'), false);
-      assert.strictEqual(reservedNames.includes('innerProp'), false);
-      assert.strictEqual(reservedNames.includes('TestClass'), false);
-      assert.strictEqual(reservedNames.includes('prop4'), false);
-      assert.strictEqual(reservedNames.includes('propObj'), false);
-      assert.strictEqual(reservedNames.includes('innerProp1'), false);
-      assert.strictEqual(reservedNames.includes('TestClass2'), true);
-      assert.strictEqual(reservedNames.includes('prop1'), false);
-      assert.strictEqual(reservedNames.includes('objProp1'), false);
-      assert.strictEqual(reservedNames.includes('innerProp2'), false);
-      assert.strictEqual(reservedNames.includes('default'), true);
-      assert.strictEqual(reservedNames.includes('mc'), true);
-      assert.strictEqual(reservedNames.includes('otherElement1'), true);
-      assert.strictEqual(reservedNames.includes('otherElement2'), true);
-      assert.strictEqual(reservedNames.includes('o2'), true);
-      assert.strictEqual(reservedProperties.includes('ModuleNs'), false);
-      assert.strictEqual(reservedProperties.includes('nsProp1'), true);
-      assert.strictEqual(reservedProperties.includes('nsFunc'), true);
-      assert.strictEqual(reservedProperties.includes('ModuleClass'), false);
-      assert.strictEqual(reservedProperties.includes('classProp1'), true);
-      assert.strictEqual(reservedProperties.includes('objProp'), true);
-      assert.strictEqual(reservedProperties.includes('innerProp'), true);
-      assert.strictEqual(reservedProperties.includes('TestClass'), false);
-      assert.strictEqual(reservedProperties.includes('prop4'), false);
-      assert.strictEqual(reservedProperties.includes('propObj'), false);
-      assert.strictEqual(reservedProperties.includes('innerProp1'), false);
-      assert.strictEqual(reservedProperties.includes('TestClass2'), true);
-      assert.strictEqual(reservedProperties.includes('prop1'), true);
-      assert.strictEqual(reservedProperties.includes('objProp1'), true);
-      assert.strictEqual(reservedProperties.includes('innerProp2'), true);
-      assert.strictEqual(reservedProperties.includes('default'), true);
-      assert.strictEqual(reservedProperties.includes('mc'), true);
-      assert.strictEqual(reservedProperties.includes('otherElement1'), true);
-      assert.strictEqual(reservedProperties.includes('otherElement2'), false);
-      assert.strictEqual(reservedProperties.includes('o2'), true);
+      let exportNameAndPropSet = projectAndLibs.exportNameAndPropSet;
+      let exportNameSet = projectAndLibs.exportNameSet;
+      assert.strictEqual(exportNameSet.has('ModuleNs'), true);
+      assert.strictEqual(exportNameSet.has('nsProp1'), true);
+      assert.strictEqual(exportNameSet.has('nsFunc'), true);
+      assert.strictEqual(exportNameSet.has('ModuleClass'), true);
+      assert.strictEqual(exportNameSet.has('classProp1'), false);
+      assert.strictEqual(exportNameSet.has('objProp'), false);
+      assert.strictEqual(exportNameSet.has('innerProp'), false);
+      assert.strictEqual(exportNameSet.has('TestClass'), false);
+      assert.strictEqual(exportNameSet.has('prop4'), false);
+      assert.strictEqual(exportNameSet.has('propObj'), false);
+      assert.strictEqual(exportNameSet.has('innerProp1'), false);
+      assert.strictEqual(exportNameSet.has('TestClass2'), true);
+      assert.strictEqual(exportNameSet.has('prop1'), false);
+      assert.strictEqual(exportNameSet.has('objProp1'), false);
+      assert.strictEqual(exportNameSet.has('innerProp2'), false);
+      assert.strictEqual(exportNameSet.has('default'), true);
+      assert.strictEqual(exportNameSet.has('mc'), true);
+      assert.strictEqual(exportNameSet.has('otherElement1'), true);
+      assert.strictEqual(exportNameSet.has('otherElement2'), true);
+      assert.strictEqual(exportNameSet.has('o2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('ModuleNs'), false);
+      assert.strictEqual(exportNameAndPropSet.has('nsProp1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('nsFunc'), true);
+      assert.strictEqual(exportNameAndPropSet.has('ModuleClass'), false);
+      assert.strictEqual(exportNameAndPropSet.has('classProp1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('objProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp'), true);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass'), false);
+      assert.strictEqual(exportNameAndPropSet.has('prop4'), false);
+      assert.strictEqual(exportNameAndPropSet.has('propObj'), false);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp1'), false);
+      assert.strictEqual(exportNameAndPropSet.has('TestClass2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('prop1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('objProp1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('innerProp2'), true);
+      assert.strictEqual(exportNameAndPropSet.has('default'), true);
+      assert.strictEqual(exportNameAndPropSet.has('mc'), true);
+      assert.strictEqual(exportNameAndPropSet.has('otherElement1'), true);
+      assert.strictEqual(exportNameAndPropSet.has('otherElement2'), false);
+      assert.strictEqual(exportNameAndPropSet.has('o2'), true);
     });
   });
 });

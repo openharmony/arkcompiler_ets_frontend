@@ -19,11 +19,11 @@ export interface INameObfuscationOption {
 
   readonly mEnable: boolean;
 
-  readonly mNameGeneratorType: NameGeneratorType;
+  readonly mNameGeneratorType?: NameGeneratorType;
 
   readonly mRenameProperties: boolean;
 
-  mReservedNames: string[];
+  mReservedNames?: string[];
 
   mReservedProperties: string[];
 
@@ -35,7 +35,7 @@ export interface INameObfuscationOption {
 
   readonly mTopLevel?: boolean;
 
-  mReservedToplevelNames: string[];
+  mReservedToplevelNames?: string[];
 
   mUniversalReservedToplevelNames?: RegExp[];
 }
@@ -90,4 +90,9 @@ export interface IPrinterOption {
 export interface IKeepSourcePathsAndDependency {
   mKeepSourceOfPaths: Set<string>;
   mkeepFilesAndDependencies: Set<string>;
+}
+
+export interface IUnobfuscationOption {
+  mPrintKeptNames: boolean;
+  mPrintPath: string;
 }

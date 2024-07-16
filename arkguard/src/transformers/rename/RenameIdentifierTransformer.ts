@@ -75,19 +75,28 @@ import {
 
 import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGenerator';
 import type {IOptions} from '../../configs/IOptions';
-import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
+import type { INameObfuscationOption, IUnobfuscationOption } from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
 import type { MangledSymbolInfo } from '../../common/type';
 import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
-import { needToBeReserved } from '../../utils/TransformUtil';
+import {
+  needToReservedTopLevel,
+  isReservedLocalVariable,
+  needToReservedLocal,
+  recordHistoryUnobfuscatedNames
+} from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
 import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
-import { PropCollections } from '../../utils/CommonCollections';
+import {
+  PropCollections,
+  UnobfuscationCollections,
+  LocalVariableCollections
+} from '../../utils/CommonCollections';
 
 namespace secharmony {
   /**
@@ -105,6 +114,7 @@ namespace secharmony {
    */
   const createRenameIdentifierFactory = function (option: IOptions): TransformerFactory<Node> {
     const profile: INameObfuscationOption | undefined = option?.mNameObfuscation;
+    const unobfuscationOption: IUnobfuscationOption | undefined = option?.mUnobfuscationOption;
     if (!profile || !profile.mEnable) {
       return null;
     }
@@ -121,25 +131,7 @@ namespace secharmony {
     return renameIdentifierFactory;
 
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
-      if (profile?.mRenameProperties) {
-        if (!isInitializedReservedList) {
-          const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
-          tmpReservedProps.forEach(item => {
-            PropCollections.reservedProperties.add(item);
-          });
-          PropCollections.mangledPropsInNameCache = new Set(PropCollections.historyMangledTable?.values());
-          PropCollections.universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
-          isInitializedReservedList = true;
-        }
-      }
-
-      let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', '__global'];
-      // the default whitelist of toplevel option
-      const defaultReservedToplevelNames: string[] = ['__global'];
-
-      defaultReservedToplevelNames.forEach(item => PropCollections.reservedProperties.add(item));
-      profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
-      profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
+      initWhitelist();
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
       let fileExportNames: Set<string> = undefined;
@@ -182,7 +174,7 @@ namespace secharmony {
         // the reservedNames of manager contain the struct name.
         if (!exportObfuscation) {
           manager.getReservedNames().forEach((name) => {
-            reservedNames.push(name);
+            LocalVariableCollections.reservedStruct.add(name);
           });
         }
 
@@ -250,7 +242,8 @@ namespace secharmony {
           let mangled: string = original;
           const path: string = scope.loc + '#' + original;
           // No allow to rename reserved names.
-          if ((!Reflect.has(def, 'obfuscateAsProperty') && reservedNames.includes(original)) ||
+          if (!Reflect.has(def, 'obfuscateAsProperty') &&
+            needToReservedLocal(original, UnobfuscationCollections.unobfuscatedNamesMap, path) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
             isSkippedGlobal(openTopLevel, scope)) {
             scope.mangledNames.add(mangled);
@@ -264,10 +257,13 @@ namespace secharmony {
 
           const historyName: string = historyNameCache?.get(path);
           if (historyName) {
+            recordHistoryUnobfuscatedNames(path); // For incremental build
             mangled = historyName;
           } else if (Reflect.has(def, 'obfuscateAsProperty')) {
-            mangled = getPropertyMangledName(original);
+            // obfuscate toplevel, export
+            mangled = getPropertyMangledName(original, path);
           } else {
+            // obfuscate local variable
             mangled = getMangled(scope, generator);
           }
           // add new names to name cache
@@ -282,17 +278,16 @@ namespace secharmony {
         });
       }
 
-      function getPropertyMangledName(original: string): string {
-        if (needToBeReserved(PropCollections.reservedProperties, PropCollections.universalReservedProperties, original)) {
+      function getPropertyMangledName(original: string, nameWithScope: string): string {
+        if (needToReservedTopLevel(original, UnobfuscationCollections.unobfuscatedNamesMap, nameWithScope)) {
           return original;
         }
 
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
-
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (needToBeReserved(PropCollections.reservedProperties, PropCollections.universalReservedProperties, tmpName) ||
+          if (needToReservedTopLevel(tmpName) ||
             tmpName === original) {
             continue;
           }
@@ -374,7 +369,7 @@ namespace secharmony {
         do {
           mangled = localGenerator.getName()!;
           // if it is a globally reserved name, it needs to be regenerated
-          if (reservedNames.includes(mangled)) {
+          if (isReservedLocalVariable(mangled)) {
             mangled = '';
             continue;
           }
@@ -629,7 +624,7 @@ namespace secharmony {
       function mangleNoSymbolImportExportPropertyName(original: string): string {
         const path: string = '#' + original;
         const historyName: string = historyNameCache?.get(path);
-        let mangled = historyName ?? getPropertyMangledName(original);
+        let mangled = historyName ?? getPropertyMangledName(original, path);
         if (nameCache && nameCache.get(IDENTIFIER_CACHE)) {
           (nameCache.get(IDENTIFIER_CACHE) as Map<string, string>).set(path, mangled);
         }
@@ -646,6 +641,34 @@ namespace secharmony {
         return false;
       }
     }
+
+    function initWhitelist(): void {
+      if (profile?.mRenameProperties) {
+        PropCollections.enablePropertyObfuscation = true;
+        if (!isInitializedReservedList) {
+          const tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
+          tmpReservedProps.forEach(item => {
+            PropCollections.reservedProperties.add(item);
+          });
+          PropCollections.mangledPropsInNameCache = new Set(PropCollections.historyMangledTable?.values());
+          PropCollections.universalReservedProperties = profile?.mUniversalReservedProperties ?? [];
+          UnobfuscationCollections.reservedLangForTopLevel.forEach(element => {
+            UnobfuscationCollections.reservedLangForProperty.add(element);
+          });
+          UnobfuscationCollections.reservedExportName.forEach(element => {
+            UnobfuscationCollections.reservedExportNameAndProp.add(element);
+          });
+          UnobfuscationCollections.reservedSdkApiForGlobal.forEach(element => {
+            UnobfuscationCollections.reservedSdkApiForProp.add(element);
+          });
+          isInitializedReservedList = true;
+        }
+      }
+      LocalVariableCollections.reservedConfig = new Set(profile?.mReservedNames ?? []);
+      LocalVariableCollections.reservedStruct = new Set();
+      profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
+      profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
+    }
   };
 
   function isSkippedGlobal(enableTopLevel: boolean, scope: Scope): boolean {
@@ -660,6 +683,7 @@ namespace secharmony {
 
   export let nameCache: Map<string, string | Map<string, string>> = new Map();
   export let historyNameCache: Map<string, string> = undefined;
+  export let historyUnobfuscatedNamesMap: Map<string, string[]> = undefined;
   export let identifierLineMap: Map<Identifier, string> = new Map();
   export let classMangledName: Map<Node, string> = new Map();
   // Record the original class name and line number range to distinguish between class names and member method names.
@@ -668,9 +692,11 @@ namespace secharmony {
   export function clearCaches(): void {
     nameCache.clear();
     historyNameCache = undefined;
+    historyUnobfuscatedNamesMap = undefined;
     identifierLineMap.clear();
     classMangledName.clear();
     classInfoInMemberMethodCache.clear();
+    UnobfuscationCollections.unobfuscatedNamesMap.clear();
   }
 }
 

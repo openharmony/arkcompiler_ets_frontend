@@ -33,7 +33,7 @@ import {
   SyntaxKind,
   isExpressionStatement,
   isClassExpression,
-  getModifiers,
+  getModifiers
 } from 'typescript';
 
 import type {
@@ -54,6 +54,7 @@ import type {
 } from 'typescript';
 
 import { ApiExtractor } from '../common/ApiExtractor';
+import { UnobfuscationCollections } from './CommonCollections';
 
 export const stringPropsSet: Set<string> = new Set();
 /**

@@ -1,7 +1,7 @@
 {
     "mCompact": false,
     "mRemoveComments": true,
-    "mOutputDir": "../../local",
+    "mOutputDir": "../../../local",
     "mDisableHilog": false,
     "mDisableConsole": false,
     "mSimplify": false,
@@ -10,22 +10,21 @@
         "mNameGeneratorType": 1,
         "mDictionaryList": [],
         "mReservedToplevelNames": [
-            "moduleName01",
-            "stringLiteralObj02",
-            "Interface11",
-            "class11",
-            "enum11",
-            "Object11"
+            "toplevel1"
         ],
         "mRenameProperties": true,
         "mReservedProperties": [
-            "strictEqual",
-            "readFileSync"
+            "property1",
+            "*de"
         ],
-        "mKeepStringProperty": true,
+        "mKeepStringProperty": false,
         "mTopLevel": true
     },
+    "mUnobfuscationOption":{
+        "mPrintKeptNames": true,
+        "mPrintPath": "./print_path"
+    },
     "mEnableSourceMap": false,
-    "mEnableNameCache": false
-  
+    "mEnableNameCache": false,
+    "mExportObfuscation": true
 }

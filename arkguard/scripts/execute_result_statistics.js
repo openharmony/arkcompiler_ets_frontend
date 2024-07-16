@@ -22,6 +22,8 @@ import { FileUtils } from '../src/utils/FileUtils';
 
 const testDirectory = path.resolve('./test/local');
 const NonExecutableFile = ['name_as_export_api_1.ts', 'name_as_import_api_1.ts', 'ohmurl_test.ts', 'ohmurl_test_new.ts', 'export_struct_transform_class.ts'];
+const PRINT_UNOBFUSCATION_SUFFIX = 'keptNames.unobf.json';
+const EXPECTED_UNOBFUSCATION_SUFFIX = '_expected_unobf.txt';
 
 function runTest(filePath) {
   try {
@@ -88,6 +90,12 @@ function compareContent(filePath) {
   const hasExpectationFile = fs.existsSync(expectationPath);
   const hasExpectationCache = fs.existsSync(expectationCachePath);
   const hasResultCache = fs.existsSync(resultCachePath);
+  // compare print_unobfuscation
+  const resultUnobfuscationPath = path.join(path.dirname(resultPathAndExtension.path), PRINT_UNOBFUSCATION_SUFFIX);
+  const expectUnobfuscationPath = sourcePathAndExtension.path + EXPECTED_UNOBFUSCATION_SUFFIX;
+  const hasExpectationUnobfuscation = fs.existsSync(expectUnobfuscationPath);
+  const hasResultUnobfuscation = fs.existsSync(resultUnobfuscationPath);
+
   const compareExpected = function(filePath, actual, expectation) {
     if (actual.replace(/(\n|\r\n)/g, '') === expectation.replace(/(\n|\r\n)/g, '')) {
       contentcomparationSuccessCount++;
@@ -101,17 +109,23 @@ function compareContent(filePath) {
       });
     }
   };
-  if (hasExpectationFile || (hasExpectationCache && hasResultCache)) {
-    if (hasExpectationFile) {
-      let actual = fs.readFileSync(filePath).toString();
-      let expectation = fs.readFileSync(expectationPath).toString();
-      compareExpected(filePath, actual, expectation);
-    }
-    if (hasExpectationCache) {
-      let actual = fs.readFileSync(resultCachePath).toString();
-      let expectation = fs.readFileSync(expectationCachePath).toString();
-      compareExpected(filePath, actual, expectation);
-    }
+
+  if (hasExpectationFile) {
+    let actual = fs.readFileSync(filePath).toString();
+    let expectation = fs.readFileSync(expectationPath).toString();
+    compareExpected(filePath, actual, expectation);
+  }
+
+  if (hasExpectationCache && hasResultCache) {
+    let actual = fs.readFileSync(resultCachePath).toString();
+    let expectation = fs.readFileSync(expectationCachePath).toString();
+    compareExpected(filePath, actual, expectation);
+  }
+
+  if (hasExpectationUnobfuscation && hasResultUnobfuscation) {
+    let actual = fs.readFileSync(resultUnobfuscationPath).toString();
+    let expectation = fs.readFileSync(expectUnobfuscationPath).toString();
+    compareExpected(filePath, actual, expectation);
   }
 }
 

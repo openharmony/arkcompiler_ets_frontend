@@ -809,23 +809,26 @@ export namespace ApiExtractor {
   * @return reserved api names
   */
   export function parseFileByPaths(projectPaths: Set<string>, scanningApiType: ApiType): 
-    {reservedProperties: string[]; reservedExportNames: string[]} {
+    {reservedExportPropertyAndName: Set<string> | undefined; reservedExportNames: Set<string> | undefined} {
     mPropertySet.clear();
     mExportNames.clear();
     projectPaths.forEach(path => {
       parseFile(path, scanningApiType);
     });
-    let reservedProperties: string[] = [];
-    let reservedExportNames: string[] = [];
+    let reservedExportPropertyAndName: Set<string>;
+    let reservedExportNames: Set<string>;
     if (scanProjectConfig.mPropertyObfuscation) {
-      reservedProperties = [...mPropertySet];
+      reservedExportPropertyAndName = new Set(mPropertySet);
     }
     if (scanProjectConfig.mExportObfuscation) {
-      reservedExportNames = [...mExportNames];
+      reservedExportNames = new Set(mExportNames);
     }
     mPropertySet.clear();
     mExportNames.clear();
-    return {reservedProperties: reservedProperties, reservedExportNames: reservedExportNames};
+    return {
+      reservedExportPropertyAndName: reservedExportPropertyAndName,
+      reservedExportNames: reservedExportNames
+    };
   }
 
   /**

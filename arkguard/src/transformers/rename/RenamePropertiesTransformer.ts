@@ -47,7 +47,7 @@ import type {
 } from 'typescript';
 
 import type {IOptions} from '../../configs/IOptions';
-import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
+import type { INameObfuscationOption } from '../../configs/INameObfuscationOption';
 import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGenerator';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
@@ -56,13 +56,13 @@ import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 import { ArkObfuscator, performancePrinter } from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
-import { needToBeReserved } from '../../utils/TransformUtil';
+import { needToReservedProperty, recordReservedName } from '../../utils/TransformUtil';
 import {
   classInfoInMemberMethodCache,
   nameCache
 } from './RenameIdentifierTransformer';
 import { UpdateMemberMethodName } from '../../utils/NameCacheUtil';
-import { PropCollections } from '../../utils/CommonCollections';
+import { PropCollections, UnobfuscationCollections } from '../../utils/CommonCollections';
 
 namespace secharmony {
   /**
@@ -160,11 +160,12 @@ namespace secharmony {
         }
 
         if (isStringLiteralLike(node) && profile?.mKeepStringProperty) {
+          recordReservedName(node.text, 'strProp', UnobfuscationCollections.unobfuscatedPropMap); 
           return node;
         }
 
         let original: string = node.text;
-        if (needToBeReserved(PropCollections.reservedProperties, PropCollections.universalReservedProperties, original)) {
+        if (needToReservedProperty(original, UnobfuscationCollections.unobfuscatedPropMap)) {
           return node;
         }
 
@@ -200,10 +201,9 @@ namespace secharmony {
       function getPropertyName(original: string): string {
         const historyName: string = PropCollections.historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : PropCollections.globalMangledTable.get(original);
-
         while (!mangledName) {
           let tmpName = generator.getName();
-          if (needToBeReserved(PropCollections.reservedProperties, PropCollections.universalReservedProperties, tmpName) ||
+          if (needToReservedProperty(tmpName) ||
             tmpName === original) {
             continue;
           }
@@ -233,14 +233,14 @@ namespace secharmony {
           return;
         }
 
-        PropCollections.reservedProperties.add(childNode.text);
+        UnobfuscationCollections.reservedEnum.add(childNode.text);
       }
 
       // enum syntax has special scenarios
       function collectReservedNames(node: Node): void {
         // collect ViewPU class properties
         if (isClassDeclaration(node) && isViewPUBasedClass(node)) {
-          getViewPUClassProperties(node, PropCollections.reservedProperties);
+          getViewPUClassProperties(node, UnobfuscationCollections.reservedStruct);
           return;
         }
 
