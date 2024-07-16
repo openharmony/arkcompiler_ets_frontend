@@ -516,6 +516,10 @@ namespace secharmony {
     }
 
     function analyzeNamespaceExport(node: NamespaceExport): void {
+      if (!exportObfuscation) {
+        return;
+      }
+
       let symbol = checker.getSymbolAtLocation(node.name);
       if (symbol) {
         current.addDefinition(symbol, true);

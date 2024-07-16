@@ -134,6 +134,10 @@ namespace secharmony {
       }
 
       let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', '__global'];
+      // the default whitelist of toplevel option
+      const defaultReservedToplevelNames: string[] = ['__global'];
+
+      defaultReservedToplevelNames.forEach(item => PropCollections.reservedProperties.add(item));
       profile?.mReservedToplevelNames?.forEach(item => PropCollections.reservedProperties.add(item));
       profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
