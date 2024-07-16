@@ -26,8 +26,38 @@ test262/data/test_es2021/built-ins/TypedArray/prototype/filter/speciesctor-get-s
 test262/data/test_es2021/intl402/Locale/constructor-options-language-invalid.js
 test262/data/test_es2021/intl402/Locale/constructor-options-region-invalid.js
 test262/data/test_es2021/intl402/Locale/constructor-options-script-invalid.js
+test262/data/test_es2021/intl402/Locale/constructor-options-canonicalized.js
 # --- end of Issue #17882
 
 #17884
 test262/data/test_es2021/language/expressions/template-literal/literal-expr-primitive.js
 # --- end of Issue #17864
+
+#18184
+test262/data/test_es2021/intl402/Collator/prototype/resolvedOptions/basic.js
+test262/data/test_es2021/intl402/Collator/taint-Object-prototype.js
+test262/data/test_es2021/intl402/DateTimeFormat/constructor-options-fractionalSecondDigits-invalid.js
+test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-date-time-components.js
+test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-fractionalSecondDigits.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/preferred-variant.js
+test262/data/test_es2021/intl402/NumberFormat/constructor-unit.js
+test262/data/test_es2021/intl402/NumberFormat/taint-Object-prototype.js
+test262/data/test_es2021/intl402/PrularRules/prototype/resolvedOptions/properties.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-auto.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/en-us-style-short.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-long.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-narrow.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-short.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-always.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/pl-pl-style-narrow.js
+test262/data/test_es2021/intl402/String/prototype/localeCompare/returns-same-results-as-Collator.js
+test262/data/test_es2021/intl402/fallback-locales-are-supported.js
+test262/data/test_es2021/intl402/supportedLocalesOf-consistent-with-resolvedOptions.js
+test262/data/test_es2021/intl402/supportedLocalesOf-unicode-extensions-ignored.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/unicode-ext-canonicalize-subdivision.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/en-us-numeric-always.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-numeric-auto.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/complex-language-subtag-replacement.js
+test262/data/test_es2021/intl402/Intl/getCanonicalLocales/complex-region-subtag-replacement.js
+test262/data/test_es2021/intl402/DateTimeFormat/prototype/resolvedOptions/basic.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/formatToParts/en-us-style-short.js
