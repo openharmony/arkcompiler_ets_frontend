@@ -77,7 +77,7 @@ class C3 {
   public s: string = '';
 }
 
-//let c6: C3 = {n: 42, s: 'foo'}; // CTE in TypeScript, CTE in ArkTS
+// CTE in TypeScript, CTE in ArkTS // let c6: C3 = {n: 42, s: 'foo'},
 
 class C4 {
   readonly n: number = 0;
@@ -118,7 +118,7 @@ class C7 {
   n: number = 0;
   s: string = '';
 }
-//let c10: C7 = {n: 42, s: '', extra: true}; // TS: CTE, ArtTS: CTE
+// TS: CTE, ArtTS: CTE // let c10: C7 = {n: 42, s: '', extra: true},
 let o1: Object = {s: '', n: 42} // OK in TS, CTE in ArkTS: no fields 'n' and 's' in Object
 let o2: object = {n: 42, s: ''} // OK in TS, CTE in ArkTS: no fields 'n' and 's' in object
 
