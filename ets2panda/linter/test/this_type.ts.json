@@ -15,39 +15,9 @@
     ],
     "nodes": [
         {
-            "line": 17,
-            "column": 13,
-            "problem": "ThisType"
-        },
-        {
-            "line": 19,
-            "column": 13,
-            "problem": "ThisType"
-        },
-        {
-            "line": 21,
-            "column": 30,
-            "problem": "ThisType"
-        },
-        {
-            "line": 31,
-            "column": 13,
-            "problem": "ThisType"
-        },
-        {
-            "line": 36,
-            "column": 13,
-            "problem": "ThisType"
-        },
-        {
-            "line": 41,
-            "column": 30,
-            "problem": "ThisType"
-        },
-        {
             "line": 53,
             "column": 8,
-            "problem": "ThisType"
+            "problem": "ThisTyping"
         },
         {
             "line": 73,

@@ -67,7 +67,7 @@ export enum FaultID {
   ImplementsClass,
   MethodReassignment,
   MultipleStaticBlocks,
-  ThisType,
+  ThisTyping,
   IntefaceExtendDifProps,
   StructuralIdentity,
   ExportAssignment,

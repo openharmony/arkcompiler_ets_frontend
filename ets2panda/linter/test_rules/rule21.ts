@@ -13,26 +13,18 @@
  * limitations under the License.
  */
 
-interface ListItem {
-    getHead(): this
-}
-
 class C {
     n: number = 0
 
     m(c: this) {
         console.log(c)
     }
-}
 
-interface ListItem2 {
-    getHead(): ListItem
-}
+    foo(): this {
+        return this.bar();
+    }
 
-class D {
-    n: number = 0
-
-    m(c: D) {
-        console.log(c)
+    bar(): this {
+        return this;
     }
 }

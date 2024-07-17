@@ -16,10 +16,10 @@
     "nodes": [
         {
             "line": 23,
-            "column": 16,
-            "problem": "ThisType",
+            "column": 30,
+            "problem": "ThisTyping",
             "suggest": "",
-            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)"
+            "rule": "Type notation using \"this\" is only supported for methods, that return \"this\" explicitly (arkts-this-typing)"
         }
     ]
 }
