@@ -20,6 +20,7 @@ action("build_arkguard") {
   sources = [
     "package.json",
     "src/ArkObfuscator.ts",
+    "src/ArkObfuscatorForTest.ts",
     "src/IObfuscator.ts",
     "src/cli/SecHarmony.ts",
     "src/common/ApiExtractor.ts",

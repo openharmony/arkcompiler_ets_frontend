@@ -16,14 +16,15 @@
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 import { ArkObfuscator, FileUtils, wildcardTransformer } from '../../../src/ArkObfuscator';
+import { ArkObfuscatorForTest } from '../../../src/ArkObfuscatorForTest'
 import path from 'path';
 import { TransformerFactory, Node, SourceFile, createSourceFile, ScriptTarget, Printer, createTextWriter, RawSourceMap } from 'typescript';
 import { IOptions } from '../../../src/configs/IOptions';
 import { getSourceMapGenerator } from '../../../src/utils/SourceMapUtil';
 import fs from 'fs';
 
-describe('Tester Cases for <ArkObfuscator>.', function () {
-  describe('Tester Cases for <ArkObfuscator>.', function () {
+describe('Tester Cases for <ArkObfuscatorForTest>.', function () {
+  describe('Tester Cases for <ArkObfuscatorForTest>.', function () {
     let etsSourceFile: SourceFile;
     let dEtsSourceFile: SourceFile;
     let tsSourceFile: SourceFile;
@@ -76,10 +77,10 @@ class Demo{
 
     it('Tester: test case for handleTsHarComments for ets file', function () {
       let mCustomProfiles: IOptions | undefined = FileUtils.readFileAsJson(path.join(__dirname, "default_config.json"));
-      let arkobfuscator = new ArkObfuscator();
+      let arkobfuscator = new ArkObfuscatorForTest();
       arkobfuscator.init(mCustomProfiles);
       let originalFilePath = 'demo.ets';
-      ArkObfuscator.projectInfo = { packageDir: '', projectRootPath: '', localPackageSet: new Set<string>(), useNormalized: false, useTsHar: true };
+      ArkObfuscatorForTest.projectInfo = { packageDir: '', projectRootPath: '', localPackageSet: new Set<string>(), useNormalized: false, useTsHar: true };
       arkobfuscator.handleTsHarComments(etsSourceFile, originalFilePath);
       let sourceMapGenerator = getSourceMapGenerator(originalFilePath);
       const textWriter = createTextWriter('\n');
@@ -115,9 +116,9 @@ class Demo{
 
     it('Tester: test case for handleTsHarComments for d.ets file', function () {
       let mCustomProfiles: IOptions | undefined = FileUtils.readFileAsJson(path.join(__dirname, "default_config.json"));
-      let arkobfuscator = new ArkObfuscator();
+      let arkobfuscator = new ArkObfuscatorForTest();
       arkobfuscator.init(mCustomProfiles);
-      ArkObfuscator.projectInfo = { packageDir: '', projectRootPath: '', localPackageSet: new Set<string>(), useNormalized: false, useTsHar: true };
+      ArkObfuscatorForTest.projectInfo = { packageDir: '', projectRootPath: '', localPackageSet: new Set<string>(), useNormalized: false, useTsHar: true };
       arkobfuscator.handleTsHarComments(dEtsSourceFile, dEtsSourceFilePath);
       let sourceMapGenerator = getSourceMapGenerator(dEtsSourceFilePath);
       const textWriter = createTextWriter('\n');
@@ -139,9 +140,9 @@ class Demo{
 
     it('Tester: test case for handleTsHarComments for ts file', function () {
       let mCustomProfiles: IOptions | undefined = FileUtils.readFileAsJson(path.join(__dirname, "default_config.json"));
-      let arkobfuscator = new ArkObfuscator();
+      let arkobfuscator = new ArkObfuscatorForTest();
       arkobfuscator.init(mCustomProfiles);
-      ArkObfuscator.projectInfo = { packageDir: '', projectRootPath: '', localPackageSet: new Set<string>(), useNormalized: false, useTsHar: true };
+      ArkObfuscatorForTest.projectInfo = { packageDir: '', projectRootPath: '', localPackageSet: new Set<string>(), useNormalized: false, useTsHar: true };
       arkobfuscator.handleTsHarComments(tsSourceFile, tsSourceFilePath);
       let sourceMapGenerator = getSourceMapGenerator(tsSourceFilePath);
       const textWriter = createTextWriter('\n');
@@ -161,11 +162,12 @@ class Demo{
     });
   });
 
-  describe('Tester Cases for <ArkObfuscator>.', function () {
-    it('Tester: test case for ArkObfuscator.ini: mConfigPath != ""', function (){
+  describe('Tester Cases for <ArkObfuscatorForTest>.', function () {
+    it('Tester: test case for ArkObfuscatorForTest.ini', function (){
       let configPath = "test/ut/arkobfuscator/iniTestObfConfig.json"
-      let obfuscator: ArkObfuscator = new ArkObfuscator(undefined, configPath);
-      let initSuccess = obfuscator.init();
+      let obfuscator: ArkObfuscatorForTest = new ArkObfuscatorForTest();
+      const originalConfig: IOptions | undefined = FileUtils.readFileAsJson(configPath);
+      obfuscator.init(originalConfig);
       let config = obfuscator.customProfiles;
       let reservedTopelevelNames = config.mNameObfuscation?.mReservedToplevelNames;
       let reservedProperty = config.mNameObfuscation?.mReservedProperties;
@@ -179,12 +181,14 @@ class Demo{
       assert.equal(universalReservedProperties[2].toString(), new RegExp(`^${wildcardTransformer("*pro?")}$`).toString());
       assert.equal(universalReservedProperties[1].toString(), new RegExp(`^${wildcardTransformer("function*")}$`).toString());
     });
+  });
 
-    it('Tester: test case for ArkObfuscator.ini: mConfigPath == ""', function (){
+  describe('Tester Cases for <ArkObfuscator>.', function () {
+    it('Tester: test case for ArkObfuscator.ini', function (){
       let configPath = "test/ut/arkobfuscator/iniTestObfConfig.json"
       let obfuscator: ArkObfuscator = new ArkObfuscator();
       let config = FileUtils.readFileAsJson(configPath) as IOptions;
-      let initSuccess = obfuscator.init(config);
+      obfuscator.init(config);
       let reservedTopelevelNames = config.mNameObfuscation?.mReservedToplevelNames;
       let reservedProperty = config.mNameObfuscation?.mReservedProperties;
       let universalReservedToplevelNames = config.mNameObfuscation?.mUniversalReservedToplevelNames;
