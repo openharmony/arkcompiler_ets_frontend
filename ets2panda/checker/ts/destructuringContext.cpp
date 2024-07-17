@@ -342,8 +342,8 @@ Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
     }
 
     index_ = savedIdx;
-    return checker_->CreateTupleType(desc, std::move(elementFlags), ElementFlags::REQUIRED, iterIndex, iterIndex,
-                                     false);
+    const checker::TupleTypeInfo tupleTypeInfo = {ElementFlags::REQUIRED, iterIndex, iterIndex, false};
+    return checker_->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo);
 }
 
 Type *ArrayDestructuringContext::GetRestType([[maybe_unused]] const lexer::SourcePosition &loc)

@@ -265,6 +265,52 @@ static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VRe
     }
 }
 
+static void CompilePropertyKind(const ir::MethodDefinition *prop, compiler::VReg dest, compiler::PandaGen *pg,
+                                const ir::ClassDefinition *node)
+{
+    switch (prop->Kind()) {
+        case ir::MethodDefinitionKind::METHOD: {
+            compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
+
+            pg->LoadAccumulator(node, dest);
+            const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
+            func->Compile(pg);
+
+            pg->StoreOwnProperty(prop->Value()->Parent(), dest, key);
+            break;
+        }
+        case ir::MethodDefinitionKind::GET:
+        case ir::MethodDefinitionKind::SET: {
+            compiler::VReg keyReg = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+
+            compiler::VReg undef = pg->AllocReg();
+            pg->LoadConst(node, compiler::Constant::JS_UNDEFINED);
+            pg->StoreAccumulator(node, undef);
+
+            compiler::VReg getter = undef;
+            compiler::VReg setter = undef;
+
+            pg->LoadAccumulator(node, dest);
+
+            compiler::VReg accessor = pg->AllocReg();
+            prop->Value()->Compile(pg);
+            pg->StoreAccumulator(prop->Value(), accessor);
+
+            if (prop->Kind() == ir::MethodDefinitionKind::GET) {
+                getter = accessor;
+            } else {
+                setter = accessor;
+            }
+
+            pg->DefineGetterSetterByValue(node, std::make_tuple(dest, keyReg, getter, setter), prop->IsComputed());
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
 static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled, compiler::VReg classReg,
                                      const ir::ClassDefinition *node)
 {
@@ -296,49 +342,7 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
             const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
             compiler::VReg dest = prop->IsStatic() ? classReg : protoReg;
             compiler::RegScope rs(pg);
-
-            switch (prop->Kind()) {
-                case ir::MethodDefinitionKind::METHOD: {
-                    compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
-
-                    pg->LoadAccumulator(node, dest);
-                    const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
-                    func->Compile(pg);
-
-                    pg->StoreOwnProperty(prop->Value()->Parent(), dest, key);
-                    break;
-                }
-                case ir::MethodDefinitionKind::GET:
-                case ir::MethodDefinitionKind::SET: {
-                    compiler::VReg keyReg = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
-
-                    compiler::VReg undef = pg->AllocReg();
-                    pg->LoadConst(node, compiler::Constant::JS_UNDEFINED);
-                    pg->StoreAccumulator(node, undef);
-
-                    compiler::VReg getter = undef;
-                    compiler::VReg setter = undef;
-
-                    pg->LoadAccumulator(node, dest);
-
-                    compiler::VReg accessor = pg->AllocReg();
-                    prop->Value()->Compile(pg);
-                    pg->StoreAccumulator(prop->Value(), accessor);
-
-                    if (prop->Kind() == ir::MethodDefinitionKind::GET) {
-                        getter = accessor;
-                    } else {
-                        setter = accessor;
-                    }
-
-                    pg->DefineGetterSetterByValue(node, std::make_tuple(dest, keyReg, getter, setter),
-                                                  prop->IsComputed());
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                }
-            }
+            CompilePropertyKind(prop, dest, pg, node);
 
             continue;
         }
@@ -1077,6 +1081,60 @@ void JSCompiler::CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *c
     }
 }
 
+void CompileRemainingPropertyKind(const ir::Property *prop, compiler::VReg objReg, compiler::PandaGen *pg,
+                                  const ir::ObjectExpression *expr)
+{
+    switch (prop->Kind()) {
+        case ir::PropertyKind::GET:
+        case ir::PropertyKind::SET: {
+            compiler::VReg key = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+
+            compiler::VReg undef = pg->AllocReg();
+            pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+            pg->StoreAccumulator(expr, undef);
+
+            compiler::VReg getter = undef;
+            compiler::VReg setter = undef;
+
+            compiler::VReg accessor = pg->AllocReg();
+            pg->LoadAccumulator(prop->Value(), objReg);
+            prop->Value()->Compile(pg);
+            pg->StoreAccumulator(prop->Value(), accessor);
+
+            if (prop->Kind() == ir::PropertyKind::GET) {
+                getter = accessor;
+            } else {
+                setter = accessor;
+            }
+
+            pg->DefineGetterSetterByValue(expr, std::make_tuple(objReg, key, getter, setter), prop->IsComputed());
+            break;
+        }
+        case ir::PropertyKind::INIT: {
+            compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
+
+            if (prop->IsMethod()) {
+                pg->LoadAccumulator(prop->Value(), objReg);
+            }
+
+            prop->Value()->Compile(pg);
+            pg->StoreOwnProperty(expr, objReg, key);
+            break;
+        }
+        case ir::PropertyKind::PROTO: {
+            prop->Value()->Compile(pg);
+            compiler::VReg proto = pg->AllocReg();
+            pg->StoreAccumulator(expr, proto);
+
+            pg->SetObjectWithProto(expr, proto, objReg);
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
 void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::BitSet *compiled,
                                             const ir::ObjectExpression *expr) const
 {
@@ -1104,56 +1162,7 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
         }
 
         const ir::Property *prop = expr->Properties()[i]->AsProperty();
-
-        switch (prop->Kind()) {
-            case ir::PropertyKind::GET:
-            case ir::PropertyKind::SET: {
-                compiler::VReg key = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
-
-                compiler::VReg undef = pg->AllocReg();
-                pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
-                pg->StoreAccumulator(expr, undef);
-
-                compiler::VReg getter = undef;
-                compiler::VReg setter = undef;
-
-                compiler::VReg accessor = pg->AllocReg();
-                pg->LoadAccumulator(prop->Value(), objReg);
-                prop->Value()->Compile(pg);
-                pg->StoreAccumulator(prop->Value(), accessor);
-
-                if (prop->Kind() == ir::PropertyKind::GET) {
-                    getter = accessor;
-                } else {
-                    setter = accessor;
-                }
-
-                pg->DefineGetterSetterByValue(expr, std::make_tuple(objReg, key, getter, setter), prop->IsComputed());
-                break;
-            }
-            case ir::PropertyKind::INIT: {
-                compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
-
-                if (prop->IsMethod()) {
-                    pg->LoadAccumulator(prop->Value(), objReg);
-                }
-
-                prop->Value()->Compile(pg);
-                pg->StoreOwnProperty(expr, objReg, key);
-                break;
-            }
-            case ir::PropertyKind::PROTO: {
-                prop->Value()->Compile(pg);
-                compiler::VReg proto = pg->AllocReg();
-                pg->StoreAccumulator(expr, proto);
-
-                pg->SetObjectWithProto(expr, proto, objReg);
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
+        CompileRemainingPropertyKind(prop, objReg, pg, expr);
     }
 
     pg->LoadAccumulator(expr, objReg);

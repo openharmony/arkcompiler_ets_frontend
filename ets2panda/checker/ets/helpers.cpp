@@ -310,6 +310,29 @@ std::tuple<Type *, bool> ETSChecker::ApplyBinaryOperatorPromotion(Type *left, Ty
     return {unboxedR, bothConst};
 }
 
+std::optional<checker::Type *> CheckLeftRightType(checker::ETSChecker *checker, checker::Type *unboxedL,
+                                                  checker::Type *unboxedR)
+{
+    if (unboxedL->IsDoubleType() || unboxedR->IsDoubleType()) {
+        return checker->GlobalDoubleType();
+    }
+    if (unboxedL->IsFloatType() || unboxedR->IsFloatType()) {
+        return checker->GlobalFloatType();
+    }
+    if (unboxedL->IsLongType() || unboxedR->IsLongType()) {
+        return checker->GlobalLongType();
+    }
+    if (unboxedL->IsIntType() || unboxedR->IsIntType() || unboxedL->IsCharType() || unboxedR->IsCharType()) {
+        return checker->GlobalIntType();
+    }
+    if (unboxedL->IsShortType() || unboxedR->IsShortType()) {
+        return checker->GlobalShortType();
+    }
+    if (unboxedL->IsByteType() || unboxedR->IsByteType()) {
+        return checker->GlobalByteType();
+    }
+    return std::nullopt;
+}
 checker::Type *ETSChecker::ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxedL,
                                                              checker::Type *unboxedR)
 {
@@ -340,25 +363,10 @@ checker::Type *ETSChecker::ApplyConditionalOperatorPromotion(checker::ETSChecker
         return checker->GlobalIntType();
     }
 
-    if (unboxedL->IsDoubleType() || unboxedR->IsDoubleType()) {
-        return checker->GlobalDoubleType();
+    auto checkLeftRight = CheckLeftRightType(checker, unboxedL, unboxedR);
+    if (checkLeftRight.has_value()) {
+        return checkLeftRight.value();
     }
-    if (unboxedL->IsFloatType() || unboxedR->IsFloatType()) {
-        return checker->GlobalFloatType();
-    }
-    if (unboxedL->IsLongType() || unboxedR->IsLongType()) {
-        return checker->GlobalLongType();
-    }
-    if (unboxedL->IsIntType() || unboxedR->IsIntType() || unboxedL->IsCharType() || unboxedR->IsCharType()) {
-        return checker->GlobalIntType();
-    }
-    if (unboxedL->IsShortType() || unboxedR->IsShortType()) {
-        return checker->GlobalShortType();
-    }
-    if (unboxedL->IsByteType() || unboxedR->IsByteType()) {
-        return checker->GlobalByteType();
-    }
-
     UNREACHABLE();
 }
 
@@ -628,27 +636,9 @@ checker::Type *PreferredObjectTypeFromAnnotation(checker::Type *annotationType)
     return resolvedType;
 }
 
-checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
-                                                    ir::Expression *init, ir::ModifierFlags const flags)
+void ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
+                           checker::Type *annotationType, varbinder::Variable *const bindingVar)
 {
-    const util::StringView &varName = ident->Name();
-    ASSERT(ident->Variable());
-    varbinder::Variable *const bindingVar = ident->Variable();
-    checker::Type *annotationType = nullptr;
-
-    const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
-    const bool isReadonly = (flags & ir::ModifierFlags::READONLY) != 0;
-    const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
-
-    if (typeAnnotation != nullptr) {
-        annotationType = typeAnnotation->GetType(this);
-        bindingVar->SetTsType(annotationType);
-    }
-
-    if (init == nullptr) {
-        return FixOptionalVariableType(bindingVar, flags);
-    }
-
     if (typeAnnotation == nullptr) {
         if (init->IsArrayExpression()) {
             annotationType = CheckArrayElements(ident, init->AsArrayExpression());
@@ -686,6 +676,30 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     if (typeAnnotation != nullptr && init->IsArrowFunctionExpression()) {
         InferAliasLambdaType(typeAnnotation, init->AsArrowFunctionExpression());
     }
+}
+
+checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation,
+                                                    ir::Expression *init, ir::ModifierFlags const flags)
+{
+    const util::StringView &varName = ident->Name();
+    ASSERT(ident->Variable());
+    varbinder::Variable *const bindingVar = ident->Variable();
+    checker::Type *annotationType = nullptr;
+
+    const bool isConst = (flags & ir::ModifierFlags::CONST) != 0;
+    const bool isReadonly = (flags & ir::ModifierFlags::READONLY) != 0;
+    const bool isStatic = (flags & ir::ModifierFlags::STATIC) != 0;
+
+    if (typeAnnotation != nullptr) {
+        annotationType = typeAnnotation->GetType(this);
+        bindingVar->SetTsType(annotationType);
+    }
+
+    if (init == nullptr) {
+        return FixOptionalVariableType(bindingVar, flags);
+    }
+
+    CheckInit(ident, typeAnnotation, init, annotationType, bindingVar);
 
     checker::Type *initType = init->Check(this);
 
@@ -1333,44 +1347,36 @@ void ETSChecker::ConcatConstantString(util::UString &target, Type *type)
             break;
         }
         case TypeFlag::ETS_BOOLEAN: {
-            ETSBooleanType::UType value = type->AsETSBooleanType()->GetValue();
-            target.Append(value ? "true" : "false");
+            target.Append(type->AsETSBooleanType()->GetValue() ? "true" : "false");
             break;
         }
         case TypeFlag::BYTE: {
-            ByteType::UType value = type->AsByteType()->GetValue();
-            target.Append(std::to_string(value));
+            target.Append(std::to_string(type->AsByteType()->GetValue()));
             break;
         }
         case TypeFlag::CHAR: {
-            CharType::UType value = type->AsCharType()->GetValue();
-            std::string s(1, value);
+            std::string s(1, type->AsCharType()->GetValue());
             target.Append(s);
             break;
         }
         case TypeFlag::SHORT: {
-            ShortType::UType value = type->AsShortType()->GetValue();
-            target.Append(std::to_string(value));
+            target.Append(std::to_string(type->AsShortType()->GetValue()));
             break;
         }
         case TypeFlag::INT: {
-            IntType::UType value = type->AsIntType()->GetValue();
-            target.Append(std::to_string(value));
+            target.Append(std::to_string(type->AsIntType()->GetValue()));
             break;
         }
         case TypeFlag::LONG: {
-            LongType::UType value = type->AsLongType()->GetValue();
-            target.Append(std::to_string(value));
+            target.Append(std::to_string(type->AsLongType()->GetValue()));
             break;
         }
         case TypeFlag::FLOAT: {
-            FloatType::UType value = type->AsFloatType()->GetValue();
-            target.Append(std::to_string(value));
+            target.Append(std::to_string(type->AsFloatType()->GetValue()));
             break;
         }
         case TypeFlag::DOUBLE: {
-            DoubleType::UType value = type->AsDoubleType()->GetValue();
-            target.Append(std::to_string(value));
+            target.Append(std::to_string(type->AsDoubleType()->GetValue()));
             break;
         }
         default: {

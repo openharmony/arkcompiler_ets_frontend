@@ -151,23 +151,22 @@ Type *TSChecker::CreateConstructorTypeWithSignature(Signature *constructSignatur
 }
 
 Type *TSChecker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags,
-                                 ElementFlags combinedFlags, uint32_t minLength, uint32_t fixedLength, bool readonly)
+                                 const TupleTypeInfo &tupleTypeInfo)
 {
-    desc->stringIndexInfo = Allocator()->New<IndexInfo>(GlobalAnyType(), "x", readonly);
+    desc->stringIndexInfo = Allocator()->New<IndexInfo>(GlobalAnyType(), "x", tupleTypeInfo.readonly);
     checker::NamedTupleMemberPool namedMembers(Allocator()->Adapter());
     return Allocator()->New<TupleType>(
-        std::make_tuple(desc, std::move(elementFlags), combinedFlags, std::move(namedMembers)), minLength, fixedLength,
-        readonly);
+        std::make_tuple(desc, std::move(elementFlags), tupleTypeInfo.combinedFlags, std::move(namedMembers)),
+        tupleTypeInfo.minLength, tupleTypeInfo.fixedLength, tupleTypeInfo.readonly);
 }
 
 Type *TSChecker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags,
-                                 ElementFlags combinedFlags, uint32_t minLength, uint32_t fixedLength, bool readonly,
-                                 NamedTupleMemberPool &&namedMembers)
+                                 const TupleTypeInfo &tupleTypeInfo, NamedTupleMemberPool &&namedMembers)
 {
-    desc->stringIndexInfo = Allocator()->New<IndexInfo>(GlobalAnyType(), "x", readonly);
+    desc->stringIndexInfo = Allocator()->New<IndexInfo>(GlobalAnyType(), "x", tupleTypeInfo.readonly);
 
     return Allocator()->New<TupleType>(
-        std::make_tuple(desc, std::move(elementFlags), combinedFlags, std::move(namedMembers)), minLength, fixedLength,
-        readonly);
+        std::make_tuple(desc, std::move(elementFlags), tupleTypeInfo.combinedFlags, std::move(namedMembers)),
+        tupleTypeInfo.minLength, tupleTypeInfo.fixedLength, tupleTypeInfo.readonly);
 }
 }  // namespace ark::es2panda::checker
