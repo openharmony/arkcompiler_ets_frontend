@@ -39,6 +39,46 @@
 namespace ark::es2panda::compiler {
 using LiteralPair = std::pair<pandasm::LiteralArray::Literal, pandasm::LiteralArray::Literal>;
 
+static LiteralPair TransformMethodLiterals(const compiler::Literal *literal)
+{
+    pandasm::LiteralArray::Literal valueLit;
+    pandasm::LiteralArray::Literal tagLit;
+
+    compiler::LiteralTag tag = literal->Tag();
+
+    switch (tag) {
+        case compiler::LiteralTag::METHOD: {
+            valueLit.tag = panda_file::LiteralTag::METHOD;
+            valueLit.value = literal->GetMethod();
+            break;
+        }
+        case compiler::LiteralTag::ASYNC_METHOD: {
+            valueLit.tag = panda_file::LiteralTag::ASYNCMETHOD;
+            valueLit.value = literal->GetMethod();
+            break;
+        }
+        case compiler::LiteralTag::GENERATOR_METHOD: {
+            valueLit.tag = panda_file::LiteralTag::GENERATORMETHOD;
+            valueLit.value = literal->GetMethod();
+            break;
+        }
+        case compiler::LiteralTag::ASYNC_GENERATOR_METHOD: {
+            valueLit.tag = panda_file::LiteralTag::ASYNCGENERATORMETHOD;
+            valueLit.value = literal->GetMethod();
+            break;
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+
+    tagLit.tag = panda_file::LiteralTag::TAGVALUE;
+    tagLit.value = static_cast<uint8_t>(valueLit.tag);
+
+    return {tagLit, valueLit};
+}
+
 static LiteralPair TransformLiteral(const compiler::Literal *literal)
 {
     pandasm::LiteralArray::Literal valueLit;
@@ -72,34 +112,13 @@ static LiteralPair TransformLiteral(const compiler::Literal *literal)
             valueLit.value = static_cast<uint8_t>(0);
             break;
         }
-        case compiler::LiteralTag::METHOD: {
-            valueLit.tag = panda_file::LiteralTag::METHOD;
-            valueLit.value = literal->GetMethod();
-            break;
-        }
-        case compiler::LiteralTag::ASYNC_METHOD: {
-            valueLit.tag = panda_file::LiteralTag::ASYNCMETHOD;
-            valueLit.value = literal->GetMethod();
-            break;
-        }
-        case compiler::LiteralTag::GENERATOR_METHOD: {
-            valueLit.tag = panda_file::LiteralTag::GENERATORMETHOD;
-            valueLit.value = literal->GetMethod();
-            break;
-        }
-        case compiler::LiteralTag::ASYNC_GENERATOR_METHOD: {
-            valueLit.tag = panda_file::LiteralTag::ASYNCGENERATORMETHOD;
-            valueLit.value = literal->GetMethod();
-            break;
-        }
         case compiler::LiteralTag::NULL_VALUE: {
             valueLit.tag = panda_file::LiteralTag::NULLVALUE;
             valueLit.value = static_cast<uint8_t>(0);
             break;
         }
         default:
-            UNREACHABLE();
-            break;
+            return TransformMethodLiterals(literal);
     }
 
     tagLit.tag = panda_file::LiteralTag::TAGVALUE;

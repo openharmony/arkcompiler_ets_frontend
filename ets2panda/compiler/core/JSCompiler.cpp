@@ -71,6 +71,67 @@ static compiler::VReg CompileHeritageClause(compiler::PandaGen *pg, const ir::Cl
     return baseReg;
 }
 
+static void CreatePrivateElement(const ir::ClassElement *prop, const ir::MethodDefinition *propMethod,
+                                 compiler::LiteralBuffer &privateBuf, util::StringView name)
+{
+    privateBuf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(propMethod->IsStatic())));
+    privateBuf.emplace_back(name);
+
+    const ir::ScriptFunction *func = propMethod->Value()->AsFunctionExpression()->Function();
+    compiler::LiteralTag tag = compiler::LiteralTag::METHOD;
+    bool isAsyncFunc = func->IsAsyncFunc();
+    if (isAsyncFunc && func->IsGenerator()) {
+        tag = compiler::LiteralTag::ASYNC_GENERATOR_METHOD;
+    } else if (isAsyncFunc && !func->IsGenerator()) {
+        tag = compiler::LiteralTag::ASYNC_METHOD;
+    } else if (!isAsyncFunc && func->IsGenerator()) {
+        tag = compiler::LiteralTag::GENERATOR_METHOD;
+    }
+
+    privateBuf.emplace_back(tag, func->Scope()->InternalName());
+}
+
+compiler::Literal PropertyMethodKind(const ir::MethodDefinition *propMethod, util::BitSet &compiled, size_t i)
+{
+    compiler::Literal value {};
+    switch (propMethod->Kind()) {
+        case ir::MethodDefinitionKind::METHOD: {
+            const ir::FunctionExpression *func = propMethod->Value()->AsFunctionExpression();
+            const util::StringView &internalName = func->Function()->Scope()->InternalName();
+
+            value = compiler::Literal(compiler::LiteralTag::METHOD, internalName);
+            compiled.Set(i);
+            break;
+        }
+        case ir::MethodDefinitionKind::GET:
+        case ir::MethodDefinitionKind::SET: {
+            value = compiler::Literal::NullLiteral();
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+    return value;
+}
+
+static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticPropertiesBuf(compiler::LiteralBuffer &buf,
+                                                                                   compiler::LiteralBuffer &privateBuf,
+                                                                                   compiler::LiteralBuffer &staticBuf,
+                                                                                   compiler::PandaGen *pg)
+{
+    uint32_t litPairs = buf.size() / 2;
+
+    /* Static items are stored at the end of the buffer */
+    buf.insert(buf.end(), staticBuf.begin(), staticBuf.end());
+
+    /* The last literal item represents the offset of the first static property. The regular property literal count
+     * is divided by 2 as key/value pairs count as one. */
+    buf.emplace_back(litPairs);
+
+    return {pg->AddLiteralBuffer(std::move(buf)), privateBuf};
+}
+
 // NOLINTNEXTLINE(google-runtime-references)
 static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
     compiler::PandaGen *pg, util::BitSet &compiled, const ArenaVector<ir::AstNode *> &properties)
@@ -89,13 +150,13 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
             continue;
         }
 
-        if (prop->IsClassProperty()) {
+        if (prop->IsClassProperty() && prop->IsPrivateElement()) {
             bool isStatic = prop->IsStatic();
-            if (prop->IsPrivateElement()) {
-                privateBuf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(isStatic)));
-                privateBuf.emplace_back(prop->Id()->Name());
-                continue;
-            }
+            privateBuf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(isStatic)));
+            privateBuf.emplace_back(prop->Id()->Name());
+            continue;
+        }
+        if (prop->IsClassProperty() && !prop->IsPrivateElement()) {
             continue;
         }
 
@@ -113,23 +174,7 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
         auto &nameMap = prop->IsStatic() ? staticPropNameMap : propNameMap;
 
         if (prop->IsPrivateElement()) {
-            privateBuf.emplace_back(static_cast<uint32_t>(prop->ToPrivateFieldKind(propMethod->IsStatic())));
-            privateBuf.emplace_back(name);
-
-            const ir::ScriptFunction *func = propMethod->Value()->AsFunctionExpression()->Function();
-
-            compiler::LiteralTag tag = compiler::LiteralTag::METHOD;
-            if (func->IsAsyncFunc()) {
-                if (func->IsGenerator()) {
-                    tag = compiler::LiteralTag::ASYNC_GENERATOR_METHOD;
-                } else {
-                    tag = compiler::LiteralTag::ASYNC_METHOD;
-                }
-            } else if (func->IsGenerator()) {
-                tag = compiler::LiteralTag::GENERATOR_METHOD;
-            }
-
-            privateBuf.emplace_back(tag, func->Scope()->InternalName());
+            CreatePrivateElement(prop, propMethod, privateBuf, name);
             compiled.Set(i);
             continue;
         }
@@ -147,40 +192,12 @@ static std::tuple<int32_t, compiler::LiteralBuffer> CreateClassStaticProperties(
             bufferPos = res.first->second;
         }
 
-        compiler::Literal value {};
-
-        switch (propMethod->Kind()) {
-            case ir::MethodDefinitionKind::METHOD: {
-                const ir::FunctionExpression *func = propMethod->Value()->AsFunctionExpression();
-                const util::StringView &internalName = func->Function()->Scope()->InternalName();
-
-                value = compiler::Literal(compiler::LiteralTag::METHOD, internalName);
-                compiled.Set(i);
-                break;
-            }
-            case ir::MethodDefinitionKind::GET:
-            case ir::MethodDefinitionKind::SET: {
-                value = compiler::Literal::NullLiteral();
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
+        compiler::Literal value = PropertyMethodKind(propMethod, compiled, i);
 
         literalBuf[bufferPos + 1] = std::move(value);
     }
 
-    uint32_t litPairs = buf.size() / 2;
-
-    /* Static items are stored at the end of the buffer */
-    buf.insert(buf.end(), staticBuf.begin(), staticBuf.end());
-
-    /* The last literal item represents the offset of the first static property. The regular property literal count
-     * is divided by 2 as key/value pairs count as one. */
-    buf.emplace_back(litPairs);
-
-    return {pg->AddLiteralBuffer(std::move(buf)), privateBuf};
+    return CreateClassStaticPropertiesBuf(buf, privateBuf, staticBuf, pg);
 }
 
 static void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg classReg,

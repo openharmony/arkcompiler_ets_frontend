@@ -96,6 +96,8 @@ public:
     void IsInstanceDynamic(const ir::BinaryExpression *node, VReg srcReg, VReg tgtReg);
     void EmitFailedTypeCastException(const ir::AstNode *node, VReg src, checker::Type const *target);
 
+    void BinaryLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
+    void BinaryArithmLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
     void Unary(const ir::AstNode *node, lexer::TokenType op);
     void Update(const ir::AstNode *node, lexer::TokenType op);
@@ -392,6 +394,7 @@ public:
     void ApplyCast(const ir::AstNode *node, const checker::Type *targetType);
     void ApplyCastToBoxingFlags(const ir::AstNode *node, const ir::BoxingUnboxingFlags targetType);
     void EmitUnboxingConversion(const ir::AstNode *node);
+    checker::Type *EmitBoxedType(ir::BoxingUnboxingFlags boxingFlag, const ir::AstNode *node);
     void EmitBoxingConversion(const ir::AstNode *node);
     void SwapBinaryOpArgs(const ir::AstNode *node, VReg lhs);
     VReg MoveAccToReg(const ir::AstNode *node);

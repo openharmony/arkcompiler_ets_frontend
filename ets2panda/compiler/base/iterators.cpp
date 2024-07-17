@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -78,6 +78,45 @@ void Iterator::Value() const
     pg_->LoadObjByName(node_, "value");
 }
 
+void Iterator::CloseInnerResultNormal(bool abruptCompletion, Label *returnExits) const
+{
+    VReg completion = pg_->AllocReg();
+    VReg innerResult = pg_->AllocReg();
+    VReg innerResultType = pg_->AllocReg();
+
+    // b. If return is undefined, return Completion(completion).
+    pg_->BranchIfNotUndefined(node_, returnExits);
+    // a. Let return be innerResult.[[Value]].
+    pg_->LoadAccumulator(node_, completion);
+
+    if (abruptCompletion) {
+        pg_->EmitThrow(node_);
+    } else {
+        pg_->DirectReturn(node_);
+    }
+
+    pg_->SetLabel(node_, returnExits);
+
+    {
+        TryContext innerTryCtx(pg_);
+        const auto &innerLabelSet = innerTryCtx.LabelSet();
+
+        pg_->SetLabel(node_, innerLabelSet.TryBegin());
+        // c. Set innerResult to Call(return, iterator).
+        CallMethod();
+        // d. If innerResult.[[Type]] is normal, set innerResult to Await(innerResult.[[Value]]).
+        pg_->FuncBuilder()->Await(node_);
+        pg_->StoreAccumulator(node_, innerResult);
+        pg_->SetLabel(node_, innerLabelSet.TryEnd());
+        pg_->Branch(node_, innerLabelSet.CatchEnd());
+
+        pg_->SetLabel(node_, innerLabelSet.CatchBegin());
+        pg_->StoreAccumulator(node_, innerResult);
+        pg_->StoreAccumulator(node_, innerResultType);
+        pg_->SetLabel(node_, innerLabelSet.CatchEnd());
+    }
+}
+
 void Iterator::Close(bool abruptCompletion) const
 {
     if (type_ == IteratorType::SYNC) {
@@ -107,37 +146,7 @@ void Iterator::Close(bool abruptCompletion) const
 
     // 5. If innerResult.[[Type]] is normal, then
     {
-        // b. If return is undefined, return Completion(completion).
-        pg_->BranchIfNotUndefined(node_, returnExits);
-        // a. Let return be innerResult.[[Value]].
-        pg_->LoadAccumulator(node_, completion);
-
-        if (abruptCompletion) {
-            pg_->EmitThrow(node_);
-        } else {
-            pg_->DirectReturn(node_);
-        }
-
-        pg_->SetLabel(node_, returnExits);
-
-        {
-            TryContext innerTryCtx(pg_);
-            const auto &innerLabelSet = innerTryCtx.LabelSet();
-
-            pg_->SetLabel(node_, innerLabelSet.TryBegin());
-            // c. Set innerResult to Call(return, iterator).
-            CallMethod();
-            // d. If innerResult.[[Type]] is normal, set innerResult to Await(innerResult.[[Value]]).
-            pg_->FuncBuilder()->Await(node_);
-            pg_->StoreAccumulator(node_, innerResult);
-            pg_->SetLabel(node_, innerLabelSet.TryEnd());
-            pg_->Branch(node_, innerLabelSet.CatchEnd());
-
-            pg_->SetLabel(node_, innerLabelSet.CatchBegin());
-            pg_->StoreAccumulator(node_, innerResult);
-            pg_->StoreAccumulator(node_, innerResultType);
-            pg_->SetLabel(node_, innerLabelSet.CatchEnd());
-        }
+        CloseInnerResultNormal(abruptCompletion, returnExits);
     }
 
     pg_->SetLabel(node_, labelSet.TryEnd());

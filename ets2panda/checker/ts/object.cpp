@@ -303,21 +303,19 @@ varbinder::Variable *TSChecker::GetPropertyOfUnionType(UnionType *type, const ut
                 continue;
             }
 
-            if (!it->IsObjectType()) {
-                if (getPartial) {
-                    continue;
-                }
-
+            if (!it->IsObjectType() && getPartial) {
+                continue;
+            }
+            if (!it->IsObjectType() && !getPartial) {
                 return nullptr;
             }
 
             ObjectType *objType = it->AsObjectType();
 
-            if (objType->StringIndexInfo() == nullptr) {
-                if (getPartial) {
-                    continue;
-                }
-
+            if (objType->StringIndexInfo() == nullptr && getPartial) {
+                continue;
+            }
+            if (objType->StringIndexInfo() == nullptr && !getPartial) {
                 return nullptr;
             }
 

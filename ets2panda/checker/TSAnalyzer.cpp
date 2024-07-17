@@ -351,34 +351,38 @@ static void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spr
         return;
     }
 
-    if (spreadType->IsUnionType()) {
-        ArenaVector<checker::Type *> spreadTypes(checker->Allocator()->Adapter());
-        bool throwError = false;
+    if (!spreadType->IsUnionType()) {
+        checker->ThrowTypeError(
+            {"Type '", spreadType, "' must have a '[Symbol.iterator]()' method that returns an iterator."}, loc);
+        return;
+    }
 
-        for (auto *type : spreadType->AsUnionType()->ConstituentTypes()) {
-            if (type->IsArrayType()) {
-                spreadTypes.push_back(type->AsArrayType()->ElementType());
-                continue;
-            }
+    ArenaVector<checker::Type *> spreadTypes(checker->Allocator()->Adapter());
+    bool throwError = false;
 
-            if (type->IsObjectType() && type->AsObjectType()->IsTupleType()) {
-                checker::TupleType *tuple = type->AsObjectType()->AsTupleType();
-
-                for (auto *it : tuple->Properties()) {
-                    spreadTypes.push_back(it->TsType());
-                }
-
-                continue;
-            }
-
-            throwError = true;
-            break;
+    for (auto *type : spreadType->AsUnionType()->ConstituentTypes()) {
+        if (type->IsArrayType()) {
+            spreadTypes.push_back(type->AsArrayType()->ElementType());
+            continue;
         }
 
-        if (!throwError) {
-            elementTypes.push_back(checker->CreateUnionType(std::move(spreadTypes)));
-            return;
+        if (type->IsObjectType() && type->AsObjectType()->IsTupleType()) {
+            checker::TupleType *tuple = type->AsObjectType()->AsTupleType();
+
+            for (auto *it : tuple->Properties()) {
+                spreadTypes.push_back(it->TsType());
+            }
+
+            continue;
         }
+
+        throwError = true;
+        break;
+    }
+
+    if (!throwError) {
+        elementTypes.push_back(checker->CreateUnionType(std::move(spreadTypes)));
+        return;
     }
 
     checker->ThrowTypeError(
@@ -482,6 +486,42 @@ checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     return funcType;
 }
 
+checker::Type *TSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr, checker::Type *leftType,
+                                                           checker::Type *rightType) const
+{
+    TSChecker *checker = GetTSChecker();
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
+            return checker->CheckBinaryOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
+                                                expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
+            return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
+                                              expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
+            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
+            return rightType;
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+
+    return nullptr;
+}
+
 checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
@@ -521,36 +561,7 @@ checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
 
     auto *rightType = expr->Right()->Check(checker);
 
-    switch (expr->OperatorType()) {
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            return checker->CheckBinaryOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
-                                                expr->OperatorType());
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
-                                              expr->OperatorType());
-        }
-        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
-            return rightType;
-        }
-        default: {
-            UNREACHABLE();
-            break;
-        }
-    }
-
-    return nullptr;
+    return CheckAssignmentExprOperatorType(expr, leftType, rightType);
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AwaitExpression *expr) const
@@ -560,12 +571,9 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AwaitExpression *expr) con
     return checker->GlobalAnyType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
+checker::Type *TSAnalyzer::CheckBinaryExprArithmLogical(ir::BinaryExpression *expr, checker::Type *leftType,
+                                                        checker::Type *rightType, TSChecker *checker) const
 {
-    TSChecker *checker = GetTSChecker();
-    auto *leftType = expr->Left()->Check(checker);
-    auto *rightType = expr->Right()->Check(checker);
-
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY:
         case lexer::TokenType::PUNCTUATOR_EXPONENTIATION:
@@ -585,6 +593,30 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
             return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
                                               expr->OperatorType());
         }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
+            return checker->CheckAndOperator(leftType, rightType, expr->Left());
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+            return checker->CheckOrOperator(leftType, rightType, expr->Left());
+        }
+        default: {
+            return nullptr;
+        }
+    }
+}
+
+checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
+{
+    TSChecker *checker = GetTSChecker();
+    auto *leftType = expr->Left()->Check(checker);
+    auto *rightType = expr->Right()->Check(checker);
+
+    auto *checkBinaryExprPunctuator = CheckBinaryExprArithmLogical(expr, leftType, rightType, checker);
+    if (checkBinaryExprPunctuator != nullptr) {
+        return checkBinaryExprPunctuator;
+    }
+
+    switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
             return checker->CheckCompareOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
@@ -601,18 +633,6 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
 
             checker->ThrowBinaryLikeError(expr->OperatorType(), leftType, rightType, expr->Start());
         }
-        case lexer::TokenType::KEYW_INSTANCEOF: {
-            return checker->CheckInstanceofExpression(leftType, rightType, expr->Right(), expr);
-        }
-        case lexer::TokenType::KEYW_IN: {
-            return checker->CheckInExpression(leftType, rightType, expr->Left(), expr->Right(), expr);
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            return checker->CheckAndOperator(leftType, rightType, expr->Left());
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            return checker->CheckOrOperator(leftType, rightType, expr->Left());
-        }
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
             // NOTE: Csaba Repasi. Implement checker for nullish coalescing
             return checker->GlobalAnyType();
@@ -620,6 +640,12 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
             checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
             return rightType;
+        }
+        case lexer::TokenType::KEYW_INSTANCEOF: {
+            return checker->CheckInstanceofExpression(leftType, rightType, expr->Right(), expr);
+        }
+        case lexer::TokenType::KEYW_IN: {
+            return checker->CheckInExpression(leftType, rightType, expr->Left(), expr->Right(), expr);
         }
         default: {
             UNREACHABLE();
@@ -739,6 +765,45 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) co
     UNREACHABLE();
 }
 
+void TSAnalyzer::CheckComputed(ir::MemberExpression *expr, checker::Type *indexType) const
+{
+    TSChecker *checker = GetTSChecker();
+    if (!indexType->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
+        checker->ThrowTypeError({"Type ", indexType, " cannot be used as index type"}, expr->Property()->Start());
+    }
+
+    if (indexType->IsNumberType()) {
+        checker->ThrowTypeError("No index signature with a parameter of type 'string' was found on type this type",
+                                expr->Start());
+    }
+
+    if (indexType->IsStringType()) {
+        checker->ThrowTypeError("No index signature with a parameter of type 'number' was found on type this type",
+                                expr->Start());
+    }
+
+    switch (expr->Property()->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            checker->ThrowTypeError(
+                {"Property ", expr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
+                expr->Property()->Start());
+        }
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            checker->ThrowTypeError(
+                {"Property ", expr->Property()->AsNumberLiteral()->Str(), " does not exist on this type."},
+                expr->Property()->Start());
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            checker->ThrowTypeError(
+                {"Property ", expr->Property()->AsStringLiteral()->Str(), " does not exist on this type."},
+                expr->Property()->Start());
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
 checker::Type *TSAnalyzer::Check(ir::MemberExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
@@ -751,41 +816,7 @@ checker::Type *TSAnalyzer::Check(ir::MemberExpression *expr) const
         if (indexedAccessType != nullptr) {
             return indexedAccessType;
         }
-
-        if (!indexType->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
-            checker->ThrowTypeError({"Type ", indexType, " cannot be used as index type"}, expr->Property()->Start());
-        }
-
-        if (indexType->IsNumberType()) {
-            checker->ThrowTypeError("No index signature with a parameter of type 'string' was found on type this type",
-                                    expr->Start());
-        }
-
-        if (indexType->IsStringType()) {
-            checker->ThrowTypeError("No index signature with a parameter of type 'number' was found on type this type",
-                                    expr->Start());
-        }
-
-        switch (expr->Property()->Type()) {
-            case ir::AstNodeType::IDENTIFIER: {
-                checker->ThrowTypeError(
-                    {"Property ", expr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
-                    expr->Property()->Start());
-            }
-            case ir::AstNodeType::NUMBER_LITERAL: {
-                checker->ThrowTypeError(
-                    {"Property ", expr->Property()->AsNumberLiteral()->Str(), " does not exist on this type."},
-                    expr->Property()->Start());
-            }
-            case ir::AstNodeType::STRING_LITERAL: {
-                checker->ThrowTypeError(
-                    {"Property ", expr->Property()->AsStringLiteral()->Str(), " does not exist on this type."},
-                    expr->Property()->Start());
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
+        CheckComputed(expr, indexType);
     }
 
     varbinder::Variable *prop = checker->GetPropertyOfType(baseType, expr->Property()->AsIdentifier()->Name());
@@ -879,6 +910,81 @@ static checker::Type *GetTypeForProperty(ir::Property *prop, checker::TSChecker 
     return prop->Value()->Check(checker);
 }
 
+void TSAnalyzer::CheckSpread(std::unordered_map<util::StringView, lexer::SourcePosition> &allPropertiesMap,
+                             checker::ObjectDescriptor *desc, ir::Expression *it) const
+{
+    TSChecker *checker = GetTSChecker();
+    ASSERT(it->IsSpreadElement());
+
+    checker::Type *const spreadType = it->AsSpreadElement()->Argument()->Check(checker);
+
+    // NOTE: aszilagyi. handle union of object types
+    if (!spreadType->IsObjectType()) {
+        checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
+    }
+
+    for (auto *spreadProp : spreadType->AsObjectType()->Properties()) {
+        auto found = allPropertiesMap.find(spreadProp->Name());
+        if (found != allPropertiesMap.end()) {
+            checker->ThrowTypeError({found->first, " is specified more than once, so this usage will be overwritten."},
+                                    found->second);
+        }
+
+        varbinder::LocalVariable *foundMember = desc->FindProperty(spreadProp->Name());
+
+        if (foundMember != nullptr) {
+            foundMember->SetTsType(spreadProp->TsType());
+            continue;
+        }
+
+        desc->properties.push_back(spreadProp);
+    }
+}
+
+void TSAnalyzer::CheckNonComputed(checker::ObjectDescriptor *desc, ir::Expression *it,
+                                  std::unordered_map<util::StringView, lexer::SourcePosition> &allPropertiesMap,
+                                  bool inConstContext) const
+{
+    TSChecker *checker = GetTSChecker();
+    auto *prop = it->AsProperty();
+    checker::Type *propType = GetTypeForProperty(prop, checker);
+    varbinder::VariableFlags flags = GetFlagsForProperty(prop);
+    const util::StringView &propName = GetPropertyName(prop->Key());
+
+    auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
+
+    if (inConstContext) {
+        memberVar->AddFlag(varbinder::VariableFlags::READONLY);
+    } else {
+        propType = checker->GetBaseTypeOfLiteralType(propType);
+    }
+
+    memberVar->SetTsType(propType);
+
+    if (prop->Key()->IsNumberLiteral()) {
+        memberVar->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
+    }
+
+    varbinder::LocalVariable *foundMember = desc->FindProperty(propName);
+    allPropertiesMap.insert({propName, it->Start()});
+
+    if (foundMember != nullptr) {
+        foundMember->SetTsType(propType);
+        return;
+    }
+
+    desc->properties.push_back(memberVar);
+}
+
+checker::IndexInfo *TSAnalyzer::CreateUnionTypeHelper(ArenaVector<checker::Type *> &computedPropTypes,
+                                                      bool inConstContext) const
+{
+    TSChecker *checker = GetTSChecker();
+
+    return checker->Allocator()->New<checker::IndexInfo>(checker->CreateUnionType(std::move(computedPropTypes)), "x",
+                                                         inConstContext);
+}
+
 checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
@@ -896,77 +1002,24 @@ checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
         if (it->IsProperty()) {
             auto *prop = it->AsProperty();
 
-            if (prop->IsComputed()) {
-                checker::Type *computedNameType = checker->CheckComputedPropertyName(prop->Key());
-
-                if (computedNameType->IsNumberType()) {
-                    hasComputedNumberProperty = true;
-                    computedNumberPropTypes.push_back(prop->Value()->Check(checker));
-                    continue;
-                }
-
-                if (computedNameType->IsStringType()) {
-                    hasComputedStringProperty = true;
-                    computedStringPropTypes.push_back(prop->Value()->Check(checker));
-                    continue;
-                }
-            }
-
-            checker::Type *propType = GetTypeForProperty(prop, checker);
-            varbinder::VariableFlags flags = GetFlagsForProperty(prop);
-            const util::StringView &propName = GetPropertyName(prop->Key());
-
-            auto *memberVar = varbinder::Scope::CreateVar(checker->Allocator(), propName, flags, it);
-
-            if (inConstContext) {
-                memberVar->AddFlag(varbinder::VariableFlags::READONLY);
-            } else {
-                propType = checker->GetBaseTypeOfLiteralType(propType);
-            }
-
-            memberVar->SetTsType(propType);
-
-            if (prop->Key()->IsNumberLiteral()) {
-                memberVar->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
-            }
-
-            varbinder::LocalVariable *foundMember = desc->FindProperty(propName);
-            allPropertiesMap.insert({propName, it->Start()});
-
-            if (foundMember != nullptr) {
-                foundMember->SetTsType(propType);
+            if (prop->IsComputed() && checker->CheckComputedPropertyName(prop->Key())->IsNumberType()) {
+                hasComputedNumberProperty = true;
+                computedNumberPropTypes.push_back(prop->Value()->Check(checker));
                 continue;
             }
 
-            desc->properties.push_back(memberVar);
-            continue;
-        }
-
-        ASSERT(it->IsSpreadElement());
-
-        checker::Type *const spreadType = it->AsSpreadElement()->Argument()->Check(checker);
-        seenSpread = true;
-
-        // NOTE: aszilagyi. handle union of object types
-        if (!spreadType->IsObjectType()) {
-            checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
-        }
-
-        for (auto *spreadProp : spreadType->AsObjectType()->Properties()) {
-            auto found = allPropertiesMap.find(spreadProp->Name());
-            if (found != allPropertiesMap.end()) {
-                checker->ThrowTypeError(
-                    {found->first, " is specified more than once, so this usage will be overwritten."}, found->second);
-            }
-
-            varbinder::LocalVariable *foundMember = desc->FindProperty(spreadProp->Name());
-
-            if (foundMember != nullptr) {
-                foundMember->SetTsType(spreadProp->TsType());
+            if (prop->IsComputed() && checker->CheckComputedPropertyName(prop->Key())->IsStringType()) {
+                hasComputedStringProperty = true;
+                computedStringPropTypes.push_back(prop->Value()->Check(checker));
                 continue;
             }
 
-            desc->properties.push_back(spreadProp);
+            CheckNonComputed(desc, it, allPropertiesMap, inConstContext);
+        }
+
+        if (it->IsSpreadElement()) {
+            CheckSpread(allPropertiesMap, desc, it);
+            seenSpread = true;
         }
     }
 
@@ -980,13 +1033,11 @@ checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
         }
 
         if (hasComputedNumberProperty) {
-            desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(
-                checker->CreateUnionType(std::move(computedNumberPropTypes)), "x", inConstContext);
+            desc->numberIndexInfo = CreateUnionTypeHelper(computedNumberPropTypes, inConstContext);
         }
 
         if (hasComputedStringProperty) {
-            desc->stringIndexInfo = checker->Allocator()->New<checker::IndexInfo>(
-                checker->CreateUnionType(std::move(computedStringPropTypes)), "x", inConstContext);
+            desc->stringIndexInfo = CreateUnionTypeHelper(computedStringPropTypes, inConstContext);
         }
     }
 
