@@ -23,8 +23,10 @@ LINTER_PATH = 'ets2panda/linter'
 merge_re = re.compile(r'Merge pull request !')
 revert_re = re.compile(r'This reverts commit (.+)\.')
 cherry_pick_re = re.compile(r'\(cherry picked from commit (.+)\)')
+
+
 def get_branch_map(repo, branch_name, path):
-    result = { }
+    result = {}
 
     commits = list(repo.iter_commits(branch_name, path))
     commits.reverse()
@@ -49,6 +51,7 @@ def get_branch_map(repo, branch_name, path):
 
     return result
 
+
 def print_complement(of, to):
     print('-' * 40)
     for sha in to:
@@ -56,6 +59,7 @@ def print_complement(of, to):
             commit = to[sha]
             print('{}\n\n{}'.format(commit.hexsha, commit.message.strip('\n')))
             print('-' * 40)
+
 
 def main():
     if len(sys.argv) != 3:

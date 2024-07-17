@@ -1108,19 +1108,20 @@ export class Autofixer {
     let found = false;
 
     const callback = (node: ts.Node): void => {
-      if (ts.isIdentifier(node)) {
-        const sym = this.typeChecker.getSymbolAtLocation(node);
-        let symNode: ts.Node | undefined = TsUtils.getDeclaration(sym);
-        while (symNode) {
-          if (symNode === typeLiteral) {
-            return;
-          }
-          if (symNode === enclosingStmt) {
-            found = true;
-            return;
-          }
-          symNode = symNode.parent;
+      if (!ts.isIdentifier(node)) {
+        return;
+      }
+      const sym = this.typeChecker.getSymbolAtLocation(node);
+      let symNode: ts.Node | undefined = TsUtils.getDeclaration(sym);
+      while (symNode) {
+        if (symNode === typeLiteral) {
+          return;
         }
+        if (symNode === enclosingStmt) {
+          found = true;
+          return;
+        }
+        symNode = symNode.parent;
       }
     };
 

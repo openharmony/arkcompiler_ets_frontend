@@ -332,9 +332,9 @@ function makeBody(): string {
     console.error('>>>BODY 3 HDR>>>: ' + +_line + ' -> ' + doc_lines[_line]);
   }
 
-  // _line++;
+  // line + 1
   while (!isHeader() || doc_lines[_line].startsWith(CB_ERROR) || doc_lines[_line].startsWith(CB_WARNING)) {
-    // skipEmptyLines();
+    // skip empty lines
     let s = translateLine(doc_lines[_line]);
 
     mdText.push(s);
@@ -369,7 +369,7 @@ function makeBad(): string {
   mdText.push('');
 
   while (_line < doc_lines.length && !isHeader()) {
-    // skipEmptyLines();
+    // skip empty lines
     let s = translateLine(doc_lines[_line]);
     mdText.push(s);
 
@@ -415,7 +415,7 @@ function makeOk(): string {
   mdText.push('');
 
   while (_line < doc_lines.length && !isHeader()) {
-    // skipEmptyLines();
+    // skip empty lines
     let s = translateLine(doc_lines[_line]);
 
     mdText.push(s);
@@ -496,7 +496,7 @@ if (commandLineArgs[0] === '-md') {
   commandLineArgs = process.argv.slice(3);
 }
 const inFileName = commandLineArgs[0];
-// console.error(inFileName);
+
 console.log(COPYRIGHT_HEADER);
 
 /*

@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-"use strict"
+'use strict';
 
-require("../dist/tslinter.js")
+require('../dist/tslinter.js');
