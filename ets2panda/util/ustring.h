@@ -385,21 +385,23 @@ std::string StringView::EscapeSymbol() const
     std::string str;
     str.reserve(Length());
 
-    Iterator iter(*this);
+    auto skipNewLine = [](auto &iter) {
+        if (iter.HasNext()) {
+            iter.Forward(1);
 
+            if (iter.Peek() != '\n') {
+                iter.Backward(1);
+            }
+        }
+    };
+
+    Iterator iter(*this);
     while (iter.HasNext()) {
         auto cp = iter.Next();
 
         switch (cp) {
             case '\r': {
-                if (iter.HasNext()) {
-                    iter.Forward(1);
-
-                    if (iter.Peek() != '\n') {
-                        iter.Backward(1);
-                    }
-                }
-
+                skipNewLine(iter);
                 [[fallthrough]];
             }
             case '\n': {

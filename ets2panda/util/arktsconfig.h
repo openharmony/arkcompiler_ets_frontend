@@ -124,6 +124,9 @@ public:
 
 private:
     void Inherit(const ArkTsConfig &base);
+#ifdef ARKTSCONFIG_USE_FILESYSTEM
+    bool ParseExtends(const std::string &extends, const std::string &configDir);
+#endif  // ARKTSCONFIG_USE_FILESYSTEM
 
     bool isParsed_ = false;
     std::string configPath_;

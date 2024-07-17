@@ -143,70 +143,61 @@ static inline bool ETSWarningsGroupSetter(const ark::PandArg<bool> &option)
     return !option.WasSet() || (option.WasSet() && option.GetValue());
 }
 
-// NOLINTNEXTLINE(readability-function-size)
-bool Options::Parse(int argc, const char **argv)
-{
-    std::vector<std::string> es2pandaArgs;
-    std::vector<std::string> bcoCompilerArgs;
-    std::vector<std::string> bytecodeoptArgs;
+static auto constexpr DEFAULT_THREAD_COUNT = 0;
 
-    SplitArgs(argc, argv, es2pandaArgs, bcoCompilerArgs, bytecodeoptArgs);
-    if (!ParseBCOCompilerOptions(bcoCompilerArgs, bytecodeoptArgs)) {
-        return false;
-    }
-
-    ark::PandArg<bool> opHelp("help", false, "Print this message and exit");
-    ark::PandArg<bool> opVersion("version", false, "Print message with version and exit");
+struct AllArgs {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
+    ark::PandArg<bool> opHelp {"help", false, "Print this message and exit"};
+    ark::PandArg<bool> opVersion {"version", false, "Print message with version and exit"};
 
     // parser
-    ark::PandArg<std::string> inputExtension("extension", "",
-                                             "Parse the input as the given extension (options: js | ts | as | ets)");
-    ark::PandArg<bool> opModule("module", false, "Parse the input as module (JS only option)");
-    ark::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
-    ark::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
-    ark::PandArg<bool> opDumpAstOnlySilent("dump-ast-only-silent", false,
-                                           "Dump parsed AST with all dumpers available but don't print to stdout");
-    ark::PandArg<bool> opDumpCheckedAst("dump-dynamic-ast", false,
-                                        "Dump AST with synthetic nodes for dynamic languages");
-    ark::PandArg<bool> opListFiles("list-files", false, "Print names of files that are part of compilation");
+    ark::PandArg<std::string> inputExtension {"extension", "",
+                                              "Parse the input as the given extension (options: js | ts | as | ets)"};
+    ark::PandArg<bool> opModule {"module", false, "Parse the input as module (JS only option)"};
+    ark::PandArg<bool> opParseOnly {"parse-only", false, "Parse the input only"};
+    ark::PandArg<bool> opDumpAst {"dump-ast", false, "Dump the parsed AST"};
+    ark::PandArg<bool> opDumpAstOnlySilent {"dump-ast-only-silent", false,
+                                            "Dump parsed AST with all dumpers available but don't print to stdout"};
+    ark::PandArg<bool> opDumpCheckedAst {"dump-dynamic-ast", false,
+                                         "Dump AST with synthetic nodes for dynamic languages"};
+    ark::PandArg<bool> opListFiles {"list-files", false, "Print names of files that are part of compilation"};
 
     // compiler
-    ark::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
-    ark::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
-    ark::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
-    ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)", 0, MAX_OPT_LEVEL);
-    ark::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
+    ark::PandArg<bool> opDumpAssembly {"dump-assembly", false, "Dump pandasm"};
+    ark::PandArg<bool> opDebugInfo {"debug-info", false, "Compile with debug info"};
+    ark::PandArg<bool> opDumpDebugInfo {"dump-debug-info", false, "Dump debug info"};
+    ark::PandArg<int> opOptLevel {"opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)", 0, MAX_OPT_LEVEL};
+    ark::PandArg<bool> opEtsModule {"ets-module", false, "Compile the input as ets-module"};
 
     // ETS-warnings
-    ark::PandArg<bool> opEtsEnableAll("ets-warnings-all", false, "Show performance-related ets-warnings");
-    ark::PandArg<bool> opEtsWerror("ets-werror", false, "Treat all enabled performance-related ets-warnings as error");
-    ark::PandArg<bool> opEtsSubsetWarnings("ets-subset-warnings", false, "Show ETS-warnings that keep you in subset");
-    ark::PandArg<bool> opEtsNonsubsetWarnings("ets-nonsubset-warnings", false,
-                                              "Show ETS-warnings that do not keep you in subset");
-    ark::PandArg<bool> opEtsSuggestFinal("ets-suggest-final", false,
-                                         "Suggest final keyword warning - ETS non-subset warning");
-    ark::PandArg<bool> opEtsProhibitTopLevelStatements("ets-prohibit-top-level-statements", false,
-                                                       "Prohibit top-level statements - ETS subset Warning");
-    ark::PandArg<bool> opEtsBoostEqualityStatement("ets-boost-equality-statement", false,
-                                                   "Suggest boosting Equality Statements - ETS Subset Warning");
-    ark::PandArg<bool> opEtsRemoveAsync("ets-remove-async", false,
-                                        "Suggests replacing async functions with coroutines - ETS Non Subset Warnings");
-    ark::PandArg<bool> opEtsRemoveLambda("ets-remove-lambda", false,
-                                         "Suggestions to replace lambda with regular functions - ETS Subset Warning");
-    ark::PandArg<bool> opEtsImplicitBoxingUnboxing(
+    ark::PandArg<bool> opEtsEnableAll {"ets-warnings-all", false, "Show performance-related ets-warnings"};
+    ark::PandArg<bool> opEtsWerror {"ets-werror", false, "Treat all enabled performance-related ets-warnings as error"};
+    ark::PandArg<bool> opEtsSubsetWarnings {"ets-subset-warnings", false, "Show ETS-warnings that keep you in subset"};
+    ark::PandArg<bool> opEtsNonsubsetWarnings {"ets-nonsubset-warnings", false,
+                                               "Show ETS-warnings that do not keep you in subset"};
+    ark::PandArg<bool> opEtsSuggestFinal {"ets-suggest-final", false,
+                                          "Suggest final keyword warning - ETS non-subset warning"};
+    ark::PandArg<bool> opEtsProhibitTopLevelStatements {"ets-prohibit-top-level-statements", false,
+                                                        "Prohibit top-level statements - ETS subset Warning"};
+    ark::PandArg<bool> opEtsBoostEqualityStatement {"ets-boost-equality-statement", false,
+                                                    "Suggest boosting Equality Statements - ETS Subset Warning"};
+    ark::PandArg<bool> opEtsRemoveAsync {
+        "ets-remove-async", false, "Suggests replacing async functions with coroutines - ETS Non Subset Warnings"};
+    ark::PandArg<bool> opEtsRemoveLambda {"ets-remove-lambda", false,
+                                          "Suggestions to replace lambda with regular functions - ETS Subset Warning"};
+    ark::PandArg<bool> opEtsImplicitBoxingUnboxing {
         "ets-implicit-boxing-unboxing", false,
-        "Check if a program contains implicit boxing or unboxing - ETS Subset Warning");
+        "Check if a program contains implicit boxing or unboxing - ETS Subset Warning"};
 
-    auto constexpr DEFAULT_THREAD_COUNT = 0;
-    ark::PandArg<int> opThreadCount("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
-    ark::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
-    ark::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
-    ark::PandArg<std::string> logLevel("log-level", "error", "Log-level");
-    ark::PandArg<std::string> stdLib("stdlib", "", "Path to standard library");
-    ark::PandArg<bool> genStdLib("gen-stdlib", false, "Gen standard library");
-    ark::PandArg<std::string> plugins("plugins", "", "Plugins");
-    ark::PandArg<std::string> skipPhases("skip-phases", "", "Phases to skip");
-    ark::PandArg<std::string> verifierWarnings(
+    ark::PandArg<int> opThreadCount {"thread", DEFAULT_THREAD_COUNT, "Number of worker threads"};
+    ark::PandArg<bool> opSizeStat {"dump-size-stat", false, "Dump size statistics"};
+    ark::PandArg<std::string> outputFile {"output", "", "Compiler binary output (.abc)"};
+    ark::PandArg<std::string> logLevel {"log-level", "error", "Log-level"};
+    ark::PandArg<std::string> stdLib {"stdlib", "", "Path to standard library"};
+    ark::PandArg<bool> genStdLib {"gen-stdlib", false, "Gen standard library"};
+    ark::PandArg<std::string> plugins {"plugins", "", "Plugins"};
+    ark::PandArg<std::string> skipPhases {"skip-phases", "", "Phases to skip"};
+    ark::PandArg<std::string> verifierWarnings {
         "verifier-warnings", "",
         "Print errors and continue compilation if AST tree is incorrect. "
         "Possible values: "
@@ -214,8 +205,8 @@ bool Options::Parse(int argc, const char **argv)
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
-        "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll");
-    ark::PandArg<std::string> verifierErrors(
+        "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll"};
+    ark::PandArg<std::string> verifierErrors {
         "verifier-errors",
         "ForLoopCorrectlyInitializedForAll,SequenceExpressionHasLastTypeForAll,NodeHasTypeForAll,NodeHasParentForAll,"
         "EveryChildHasValidParentForAll,ModifierAccessValidForAll,ArithmeticOperationValidForAll,"
@@ -227,272 +218,315 @@ bool Options::Parse(int argc, const char **argv)
         "IdentifierHasVariableForAll,ArithmeticOperationValidForAll,SequenceExpressionHasLastTypeForAll,"
         "ForLoopCorrectlyInitializedForAll,VariableHasEnclosingScopeForAll,ModifierAccessValidForAll,"
         "ImportExportAccessValid,NodeHasSourceRangeForAll,EveryChildInParentRangeForAll,"
-        "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll");
-    ark::PandArg<bool> verifierAllChecks(
+        "ReferenceTypeAnnotationIsNullForAll,VariableNameIdentifierNameSameForAll"};
+    ark::PandArg<bool> verifierAllChecks {
         "verifier-all-checks", false,
-        "Run verifier checks on every phase, monotonically expanding them on every phase");
-    ark::PandArg<bool> verifierFullProgram("verifier-full-program", false,
-                                           "Analyze full program, including program AST and it's dependencies");
-    ark::PandArg<std::string> dumpBeforePhases("dump-before-phases", "",
-                                               "Generate program dump before running phases in the list");
-    ark::PandArg<std::string> dumpEtsSrcBeforePhases(
-        "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list");
-    ark::PandArg<std::string> dumpEtsSrcAfterPhases(
-        "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list");
-    ark::PandArg<std::string> dumpAfterPhases("dump-after-phases", "",
-                                              "Generate program dump after running phases in the list");
-    ark::PandArg<std::string> arktsConfig(
-        "arktsconfig",
-        ark::es2panda::JoinPaths(
-            ark::es2panda::ParentPath(argv[0]),  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-            "arktsconfig.json"),
-        "Path to arkts configuration file");
+        "Run verifier checks on every phase, monotonically expanding them on every phase"};
+    ark::PandArg<bool> verifierFullProgram {"verifier-full-program", false,
+                                            "Analyze full program, including program AST and it's dependencies"};
+    ark::PandArg<std::string> dumpBeforePhases {"dump-before-phases", "",
+                                                "Generate program dump before running phases in the list"};
+    ark::PandArg<std::string> dumpEtsSrcBeforePhases {
+        "dump-ets-src-before-phases", "", "Generate program dump as ets source code before running phases in the list"};
+    ark::PandArg<std::string> dumpEtsSrcAfterPhases {
+        "dump-ets-src-after-phases", "", "Generate program dump as ets source code after running phases in the list"};
+    ark::PandArg<std::string> dumpAfterPhases {"dump-after-phases", "",
+                                               "Generate program dump after running phases in the list"};
 
     // tail arguments
-    ark::PandArg<std::string> inputFile("input", "", "input file");
+    ark::PandArg<std::string> inputFile {"input", "", "input file"};
 
-    argparser_->Add(&opHelp);
-    argparser_->Add(&opVersion);
-    argparser_->Add(&opModule);
-    argparser_->Add(&opDumpAst);
-    argparser_->Add(&opDumpAstOnlySilent);
-    argparser_->Add(&opDumpCheckedAst);
-    argparser_->Add(&opParseOnly);
-    argparser_->Add(&opDumpAssembly);
-    argparser_->Add(&opDebugInfo);
-    argparser_->Add(&opDumpDebugInfo);
+    ark::PandArg<std::string> arktsConfig;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 
-    argparser_->Add(&opOptLevel);
-    argparser_->Add(&opEtsModule);
-    argparser_->Add(&opThreadCount);
-    argparser_->Add(&opSizeStat);
-    argparser_->Add(&opListFiles);
-
-    argparser_->Add(&inputExtension);
-    argparser_->Add(&outputFile);
-    argparser_->Add(&logLevel);
-    argparser_->Add(&stdLib);
-    argparser_->Add(&genStdLib);
-    argparser_->Add(&plugins);
-    argparser_->Add(&skipPhases);
-    argparser_->Add(&verifierAllChecks);
-    argparser_->Add(&verifierFullProgram);
-    argparser_->Add(&verifierWarnings);
-    argparser_->Add(&verifierErrors);
-    argparser_->Add(&dumpBeforePhases);
-    argparser_->Add(&dumpEtsSrcBeforePhases);
-    argparser_->Add(&dumpAfterPhases);
-    argparser_->Add(&dumpEtsSrcAfterPhases);
-    argparser_->Add(&arktsConfig);
-
-    argparser_->Add(&opEtsEnableAll);
-    argparser_->Add(&opEtsWerror);
-    argparser_->Add(&opEtsSubsetWarnings);
-    argparser_->Add(&opEtsNonsubsetWarnings);
-
-    // ETS-subset warnings
-    argparser_->Add(&opEtsProhibitTopLevelStatements);
-    argparser_->Add(&opEtsBoostEqualityStatement);
-    argparser_->Add(&opEtsRemoveLambda);
-    argparser_->Add(&opEtsImplicitBoxingUnboxing);
-
-    // ETS-non-subset warnings
-    argparser_->Add(&opEtsSuggestFinal);
-    argparser_->Add(&opEtsRemoveAsync);
-
-    argparser_->PushBackTail(&inputFile);
-    argparser_->EnableTail();
-    argparser_->EnableRemainder();
-
-    if (!argparser_->Parse(es2pandaArgs) || opHelp.GetValue()) {
-        std::stringstream ss;
-
-        ss << argparser_->GetErrorString() << std::endl;
-        ss << "Usage: "
-           << "es2panda"
-           << " [OPTIONS] [input file] -- [arguments]" << std::endl;
-        ss << std::endl;
-        ss << "optional arguments:" << std::endl;
-        ss << argparser_->GetHelpString() << std::endl;
-
-        ss << std::endl;
-        ss << "--bco-optimizer: Argument directly to bytecode optimizer can be passed after this prefix" << std::endl;
-        ss << "--bco-compiler: Argument directly to jit-compiler inside bytecode optimizer can be passed after this "
-              "prefix"
-           << std::endl;
-
-        errorMsg_ = ss.str();
-        return false;
+    explicit AllArgs(const char *argv0)
+        : arktsConfig {"arktsconfig", ark::es2panda::JoinPaths(ark::es2panda::ParentPath(argv0), "arktsconfig.json"),
+                       "Path to arkts configuration file"}
+    {
     }
 
-    if (opVersion.GetValue()) {
-        std::stringstream ss;
+    bool ParseInputOutput(CompilationMode compilationMode, std::string &errorMsg, std::string &sourceFile,
+                          std::string &parserInput, std::string &compilerOutput) const
+    {
+        sourceFile = inputFile.GetValue();
+        if (compilationMode == CompilationMode::SINGLE_FILE) {
+            std::ifstream inputStream(sourceFile.c_str());
+            if (inputStream.fail()) {
+                errorMsg = "Failed to open file: ";
+                errorMsg.append(sourceFile);
+                return false;
+            }
 
-        ss << std::endl;
-        ss << "  Es2panda Version " << ES2PANDA_VERSION << std::endl;
+            std::stringstream ss;
+            ss << inputStream.rdbuf();
+            parserInput = ss.str();
+        }
+
+        if (!outputFile.GetValue().empty()) {
+            if (compilationMode == CompilationMode::PROJECT) {
+                errorMsg = "Error: When compiling in project mode --output key is not needed";
+                return false;
+            }
+            compilerOutput = outputFile.GetValue();
+        } else {
+            compilerOutput = RemoveExtension(BaseName(sourceFile)).append(".abc");
+        }
+
+        return true;
+    }
+
+    void BindArgs(ark::PandArgParser &argparser)
+    {
+        argparser.Add(&opHelp);
+        argparser.Add(&opVersion);
+        argparser.Add(&opModule);
+        argparser.Add(&opDumpAst);
+        argparser.Add(&opDumpAstOnlySilent);
+        argparser.Add(&opDumpCheckedAst);
+        argparser.Add(&opParseOnly);
+        argparser.Add(&opDumpAssembly);
+        argparser.Add(&opDebugInfo);
+        argparser.Add(&opDumpDebugInfo);
+
+        argparser.Add(&opOptLevel);
+        argparser.Add(&opEtsModule);
+        argparser.Add(&opThreadCount);
+        argparser.Add(&opSizeStat);
+        argparser.Add(&opListFiles);
+
+        argparser.Add(&inputExtension);
+        argparser.Add(&outputFile);
+        argparser.Add(&logLevel);
+        argparser.Add(&stdLib);
+        argparser.Add(&genStdLib);
+        argparser.Add(&plugins);
+        argparser.Add(&skipPhases);
+        argparser.Add(&verifierAllChecks);
+        argparser.Add(&verifierFullProgram);
+        argparser.Add(&verifierWarnings);
+        argparser.Add(&verifierErrors);
+        argparser.Add(&dumpBeforePhases);
+        argparser.Add(&dumpEtsSrcBeforePhases);
+        argparser.Add(&dumpAfterPhases);
+        argparser.Add(&dumpEtsSrcAfterPhases);
+        argparser.Add(&arktsConfig);
+
+        argparser.Add(&opEtsEnableAll);
+        argparser.Add(&opEtsWerror);
+        argparser.Add(&opEtsSubsetWarnings);
+        argparser.Add(&opEtsNonsubsetWarnings);
+
+        // ETS-subset warnings
+        argparser.Add(&opEtsProhibitTopLevelStatements);
+        argparser.Add(&opEtsBoostEqualityStatement);
+        argparser.Add(&opEtsRemoveLambda);
+        argparser.Add(&opEtsImplicitBoxingUnboxing);
+
+        // ETS-non-subset warnings
+        argparser.Add(&opEtsSuggestFinal);
+        argparser.Add(&opEtsRemoveAsync);
+
+        argparser.PushBackTail(&inputFile);
+        argparser.EnableTail();
+        argparser.EnableRemainder();
+    }
+
+    void InitCompilerOptions(es2panda::CompilerOptions &compilerOptions, CompilationMode compilationMode) const
+    {
+        compilerOptions.dumpAsm = opDumpAssembly.GetValue();
+        compilerOptions.dumpAst = opDumpAst.GetValue();
+        compilerOptions.opDumpAstOnlySilent = opDumpAstOnlySilent.GetValue();
+        compilerOptions.dumpCheckedAst = opDumpCheckedAst.GetValue();
+        compilerOptions.dumpDebugInfo = opDumpDebugInfo.GetValue();
+        compilerOptions.isDebug = opDebugInfo.GetValue();
+        compilerOptions.parseOnly = opParseOnly.GetValue();
+        compilerOptions.stdLib = stdLib.GetValue();
+        compilerOptions.isEtsModule = opEtsModule.GetValue();
+        compilerOptions.plugins = SplitToStringVector(plugins.GetValue());
+        compilerOptions.skipPhases = SplitToStringSet(skipPhases.GetValue());
+        compilerOptions.verifierFullProgram = verifierFullProgram.GetValue();
+        compilerOptions.verifierAllChecks = verifierAllChecks.GetValue();
+        compilerOptions.verifierWarnings = SplitToStringSet(verifierWarnings.GetValue());
+        compilerOptions.verifierErrors = SplitToStringSet(verifierErrors.GetValue());
+        compilerOptions.dumpBeforePhases = SplitToStringSet(dumpBeforePhases.GetValue());
+        compilerOptions.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
+        compilerOptions.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
+        compilerOptions.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
+
+        // ETS-Warnings
+        compilerOptions.etsSubsetWarnings = opEtsSubsetWarnings.GetValue();
+        compilerOptions.etsWerror = opEtsWerror.GetValue();
+        compilerOptions.etsNonsubsetWarnings = opEtsNonsubsetWarnings.GetValue();
+        compilerOptions.etsEnableAll = opEtsEnableAll.GetValue();
+
+        if (compilerOptions.etsEnableAll || compilerOptions.etsSubsetWarnings) {
+            // Adding subset warnings
+            compilerOptions.etsProhibitTopLevelStatements = ETSWarningsGroupSetter(opEtsProhibitTopLevelStatements);
+            compilerOptions.etsBoostEqualityStatement = ETSWarningsGroupSetter(opEtsBoostEqualityStatement);
+            compilerOptions.etsRemoveLambda = ETSWarningsGroupSetter(opEtsRemoveLambda);
+            compilerOptions.etsImplicitBoxingUnboxing = ETSWarningsGroupSetter(opEtsImplicitBoxingUnboxing);
+        }
+
+        if (compilerOptions.etsEnableAll || compilerOptions.etsNonsubsetWarnings) {
+            // Adding non-subset warnings
+            compilerOptions.etsSuggestFinal = ETSWarningsGroupSetter(opEtsSuggestFinal);
+            compilerOptions.etsRemoveAsync = ETSWarningsGroupSetter(opEtsRemoveAsync);
+        }
+
+        if (!compilerOptions.etsEnableAll && !compilerOptions.etsSubsetWarnings &&
+            !compilerOptions.etsNonsubsetWarnings) {
+            // If no warnings groups enabled - check all if enabled
+            compilerOptions.etsSuggestFinal = opEtsSuggestFinal.GetValue();
+            compilerOptions.etsProhibitTopLevelStatements = opEtsProhibitTopLevelStatements.GetValue();
+            compilerOptions.etsBoostEqualityStatement = opEtsBoostEqualityStatement.GetValue();
+            compilerOptions.etsRemoveAsync = opEtsRemoveAsync.GetValue();
+            compilerOptions.etsRemoveLambda = opEtsRemoveLambda.GetValue();
+            compilerOptions.etsImplicitBoxingUnboxing = opEtsImplicitBoxingUnboxing.GetValue();
+        }
+
+        // Pushing enabled warnings to warning collection
+        PushingEnabledWarnings(compilerOptions);
+
+        compilerOptions.compilationMode = compilationMode;
+        compilerOptions.arktsConfig = std::make_shared<ark::es2panda::ArkTsConfig>(arktsConfig.GetValue());
+    }
+
+private:
+    static void PushingEnabledWarnings(es2panda::CompilerOptions &compilerOptions)
+    {
+        if (compilerOptions.etsSuggestFinal) {
+            compilerOptions.etsWarningCollection.push_back(ETSWarnings::SUGGEST_FINAL);
+        }
+        if (compilerOptions.etsProhibitTopLevelStatements) {
+            compilerOptions.etsWarningCollection.push_back(ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS);
+        }
+        if (compilerOptions.etsBoostEqualityStatement) {
+            compilerOptions.etsWarningCollection.push_back(ETSWarnings::BOOST_EQUALITY_STATEMENT);
+        }
+        if (compilerOptions.etsRemoveAsync) {
+            compilerOptions.etsWarningCollection.push_back(ETSWarnings::REMOVE_ASYNC_FUNCTIONS);
+        }
+        if (compilerOptions.etsRemoveLambda) {
+            compilerOptions.etsWarningCollection.push_back(ETSWarnings::REMOVE_LAMBDA);
+        }
+        if (compilerOptions.etsImplicitBoxingUnboxing) {
+            compilerOptions.etsWarningCollection.push_back(ETSWarnings::IMPLICIT_BOXING_UNBOXING);
+        }
+        if (!compilerOptions.etsWarningCollection.empty()) {
+            compilerOptions.etsHasWarnings = true;
+        }
+    }
+};
+
+static std::string Usage(const ark::PandArgParser &argparser)
+{
+    std::stringstream ss;
+
+    ss << argparser.GetErrorString() << std::endl;
+    ss << "Usage: "
+       << "es2panda"
+       << " [OPTIONS] [input file] -- [arguments]" << std::endl;
+    ss << std::endl;
+    ss << "optional arguments:" << std::endl;
+    ss << argparser.GetHelpString() << std::endl;
+
+    ss << std::endl;
+    ss << "--bco-optimizer: Argument directly to bytecode optimizer can be passed after this prefix" << std::endl;
+    ss << "--bco-compiler: Argument directly to jit-compiler inside bytecode optimizer can be passed after this "
+          "prefix"
+       << std::endl;
+
+    return ss.str();
+}
+
+static std::string GetVersion()
+{
+    std::stringstream ss;
+
+    ss << std::endl;
+    ss << "  Es2panda Version " << ES2PANDA_VERSION << std::endl;
 
 #ifndef PANDA_PRODUCT_BUILD
 #ifdef ES2PANDA_DATE
-        ss << std::endl;
-        ss << "  Build date: ";
-        ss << ES2PANDA_DATE;
+    ss << std::endl;
+    ss << "  Build date: ";
+    ss << ES2PANDA_DATE;
 #endif  // ES2PANDA_DATE
 #ifdef ES2PANDA_HASH
-        ss << std::endl;
-        ss << "  Last commit hash: ";
-        ss << ES2PANDA_HASH;
-        ss << std::endl;
+    ss << std::endl;
+    ss << "  Last commit hash: ";
+    ss << ES2PANDA_HASH;
+    ss << std::endl;
 #endif  // ES2PANDA_HASH
 #endif  // PANDA_PRODUCT_BUILD
-        errorMsg_ = ss.str();
+
+    return ss.str();
+}
+
+bool Options::Parse(int argc, const char **argv)
+{
+    std::vector<std::string> es2pandaArgs;
+    std::vector<std::string> bcoCompilerArgs;
+    std::vector<std::string> bytecodeoptArgs;
+
+    SplitArgs(argc, argv, es2pandaArgs, bcoCompilerArgs, bytecodeoptArgs);
+    if (!ParseBCOCompilerOptions(bcoCompilerArgs, bytecodeoptArgs)) {
+        return false;
+    }
+
+    AllArgs allArgs(argv[0]);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+
+    allArgs.BindArgs(*argparser_);
+    if (!argparser_->Parse(es2pandaArgs) || allArgs.opHelp.GetValue()) {
+        errorMsg_ = Usage(*argparser_);
+        return false;
+    }
+
+    if (allArgs.opVersion.GetValue()) {
+        errorMsg_ = GetVersion();
         return false;
     }
 
     // Determine compilation mode
-    auto compilationMode = DetermineCompilationMode(genStdLib, inputFile);
-
-    sourceFile_ = inputFile.GetValue();
-    std::ifstream inputStream;
-
-    if (compilationMode == CompilationMode::SINGLE_FILE) {
-        inputStream.open(sourceFile_.c_str());
-
-        if (inputStream.fail()) {
-            errorMsg_ = "Failed to open file: ";
-            errorMsg_.append(sourceFile_);
-            return false;
-        }
-
-        std::stringstream ss;
-        ss << inputStream.rdbuf();
-        parserInput_ = ss.str();
-        inputStream.close();
-    }
-
-    if (!outputFile.GetValue().empty()) {
-        if (compilationMode == CompilationMode::PROJECT) {
-            errorMsg_ = "Error: When compiling in project mode --output key is not needed";
-            return false;
-        }
-        compilerOutput_ = outputFile.GetValue();
-    } else {
-        compilerOutput_ = RemoveExtension(BaseName(sourceFile_)).append(".abc");
-    }
-
-    DetermineLogLevel(logLevel);
-    if (logLevel_ == util::LogLevel::INVALID) {
+    auto compilationMode = DetermineCompilationMode(allArgs.genStdLib, allArgs.inputFile);
+    if (!allArgs.ParseInputOutput(compilationMode, errorMsg_, sourceFile_, parserInput_, compilerOutput_)) {
         return false;
     }
 
-    std::string extension = inputExtension.GetValue();
-    std::string sourceFileExtension = sourceFile_.substr(sourceFile_.find_last_of('.') + 1);
-
     // Determine Extension
-    DetermineExtension(extension, sourceFileExtension, inputStream, arktsConfig, compilationMode);
+    DetermineExtension(allArgs.inputExtension, allArgs.arktsConfig, compilationMode);
     if (extension_ == es2panda::ScriptExtension::INVALID) {
         return false;
     }
 
-    if (extension_ != es2panda::ScriptExtension::JS && opModule.GetValue()) {
+    if (extension_ != es2panda::ScriptExtension::JS && allArgs.opModule.GetValue()) {
         errorMsg_ = "Error: --module is not supported for this extension.";
         return false;
     }
 
-    optLevel_ = opOptLevel.GetValue();
-    threadCount_ = opThreadCount.GetValue();
-    listFiles_ = opListFiles.GetValue();
-
     // Add Option Flags
-    AddOptionFlags(opParseOnly, opModule, opSizeStat);
+    AddOptionFlags(allArgs.opParseOnly, allArgs.opModule, allArgs.opSizeStat);
 
-    compilerOptions_.arktsConfig = std::make_shared<ark::es2panda::ArkTsConfig>(arktsConfig.GetValue());
-
-    // Some additional checks for ETS extension
-    if (!CheckEtsSpecificOptions(compilationMode, arktsConfig)) {
-        return false;
-    }
-
-    if ((dumpEtsSrcBeforePhases.GetValue().size() + dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
+    if ((allArgs.dumpEtsSrcBeforePhases.GetValue().size() + allArgs.dumpEtsSrcAfterPhases.GetValue().size() > 0) &&
         extension_ != es2panda::ScriptExtension::ETS) {
         errorMsg_ = "--dump-ets-src-* option is valid only with ETS extension";
         return false;
     }
 
-    compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
-    compilerOptions_.dumpAst = opDumpAst.GetValue();
-    compilerOptions_.opDumpAstOnlySilent = opDumpAstOnlySilent.GetValue();
-    compilerOptions_.dumpCheckedAst = opDumpCheckedAst.GetValue();
-    compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
-    compilerOptions_.isDebug = opDebugInfo.GetValue();
-    compilerOptions_.parseOnly = opParseOnly.GetValue();
-    compilerOptions_.stdLib = stdLib.GetValue();
-    compilerOptions_.compilationMode = compilationMode;
-    compilerOptions_.isEtsModule = opEtsModule.GetValue();
-    compilerOptions_.plugins = SplitToStringVector(plugins.GetValue());
-    compilerOptions_.skipPhases = SplitToStringSet(skipPhases.GetValue());
-    compilerOptions_.verifierFullProgram = verifierFullProgram.GetValue();
-    compilerOptions_.verifierAllChecks = verifierAllChecks.GetValue();
-    compilerOptions_.verifierWarnings = SplitToStringSet(verifierWarnings.GetValue());
-    compilerOptions_.verifierErrors = SplitToStringSet(verifierErrors.GetValue());
-    compilerOptions_.dumpBeforePhases = SplitToStringSet(dumpBeforePhases.GetValue());
-    compilerOptions_.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
-    compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
-    compilerOptions_.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
-
-    // ETS-Warnings
-    compilerOptions_.etsSubsetWarnings = opEtsSubsetWarnings.GetValue();
-    compilerOptions_.etsWerror = opEtsWerror.GetValue();
-    compilerOptions_.etsNonsubsetWarnings = opEtsNonsubsetWarnings.GetValue();
-    compilerOptions_.etsEnableAll = opEtsEnableAll.GetValue();
-
-    if (compilerOptions_.etsEnableAll || compilerOptions_.etsSubsetWarnings) {
-        // Adding subset warnings
-        compilerOptions_.etsProhibitTopLevelStatements = ETSWarningsGroupSetter(opEtsProhibitTopLevelStatements);
-        compilerOptions_.etsBoostEqualityStatement = ETSWarningsGroupSetter(opEtsBoostEqualityStatement);
-        compilerOptions_.etsRemoveLambda = ETSWarningsGroupSetter(opEtsRemoveLambda);
-        compilerOptions_.etsImplicitBoxingUnboxing = ETSWarningsGroupSetter(opEtsImplicitBoxingUnboxing);
+    DetermineLogLevel(allArgs.logLevel);
+    if (logLevel_ == util::LogLevel::INVALID) {
+        return false;
     }
 
-    if (compilerOptions_.etsEnableAll || compilerOptions_.etsNonsubsetWarnings) {
-        // Adding non-subset warnings
-        compilerOptions_.etsSuggestFinal = ETSWarningsGroupSetter(opEtsSuggestFinal);
-        compilerOptions_.etsRemoveAsync = ETSWarningsGroupSetter(opEtsRemoveAsync);
+    allArgs.InitCompilerOptions(compilerOptions_, compilationMode);
+    // Some additional checks for ETS extension
+    if (!CheckEtsSpecificOptions(compilationMode, allArgs.arktsConfig)) {
+        return false;
     }
 
-    if (!compilerOptions_.etsEnableAll && !compilerOptions_.etsSubsetWarnings &&
-        !compilerOptions_.etsNonsubsetWarnings) {
-        // If no warnings groups enabled - check all if enabled
-        compilerOptions_.etsSuggestFinal = opEtsSuggestFinal.GetValue();
-        compilerOptions_.etsProhibitTopLevelStatements = opEtsProhibitTopLevelStatements.GetValue();
-        compilerOptions_.etsBoostEqualityStatement = opEtsBoostEqualityStatement.GetValue();
-        compilerOptions_.etsRemoveAsync = opEtsRemoveAsync.GetValue();
-        compilerOptions_.etsRemoveLambda = opEtsRemoveLambda.GetValue();
-        compilerOptions_.etsImplicitBoxingUnboxing = opEtsImplicitBoxingUnboxing.GetValue();
-    }
-
-    // Pushing enabled warnings to warning collection
-    if (compilerOptions_.etsSuggestFinal) {
-        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::SUGGEST_FINAL);
-    }
-    if (compilerOptions_.etsProhibitTopLevelStatements) {
-        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS);
-    }
-    if (compilerOptions_.etsBoostEqualityStatement) {
-        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::BOOST_EQUALITY_STATEMENT);
-    }
-    if (compilerOptions_.etsRemoveAsync) {
-        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::REMOVE_ASYNC_FUNCTIONS);
-    }
-    if (compilerOptions_.etsRemoveLambda) {
-        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::REMOVE_LAMBDA);
-    }
-    if (compilerOptions_.etsImplicitBoxingUnboxing) {
-        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::IMPLICIT_BOXING_UNBOXING);
-    }
-
-    if (!compilerOptions_.etsWarningCollection.empty()) {
-        compilerOptions_.etsHasWarnings = true;
-    }
+    optLevel_ = allArgs.opOptLevel.GetValue();
+    threadCount_ = allArgs.opThreadCount.GetValue();
+    listFiles_ = allArgs.opListFiles.GetValue();
 
     return true;
 }

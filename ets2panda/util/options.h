@@ -146,10 +146,12 @@ public:
         }
     }
 
-    void DetermineExtension(const std::string &extension, const std::string &sourceFileExtension,
-                            std::ifstream &inputStream, const ark::PandArg<std::string> &arktsConfig,
-                            const es2panda::CompilationMode &compMode)
+    void DetermineExtension(const ark::PandArg<std::string> &inputExtension,
+                            const ark::PandArg<std::string> &arktsConfig, const es2panda::CompilationMode &compMode)
     {
+        std::string extension = inputExtension.GetValue();
+        std::string sourceFileExtension = sourceFile_.substr(sourceFile_.find_last_of('.') + 1);
+
         bool extensionIsEmpty = extension.empty();
         if (!sourceFile_.empty() && !extensionIsEmpty && extension != sourceFileExtension) {
             std::cerr << "Warning: Not matching extensions! Sourcefile: " << sourceFileExtension
@@ -170,14 +172,13 @@ public:
         } else if (tempExtension == "ets") {
             extension_ = es2panda::ScriptExtension::ETS;
 
-            inputStream.open(arktsConfig.GetValue());
+            std::ifstream inputStream(arktsConfig.GetValue());
             if (inputStream.fail()) {
                 errorMsg_ = "Failed to open arktsconfig: ";
                 errorMsg_.append(arktsConfig.GetValue());
                 extension_ = es2panda::ScriptExtension::INVALID;
                 return;
             }
-            inputStream.close();
         } else if (extensionIsEmpty && (compMode == CompilationMode::PROJECT)) {
             extension_ = es2panda::ScriptExtension::ETS;
         } else {

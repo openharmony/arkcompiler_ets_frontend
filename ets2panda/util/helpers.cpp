@@ -473,27 +473,8 @@ void Helpers::CheckImportedName(const ArenaVector<ir::ImportSpecifier *> &specif
     }
 }
 
-util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func)
+static util::StringView FunctionNameFromParent(const ir::AstNode *parent, ArenaAllocator *allocator)
 {
-    if (func->Id() != nullptr) {
-        return func->Id()->Name();
-    }
-
-    if (func->Parent()->IsFunctionDeclaration()) {
-        return "*default*";
-    }
-
-    const ir::AstNode *parent = func->Parent()->Parent();
-
-    if (func->IsConstructor()) {
-        parent = parent->Parent();
-        if (parent->AsClassDefinition()->Ident() != nullptr) {
-            return parent->AsClassDefinition()->Ident()->Name();
-        }
-
-        parent = parent->Parent()->Parent();
-    }
-
     switch (parent->Type()) {
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
             const ir::VariableDeclarator *varDecl = parent->AsVariableDeclarator();
@@ -553,6 +534,30 @@ util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::Scri
     }
 
     return util::StringView();
+}
+
+util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func)
+{
+    if (func->Id() != nullptr) {
+        return func->Id()->Name();
+    }
+
+    if (func->Parent()->IsFunctionDeclaration()) {
+        return "*default*";
+    }
+
+    const ir::AstNode *parent = func->Parent()->Parent();
+
+    if (func->IsConstructor()) {
+        parent = parent->Parent();
+        if (parent->AsClassDefinition()->Ident() != nullptr) {
+            return parent->AsClassDefinition()->Ident()->Name();
+        }
+
+        parent = parent->Parent()->Parent();
+    }
+
+    return FunctionNameFromParent(parent, allocator);
 }
 
 std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
