@@ -17,7 +17,7 @@ type First = (n: int) => int
 type Second = First
 type Callback = Second
 class A {
-    public callback: Callback
+    public callback: Callback = (n: int) => 0
     public increment() {
         this.callback(1)
     }

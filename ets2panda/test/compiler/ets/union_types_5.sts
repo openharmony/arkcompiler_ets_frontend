@@ -15,6 +15,9 @@
 
 class A<T extends Object> {
     union0: T;
+    constructor(union0: T) {
+        this.union0 = union0
+    }
 }
 class B {
     num: int = 42
@@ -44,8 +47,7 @@ function bar(x: A<B|C>) {
 }
 
 function main(): void {
-    let a: A<B|C> = new A<B|C>();
-    a.union0 = new B();
+    let a: A<B|C> = new A<B|C>(new B());
     foo(a.union0);
     bar(a);
     a.union0 = new C();

@@ -15,6 +15,9 @@
 
 class B<T extends Object> {
     private a0: T;
+    constructor(a0: T) {
+        this.a0 = a0;
+    }
     public f1(): T {
         return this.a0;
     }

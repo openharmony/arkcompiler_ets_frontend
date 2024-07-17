@@ -235,6 +235,6 @@ class ArrayAsListt<T> implements Listt<T> {
     }
 
 
-    private data: T[];
+    private data: T[] = [];
     private curSize: int;
 }

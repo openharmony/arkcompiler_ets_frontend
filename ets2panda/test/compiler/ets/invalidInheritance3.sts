@@ -14,7 +14,7 @@
  */
 
 class A {
-    a: (a: int, b: int) => void;
+    a: (a: int, b: int) => void = (a: int, b: int) => { return };
 }
 
 class B extends A {

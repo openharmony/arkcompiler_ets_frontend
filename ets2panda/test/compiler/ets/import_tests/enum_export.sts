@@ -25,5 +25,5 @@ export enum Commands {
 }
 
 export class C {
-  a : AmbientColor;
+  a : AmbientColor = AmbientColor.Yellow;
 };

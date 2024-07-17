@@ -39,6 +39,20 @@
                 }
               }
             },
+            "value": {
+              "type": "StringLiteral",
+              "value": "",
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 15
+                },
+                "end": {
+                  "line": 19,
+                  "column": 17
+                }
+              }
+            },
             "accessibility": "public",
             "static": false,
             "readonly": false,
@@ -71,7 +85,7 @@
                   },
                   "end": {
                     "line": 19,
-                    "column": 13
+                    "column": 14
                   }
                 }
               },
@@ -82,7 +96,7 @@
                 },
                 "end": {
                   "line": 19,
-                  "column": 13
+                  "column": 14
                 }
               }
             },
@@ -95,7 +109,7 @@
               },
               "end": {
                 "line": 19,
-                "column": 13
+                "column": 17
               }
             }
           },

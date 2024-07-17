@@ -16,7 +16,7 @@
 let a: int  = 1;
 
 class B {
-  a: String;
+  a: String = "";
 }
 
 class A extends B {

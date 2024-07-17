@@ -176,6 +176,61 @@
                 }
               }
             },
+            "value": {
+              "type": "ETSNewClassInstanceExpression",
+              "typeReference": {
+                "type": "ETSTypeReference",
+                "part": {
+                  "type": "ETSTypeReferencePart",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "C",
+                    "decorators": [],
+                    "loc": {
+                      "start": {
+                        "line": 19,
+                        "column": 20
+                      },
+                      "end": {
+                        "line": 19,
+                        "column": 21
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 20
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 22
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 19,
+                    "column": 20
+                  },
+                  "end": {
+                    "line": 19,
+                    "column": 22
+                  }
+                }
+              },
+              "arguments": [],
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 16
+                },
+                "end": {
+                  "line": 20,
+                  "column": 2
+                }
+              }
+            },
             "accessibility": "public",
             "static": false,
             "readonly": false,
@@ -207,8 +262,8 @@
                     "column": 12
                   },
                   "end": {
-                    "line": 20,
-                    "column": 2
+                    "line": 19,
+                    "column": 15
                   }
                 }
               },
@@ -218,8 +273,8 @@
                   "column": 12
                 },
                 "end": {
-                  "line": 20,
-                  "column": 2
+                  "line": 19,
+                  "column": 15
                 }
               }
             },

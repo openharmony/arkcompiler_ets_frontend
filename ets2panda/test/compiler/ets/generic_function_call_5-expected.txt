@@ -359,6 +359,61 @@
                 }
               }
             },
+            "value": {
+              "type": "ETSNewClassInstanceExpression",
+              "typeReference": {
+                "type": "ETSTypeReference",
+                "part": {
+                  "type": "ETSTypeReferencePart",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "Object",
+                    "decorators": [],
+                    "loc": {
+                      "start": {
+                        "line": 20,
+                        "column": 31
+                      },
+                      "end": {
+                        "line": 20,
+                        "column": 37
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 31
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 38
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 20,
+                    "column": 31
+                  },
+                  "end": {
+                    "line": 20,
+                    "column": 38
+                  }
+                }
+              },
+              "arguments": [],
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 27
+                },
+                "end": {
+                  "line": 20,
+                  "column": 40
+                }
+              }
+            },
             "accessibility": "private",
             "static": false,
             "readonly": false,
@@ -391,7 +446,7 @@
                   },
                   "end": {
                     "line": 20,
-                    "column": 25
+                    "column": 26
                   }
                 }
               },
@@ -402,7 +457,7 @@
                 },
                 "end": {
                   "line": 20,
-                  "column": 25
+                  "column": 26
                 }
               }
             },
@@ -415,7 +470,7 @@
               },
               "end": {
                 "line": 20,
-                "column": 25
+                "column": 40
               }
             }
           }

@@ -39,6 +39,20 @@
                 }
               }
             },
+            "value": {
+              "type": "StringLiteral",
+              "value": "",
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 22
+                },
+                "end": {
+                  "line": 17,
+                  "column": 24
+                }
+              }
+            },
             "accessibility": "public",
             "static": false,
             "readonly": false,
@@ -71,7 +85,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 20
+                    "column": 21
                   }
                 }
               },
@@ -82,7 +96,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 20
+                  "column": 21
                 }
               }
             },
@@ -95,7 +109,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 20
+                "column": 24
               }
             }
           },
@@ -253,6 +267,20 @@
                 }
               }
             },
+            "value": {
+              "type": "StringLiteral",
+              "value": "",
+              "loc": {
+                "start": {
+                  "line": 21,
+                  "column": 22
+                },
+                "end": {
+                  "line": 21,
+                  "column": 24
+                }
+              }
+            },
             "accessibility": "public",
             "static": false,
             "readonly": false,
@@ -285,7 +313,7 @@
                   },
                   "end": {
                     "line": 21,
-                    "column": 20
+                    "column": 21
                   }
                 }
               },
@@ -296,7 +324,7 @@
                 },
                 "end": {
                   "line": 21,
-                  "column": 20
+                  "column": 21
                 }
               }
             },
@@ -309,7 +337,7 @@
               },
               "end": {
                 "line": 21,
-                "column": 20
+                "column": 24
               }
             }
           },

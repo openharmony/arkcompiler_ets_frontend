@@ -19,7 +19,7 @@ export class Morph3d {
   private static readonly param: int = 120;
   private static readonly n: int = 15;
 
-  static a: double[];
+  static a: double[] = [];
 
   public setup(): void {
     // Not parsed new double[...]

@@ -14,7 +14,7 @@
  */
 
 class A {
-    xstate: () => int;
+    xstate: () => int = () => { return 0; };
 
     get x(): () => int { return this.xstate; }
     set x(v: () => int) { this.xstate = v }

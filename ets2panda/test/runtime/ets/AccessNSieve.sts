@@ -17,7 +17,7 @@ export class AccessNSieve {
   static readonly n1: int = 3;
   static readonly n2: int = 10000;
   static readonly expected: int = 14302;
-  static isPrime: boolean[];
+  static isPrime: boolean[] = [];
 
   public setup(): void {
     AccessNSieve.isPrime = new boolean[(1 << AccessNSieve.n1) * AccessNSieve.n2 + 1];

@@ -237,6 +237,20 @@
                 }
               }
             },
+            "value": {
+              "type": "ArrayExpression",
+              "elements": [],
+              "loc": {
+                "start": {
+                  "line": 22,
+                  "column": 24
+                },
+                "end": {
+                  "line": 22,
+                  "column": 26
+                }
+              }
+            },
             "accessibility": "public",
             "static": true,
             "readonly": false,
@@ -261,11 +275,11 @@
               "loc": {
                 "start": {
                   "line": 22,
-                  "column": 21
+                  "column": 22
                 },
                 "end": {
                   "line": 22,
-                  "column": 22
+                  "column": 23
                 }
               }
             },
@@ -278,7 +292,7 @@
               },
               "end": {
                 "line": 22,
-                "column": 22
+                "column": 26
               }
             }
           },

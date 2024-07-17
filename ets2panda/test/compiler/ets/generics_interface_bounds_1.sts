@@ -20,6 +20,10 @@ interface A<T>{
 class B<U extends A<Object>>{
     private my_var: U;
 
+    constructor(my_var: U) {
+        this.my_var = my_var;
+    }
+
     bar(): void {
         let a: Object = this.my_var;
     }
