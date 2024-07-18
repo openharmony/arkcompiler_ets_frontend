@@ -43,6 +43,7 @@ protected:
 
     PandaGen *pg_;
     uint32_t regBase_;
+    uint32_t insStartIndex_;
 };
 
 class LocalRegScope : public RegScope {
