@@ -173,6 +173,26 @@ def get_args():
     return parser.parse_args()
 
 
+def run_subprocess_with_beta3(test_obj, cmd):
+    has_target_api = False
+    has_version_12 = False
+    has_sub_version = False
+
+    for param in cmd:
+        if "--target-api-sub-version" in param:
+            has_sub_version = True
+        if "--target-api-version" in param:
+            has_target_api = True
+        if "12" in param:
+            has_version_12 = True
+    if not has_target_api or (has_version_12 and not has_sub_version):
+        cmd.append("--target-api-sub-version=beta3")
+    if test_obj:
+        test_obj.log_cmd(cmd)
+    return subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
 class Test:
     def __init__(self, test_path, flags):
         self.path = test_path
@@ -198,10 +218,7 @@ class Test:
         cmd.extend(self.flags)
         cmd.extend(["--output=" + test_abc_path])
         cmd.append(self.path)
-
-        self.log_cmd(cmd)
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, cmd)
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
 
@@ -266,10 +283,7 @@ class TSCTest(Test):
         if "module" in self.options:
             cmd.append('--module')
         cmd.append(self.path)
-
-        self.log_cmd(cmd)
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, cmd)
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore")
 
@@ -298,9 +312,7 @@ class TestAop:
 
     def run(self, runner):
         cmd = self.cmd
-        self.log_cmd(cmd)
-
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, cmd)
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
 
@@ -474,8 +486,7 @@ class AbcToAsmTest(Test):
         gen_abc_cmd = runner.cmd_prefix + [runner.es2panda]
         gen_abc_cmd.extend(["--dump-normalized-asm-program", "--debug-info", "--output=" + output_abc_file])
         gen_abc_cmd.append(self.path)
-        self.log_cmd(gen_abc_cmd)
-        process_gen_abc = subprocess.Popen(gen_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process_gen_abc = run_subprocess_with_beta3(self, gen_abc_cmd)
         gen_abc_out, gen_abc_err = process_gen_abc.communicate()
         gen_abc_output = gen_abc_out.decode("utf-8", errors="ignore") + gen_abc_err.decode("utf-8", errors="ignore")
         # If no abc file is generated, an error occurs during parser, but abc2asm function is normal.
@@ -485,8 +496,7 @@ class AbcToAsmTest(Test):
         abc_to_asm_cmd = runner.cmd_prefix + [runner.es2panda]
         abc_to_asm_cmd.extend(["--dump-normalized-asm-program", "--debug-info", "--enable-abc-input"])
         abc_to_asm_cmd.append(output_abc_file)
-        self.log_cmd(abc_to_asm_cmd)
-        process_abc_to_asm = subprocess.Popen(abc_to_asm_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process_abc_to_asm = run_subprocess_with_beta3(self, abc_to_asm_cmd)
         abc_to_asm_out, abc_to_asm_err = process_abc_to_asm.communicate()
         abc_to_asm_output = (abc_to_asm_out.decode("utf-8", errors="ignore") +
                              abc_to_asm_err.decode("utf-8", errors="ignore"))
@@ -617,15 +627,13 @@ class CompilerTest(Test):
         es2abc_cmd.extend(self.flags)
         es2abc_cmd.extend(["--output=" + test_abc_path])
         es2abc_cmd.append(self.path)
-        self.log_cmd(es2abc_cmd)
-
         enable_arkguard = runner.args.enable_arkguard
         if enable_arkguard:
             success = self.execute_arkguard(runner)
             if not success:
                 return self
 
-        process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, es2abc_cmd)
         out, err = process.communicate()
         if "--dump-assembly" in self.flags:
             pa_expected_path = "".join([self.get_path_to_expected()[:self.get_path_to_expected().rfind(".txt")],
@@ -716,9 +724,7 @@ class CompilerProjectTest(Test):
             es2abc_cmd.extend(self.flags)
             es2abc_cmd.extend(['%s%s' % ("--output=", test_abc_path)])
             es2abc_cmd.append(self.path)
-            self.log_cmd(es2abc_cmd)
-
-            process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = run_subprocess_with_beta3(self, es2abc_cmd)
             out, err = process.communicate()
             if err:
                 self.passed = False
@@ -829,8 +835,7 @@ class CompilerProjectTest(Test):
                 abc_input_file_path = fp.read().split(';')[0]
 
         es2abc_cmd = self.gen_es2abc_cmd(runner, abc_input_file_path, abc_input_merged_abc_path)
-        self.log_cmd(es2abc_cmd)
-        process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, es2abc_cmd)
         out, err = process.communicate()
         if err:
             self.passed = False
@@ -867,9 +872,8 @@ class CompilerProjectTest(Test):
         compile_context_info_path = path.join(path.join(self.projects_path, self.project), "compileContextInfo.json")
         if path.exists(compile_context_info_path):
             es2abc_cmd.append("%s%s" % ("--compile-context-info=", compile_context_info_path))
-        self.log_cmd(es2abc_cmd)
+        process = run_subprocess_with_beta3(self, es2abc_cmd)
         self.path = exec_file_path
-        process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
 
         # restore merge-abc flag
@@ -1061,10 +1065,7 @@ class TransformerTest(Test):
         cmd = runner.cmd_prefix + [runner.es2panda]
         cmd.extend(self.flags)
         cmd.append(self.path)
-
-        self.log_cmd(cmd)
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, cmd)
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
 
@@ -1138,14 +1139,15 @@ class PatchTest(Test):
 
     def run(self, runner):
         gen_base_cmd, patch_test_cmd, symbol_table_file, origin_output_abc, modified_output_abc = self.gen_cmd(runner)
-        process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+
+        process_base = run_subprocess_with_beta3(None, gen_base_cmd)
         stdout_base, stderr_base = process_base.communicate(timeout=runner.args.es2panda_timeout)
         if stderr_base:
             self.passed = False
             self.error = stderr_base.decode("utf-8", errors="ignore")
             self.output = stdout_base.decode("utf-8", errors="ignore") + stderr_base.decode("utf-8", errors="ignore")
         else:
+            process_patch = run_subprocess_with_beta3(None, patch_test_cmd)
             process_patch = subprocess.Popen(patch_test_cmd, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
             stdout_patch, stderr_patch = process_patch.communicate(timeout=runner.args.es2panda_timeout)
@@ -1237,11 +1239,7 @@ class DebuggerTest(Test):
             cmd.extend(['--debug-info'])
         cmd.extend([os.path.join(self.path, input_file_name)])
         cmd.extend(['--dump-assembly'])
-
-
-        self.log_cmd(cmd)
-
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = run_subprocess_with_beta3(self, cmd)
         stdout, stderr = process.communicate(timeout=runner.args.es2panda_timeout)
         if stderr:
             self.passed = False
@@ -1300,6 +1298,8 @@ class Base64Test(Test):
             # base64 test for all available target api version.
             version = os.path.basename(self.path)
             cmd.extend(['--target-api-version', version])
+            if version == "12":
+                cmd.append("--target-api-sub-version=beta3")
             input_file = os.path.join(self.path, "input.txt")
             try:
                 with open(input_file, 'r') as fp:
@@ -1311,6 +1311,10 @@ class Base64Test(Test):
             self.error = "Unsupported base64 input type"
             self.passed = False
             return self
+
+        version = os.path.basename(self.path)
+        if not self.input_type == "targetApiVersion":
+            cmd.append("--target-api-sub-version=beta3")
 
         self.log_cmd(cmd)
 
@@ -1419,20 +1423,22 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/ts/cases/declaration", "d.ts",
                          ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
     runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
-    runner.add_directory("parser/binder", "js", ["--dump-assembly", "--dump-literal-buffer", "--module"])
-    runner.add_directory("parser/binder", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module"])
-    runner.add_directory("parser/binder/noModule", "ts", ["--dump-assembly", "--dump-literal-buffer"])
-    runner.add_directory("parser/binder/targetVersion11", "js", ["--dump-assembly", "--target-api-version=11"])
+    runner.add_directory("parser/binder", "js", ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
+    runner.add_directory("parser/binder", "ts", ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
+    runner.add_directory("parser/binder/noModule", "ts", ["--dump-assembly", "--dump-literal-buffer", "--target-api-sub-version=beta3"])
+    runner.add_directory("parser/binder/api12beta2", "js", ["--dump-assembly", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
     runner.add_directory("parser/js/language/arguments-object", "js", ["--parse-only"])
     runner.add_directory("parser/js/language/statements/for-statement", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/expressions/optional-chain", "js", ["--parse-only", "--dump-ast"])
     runner.add_directory("parser/js/language/import/syntax", "js",
-                         ["--parse-only", "--module", "--target-api-sub-version='beta3'"])
+                         ["--parse-only", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/js/language/import", "ts",
-                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version='beta3'"])
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class", "ts",
-        ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version='beta3'"])
+        ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
+    runner.add_directory("parser/sendable_class/api12beta2", "ts",
+        ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/unicode", "js", ["--parse-only"])
     runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
 
@@ -1501,7 +1507,7 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
-    compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module", "--target-api-sub-version='beta3'"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module", "--target-api-sub-version=beta3"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/opt-try-catch-func", "js",
