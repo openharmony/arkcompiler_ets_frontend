@@ -768,7 +768,7 @@ export class Autofixer {
     bodyStatements = bodyStatements.concat(body.statements);
     for (let i = 1; i < nodes.length; i++) {
       bodyStatements = bodyStatements.concat((nodes[i] as ts.ClassStaticBlockDeclaration).body.statements);
-      autofix[i] = { start: nodes[i].getFullStart(), end: nodes[i].getEnd(), replacementText: '' };
+      autofix[i] = { start: nodes[i].getStart(), end: nodes[i].getEnd(), replacementText: '' };
     }
     body = ts.factory.createBlock(bodyStatements, true);
     // static blocks shouldn't have modifiers

@@ -41,7 +41,8 @@ cookBookTag[17] = 'Indexed signatures are not supported (arkts-no-indexed-signat
 cookBookTag[18] = '';
 cookBookTag[19] = 'Use inheritance instead of intersection types (arkts-no-intersection-types)';
 cookBookTag[20] = '';
-cookBookTag[21] = 'Type notation using "this" is only supported for methods, that return "this" explicitly (arkts-this-typing)';
+cookBookTag[21] =
+  'Type notation using "this" is only supported for methods, that return "this" explicitly (arkts-this-typing)';
 cookBookTag[22] = 'Conditional types are not supported (arkts-no-conditional-types)';
 cookBookTag[23] = '';
 cookBookTag[24] = '';
