@@ -58,3 +58,25 @@ export function deleteLineInfoForNameString(historyNameCache: Map<string, string
     }
   }
 }
+
+// The original name of the member method is recorded during the identifier obfuscation.
+// After the property obfuscation, it needs to be updated to the mangled name.
+export function UpdateMemberMethodName(nameCache: Map<string, string | Map<string, string>>, globalMangledTable: Map<string, string>,
+  classInfoInMemberMethodCache: Set<string>): void {
+  let memberMethodCache: Map<string, string> = nameCache.get(MEM_METHOD_CACHE) as Map<string, string>;
+  if (!memberMethodCache) {
+    return;
+  }
+  // the valueName is the orignal name of member method.
+  for (const [key, valueName] of memberMethodCache.entries()) {
+    // It is used to prevent the class name from being updated incorrectly, since the obfuscated class name
+    // is recorded during identifier obfuscation.
+    if (classInfoInMemberMethodCache.has(key)) {
+      continue;
+    }
+    const mangledName: string = globalMangledTable.get(valueName);
+    if (mangledName) {
+      memberMethodCache.set(key, mangledName);
+    }
+  }
+}

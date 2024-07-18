@@ -35,6 +35,7 @@ import type {
 
 import path from 'path';
 
+import { PropCollections } from './utils/CommonCollections'
 import type { IOptions } from './configs/IOptions';
 import { FileUtils } from './utils/FileUtils';
 import { TransformerManager } from './transformers/TransformerManager';
@@ -67,10 +68,9 @@ export { separateUniversalReservedItem, containWildcards, wildcardTransformer } 
 export type { ReservedNameInfo } from './utils/TransformUtil';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
-export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
 export const renameFileNameModule = require('./transformers/rename/RenameFileNameTransformer');
 
-export { getMapFromJson, readProjectPropertiesByCollectedPaths, deleteLineInfoForNameString };
+export { getMapFromJson, readProjectPropertiesByCollectedPaths, deleteLineInfoForNameString, ApiExtractor, PropCollections };
 export let orignalFilePathForSearching: string | undefined;
 export interface PerformancePrinter {
   filesPrinter?: TimeTracker;
@@ -81,6 +81,12 @@ export interface PerformancePrinter {
 export let performancePrinter: PerformancePrinter = {
   iniPrinter: new TimeTracker(),
 };
+
+// When the module is compiled, call this function to clear global collections.
+export function clearGlobalCaches(): void {
+  PropCollections.clearPropsCollections();
+  renameFileNameModule.clearCaches();
+}
 
 export type ObfuscationResultType = {
   content: string;
@@ -467,14 +473,6 @@ export class ArkObfuscator {
   private clearCaches(): void {
     // clear cache of text writer
     this.mTextWriter.clear();
-    if (renameIdentifierModule.nameCache) {
-      renameIdentifierModule.nameCache.clear();
-      renameIdentifierModule.identifierLineMap.clear();
-      renameIdentifierModule.classMangledName.clear();
-    }
-
-    renameIdentifierModule.historyNameCache = undefined;
+    renameIdentifierModule.clearCaches();
   }
 }
-
-export { ApiExtractor };

@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 import assert from 'assert';
-namespace i {
-    let l, m;
-    const n = 0;
-    const o = 0;
-    async function k() {
-        for await ({ g: l = n, h: m = o } of [{ g: l, h: m }]) {
-            assert.strictEqual(l, n);
-            assert.strictEqual(m, o);
+namespace g {
+    let j, k;
+    const l = 0;
+    const m = 0;
+    async function i() {
+        for await ({ i: j = l, j: k = m } of [{ i: j, j: k }]) {
+            assert.strictEqual(j, l);
+            assert.strictEqual(k, m);
         }
     }
 }
-class j {
-    g: string = "123";
+class h {
+    i: string = "123";
 }

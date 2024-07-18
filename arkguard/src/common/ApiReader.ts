@@ -81,9 +81,8 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
   } else {
     scanningCommonType = ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY;
     scanningLibsType = ApiExtractor.ApiType.CONSTRUCTOR_PROPERTY;
-    ApiExtractor.mConstructorPropertySet = new Set();
   }
-
+  ApiExtractor.mConstructorPropertySet = new Set();
   // This call is for UT.
   initScanProjectConfig(customProfiles);
 
@@ -154,9 +153,7 @@ export function readProjectPropertiesByCollectedPaths(filesForCompilation: Set<s
     scanningLibsType = ApiType.CONSTRUCTOR_PROPERTY;
   }
   // The purpose of collecting constructor properties is to avoid generating the same name as the constructor property when obfuscating identifier names.
-  // If property obfuscation is enabled, as property obfuscation precedes identifer obfuscation.
-  // the constructor property will be obfuscated first, so there is no need to collect this name.
-  ApiExtractor.mConstructorPropertySet = isEnabledPropertyObfuscation(customProfiles) ? undefined : new Set();
+  ApiExtractor.mConstructorPropertySet = new Set();
 
   initScanProjectConfig(customProfiles, isHarCompiled);
 

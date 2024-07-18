@@ -66,6 +66,12 @@ namespace secharmony {
   // used for file name cache
   export let historyFileNameMangledTable: Map<string, string> = undefined;
 
+  // When the module is compiled, call this function to clear global collections related to file name.
+  export function clearCaches(): void {
+    globalFileNameMangledTable.clear();
+    historyFileNameMangledTable?.clear();
+  }
+
   let profile: IFileNameObfuscationOption | undefined;
   let generator: INameGenerator | undefined;
   let reservedFileNames: Set<string> | undefined;

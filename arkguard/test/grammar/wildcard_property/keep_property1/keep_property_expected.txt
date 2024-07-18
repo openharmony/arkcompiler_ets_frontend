@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class h {
+class g {
     prop1: string = '1'; // keep
     prop2: number = 2; // keep
     myprop: number = 3; // keep
     aaaaaaaa: number = 4; // keep
-    g: number = 5;
+    h: number = 5;
     // keep functionkeep
     functionkeep() {
         return `function name should be kept.`;

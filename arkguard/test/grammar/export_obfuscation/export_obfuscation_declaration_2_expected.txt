@@ -17,7 +17,7 @@ export declare struct q1 {
     message1: string;
     method1(): void;
 }
-export declare function h(u1, v1);
+export declare function g(u1, v1);
 export declare const s1;
 export declare struct t1 {
     param2: string;

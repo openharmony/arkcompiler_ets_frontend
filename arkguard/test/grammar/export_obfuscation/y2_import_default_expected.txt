@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import a6 from './y2_export_default_func';
-import { default as b6 } from './y2_export_default_func';
-assert(a6(2, 3) === 6, 'success');
-assert(b6(3, 4) === 12, 'success');
+import z5 from './y2_export_default_func';
+import { default as a6 } from './y2_export_default_func';
+assert(z5(2, 3) === 6, 'success');
+assert(a6(3, 4) === 12, 'success');

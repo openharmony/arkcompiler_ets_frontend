@@ -1,14 +1,14 @@
 import add from './namecacheTest7_export';
-import { multiply, m } from './namecacheTest7_export';
-import { PI, j } from './namecacheTest7_export';
-import { i, k } from './namecacheTest7_export';
-import type { l } from './namecacheTest7_export';
-let v = new j("xiaoming", 12);
-let a1: j = new j("xiaohong", 11);
-var value: l = "hello";
-const b1: number = 5;
-let c1 = (m(b1, PI) == multiply(b1, PI));
-let d1: k = {
+import { multiply, k } from './namecacheTest7_export';
+import { PI, h } from './namecacheTest7_export';
+import { g, i } from './namecacheTest7_export';
+import type { j } from './namecacheTest7_export';
+let t = new h("xiaoming", 12);
+let u: h = new h("xiaohong", 11);
+var value: j = "hello";
+const v: number = 5;
+let a1 = (k(v, PI) == multiply(v, PI));
+let b1: i = {
     id: 1,
-    h: "2023"
+    m: "2023"
 };

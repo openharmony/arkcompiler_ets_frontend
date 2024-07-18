@@ -12,17 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class e1 {
-    a1: string = '1';
-    b1: number = 1;
+class a1 {
+    b1: string = '1';
+    c1: number = 1;
     a: number = 1; // keep
     b: number = 2; // keep
     'c': number = 3; // keep
     '?': number = 4; // keep
     '*': number = 5; // keep
     '/': number = 6; // keep
-    "c1": number = 7;
-    d1() {
+    "d1": number = 7;
+    e1() {
         return `function name should be obfuscated.`;
     }
     // keep

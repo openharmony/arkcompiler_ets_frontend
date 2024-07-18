@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 import assert from 'assert';
-let l: any = null, m: any = undefined;
-let a1 = 1, b1 = 2;
-for ({ l: l = a1, m: m = b1 } of [{ l: l, m: m }]) {
-    assert.strictEqual(l, null);
-    assert.strictEqual(m, 2);
+let a1: any = null, b1: any = undefined;
+let c1 = 1, d1 = 2;
+for ({ a1: a1 = c1, b1: b1 = d1 } of [{ a1: a1, b1: b1 }]) {
+    assert.strictEqual(a1, null);
+    assert.strictEqual(b1, 2);
 }
