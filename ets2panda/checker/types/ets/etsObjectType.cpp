@@ -456,29 +456,27 @@ bool ETSObjectType::CastWideningNarrowing(TypeRelation *const relation, Type *co
     return false;
 }
 
-bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
+bool ETSObjectType::TryCastByte(TypeRelation *const relation, Type *const target)
 {
-    if (!target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
-                             TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
-        return false;
-    }
-    if (relation->IsIdenticalTo(this, target)) {
+    if (target->HasTypeFlag(TypeFlag::BYTE)) {
+        conversion::Unboxing(relation, this);
         return true;
     }
-    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
-        if (target->HasTypeFlag(TypeFlag::BYTE)) {
-            conversion::Unboxing(relation, this);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::SHORT | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT |
-                                TypeFlag::DOUBLE)) {
-            conversion::UnboxingWideningPrimitive(relation, this, target);
-            return true;
-        }
-        if (target->HasTypeFlag(TypeFlag::CHAR)) {
-            conversion::UnboxingWideningNarrowingPrimitive(relation, this, target);
-            return true;
-        }
+    if (target->HasTypeFlag(TypeFlag::SHORT | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
+        conversion::UnboxingWideningPrimitive(relation, this, target);
+        return true;
+    }
+    if (target->HasTypeFlag(TypeFlag::CHAR)) {
+        conversion::UnboxingWideningNarrowingPrimitive(relation, this, target);
+        return true;
+    }
+    return false;
+}
+
+bool ETSObjectType::TryCastIntegral(TypeRelation *const relation, Type *const target)
+{
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE) && TryCastByte(relation, target)) {
+        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT) &&
         CastWideningNarrowing(relation, target, TypeFlag::SHORT,
@@ -502,6 +500,11 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
                               TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT)) {
         return true;
     }
+    return false;
+}
+
+bool ETSObjectType::TryCastFloating(TypeRelation *const relation, Type *const target)
+{
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT) &&
         CastWideningNarrowing(relation, target, TypeFlag::FLOAT, TypeFlag::DOUBLE,
                               TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG)) {
@@ -513,27 +516,50 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
         CastWideningNarrowing(relation, target, TypeFlag::DOUBLE, TypeFlag::NONE, narrowingFlags)) {
         return true;
     }
+    return false;
+}
+
+bool ETSObjectType::TryCastUnboxable(TypeRelation *const relation, Type *const target)
+{
+    if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+        if (!target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        auto unboxedTarget = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+        CastNumericObject(relation, unboxedTarget);
+        if (relation->IsTrue()) {
+            conversion::Boxing(relation, unboxedTarget);
+            return true;
+        }
+        conversion::WideningReference(relation, this, target->AsETSObjectType());
+        return true;
+    }
+    conversion::Forbidden(relation);
+    return true;
+}
+
+bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
+{
+    if (!target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
+                             TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
+        return false;
+    }
+    if (relation->IsIdenticalTo(this, target)) {
+        return true;
+    }
+    if (TryCastIntegral(relation, target)) {
+        return true;
+    }
+    if (TryCastFloating(relation, target)) {
+        return true;
+    }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN) && target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
         conversion::Unboxing(relation, this);
         return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            if (!target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return true;
-            }
-            auto unboxedTarget = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
-            CastNumericObject(relation, unboxedTarget);
-            if (relation->IsTrue()) {
-                conversion::Boxing(relation, unboxedTarget);
-                return true;
-            }
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
-            return true;
-        }
-        conversion::Forbidden(relation);
-        return true;
+        return TryCastUnboxable(relation, target);
     }
     if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
                             TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {

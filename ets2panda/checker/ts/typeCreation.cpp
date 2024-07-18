@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -155,8 +155,9 @@ Type *TSChecker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlag
 {
     desc->stringIndexInfo = Allocator()->New<IndexInfo>(GlobalAnyType(), "x", readonly);
     checker::NamedTupleMemberPool namedMembers(Allocator()->Adapter());
-    return Allocator()->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly,
-                                       std::move(namedMembers));
+    return Allocator()->New<TupleType>(
+        std::make_tuple(desc, std::move(elementFlags), combinedFlags, std::move(namedMembers)), minLength, fixedLength,
+        readonly);
 }
 
 Type *TSChecker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags,
@@ -165,7 +166,8 @@ Type *TSChecker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlag
 {
     desc->stringIndexInfo = Allocator()->New<IndexInfo>(GlobalAnyType(), "x", readonly);
 
-    return Allocator()->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly,
-                                       std::move(namedMembers));
+    return Allocator()->New<TupleType>(
+        std::make_tuple(desc, std::move(elementFlags), combinedFlags, std::move(namedMembers)), minLength, fixedLength,
+        readonly);
 }
 }  // namespace ark::es2panda::checker

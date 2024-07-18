@@ -24,7 +24,8 @@ public:
     explicit ETSDynamicType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
                             ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation, Language lang,
                             bool hasDecl)
-        : ETSObjectType(allocator, name, assemblerName, declNode, flags | ETSObjectFlags::DYNAMIC, relation),
+        : ETSObjectType(allocator, name, assemblerName,
+                        std::make_tuple(declNode, flags | ETSObjectFlags::DYNAMIC, relation)),
           propertiesCache_ {allocator->Adapter()},
           lang_(lang),
           hasDecl_(hasDecl)

@@ -163,7 +163,8 @@ Type *TupleType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, 
         copiedElementFlags.push_back(it);
     }
 
-    return allocator->New<TupleType>(copiedDesc, std::move(copiedElementFlags), combinedFlags_, minLength_,
-                                     fixedLength_, readonly_, std::move(copiedNamedMemberPool));
+    return allocator->New<TupleType>(
+        std::make_tuple(copiedDesc, std::move(copiedElementFlags), combinedFlags_, std::move(copiedNamedMemberPool)),
+        minLength_, fixedLength_, readonly_);
 }
 }  // namespace ark::es2panda::checker

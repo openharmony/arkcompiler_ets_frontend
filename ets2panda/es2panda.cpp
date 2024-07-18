@@ -28,7 +28,6 @@ template <class T>
 T DirName(T const &path, T const &delims = ark::os::file::File::GetPathDelim())
 {
     std::size_t pos = path.find_last_of(delims);
-
     if (pos == std::string::npos) {
         return "./";
     }

@@ -539,6 +539,31 @@ ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNod
     return objType;
 }
 
+std::tuple<Language, bool> ETSChecker::CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName)
+{
+    Language lang(Language::Id::ETS);
+    bool hasDecl = false;
+
+    if (declNode->IsClassDefinition()) {
+        auto *clsDef = declNode->AsClassDefinition();
+        lang = clsDef->Language();
+        hasDecl = clsDef->IsDeclare();
+    }
+
+    if (declNode->IsTSInterfaceDeclaration()) {
+        auto *ifaceDecl = declNode->AsTSInterfaceDeclaration();
+        lang = ifaceDecl->Language();
+        hasDecl = ifaceDecl->IsDeclare();
+    }
+
+    auto res = compiler::Signatures::Dynamic::LanguageFromType(assemblerName.Utf8());
+    if (res) {
+        lang = *res;
+    }
+
+    return std::make_tuple(lang, hasDecl);
+}
+
 ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags)
 {
     util::StringView assemblerName = name;
@@ -573,32 +598,14 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
                 .View();
     }
 
-    Language lang(Language::Id::ETS);
-    bool hasDecl = false;
-
-    if (declNode->IsClassDefinition()) {
-        auto *clsDef = declNode->AsClassDefinition();
-        lang = clsDef->Language();
-        hasDecl = clsDef->IsDeclare();
-    }
-
-    if (declNode->IsTSInterfaceDeclaration()) {
-        auto *ifaceDecl = declNode->AsTSInterfaceDeclaration();
-        lang = ifaceDecl->Language();
-        hasDecl = ifaceDecl->IsDeclare();
-    }
-
-    auto res = compiler::Signatures::Dynamic::LanguageFromType(assemblerName.Utf8());
-    if (res) {
-        lang = *res;
-    }
-
+    auto [lang, hasDecl] = CheckForDynamicLang(declNode, assemblerName);
     if (lang.IsDynamic()) {
         return Allocator()->New<ETSDynamicType>(Allocator(), name, assemblerName, declNode, flags, Relation(), lang,
                                                 hasDecl);
     }
 
-    return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName, declNode, flags, Relation());
+    return Allocator()->New<ETSObjectType>(Allocator(), name, assemblerName,
+                                           std::make_tuple(declNode, flags, Relation()));
 }
 
 std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType,

@@ -700,7 +700,8 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
     }
 
     if (!ast->Parent()->IsCallExpression()) {
-        checker->ThrowTypeError({"Cannot deduce call signature"}, ast->Start());
+        checker->ThrowTypeError(
+            std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"}, ast->Start());
     }
 
     auto &args = ast->Parent()->AsCallExpression()->Arguments();
@@ -721,7 +722,9 @@ static checker::Signature *GuessSignature(checker::ETSChecker *checker, ir::Expr
             }
             if (sigFound != nullptr) {
                 // ambiguiuty
-                checker->ThrowTypeError({"Cannot deduce call signature"}, ast->Start());
+                checker->ThrowTypeError(
+                    std::initializer_list<checker::TypeErrorMessageElement> {"Cannot deduce call signature"},
+                    ast->Start());
             }
             sigFound = sig;
         }
