@@ -840,6 +840,7 @@ void AddOverload(ir::MethodDefinition *overload, varbinder::Variable *variable) 
     auto *currentNode = variable->Declaration()->Node();
     currentNode->AsMethodDefinition()->AddOverload(overload);
     overload->Id()->SetVariable(variable);
+    overload->SetParent(currentNode);
 }
 
 void InitScopesPhaseETS::DeclareClassMethod(ir::MethodDefinition *method)

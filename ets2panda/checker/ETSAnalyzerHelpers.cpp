@@ -171,7 +171,7 @@ void ComposeAsyncImplFuncReturnType(ETSChecker *checker, ir::ScriptFunction *scr
 
 void ComposeAsyncImplMethod(ETSChecker *checker, ir::MethodDefinition *node)
 {
-    auto *classDef = node->Parent()->AsClassDefinition();
+    auto *classDef = checker->FindAncestorGivenByType(node, ir::AstNodeType::CLASS_DEFINITION)->AsClassDefinition();
     auto *scriptFunc = node->Function();
     ir::MethodDefinition *implMethod = checker->CreateAsyncProxy(node, classDef);
 

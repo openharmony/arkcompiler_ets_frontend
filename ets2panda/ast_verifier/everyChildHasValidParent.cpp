@@ -14,6 +14,7 @@
  */
 
 #include "everyChildHasValidParent.h"
+#include "ir/base/methodDefinition.h"
 
 namespace ark::es2panda::compiler::ast_verifier {
 
@@ -24,11 +25,30 @@ CheckResult EveryChildHasValidParent::operator()(CheckContext &ctx, const ir::As
         return result;
     }
 
+    auto maybeOverloadMethod = [](const ir::AstNode *root, const ir::AstNode *node) -> bool {
+        if (root->IsClassDefinition() && node->IsMethodDefinition() && node->Parent()->IsMethodDefinition()) {
+            auto maybeBaseOverloadMethod = node->Parent()->AsMethodDefinition();
+            auto overloads = maybeBaseOverloadMethod->Overloads();
+            auto res =
+                std::find_if(overloads.begin(), overloads.end(), [node](ir::MethodDefinition *m) { return m == node; });
+            return res != overloads.end();
+        }
+        return false;
+    };
+
     ast->Iterate([&](const ir::AstNode *node) {
         if (ir::AstNode const *parent = node->Parent(); ast != parent) {
             //  NOTE: Temporary suppress.
             //  Should be removed after new ENUMs support will be implemented: #14443
             if (ast->IsClassDeclaration() && parent != nullptr && parent->IsETSNewClassInstanceExpression()) {
+                return;
+            }
+
+            //  NOTE: Temporary suppress.
+            //  Should be removed after proper overload method's parent setting
+            //  For now there is no right decision who is parent of overload method:
+            //  baseOverloadMethod or ClassDefininiton, but the first is set
+            if (maybeOverloadMethod(ast, node)) {
                 return;
             }
 

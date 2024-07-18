@@ -306,8 +306,7 @@ ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclarat
 
     checker::ETSObjectType *interfaceType {};
     if (var->TsType() == nullptr) {
-        interfaceType = CreateETSObjectType(var->Name(), interfaceDecl,
-                                            checker::ETSObjectFlags::INTERFACE | checker::ETSObjectFlags::ABSTRACT);
+        interfaceType = CreateETSObjectType(var->Name(), interfaceDecl, checker::ETSObjectFlags::INTERFACE);
         interfaceType->SetVariable(var);
         var->SetTsType(interfaceType);
     } else {

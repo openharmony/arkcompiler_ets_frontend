@@ -703,12 +703,20 @@ public:
 
     [[nodiscard]] ir::ScriptFunction *FindFunction(const util::UString &name);
 
-private:
     using ClassBuilder = std::function<void(ArenaVector<ir::AstNode *> *)>;
     using ClassInitializerBuilder =
         std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *)>;
     using MethodBuilder = std::function<void(ArenaVector<ir::Statement *> *, ArenaVector<ir::Expression *> *, Type **)>;
 
+    ir::ClassStaticBlock *CreateClassStaticInitializer(const ClassInitializerBuilder &builder,
+                                                       ETSObjectType *type = nullptr);
+    ir::MethodDefinition *CreateClassInstanceInitializer(const ClassInitializerBuilder &builder,
+                                                         ETSObjectType *type = nullptr);
+    ir::MethodDefinition *CreateClassMethod(std::string_view name, ir::ScriptFunctionFlags funcFlags,
+                                            ir::ModifierFlags modifierFlags, const MethodBuilder &builder);
+    ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
+
+private:
     ETSEnumType::Method MakeMethod(ir::TSEnumDeclaration const *const enumDecl, const std::string_view &name,
                                    bool buildPorxyParam, Type *returnType, bool buildProxy = true);
 
@@ -740,22 +748,14 @@ private:
     PropertySearchFlags GetSearchFlags(const ir::MemberExpression *memberExpr, const varbinder::Variable *targetRef);
     PropertySearchFlags GetInitialSearchFlags(const ir::MemberExpression *memberExpr);
     const varbinder::Variable *GetTargetRef(const ir::MemberExpression *memberExpr);
-    ir::ClassDeclaration *BuildClass(util::StringView name, const ClassBuilder &builder);
     Type *GetTypeOfSetterGetter([[maybe_unused]] varbinder::Variable *var);
     void IterateInVariableContext([[maybe_unused]] varbinder::Variable *const var);
     void CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                    checker::Type *annotationType, varbinder::Variable *const bindingVar);
 
-    template <bool IS_STATIC>
+    std::pair<ir::ScriptFunction *, ir::Identifier *> CreateStaticScriptFunction(
+        ClassInitializerBuilder const &builder);
     std::pair<ir::ScriptFunction *, ir::Identifier *> CreateScriptFunction(ClassInitializerBuilder const &builder);
-
-    template <bool IS_STATIC>
-    std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> CreateClassInitializer(
-        const ClassInitializerBuilder &builder, ETSObjectType *type = nullptr);
-
-    template <bool IS_STATIC>
-    ir::MethodDefinition *CreateClassMethod(std::string_view name, ir::ModifierFlags modifierFlags,
-                                            const MethodBuilder &builder);
 
     template <typename T>
     ir::MethodDefinition *CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,

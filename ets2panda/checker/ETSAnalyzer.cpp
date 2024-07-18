@@ -1368,7 +1368,18 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     }
 
     checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();
-    if (objType->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT | checker::ETSObjectFlags::INTERFACE)) {
+    if (objType->HasObjectFlag(checker::ETSObjectFlags::INTERFACE)) {
+        // Object literal of interface tpye
+        // Further interfaceObjectLiteralLowering phase will resolve interface type
+        // and create corresponding anonymous class and class type
+        // Here we just set the type to pass the checker
+        CheckObjectExprProps(expr, checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
+                                       checker::PropertySearchFlags::SEARCH_IN_INTERFACES);
+        expr->SetTsType(objType);
+        return objType;
+    }
+
+    if (objType->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
         checker->ThrowTypeError({"target type for class composite ", objType->Name(), " is not instantiable"},
                                 expr->Start());
     }
@@ -1395,13 +1406,15 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
         checker->ThrowTypeError({"type ", objType->Name(), " has no parameterless constructor"}, expr->Start());
     }
 
-    CheckObjectExprProps(expr);
+    CheckObjectExprProps(expr, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
+                                   checker::PropertySearchFlags::SEARCH_IN_BASE |
+                                   checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD);
 
     expr->SetTsType(objType);
     return objType;
 }
 
-void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
+void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr, checker::PropertySearchFlags searchFlags) const
 {
     ETSChecker *checker = GetETSChecker();
     checker::ETSObjectType *objType = expr->PreferredType()->AsETSObjectType();
@@ -1421,9 +1434,7 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
             checker->ThrowTypeError({"key in class composite should be either identifier or string literal"},
                                     expr->Start());
         }
-        varbinder::LocalVariable *lv = objType->GetProperty(
-            pname, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD | checker::PropertySearchFlags::SEARCH_IN_BASE |
-                       checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD);
+        varbinder::LocalVariable *lv = objType->GetProperty(pname, searchFlags);
         if (lv == nullptr) {
             checker->ThrowTypeError({"type ", objType->Name(), " has no property named ", pname}, propExpr->Start());
         }
