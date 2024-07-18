@@ -19,5 +19,8 @@
 /merge_abc/ @gavin1012_hw
 /test/ @gavin1012_hw
 /test262/ @gavin1012_hw
+/test262/*.json                 @shirunova_viktoria @gavin1012_hw @zhuheng27
+/test262/*.py			@shirunova_viktoria @gavin1012_hw @zhuheng27
+/test262/ignored*.txt		@shirunova_viktoria @gavin1012_hw @kuchkovairina @zhuheng27
 /test_ecma_bcopt/ @gavin1012_hw
-/ets2panda/linter/ @ragnvald
+/ets2panda/linter/              @ragnvald
