@@ -1,22 +1,5 @@
 # Known failure list for test262 - debug-x64
 
-# Issue #17827 - timeout
-test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat_small-typed-array.js
-test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
-test262/data/test_es2021/intl402/Segmenter/constructor/supportedLocalesOf/locales-invalid.js
-test262/data/test_es2021/intl402/supportedLocalesOf-unicode-extensions-ignored.js
-test262/data/test_es2021/language/identifiers/start-unicode-10.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-10.0.0-escaped.js
-test262/data/test_es2021/language/identifiers/start-unicode-8.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-8.0.0-escaped.js
-test262/data/test_es2021/language/identifiers/start-unicode-9.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-9.0.0-escaped.js
-test262/data/test_es2021/language/identifiers/start-unicode-13.0.0-escaped.js
-test262/data/test_es2021/language/identifiers/start-unicode-13.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-5.2.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-5.2.0-escaped.js
-# --- end of Issue #17827
-
 # Issue #18004
 test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
 # --- end of Issue #18004
