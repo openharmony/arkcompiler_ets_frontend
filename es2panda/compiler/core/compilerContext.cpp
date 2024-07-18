@@ -25,7 +25,7 @@ CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDe
                                  util::StringView recordName, util::PatchFix *patchFixHelper)
     : binder_(binder), isDebug_(isDebug), isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode),
       isMergeAbc_(isMergeAbc), isJsonInputFile_(isJsonInputFile),
-      isRecordSource_(isRecordSource), sourceFile_(sourceFile), pkgName_(pkgName), recordName_(recordName), 
+      isRecordSource_(isRecordSource), sourceFile_(sourceFile), pkgName_(pkgName), recordName_(recordName),
       patchFixHelper_(patchFixHelper), emitter_(std::make_unique<class Emitter>(this))
 {
 }

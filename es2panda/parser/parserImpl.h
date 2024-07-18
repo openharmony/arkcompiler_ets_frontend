@@ -598,11 +598,11 @@ private:
     {
         return program_.Binder();
     }
-    static constexpr unsigned maxRecursionDepth = 1024;
+    static constexpr unsigned MAX_RECURSION_DEPTH = 1024;
 
     inline void RecursiveDepthCheck()
     {
-        if (recursiveDepth_ < maxRecursionDepth) {
+        if (recursiveDepth_ < MAX_RECURSION_DEPTH) {
             return;
         }
         RecursiveDepthException();

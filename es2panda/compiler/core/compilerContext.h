@@ -116,7 +116,6 @@ public:
     bool IsRecordSource() const
     {
         return isRecordSource_;
-; 
     }
 
 private:
