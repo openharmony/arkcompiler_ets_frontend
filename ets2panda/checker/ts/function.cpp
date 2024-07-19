@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -229,15 +229,15 @@ ReturnedVariable TSChecker::CheckFunctionAssignmentPatternParameter(ir::Assignme
 
     if (param->Left()->IsArrayPattern()) {
         ir::ArrayExpression *arrayPattern = param->Left()->AsArrayPattern();
-        auto context =
-            ArrayDestructuringContext(this, arrayPattern, false, true, arrayPattern->TypeAnnotation(), param->Right());
+        auto context = ArrayDestructuringContext(
+            {this, arrayPattern, false, true, arrayPattern->TypeAnnotation(), param->Right()});
         context.Start();
         paramType = CreateParameterTypeForArrayAssignmentPattern(arrayPattern, context.InferredType());
         CreatePatternParameterName(param->Left(), ss);
     } else {
         ir::ObjectExpression *objectPattern = param->Left()->AsObjectPattern();
-        auto context = ObjectDestructuringContext(this, objectPattern, false, true, objectPattern->TypeAnnotation(),
-                                                  param->Right());
+        auto context = ObjectDestructuringContext(
+            {this, objectPattern, false, true, objectPattern->TypeAnnotation(), param->Right()});
         context.Start();
         paramType = CreateParameterTypeForObjectAssignmentPattern(objectPattern, context.InferredType());
         CreatePatternParameterName(param->Left(), ss);
@@ -280,7 +280,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
             ASSERT(param->Argument()->IsObjectPattern());
             auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
             auto destructuringContext =
-                ObjectDestructuringContext(this, param->Argument(), false, false, nullptr, nullptr);
+                ObjectDestructuringContext({this, param->Argument(), false, false, nullptr, nullptr});
             destructuringContext.SetInferredType(restType);
             destructuringContext.SetSignatureInfo(signatureInfo);
             destructuringContext.Start();
@@ -289,7 +289,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
         case ir::AstNodeType::ARRAY_PATTERN: {
             auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
             auto destructuringContext =
-                ArrayDestructuringContext(this, param->Argument(), false, false, nullptr, nullptr);
+                ArrayDestructuringContext({this, param->Argument(), false, false, nullptr, nullptr});
             destructuringContext.SetInferredType(restType);
             destructuringContext.SetSignatureInfo(signatureInfo);
             destructuringContext.Start();
@@ -313,7 +313,7 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
     if (param->TypeAnnotation() != nullptr) {
         auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
         auto destructuringContext =
-            ArrayDestructuringContext(this, param->AsArrayPattern(), false, false, param->TypeAnnotation(), nullptr);
+            ArrayDestructuringContext({this, param->AsArrayPattern(), false, false, param->TypeAnnotation(), nullptr});
         destructuringContext.Start();
         patternVar->SetTsType(destructuringContext.InferredType());
         return {patternVar->AsLocalVariable(), nullptr, false};
@@ -334,8 +334,8 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
 
     if (param->TypeAnnotation() != nullptr) {
         auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE);
-        auto destructuringContext =
-            ObjectDestructuringContext(this, param->AsObjectPattern(), false, false, param->TypeAnnotation(), nullptr);
+        auto destructuringContext = ObjectDestructuringContext(
+            {this, param->AsObjectPattern(), false, false, param->TypeAnnotation(), nullptr});
         destructuringContext.Start();
         patternVar->SetTsType(destructuringContext.InferredType());
         return {patternVar->AsLocalVariable(), nullptr, false};
@@ -348,15 +348,15 @@ std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSCheck
 std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> TSChecker::CheckFunctionParameter(
     ir::Expression *param, SignatureInfo *signatureInfo)
 {
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> result;
     if (param->TsType() != nullptr) {
         ASSERT(param->TsType()->Variable());
         varbinder::Variable *var = param->TsType()->Variable();
-        return {var->AsLocalVariable(), nullptr, var->HasFlag(varbinder::VariableFlags::OPTIONAL)};
+        result = {var->AsLocalVariable(), nullptr, var->HasFlag(varbinder::VariableFlags::OPTIONAL)};
+        return result;
     }
 
-    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> result;
     bool cache = true;
-
     switch (param->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             result = CheckFunctionIdentifierParameter(param->AsIdentifier());
@@ -426,6 +426,41 @@ bool ShouldCreatePropertyValueName(ir::Expression *propValue)
                                                  propValue->AsAssignmentPattern()->Left()->IsObjectPattern()));
 }
 
+void TSChecker::HandlePropertyPatternParameterName(ir::Property *prop, std::stringstream &ss)
+{
+    util::StringView propName;
+    if (prop->Key()->IsIdentifier()) {
+        propName = prop->Key()->AsIdentifier()->Name();
+    } else {
+        switch (prop->Key()->Type()) {
+            case ir::AstNodeType::NUMBER_LITERAL: {
+                propName =
+                    util::Helpers::ToStringView(Allocator(), prop->Key()->AsNumberLiteral()->Number().GetDouble());
+                break;
+            }
+            case ir::AstNodeType::BIGINT_LITERAL: {
+                propName = prop->Key()->AsBigIntLiteral()->Str();
+                break;
+            }
+            case ir::AstNodeType::STRING_LITERAL: {
+                propName = prop->Key()->AsStringLiteral()->Str();
+                break;
+            }
+            default: {
+                UNREACHABLE();
+                break;
+            }
+        }
+    }
+
+    ss << propName;
+
+    if (ShouldCreatePropertyValueName(prop->Value())) {
+        ss << ": ";
+        TSChecker::CreatePatternParameterName(prop->Value(), ss);
+    }
+}
+
 void TSChecker::CreatePatternParameterName(ir::AstNode *node, std::stringstream &ss)
 {
     switch (node->Type()) {
@@ -466,40 +501,7 @@ void TSChecker::CreatePatternParameterName(ir::AstNode *node, std::stringstream 
             break;
         }
         case ir::AstNodeType::PROPERTY: {
-            ir::Property *prop = node->AsProperty();
-            util::StringView propName;
-
-            if (prop->Key()->IsIdentifier()) {
-                propName = prop->Key()->AsIdentifier()->Name();
-            } else {
-                switch (prop->Key()->Type()) {
-                    case ir::AstNodeType::NUMBER_LITERAL: {
-                        propName = util::Helpers::ToStringView(Allocator(),
-                                                               prop->Key()->AsNumberLiteral()->Number().GetDouble());
-                        break;
-                    }
-                    case ir::AstNodeType::BIGINT_LITERAL: {
-                        propName = prop->Key()->AsBigIntLiteral()->Str();
-                        break;
-                    }
-                    case ir::AstNodeType::STRING_LITERAL: {
-                        propName = prop->Key()->AsStringLiteral()->Str();
-                        break;
-                    }
-                    default: {
-                        UNREACHABLE();
-                        break;
-                    }
-                }
-            }
-
-            ss << propName;
-
-            if (ShouldCreatePropertyValueName(prop->Value())) {
-                ss << ": ";
-                TSChecker::CreatePatternParameterName(prop->Value(), ss);
-            }
-
+            HandlePropertyPatternParameterName(node->AsProperty(), ss);
             break;
         }
         case ir::AstNodeType::REST_ELEMENT: {
@@ -524,38 +526,56 @@ ir::Statement *FindSubsequentFunctionNode(ir::BlockStatement *block, ir::ScriptF
     return nullptr;
 }
 
+void TSChecker::ValidateSubsequentNode(const ir::Statement *const subsequentNode, const ir::ScriptFunction *const func)
+{
+    if (!subsequentNode->IsFunctionDeclaration()) {
+        ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
+                       func->Id()->Start());
+    }
+
+    const ir::ScriptFunction *const subsequentFunc = subsequentNode->AsFunctionDeclaration()->Function();
+    if (subsequentFunc->Id()->Name() != func->Id()->Name()) {
+        ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
+                       func->Id()->Start());
+    }
+
+    if (subsequentFunc->Declare() != func->Declare()) {
+        ThrowTypeError("Overload signatures must all be ambient or non-ambient.", func->Id()->Start());
+    }
+}
+
+void TSChecker::CheckOverloadSignatureCompatibility(Signature *bodyCallSignature, Signature *signature)
+{
+    if (bodyCallSignature->ReturnType()->IsVoidType() ||
+        IsTypeAssignableTo(bodyCallSignature->ReturnType(), signature->ReturnType()) ||
+        IsTypeAssignableTo(signature->ReturnType(), bodyCallSignature->ReturnType())) {
+        bodyCallSignature->AssignmentTarget(Relation(), signature);
+
+        if (Relation()->IsTrue()) {
+            return;
+        }
+    }
+
+    ASSERT(signature->Function());
+    ThrowTypeError("This overload signature is not compatible with its implementation signature",
+                   signature->Function()->Id()->Start());
+}
+
 void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *funcVar)
 {
     ir::ScriptFunction *bodyDeclaration = decl->Decls().back();
-
     if (bodyDeclaration->IsOverload()) {
         ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
                        bodyDeclaration->Id()->Start());
     }
 
     ObjectDescriptor *descWithOverload = Allocator()->New<ObjectDescriptor>(Allocator());
-
     for (auto it = decl->Decls().begin(); it != decl->Decls().end() - 1; it++) {
         ir::ScriptFunction *func = *it;
         ASSERT(func->IsOverload() && (*it)->Parent()->Parent()->IsBlockStatement());
         ir::Statement *subsequentNode = FindSubsequentFunctionNode((*it)->Parent()->Parent()->AsBlockStatement(), func);
         ASSERT(subsequentNode);
-
-        if (!subsequentNode->IsFunctionDeclaration()) {
-            ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
-                           func->Id()->Start());
-        }
-
-        ir::ScriptFunction *subsequentFunc = subsequentNode->AsFunctionDeclaration()->Function();
-
-        if (subsequentFunc->Id()->Name() != func->Id()->Name()) {
-            ThrowTypeError("Function implementation is missing or not immediately following the declaration.",
-                           func->Id()->Start());
-        }
-
-        if (subsequentFunc->Declare() != func->Declare()) {
-            ThrowTypeError("Overload signatures must all be ambient or non-ambient.", func->Id()->Start());
-        }
+        ValidateSubsequentNode(subsequentNode, func);
 
         ScopeContext scopeCtx(this, func->Scope());
 
@@ -593,19 +613,7 @@ void TSChecker::InferFunctionDeclarationType(const varbinder::FunctionDecl *decl
         funcVar->SetTsType(funcType);
 
         for (auto *iter : descWithOverload->callSignatures) {
-            if (bodyCallSignature->ReturnType()->IsVoidType() ||
-                IsTypeAssignableTo(bodyCallSignature->ReturnType(), iter->ReturnType()) ||
-                IsTypeAssignableTo(iter->ReturnType(), bodyCallSignature->ReturnType())) {
-                bodyCallSignature->AssignmentTarget(Relation(), iter);
-
-                if (Relation()->IsTrue()) {
-                    continue;
-                }
-            }
-
-            ASSERT(iter->Function());
-            ThrowTypeError("This overload signature is not compatible with its implementation signature",
-                           iter->Function()->Id()->Start());
+            CheckOverloadSignatureCompatibility(bodyCallSignature, iter);
         }
     }
 }

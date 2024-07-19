@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,11 +31,23 @@ class Type;
 
 class DestructuringContext {
 public:
-    DestructuringContext(TSChecker *checker, ir::Expression *id, bool inAssignment, bool convertTupleToArray,
-                         ir::TypeNode *typeAnnotation, ir::Expression *initializer)
-        : checker_(checker), id_(id), inAssignment_(inAssignment), convertTupleToArray_(convertTupleToArray)
+    // Struct to reduce number of constructor arguments to pass code checker
+    struct DestructuringContextArguments {
+        TSChecker *checker;
+        ir::Expression *id;
+        bool inAssignment;
+        bool convertTupleToArray;
+        ir::TypeNode *typeAnnotation;
+        ir::Expression *initializer;
+    };
+
+    explicit DestructuringContext(const DestructuringContextArguments &data)
+        : checker_(data.checker),
+          id_(data.id),
+          inAssignment_(data.inAssignment),
+          convertTupleToArray_(data.convertTupleToArray)
     {
-        Prepare(typeAnnotation, initializer, id->Start());
+        Prepare(data.typeAnnotation, data.initializer, data.id->Start());
     }
 
     void SetInferredType(Type *type)
@@ -56,6 +68,9 @@ public:
     void ValidateObjectLiteralType(ObjectType *objType, ir::ObjectExpression *objPattern);
     void HandleDestructuringAssignment(ir::Identifier *ident, Type *inferredType, Type *defaultType);
     void HandleAssignmentPattern(ir::AssignmentExpression *assignmentPattern, Type *inferredType, bool validateDefault);
+    void HandleAssignmentPatternArrayPattern(ir::AssignmentExpression *assignmentPattern, Type *inferredType);
+    void HandleAssignmentPatternIdentifier(ir::AssignmentExpression *assignmentPattern, Type *defaultType,
+                                           Type *inferredType);
     void SetInferredTypeForVariable(varbinder::Variable *var, Type *inferredType, const lexer::SourcePosition &loc);
     void Prepare(ir::TypeNode *typeAnnotation, ir::Expression *initializer, const lexer::SourcePosition &loc);
 
@@ -85,11 +100,7 @@ protected:
 
 class ArrayDestructuringContext : public DestructuringContext {
 public:
-    ArrayDestructuringContext(TSChecker *checker, ir::Expression *id, bool inAssignment, bool convertTupleToArray,
-                              ir::TypeNode *typeAnnotation, ir::Expression *initializer)
-        : DestructuringContext(checker, id, inAssignment, convertTupleToArray, typeAnnotation, initializer)
-    {
-    }
+    explicit ArrayDestructuringContext(const DestructuringContextArguments &data) : DestructuringContext(data) {}
 
     Type *GetTypeFromTupleByIndex(TupleType *tuple);
     Type *CreateArrayTypeForRest(UnionType *inferredType);
@@ -97,6 +108,7 @@ public:
     void SetRemainingParameterTypes();
 
     void Start() override;
+    void HandleElement(ir::Expression *element, Type *nextInferredType);
     void ValidateInferredType() override;
     Type *NextInferredType([[maybe_unused]] const util::StringView &searchName, bool throwError) override;
     void HandleRest(ir::SpreadElement *rest) override;
@@ -109,11 +121,7 @@ private:
 
 class ObjectDestructuringContext : public DestructuringContext {
 public:
-    ObjectDestructuringContext(TSChecker *checker, ir::Expression *id, bool inAssignment, bool convertTupleToArray,
-                               ir::TypeNode *typeAnnotation, ir::Expression *initializer)
-        : DestructuringContext(checker, id, inAssignment, convertTupleToArray, typeAnnotation, initializer)
-    {
-    }
+    explicit ObjectDestructuringContext(const DestructuringContextArguments &data) : DestructuringContext(data) {}
 
     Type *CreateObjectTypeForRest(ObjectType *objType);
 

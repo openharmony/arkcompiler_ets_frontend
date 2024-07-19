@@ -286,16 +286,16 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
                 } else if (assignmentPattern->Left()->IsArrayPattern()) {
                     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
                     auto destructuringContext =
-                        checker::ArrayDestructuringContext(checker, assignmentPattern->Left()->AsArrayPattern(), false,
-                                                           true, nullptr, assignmentPattern->Right());
+                        checker::ArrayDestructuringContext({checker, assignmentPattern->Left()->AsArrayPattern(), false,
+                                                            true, nullptr, assignmentPattern->Right()});
                     destructuringContext.Start();
                     elementType = destructuringContext.InferredType();
                 } else {
                     ASSERT(assignmentPattern->Left()->IsObjectPattern());
                     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
                     auto destructuringContext =
-                        checker::ObjectDestructuringContext(checker, assignmentPattern->Left()->AsObjectPattern(),
-                                                            false, true, nullptr, assignmentPattern->Right());
+                        checker::ObjectDestructuringContext({checker, assignmentPattern->Left()->AsObjectPattern(),
+                                                             false, true, nullptr, assignmentPattern->Right()});
                     destructuringContext.Start();
                     elementType = destructuringContext.InferredType();
                 }

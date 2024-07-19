@@ -488,7 +488,7 @@ checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
     if (expr->Left()->IsArrayPattern()) {
         auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
         auto destructuringContext =
-            checker::ArrayDestructuringContext(checker, expr->Left(), true, true, nullptr, expr->Right());
+            checker::ArrayDestructuringContext({checker, expr->Left(), true, true, nullptr, expr->Right()});
         destructuringContext.Start();
         return destructuringContext.InferredType();
     }
@@ -496,7 +496,7 @@ checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
     if (expr->Left()->IsObjectPattern()) {
         auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
         auto destructuringContext =
-            checker::ObjectDestructuringContext(checker, expr->Left(), true, true, nullptr, expr->Right());
+            checker::ObjectDestructuringContext({checker, expr->Left(), true, true, nullptr, expr->Right()});
         destructuringContext.Start();
         return destructuringContext.InferredType();
     }
@@ -1580,9 +1580,9 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const
 
     if (st->Id()->IsArrayPattern()) {
         auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-        checker::ArrayDestructuringContext(checker, st->Id(), false,
-                                           st->Id()->AsArrayPattern()->TypeAnnotation() == nullptr,
-                                           st->Id()->AsArrayPattern()->TypeAnnotation(), st->Init())
+        checker::ArrayDestructuringContext({checker, st->Id(), false,
+                                            st->Id()->AsArrayPattern()->TypeAnnotation() == nullptr,
+                                            st->Id()->AsArrayPattern()->TypeAnnotation(), st->Init()})
             .Start();
 
         st->SetTsType(st->CHECKED);
@@ -1591,9 +1591,9 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const
 
     ASSERT(st->Id()->IsObjectPattern());
     auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-    checker::ObjectDestructuringContext(checker, st->Id(), false,
-                                        st->Id()->AsObjectPattern()->TypeAnnotation() == nullptr,
-                                        st->Id()->AsObjectPattern()->TypeAnnotation(), st->Init())
+    checker::ObjectDestructuringContext({checker, st->Id(), false,
+                                         st->Id()->AsObjectPattern()->TypeAnnotation() == nullptr,
+                                         st->Id()->AsObjectPattern()->TypeAnnotation(), st->Init()})
         .Start();
 
     st->SetTsType(st->CHECKED);
