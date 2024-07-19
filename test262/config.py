@@ -143,3 +143,5 @@ DEFAULT_MERGE_ABC_MODE = 1
 
 OHOS_TYPESCRIPT = "ohos-typescript-4.2.3-r2.tgz"
 OHOS_TYPESCRIPT_TGZ_PATH = f"{CODE_ROOT}/third_party/typescript/build_package/{OHOS_TYPESCRIPT}"
+
+DEFAULT_RETRIES = 3

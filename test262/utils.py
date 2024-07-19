@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright (c) 2021 Huawei Device Co., Ltd.
+Copyright (c) 2021-2024 Huawei Device Co., Ltd.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -27,7 +27,7 @@ import time
 import shutil
 import platform
 import re
-from config import DEFAULT_TIMEOUT
+from config import DEFAULT_TIMEOUT, DEFAULT_RETRIES
 
 TERM_NORMAL = '\033[0m'
 TERM_YELLOW = '\033[1;33m'
@@ -216,7 +216,14 @@ def report_command(cmd_type, cmd, env=None):
 
 def git_clone(git_url, code_dir):
     cmd = ['git', 'clone', git_url, code_dir]
-    ret = run_cmd_cwd(cmd)
+    retries = 1
+    while retries <= DEFAULT_RETRIES:
+        ret = run_cmd_cwd(cmd)
+        if ret == 0:
+            break
+        else:
+            print(f"\n warning: Atempt: #{retries} to clone '{git_url}' failed. Try cloining again")
+            retries += 1
     assert not ret, f"\n error: Cloning '{git_url}' failed."
 
 
