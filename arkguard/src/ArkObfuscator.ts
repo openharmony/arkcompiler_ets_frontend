@@ -72,6 +72,7 @@ export const renameFileNameModule = require('./transformers/rename/RenameFileNam
 
 export { getMapFromJson, readProjectPropertiesByCollectedPaths, deleteLineInfoForNameString, ApiExtractor, PropCollections };
 export let orignalFilePathForSearching: string | undefined;
+export let cleanFileMangledNames: boolean = false;
 export interface PerformancePrinter {
   filesPrinter?: TimeTracker;
   singleFilePrinter?: TimeTracker;
@@ -216,6 +217,14 @@ export class ArkObfuscator {
     if (this.mCustomProfiles.mEnableSourceMap) {
       this.mCompilerOptions.sourceMap = true;
     }
+
+    const enableTopLevel: boolean = this.mCustomProfiles.mNameObfuscation?.mTopLevel;
+    const exportObfuscation: boolean = this.mCustomProfiles.mExportObfuscation;
+    const propertyObfuscation: boolean = this.mCustomProfiles.mNameObfuscation?.mRenameProperties;
+    /**
+     * clean mangledNames in case skip name check when generating names
+     */
+    cleanFileMangledNames = enableTopLevel && !exportObfuscation && !propertyObfuscation;
 
     this.initPerformancePrinter();
     // load transformers
@@ -474,5 +483,9 @@ export class ArkObfuscator {
     // clear cache of text writer
     this.mTextWriter.clear();
     renameIdentifierModule.clearCaches();
+    if (cleanFileMangledNames) {
+      PropCollections.globalMangledTable.clear();
+      PropCollections.newlyOccupiedMangledProps.clear();
+    }
   }
 }

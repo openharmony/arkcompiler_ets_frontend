@@ -12,10 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import w from 'assert';
-const { codes1: { ERR_INVALID_ARG_TYPE1: x, ERR_MISSING_ARGS1: y, ERROR_OUT_OF_RANGE1: z }, AbortError1: a1, } = require('./exportsApi1_toplevel');
-w(x === 'ERR_INVALID_ARG_TYPE', 'success');
-w(y === 'ERR_MISSING_ARGS', 'success');
-w(z === 'ERROR_OUT_OF_RANGE', 'success');
-let b1 = new a1("hello");
-w(b1.message === 'hello', 'success');
+
+/**
+ * Toplevel: var1, TestFunction, TestClass, TestNs, TestType, TestInterface, top1, top2
+ * Export: l, k, m, n, o, p, q, r
+ * Expect toplevel elements to avoid being obfuscated as l, k, m, n, o, p, q, r, since they're export elements
+ */
+let var1 = 1;
+function TestFunction(): void {}
+class TestClass {}
+namespace TestNs {}
+type TestType = {}
+interface TestInterface {}
+let top1 = 1;
+namespace top2 {}
+
+export {var1 as l, TestFunction as k, TestClass as m, TestNs as n, TestType as o,
+    TestInterface as p, top1 as q, top2 as r};

@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 import q from 'assert';
-const { codes1: { ERR_INVALID_ARG_TYPE1: a, ERR_MISSING_ARGS1: b, ERROR_OUT_OF_RANGE1: c }, AbortError1: d, } = require('./exportsApi1_toplevel');
-q(a === 'ERR_INVALID_ARG_TYPE', 'success');
-q(b === 'ERR_MISSING_ARGS', 'success');
-q(c === 'ERROR_OUT_OF_RANGE', 'success');
-let r = new d("hello");
-q(r.message === 'hello', 'success');
+const { codes1: { ERR_INVALID_ARG_TYPE1: r, ERR_MISSING_ARGS1: s, ERROR_OUT_OF_RANGE1: t }, AbortError1: u, } = require('./exportsApi1_toplevel');
+q(r === 'ERR_INVALID_ARG_TYPE', 'success');
+q(s === 'ERR_MISSING_ARGS', 'success');
+q(t === 'ERROR_OUT_OF_RANGE', 'success');
+let v = new u("hello");
+q(v.message === 'hello', 'success');

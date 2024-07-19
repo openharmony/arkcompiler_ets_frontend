@@ -84,7 +84,7 @@ import {TypeUtils} from '../../utils/TypeUtils';
 import { needToBeReserved } from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {ApiExtractor} from '../../common/ApiExtractor';
-import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
+import {performancePrinter, ArkObfuscator, cleanFileMangledNames} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
 import { PropCollections } from '../../utils/CommonCollections'
@@ -138,6 +138,8 @@ namespace secharmony {
       profile?.mUniversalReservedToplevelNames?.forEach(item => PropCollections.universalReservedProperties.push(item));
       let mangledSymbolNames: Map<Symbol, MangledSymbolInfo> = new Map<Symbol, MangledSymbolInfo>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
+      let fileExportNames: Set<string> = undefined;
+      let fileImportNames: Set<string> = undefined;
       noSymbolIdentifier.clear();
 
       let historyMangledNames: Set<string> = undefined;
@@ -181,6 +183,8 @@ namespace secharmony {
         }
 
         let root: Scope = manager.getRootScope();
+        fileExportNames = root.fileExportNames;
+        fileImportNames = root.fileImportNames;
 
         performancePrinter?.singleFilePrinter?.startEvent(EventList.CREATE_OBFUSCATED_NAMES, performancePrinter.timeSumPrinter);
         renameInScope(root);
@@ -289,6 +293,31 @@ namespace secharmony {
             continue;
           }
 
+          /**
+           * In case b is obfuscated as a when only enable toplevel obfuscation:
+           * let b = 1;
+           * export let a = 1;
+           */
+          if (cleanFileMangledNames && fileExportNames && fileExportNames.has(tmpName)) {
+            continue;
+          }
+
+          /**
+           * In case b is obfuscated as a when only enable toplevel obfuscation:
+           * import {a} from 'filePath';
+           * let b = 1;
+           */
+          if (cleanFileMangledNames && fileImportNames.has(tmpName)) {
+            continue;
+          }
+
+          /**
+           * In case a newly added variable get an obfuscated name that is already in history namecache
+           */
+          if (historyMangledNames && historyMangledNames.has(tmpName)) {
+            continue;
+          }
+
           if (PropCollections.newlyOccupiedMangledProps.has(tmpName) || PropCollections.mangledPropsInNameCache.has(tmpName)) {
             continue;
           }
@@ -346,7 +375,7 @@ namespace secharmony {
             continue;
           }
 
-          if (scope.exportNames && scope.exportNames.has(mangled)) {
+          if (fileExportNames && fileExportNames.has(mangled)) {
             mangled = '';
             continue;
           }

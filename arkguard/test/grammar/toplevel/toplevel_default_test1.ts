@@ -12,10 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import w from 'assert';
-const { codes1: { ERR_INVALID_ARG_TYPE1: x, ERR_MISSING_ARGS1: y, ERROR_OUT_OF_RANGE1: z }, AbortError1: a1, } = require('./exportsApi1_toplevel');
-w(x === 'ERR_INVALID_ARG_TYPE', 'success');
-w(y === 'ERR_MISSING_ARGS', 'success');
-w(z === 'ERROR_OUT_OF_RANGE', 'success');
-let b1 = new a1("hello");
-w(b1.message === 'hello', 'success');
+
+let var1 = 1;
+export default function a() {}
