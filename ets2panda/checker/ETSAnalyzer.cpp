@@ -1066,6 +1066,18 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     return returnType;
 }
 
+static void CheckAbstractCall(ETSChecker *checker, ir::CallExpression *expr)
+{
+    if (expr->Callee()->IsMemberExpression()) {
+        auto obj = expr->Callee()->AsMemberExpression()->Object();
+        if (obj != nullptr && obj->IsSuperExpression()) {
+            if ((expr->Signature() != nullptr) && (expr->Signature()->HasSignatureFlag(SignatureFlags::ABSTRACT))) {
+                checker->ThrowTypeError("Cannot call abstract method!", expr->Start());
+            }
+        }
+    }
+}
+
 checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1121,6 +1133,7 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     }
 
     CheckVoidTypeExpression(checker, expr);
+    CheckAbstractCall(checker, expr);
     return expr->TsType();
 }
 
