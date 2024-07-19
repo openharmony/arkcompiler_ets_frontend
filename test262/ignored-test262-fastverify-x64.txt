@@ -1,13 +1,17 @@
 # Known failure list for test262 - fastverify-x64
 
-# Issue #17827 - timeout
-test262/data/test_es2021/built-ins/Array/prototype/concat/Array.prototype.concat_small-typed-array.js
-test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
-test262/data/test_es2021/intl402/Segmenter/constructor/supportedLocalesOf/locales-invalid.js
-test262/data/test_es2021/language/identifiers/start-unicode-10.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-10.0.0-escaped.js
-test262/data/test_es2021/language/identifiers/start-unicode-8.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-8.0.0-escaped.js
-test262/data/test_es2021/language/identifiers/start-unicode-9.0.0.js
-test262/data/test_es2021/language/identifiers/start-unicode-9.0.0-escaped.js
-# --- end of Issue #17827
+# Issue #18277
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-block-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-do-while-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-block-labeled-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-else-braceless-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-else-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-if-braceless-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-if-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-while-empty-str-is-valid-assign-expr.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/new-covered-expression-is-valid.js
+test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/top-level-empty-str-is-valid-assign-expr.js
+# --- end of Issue #18277
+
+# Issue #18004
+test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
