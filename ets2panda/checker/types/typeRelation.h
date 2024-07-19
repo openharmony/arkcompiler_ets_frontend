@@ -31,6 +31,8 @@ class IndexInfo;
 class Type;
 class Checker;
 
+using ENUMBITOPS_OPERATORS;
+
 enum class TypeRelationFlag : uint32_t {
     NONE = 0U,
     NARROWING = 1U << 0U,
@@ -69,7 +71,13 @@ enum class RelationResult { TRUE, FALSE, UNKNOWN, MAYBE, CACHE_MISS, ERROR };
 
 enum class RelationType { COMPARABLE, ASSIGNABLE, IDENTICAL, UNCHECKED_CASTABLE, SUPERTYPE };
 
-DEFINE_BITOPS(TypeRelationFlag)
+}  // namespace ark::es2panda::checker
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::checker::TypeRelationFlag> : std::true_type {
+};
+
+namespace ark::es2panda::checker {
 
 class RelationKey {
 public:

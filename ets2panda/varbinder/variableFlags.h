@@ -74,6 +74,8 @@ enum class ScopeType {
 #undef GEN_SCOPE_TYPES
 };
 
+using ENUMBITOPS_OPERATORS;
+
 enum class ResolveBindingOptions : uint32_t {
     BINDINGS = 1U << 0U,
     INTERFACES = 1U << 1U,
@@ -94,8 +96,6 @@ enum class ResolveBindingOptions : uint32_t {
     ALL = (LAST << 1U) - 1U,
     ALL_NON_TYPE = ALL - TYPE_ALIASES,
 };
-
-DEFINE_BITOPS(ResolveBindingOptions)
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define VARIABLE_TYPES(_)     \
@@ -161,8 +161,6 @@ enum class VariableFlags : uint64_t {
     CLASS_OR_INTERFACE_OR_ENUM = CLASS_OR_INTERFACE | ENUM_LITERAL,
 };
 
-DEFINE_BITOPS(VariableFlags)
-
 enum class LetOrConstStatus {
     INITIALIZED,
     UNINITIALIZED,
@@ -186,7 +184,22 @@ enum class ScopeFlags : uint32_t {
     STATIC_METHOD_SCOPE = METHOD_SCOPE | STATIC,
 };
 
-DEFINE_BITOPS(ScopeFlags)
 }  // namespace ark::es2panda::varbinder
+
+namespace enumbitops {
+
+template <>
+struct IsAllowedType<ark::es2panda::varbinder::ResolveBindingOptions> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::varbinder::VariableFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::varbinder::ScopeFlags> : std::true_type {
+};
+
+}  // namespace enumbitops
 
 #endif

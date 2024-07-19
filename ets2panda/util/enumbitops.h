@@ -18,61 +18,86 @@
 
 #include <type_traits>
 
-// NOLINTBEGIN(cppcoreguidelines-macro-usage)
-#define DEFINE_BITOPS(T)                                                          \
-    inline constexpr T operator~(T a)                                             \
-    {                                                                             \
-        using utype = std::underlying_type_t<T>;                                  \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return static_cast<T>(~static_cast<utype>(a));                            \
-    }                                                                             \
-                                                                                  \
-    inline constexpr bool operator!(T a)                                          \
-    {                                                                             \
-        using utype = std::underlying_type_t<T>;                                  \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return (!static_cast<utype>(a));                                          \
-    }                                                                             \
-                                                                                  \
-    inline constexpr T operator|(T a, T b)                                        \
-    {                                                                             \
-        using utype = std::underlying_type_t<T>;                                  \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return static_cast<T>(static_cast<utype>(a) | static_cast<utype>(b));     \
-    }                                                                             \
-                                                                                  \
-    inline constexpr std::underlying_type_t<T> operator&(T a, T b)                \
-    {                                                                             \
-        using utype = std::underlying_type_t<T>;                                  \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return static_cast<utype>(static_cast<utype>(a) & static_cast<utype>(b)); \
-    }                                                                             \
-                                                                                  \
-    inline constexpr T operator^(T a, T b)                                        \
-    {                                                                             \
-        using utype = std::underlying_type_t<T>;                                  \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return static_cast<T>(static_cast<utype>(a) ^ static_cast<utype>(b));     \
-    }                                                                             \
-                                                                                  \
-    inline constexpr T &operator|=(T &a, T b)                                     \
-    {                                                                             \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return a = a | b;                                                         \
-    }                                                                             \
-                                                                                  \
-    inline constexpr T &operator&=(T &a, T b)                                     \
-    {                                                                             \
-        using utype = std::underlying_type_t<T>;                                  \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return a = static_cast<T>(static_cast<utype>(a) & static_cast<utype>(b)); \
-    }                                                                             \
-                                                                                  \
-    inline constexpr T &operator^=(T &a, T b)                                     \
-    {                                                                             \
-        /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
-        return a = a ^ b;                                                         \
-    }
-// NOLINTEND(cppcoreguidelines-macro-usage)
+// clang-format off
+#define ENUMBITOPS_OPERATORS \
+    enumbitops::operator~,   \
+    enumbitops::operator!,   \
+    enumbitops::operator|,   \
+    enumbitops::operator&,   \
+    enumbitops::operator^,   \
+    enumbitops::operator|=,  \
+    enumbitops::operator&=,  \
+    enumbitops::operator^=
+// clang-format on
+
+namespace enumbitops {
+
+template <class T>
+struct IsAllowedType : std::false_type {
+};
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr T operator~(T a)
+{
+    using Utype = std::underlying_type_t<T>;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return static_cast<T>(~static_cast<Utype>(a));
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr bool operator!(T a)
+{
+    using Utype = std::underlying_type_t<T>;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return (!static_cast<Utype>(a));
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr T operator|(T a, T b)
+{
+    using Utype = std::underlying_type_t<T>;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return static_cast<T>(static_cast<Utype>(a) | static_cast<Utype>(b));
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr std::underlying_type_t<T> operator&(T a, T b)
+{
+    using Utype = std::underlying_type_t<T>;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return static_cast<Utype>(static_cast<Utype>(a) & static_cast<Utype>(b));
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr T operator^(T a, T b)
+{
+    using Utype = std::underlying_type_t<T>;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return static_cast<T>(static_cast<Utype>(a) ^ static_cast<Utype>(b));
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr T &operator|=(T &a, T b)
+{
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return a = a | b;
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr T &operator&=(T &a, T b)
+{
+    using Utype = std::underlying_type_t<T>;
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return a = static_cast<T>(static_cast<Utype>(a) & static_cast<Utype>(b));
+}
+
+template <class T, std::enable_if_t<IsAllowedType<T>::value, bool> = true>
+inline constexpr T &operator^=(T &a, T b)
+{
+    // NOLINTNEXTLINE(hicpp-signed-bitwise)
+    return a = a ^ b;
+}
+
+}  // namespace enumbitops
 
 #endif

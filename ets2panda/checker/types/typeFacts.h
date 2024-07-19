@@ -16,9 +16,14 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_FACTS_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_FACTS_H
 
+#include <cstdint>
+
 #include "util/enumbitops.h"
 
 namespace ark::es2panda::checker {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class TypeFacts : uint32_t {
     NONE = 0U,
     TYPEOF_EQ_STRING = 1U << 0U,        // typeof x === "string"
@@ -115,7 +120,10 @@ enum class TypeFacts : uint32_t {
                  EQ_UNDEFINED_OR_NULL | FALSY,
 };
 
-DEFINE_BITOPS(TypeFacts)
 }  // namespace ark::es2panda::checker
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::checker::TypeFacts> : std::true_type {
+};
 
 #endif /* TYPESCRIPT_TYPES_TYPE_FACTS_H */

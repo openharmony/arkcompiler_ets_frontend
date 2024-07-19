@@ -21,6 +21,9 @@
 #include <cinttypes>
 
 namespace ark::es2panda::checker {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class TypeFlag : uint64_t {
     NONE = 0,
     NUMBER = 1ULL << 0ULL,               // x: number
@@ -140,7 +143,10 @@ enum class TypeFlag : uint64_t {
                                 SHORT | INT | LONG | FLOAT | DOUBLE | ETS_BOOLEAN | ETS_ENUM | ETS_STRING_ENUM
 };
 
-DEFINE_BITOPS(TypeFlag)
 }  // namespace ark::es2panda::checker
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::checker::TypeFlag> : std::true_type {
+};
 
 #endif /* TYPESCRIPT_TYPES_TYPE_FLAG_H */

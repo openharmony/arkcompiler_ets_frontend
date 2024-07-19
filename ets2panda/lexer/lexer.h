@@ -29,14 +29,14 @@ class ETSNolintParser;
 namespace ark::es2panda::lexer {
 class Keywords;
 
+using ENUMBITOPS_OPERATORS;
+
 enum class NextTokenFlags : uint32_t {
     NONE = 0U,
     KEYWORD_TO_IDENT = 1U << 0U,
     NUMERIC_SEPARATOR_ALLOWED = 1U << 1U,
     BIGINT_ALLOWED = 1U << 2U,
 };
-
-DEFINE_BITOPS(NextTokenFlags)
 
 class LexerPosition {
 public:
@@ -596,5 +596,9 @@ inline bool Lexer::IsOctalDigit(char32_t ch)
     return (ch >= LEX_CHAR_0 && ch <= LEX_CHAR_7);
 }
 }  // namespace ark::es2panda::lexer
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::lexer::NextTokenFlags> : std::true_type {
+};
 
 #endif

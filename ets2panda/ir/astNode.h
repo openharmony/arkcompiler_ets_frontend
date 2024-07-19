@@ -21,7 +21,6 @@
 #include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
 #include "macros.h"
-#include "util/enumbitops.h"
 
 namespace ark::es2panda::compiler {
 class PandaGen;
@@ -61,14 +60,6 @@ enum class AstNodeType {
         AST_NODE_REINTERPRET_MAPPING(DECLARE_NODE_TYPES)
 #undef DECLARE_NODE_TYPES
 };
-
-DEFINE_BITOPS(AstNodeFlags)
-
-DEFINE_BITOPS(ModifierFlags)
-
-DEFINE_BITOPS(ScriptFunctionFlags)
-
-DEFINE_BITOPS(BoxingUnboxingFlags)
 
 // Forward declarations
 class AstDumper;

@@ -22,6 +22,9 @@
 #include <unordered_set>
 
 namespace ark::es2panda::lexer {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class RegExpFlags : uint32_t {
     EMPTY = 0U,
     GLOBAL = 1U << 0U,
@@ -31,8 +34,6 @@ enum class RegExpFlags : uint32_t {
     UNICODE = 1U << 4U,
     STICKY = 1U << 5U,
 };
-
-DEFINE_BITOPS(RegExpFlags)
 
 class RegExpError : std::exception {
 public:
@@ -107,5 +108,9 @@ private:
     std::unordered_set<util::StringView> backReferences_;
 };
 }  // namespace ark::es2panda::lexer
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::lexer::RegExpFlags> : std::true_type {
+};
 
 #endif

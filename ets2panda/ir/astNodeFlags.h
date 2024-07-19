@@ -18,7 +18,12 @@
 
 #include <cstdint>
 
+#include "util/enumbitops.h"
+
 namespace ark::es2panda::ir {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class AstNodeFlags {
     NO_OPTS = 0,
     CHECKCAST = 1U << 0U,
@@ -121,5 +126,25 @@ enum class BoxingUnboxingFlags : uint32_t {
                     UNBOX_TO_FLOAT | UNBOX_TO_DOUBLE,
 };
 }  // namespace ark::es2panda::ir
+
+namespace enumbitops {
+
+template <>
+struct IsAllowedType<ark::es2panda::ir::AstNodeFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::ir::ModifierFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::ir::ScriptFunctionFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::ir::BoxingUnboxingFlags> : std::true_type {
+};
+
+}  // namespace enumbitops
 
 #endif

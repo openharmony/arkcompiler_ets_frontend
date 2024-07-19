@@ -16,9 +16,14 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TS_ELEMENT_FLAGS_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TS_ELEMENT_FLAGS_H
 
+#include <cstdint>
+
 #include "util/enumbitops.h"
 
 namespace ark::es2panda::checker {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class ElementFlags : uint32_t {
     NO_OPTS = 0U,
     REQUIRED = 1U << 0U,  // T
@@ -31,7 +36,10 @@ enum class ElementFlags : uint32_t {
     NON_REST = REQUIRED | OPTIONAL | VARIADIC,
 };
 
-DEFINE_BITOPS(ElementFlags)
 }  // namespace ark::es2panda::checker
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::checker::ElementFlags> : std::true_type {
+};
 
 #endif /* TYPESCRIPT_TYPES_ELEMENT_FLAGS_H */

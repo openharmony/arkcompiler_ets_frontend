@@ -143,6 +143,8 @@ public:
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
+using ENUMBITOPS_OPERATORS;
+
 enum class TypeAnnotationParsingOptions : uint32_t {
     NO_OPTS = 0U,
     IN_UNION = 1U << 0U,
@@ -162,8 +164,6 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ALLOW_DECLARATION_SITE_VARIANCE = 1U << 14U,
     DISALLOW_UNION = 1U << 15U,
 };
-
-DEFINE_BITOPS(TypeAnnotationParsingOptions)
 
 class ArrowFunctionContext;
 
@@ -763,4 +763,9 @@ private:
     }
 };
 }  // namespace ark::es2panda::parser
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::parser::TypeAnnotationParsingOptions> : std::true_type {
+};
+
 #endif
