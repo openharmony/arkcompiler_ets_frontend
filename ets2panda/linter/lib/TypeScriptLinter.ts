@@ -720,7 +720,7 @@ export class TypeScriptLinter {
     const propName = node.name;
     if (!!propName && ts.isNumericLiteral(propName)) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
+      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
 
     const decorators = ts.getDecorators(node);
@@ -789,7 +789,7 @@ export class TypeScriptLinter {
     isDynamic = isLibraryType || this.tsUtils.isDynamicLiteralInitializer(node.parent);
     if (!isRecordObjectInitializer && !isDynamic) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyAssignment(node);
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
+      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
   }
 
@@ -797,7 +797,7 @@ export class TypeScriptLinter {
     const propName = node.name;
     if (!!propName && ts.isNumericLiteral(propName)) {
       const autofix = this.autofixer?.fixLiteralAsPropertyNamePropertyName(propName);
-      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofix);
+      this.incrementCounters(node.name, FaultID.LiteralAsPropertyName, autofix);
     }
     this.handleSendableInterfaceProperty(node);
   }

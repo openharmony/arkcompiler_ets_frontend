@@ -16,7 +16,7 @@
     "nodes": [
         {
             "line": 20,
-            "column": 3,
+            "column": 11,
             "problem": "LiteralAsPropertyName",
             "autofix": [
                 {
