@@ -55,3 +55,12 @@ function foo(): boolean {
 }
 
 export {foo};
+
+@Sendable
+export function sf():void {
+}
+
+@Sendable
+function sf2():void {
+}
+export {sf2};

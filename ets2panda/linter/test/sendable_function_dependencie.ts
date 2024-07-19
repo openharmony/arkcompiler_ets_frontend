@@ -13,12 +13,28 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+@Sendable
+function D_sf():void {}
+const Dv_sf = D_sf;
 
-export const SENDABLE_DECORATOR = 'Sendable';
+function D_nf():void {}
+const Dv_nf = D_nf;
 
-export const SENDABLE_DECORATOR_NODES = [
-  ts.SyntaxKind.ClassDeclaration,
-  ts.SyntaxKind.FunctionDeclaration,
-  ts.SyntaxKind.TypeAliasDeclaration
-];
+@Sendable
+type D_Sft = ()=>void;
+type Dv_Sft = D_Sft;
+
+type D_Nft = ()=>void;
+type Dv_Nft = D_Nft;
+
+@Sendable
+class D_Sc {}
+class D_Nc {}
+
+
+export {
+  D_sf, Dv_sf, D_nf, Dv_nf, D_Sft, Dv_Sft, D_Nft, Dv_Nft, D_Sc, D_Nc,
+  D_sf as AS_D_sf, Dv_sf as AS_Dv_sf, D_nf as AS_D_nf, Dv_nf as AS_Dv_nf,
+  D_Sft as AS_D_Sft, Dv_Sft as AS_Dv_Sft, D_Nft as AS_D_Nft, Dv_Nft as AS_Dv_Nft,
+  D_Sc as AS_D_Sc, D_Nc as AS_D_Nc
+};

@@ -621,7 +621,9 @@ export class TsUtils {
         // The 'arkts-sendable-obj-init' rule already exists. Wait for the new 'strict type' to be modified.
         return false;
       }
+      // eslint-disable-next-line no-param-reassign
       lhsType = TsUtils.reduceReference(lhsType);
+      // eslint-disable-next-line no-param-reassign
       rhsType = TsUtils.reduceReference(rhsType);
     }
     return (
@@ -948,21 +950,21 @@ export class TsUtils {
 
     const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(propSym, propSym.declarations[0]);
     const initExpr = TsUtils.unwrapParenthesized(prop.initializer);
-    const tsInitType = this.tsTypeChecker.getTypeAtLocation(initExpr);
+    const rhsType = this.tsTypeChecker.getTypeAtLocation(initExpr);
     if (ts.isObjectLiteralExpression(initExpr)) {
       if (!this.isObjectLiteralAssignable(propType, initExpr)) {
         return false;
       }
-    } else if (
-      this.needToDeduceStructuralIdentity(
-        propType,
-        tsInitType,
-        initExpr,
-        this.needStrictMatchType(propType, tsInitType)
-      )
-    ) {
+    } else {
       // Only check for structural sub-typing.
-      return false;
+      if (
+        this.needToDeduceStructuralIdentity(propType, rhsType, initExpr, this.needStrictMatchType(propType, rhsType))
+      ) {
+        return false;
+      }
+      if (this.isWrongSendableFunctionAssignment(propType, rhsType)) {
+        return false;
+      }
     }
 
     return true;
@@ -1901,6 +1903,12 @@ export class TsUtils {
     ) {
       return true;
     }
+    if (this.isSendableTypeAlias(type)) {
+      return true;
+    }
+    if (TsUtils.isSendableFunction(type)) {
+      return true;
+    }
 
     return this.isSendableClassOrInterface(type);
   }
@@ -1958,6 +1966,7 @@ export class TsUtils {
         return this.typeContainsNonSendableClassOrInterface(compType);
       });
     }
+    // eslint-disable-next-line no-param-reassign
     type = TsUtils.reduceReference(type);
     return type.isClassOrInterface() && !this.isSendableClassOrInterface(type);
   }
@@ -1977,15 +1986,17 @@ export class TsUtils {
     });
   }
 
-  static hasSendableDecorator(decl: ts.ClassDeclaration): boolean {
-    const decorators = ts.getDecorators(decl);
+  static hasSendableDecorator(decl: ts.ClassDeclaration | ts.FunctionDeclaration | ts.TypeAliasDeclaration): boolean {
+    const decorators = ts.getAllDecorators(decl);
     return !!decorators?.some((x) => {
       return TsUtils.getDecoratorName(x) === SENDABLE_DECORATOR;
     });
   }
 
-  static getNonSendableDecorators(decl: ts.ClassDeclaration): ts.Decorator[] | undefined {
-    const decorators = ts.getDecorators(decl);
+  static getNonSendableDecorators(
+    decl: ts.ClassDeclaration | ts.FunctionDeclaration | ts.TypeAliasDeclaration
+  ): ts.Decorator[] | undefined {
+    const decorators = ts.getAllDecorators(decl);
     return decorators?.filter((x) => {
       return TsUtils.getDecoratorName(x) !== SENDABLE_DECORATOR;
     });
@@ -2482,5 +2493,108 @@ export class TsUtils {
     }
     const method = node as ts.MethodDeclaration;
     return method.type?.kind === ts.SyntaxKind.ThisType;
+  }
+
+  // If it is an overloaded function, all declarations for that function are found
+  static hasSendableDecoratorFunctionOverload(decl: ts.FunctionDeclaration): boolean {
+    const decorators = TsUtils.getFunctionOverloadDecorators(decl);
+    return !!decorators?.some((x) => {
+      return TsUtils.getDecoratorName(x) === SENDABLE_DECORATOR;
+    });
+  }
+
+  static getFunctionOverloadDecorators(funcDecl: ts.FunctionDeclaration): readonly ts.Decorator[] | undefined {
+    const decls = funcDecl.symbol.getDeclarations();
+    if (!decls?.length) {
+      return undefined;
+    }
+    let result: ts.Decorator[] = [];
+    decls.forEach((decl) => {
+      if (!ts.isFunctionDeclaration(decl)) {
+        return;
+      }
+      const decorators = ts.getAllDecorators(decl);
+      if (decorators?.length) {
+        result = result.concat(decorators);
+      }
+    });
+    return result.length ? result : undefined;
+  }
+
+  static isSendableFunction(type: ts.Type): boolean {
+    const callSigns = type.getCallSignatures();
+    if (!callSigns?.length) {
+      return false;
+    }
+    const decl = callSigns[0].declaration;
+    if (!decl || !ts.isFunctionDeclaration(decl)) {
+      return false;
+    }
+    return TsUtils.hasSendableDecoratorFunctionOverload(decl);
+  }
+
+  isSendableTypeAlias(type: ts.Type): boolean {
+    const decl = this.getTypsAliasOriginalDecl(type);
+    return !!decl && TsUtils.hasSendableDecorator(decl);
+  }
+
+  hasSendableTypeAlias(type: ts.Type): boolean {
+    if (type.isUnion()) {
+      return type.types.some((compType) => {
+        return this.hasSendableTypeAlias(compType);
+      });
+    }
+    return this.isSendableTypeAlias(type);
+  }
+
+  isNonSendableFunctionTypeAlias(type: ts.Type): boolean {
+    const decl = this.getTypsAliasOriginalDecl(type);
+    return !!decl && ts.isFunctionTypeNode(decl.type) && !TsUtils.hasSendableDecorator(decl);
+  }
+
+  // If the alias refers to another alias, the search continues
+  private getTypsAliasOriginalDecl(type: ts.Type): ts.TypeAliasDeclaration | undefined {
+    if (!type.aliasSymbol) {
+      return undefined;
+    }
+    const decl = TsUtils.getDeclaration(type.aliasSymbol);
+    if (!decl || !ts.isTypeAliasDeclaration(decl)) {
+      return undefined;
+    }
+    if (ts.isTypeReferenceNode(decl.type)) {
+      const targetType = this.tsTypeChecker.getTypeAtLocation(decl.type.typeName);
+      if (targetType.aliasSymbol && targetType.aliasSymbol.getFlags() & ts.SymbolFlags.TypeAlias) {
+        return this.getTypsAliasOriginalDecl(targetType);
+      }
+    }
+    return decl;
+  }
+
+  // not allow 'lhsType' contains 'sendable typeAlias' && 'rhsType' contains 'non-sendable function/non-sendable function typeAlias'
+  isWrongSendableFunctionAssignment(lhsType: ts.Type, rhsType: ts.Type): boolean {
+    // eslint-disable-next-line no-param-reassign
+    lhsType = this.getNonNullableType(lhsType);
+    // eslint-disable-next-line no-param-reassign
+    rhsType = this.getNonNullableType(rhsType);
+    if (!this.hasSendableTypeAlias(lhsType)) {
+      return false;
+    }
+
+    if (rhsType.isUnion()) {
+      return rhsType.types.some((compType) => {
+        return this.isInvalidSendableFunctionAssignmentType(compType);
+      });
+    }
+    return this.isInvalidSendableFunctionAssignmentType(rhsType);
+  }
+
+  private isInvalidSendableFunctionAssignmentType(type: ts.Type): boolean {
+    if (type.aliasSymbol) {
+      return this.isNonSendableFunctionTypeAlias(type);
+    }
+    if (TsUtils.isFunctionalType(type)) {
+      return !TsUtils.isSendableFunction(type);
+    }
+    return false;
   }
 }

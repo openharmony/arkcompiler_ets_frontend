@@ -113,6 +113,15 @@ export enum FaultID {
   NoNameSpaceImportEtsToTs,
   NoSIdeEffectImportEtsToTs,
   SendableExplicitFieldType,
+  SendableFunctionImportedVariables,
+  SendableFunctionDecorator,
+  SendableTypeAliasDecorator,
+  SendableTypeAliasDeclaration,
+  SendableFunctionAssignment,
+  SendableFunctionOverloadDecorator,
+  SendableFunctionProperty,
+  SendableFunctionAsExpr,
+  SendableDecoratorLimited,
   // this should always be last enum
   LAST_ID
 }
