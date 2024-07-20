@@ -77,7 +77,7 @@ void PatchFix::DumpModuleInfo(const std::string &recordName,
     std::stringstream ss;
     ss << recordName << SymbolTable::SECOND_LEVEL_SEPERATOR;
     ss << Helpers::GetHashString(ConvertLiteralToString(moduleBuffer)) << std::endl;
-    symbolTable_->WriteSymbolTable(ss.str());
+    symbolTable_->FillSymbolTable(ss);
 }
 
 void PatchFix::ValidateModuleInfo(const std::string &recordName,
@@ -103,7 +103,7 @@ void PatchFix::DumpJsonContentRecInfo(const std::string &recordName, const std::
     std::stringstream ss;
     ss << recordName << SymbolTable::SECOND_LEVEL_SEPERATOR;
     ss << Helpers::GetHashString(jsonFileContent) << std::endl;
-    symbolTable_->WriteSymbolTable(ss.str());
+    symbolTable_->FillSymbolTable(ss);
 }
 
 void PatchFix::ValidateJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent)
@@ -648,7 +648,7 @@ void PatchFix::DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Fu
     }
     ss << SymbolTable::SECOND_LEVEL_SEPERATOR << std::endl;
 
-    symbolTable_->WriteSymbolTable(ss.str());
+    symbolTable_->FillSymbolTable(ss);
 }
 
 bool PatchFix::IsAdditionalVarInPatch(uint32_t slot)

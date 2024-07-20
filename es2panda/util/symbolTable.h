@@ -45,7 +45,8 @@ public:
         originRecordHashFunctionNames_(allocator_.Adapter()) {}
 
     bool Initialize(int targetApiVersion);
-    void WriteSymbolTable(const std::string &content);
+    void FillSymbolTable(const std::stringstream &content);
+    void WriteSymbolTable();
     ArenaUnorderedMap<std::string, OriginFunctionInfo> *GetOriginFunctionInfo()
     {
         return &originFunctionInfo_;
@@ -81,6 +82,8 @@ private:
     ArenaUnorderedMap<std::string, std::string> originModuleInfo_;
     // <recordName, <specialFuncIndex, specialFuncName>>
     ArenaUnorderedMap<std::string, std::unordered_map<std::string, std::string>> originRecordHashFunctionNames_;
+
+    std::stringstream symbolTableContent_;
 };
 }  // namespace panda::es2panda::util
 

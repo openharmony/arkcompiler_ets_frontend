@@ -128,14 +128,19 @@ bool SymbolTable::ReadSymbolTable(const std::string &symbolTable)
     return true;
 }
 
-void SymbolTable::WriteSymbolTable(const std::string &content)
+void SymbolTable::FillSymbolTable(const std::stringstream &content)
 {
     std::lock_guard<std::mutex> lock(m_);
+    symbolTableContent_ << content.rdbuf();
+}
+
+void SymbolTable::WriteSymbolTable()
+{
     std::fstream fs;
     fs.open(panda::os::file::File::GetExtendedFilePath(dumpSymbolTable_),
         std::ios_base::app | std::ios_base::in);
     if (fs.is_open()) {
-        fs << content;
+        fs << symbolTableContent_.str();
         fs.close();
     }
 }
