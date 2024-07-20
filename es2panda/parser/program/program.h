@@ -185,6 +185,16 @@ public:
         targetApiVersion_ = targetApiVersion;
     }
 
+    void SetTargetApiSubVersion(std::string targetApiSubVersion)
+    {
+        targetApiSubVersion_ = targetApiSubVersion;
+    }
+
+    std::string GetTargetApiSubVersion() const
+    {
+        return targetApiSubVersion_;
+    }
+
     bool UseDefineSemantic() const
     {
         return useDefineSemantic_;
@@ -227,6 +237,7 @@ private:
     int targetApiVersion_ {0};
     bool useDefineSemantic_ {true};
     bool isShared_ {false};
+    std::string targetApiSubVersion_ { util::Helpers::DEFAULT_SUB_API_VERSION };
 };
 
 }  // namespace panda::es2panda::parser

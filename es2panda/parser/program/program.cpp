@@ -48,7 +48,8 @@ Program::Program(Program &&other)
       isDebug_(other.isDebug_),
       targetApiVersion_(other.targetApiVersion_),
       useDefineSemantic_(other.useDefineSemantic_),
-      isShared_(other.isShared_)
+      isShared_(other.isShared_),
+      targetApiSubVersion_(other.targetApiSubVersion_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;
@@ -70,6 +71,7 @@ Program &Program::operator=(Program &&other)
     targetApiVersion_ = other.targetApiVersion_;
     useDefineSemantic_ = other.useDefineSemantic_;
     isShared_ = other.isShared_;
+    targetApiSubVersion_ = other.targetApiSubVersion_;
 
     other.ast_ = nullptr;
 

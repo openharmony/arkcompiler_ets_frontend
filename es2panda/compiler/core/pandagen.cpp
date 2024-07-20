@@ -576,9 +576,14 @@ void PandaGen::StoreObjByName(const ir::AstNode *node, VReg obj, const util::Str
 
 void PandaGen::DefineFieldByName(const ir::AstNode *node, VReg obj, const util::StringView &prop)
 {
-    // use definepropertybyname instead of definefieldbyname since api12 for runtime's performance.
-    Binder()->Program()->TargetApiVersion() >= 12 ? ra_.Emit<Definepropertybyname>(node, 0, prop, obj) :
+    if (util::Helpers::IsDefaultApiVersion(Binder()->Program()->TargetApiVersion(),
+        Binder()->Program()->GetTargetApiSubVersion())) {
         ra_.Emit<Definefieldbyname>(node, 0, prop, obj);
+        strings_.insert(prop);
+        return;
+    }
+
+    ra_.Emit<Definepropertybyname>(node, 0, prop, obj);
     strings_.insert(prop);
 }
 
@@ -1091,8 +1096,13 @@ void PandaGen::GreaterEqual(const ir::AstNode *node, VReg lhs)
 
 void PandaGen::IsTrue(const ir::AstNode *node)
 {
-    // use callruntime.istrue instead of istrue since api12 for runtime's performance.
-    Binder()->Program()->TargetApiVersion() >= 12 ? ra_.Emit<CallruntimeIstrue>(node, 0) :  ra_.Emit<Istrue>(node);
+    if (util::Helpers::IsDefaultApiVersion(Binder()->Program()->TargetApiVersion(),
+        Binder()->Program()->GetTargetApiSubVersion())) {
+        ra_.Emit<Istrue>(node);
+        return;
+    }
+
+    ra_.Emit<CallruntimeIstrue>(node, 0);
 }
 
 void PandaGen::BranchIfUndefined(const ir::AstNode *node, Label *target)
@@ -1149,8 +1159,14 @@ void PandaGen::BranchIfNotTrue(const ir::AstNode *node, Label *target)
 
 void PandaGen::BranchIfFalse(const ir::AstNode *node, Label *target)
 {
-    // use callruntime.istrue instead of istrue since api12 for runtime's performance.
-    Binder()->Program()->TargetApiVersion() >= 12 ? ra_.Emit<CallruntimeIsfalse>(node, 0) :  ra_.Emit<Isfalse>(node);
+    if (util::Helpers::IsDefaultApiVersion(Binder()->Program()->TargetApiVersion(),
+        Binder()->Program()->GetTargetApiSubVersion())) {
+        ra_.Emit<Isfalse>(node);
+        ra_.Emit<Jnez>(node, target);
+        return;
+    }
+
+    ra_.Emit<CallruntimeIsfalse>(node, 0);
     ra_.Emit<Jnez>(node, target);
 }
 

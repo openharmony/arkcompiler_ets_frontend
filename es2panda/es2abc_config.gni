@@ -106,3 +106,66 @@ template("es2abc_gen_abc") {
     outputs = invoker.out_puts
   }
 }
+
+template("es2abc_gen_newest_abc") {
+  assert(defined(invoker.src_js), "src_js is required!")
+  assert(defined(invoker.dst_file), "dst_file is required!")
+  assert(defined(invoker.out_puts), "out_puts is required!")
+
+  extra_dependencies = []
+  if (defined(invoker.extra_dependencies)) {
+    extra_dependencies += invoker.extra_dependencies
+  }
+
+  action("$target_name") {
+    if (defined(invoker.extra_visibility)) {
+      visibility = invoker.extra_visibility
+    }
+
+    script = "${es2abc_root}/scripts/generate_js_bytecode.py"
+
+    deps = extra_dependencies
+    deps += es2abc_build_deps
+
+    args = [
+      "--src-js",
+      invoker.src_js,
+      "--dst-file",
+      invoker.dst_file,
+      "--frontend-tool-path",
+      rebase_path("${es2abc_build_path}"),
+    ]
+
+    if (defined(invoker.extension)) {
+      args += [
+        "--extension",
+        invoker.extension,
+      ]
+    }
+
+    if (defined(invoker.dump_symbol_table)) {
+      args += [
+        "--dump-symbol-table",
+        invoker.dump_symbol_table,
+      ]
+    }
+    if (defined(invoker.input_symbol_table)) {
+      args += [
+        "--input-symbol-table",
+        invoker.input_symbol_table,
+      ]
+    }
+
+    if (defined(invoker.extra_args)) {
+      args += invoker.extra_args
+    }
+
+    if (defined(invoker.in_puts)) {
+      inputs = invoker.in_puts
+    }
+
+    args += [ "--target-api-sub-version=beta3" ]
+
+    outputs = invoker.out_puts
+  }
+}

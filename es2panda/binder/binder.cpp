@@ -365,7 +365,7 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, cons
     }
     functionScopes_.push_back(funcScope);
     funcScope->SetInFunctionScopes();
-    if (Program()->TargetApiVersion() > 11) {
+    if (!util::Helpers::IsDefaultApiVersion(Program()->TargetApiVersion(), Program()->GetTargetApiSubVersion())) {
         funcScope->SetSelfScopeName(name);
         auto recordName = program_->FormatedRecordName().Mutf8();
         funcScope->BindNameWithScopeInfo(name, util::UString(recordName, Allocator()).View());
@@ -722,8 +722,8 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             if ((inSendableClass_ && !scriptFunc->IsStaticInitializer()) || inSendableFunction_) {
                 scriptFunc->SetInSendable();
             }
-            util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc),
-                                          Program()->GetLineIndex());
+            util::Helpers::ScanDirectives(const_cast<ir::ScriptFunction *>(scriptFunc), Program()->GetLineIndex(),
+                !util::Helpers::IsDefaultApiVersion(program_->TargetApiVersion(), program_->GetTargetApiSubVersion()));
 
             if (scriptFunc->IsConstructor() && util::Helpers::GetClassDefiniton(scriptFunc)->IsSendable()) {
                 scriptFunc->SetInSendable();
