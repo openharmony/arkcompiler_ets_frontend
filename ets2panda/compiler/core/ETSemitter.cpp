@@ -76,7 +76,7 @@ static uint32_t TranslateModifierFlags(ir::ModifierFlags modifierFlags)
         accessFlags |= ACC_FINAL;
     }
     // NOTE: should be ModifierFlags::READONLY
-    if ((modifierFlags & ir::ModifierFlags::CONST) != 0) {
+    if ((modifierFlags & ir::ModifierFlags::READONLY) != 0) {
         accessFlags |= ACC_READONLY;
     }
     if ((modifierFlags & ir::ModifierFlags::ABSTRACT) != 0) {

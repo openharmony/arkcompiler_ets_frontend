@@ -166,7 +166,20 @@
                   "statements": [
                     {
                       "type": "ReturnStatement",
-                      "argument": null,
+                      "argument": {
+                        "type": "NumberLiteral",
+                        "value": 42,
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 24
+                          },
+                          "end": {
+                            "line": 17,
+                            "column": 26
+                          }
+                        }
+                      },
                       "loc": {
                         "start": {
                           "line": 17,
@@ -174,7 +187,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 24
+                          "column": 27
                         }
                       }
                     }
@@ -186,7 +199,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 26
+                      "column": 29
                     }
                   }
                 },
@@ -197,7 +210,7 @@
                   },
                   "end": {
                     "line": 17,
-                    "column": 26
+                    "column": 29
                   }
                 }
               },
@@ -208,7 +221,7 @@
                 },
                 "end": {
                   "line": 17,
-                  "column": 26
+                  "column": 29
                 }
               }
             },
@@ -221,7 +234,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 26
+                "column": 29
               }
             }
           },
@@ -442,4 +455,3 @@
     }
   }
 }
-TypeError: Type 'void' cannot be assigned to type 'int' [function_implicit_return_type6.ets:20:16]

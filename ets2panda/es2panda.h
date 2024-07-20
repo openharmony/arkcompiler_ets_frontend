@@ -31,6 +31,8 @@ struct Program;
 }  // namespace ark::pandasm
 
 namespace ark::es2panda {
+
+static constexpr std::string_view ES2PANDA_VERSION = "0.1";
 namespace util {
 class Options;
 }  // namespace util

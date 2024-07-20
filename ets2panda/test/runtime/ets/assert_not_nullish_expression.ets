@@ -15,10 +15,10 @@
 
 function main():void{
     let a = (): Int|undefined => {return 3; }();
-    assert a!;
+    assert !!(a!);
     foo(5);
 }
 
 function foo(i: Int|undefined): void {
-assert i!;
+    assert !!(i!);
 }

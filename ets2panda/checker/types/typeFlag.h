@@ -78,20 +78,21 @@ enum class TypeFlag : uint64_t {
     ETS_DYNAMIC_FLAG = 1ULL << 53ULL,    // ETS Dynamic flag
     GETTER = 1ULL << 54ULL,              // ETS Getter
     SETTER = 1ULL << 55ULL,              // ETS Setter
-    ETS_EXTENSION_FUNC_HELPER = 1ULL << 56ULL,  // ETS Extension Function Helper
-    ETS_UNION = 1ULL << 57ULL,                  // ETS union
-    ETS_TUPLE = 1ULL << 58ULL,                  // ETS tuple type
-    ETS_NULL = 1ULL << 59ULL,                   // ETS null
-    ETS_UNDEFINED = 1ULL << 60ULL,              // ETS undefined
-    ETS_NONNULLISH = 1ULL << 61ULL,             // ETS nonnullish type parameter
-    ETS_READONLY = 1ULL << 62ULL,               // ETS readonly type parameter
+    ETS_EXTENSION_FUNC_HELPER = 1ULL << 56ULL,    // ETS Extension Function Helper
+    ETS_UNION = 1ULL << 57ULL,                    // ETS union
+    ETS_TUPLE = 1ULL << 58ULL,                    // ETS tuple type
+    ETS_NULL = 1ULL << 59ULL,                     // ETS null
+    ETS_UNDEFINED = 1ULL << 60ULL,                // ETS undefined
+    ETS_NONNULLISH = 1ULL << 61ULL,               // ETS nonnullish type parameter
+    ETS_READONLY = 1ULL << 62ULL,                 // ETS readonly type parameter
+    ETS_REQUIRED_TYPE_PARAMETER = 1ULL << 63ULL,  // ETS Required type parameter
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
     ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |
                WILDCARD | ETS_TYPE_PARAMETER | ETS_ENUM | ETS_STRING_ENUM | ETS_DYNAMIC_TYPE | ETS_UNION | ETS_NULL |
                ETS_UNDEFINED | ETS_NONNULLISH | ETS_READONLY,
     ETS_PRIMITIVE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN,
-    ETS_PRIMITIVE_RETURN = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_ENUM,
+    ETS_PRIMITIVE_RETURN = ETS_PRIMITIVE | ETS_ENUM,
     ETS_ARRAY_INDEX = BYTE | SHORT | INT,
     ETS_INTEGRAL = BYTE | CHAR | SHORT | INT | LONG,
     ETS_FLOATING_POINT = FLOAT | DOUBLE,

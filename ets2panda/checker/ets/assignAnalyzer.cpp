@@ -1376,7 +1376,8 @@ bool AssignAnalyzer::VariableHasDefaultValue(const ir::AstNode *node)
         UNREACHABLE();
     }
 
-    return type != nullptr && (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) || type->PossiblyETSNullish());
+    return type != nullptr && (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ||
+                               (type->PossiblyETSNullish() && !type->HasTypeFlag(checker::TypeFlag::GENERIC)));
 }
 
 void AssignAnalyzer::LetInit(const ir::AstNode *node)
@@ -1412,8 +1413,6 @@ void AssignAnalyzer::LetInit(const ir::AstNode *node)
             } else {
                 uninit(adr);
             }
-        } else {
-            Warning({"Cannot assign to '", name, "' because it is a read-only property."}, pos);
         }
     }
 

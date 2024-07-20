@@ -929,4 +929,4 @@
     }
   }
 }
-TypeError: Cannot assign to a constant variable value [readonlyField.ets:16:14]
+TypeError: Cannot assign to a readonly variable value [readonlyField.ets:16:14]

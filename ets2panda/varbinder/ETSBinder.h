@@ -25,6 +25,9 @@
 
 namespace ark::es2panda::varbinder {
 
+using AliasesByExportedNames = ArenaMap<util::StringView, util::StringView>;
+using ModulesToExportedNamesWithAliases = ArenaMap<util::StringView, AliasesByExportedNames>;
+
 struct DynamicImportData {
     const ir::ETSImportDeclaration *import;
     const ir::AstNode *specifier;
@@ -44,7 +47,8 @@ public:
           dynamicImports_(Allocator()->Adapter()),
           reExportImports_(Allocator()->Adapter()),
           dynamicImportVars_(Allocator()->Adapter()),
-          importSpecifiers_(Allocator()->Adapter())
+          importSpecifiers_(Allocator()->Adapter()),
+          selectiveExportsWithAlias_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -219,6 +223,10 @@ public:
 
     void ResolveReferencesForScopeWithContext(ir::AstNode *node, Scope *scope);
 
+    void AddExportSelectiveAlias(const util::StringView &path, const util::StringView &key,
+                                 const util::StringView &value);
+    util::StringView GetExportSelectiveAliasValue(util::StringView const &path, util::StringView const &key) const;
+
 private:
     void BuildClassDefinitionImpl(ir::ClassDefinition *classDef);
     void InitImplicitThisParam();
@@ -242,6 +250,7 @@ private:
     ir::Identifier *thisParam_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> importSpecifiers_;
     ir::AstNode *defaultExport_ {};
+    ModulesToExportedNamesWithAliases selectiveExportsWithAlias_;
 
     friend class RecordTableContext;
 };

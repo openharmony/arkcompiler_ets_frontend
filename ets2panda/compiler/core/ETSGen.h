@@ -1013,59 +1013,11 @@ private:
     }
 
     template <typename Short, typename General, typename Range>
-    bool ResolveStringFromNullishBuiltin(const ir::AstNode *node, checker::Signature const *signature,
-                                         const ArenaVector<ir::Expression *> &arguments)
-    {
-        if (signature->InternalName() != Signatures::BUILTIN_STRING_FROM_NULLISH_CTOR) {
-            return false;
-        }
-        auto argExpr = arguments[0];
-        if (argExpr->IsExpression()) {
-            if (argExpr->AsExpression()->IsNullLiteral()) {
-                LoadAccumulatorString(node, "null");
-                return true;
-            }
-            if (argExpr->AsExpression()->IsUndefinedLiteral()) {
-                LoadAccumulatorString(node, "undefined");
-                return true;
-            }
-        }
-
-        Label *isNull = AllocLabel();
-        Label *end = AllocLabel();
-        Label *isUndefined = AllocLabel();
-        COMPILE_ARG(0);
-        LoadAccumulator(node, arg0);
-        if (argExpr->TsType()->PossiblyETSNullish()) {
-            BranchIfNull(node, isNull);
-            EmitIsUndefined(node);
-            BranchIfTrue(node, isUndefined);
-        }
-        LoadAccumulator(node, arg0);
-        CastToString(node);
-        StoreAccumulator(node, arg0);
-        Ra().Emit<Short, 1>(node, Signatures::BUILTIN_STRING_FROM_STRING_CTOR, arg0, dummyReg_);
-        JumpTo(node, end);
-        if (argExpr->TsType()->PossiblyETSNullish()) {
-            SetLabel(node, isNull);
-            LoadAccumulatorString(node, "null");
-            JumpTo(node, end);
-            SetLabel(node, isUndefined);
-            LoadAccumulatorString(node, "undefined");
-        }
-        SetLabel(node, end);
-        return true;
-    }
-
-    template <typename Short, typename General, typename Range>
     void CallImpl(const ir::AstNode *node, checker::Signature const *signature,
                   const ArenaVector<ir::Expression *> &arguments)
     {
         ASSERT(signature != nullptr);
         RegScope rs(this);
-        if (ResolveStringFromNullishBuiltin<Short, General, Range>(node, signature, arguments)) {
-            return;
-        }
 
         switch (arguments.size()) {
             case 0U: {
@@ -1207,7 +1159,8 @@ private:
 template <typename T>
 void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
 {
-    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType())
+    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
+                                    !targetType_->IsETSArrayType())
                         ? checker::ETSChecker::TypeKind(targetType_)
                         : targetType;
 

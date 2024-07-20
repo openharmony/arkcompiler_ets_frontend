@@ -387,6 +387,7 @@ public:
     void AddReExports(ETSObjectType *reExport);
     void AddReExportAlias(util::StringView const &value, util::StringView const &key);
     util::StringView GetReExportAliasValue(util::StringView const &key) const;
+    bool IsReExportHaveAliasValue(util::StringView const &key) const;
     const ArenaVector<ETSObjectType *> &ReExports() const;
 
     ArenaAllocator *Allocator() const
@@ -464,8 +465,8 @@ private:
     }
     varbinder::LocalVariable *SearchFieldsDecls(const util::StringView &name, PropertySearchFlags flags) const;
 
-    void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &newTypeArgs,
-                                 const Substitution *substitution);
+    void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &&newTypeArgs,
+                                 ETSObjectType *base);
     bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &newTypeArgs, const Substitution *substitution);
 
     ArenaAllocator *allocator_;
@@ -484,7 +485,7 @@ private:
 
     // for lazy properties instantiation
     TypeRelation *relation_ = nullptr;
-    const Substitution *substitution_ = nullptr;
+    const Substitution *effectiveSubstitution_ = nullptr;
     mutable bool propertiesInstantiated_ = false;
     mutable ArenaVector<Signature *> constructSignatures_;
     mutable PropertyHolder properties_;

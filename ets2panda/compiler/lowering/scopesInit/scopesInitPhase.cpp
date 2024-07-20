@@ -54,7 +54,7 @@ void ScopesInitPhase::VisitScriptFunction(ir::ScriptFunction *scriptFunction)
 
 void ScopesInitPhase::VisitBlockStatement(ir::BlockStatement *blockStmt)
 {
-    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), blockStmt);
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScopeWithTypeAlias>(VarBinder(), blockStmt);
     HandleBlockStmt(blockStmt, GetScope());
 }
 
@@ -221,7 +221,7 @@ void ScopesInitPhase::VisitVariableDeclarator(ir::VariableDeclarator *varDecl)
 void ScopesInitPhase::VisitSwitchStatement(ir::SwitchStatement *switchStmt)
 {
     CallNode(switchStmt->Discriminant());
-    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScope>(VarBinder(), switchStmt);
+    auto localCtx = LexicalScopeCreateOrEnter<varbinder::LocalScopeWithTypeAlias>(VarBinder(), switchStmt);
     AttachLabelToScope(switchStmt);
     BindScopeNode(localCtx.GetScope(), switchStmt);
     CallNode(switchStmt->Cases());
@@ -1148,6 +1148,13 @@ void InitScopesPhaseETS::VisitClassProperty(ir::ClassProperty *classProp)
             ThrowSyntaxError("Missing initializer in const declaration", pos);
         }
         AddOrGetDecl<varbinder::ConstDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
+    } else if (classProp->IsReadonly()) {
+        ASSERT(curScope->Parent() != nullptr);
+        if (curScope->Parent()->IsGlobalScope() && !classProp->IsDeclare()) {
+            auto pos = classProp->End();
+            ThrowSyntaxError("Readonly field cannot be in Global scope", pos);
+        }
+        AddOrGetDecl<varbinder::ReadonlyDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     } else {
         AddOrGetDecl<varbinder::LetDecl>(VarBinder(), name, classProp, classProp->Key()->Start(), name, classProp);
     }

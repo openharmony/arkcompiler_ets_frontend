@@ -321,6 +321,11 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
         return;
     }
 
+    const bool isRequiredType = HasObjectFlag(ETSObjectFlags::REQUIRED);
+    if (isRequiredType) {
+        ss << "Required" << compiler::Signatures::GENERIC_BEGIN;
+    }
+
     if (precise) {
         ss << assemblerName_;  // NOTE(gogabr): need full qualified name
     } else {
@@ -336,6 +341,10 @@ void ETSObjectType::ToString(std::stringstream &ss, bool precise) const
                 ss << lexer::TokenToString(lexer::TokenType::PUNCTUATOR_COMMA);
             }
         }
+        ss << compiler::Signatures::GENERIC_END;
+    }
+
+    if (isRequiredType) {
         ss << compiler::Signatures::GENERIC_END;
     }
 }
@@ -634,7 +643,7 @@ void ETSObjectType::IsGenericSupertypeOf(TypeRelation *relation, Type *source)
     ASSERT(HasTypeFlag(TypeFlag::GENERIC));
 
     auto *sourceType = source->AsETSObjectType();
-    auto const sourceTypeArguments = sourceType->TypeArguments();
+    auto const &sourceTypeArguments = sourceType->TypeArguments();
     auto const typeArgumentsNumber = typeArguments_.size();
     if (typeArgumentsNumber > sourceTypeArguments.size()) {
         relation->Result(false);
@@ -773,11 +782,22 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     copiedType->SetBaseType(this);
     copiedType->propertiesInstantiated_ = false;
     copiedType->relation_ = relation;
-    copiedType->substitution_ = nullptr;
+    copiedType->effectiveSubstitution_ = nullptr;
 
     relation->DecreaseTypeRecursionCount(base);
 
     return copiedType;
+}
+
+static Type *SubstituteVariableType(TypeRelation *relation, const Substitution *substitution, Type *const varType)
+{
+    auto *substitutedType = varType->Substitute(relation, substitution);
+
+    if (varType->HasTypeFlag(TypeFlag::ETS_REQUIRED_TYPE_PARAMETER)) {
+        substitutedType = relation->GetChecker()->AsETSChecker()->HandleRequiredType(substitutedType);
+    }
+
+    return substitutedType;
 }
 
 static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalVariable *prop, TypeRelation *relation,
@@ -785,7 +805,7 @@ static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalV
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const varType = ETSChecker::IsVariableGetterSetter(prop) ? prop->TsType() : checker->GetTypeOfVariable(prop);
-    auto *const copiedPropType = varType->Substitute(relation, substitution);
+    auto *const copiedPropType = SubstituteVariableType(relation, substitution, varType);
     auto *const copiedProp = prop->Copy(checker->Allocator(), prop->Declaration());
     copiedPropType->SetVariable(copiedProp);
     copiedProp->SetTsType(copiedPropType);
@@ -820,18 +840,36 @@ bool ETSObjectType::SubstituteTypeArgs(TypeRelation *const relation, ArenaVector
     return anyChange;
 }
 
+static Substitution *ComputeEffectiveSubstitution(TypeRelation *const relation,
+                                                  const ArenaVector<Type *> &baseTypeParams,
+                                                  ArenaVector<Type *> &newTypeArgs)
+{
+    ASSERT(baseTypeParams.size() == newTypeArgs.size());
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    auto *effectiveSubstitution = checker->NewSubstitution();
+
+    for (size_t ix = 0; ix < baseTypeParams.size(); ix++) {
+        ETSChecker::EmplaceSubstituted(effectiveSubstitution, baseTypeParams[ix]->AsETSTypeParameter(),
+                                       newTypeArgs[ix]);
+    }
+
+    return effectiveSubstitution;
+}
+
 void ETSObjectType::SetCopiedTypeProperties(TypeRelation *const relation, ETSObjectType *const copiedType,
-                                            ArenaVector<Type *> &newTypeArgs, const Substitution *const substitution)
+                                            ArenaVector<Type *> &&newTypeArgs, ETSObjectType *base)
 {
     copiedType->typeFlags_ = typeFlags_;
     copiedType->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copiedType->SetVariable(variable_);
-    copiedType->SetBaseType(this);
+    copiedType->SetBaseType(base);
+
+    auto const &baseTypeParams = base->TypeArguments();
+    copiedType->effectiveSubstitution_ = ComputeEffectiveSubstitution(relation, baseTypeParams, newTypeArgs);
 
     copiedType->SetTypeArguments(std::move(newTypeArgs));
     copiedType->relation_ = relation;
-    copiedType->substitution_ = substitution;
 }
 
 void ETSObjectType::UpdateTypeProperty(checker::ETSChecker *checker, varbinder::LocalVariable *const prop,
@@ -903,7 +941,7 @@ ETSObjectType *ETSObjectType::Substitute(TypeRelation *relation, const Substitut
     relation->IncreaseTypeRecursionCount(base);
 
     auto *const copiedType = checker->CreateNewETSObjectType(name_, declNode_, flags_);
-    SetCopiedTypeProperties(relation, copiedType, newTypeArgs, substitution);
+    SetCopiedTypeProperties(relation, copiedType, std::move(newTypeArgs), base);
 
     if (cache) {
         GetInstantiationMap().try_emplace(hash, copiedType);
@@ -958,46 +996,46 @@ void ETSObjectType::InstantiateProperties() const
     }
 
     ASSERT(!propertiesInstantiated_);
-    checker->ResolveDeclaredMembersOfObject(this);
+    declNode_->Check(checker);
 
     for (auto *const it : baseType_->ConstructSignatures()) {
-        auto *newSig = it->Substitute(relation_, substitution_);
+        auto *newSig = it->Substitute(relation_, effectiveSubstitution_);
         constructSignatures_.push_back(newSig);
     }
 
     for (auto const &[_, prop] : baseType_->InstanceFields()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
         properties_[static_cast<size_t>(PropertyType::INSTANCE_FIELD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->StaticFields()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
         properties_[static_cast<size_t>(PropertyType::STATIC_FIELD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->InstanceMethods()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
         properties_[static_cast<size_t>(PropertyType::INSTANCE_METHOD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->StaticMethods()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
         properties_[static_cast<size_t>(PropertyType::STATIC_METHOD)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->InstanceDecls()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
         properties_[static_cast<size_t>(PropertyType::INSTANCE_DECL)].emplace(prop->Name(), copiedProp);
     }
 
     for (auto const &[_, prop] : baseType_->StaticDecls()) {
         (void)_;
-        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
+        auto *copiedProp = CopyPropertyWithTypeArguments(prop, relation_, effectiveSubstitution_);
         properties_[static_cast<size_t>(PropertyType::STATIC_DECL)].emplace(prop->Name(), copiedProp);
     }
 }
@@ -1068,6 +1106,12 @@ util::StringView ETSObjectType::GetReExportAliasValue(util::StringView const &ke
         return key;
     }
     return ret->second;
+}
+
+bool ETSObjectType::IsReExportHaveAliasValue(util::StringView const &key) const
+{
+    return std::any_of(reExportAlias_.begin(), reExportAlias_.end(),
+                       [&](const auto &val) { return val.second == key; });
 }
 
 const ArenaVector<ETSObjectType *> &ETSObjectType::ReExports() const

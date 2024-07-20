@@ -423,6 +423,7 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
         }
         case varbinder::DeclType::ENUM_LITERAL:
         case varbinder::DeclType::CONST:
+        case varbinder::DeclType::READONLY:
         case varbinder::DeclType::LET:
         case varbinder::DeclType::VAR: {
             auto *declNode = var->Declaration()->Node();
@@ -433,9 +434,7 @@ Type *ETSChecker::GetTypeOfVariable(varbinder::Variable *const var)
 
             return declNode->Check(this);
         }
-        case varbinder::DeclType::FUNC: {
-            return var->Declaration()->Node()->Check(this);
-        }
+        case varbinder::DeclType::FUNC:
         case varbinder::DeclType::IMPORT: {
             return var->Declaration()->Node()->Check(this);
         }
@@ -483,9 +482,21 @@ Type *ETSChecker::GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *
         return nullptr;
     }
 
-    auto *baseProp = prop->Declaration()->Node()->IsClassProperty()
-                         ? prop->Declaration()->Node()->AsClassProperty()->Id()->Variable()
-                         : prop->Declaration()->Node()->AsMethodDefinition()->Variable();
+    varbinder::Variable *baseProp = nullptr;
+    switch (auto node = prop->Declaration()->Node(); node->Type()) {
+        case ir::AstNodeType::CLASS_PROPERTY:
+            baseProp = node->AsClassProperty()->Id()->Variable();
+            break;
+        case ir::AstNodeType::METHOD_DEFINITION:
+            baseProp = node->AsMethodDefinition()->Variable();
+            break;
+        case ir::AstNodeType::CLASS_DEFINITION:
+            baseProp = node->AsClassDefinition()->Ident()->Variable();
+            break;
+        default:
+            UNREACHABLE();
+    }
+
     if (baseProp == prop) {
         return nullptr;
     }
@@ -517,7 +528,7 @@ void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifie
     const auto *const targetType = GetTypeOfVariable(id->Variable());
     ASSERT(targetType != nullptr);
 
-    if (!targetType->IsETSObjectType() || !targetType->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+    if (!targetType->IsETSObjectType()) {
         ThrowTypeError("Initializers type is not assignable to the target type", ident->Start());
     }
 }

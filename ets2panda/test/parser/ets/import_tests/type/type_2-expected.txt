@@ -1,0 +1,1 @@
+SyntaxError: Name 'A' cannot be exported and type exported at the same time. [type_2.ets:18:19]

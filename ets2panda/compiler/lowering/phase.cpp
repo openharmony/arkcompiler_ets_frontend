@@ -20,6 +20,7 @@
 #include "ets/defaultParameterLowering.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/recordLowering.h"
@@ -27,6 +28,7 @@
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
+#include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/objectIndexAccess.h"
 #include "compiler/lowering/ets/objectIterator.h"
@@ -41,6 +43,7 @@
 #include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/bigintLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
+#include "compiler/lowering/ets/stringConstructorLowering.h"
 #include "compiler/lowering/ets/enumLowering.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/scopesInit/scopesInitPhase.h"
@@ -59,8 +62,11 @@ std::vector<Phase *> GetTrivialPhaseList()
 
 static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
+static StringConstructorLowering g_stringConstructorLowering;
+static ConstStringToCharLowering g_constStringToCharLowering;
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static EnumLoweringPhase g_enumLoweringPhase;
+static SpreadConstructionPhase g_spreadConstructionPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
 static BoxingForLocals g_boxingForLocals;
@@ -112,6 +118,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_interfacePropDeclPhase,
         &g_enumLoweringPhase,
         &g_checkerPhase,
+        &g_spreadConstructionPhase,
         &g_pluginsAfterCheck,
         &g_bigintLowering,
         &g_opAssignmentLowering,
@@ -125,6 +132,8 @@ std::vector<Phase *> GetETSPhaseList()
         &g_expandBracketsPhase,
         &g_localClassLowering,
         &g_objectLiteralLowering,
+        &g_stringConstructorLowering,
+        &g_constStringToCharLowering,
         &g_stringComparisonLowering,
         &g_partialExportClassGen,
         &g_pluginsAfterLowerings,

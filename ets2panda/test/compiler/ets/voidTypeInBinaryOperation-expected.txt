@@ -438,4 +438,4 @@
     }
   }
 }
-TypeError: Bad operand type, the types of the operands must be of possible condition type. [voidTypeInBinaryOperation.ets:20:10]
+TypeError: Cannot use type 'void' as value.  [voidTypeInBinaryOperation.ets:20:19]

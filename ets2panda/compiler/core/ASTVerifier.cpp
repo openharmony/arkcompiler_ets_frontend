@@ -582,8 +582,9 @@ private:
             return true;
         }
 
-        // NOTE(mmartin): find a better solution to handle partial type resolution
-        if (ast->Name().Is(Signatures::PARTIAL_TYPE_NAME)) {
+        // NOTE(mmartin): find a better solution to handle utility type resolution
+        if (ast->Name().Is(Signatures::PARTIAL_TYPE_NAME) || ast->Name().Is(Signatures::REQUIRED_TYPE_NAME) ||
+            ast->Name().Is(Signatures::READONLY_TYPE_NAME)) {
             return true;
         }
 
@@ -592,11 +593,6 @@ private:
 
     bool CheckAstExceptions(const ir::Identifier *ast) const
     {
-        // NOTE(lujiahui): skip Readonly property
-        if (ast->Parent()->IsETSTypeReferencePart() && ast->Name().Is("Readonly")) {
-            return true;
-        }
-        // E
         // NOTE(kkonkuznetsov): skip enums
         if (ast->Parent()->IsMemberExpression() &&
             (ast->Parent()->AsMemberExpression()->Object()->TsType() == nullptr ||
@@ -824,22 +820,6 @@ private:
             return true;
         }
 
-        // NOTE(kkonkuznetsov): skip parameters in async functions
-        if (ast->Parent() != nullptr && ast->Parent()->IsScriptFunction()) {
-            auto scriptFunction = ast->Parent()->AsScriptFunction();
-            if (scriptFunction->IsAsyncFunc()) {
-                return true;
-            }
-        }
-
-        // NOTE(kkonkuznetsov): skip unions/async lambdas
-        if (ast->IsIdentifier()) {
-            auto id = ast->AsIdentifier();
-            if (id->TypeAnnotation() != nullptr && id->TypeAnnotation()->IsETSUnionType()) {
-                return true;
-            }
-        }
-
         // NOTE(kkonkuznetsov): lambdas
         auto parent = ast->Parent();
         while (parent != nullptr) {
@@ -1046,15 +1026,6 @@ private:
             // loop: for (let i = 0; i < 10; i++) {
             // }
             return true;
-        }
-
-        // NOTE(kkonkuznetsov): skip, something with unions
-        if (ast->IsIdentifier()) {
-            auto id = ast->AsIdentifier();
-            auto annotation = id->TypeAnnotation();
-            if (annotation != nullptr && annotation->IsETSUnionType()) {
-                return true;
-            }
         }
 
         // NOTE(kkonkuznetsov): skip lambdas

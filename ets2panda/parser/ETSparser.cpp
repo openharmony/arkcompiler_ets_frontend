@@ -565,8 +565,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seenStatic)
                 break;
             }
             case lexer::TokenType::KEYW_READONLY: {
-                // NOTE(OCs): Use ir::ModifierFlags::READONLY once compiler is ready for it.
-                currentFlag = ir::ModifierFlags::CONST | ir::ModifierFlags::READONLY;
+                currentFlag = ir::ModifierFlags::READONLY;
                 break;
             }
             default: {
@@ -1229,10 +1228,6 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allowStatic)
 ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
 {
     ASSERT(Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE);
-
-    if ((GetContext().Status() & parser::ParserStatus::FUNCTION) != 0U) {
-        ThrowSyntaxError("Type alias is allowed only as top-level declaration");
-    }
 
     lexer::SourcePosition typeStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat type keyword

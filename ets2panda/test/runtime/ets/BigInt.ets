@@ -616,21 +616,17 @@ function test_scientific(): void {
     assert new BigInt(0.0e+0).toString() == "0" : "BigInt(0.0e+0)"
     assert new BigInt(0.0e-0).toString() == "0" : "BigInt(0.0e-0).toString()"
     assert new BigInt(-0.0e0).toString() == "0" : "BigInt(-0.0e0).toString()"
-    assert new BigInt(1e23).toString() == "100000000000000000000000" : "BigInt(1e23)"
-    assert new BigInt(1e+23).toString() == "100000000000000000000000" : "BigInt(1e+23)"
-    assert new BigInt(1e-23).toString() == "0" : "BigInt(1e-23)"
-    assert new BigInt(-1e23).toString() == "-100000000000000000000000" : "BigInt(-1e23)"
-    assert new BigInt(-1e+23).toString() == "-100000000000000000000000" : "BigInt(-1e+23)"
-    assert new BigInt(-1e-23).toString() == "0" : "BigInt(-1e-23)"
+    assert new BigInt(1e22).toString() == "10000000000000000000000" : "BigInt(1e22)"
+    assert new BigInt(1e+22).toString() == "10000000000000000000000" : "BigInt(1e+22)"
+    assert new BigInt(-1e22).toString() == "-10000000000000000000000" : "BigInt(-1e22)"
+    assert new BigInt(-1e+22).toString() == "-10000000000000000000000" : "BigInt(-1e+22)"
 
     assert new BigInt(1.234567e10).toString() == "12345670000" : "BigInt(1.234567e10).toString()"
     assert new BigInt(1.234567e20).toString() == "123456700000000000000" : "BigInt(1.234567e20).toString()"
-    assert new BigInt(1.88e-20).toString() == "0" : "BigInt(1.88e-20)"
 
-    assert new BigInt(1.2345678912e21).toString() == "1234567891200000000000" : "BigInt(1.2345678912e21)"
-    assert new BigInt(1.2345678912e+21).toString() == "1234567891200000000000" : "BigInt(1.2345678912e+21)"
-    assert new BigInt(1.2345678912e-21).toString() == "0" : "BigInt(1.2345678912e-21)"
-    assert new BigInt(-1.2345678912e21).toString() == "-1234567891200000000000" : "BigInt(-1.2345678912e21)"
+    assert new BigInt(1.2345678848e+21).toString() == "1234567884800000000000" : "BigInt(1.2345678848e21)"
+    assert new BigInt(1.2345678848e+21).toString() == "1234567884800000000000" : "BigInt(1.2345678848e+21)"
+    assert new BigInt(-1.2345678848e21).toString() == "-1234567884800000000000" : "BigInt(-1.2345678848e21)"
 }
 
 function test_double(): void {
@@ -647,6 +643,10 @@ function test_double(): void {
     assert bigIntFromDouble(-0.1) : "BigInt(-0.1)"
     assert bigIntFromDouble(42.1234567) : "BigInt(42.1234567)"
     assert bigIntFromDouble(1.234567e2) : "BigInt(1.234567e2)"
+    assert bigIntFromDouble(1e-22) : "BigInt(1e-22)"
+    assert bigIntFromDouble(-1e-22) : "BigInt(-1e-22)"
+    assert bigIntFromDouble(1.88e-20) : "BigInt(1.88e-20)"
+    assert bigIntFromDouble(1.2345678848e-21) : "BigInt(1.2345678484e-21)"
 }
 
 function main() : void {
@@ -679,6 +679,5 @@ function main() : void {
     test_shift();
     test_bitwise();
     test_double();
-    // NOTE(aakmaev): Enable after fix #17683.
-    // test_scientific();
+    test_scientific();
 }

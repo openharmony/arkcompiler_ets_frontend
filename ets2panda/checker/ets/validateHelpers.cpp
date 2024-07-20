@@ -240,14 +240,15 @@ void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
         return;
     }
 
-    if (variable->Declaration()->IsConstDecl()) {
+    if (variable->Declaration()->IsConstDecl() || variable->Declaration()->IsReadonlyDecl()) {
+        std::string_view fieldType = variable->Declaration()->IsConstDecl() ? "constant" : "readonly";
         if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
             !variable->HasFlag(varbinder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
-            ThrowTypeError({"Cannot reassign constant field ", variable->Name()},
+            ThrowTypeError({"Cannot reassign ", fieldType, " ", variable->Name()},
                            variable->Declaration()->Node()->Start());
         }
         if (!HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK)) {
-            ThrowTypeError({"Cannot assign to a constant variable ", variable->Name()},
+            ThrowTypeError({"Cannot assign to a ", fieldType, " variable ", variable->Name()},
                            variable->Declaration()->Node()->Start());
         }
     }

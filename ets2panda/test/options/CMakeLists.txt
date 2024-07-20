@@ -35,3 +35,4 @@ check_option_help_otput(bco_opt_help "--bco-optimizer --help" "bytecode-opt-peep
 check_option_help_otput(comp_opt "--help" "bco-compiler:")
 check_option_help_otput(comp_opt_help "--bco-compiler --help" "compiler-disasm-dump:")
 check_option_help_otput(opt_level "--opt-level 7" "out of range parameter value \\\"7\\\"")
+check_option_help_otput(version "--version" "Es2panda Version")

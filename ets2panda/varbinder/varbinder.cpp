@@ -387,7 +387,8 @@ void VarBinder::InitializeClassIdent(ir::ClassDefinition *classDef)
 {
     auto res = scope_->Find(classDef->Ident()->Name());
 
-    ASSERT(res.variable && res.variable->Declaration()->IsConstDecl());
+    ASSERT(res.variable &&
+           (res.variable->Declaration()->IsConstDecl() || res.variable->Declaration()->IsReadonlyDecl()));
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 

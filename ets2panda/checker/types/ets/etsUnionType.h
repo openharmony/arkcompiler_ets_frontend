@@ -83,8 +83,10 @@ private:
     void RelationTarget(TypeRelation *relation, Type *source, RelFN const &relFn);
 
     static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &types);
-    [[nodiscard]] bool ExtractType(ETSChecker *checker, checker::ETSObjectType *sourceType) noexcept;
-    [[nodiscard]] bool ExtractType(ETSChecker *checker, checker::ETSArrayType *sourceType) noexcept;
+    [[nodiscard]] static bool ExtractType(ETSChecker *checker, checker::ETSObjectType *sourceType,
+                                          ArenaVector<Type *> &unionTypes) noexcept;
+    [[nodiscard]] static bool ExtractType(ETSChecker *checker, checker::ETSArrayType *sourceType,
+                                          ArenaVector<Type *> &unionTypes) noexcept;
 
     [[nodiscard]] checker::Type *GetAssignableBuiltinType(
         checker::ETSChecker *checker, checker::ETSObjectType *sourceType, bool isBool, bool isChar,
@@ -92,7 +94,7 @@ private:
 
     static Type *ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un);
 
-    ArenaVector<Type *> constituentTypes_;
+    ArenaVector<Type *> const constituentTypes_;
     Type *assemblerLub_ {nullptr};
 };
 }  // namespace ark::es2panda::checker

@@ -57,6 +57,12 @@ public:
      */
     void HandleGlobalStmts(const ArenaVector<parser::Program *> &programs);
     void VerifyTypeExports(const ArenaVector<parser::Program *> &programs);
+    void VerifyType(ir::Statement *stmt, parser::Program *program, std::set<util::StringView> &exportedTypes,
+                    std::set<util::StringView> &exportedStatements,
+                    std::map<util::StringView, ir::AstNode *> &typesMap);
+    void HandleSimpleType(std::set<util::StringView> &exportedTypes, std::set<util::StringView> &exportedStatements,
+                          ir::Statement *stmt, util::StringView name, parser::Program *program,
+                          lexer::SourcePosition pos);
 
     void VerifySingleExportDefault(const ArenaVector<parser::Program *> &programs);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ let d: long = -9223372036854775808;
 let e: boolean = true;
 let f: char = c'a';
 
-let g: void;
+let g: undefined;
 
 let k: float = 3.1415;
 let l: double = 3.1415;

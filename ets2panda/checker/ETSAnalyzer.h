@@ -63,6 +63,26 @@ private:
 
         return calleeType;
     }
+
+    void CheckVoidTypeExpression(ETSChecker *checker, const ir::Expression *expr) const
+    {
+        // Existing void expression inconsistency,refer to #17762
+        if (expr->TsType() == nullptr || !expr->TsType()->IsETSVoidType() || expr->Parent() == nullptr) {
+            return;
+        }
+        auto parent = expr->Parent();
+        while (parent->IsConditionalExpression()) {
+            parent = parent->Parent();
+            if (parent == nullptr) {
+                return;
+            }
+        }
+        bool acceptVoid = parent->IsExpressionStatement() || parent->IsReturnStatement() ||
+                          parent->IsETSLaunchExpression() || parent->IsCallExpression();
+        if (!acceptVoid) {
+            checker->ThrowTypeError({"Cannot use type 'void' as value. "}, expr->Start());
+        }
+    }
 };
 
 }  // namespace ark::es2panda::checker

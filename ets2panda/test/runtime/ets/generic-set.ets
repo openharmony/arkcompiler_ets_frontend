@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,8 @@
  */
 
 interface MyStack<Item> {
-    getTop() : Item;
-    pop() : Item;
+    getTop() : Item|null;
+    pop() : Item|null;
     push(item : Item) : void;
     isEmpty() : boolean;
     size() : int;
@@ -36,14 +36,14 @@ class MyArrayStack<Item> implements MyStack<Item> {
         this.container = new Item[size];
     }
 
-    override getTop() : Item {
+    override getTop() : Item|null {
         if (this.top == -1) {
             return null;
         }
         return this.container[this.top];
     }
 
-    override pop() : Item {
+    override pop() : Item|null {
         if (this.top == -1) {
             return null;
         }

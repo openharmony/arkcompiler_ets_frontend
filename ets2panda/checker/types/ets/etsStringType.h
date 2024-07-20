@@ -73,6 +73,8 @@ public:
         return {IsConstantType(), IsConstantType() ? (GetValue().Length() != 0) : false};
     }
 
+    bool IsConvertibleTo(Type const *to) const;
+
 private:
     util::StringView value_ {};
 };

@@ -85,6 +85,10 @@ void CheckExtensionMethod(checker::ETSChecker *checker, ir::ScriptFunction *exte
          !classType->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE))) {
         checker->ThrowTypeError("Extension function can only defined for class and interface type.", node->Start());
     }
+    if (classType->Variable()->Declaration()->Node()->IsClassDefinition() &&
+        !classType->Variable()->Declaration()->Node()->AsClassDefinition()->IsClassDefinitionChecked()) {
+        classType->Variable()->Declaration()->Node()->Check(checker);
+    }
 
     // NOTE(gogabr): should be done in a lowering
     ReplaceThisInExtensionMethod(checker, extensionFunc);
@@ -489,6 +493,7 @@ checker::ETSObjectType *CreateSyntheticType(ETSChecker *checker, util::StringVie
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
 static constexpr char const INVALID_CONST_ASSIGNMENT[] = "Cannot assign a value to a constant variable ";
+static constexpr char const INVALID_READONLY_ASSIGNMENT[] = "Cannot assign a value to a readonly variable ";
 static constexpr char const ITERATOR_TYPE_ABSENT[] = "Cannot obtain iterator type in 'for-of' statement.";
 // NOLINTEND(modernize-avoid-c-arrays)
 
@@ -497,7 +502,8 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     // Just to avoid extra nested level(s)
     auto const getIterType = [checker, elemType](ir::VariableDeclarator *const declarator) -> checker::Type * {
         if (declarator->TsType() == nullptr) {
-            if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name());
+            if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name(),
+                                                                      varbinder::ResolveBindingOptions::ALL_NON_TYPE);
                 resolved != nullptr) {
                 resolved->SetTsType(elemType);
                 return elemType;
@@ -511,9 +517,11 @@ checker::Type *GetIteratorType(ETSChecker *checker, checker::Type *elemType, ir:
     checker::Type *iterType = nullptr;
     if (left->IsIdentifier()) {
         if (auto *const variable = left->AsIdentifier()->Variable(); variable != nullptr) {
-            if (variable->Declaration()->IsConstDecl()) {
-                checker->ThrowTypeError({INVALID_CONST_ASSIGNMENT, variable->Name()},
-                                        variable->Declaration()->Node()->Start());
+            auto *decl = variable->Declaration();
+            if (decl->IsConstDecl() || decl->IsReadonlyDecl()) {
+                std::string_view errorMsg =
+                    decl->IsConstDecl() ? INVALID_CONST_ASSIGNMENT : INVALID_READONLY_ASSIGNMENT;
+                checker->ThrowTypeError({errorMsg, variable->Name()}, decl->Node()->Start());
             }
         }
         iterType = left->AsIdentifier()->TsType();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,9 +25,16 @@ void ETSStringType::Identical(TypeRelation *relation, Type *other)
     }
 }
 
-bool ETSStringType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
+bool ETSStringType::AssignmentSource(TypeRelation *relation, Type *target)
 {
-    relation->Result(target->IsETSStringType());
+    auto node = relation->GetNode();
+    if ((relation->InAssignmentContext() || relation->ApplyStringToChar()) && IsConvertibleTo(target)) {
+        node->AddBoxingUnboxingFlags(ir::BoxingUnboxingFlags::UNBOX_TO_CHAR);
+        relation->Result(true);
+    } else {
+        relation->Result(target->IsETSStringType());
+    }
+
     return relation->IsTrue();
 }
 
@@ -43,4 +50,15 @@ Type *ETSStringType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[m
 {
     return this;
 }
+
+bool ETSStringType::IsConvertibleTo(Type const *to) const
+{
+    const bool targetIsChar =
+        to->IsCharType() ||
+        // ETSObjectType is used in arrow function expression call.
+        (to->IsETSObjectType() && to->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR));
+
+    return targetIsChar && IsConstantType() && value_.IsConvertibleToChar();
+}
+
 }  // namespace ark::es2panda::checker

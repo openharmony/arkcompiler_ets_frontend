@@ -53,6 +53,23 @@ if(PANDA_WITH_ETS)
   file(COPY "${GENERATED_DIR}/arktsconfig.json" DESTINATION "${CMAKE_BINARY_DIR}/bin")
 endif()
 
+if(NOT PANDA_PRODUCT_BUILD)
+  execute_process(
+    COMMAND date "+%Y-%m-%d %H:%M:%S"
+    OUTPUT_VARIABLE CURRENT_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  execute_process(
+    COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE LAST_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  add_definitions(-DES2PANDA_DATE="${CURRENT_DATE}")
+  add_definitions(-DES2PANDA_HASH="${LAST_COMMIT_HASH}")
+  endif()
+
 add_custom_command(
   OUTPUT ${GENERATED_STAMP}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
@@ -156,6 +173,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/expressionLambdaLowering.cpp
   compiler/lowering/ets/boxingForLocals.cpp
   compiler/lowering/ets/lambdaLowering.cpp
+  compiler/lowering/ets/spreadLowering.cpp
   compiler/lowering/ets/localClassLowering.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
   compiler/lowering/ets/objectIterator.cpp
@@ -163,6 +181,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/opAssignment.cpp
   compiler/lowering/ets/ambientLowering.cpp
   compiler/lowering/ets/bigintLowering.cpp
+  compiler/lowering/ets/constStringToCharLowering.cpp
   compiler/lowering/ets/recordLowering.cpp
   compiler/lowering/ets/tupleLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
@@ -174,6 +193,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/defaultParameterLowering.cpp
   compiler/lowering/ets/objectLiteralLowering.cpp
   compiler/lowering/ets/stringComparison.cpp
+  compiler/lowering/ets/stringConstructorLowering.cpp
   compiler/lowering/ets/enumLowering.cpp
   ir/astDump.cpp
   ir/srcDump.cpp
@@ -396,6 +416,7 @@ set(ES2PANDA_LIB_SRC
   checker/ets/typeCreation.cpp
   checker/ets/typeRelationContext.cpp
   checker/ets/unboxingConverter.cpp
+  checker/ets/utilityTypeHandlers.cpp
   checker/ets/wideningConverter.cpp
   checker/ts/binaryLikeExpression.cpp
   checker/ts/destructuringContext.cpp

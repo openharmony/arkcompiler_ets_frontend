@@ -200,7 +200,8 @@ void CheckerContext::CheckAssignments(ir::AstNode const *node, SmartVariables &c
         auto const *variable = ident->Variable();
         if (variable == nullptr) {
             //  NOTE: we're interesting in the local variables ONLY!
-            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(ident->Name());
+            variable = parent_->AsETSChecker()->FindVariableInFunctionScope(
+                ident->Name(), varbinder::ResolveBindingOptions::ALL_NON_TYPE);
         }
 
         if (variable != nullptr) {

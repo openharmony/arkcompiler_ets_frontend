@@ -33,7 +33,7 @@ function foo(c: Int|String|A|null|undefined): void {
   } else if (c instanceof C) {
     assert(c.bar() == "Class C");
   } else if (c instanceof Int) {
-    assert(c * c = 49);
+    assert(c * c == 49);
   } else if (c === undefined) {
      assert(c == undefined);
   } else {

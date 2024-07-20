@@ -65,11 +65,15 @@ checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
 checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
 {
     ETSChecker *checker = GetETSChecker();
+
     if (node->TsType() == nullptr) {
         checker->BuildBasicClassProperties(node);
     }
 
-    checker->CheckClassDefinition(node);
+    if (!node->IsClassDefinitionChecked()) {
+        checker->CheckClassDefinition(node);
+    }
+
     return nullptr;
 }
 
@@ -255,7 +259,11 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ScriptFunction *node) con
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
 {
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *elementType =
+        expr->AsSpreadElement()->Argument()->AsIdentifier()->Check(checker)->AsETSArrayType()->ElementType();
+    expr->SetTsType(elementType);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TemplateElement *expr) const
@@ -450,6 +458,12 @@ void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr,
         expr->SetTsType(classType);
     } else if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
         checker->ThrowTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
+    }
+
+    if (calleeObj->HasObjectFlag(ETSObjectFlags::REQUIRED) &&
+        !expr->HasAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION)) {
+        checker->ThrowTypeError("Required type can be instantiated only with object literal",
+                                expr->GetTypeRef()->Start());
     }
 }
 
@@ -1093,6 +1107,10 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
         checker::SavedCheckerContext savedCtx(checker, checker->Context().Status(), expr->Signature()->Owner());
         expr->Signature()->OwnerVar()->Declaration()->Node()->Check(checker);
+        if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE) &&
+            expr->Signature()->Function()->HasBody()) {
+            checker->CollectReturnStatements(expr->Signature()->Function());
+        }
         returnType = expr->Signature()->ReturnType();
         // NOTE(vpukhov): #14902 substituted signature is not updated
     }
@@ -1101,6 +1119,8 @@ checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
     if (expr->UncheckedType() != nullptr) {
         checker->ComputeApparentType(returnType);
     }
+
+    CheckVoidTypeExpression(checker, expr);
     return expr->TsType();
 }
 
@@ -1219,19 +1239,30 @@ checker::Type *ETSAnalyzer::SetAndAdjustType(ETSChecker *checker, ir::MemberExpr
     return expr->AdjustType(checker, resType);
 }
 
-std::pair<checker::Type *, util::StringView> SearchReExportsType(Type *baseType, ir::MemberExpression *expr,
-                                                                 util::StringView aliasName)
+std::pair<checker::Type *, util::StringView> SearchReExportsType(ETSObjectType *baseType, ir::MemberExpression *expr,
+                                                                 util::StringView &aliasName, ETSChecker *checker)
 {
-    for (auto item : baseType->AsETSObjectType()->ReExports()) {
-        auto name = item->AsETSObjectType()->GetReExportAliasValue(aliasName);
-        if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
-            return std::make_pair(item, name);
+    std::pair<ETSObjectType *, util::StringView> ret {};
+
+    for (auto *const item : baseType->ReExports()) {
+        auto name = item->GetReExportAliasValue(aliasName);
+        if (name == aliasName && item->IsReExportHaveAliasValue(name)) {
+            break;
         }
-        if (auto reExportType = SearchReExportsType(item, expr, name); reExportType.first != nullptr) {
+
+        if (item->GetProperty(name, PropertySearchFlags::SEARCH_ALL) != nullptr) {
+            if (ret.first != nullptr) {
+                checker->ThrowTypeError({"Ambiguous reference to '", aliasName, "'"}, expr->Start());
+            }
+            ret = {item, name};
+        }
+
+        if (auto reExportType = SearchReExportsType(item, expr, name, checker); reExportType.first != nullptr) {
             return reExportType;
         }
     }
-    return std::make_pair(nullptr, util::StringView());
+
+    return ret;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
@@ -1252,7 +1283,8 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (baseType->IsETSObjectType() && !baseType->AsETSObjectType()->ReExports().empty() &&
         baseType->AsETSObjectType()->GetProperty(expr->Property()->AsIdentifier()->Name(),
                                                  PropertySearchFlags::SEARCH_ALL) == nullptr) {
-        if (auto reExportType = SearchReExportsType(baseType, expr, expr->Property()->AsIdentifier()->Name());
+        if (auto reExportType = SearchReExportsType(baseType->AsETSObjectType(), expr,
+                                                    expr->Property()->AsIdentifier()->Name(), checker);
             reExportType.first != nullptr) {
             baseType = reExportType.first;
             expr->object_->AsIdentifier()->SetTsType(baseType);
@@ -1416,6 +1448,10 @@ void ETSAnalyzer::CheckObjectExprProps(const ir::ObjectExpression *expr) const
         checker::AssignmentContext(
             checker->Relation(), value, valueType, propType, value->Start(),
             {"Type '", sourceType, "' is not compatible with type '", targetType, "' at property '", pname, "'"});
+    }
+
+    if (objType->HasObjectFlag(ETSObjectFlags::REQUIRED)) {
+        checker->ValidateObjectLiteralForRequiredType(objType, expr);
     }
 }
 
@@ -1790,7 +1826,10 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) cons
 checker::Type *ETSAnalyzer::Check(ir::AssertStatement *st) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker->CheckTruthinessOfType(st->test_);
+    if (!(st->Test()->Check(checker)->HasTypeFlag(TypeFlag::ETS_BOOLEAN | TypeFlag::BOOLEAN_LIKE) ||
+          st->Test()->Check(checker)->ToString() == "Boolean")) {
+        checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.", st->Test()->Start());
+    }
 
     if (st->Second() != nullptr) {
         auto *msgType = st->second_->Check(checker);
@@ -2497,13 +2536,15 @@ checker::Type *ETSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 
     checker::ETSObjectType *interfaceType {};
 
-    if (st->TsType() == nullptr) {
-        interfaceType = checker->BuildBasicInterfaceProperties(st);
-        ASSERT(interfaceType != nullptr);
-        interfaceType->SetSuperType(checker->GlobalETSObjectType());
-        checker->CheckInvokeMethodsLegitimacy(interfaceType);
-        st->SetTsType(interfaceType);
+    if (st->TsType() != nullptr) {
+        return st->TsType();
     }
+
+    interfaceType = checker->BuildBasicInterfaceProperties(st);
+    ASSERT(interfaceType != nullptr);
+    interfaceType->SetSuperType(checker->GlobalETSObjectType());
+    checker->CheckInvokeMethodsLegitimacy(interfaceType);
+    st->SetTsType(interfaceType);
 
     checker::ScopeContext scopeCtx(checker, st->Scope());
     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, interfaceType);
@@ -2609,14 +2650,30 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     checker::Type *baseType = expr->Left()->Check(checker);
+
     if (baseType->IsETSObjectType()) {
+        auto importDecl = baseType->AsETSObjectType()->GetDeclNode()->Parent()->Parent();
+        // clang-format off
+        auto searchName =
+            importDecl->IsETSImportDeclaration()
+                ? checker->VarBinder()->AsETSBinder()->GetExportSelectiveAliasValue(
+                    importDecl->AsETSImportDeclaration()->ResolvedSource()->Str(), expr->Right()->Name())
+                : expr->Right()->Name();
+        // clang-format on
         varbinder::Variable *prop =
-            baseType->AsETSObjectType()->GetProperty(expr->Right()->Name(), checker::PropertySearchFlags::SEARCH_DECL);
+            baseType->AsETSObjectType()->GetProperty(searchName, checker::PropertySearchFlags::SEARCH_DECL);
+
+        if (prop == nullptr) {
+            checker->ThrowTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());
+        }
+
+        if (expr->Right()->Name().Is(searchName.Mutf8()) && prop->Declaration()->Node()->HasAliasExport()) {
+            checker->ThrowTypeError({"Cannot find imported element '", searchName, "' exported with alias"},
+                                    expr->Right()->Start());
+        }
 
         expr->Right()->SetVariable(prop);
-        if (prop != nullptr) {
-            return checker->GetTypeOfVariable(prop);
-        }
+        return checker->GetTypeOfVariable(prop);
     }
 
     checker->ThrowTypeError({"'", expr->Right()->Name(), "' type does not exist."}, expr->Right()->Start());

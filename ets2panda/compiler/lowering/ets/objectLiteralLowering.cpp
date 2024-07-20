@@ -31,19 +31,17 @@ static void MaybeAllowConstAssign(checker::Type *targetType, ArenaVector<ir::Sta
     if (!targetType->IsETSObjectType()) {
         return;
     }
-    for (auto *stmt : statements) {
-        if (stmt->IsExpressionStatement() && stmt->AsExpressionStatement()->GetExpression()->IsAssignmentExpression()) {
-            auto *variable = stmt->AsExpressionStatement()
-                                 ->GetExpression()
-                                 ->AsAssignmentExpression()
-                                 ->Left()
-                                 ->AsMemberExpression()
-                                 ->Property()
-                                 ->AsIdentifier()
-                                 ->Variable();
-            if (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::READONLY)) {
-                stmt->AsExpressionStatement()->GetExpression()->AsAssignmentExpression()->SetIgnoreConstAssign();
-            }
+    for (auto *const stmt : statements) {
+        if (!stmt->IsExpressionStatement() ||
+            !stmt->AsExpressionStatement()->GetExpression()->IsAssignmentExpression()) {
+            continue;
+        }
+
+        auto *const assignmentExpr = stmt->AsExpressionStatement()->GetExpression()->AsAssignmentExpression();
+        auto *const variable = assignmentExpr->Left()->AsMemberExpression()->Property()->AsIdentifier()->Variable();
+
+        if (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::READONLY)) {
+            assignmentExpr->SetIgnoreConstAssign();
         }
     }
 }
@@ -72,6 +70,35 @@ static void RestoreNestedBlockExpression(const ArenaVector<ir::Statement *> &sta
         }
         // All nested block expressions should be restored
         ASSERT(nestedBlckExprs.empty());
+    }
+}
+
+static void AllowRequiredTypeInstantiation(const ir::Expression *const loweringResult)
+{
+    if (!loweringResult->IsBlockExpression()) {
+        return;
+    }
+
+    const auto *const blockExpression = loweringResult->AsBlockExpression();
+    const auto *const firstStatement = blockExpression->Statements().front();
+    if (!firstStatement->IsVariableDeclaration() ||
+        !firstStatement->AsVariableDeclaration()->Declarators().front()->Init()->IsETSNewClassInstanceExpression()) {
+        return;
+    }
+
+    const auto *const varDecl = firstStatement->AsVariableDeclaration()->Declarators().front()->Init();
+
+    varDecl->AddAstNodeFlags(ir::AstNodeFlags::ALLOW_REQUIRED_INSTANTIATION);
+
+    for (auto *const stmt : blockExpression->Statements()) {
+        if (!stmt->IsExpressionStatement() ||
+            !stmt->AsExpressionStatement()->GetExpression()->IsAssignmentExpression() ||
+            !stmt->AsExpressionStatement()->GetExpression()->AsAssignmentExpression()->Right()->IsBlockExpression()) {
+            continue;
+        }
+
+        AllowRequiredTypeInstantiation(
+            stmt->AsExpressionStatement()->GetExpression()->AsAssignmentExpression()->Right()->AsBlockExpression());
     }
 }
 
@@ -162,6 +189,8 @@ static ir::AstNode *HandleObjectLiteralLowering(public_lib::Context *ctx, ir::Ob
                                  loweringResult->Scope());
 
     varbinder->ResolveReferencesForScope(loweringResult, NearestScope(loweringResult));
+
+    AllowRequiredTypeInstantiation(loweringResult);
 
     checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY};
     loweringResult->Check(checker);

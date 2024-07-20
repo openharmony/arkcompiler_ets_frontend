@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -79,6 +79,15 @@ void StringView::Iterator::SkipCp()
         return;
     }
 }
+
+bool StringView::IsConvertibleToChar() const
+{
+    Iterator it(*this);
+    size_t size = 0;
+    char32_t ch = it.PeekCp(&size);
+    return size == Length() && ch != Iterator::INVALID_CP;
+}
+
 }  // namespace ark::es2panda::util
 
 // NOLINTNEXTLINE(cert-dcl58-cpp)
