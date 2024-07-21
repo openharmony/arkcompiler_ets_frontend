@@ -40,7 +40,19 @@ void RegScope::DebuggerCloseScope()
         return;
     }
 
+    if (insStartIndex_ < pg_->insns_.size()) {
+        auto it = pg_->insns_.begin();
+        std::advance(it, insStartIndex_);
+        pg_->scope_->SetScopeStart(*it);
+    } else {
+        pg_->scope_->SetScopeStart(pg_->insns_.back());
+    }
+
     pg_->scope_->SetScopeEnd(pg_->insns_.back());
+    auto *debugInfo = &pg_->debugInfo_.variableDebugInfo;
+    if (std::find(debugInfo->begin(), debugInfo->end(), pg_->scope_) == debugInfo->end()) {
+        debugInfo->push_back(pg_->scope_);
+    }
 }
 
 // LocalRegScope
@@ -59,10 +71,7 @@ LocalRegScope::LocalRegScope(PandaGen *pg, binder::Scope *scope) : RegScope(pg)
         }
     }
 
-    if (pg_->IsDebug()) {
-        pg_->scope_->SetScopeStart(pg_->insns_.back());
-        pg_->debugInfo_.variableDebugInfo.push_back(pg_->scope_);
-    }
+    insStartIndex_ = pg_->insns_.size();
 
     Hoisting::Hoist(pg_);
 }

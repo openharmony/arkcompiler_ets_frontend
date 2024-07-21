@@ -1,0 +1,1626 @@
+{
+    "functions": [
+      {
+        "name": ".func_main_0",
+        "signature": {
+          "retType": "any",
+          "params": [
+            "any",
+            "any",
+            "any"
+          ]
+      },
+      "ins": [
+        {
+          "opcode": "mov",
+          "regs": [
+            0,
+            10
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 1,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "mov",
+          "regs": [
+            1,
+            11
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 1,
+            "boundRight": 2,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "mov",
+          "regs": [
+            2,
+            12
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 2,
+            "boundRight": 3,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            0
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 3,
+            "boundRight": 8,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 8,
+            "boundRight": 10,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_2: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_2",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 10,
+            "boundRight": 12,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 12,
+            "boundRight": 14,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            5
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 14,
+            "boundRight": 19,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "less",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [
+            0
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 19,
+            "boundRight": 22,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jeqz",
+          "regs": [],
+          "ids": [
+            "LABEL_0"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 22,
+            "boundRight": 24,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            1
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 24,
+            "boundRight": 29,
+            "sourceLineNum": 16,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 29,
+            "boundRight": 31,
+            "sourceLineNum": 16,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda.str",
+          "regs": [],
+          "ids": [
+            "aaaa"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 31,
+            "boundRight": 34,
+            "sourceLineNum": 17,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_1: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_1",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 34,
+            "boundRight": 36,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 36,
+            "boundRight": 38,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 38,
+            "boundRight": 40,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "tonumeric",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            1
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 40,
+            "boundRight": 42,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 42,
+            "boundRight": 44,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 44,
+            "boundRight": 46,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "inc",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            2
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 46,
+            "boundRight": 48,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 48,
+            "boundRight": 50,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 50,
+            "boundRight": 52,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jmp",
+          "regs": [],
+          "ids": [
+            "LABEL_2"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 52,
+            "boundRight": 54,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_0: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_0",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            2
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 54,
+            "boundRight": 59,
+            "sourceLineNum": 19,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sttoglobalrecord",
+          "regs": [],
+          "ids": [
+            "b"
+          ],
+          "imms": [
+            3
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 59,
+            "boundRight": 64,
+            "sourceLineNum": 19,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            0
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 64,
+            "boundRight": 69,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 69,
+            "boundRight": 71,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_5: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_5",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 71,
+            "boundRight": 73,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 73,
+            "boundRight": 75,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            10
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 75,
+            "boundRight": 80,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "less",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [
+            4
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 80,
+            "boundRight": 83,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jeqz",
+          "regs": [],
+          "ids": [
+            "LABEL_3"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 83,
+            "boundRight": 85,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            3
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 85,
+            "boundRight": 90,
+            "sourceLineNum": 21,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 90,
+            "boundRight": 92,
+            "sourceLineNum": 21,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "tryldglobalbyname",
+          "regs": [],
+          "ids": [
+            "print"
+          ],
+          "imms": [
+            5
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 92,
+            "boundRight": 96,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 96,
+            "boundRight": 98,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 98,
+            "boundRight": 100,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 100,
+            "boundRight": 102,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 102,
+            "boundRight": 104,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "callarg1",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [
+            6
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 104,
+            "boundRight": 107,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_4: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_4",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 19,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 107,
+            "boundRight": 109,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 109,
+            "boundRight": 111,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 111,
+            "boundRight": 113,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "tonumeric",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            8
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 113,
+            "boundRight": 115,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 115,
+            "boundRight": 117,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 117,
+            "boundRight": 119,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "inc",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            9
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 119,
+            "boundRight": 121,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 121,
+            "boundRight": 123,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 123,
+            "boundRight": 125,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jmp",
+          "regs": [],
+          "ids": [
+            "LABEL_5"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 125,
+            "boundRight": 127,
+            "sourceLineNum": 20,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_3: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_3",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 19,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            10
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 127,
+            "boundRight": 132,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 132,
+            "boundRight": 134,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_8: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_8",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 134,
+            "boundRight": 136,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 136,
+            "boundRight": 138,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            0
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 138,
+            "boundRight": 143,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "greater",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [
+            10
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 143,
+            "boundRight": 146,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jeqz",
+          "regs": [],
+          "ids": [
+            "LABEL_6"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 146,
+            "boundRight": 148,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            10
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 148,
+            "boundRight": 153,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 153,
+            "boundRight": 155,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_11: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_11",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 155,
+            "boundRight": 157,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 157,
+            "boundRight": 159,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            0
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 159,
+            "boundRight": 164,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "greater",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [
+            11
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 164,
+            "boundRight": 167,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jeqz",
+          "regs": [],
+          "ids": [
+            "LABEL_9"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 167,
+            "boundRight": 169,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            4
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 169,
+            "boundRight": 174,
+            "sourceLineNum": 26,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 174,
+            "boundRight": 176,
+            "sourceLineNum": 26,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_10: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_10",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 176,
+            "boundRight": 178,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 178,
+            "boundRight": 180,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 180,
+            "boundRight": 182,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "tonumeric",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            12
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 182,
+            "boundRight": 184,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 184,
+            "boundRight": 186,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 186,
+            "boundRight": 188,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "dec",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            13
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 188,
+            "boundRight": 190,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 190,
+            "boundRight": 192,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 192,
+            "boundRight": 194,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jmp",
+          "regs": [],
+          "ids": [
+            "LABEL_11"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 194,
+            "boundRight": 196,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_9: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_9",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_7: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_7",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 19,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 196,
+            "boundRight": 198,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 198,
+            "boundRight": 200,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 200,
+            "boundRight": 202,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "tonumeric",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            14
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 202,
+            "boundRight": 204,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 204,
+            "boundRight": 206,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 206,
+            "boundRight": 208,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "dec",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            15
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 208,
+            "boundRight": 210,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 210,
+            "boundRight": 212,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 212,
+            "boundRight": 214,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "jmp",
+          "regs": [],
+          "ids": [
+            "LABEL_8"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 214,
+            "boundRight": 216,
+            "sourceLineNum": 24,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "LABEL_6: ",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "LABEL_6",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": 19,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldundefined",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "returnundefined",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        }
+      ],
+      "variables": [
+        {
+          "name": "m",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 6,
+          "start": 56,
+          "length": 42
+        },
+        {
+          "name": "n",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 8,
+          "start": 64,
+          "length": 22
+        },
+        {
+          "name": "d",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 9,
+          "start": 72,
+          "length": 2
+        },
+        {
+          "name": "j",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 6,
+          "start": 28,
+          "length": 28
+        },
+        {
+          "name": "c",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 7,
+          "start": 36,
+          "length": 8
+        },
+        {
+          "name": "i",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 6,
+          "start": 3,
+          "length": 23
+        },
+        {
+          "name": "a",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 7,
+          "start": 11,
+          "length": 3
+        },
+        {
+          "name": "b",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 3,
+          "start": 3,
+          "length": 97
+        },
+        {
+          "name": "this",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 2,
+          "start": 3,
+          "length": 97
+        },
+        {
+          "name": "4newTarget",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 1,
+          "start": 3,
+          "length": 97
+        },
+        {
+          "name": "4funcObj",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 0,
+          "start": 3,
+          "length": 97
+        }
+      ],
+        "sourceFile": "debug-info.js",
+        "sourceCode": "/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+for (let i = 0; i < 5; i++) {
+    let a = 1;
+    "aaaa";
+}
+let b = 2;
+for(let j = 0; j < 10; j++) {
+    let c = 3;
+    print(c);
+}
+for(let m = 10; m > 0; m--) {
+    for (let n = 10; n > 0; n--) {
+        let d = 4;
+    }
+}
+",    }
+  ]
+}

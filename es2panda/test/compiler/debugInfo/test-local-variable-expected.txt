@@ -1,0 +1,369 @@
+{
+    "functions": [
+      {
+        "name": ".func_main_0",
+        "signature": {
+          "retType": "any",
+          "params": [
+            "any",
+            "any",
+            "any"
+          ]
+      },
+      "ins": [
+        {
+          "opcode": "mov",
+          "regs": [
+            0,
+            8
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 1,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "mov",
+          "regs": [
+            1,
+            9
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 1,
+            "boundRight": 2,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "mov",
+          "regs": [
+            2,
+            10
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 2,
+            "boundRight": 3,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            1
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 3,
+            "boundRight": 8,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sttoglobalrecord",
+          "regs": [],
+          "ids": [
+            "a"
+          ],
+          "imms": [
+            0
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 8,
+            "boundRight": 13,
+            "sourceLineNum": 15,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            1
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 13,
+            "boundRight": 18,
+            "sourceLineNum": 17,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            5
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 18,
+            "boundRight": 20,
+            "sourceLineNum": 17,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda.str",
+          "regs": [],
+          "ids": [
+            "cccc"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 20,
+            "boundRight": 23,
+            "sourceLineNum": 18,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            2
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 23,
+            "boundRight": 28,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            6
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 28,
+            "boundRight": 30,
+            "sourceLineNum": 22,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "lda.str",
+          "regs": [],
+          "ids": [
+            "dddd"
+          ],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 30,
+            "boundRight": 33,
+            "sourceLineNum": 23,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            3
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 33,
+            "boundRight": 38,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            7
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 38,
+            "boundRight": 40,
+            "sourceLineNum": 25,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldai",
+          "regs": [],
+          "ids": [],
+          "imms": [
+            4
+          ],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 40,
+            "boundRight": 45,
+            "sourceLineNum": 27,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "sta",
+          "regs": [
+            5
+          ],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 45,
+            "boundRight": 47,
+            "sourceLineNum": 27,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "ldundefined",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        },
+        {
+          "opcode": "returnundefined",
+          "regs": [],
+          "ids": [],
+          "imms": [],
+          "label": "",
+          "debug_pos_info": {
+            "boundLeft": 0,
+            "boundRight": 0,
+            "sourceLineNum": -1,
+            "wholeLine": ""
+          }
+        }
+      ],
+      "variables": [
+        {
+          "name": "j",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 6,
+          "start": 8,
+          "length": 7
+        },
+        {
+          "name": "i",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 5,
+          "start": 8,
+          "length": 7
+        },
+        {
+          "name": "j",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 7,
+          "start": 11,
+          "length": 2
+        },
+        {
+          "name": "j",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 5,
+          "start": 5,
+          "length": 3
+        },
+        {
+          "name": "a",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 3,
+          "start": 3,
+          "length": 14
+        },
+        {
+          "name": "this",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 2,
+          "start": 3,
+          "length": 14
+        },
+        {
+          "name": "4newTarget",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 1,
+          "start": 3,
+          "length": 14
+        },
+        {
+          "name": "4funcObj",
+          "signature": "any",
+          "signatureType": "any",
+          "reg": 0,
+          "start": 3,
+          "length": 14
+        }
+      ],
+        "sourceFile": "debug-info.js",
+        "sourceCode": "/*
+ * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+let a = 1;
+{
+    let j = 1;
+    "cccc"
+}
+
+{
+    let j = 2;
+    "dddd"
+    {
+        let j = 3;
+    }
+    let i = 4;
+}
+",    }
+  ]
+}

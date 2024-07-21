@@ -650,6 +650,22 @@ class CompilerTest(Test):
                 if os.path.exists(test_abc_path):
                     os.remove(test_abc_path)
                 return self
+        if "--dump-debug-info" in self.flags:
+            self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+            try:
+                with open(self.get_path_to_expected(), 'r') as fp:
+                    expected = fp.read()
+                self.passed = expected == self.output and process.returncode in [0, 1]
+                if os.path.exists(test_abc_path):
+                    os.remove(test_abc_path)
+                return self
+            except Exception:
+                self.passed = False
+            if not self.passed:
+                self.error = err.decode("utf-8", errors="ignore")
+                if os.path.exists(test_abc_path):
+                    os.remove(test_abc_path)
+                return self
         if err:
             self.passed = False
             self.error = err.decode("utf-8", errors="ignore")
@@ -1512,6 +1528,8 @@ def add_directory_for_compiler(runners, args):
                                                 ["--module", "--branch-elimination", "--dump-assembly"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/opt-try-catch-func", "js",
                                                 ["--module", "--dump-assembly"]))
+    compiler_test_infos.append(CompilerTestInfo("compiler/debugInfo/", "js",
+                                                ["--debug-info", "--dump-debug-info", "--source-file", "debug-info.js"]))
     # Following directories of test cases are for dump-assembly comparison only, and is not executed.
     # Check CompilerProjectTest for more details.
     compiler_test_infos.append(CompilerTestInfo("optimizer/ts/branch-elimination/projects", "ts",
