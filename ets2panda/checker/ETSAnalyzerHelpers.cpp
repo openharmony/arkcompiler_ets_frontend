@@ -480,7 +480,8 @@ checker::ETSObjectType *CreateSyntheticType(ETSChecker *checker, util::StringVie
                                             checker::ETSObjectType *lastObjectType, ir::Identifier *id)
 {
     auto *syntheticObjType = checker->Allocator()->New<checker::ETSObjectType>(
-        checker->Allocator(), syntheticName, syntheticName, id, checker::ETSObjectFlags::NO_OPTS, checker->Relation());
+        checker->Allocator(), syntheticName, syntheticName,
+        std::make_tuple(id, checker::ETSObjectFlags::NO_OPTS, checker->Relation()));
 
     auto *classDecl = checker->Allocator()->New<varbinder::ClassDecl>(syntheticName);
     varbinder::LocalVariable *var =

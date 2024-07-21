@@ -267,6 +267,7 @@ public:
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *arrayType, size_t dim);
     Signature *CreateBuiltinArraySignature(ETSArrayType *arrayType, size_t dim);
     IntType *CreateIntTypeFromType(Type *type);
+    std::tuple<Language, bool> CheckForDynamicLang(ir::AstNode *declNode, util::StringView assemblerName);
     ETSObjectType *CreateNewETSObjectType(util::StringView name, ir::AstNode *declNode, ETSObjectFlags flags);
 
     Signature *CreateSignature(SignatureInfo *info, Type *returnType, ir::ScriptFunction *func);

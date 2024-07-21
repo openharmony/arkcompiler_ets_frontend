@@ -331,7 +331,8 @@ static void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet 
                         setter = accessor;
                     }
 
-                    pg->DefineGetterSetterByValue(node, dest, keyReg, getter, setter, prop->IsComputed());
+                    pg->DefineGetterSetterByValue(node, std::make_tuple(dest, keyReg, getter, setter),
+                                                  prop->IsComputed());
                     break;
                 }
                 default: {
@@ -1127,7 +1128,7 @@ void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::
                     setter = accessor;
                 }
 
-                pg->DefineGetterSetterByValue(expr, objReg, key, getter, setter, prop->IsComputed());
+                pg->DefineGetterSetterByValue(expr, std::make_tuple(objReg, key, getter, setter), prop->IsComputed());
                 break;
             }
             case ir::PropertyKind::INIT: {

@@ -2528,8 +2528,9 @@ ETSObjectType *ETSChecker::GetImportSpecifierObjectType(ir::ETSImportDeclaration
                             .View();
     }
 
-    auto *moduleObjectType = Allocator()->New<checker::ETSObjectType>(
-        Allocator(), syntheticNames[0], assemblerName, ident, checker::ETSObjectFlags::CLASS, Relation());
+    auto *moduleObjectType =
+        Allocator()->New<checker::ETSObjectType>(Allocator(), syntheticNames[0], assemblerName,
+                                                 std::make_tuple(ident, checker::ETSObjectFlags::CLASS, Relation()));
 
     auto *rootDecl = Allocator()->New<varbinder::ClassDecl>(syntheticNames[0]);
     varbinder::LocalVariable *rootVar =

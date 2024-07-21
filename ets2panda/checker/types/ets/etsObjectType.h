@@ -36,25 +36,25 @@ public:
     explicit ETSObjectType(ArenaAllocator *allocator) : ETSObjectType(allocator, ETSObjectFlags::NO_OPTS) {}
 
     explicit ETSObjectType(ArenaAllocator *allocator, ETSObjectFlags flags)
-        : ETSObjectType(allocator, "", "", nullptr, flags, nullptr)
+        : ETSObjectType(allocator, "", "", std::make_tuple(nullptr, flags, nullptr))
     {
     }
 
     explicit ETSObjectType(ArenaAllocator *allocator, ETSObjectFlags flags, TypeRelation *relation)
-        : ETSObjectType(allocator, "", "", nullptr, flags, relation)
+        : ETSObjectType(allocator, "", "", std::make_tuple(nullptr, flags, relation))
     {
     }
 
     explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
                            ir::AstNode *declNode, ETSObjectFlags flags)
-        : ETSObjectType(allocator, name, assemblerName, declNode, flags, nullptr,
+        : ETSObjectType(allocator, name, assemblerName, std::make_tuple(declNode, flags, nullptr),
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
 
     explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
-                           ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation)
-        : ETSObjectType(allocator, name, assemblerName, declNode, flags, relation,
+                           std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info)
+        : ETSObjectType(allocator, name, assemblerName, info,
                         std::make_index_sequence<static_cast<size_t>(PropertyType::COUNT)> {})
     {
     }
@@ -413,20 +413,20 @@ protected:
 private:
     template <size_t... IS>
     explicit ETSObjectType(ArenaAllocator *allocator, util::StringView name, util::StringView assemblerName,
-                           ir::AstNode *declNode, ETSObjectFlags flags, TypeRelation *relation,
+                           std::tuple<ir::AstNode *, ETSObjectFlags, TypeRelation *> info,
                            [[maybe_unused]] std::index_sequence<IS...> s)
         : Type(TypeFlag::ETS_OBJECT),
           allocator_(allocator),
           name_(name),
           assemblerName_(assemblerName),
-          declNode_(declNode),
+          declNode_(std::get<ir::AstNode *>(info)),
           interfaces_(allocator->Adapter()),
           reExports_(allocator->Adapter()),
           reExportAlias_(allocator->Adapter()),
-          flags_(flags),
+          flags_(std::get<ETSObjectFlags>(info)),
           instantiationMap_(allocator->Adapter()),
           typeArguments_(allocator->Adapter()),
-          relation_(relation),
+          relation_(std::get<TypeRelation *>(info)),
           constructSignatures_(allocator->Adapter()),
           properties_ {(void(IS), PropertyMap {allocator->Adapter()})...}
     {
@@ -468,6 +468,11 @@ private:
     void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &&newTypeArgs,
                                  ETSObjectType *base);
     bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &newTypeArgs, const Substitution *substitution);
+
+    bool TryCastByte(TypeRelation *const relation, Type *const target);
+    bool TryCastIntegral(TypeRelation *const relation, Type *const target);
+    bool TryCastFloating(TypeRelation *const relation, Type *const target);
+    bool TryCastUnboxable(TypeRelation *const relation, Type *const target);
 
     ArenaAllocator *allocator_;
     util::StringView name_;

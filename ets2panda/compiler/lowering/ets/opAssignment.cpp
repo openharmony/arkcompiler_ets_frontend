@@ -342,14 +342,21 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
 
 bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
-        for (auto &[_, ext_programs] : program->ExternalSources()) {
-            (void)_;
-            for (auto *extProg : ext_programs) {
-                if (!Postcondition(ctx, extProg)) {
-                    return false;
-                }
+    auto checkExternalPrograms = [this, ctx](const ArenaVector<parser::Program *> &programs) {
+        for (auto *p : programs) {
+            if (!Postcondition(ctx, p)) {
+                return false;
             }
+        }
+        return true;
+    };
+
+    if (ctx->config->options->CompilerOptions().compilationMode == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, extPrograms] : program->ExternalSources()) {
+            (void)_;
+            if (!checkExternalPrograms(extPrograms)) {
+                return false;
+            };
         }
     }
 

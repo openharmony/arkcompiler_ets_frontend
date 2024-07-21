@@ -942,62 +942,77 @@ void PandaGen::Call1This(const ir::AstNode *node, VReg callee, VReg thisReg, VRe
 void PandaGen::Call(const ir::AstNode *node, VReg callee, VReg thisReg, const ArenaVector<ir::Expression *> &arguments)
 {
     bool hasThis = !thisReg.IsInvalid();
+    const auto call0Args = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR) {
+        if (hasThis) {
+            Call0This(n, c, thisR);
+        } else {
+            Sa().Emit<EcmaCall0dyn>(n);
+        }
+    };
+    const auto call1Arg = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR,
+                                          const ArenaVector<ir::Expression *> &args) {
+        const auto *arg0 = args[0];
+        arg0->Compile(this);
+
+        if (hasThis) {
+            Ra().Emit<EcmaCall1thisdyn>(n, c, thisR);
+        } else {
+            Ra().Emit<EcmaCall1dyn>(n, c);
+        }
+    };
+    const auto call2Args = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR,
+                                           const ArenaVector<ir::Expression *> &args) {
+        const auto *arg0 = args[0];
+        arg0->Compile(this);
+        compiler::VReg arg0Reg = AllocReg();
+        StoreAccumulator(arg0, arg0Reg);
+
+        const auto *arg1 = args[1];
+        arg1->Compile(this);
+
+        if (hasThis) {
+            Ra().Emit<EcmaCall2thisdyn>(n, c, thisR, arg0Reg);
+        } else {
+            Ra().Emit<EcmaCall2dyn>(n, c, arg0Reg);
+        }
+    };
+    const auto call3Args = [this, hasThis](const ir::AstNode *n, VReg c, VReg thisR,
+                                           const ArenaVector<ir::Expression *> &args) {
+        const auto *arg0 = args[0];
+        arg0->Compile(this);
+        compiler::VReg arg0Reg = AllocReg();
+        StoreAccumulator(arg0, arg0Reg);
+
+        const auto *arg1 = args[1];
+        arg1->Compile(this);
+        compiler::VReg arg1Reg = AllocReg();
+        StoreAccumulator(arg1, arg1Reg);
+
+        const auto *arg2 = args[2];
+        arg2->Compile(this);
+
+        if (hasThis) {
+            Ra().Emit<EcmaCall3thisdyn>(n, c, thisR, arg0Reg, arg1Reg);
+        } else {
+            Ra().Emit<EcmaCall3dyn>(n, c, arg0Reg, arg1Reg);
+        }
+    };
 
     switch (arguments.size()) {
         case 0: {  // 0 args
-            if (hasThis) {
-                Call0This(node, callee, thisReg);
-            } else {
-                Sa().Emit<EcmaCall0dyn>(node);
-            }
+            call0Args(node, callee, thisReg);
             return;
         }
         case 1: {  // 1 arg
-            const auto *arg0 = arguments[0];
-            arg0->Compile(this);
-
-            if (hasThis) {
-                Ra().Emit<EcmaCall1thisdyn>(node, callee, thisReg);
-            } else {
-                Ra().Emit<EcmaCall1dyn>(node, callee);
-            }
+            call1Arg(node, callee, thisReg, arguments);
             return;
         }
         case 2: {  // 2 args
-            const auto *arg0 = arguments[0];
-            arg0->Compile(this);
-            compiler::VReg arg0Reg = AllocReg();
-            StoreAccumulator(arg0, arg0Reg);
-
-            const auto *arg1 = arguments[1];
-            arg1->Compile(this);
-
-            if (hasThis) {
-                Ra().Emit<EcmaCall2thisdyn>(node, callee, thisReg, arg0Reg);
-            } else {
-                Ra().Emit<EcmaCall2dyn>(node, callee, arg0Reg);
-            }
+            call2Args(node, callee, thisReg, arguments);
             return;
         }
         case 3: {  // 3 args
-            const auto *arg0 = arguments[0];
-            arg0->Compile(this);
-            compiler::VReg arg0Reg = AllocReg();
-            StoreAccumulator(arg0, arg0Reg);
-
-            const auto *arg1 = arguments[1];
-            arg1->Compile(this);
-            compiler::VReg arg1Reg = AllocReg();
-            StoreAccumulator(arg1, arg1Reg);
-
-            const auto *arg2 = arguments[2];
-            arg2->Compile(this);
-
-            if (hasThis) {
-                Ra().Emit<EcmaCall3thisdyn>(node, callee, thisReg, arg0Reg, arg1Reg);
-            } else {
-                Ra().Emit<EcmaCall3dyn>(node, callee, arg0Reg, arg1Reg);
-            }
+            call3Args(node, callee, thisReg, arguments);
             return;
         }
         default: {
@@ -1041,32 +1056,41 @@ void PandaGen::CallTagged(const ir::AstNode *node, VReg callee, VReg thisReg,
     VReg arg0Reg = AllocReg();
     StoreAccumulator(node, arg0Reg);
 
+    const auto call1 = [this, hasThis, arg0Reg](const ir::AstNode *n, VReg c, VReg thisR,
+                                                const ArenaVector<ir::Expression *> &args) {
+        const auto *arg = args[0];
+        arg->Compile(this);
+
+        if (hasThis) {
+            Ra().Emit<EcmaCall2thisdyn>(n, c, thisR, arg0Reg);
+        } else {
+            Ra().Emit<EcmaCall2dyn>(n, c, arg0Reg);
+        }
+    };
+    const auto call2 = [this, hasThis, arg0Reg](const ir::AstNode *n, VReg c, VReg thisR,
+                                                const ArenaVector<ir::Expression *> &args) {
+        const auto *arg1 = args[0];
+        arg1->Compile(this);
+        compiler::VReg arg1Reg = AllocReg();
+        StoreAccumulator(arg1, arg1Reg);
+
+        const auto *arg2 = args[1];
+        arg2->Compile(this);
+
+        if (hasThis) {
+            Ra().Emit<EcmaCall3thisdyn>(n, c, thisR, arg0Reg, arg1Reg);
+        } else {
+            Ra().Emit<EcmaCall3dyn>(n, c, arg0Reg, arg1Reg);
+        }
+    };
+
     switch (arguments.size()) {
         case 1: {
-            const auto *arg = arguments[0];
-            arg->Compile(this);
-
-            if (hasThis) {
-                Ra().Emit<EcmaCall2thisdyn>(node, callee, thisReg, arg0Reg);
-            } else {
-                Ra().Emit<EcmaCall2dyn>(node, callee, arg0Reg);
-            }
+            call1(node, callee, thisReg, arguments);
             return;
         }
         case 2: {  // 2:2 args
-            const auto *arg1 = arguments[0];
-            arg1->Compile(this);
-            compiler::VReg arg1Reg = AllocReg();
-            StoreAccumulator(arg1, arg1Reg);
-
-            const auto *arg2 = arguments[1];
-            arg2->Compile(this);
-
-            if (hasThis) {
-                Ra().Emit<EcmaCall3thisdyn>(node, callee, thisReg, arg0Reg, arg1Reg);
-            } else {
-                Ra().Emit<EcmaCall3dyn>(node, callee, arg0Reg, arg1Reg);
-            }
+            call2(node, callee, thisReg, arguments);
             return;
         }
         default: {
@@ -1298,9 +1322,10 @@ void PandaGen::CopyDataProperties(const ir::AstNode *node, VReg dst, VReg src)
     Ra().Emit<EcmaCopydataproperties>(node, dst, src);
 }
 
-void PandaGen::DefineGetterSetterByValue(const ir::AstNode *node, VReg obj, VReg name, VReg getter, VReg setter,
+void PandaGen::DefineGetterSetterByValue(const ir::AstNode *node, std::tuple<VReg, VReg, VReg, VReg> registers,
                                          bool setName)
 {
+    const auto [obj, name, getter, setter] = registers;
     LoadConst(node, setName ? Constant::JS_TRUE : Constant::JS_FALSE);
     Ra().Emit<EcmaDefinegettersetterbyvalue>(node, obj, name, getter, setter);
 }
@@ -1316,14 +1341,8 @@ void PandaGen::CreateArrayWithBuffer(const ir::AstNode *node, uint32_t idx)
     Sa().Emit<EcmaCreatearraywithbuffer>(node, util::Helpers::ToStringView(Allocator(), idx));
 }
 
-void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expression *> &elements, VReg obj)
+size_t PandaGen::HandleArrayLiterals(const ir::AstNode *node, const ArenaVector<ir::Expression *> &elements)
 {
-    if (elements.empty()) {
-        CreateEmptyArray(node);
-        StoreAccumulator(node, obj);
-        return;
-    }
-
     LiteralBuffer buf {};
 
     size_t i = 0;
@@ -1345,13 +1364,12 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
         uint32_t bufIdx = AddLiteralBuffer(std::move(buf));
         CreateArrayWithBuffer(node, bufIdx);
     }
+    return i;
+}
 
-    StoreAccumulator(node, obj);
-
-    if (i == elements.size()) {
-        return;
-    }
-
+void PandaGen::HandleArraySpread(const ir::AstNode *node, const ArenaVector<ir::Expression *> &elements, VReg obj)
+{
+    size_t i = 0;
     bool hasSpread = false;
 
     // This loop handles array elements until a spread element is encountered
@@ -1411,6 +1429,25 @@ void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expres
 
         StOwnByName(node, obj, "length");
     }
+}
+
+void PandaGen::CreateArray(const ir::AstNode *node, const ArenaVector<ir::Expression *> &elements, VReg obj)
+{
+    if (elements.empty()) {
+        CreateEmptyArray(node);
+        StoreAccumulator(node, obj);
+        return;
+    }
+
+    const auto i = HandleArrayLiterals(node, elements);
+
+    StoreAccumulator(node, obj);
+
+    if (i == elements.size()) {
+        return;
+    }
+
+    HandleArraySpread(node, elements, obj);
 
     LoadAccumulator(node, obj);
 }

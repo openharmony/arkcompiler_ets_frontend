@@ -32,14 +32,15 @@ public:
     {
     }
 
-    TupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
-              uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers)
-        : ObjectType(ObjectType::ObjectTypeKind::TUPLE, desc),
-          elementFlags_(std::move(elementFlags)),
-          combinedFlags_(combinedFlags),
+    TupleType(
+        std::tuple<ObjectDescriptor *, ArenaVector<ElementFlags> &&, ElementFlags, NamedTupleMemberPool &&> contents,
+        uint32_t minLength, uint32_t fixedLength, bool readonly)
+        : ObjectType(ObjectType::ObjectTypeKind::TUPLE, std::get<ObjectDescriptor *>(contents)),
+          elementFlags_(std::move(std::get<ArenaVector<ElementFlags> &&>(contents))),
+          combinedFlags_(std::get<ElementFlags>(contents)),
           minLength_(minLength),
           fixedLength_(fixedLength),
-          namedMembers_(std::move(namedMembers)),
+          namedMembers_(std::move(std::get<NamedTupleMemberPool &&>(contents))),
           readonly_(readonly)
     {
         if (readonly_) {

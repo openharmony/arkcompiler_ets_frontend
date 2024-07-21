@@ -47,7 +47,8 @@ public:
           baseOverloadMethod_(nullptr),
           asyncPairMethod_(nullptr)
     {
-        ASSERT(key_ != nullptr && value_ != nullptr);
+        ASSERT(key_ != nullptr);
+        ASSERT(value != nullptr);
     }
 
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields

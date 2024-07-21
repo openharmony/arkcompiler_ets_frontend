@@ -75,6 +75,8 @@ protected:
     void GenInstructionDebugInfo(const IRNode *ins, ark::pandasm::Ins *pandaIns);
     void GenFunctionInstructions(pandasm::Function *func);
     void GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const;
+    void GenScopeVariableInfoEnd(pandasm::Function *func, const varbinder::Scope *scope, uint32_t count,
+                                 uint32_t start) const;
     void GenSourceFileDebugInfo(pandasm::Function *func);
     void GenFunctionCatchTables(ark::pandasm::Function *func);
     void GenVariablesDebugInfo(pandasm::Function *func);
