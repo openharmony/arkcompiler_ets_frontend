@@ -1,0 +1,19 @@
+# Known failures list for third_lib_js - release-x64-aot
+
+# Issue #18153
+mathjs_test
+textEncoding_test
+Easyrelpace_test
+Drools_test
+gson_test
+bignumber_test
+Matrix_test
+lodash_test
+dayjs_test
+validator_test
+jBox2d_test
+pdfview_test
+sax_test
+pcx_test
+js-joda_test
+jsDiff_test
