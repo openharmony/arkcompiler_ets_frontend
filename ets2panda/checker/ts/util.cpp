@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -118,13 +118,11 @@ bool TSChecker::MaybeTypeOfKind(const Type *type, TypeFlag flags)
         return true;
     }
 
-    if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION)) {
-        if (type->IsUnionType()) {
-            const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
-            for (auto *it : constituentTypes) {
-                if (MaybeTypeOfKind(it, flags)) {
-                    return true;
-                }
+    if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION) && type->IsUnionType()) {
+        const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        for (auto *it : constituentTypes) {
+            if (MaybeTypeOfKind(it, flags)) {
+                return true;
             }
         }
     }
@@ -138,13 +136,11 @@ bool TSChecker::MaybeTypeOfKind(const Type *type, ObjectType::ObjectTypeKind kin
         return true;
     }
 
-    if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION)) {
-        if (type->IsUnionType()) {
-            const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
-            for (auto *it : constituentTypes) {
-                if (MaybeTypeOfKind(it, kind)) {
-                    return true;
-                }
+    if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION) && type->IsUnionType()) {
+        const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        for (auto *it : constituentTypes) {
+            if (MaybeTypeOfKind(it, kind)) {
+                return true;
             }
         }
     }

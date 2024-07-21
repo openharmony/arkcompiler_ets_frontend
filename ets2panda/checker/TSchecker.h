@@ -274,6 +274,10 @@ public:
                                            bool isAsSrcLeftType = false);
     void ElaborateElementwise(Type *targetType, ir::Expression *sourceNode, const lexer::SourcePosition &pos);
     void InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declarator);
+    void GetTypeVar(varbinder::Decl *decl);
+    void GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl);
+    void GetTypeEnum(varbinder::Variable *var, varbinder::Decl *decl);
+    Type *GetDeclTsType(varbinder::Variable *var, varbinder::Decl *decl);
     Type *GetTypeOfVariable(varbinder::Variable *var) override;
     Type *GetUnaryResultType(Type *operandType);
     Type *GetTypeFromClassOrInterfaceReference(ir::TSTypeReference *node, varbinder::Variable *var);

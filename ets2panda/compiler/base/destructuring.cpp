@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,19 +68,8 @@ static void GenRestElement(PandaGen *pg, const ir::SpreadElement *restElement,
     lref.SetValue();
 }
 
-static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
+static void GenElement(const ir::ArrayExpression *array, DestructuringIterator &iterator, PandaGen *pg)
 {
-    DestructuringIterator iterator(pg, array);
-
-    if (array->Elements().empty()) {
-        iterator.Close(false);
-        return;
-    }
-
-    TryContext tryCtx(pg);
-    const auto &labelSet = tryCtx.LabelSet();
-    pg->SetLabel(array, labelSet.TryBegin());
-
     for (const auto *element : array->Elements()) {
         RegScope ers(pg);
 
@@ -120,6 +109,22 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
 
         lref.SetValue();
     }
+}
+
+static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
+{
+    DestructuringIterator iterator(pg, array);
+
+    if (array->Elements().empty()) {
+        iterator.Close(false);
+        return;
+    }
+
+    TryContext tryCtx(pg);
+    const auto &labelSet = tryCtx.LabelSet();
+    pg->SetLabel(array, labelSet.TryBegin());
+
+    GenElement(array, iterator, pg);
 
     pg->SetLabel(array, labelSet.TryEnd());
 

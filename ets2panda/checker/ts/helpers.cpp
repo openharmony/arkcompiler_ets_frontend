@@ -158,29 +158,28 @@ Type *TSChecker::ExtractDefinitelyFalsyTypes(Type *type)
 Type *TSChecker::RemoveDefinitelyFalsyTypes(Type *type)
 {
     if ((static_cast<uint64_t>(GetFalsyFlags(type)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY)) != 0U) {
-        if (type->IsUnionType()) {
-            auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
-            ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
-
-            for (auto &it : constituentTypes) {
-                if ((static_cast<uint64_t>(GetFalsyFlags(it)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY)) ==
-                    0U) {
-                    newConstituentTypes.push_back(it);
-                }
-            }
-
-            if (newConstituentTypes.empty()) {
-                return GlobalNeverType();
-            }
-
-            if (newConstituentTypes.size() == 1) {
-                return newConstituentTypes[0];
-            }
-
-            return CreateUnionType(std::move(newConstituentTypes));
+        if (!type->IsUnionType()) {
+            return GlobalNeverType();
         }
 
-        return GlobalNeverType();
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        ArenaVector<Type *> newConstituentTypes(Allocator()->Adapter());
+
+        for (auto &it : constituentTypes) {
+            if ((static_cast<uint64_t>(GetFalsyFlags(it)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY)) == 0U) {
+                newConstituentTypes.push_back(it);
+            }
+        }
+
+        if (newConstituentTypes.empty()) {
+            return GlobalNeverType();
+        }
+
+        if (newConstituentTypes.size() == 1) {
+            return newConstituentTypes[0];
+        }
+
+        return CreateUnionType(std::move(newConstituentTypes));
     }
 
     return type;
@@ -355,20 +354,68 @@ void TSChecker::InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declar
                    declarator->Id()->Start());
 }
 
-Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
+void TSChecker::GetTypeVar(varbinder::Decl *decl)
 {
-    if (var->TsType() != nullptr) {
-        return var->TsType();
+    ir::AstNode *declarator =
+        util::Helpers::FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
+    ASSERT(declarator);
+
+    if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
+        InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());
+        return;
     }
 
-    varbinder::Decl *decl = var->Declaration();
+    declarator->Check(this);
+}
 
-    TypeStackElement tse(this, decl->Node(),
-                         {"'", var->Name(),
-                          "' is referenced directly or indirectly in its "
-                          "own initializer ot type annotation."},
-                         decl->Node()->Start());
+void TSChecker::GetTypeParam(varbinder::Variable *var, varbinder::Decl *decl)
+{
+    ir::AstNode *declaration = FindAncestorUntilGivenType(decl->Node(), ir::AstNodeType::SCRIPT_FUNCTION);
 
+    if (declaration->IsIdentifier()) {
+        auto *ident = declaration->AsIdentifier();
+        if (ident->TypeAnnotation() != nullptr) {
+            ASSERT(ident->Variable() == var);
+            var->SetTsType(ident->TypeAnnotation()->GetType(this));
+            return;
+        }
+
+        ThrowTypeError({"Parameter ", ident->Name(), " implicitly has an 'any' type."}, ident->Start());
+    }
+
+    if (declaration->IsAssignmentPattern() && declaration->AsAssignmentPattern()->Left()->IsIdentifier()) {
+        ir::Identifier *ident = declaration->AsAssignmentPattern()->Left()->AsIdentifier();
+
+        if (ident->TypeAnnotation() != nullptr) {
+            ASSERT(ident->Variable() == var);
+            var->SetTsType(ident->TypeAnnotation()->GetType(this));
+            return;
+        }
+
+        var->SetTsType(declaration->AsAssignmentPattern()->Right()->Check(this));
+    }
+
+    CheckFunctionParameter(declaration->AsExpression(), nullptr);
+}
+
+void TSChecker::GetTypeEnum(varbinder::Variable *var, varbinder::Decl *decl)
+{
+    ASSERT(var->IsEnumVariable());
+    varbinder::EnumVariable *enumVar = var->AsEnumVariable();
+
+    if (std::holds_alternative<bool>(enumVar->Value())) {
+        ThrowTypeError(
+            "A member initializer in a enum declaration cannot reference members declared after it, "
+            "including "
+            "members defined in other enums.",
+            decl->Node()->Start());
+    }
+
+    var->SetTsType(std::holds_alternative<double>(enumVar->Value()) ? GlobalNumberType() : GlobalStringType());
+}
+
+Type *TSChecker::GetDeclTsType(varbinder::Variable *var, varbinder::Decl *decl)
+{
     switch (decl->Type()) {
         case varbinder::DeclType::CONST:
         case varbinder::DeclType::LET: {
@@ -381,16 +428,7 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
             [[fallthrough]];
         }
         case varbinder::DeclType::VAR: {
-            ir::AstNode *declarator =
-                util::Helpers::FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
-            ASSERT(declarator);
-
-            if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
-                InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());
-                break;
-            }
-
-            declarator->Check(this);
+            GetTypeVar(decl);
             break;
         }
         case varbinder::DeclType::PROPERTY: {
@@ -409,47 +447,11 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
             break;
         }
         case varbinder::DeclType::PARAM: {
-            ir::AstNode *declaration = FindAncestorUntilGivenType(decl->Node(), ir::AstNodeType::SCRIPT_FUNCTION);
-
-            if (declaration->IsIdentifier()) {
-                auto *ident = declaration->AsIdentifier();
-                if (ident->TypeAnnotation() != nullptr) {
-                    ASSERT(ident->Variable() == var);
-                    var->SetTsType(ident->TypeAnnotation()->GetType(this));
-                    break;
-                }
-
-                ThrowTypeError({"Parameter ", ident->Name(), " implicitly has an 'any' type."}, ident->Start());
-            }
-
-            if (declaration->IsAssignmentPattern() && declaration->AsAssignmentPattern()->Left()->IsIdentifier()) {
-                ir::Identifier *ident = declaration->AsAssignmentPattern()->Left()->AsIdentifier();
-
-                if (ident->TypeAnnotation() != nullptr) {
-                    ASSERT(ident->Variable() == var);
-                    var->SetTsType(ident->TypeAnnotation()->GetType(this));
-                    break;
-                }
-
-                var->SetTsType(declaration->AsAssignmentPattern()->Right()->Check(this));
-            }
-
-            CheckFunctionParameter(declaration->AsExpression(), nullptr);
+            GetTypeParam(var, decl);
             break;
         }
         case varbinder::DeclType::ENUM: {
-            ASSERT(var->IsEnumVariable());
-            varbinder::EnumVariable *enumVar = var->AsEnumVariable();
-
-            if (std::holds_alternative<bool>(enumVar->Value())) {
-                ThrowTypeError(
-                    "A member initializer in a enum declaration cannot reference members declared after it, "
-                    "including "
-                    "members defined in other enums.",
-                    decl->Node()->Start());
-            }
-
-            var->SetTsType(std::holds_alternative<double>(enumVar->Value()) ? GlobalNumberType() : GlobalStringType());
+            GetTypeEnum(var, decl);
             break;
         }
         case varbinder::DeclType::ENUM_LITERAL: {
@@ -461,6 +463,23 @@ Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
     }
 
     return var->TsType();
+}
+
+Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
+{
+    if (var->TsType() != nullptr) {
+        return var->TsType();
+    }
+
+    varbinder::Decl *decl = var->Declaration();
+
+    TypeStackElement tse(
+        this, decl->Node(),
+        std::initializer_list<TypeErrorMessageElement> {
+            "'", var->Name(), "' is referenced directly or indirectly in its ", "own initializer ot type annotation."},
+        decl->Node()->Start());
+
+    return GetDeclTsType(var, decl);
 }
 
 Type *TSChecker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] ir::TSTypeReference *node,

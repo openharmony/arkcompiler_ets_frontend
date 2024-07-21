@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -95,6 +95,26 @@ void ArrayElaborationContext::RemoveUnnecessaryTypes()
     }
 }
 
+Type *ObjectElaborationContext::NonComputedPropKeyType(ir::Property *prop)
+{
+    switch (prop->Key()->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            return checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsIdentifier()->Name());
+        }
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            return checker_->Allocator()->New<NumberLiteralType>(prop->Key()->AsNumberLiteral()->Number().GetDouble());
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            return checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsStringLiteral()->Str());
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+    return nullptr;
+}
+
 void ObjectElaborationContext::Start()
 {
     ASSERT(sourceNode_->IsObjectExpression());
@@ -111,25 +131,7 @@ void ObjectElaborationContext::Start()
         if (prop->IsComputed()) {
             propKeyType = checker_->CheckComputedPropertyName(prop->Key());
         } else {
-            switch (prop->Key()->Type()) {
-                case ir::AstNodeType::IDENTIFIER: {
-                    propKeyType = checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsIdentifier()->Name());
-                    break;
-                }
-                case ir::AstNodeType::NUMBER_LITERAL: {
-                    propKeyType = checker_->Allocator()->New<NumberLiteralType>(
-                        prop->Key()->AsNumberLiteral()->Number().GetDouble());
-                    break;
-                }
-                case ir::AstNodeType::STRING_LITERAL: {
-                    propKeyType = checker_->Allocator()->New<StringLiteralType>(prop->Key()->AsStringLiteral()->Str());
-                    break;
-                }
-                default: {
-                    UNREACHABLE();
-                    break;
-                }
-            }
+            propKeyType = NonComputedPropKeyType(prop);
         }
 
         Type *targetElementType = nullptr;

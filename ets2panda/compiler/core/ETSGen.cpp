@@ -1248,6 +1248,48 @@ void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
     }
 }
 
+checker::Type *ETSGen::EmitBoxedType(ir::BoxingUnboxingFlags boxingFlag, const ir::AstNode *node)
+{
+    switch (boxingFlag) {
+        case ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BOOLEAN_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_BYTE: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BYTE_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalByteBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_CHAR: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_CHAR_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalCharBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_SHORT: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_SHORT_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalShortBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_INT: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_INT_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalIntegerBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_LONG: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_LONG_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalLongBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_FLOAT: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_FLOAT_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalFloatBuiltinType();
+        }
+        case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE: {
+            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_DOUBLE_VALUE_OF, dummyReg_, 0);
+            return Checker()->GetGlobalTypesHolder()->GlobalDoubleBuiltinType();
+        }
+        default:
+            UNREACHABLE();
+            break;
+    }
+    return nullptr;
+}
+
 void ETSGen::EmitBoxingConversion(const ir::AstNode *node)
 {
     auto boxingFlag =
@@ -1258,50 +1300,7 @@ void ETSGen::EmitBoxingConversion(const ir::AstNode *node)
     ApplyCastToBoxingFlags(node, boxingFlag);
     checker::Type *boxedType;
 
-    switch (boxingFlag) {
-        case ir::BoxingUnboxingFlags::BOX_TO_BOOLEAN: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BOOLEAN_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_BYTE: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BYTE_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalByteBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_CHAR: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_CHAR_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalCharBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_SHORT: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_SHORT_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalShortBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_INT: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_INT_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalIntegerBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_LONG: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_LONG_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalLongBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_FLOAT: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_FLOAT_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalFloatBuiltinType();
-            break;
-        }
-        case ir::BoxingUnboxingFlags::BOX_TO_DOUBLE: {
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_DOUBLE_VALUE_OF, dummyReg_, 0);
-            boxedType = Checker()->GetGlobalTypesHolder()->GlobalDoubleBuiltinType();
-            break;
-        }
-        default:
-            UNREACHABLE();
-    }
+    boxedType = EmitBoxedType(boxingFlag, node);
 
     SetAccumulatorType(boxedType);
     if (node->IsExpression()) {
@@ -1881,73 +1880,9 @@ void ETSGen::ToBinaryResult(const ir::AstNode *node, Label *ifFalse)
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
-void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
+void ETSGen::BinaryLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
 {
     switch (op) {
-        case lexer::TokenType::PUNCTUATOR_EQUAL: {
-            Label *ifFalse = AllocLabel();
-            BinaryEquality<JneObj, Jne, Jnez, Jeqz>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
-            Label *ifFalse = AllocLabel();
-            BinaryEquality<JeqObj, Jeq, Jeqz, Jnez>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL: {
-            Label *ifFalse = AllocLabel();
-            RefEqualityStrict<JneObj, Jeqz>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            Label *ifFalse = AllocLabel();
-            RefEqualityStrict<JeqObj, Jnez>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
-            Label *ifFalse = AllocLabel();
-            BinaryRelation<Jle, Jlez>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL: {
-            Label *ifFalse = AllocLabel();
-            BinaryRelation<Jlt, Jltz>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            Label *ifFalse = AllocLabel();
-            BinaryRelation<Jge, Jgez>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-            Label *ifFalse = AllocLabel();
-            BinaryRelation<Jgt, Jgtz>(node, lhs, ifFalse);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS:
-        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            SwapBinaryOpArgs(node, lhs);
-            BinaryArithmetic<Add2, Add2Wide, Fadd2, Fadd2Wide>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL: {
-            SwapBinaryOpArgs(node, lhs);
-            BinaryArithmetic<Sub2, Sub2Wide, Fsub2, Fsub2Wide>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL: {
-            SwapBinaryOpArgs(node, lhs);
-            BinaryArithmetic<Mul2, Mul2Wide, Fmul2, Fmul2Wide>(node, lhs);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_DIVIDE:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL: {
-            SwapBinaryOpArgs(node, lhs);
-            BinaryArithmetic<Div2, Div2Wide, Fdiv2, Fdiv2Wide>(node, lhs);
-            break;
-        }
         case lexer::TokenType::PUNCTUATOR_MOD:
         case lexer::TokenType::PUNCTUATOR_MOD_EQUAL: {
             SwapBinaryOpArgs(node, lhs);
@@ -1989,6 +1924,89 @@ void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
         }
         default: {
             UNREACHABLE();
+        }
+    }
+    ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
+    ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
+                                                const_cast<checker::Type *>(node->AsExpression()->TsType())));
+}
+
+void ETSGen::BinaryArithmLogic(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
+{
+    switch (op) {
+        case lexer::TokenType::PUNCTUATOR_PLUS:
+        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
+            SwapBinaryOpArgs(node, lhs);
+            BinaryArithmetic<Add2, Add2Wide, Fadd2, Fadd2Wide>(node, lhs);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL: {
+            SwapBinaryOpArgs(node, lhs);
+            BinaryArithmetic<Sub2, Sub2Wide, Fsub2, Fsub2Wide>(node, lhs);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL: {
+            SwapBinaryOpArgs(node, lhs);
+            BinaryArithmetic<Mul2, Mul2Wide, Fmul2, Fmul2Wide>(node, lhs);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_DIVIDE:
+        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL: {
+            SwapBinaryOpArgs(node, lhs);
+            BinaryArithmetic<Div2, Div2Wide, Fdiv2, Fdiv2Wide>(node, lhs);
+            break;
+        }
+        default: {
+            BinaryLogic(node, op, lhs);
+            break;
+        }
+    }
+    ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
+    ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
+                                                const_cast<checker::Type *>(node->AsExpression()->TsType())));
+}
+
+void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
+{
+    Label *ifFalse = AllocLabel();
+    switch (op) {
+        case lexer::TokenType::PUNCTUATOR_EQUAL: {
+            BinaryEquality<JneObj, Jne, Jnez, Jeqz>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
+            BinaryEquality<JeqObj, Jeq, Jeqz, Jnez>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL: {
+            RefEqualityStrict<JneObj, Jeqz>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
+            RefEqualityStrict<JeqObj, Jnez>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
+            BinaryRelation<Jle, Jlez>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL: {
+            BinaryRelation<Jlt, Jltz>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
+            BinaryRelation<Jge, Jgez>(node, lhs, ifFalse);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
+            BinaryRelation<Jgt, Jgtz>(node, lhs, ifFalse);
+            break;
+        }
+        default: {
+            BinaryArithmLogic(node, op, lhs);
+            break;
         }
     }
     ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
