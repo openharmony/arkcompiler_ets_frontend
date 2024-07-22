@@ -926,57 +926,11 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
     return classDefinition;
 }
 
-ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
-                                            ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
+ir::AstNode *TypedParser::ParseProperty(const ArenaVector<ir::AstNode *> &properties, ClassElementDescriptor &desc,
+                                        ir::Expression *propName)
 {
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
-        Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
-        return ParseClassStaticBlock();
-    }
-
-    ClassElementDescriptor desc(Allocator());
-
-    desc.methodKind = ir::MethodDefinitionKind::METHOD;
-    desc.newStatus = ParserStatus::ALLOW_SUPER;
-    desc.hasSuperClass = (modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0;
-    desc.propStart = Lexer()->GetToken().Start();
-
-    ParseDecorators(desc.decorators);
-
-    desc.modifiers = ParseModifiers();
-
-    if (((desc.modifiers & ir::ModifierFlags::ABSTRACT) != 0) && ((flags & ir::ModifierFlags::ABSTRACT) == 0)) {
-        ThrowSyntaxError("Abstract methods can only appear within an abstract class.");
-    }
-
-    char32_t nextCp = Lexer()->Lookahead();
-    CheckClassGeneratorMethod(&desc, &nextCp);
-    ParseClassAccessor(&desc, &nextCp);
-
-    if ((desc.modifiers & ir::ModifierFlags::STATIC) == 0) {
-        GetContext().Status() |= ParserStatus::ALLOW_THIS_TYPE;
-    }
-
-    ir::Expression *propName = ParseClassKey(&desc);
-
-    if (desc.methodKind == ir::MethodDefinitionKind::CONSTRUCTOR && !desc.decorators.empty()) {
-        ThrowSyntaxError("Decorators are not valid here.", desc.decorators.front()->Start());
-    }
-
-    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-        ParseOptionalClassElement(&desc);
-    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
-        if (desc.isIndexSignature || Lexer()->Lookahead() != lexer::LEX_CHAR_COLON) {
-            ThrowSyntaxError("';' expected");
-        }
-
-        desc.modifiers |= ir::ModifierFlags::DEFINITE;
-        Lexer()->NextToken();
-    }
-
-    ir::TypeNode *typeAnnotation = ParseClassKeyAnnotation();
-
     ir::AstNode *property = nullptr;
+    ir::TypeNode *typeAnnotation = ParseClassKeyAnnotation();
 
     if (desc.isIndexSignature) {
         if (!desc.decorators.empty()) {
@@ -1033,6 +987,57 @@ ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &pr
     return property;
 }
 
+ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
+                                            ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
+{
+    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
+        Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
+        return ParseClassStaticBlock();
+    }
+
+    ClassElementDescriptor desc(Allocator());
+
+    desc.methodKind = ir::MethodDefinitionKind::METHOD;
+    desc.newStatus = ParserStatus::ALLOW_SUPER;
+    desc.hasSuperClass = (modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0;
+    desc.propStart = Lexer()->GetToken().Start();
+
+    ParseDecorators(desc.decorators);
+
+    desc.modifiers = ParseModifiers();
+
+    if (((desc.modifiers & ir::ModifierFlags::ABSTRACT) != 0) && ((flags & ir::ModifierFlags::ABSTRACT) == 0)) {
+        ThrowSyntaxError("Abstract methods can only appear within an abstract class.");
+    }
+
+    char32_t nextCp = Lexer()->Lookahead();
+    CheckClassGeneratorMethod(&desc, &nextCp);
+    ParseClassAccessor(&desc, &nextCp);
+
+    if ((desc.modifiers & ir::ModifierFlags::STATIC) == 0) {
+        GetContext().Status() |= ParserStatus::ALLOW_THIS_TYPE;
+    }
+
+    ir::Expression *propName = ParseClassKey(&desc);
+
+    if (desc.methodKind == ir::MethodDefinitionKind::CONSTRUCTOR && !desc.decorators.empty()) {
+        ThrowSyntaxError("Decorators are not valid here.", desc.decorators.front()->Start());
+    }
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+        ParseOptionalClassElement(&desc);
+    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
+        if (desc.isIndexSignature || Lexer()->Lookahead() != lexer::LEX_CHAR_COLON) {
+            ThrowSyntaxError("';' expected");
+        }
+
+        desc.modifiers |= ir::ModifierFlags::DEFINITE;
+        Lexer()->NextToken();
+    }
+
+    return ParseProperty(properties, desc, propName);
+}
+
 void TypedParser::ParseOptionalClassElement(ClassElementDescriptor *desc)
 {
     if (desc->isIndexSignature) {
@@ -1045,6 +1050,41 @@ void TypedParser::ParseOptionalClassElement(ClassElementDescriptor *desc)
 
     desc->modifiers |= ir::ModifierFlags::OPTIONAL;
     Lexer()->NextToken();
+}
+
+static std::pair<ir::ModifierFlags, ir::ModifierFlags> ParseActualNextStatus(lexer::TokenType keywordType)
+{
+    constexpr auto ASYNC_STATIC_READONLY =
+        ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY;
+    constexpr auto ASYNC_STATIC_READONLY_DECLARE_ABSTRACT =
+        ASYNC_STATIC_READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
+
+    switch (keywordType) {
+        case lexer::TokenType::KEYW_PUBLIC:
+            return {ir::ModifierFlags::PUBLIC, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT};
+        case lexer::TokenType::KEYW_PRIVATE:
+            return {ir::ModifierFlags::PRIVATE, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT};
+        case lexer::TokenType::KEYW_PROTECTED:
+            return {ir::ModifierFlags::PROTECTED, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT};
+        case lexer::TokenType::KEYW_INTERNAL:
+            return {ir::ModifierFlags::INTERNAL, ASYNC_STATIC_READONLY_DECLARE_ABSTRACT | ir::ModifierFlags::PROTECTED};
+        case lexer::TokenType::KEYW_STATIC:
+            return {ir::ModifierFlags::STATIC, ir::ModifierFlags::ASYNC | ir::ModifierFlags::READONLY |
+                                                   ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT};
+        case lexer::TokenType::KEYW_ASYNC:
+            return {ir::ModifierFlags::ASYNC,
+                    ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT};
+        case lexer::TokenType::KEYW_ABSTRACT:
+            return {ir::ModifierFlags::ABSTRACT,
+                    ASYNC_STATIC_READONLY | ir::ModifierFlags::ACCESS | ir::ModifierFlags::DECLARE};
+        case lexer::TokenType::KEYW_DECLARE:
+            return {ir::ModifierFlags::DECLARE, ASYNC_STATIC_READONLY | ir::ModifierFlags::ACCESS};
+        case lexer::TokenType::KEYW_READONLY:
+            return {ir::ModifierFlags::READONLY,
+                    ir::ModifierFlags::ASYNC | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT};
+        default:
+            UNREACHABLE();
+    }
 }
 
 ir::ModifierFlags TypedParser::ParseModifiers()
@@ -1064,66 +1104,7 @@ ir::ModifierFlags TypedParser::ParseModifiers()
             ThrowSyntaxError("Keyword must not contain escaped characters");
         }
 
-        ir::ModifierFlags actualStatus = ir::ModifierFlags::NONE;
-        ir::ModifierFlags nextStatus = ir::ModifierFlags::NONE;
-
-        switch (Lexer()->GetToken().KeywordType()) {
-            case lexer::TokenType::KEYW_PUBLIC: {
-                actualStatus = ir::ModifierFlags::PUBLIC;
-                nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
-                break;
-            }
-            case lexer::TokenType::KEYW_PRIVATE: {
-                actualStatus = ir::ModifierFlags::PRIVATE;
-                nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
-                break;
-            }
-            case lexer::TokenType::KEYW_PROTECTED: {
-                actualStatus = ir::ModifierFlags::PROTECTED;
-                nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
-                break;
-            }
-            case lexer::TokenType::KEYW_INTERNAL: {
-                actualStatus = ir::ModifierFlags::INTERNAL;
-                nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::PROTECTED;
-                break;
-            }
-            case lexer::TokenType::KEYW_STATIC: {
-                actualStatus = ir::ModifierFlags::STATIC;
-                nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE |
-                             ir::ModifierFlags::ABSTRACT;
-                break;
-            }
-            case lexer::TokenType::KEYW_ASYNC: {
-                actualStatus = ir::ModifierFlags::ASYNC;
-                nextStatus = ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
-                break;
-            }
-            case lexer::TokenType::KEYW_ABSTRACT: {
-                actualStatus = ir::ModifierFlags::ABSTRACT;
-                nextStatus = ir::ModifierFlags::ACCESS | ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC |
-                             ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE;
-                break;
-            }
-            case lexer::TokenType::KEYW_DECLARE: {
-                actualStatus = ir::ModifierFlags::DECLARE;
-                nextStatus = ir::ModifierFlags::ACCESS | ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC |
-                             ir::ModifierFlags::READONLY;
-                break;
-            }
-            case lexer::TokenType::KEYW_READONLY: {
-                actualStatus = ir::ModifierFlags::READONLY;
-                nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
+        auto [actualStatus, nextStatus] = ParseActualNextStatus(Lexer()->GetToken().KeywordType());
 
         nextCp = Lexer()->Lookahead();
         if (nextCp == lexer::LEX_CHAR_COLON || nextCp == lexer::LEX_CHAR_COMMA ||
@@ -1185,6 +1166,22 @@ ir::Expression *TypedParser::ParseQualifiedName(ExpressionParseFlags flags)
     return expr;
 }
 
+ir::Expression *TypedParser::ParseLiteralIndent(ir::Expression *typeName, ExpressionParseFlags flags,
+                                                const lexer::SourcePosition &startLoc)
+{
+    if ((flags & ExpressionParseFlags::POTENTIAL_CLASS_LITERAL) != 0) {
+        if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {
+            typeName->SetRange({startLoc, Lexer()->GetToken().End()});
+            return typeName;
+        }
+        if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS) {
+            return static_cast<ir::Expression *>(nullptr);
+        }
+    }
+
+    ThrowSyntaxError("Identifier expected");
+}
+
 ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, ExpressionParseFlags flags)
 {
     lexer::SourcePosition startLoc = typeName->Start();
@@ -1200,17 +1197,7 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
             propName = ParseIdentifierFormatPlaceholder(std::nullopt);
         } else if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-            if ((flags & ExpressionParseFlags::POTENTIAL_CLASS_LITERAL) != 0) {
-                if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {
-                    typeName->SetRange({startLoc, Lexer()->GetToken().End()});
-                    return typeName;
-                }
-                if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS) {
-                    return nullptr;
-                }
-            }
-
-            ThrowSyntaxError("Identifier expected");
+            return ParseLiteralIndent(typeName, flags, startLoc);
         } else {
             propName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         }
@@ -1224,7 +1211,6 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *typeName, E
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
             Lexer()->NextToken();
         }
-
     } while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD);
 
     typeName->SetRange({startLoc, Lexer()->GetToken().End()});
@@ -1391,6 +1377,58 @@ void TypedParser::ParsePotentialOptionalFunctionParameter(ir::AnnotatedExpressio
     }
 }
 
+ParserStatus TypedParser::ValidateArrowParameterAssignment(ir::AssignmentExpression *assignmentExpr)
+{
+    if (assignmentExpr->Right()->IsYieldExpression()) {
+        ThrowSyntaxError("yield is not allowed in arrow function parameters");
+    }
+
+    if (assignmentExpr->Right()->IsAwaitExpression()) {
+        ThrowSyntaxError("await is not allowed in arrow function parameters");
+    }
+
+    if (!assignmentExpr->ConvertibleToAssignmentPattern()) {
+        ThrowSyntaxError("Invalid destructuring assignment target");
+    }
+
+    if (assignmentExpr->Left()->IsIdentifier() && assignmentExpr->Left()->AsIdentifier()->IsOptional()) {
+        ThrowSyntaxError("Parameter cannot have question mark and initializer.", assignmentExpr->Start());
+    }
+
+    ValidateArrowParameterBindings(assignmentExpr);
+    return ParserStatus::HAS_COMPLEX_PARAM;
+}
+
+ParserStatus TypedParser::ValidateArrowParameterArray(ir::ArrayExpression *arrayPattern)
+{
+    if (!arrayPattern->ConvertibleToArrayPattern()) {
+        ThrowSyntaxError("Invalid destructuring assignment target");
+    }
+
+    if (!InAmbientContext() && ((GetContext().Status() & ParserStatus::FUNCTION) != 0) && arrayPattern->IsOptional()) {
+        ThrowSyntaxError("A binding pattern parameter cannot be optional in an implementation signature.",
+                         arrayPattern->Start());
+    }
+
+    ValidateArrowParameterBindings(arrayPattern);
+    return ParserStatus::HAS_COMPLEX_PARAM;
+}
+
+ParserStatus TypedParser::ValidateArrowParameterObject(ir::ObjectExpression *objectPattern)
+{
+    if (!objectPattern->ConvertibleToObjectPattern()) {
+        ThrowSyntaxError("Invalid destructuring assignment target");
+    }
+
+    if (!InAmbientContext() && ((GetContext().Status() & ParserStatus::FUNCTION) != 0) && objectPattern->IsOptional()) {
+        ThrowSyntaxError("A binding pattern parameter cannot be optional in an implementation signature.",
+                         objectPattern->Start());
+    }
+
+    ValidateArrowParameterBindings(objectPattern);
+    return ParserStatus::HAS_COMPLEX_PARAM;
+}
+
 ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *seenOptional)
 {
     switch (expr->Type()) {
@@ -1427,62 +1465,14 @@ ParserStatus TypedParser::ValidateArrowParameter(ir::Expression *expr, bool *see
             ValidateArrowParameterBindings(expr);
             return ParserStatus::NO_OPTS;
         }
-        case ir::AstNodeType::OBJECT_EXPRESSION: {
-            ir::ObjectExpression *objectPattern = expr->AsObjectExpression();
-
-            if (!objectPattern->ConvertibleToObjectPattern()) {
-                ThrowSyntaxError("Invalid destructuring assignment target");
-            }
-
-            if (!InAmbientContext() && ((GetContext().Status() & ParserStatus::FUNCTION) != 0) &&
-                objectPattern->IsOptional()) {
-                ThrowSyntaxError("A binding pattern parameter cannot be optional in an implementation signature.",
-                                 expr->Start());
-            }
-
-            ValidateArrowParameterBindings(expr);
-            return ParserStatus::HAS_COMPLEX_PARAM;
-        }
-        case ir::AstNodeType::ARRAY_EXPRESSION: {
-            ir::ArrayExpression *arrayPattern = expr->AsArrayExpression();
-
-            if (!arrayPattern->ConvertibleToArrayPattern()) {
-                ThrowSyntaxError("Invalid destructuring assignment target");
-            }
-
-            if (!InAmbientContext() && ((GetContext().Status() & ParserStatus::FUNCTION) != 0) &&
-                arrayPattern->IsOptional()) {
-                ThrowSyntaxError("A binding pattern parameter cannot be optional in an implementation signature.",
-                                 expr->Start());
-            }
-
-            ValidateArrowParameterBindings(expr);
-            return ParserStatus::HAS_COMPLEX_PARAM;
-        }
-        case ir::AstNodeType::ASSIGNMENT_EXPRESSION: {
-            auto *assignmentExpr = expr->AsAssignmentExpression();
-            if (assignmentExpr->Right()->IsYieldExpression()) {
-                ThrowSyntaxError("yield is not allowed in arrow function parameters");
-            }
-
-            if (assignmentExpr->Right()->IsAwaitExpression()) {
-                ThrowSyntaxError("await is not allowed in arrow function parameters");
-            }
-
-            if (!assignmentExpr->ConvertibleToAssignmentPattern()) {
-                ThrowSyntaxError("Invalid destructuring assignment target");
-            }
-
-            if (assignmentExpr->Left()->IsIdentifier() && assignmentExpr->Left()->AsIdentifier()->IsOptional()) {
-                ThrowSyntaxError("Parameter cannot have question mark and initializer.", expr->Start());
-            }
-
-            ValidateArrowParameterBindings(expr);
-            return ParserStatus::HAS_COMPLEX_PARAM;
-        }
-        default: {
+        case ir::AstNodeType::OBJECT_EXPRESSION:
+            return ValidateArrowParameterObject(expr->AsObjectExpression());
+        case ir::AstNodeType::ARRAY_EXPRESSION:
+            return ValidateArrowParameterArray(expr->AsArrayExpression());
+        case ir::AstNodeType::ASSIGNMENT_EXPRESSION:
+            return ValidateArrowParameterAssignment(expr->AsAssignmentExpression());
+        default:
             break;
-        }
     }
     ThrowSyntaxError("Insufficient formal parameter in arrow function.");
     return ParserStatus::NO_OPTS;
