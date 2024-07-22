@@ -2336,7 +2336,7 @@ ir::ClassProperty *GetImplementationClassProp(ETSChecker *checker, ir::ClassProp
 
 static void SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectType *classType,
                                    ir::ClassDefinition *classDef, ir::MethodDefinition *getter,
-                                   ir::MethodDefinition *setter)
+                                   ir::MethodDefinition *setter, const bool inExternal)
 {
     for (auto &method : {getter, setter}) {
         if (method == nullptr) {
@@ -2352,7 +2352,7 @@ static void SetupGetterSetterFlags(ir::ClassProperty *originalProp, ETSObjectTyp
             method->Function()->AddModifier(ir::ModifierFlags::OVERRIDE);
         }
 
-        if ((originalProp->Modifiers() & ir::ModifierFlags::EXTERNAL) != 0U) {
+        if (inExternal) {
             method->Function()->AddFlag(ir::ScriptFunctionFlags::EXTERNAL);
         }
         method->SetParent(classDef);
@@ -2364,7 +2364,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
 {
     auto *const classDef = classType->GetDeclNode()->AsClassDefinition();
     auto *interfaceProp = originalProp->Clone(Allocator(), originalProp->Parent());
-    interfaceProp->ClearModifier(ir::ModifierFlags::GETTER_SETTER | ir::ModifierFlags::EXTERNAL);
+    interfaceProp->ClearModifier(ir::ModifierFlags::GETTER_SETTER);
 
     auto *const scope = Scope()->AsClassScope();
     scope->InstanceFieldScope()->EraseBinding(interfaceProp->Key()->AsIdentifier()->Name());
@@ -2398,7 +2398,7 @@ void ETSChecker::GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *origin
     }
     var->AddFlag(varbinder::VariableFlags::METHOD);
 
-    SetupGetterSetterFlags(originalProp, classType, classDef, getter, setter);
+    SetupGetterSetterFlags(originalProp, classType, classDef, getter, setter, HasStatus(CheckerStatus::IN_EXTERNAL));
 
     if (setter != nullptr) {
         getter->Variable()->TsType()->AsETSFunctionType()->AddCallSignature(

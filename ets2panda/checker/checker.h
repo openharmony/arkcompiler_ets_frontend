@@ -317,7 +317,12 @@ public:
                                  Signature *containingSignature)
         : checker_(checker), prev_(checker->context_)
     {
+        const bool inExternal = checker->HasStatus(CheckerStatus::IN_EXTERNAL);
         checker_->context_ = CheckerContext(checker, newStatus, containingClass, containingSignature);
+        if (inExternal) {
+            // handled here instead of at call sites to make things more foolproof
+            checker_->context_.Status() |= CheckerStatus::IN_EXTERNAL;
+        }
     }
 
     NO_COPY_SEMANTIC(SavedCheckerContext);

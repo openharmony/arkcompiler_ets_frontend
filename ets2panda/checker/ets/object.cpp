@@ -865,10 +865,6 @@ void ETSChecker::ApplyModifiersAndRemoveImplementedAbstracts(ArenaVector<ETSFunc
 {
     for (auto *field : classType->Fields()) {
         if (field->Name() == (*it)->Name()) {
-            if (isGetSetExternal.isExternal) {
-                field->Declaration()->Node()->AddModifier(ir::ModifierFlags::EXTERNAL);
-            }
-
             field->Declaration()->Node()->AddModifier(isGetSetExternal.isGetter && isGetSetExternal.isSetter
                                                           ? ir::ModifierFlags::GETTER_SETTER
                                                       : isGetSetExternal.isGetter ? ir::ModifierFlags::GETTER

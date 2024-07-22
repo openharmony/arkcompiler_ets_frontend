@@ -59,7 +59,6 @@ enum class ModifierFlags : uint32_t {
     SETTER = 1U << 22U,
     DEFAULT_EXPORT = 1U << 23U,
     EXPORT_TYPE = 1U << 24U,
-    EXTERNAL = 1U << 25U,
     SUPER_OWNER = 1U << 26U,
     ACCESS = PUBLIC | PROTECTED | PRIVATE | INTERNAL,
     ALL = STATIC | ASYNC | ACCESS | DECLARE | READONLY | ABSTRACT,
