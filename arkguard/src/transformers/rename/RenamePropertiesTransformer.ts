@@ -62,7 +62,7 @@ import {
   nameCache
 } from './RenameIdentifierTransformer';
 import { UpdateMemberMethodName } from '../../utils/NameCacheUtil';
-import { PropCollections } from '../../utils/CommonCollections'
+import { PropCollections } from '../../utils/CommonCollections';
 
 namespace secharmony {
   /**

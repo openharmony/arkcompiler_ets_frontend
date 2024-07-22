@@ -87,7 +87,7 @@ import {ApiExtractor} from '../../common/ApiExtractor';
 import {performancePrinter, ArkObfuscator} from '../../ArkObfuscator';
 import { EventList } from '../../utils/PrinterUtils';
 import { isViewPUBasedClass } from '../../utils/OhsUtil';
-import { PropCollections } from '../../utils/CommonCollections'
+import { PropCollections } from '../../utils/CommonCollections';
 
 namespace secharmony {
   /**
@@ -632,7 +632,7 @@ namespace secharmony {
   // Record the original class name and line number range to distinguish between class names and member method names.
   export let classInfoInMemberMethodCache: Set<string> = new Set();
 
-  export function clearCaches() {
+  export function clearCaches(): void {
     nameCache.clear();
     historyNameCache = undefined;
     identifierLineMap.clear();

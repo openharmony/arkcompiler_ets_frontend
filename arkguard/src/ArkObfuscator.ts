@@ -35,7 +35,7 @@ import type {
 
 import path from 'path';
 
-import { PropCollections } from './utils/CommonCollections'
+import { PropCollections } from './utils/CommonCollections';
 import type { IOptions } from './configs/IOptions';
 import { FileUtils } from './utils/FileUtils';
 import { TransformerManager } from './transformers/TransformerManager';
