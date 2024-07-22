@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+#ifndef ETS2PANDA_TEST_UNIT_NODE_CREATOR_H
+#define ETS2PANDA_TEST_UNIT_NODE_CREATOR_H
+
 #include "ir/astNode.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/statements/variableDeclaration.h"
@@ -85,3 +88,4 @@ private:
     ArenaAllocator *const alloc_;
 };
 }  // namespace ark::es2panda::gtests
+#endif  // ETS2PANDA_TEST_UNIT_NODE_CREATOR_H

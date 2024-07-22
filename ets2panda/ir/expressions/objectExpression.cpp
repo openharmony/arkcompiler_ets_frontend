@@ -68,6 +68,20 @@ ObjectExpression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNo
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
+static std::pair<ValidationInfo, bool> ValidateProperty(Property *prop, bool &foundProto)
+{
+    ValidationInfo info = prop->ValidateExpression();
+    if (prop->Kind() == PropertyKind::PROTO) {
+        if (foundProto) {
+            return {{"Duplicate __proto__ fields are not allowed in object literals", prop->Key()->Start()}, true};
+        }
+
+        foundProto = true;
+    }
+
+    return {info, false};
+}
+
 ValidationInfo ObjectExpression::ValidateExpression()
 {
     if (optional_) {
@@ -93,16 +107,11 @@ ValidationInfo ObjectExpression::ValidateExpression()
             }
             case AstNodeType::PROPERTY: {
                 auto *prop = it->AsProperty();
-                info = prop->ValidateExpression();
-
-                if (prop->Kind() == PropertyKind::PROTO) {
-                    if (foundProto) {
-                        return {"Duplicate __proto__ fields are not allowed in object literals", prop->Key()->Start()};
-                    }
-
-                    foundProto = true;
+                bool ret = false;
+                std::tie(info, ret) = ValidateProperty(prop, foundProto);
+                if (ret) {
+                    return info;
                 }
-
                 break;
             }
             default: {

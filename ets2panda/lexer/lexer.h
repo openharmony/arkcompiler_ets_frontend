@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_CORE_LEXER_H
 #define ES2PANDA_PARSER_CORE_LEXER_H
 
+#include <ios>
 #include "lexer/regexp/regexp.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/token.h"
@@ -283,6 +284,8 @@ protected:
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanNumberRadix(bool allowNumericSeparator = true);
     void ScanNumber(bool allowBigInt = true);
+    std::tuple<size_t, bool, NumberFlags> ScanCharLex(bool allowBigInt, bool parseExponent, NumberFlags flags);
+    size_t ScanSignOfNumber();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanTooLargeNumber(RadixType number);
     virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
