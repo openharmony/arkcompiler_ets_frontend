@@ -85,6 +85,7 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 bool isExportEquals = false) override;
+    class ParseNamedExportDeclarationHelper;
     ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc) override;
     ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers) override;
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
