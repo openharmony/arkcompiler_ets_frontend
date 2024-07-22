@@ -295,12 +295,6 @@ namespace secharmony {
     let mangledOhmUrl: string;
     // mOhmUrlStatus: for unit test in Arkguard
     if (useNormalized || profile?.mOhmUrlStatus === OhmUrlStatus.NORMALIZED) {
-      /**
-       * Normalized OhmUrl Format:
-       * hap/hsp: @normalized:N&<module name>&<bundle name>&<standard import path>&
-       * har: @normalized:N&&<bundle name>&<standard import path>&<version>
-       * we only mangle <standard import path>.
-       */
       mangledOhmUrl = handleNormalizedOhmUrl(ohmUrl);
     } else {
       /**
@@ -320,10 +314,22 @@ namespace secharmony {
     return mangledOhmUrl;
   }
 
-  function handleNormalizedOhmUrl(ohmUrl: string, needPkgName?: boolean): string {
+  /**
+   * Normalized OhmUrl Format:
+   * hap/hsp: @normalized:N&<module name>&<bundle name>&<standard import path>&
+   * har: @normalized:N&&<bundle name>&<standard import path>&<version>
+   * we only mangle <standard import path>.
+   */
+  export function handleNormalizedOhmUrl(ohmUrl: string, needPkgName?: boolean): string {
     let originalOhmUrlSegments: string[] = ohmUrl.split('&');
     const standardImportPath = originalOhmUrlSegments[3]; // 3: index of standard import path in array.
-    const index = standardImportPath.indexOf('/');
+    let index = standardImportPath.indexOf('/');
+    // The format of <module name>: @group/packagename or packagename,
+    // and there should only be one '@' symbol and one path separator '/' if and only if the 'group' exists.
+    if (standardImportPath.startsWith('@')) {
+      index = standardImportPath.indexOf('/', index + 1);
+    }
+
     const pakName = standardImportPath.substring(0, index);
     if (needPkgName) {
       return pakName;
