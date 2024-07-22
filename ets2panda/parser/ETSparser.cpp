@@ -1306,7 +1306,9 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
 
     const auto isExternal = IsExternal();
     auto *interfaceDecl = AllocNode<ir::TSInterfaceDeclaration>(
-        Allocator(), name, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguage());
+        Allocator(), std::move(extends),
+        ir::TSInterfaceDeclaration::ConstructorData {name, typeParamDecl, body, isStatic, isExternal,
+                                                     GetContext().GetLanguage()});
 
     Lexer()->NextToken();
     GetContext().Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
@@ -3761,8 +3763,9 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
         ParseNumberEnum(members);
     }
 
-    auto *const enumDeclaration =
-        AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members), isConst, isStatic, InAmbientContext());
+    auto *const enumDeclaration = AllocNode<ir::TSEnumDeclaration>(
+        Allocator(), key, std::move(members),
+        ir::TSEnumDeclaration::ConstructorFlags {isConst, isStatic, InAmbientContext()});
     enumDeclaration->SetRange({enumStart, Lexer()->GetToken().End()});
 
     Lexer()->NextToken();  // eat '}'

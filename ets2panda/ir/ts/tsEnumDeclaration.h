@@ -18,7 +18,6 @@
 
 #include "varbinder/scope.h"
 #include "ir/statement.h"
-#include "varbinder/enumMemberResult.h"
 
 namespace ark::es2panda::varbinder {
 class EnumVariable;
@@ -30,19 +29,27 @@ class TSEnumMember;
 
 class TSEnumDeclaration : public TypedStatement {
 public:
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-member-init)
+    struct ConstructorFlags {
+        bool isConst;
+        bool isStatic = false;
+        bool isDeclare = false;
+    };
+    // NOLINTEND(cppcoreguidelines-pro-type-member-init)
+
     explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
-                               bool isConst, bool isStatic = false, bool isDeclare = false)
+                               ConstructorFlags &&flags)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           decorators_(allocator->Adapter()),
           key_(key),
           members_(std::move(members)),
-          isConst_(isConst),
-          isDeclare_(isDeclare)
+          isConst_(flags.isConst),
+          isDeclare_(flags.isDeclare)
     {
-        if (isStatic) {
+        if (flags.isStatic) {
             AddModifier(ModifierFlags::STATIC);
         }
-        if (isDeclare) {
+        if (flags.isDeclare) {
             AddModifier(ModifierFlags::DECLARE);
         }
     }

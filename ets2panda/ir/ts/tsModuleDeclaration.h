@@ -24,15 +24,22 @@ class Expression;
 
 class TSModuleDeclaration : public Statement {
 public:
-    explicit TSModuleDeclaration(ArenaAllocator *allocator, Expression *name, Statement *body, bool declare,
-                                 bool global, bool isExternalAmbient)
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-member-init)
+    struct ConstructorFlags {
+        bool declare;
+        bool global;
+        bool isExternalAmbient;
+    };
+    // NOLINTEND(cppcoreguidelines-pro-type-member-init)
+
+    explicit TSModuleDeclaration(ArenaAllocator *allocator, Expression *name, Statement *body, ConstructorFlags &&flags)
         : Statement(AstNodeType::TS_MODULE_DECLARATION),
           decorators_(allocator->Adapter()),
           name_(name),
           body_(body),
-          declare_(declare),
-          global_(global),
-          isExternalAmbient_(isExternalAmbient)
+          declare_(flags.declare),
+          global_(flags.global),
+          isExternalAmbient_(flags.isExternalAmbient)
     {
     }
 

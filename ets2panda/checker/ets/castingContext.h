@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,14 +17,21 @@
 #define ES2PANDA_COMPILER_CHECKER_ETS_CASTING_CONTEXT_H
 
 #include "checker/types/typeRelation.h"
-#include "ir/expression.h"
 
 namespace ark::es2panda::checker {
 class CastingContext {
 public:
-    CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                   const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
-                   TypeRelationFlag extraFlags = TypeRelationFlag::NONE);
+    // NOLINTBEGIN(cppcoreguidelines-pro-type-member-init)
+    struct ConstructorData {
+        ir::Expression *node;
+        checker::Type *source;
+        checker::Type *target;
+        lexer::SourcePosition const &pos;
+        TypeRelationFlag extraFlags = TypeRelationFlag::NONE;
+    };
+    // NOLINTEND(cppcoreguidelines-pro-type-member-init)
+
+    CastingContext(TypeRelation *relation, std::initializer_list<TypeErrorMessageElement> list, ConstructorData &&data);
 
     [[nodiscard]] bool UncheckedCast() const noexcept;
 

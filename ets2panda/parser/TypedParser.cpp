@@ -264,7 +264,8 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
         ThrowSyntaxError("';' expected");
     }
 
-    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(Allocator(), name, body, InAmbientContext(), isGlobal, true);
+    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(
+        Allocator(), name, body, ir::TSModuleDeclaration::ConstructorFlags {InAmbientContext(), isGlobal, true});
     moduleDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return moduleDecl;
@@ -291,8 +292,8 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
         body = ParseTsModuleBlock();
     }
 
-    auto *moduleDecl =
-        AllocNode<ir::TSModuleDeclaration>(Allocator(), identNode, body, InAmbientContext(), false, false);
+    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(
+        Allocator(), identNode, body, ir::TSModuleDeclaration::ConstructorFlags {InAmbientContext(), false, false});
     moduleDecl->SetRange({startLoc, Lexer()->GetToken().End()});
 
     return moduleDecl;
@@ -461,7 +462,9 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool isStatic)
 
     const auto isExternal = IsExternal();
     auto *interfaceDecl = AllocNode<ir::TSInterfaceDeclaration>(
-        Allocator(), id, typeParamDecl, body, std::move(extends), isStatic, isExternal, GetContext().GetLanguage());
+        Allocator(), std::move(extends),
+        ir::TSInterfaceDeclaration::ConstructorData {id, typeParamDecl, body, isStatic, isExternal,
+                                                     GetContext().GetLanguage()});
     interfaceDecl->SetRange({interfaceStart, Lexer()->GetToken().End()});
 
     Lexer()->NextToken();
@@ -640,7 +643,8 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
         }
     }
 
-    auto *enumDeclaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members), isConst);
+    auto *enumDeclaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members),
+                                                             ir::TSEnumDeclaration::ConstructorFlags {isConst});
     enumDeclaration->SetRange({enumStart, Lexer()->GetToken().End()});
     Lexer()->NextToken();  // eat '}'
 
