@@ -1,1 +1,1 @@
-Current compile mode is non merge-abc, all input abc files must be unmerged mode
+Error: If an abc file is used as input, it must be the only input file when the option '--merge-abc' is not enabled
