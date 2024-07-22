@@ -196,6 +196,53 @@ void ASParser::ParseOptionalFunctionParameter(ir::AnnotatedExpression *returnNod
     }
 }
 
+ParserStatus ASParser::ValidateArrowExprIdentifier(ir::Expression *expr, bool *seenOptional)
+{
+    const util::StringView &identifier = expr->AsIdentifier()->Name();
+    bool isOptional = expr->AsIdentifier()->IsOptional();
+    if ((*seenOptional) != isOptional) {
+        ThrowSyntaxError("A required parameter cannot follow an optional parameter.", expr->Start());
+    }
+
+    (*seenOptional) |= isOptional;
+
+    if (expr->AsIdentifier()->TypeAnnotation() == nullptr) {
+        ThrowSyntaxError("':' expected", expr->End());
+    }
+
+    if (identifier.Is("arguments")) {
+        ThrowSyntaxError("Binding 'arguments' in strict mode is invalid");
+    } else if (identifier.Is("eval")) {
+        ThrowSyntaxError("Binding 'eval' in strict mode is invalid");
+    }
+
+    ValidateArrowParameterBindings(expr);
+    return ParserStatus::NO_OPTS;
+}
+
+ParserStatus ASParser::ValidateArrowAssignmentExpr(ir::Expression *expr)
+{
+    auto *assignmentExpr = expr->AsAssignmentExpression();
+    if (assignmentExpr->Right()->IsYieldExpression()) {
+        ThrowSyntaxError("yield is not allowed in arrow function parameters");
+    }
+
+    if (assignmentExpr->Right()->IsAwaitExpression()) {
+        ThrowSyntaxError("await is not allowed in arrow function parameters");
+    }
+
+    if (!assignmentExpr->ConvertibleToAssignmentPattern()) {
+        ThrowSyntaxError("Invalid destructuring assignment target");
+    }
+
+    if (assignmentExpr->Left()->IsIdentifier() && assignmentExpr->Left()->AsIdentifier()->IsOptional()) {
+        ThrowSyntaxError("Parameter cannot have question mark and initializer.", expr->Start());
+    }
+
+    ValidateArrowParameterBindings(expr);
+    return ParserStatus::HAS_COMPLEX_PARAM;
+}
+
 ParserStatus ASParser::ValidateArrowParameter(ir::Expression *expr, bool *seenOptional)
 {
     switch (expr->Type()) {
@@ -215,47 +262,10 @@ ParserStatus ASParser::ValidateArrowParameter(ir::Expression *expr, bool *seenOp
             return ParserStatus::HAS_COMPLEX_PARAM;
         }
         case ir::AstNodeType::IDENTIFIER: {
-            const util::StringView &identifier = expr->AsIdentifier()->Name();
-            bool isOptional = expr->AsIdentifier()->IsOptional();
-            if ((*seenOptional) != isOptional) {
-                ThrowSyntaxError("A required parameter cannot follow an optional parameter.", expr->Start());
-            }
-
-            (*seenOptional) |= isOptional;
-
-            if (expr->AsIdentifier()->TypeAnnotation() == nullptr) {
-                ThrowSyntaxError("':' expected", expr->End());
-            }
-
-            if (identifier.Is("arguments")) {
-                ThrowSyntaxError("Binding 'arguments' in strict mode is invalid");
-            } else if (identifier.Is("eval")) {
-                ThrowSyntaxError("Binding 'eval' in strict mode is invalid");
-            }
-
-            ValidateArrowParameterBindings(expr);
-            return ParserStatus::NO_OPTS;
+            return ValidateArrowExprIdentifier(expr, seenOptional);
         }
         case ir::AstNodeType::ASSIGNMENT_EXPRESSION: {
-            auto *assignmentExpr = expr->AsAssignmentExpression();
-            if (assignmentExpr->Right()->IsYieldExpression()) {
-                ThrowSyntaxError("yield is not allowed in arrow function parameters");
-            }
-
-            if (assignmentExpr->Right()->IsAwaitExpression()) {
-                ThrowSyntaxError("await is not allowed in arrow function parameters");
-            }
-
-            if (!assignmentExpr->ConvertibleToAssignmentPattern()) {
-                ThrowSyntaxError("Invalid destructuring assignment target");
-            }
-
-            if (assignmentExpr->Left()->IsIdentifier() && assignmentExpr->Left()->AsIdentifier()->IsOptional()) {
-                ThrowSyntaxError("Parameter cannot have question mark and initializer.", expr->Start());
-            }
-
-            ValidateArrowParameterBindings(expr);
-            return ParserStatus::HAS_COMPLEX_PARAM;
+            return ValidateArrowAssignmentExpr(expr);
         }
         default: {
             break;
@@ -318,7 +328,7 @@ ArrowFunctionDescriptor ASParser::ConvertToArrowParameter(ir::Expression *expr, 
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-ir::Expression *ASParser::ParsePatternElement(ExpressionParseFlags flags, bool allowDefault)
+std::tuple<ir::AnnotatedExpression *, bool> ASParser::ParsePatternElementToken(ExpressionParseFlags flags)
 {
     ir::AnnotatedExpression *returnNode = nullptr;
     bool isOptional = false;
@@ -338,12 +348,13 @@ ir::Expression *ASParser::ParsePatternElement(ExpressionParseFlags flags, bool a
             returnNode->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
 
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-                isOptional = true;
+            bool questionMark = Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK;
+            if (questionMark && ((flags & ExpressionParseFlags::IN_REST) != 0)) {
+                ThrowSyntaxError("A rest parameter cannot be optional");
+            }
 
-                if ((flags & ExpressionParseFlags::IN_REST) != 0) {
-                    ThrowSyntaxError("A rest parameter cannot be optional");
-                }
+            if (questionMark) {
+                isOptional = true;
 
                 returnNode->AsIdentifier()->SetOptional(true);
                 Lexer()->NextToken();
@@ -363,6 +374,14 @@ ir::Expression *ASParser::ParsePatternElement(ExpressionParseFlags flags, bool a
             ThrowSyntaxError("Identifier expected");
         }
     }
+    return {returnNode, isOptional};
+}
+
+ir::Expression *ASParser::ParsePatternElement(ExpressionParseFlags flags, bool allowDefault)
+{
+    ir::AnnotatedExpression *returnNode = nullptr;
+    bool isOptional = false;
+    std::tie(returnNode, isOptional) = ParsePatternElementToken(flags);
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         return returnNode;
@@ -550,101 +569,74 @@ ir::TypeNode *ASParser::ParseParenthesizedOrFunctionType(bool throwError)
     return type;
 }
 
-ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
+ir::TypeNode *ASParser::ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type, TypeAnnotationParsingOptions *options)
 {
-    ir::TypeNode *type = nullptr;
+    auto *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    typeName->SetRange(Lexer()->GetToken().Loc());
+    type = AllocNode<ir::NamedType>(typeName);
+    type->SetRange(Lexer()->GetToken().Loc());
+    Lexer()->NextToken();
 
-    bool throwError = (((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0);
+    ir::NamedType *current = type->AsNamedType();
+    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
+        Lexer()->NextToken();
+
+        if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+            ThrowSyntaxError("Identifier expected");
+        }
+
+        typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+        typeName->SetRange(Lexer()->GetToken().Loc());
+        auto *next = AllocNode<ir::NamedType>(typeName);
+        current->SetRange(Lexer()->GetToken().Loc());
+        current->SetNext(next);
+        current = next;
+        Lexer()->NextToken();
+    }
+
+    ir::TSTypeParameterInstantiation *typeParams = nullptr;
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        typeParams = ParseTypeParameterInstantiation(options);
+        if (typeParams == nullptr) {
+            return nullptr;
+        }
+
+        type->AsNamedType()->SetTypeParams(typeParams);
+    }
+    return type;
+}
+
+ir::TypeNode *ASParser::ParseTypeAnnotationTokens(ir::TypeNode *type, bool throwError,
+                                                  TypeAnnotationParsingOptions *options)
+{
+    util::StringView name = "";
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
-            type = ParseParenthesizedOrFunctionType(throwError);
-            if (type == nullptr) {
-                return nullptr;
-            }
-
-            break;
+            return ParseParenthesizedOrFunctionType(throwError);
         }
         case lexer::TokenType::KEYW_VOID: {
-            util::StringView name = "void";
-            auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
-            typeName->SetRange(Lexer()->GetToken().Loc());
-            type = AllocNode<ir::NamedType>(typeName);
-            type->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
+            name = "void";
             break;
         }
         case lexer::TokenType::KEYW_THIS: {
-            util::StringView name = "this";
-            auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
-            typeName->SetRange(Lexer()->GetToken().Loc());
-            type = AllocNode<ir::NamedType>(typeName);
-            type->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
+            name = "this";
             break;
         }
         case lexer::TokenType::LITERAL_FALSE:
         case lexer::TokenType::LITERAL_TRUE: {
-            util::StringView name = "bool";
-            auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
-            typeName->SetRange(Lexer()->GetToken().Loc());
-            type = AllocNode<ir::NamedType>(typeName);
-            type->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
+            name = "bool";
             break;
         }
         case lexer::TokenType::LITERAL_NULL: {
-            util::StringView name = "null";
-            auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
-            typeName->SetRange(Lexer()->GetToken().Loc());
-            type = AllocNode<ir::NamedType>(typeName);
-            type->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
+            name = "null";
             break;
         }
         case lexer::TokenType::LITERAL_STRING: {
-            util::StringView name = "string";
-            auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
-            typeName->SetRange(Lexer()->GetToken().Loc());
-            type = AllocNode<ir::NamedType>(typeName);
-            type->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
+            name = "string";
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            auto *typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            typeName->SetRange(Lexer()->GetToken().Loc());
-            type = AllocNode<ir::NamedType>(typeName);
-            type->SetRange(Lexer()->GetToken().Loc());
-            Lexer()->NextToken();
-
-            ir::NamedType *current = type->AsNamedType();
-            while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
-                Lexer()->NextToken();
-
-                if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                    ThrowSyntaxError("Identifier expected");
-                }
-
-                typeName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-                typeName->SetRange(Lexer()->GetToken().Loc());
-                auto *next = AllocNode<ir::NamedType>(typeName);
-                current->SetRange(Lexer()->GetToken().Loc());
-                current->SetNext(next);
-                current = next;
-                Lexer()->NextToken();
-            }
-
-            ir::TSTypeParameterInstantiation *typeParams = nullptr;
-            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-                typeParams = ParseTypeParameterInstantiation(options);
-                if (typeParams == nullptr) {
-                    return nullptr;
-                }
-
-                type->AsNamedType()->SetTypeParams(typeParams);
-            }
-
-            break;
+            return ParseTypeAnnotationLiteralIdentHelper(type, options);
         }
         default: {
             if (throwError) {
@@ -655,8 +647,16 @@ ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *option
         }
     }
 
-    bool isNullable = false;
+    auto *typeName = AllocNode<ir::Identifier>(name, Allocator());
+    typeName->SetRange(Lexer()->GetToken().Loc());
+    type = AllocNode<ir::NamedType>(typeName);
+    type->SetRange(Lexer()->GetToken().Loc());
+    Lexer()->NextToken();
+    return type;
+}
 
+ir::TypeNode *ASParser::ParseTypeAnnotationTokensBitwiseOr(ir::TypeNode *type, bool throwError, bool isNullable)
+{
     while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
         Lexer()->NextToken();
 
@@ -681,7 +681,11 @@ ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *option
         type->SetEnd(Lexer()->GetToken().End());
         Lexer()->NextToken();
     }
+    return type;
+}
 
+ir::TypeNode *ASParser::ParseTypeAnnotationTokenLeftSquareBracket(ir::TypeNode *type, bool throwError, bool isNullable)
+{
     while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
         Lexer()->NextToken();
 
@@ -700,11 +704,11 @@ ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *option
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
             Lexer()->NextToken();
 
-            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NULL) {
-                if (throwError) {
-                    ThrowSyntaxError("'null' expected");
-                }
-
+            bool isLiteralNull = Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NULL;
+            if (isLiteralNull && throwError) {
+                ThrowSyntaxError("'null' expected");
+            }
+            if (isLiteralNull) {
                 return nullptr;
             }
 
@@ -731,7 +735,24 @@ ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *option
             break;
         }
     }
+    return type;
+}
 
+ir::TypeNode *ASParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
+{
+    bool throwError = (((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0);
+    ir::TypeNode *type = ParseTypeAnnotationTokens(nullptr, throwError, options);
+    if (type == nullptr) {
+        return nullptr;
+    }
+
+    bool isNullable = false;
+    type = ParseTypeAnnotationTokensBitwiseOr(type, throwError, isNullable);
+    if (type == nullptr) {
+        return nullptr;
+    }
+
+    type = ParseTypeAnnotationTokenLeftSquareBracket(type, throwError, isNullable);
     return type;
 }
 

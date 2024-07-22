@@ -133,6 +133,8 @@ public:
 
     [[nodiscard]] AssignmentExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    [[nodiscard]] bool ConvertibleToAssignmentPatternLeft(bool mustBePattern);
+    [[nodiscard]] bool ConvertibleToAssignmentPatternRight();
     [[nodiscard]] bool ConvertibleToAssignmentPattern(bool mustBePattern = true);
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;

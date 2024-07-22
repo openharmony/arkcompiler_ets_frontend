@@ -30,37 +30,57 @@
 #include "checker/ets/typeRelationContext.h"
 
 namespace ark::es2panda::ir {
-bool AssignmentExpression::ConvertibleToAssignmentPattern(bool mustBePattern)
-{
-    bool convResult = true;
 
+bool AssignmentExpression::ConvertibleToAssignmentPatternLeft(bool mustBePattern)
+{
     switch (left_->Type()) {
         case AstNodeType::ARRAY_EXPRESSION: {
-            convResult = left_->AsArrayExpression()->ConvertibleToArrayPattern();
-            break;
+            return left_->AsArrayExpression()->ConvertibleToArrayPattern();
         }
         case AstNodeType::SPREAD_ELEMENT: {
-            convResult = mustBePattern && left_->AsSpreadElement()->ConvertibleToRest(false);
-            break;
+            return mustBePattern && left_->AsSpreadElement()->ConvertibleToRest(false);
         }
         case AstNodeType::OBJECT_EXPRESSION: {
-            convResult = left_->AsObjectExpression()->ConvertibleToObjectPattern();
-            break;
+            return left_->AsObjectExpression()->ConvertibleToObjectPattern();
         }
         case AstNodeType::ASSIGNMENT_EXPRESSION: {
-            convResult = left_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(mustBePattern);
-            break;
+            return left_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(mustBePattern);
         }
         case AstNodeType::META_PROPERTY_EXPRESSION:
         case AstNodeType::CHAIN_EXPRESSION: {
-            convResult = false;
-            break;
+            return false;
         }
         default: {
-            break;
+            return true;
         }
     }
+}
 
+bool AssignmentExpression::ConvertibleToAssignmentPatternRight()
+{
+    switch (right_->Type()) {
+        case AstNodeType::ARRAY_EXPRESSION: {
+            return right_->AsArrayExpression()->ConvertibleToArrayPattern();
+        }
+        case AstNodeType::CHAIN_EXPRESSION:
+        case AstNodeType::SPREAD_ELEMENT: {
+            return false;
+        }
+        case AstNodeType::OBJECT_EXPRESSION: {
+            return right_->AsObjectExpression()->ConvertibleToObjectPattern();
+        }
+        case AstNodeType::ASSIGNMENT_EXPRESSION: {
+            return right_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(false);
+        }
+        default: {
+            return true;
+        }
+    }
+}
+
+bool AssignmentExpression::ConvertibleToAssignmentPattern(bool mustBePattern)
+{
+    bool convResult = ConvertibleToAssignmentPatternLeft(mustBePattern);
     if (mustBePattern) {
         SetType(AstNodeType::ASSIGNMENT_PATTERN);
     }
@@ -68,31 +88,7 @@ bool AssignmentExpression::ConvertibleToAssignmentPattern(bool mustBePattern)
     if (!right_->IsAssignmentExpression()) {
         return convResult;
     }
-
-    switch (right_->Type()) {
-        case AstNodeType::ARRAY_EXPRESSION: {
-            convResult = right_->AsArrayExpression()->ConvertibleToArrayPattern();
-            break;
-        }
-        case AstNodeType::CHAIN_EXPRESSION:
-        case AstNodeType::SPREAD_ELEMENT: {
-            convResult = false;
-            break;
-        }
-        case AstNodeType::OBJECT_EXPRESSION: {
-            convResult = right_->AsObjectExpression()->ConvertibleToObjectPattern();
-            break;
-        }
-        case AstNodeType::ASSIGNMENT_EXPRESSION: {
-            convResult = right_->AsAssignmentExpression()->ConvertibleToAssignmentPattern(false);
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-
-    return convResult;
+    return ConvertibleToAssignmentPatternRight();
 }
 
 void AssignmentExpression::TransformChildren(const NodeTransformer &cb, std::string_view transformationName)
