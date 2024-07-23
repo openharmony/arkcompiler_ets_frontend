@@ -12,25 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import q from 'assert';
-function k1() {
+import q2 from 'assert';
+function p2() {
     return { Propx1: 1, Propy1: 2 };
 }
-const { Propx1: q1, Propy1: r1 } = k1();
-q(q1 === 1, 'success');
-q(r1 === 2, 'success');
+const { Propx1: r2, Propy1: s2 } = p2();
+q2(r2 === 1, 'success');
+q2(s2 === 2, 'success');
 // let Propx2 =3;
 // let Propy3 =4;
 // let Propy4 =5;
-const { Propx2: s1, Obj: { Propy3: z1, Propy4: a2 } } = { Propx2: 2, Obj: { Propy3: 3, Propy4: 4 } };
-q(s1 === 2, 'success');
-q(z1 === 3, 'success');
-q(a2 === 4, 'success');
-const { ...b2 } = { prop1: 1, prop2: 2 };
-q(b2.prop1 === 1, 'success');
-q(b2.prop2 === 2, 'success');
-const { prop3: c2, ...d2 } = { prop3: 3, prop4: 4 };
-q(c2 === 3, 'success');
-q(d2.prop4 === 4, 'success');
-let e2 = 'hello';
-let f2 = { name11: e2 };
+const { Propx2: t2, Obj: { Propy3: u2, Propy4: v2 } } = { Propx2: 2, Obj: { Propy3: 3, Propy4: 4 } };
+q2(t2 === 2, 'success');
+q2(u2 === 3, 'success');
+q2(v2 === 4, 'success');
+const { ...w2 } = { prop1: 1, prop2: 2 };
+q2(w2.prop1 === 1, 'success');
+q2(w2.prop2 === 2, 'success');
+const { prop3: x2, ...y2 } = { prop3: 3, prop4: 4 };
+q2(x2 === 3, 'success');
+q2(y2.prop4 === 4, 'success');
+let z2 = 'hello';
+let a3 = { name11: z2 };

@@ -12,35 +12,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import q from 'assert';
+import a2 from 'assert';
 // 不新增变量
-let [l1, m1] = ['akria', 12];
-let { ...n1 } = { 'name2': 'akria2', age2: 18 };
-q(l1 === 'akria', 'success');
-q(m1 === 12, 'success');
-q(n1.name2 === 'akria2', 'success');
-q(n1.age2 === 18, 'success');
-function j1() {
-    let [w1, x1] = ['akria3', 13];
-    let { ...y1 } = { 'name2': 'akria4', age2: 18 };
-    q(w1 === 'akria3', 'success');
-    q(x1 === 13, 'success');
-    q(y1.name2 === 'akria4', 'success');
-    q(y1.age2 === 18, 'success');
+let [b2, c2] = ['akria', 12];
+let { ...d2 } = { 'name2': 'akria2', age2: 18 };
+a2(b2 === 'akria', 'success');
+a2(c2 === 12, 'success');
+a2(d2.name2 === 'akria2', 'success');
+a2(d2.age2 === 18, 'success');
+function y1() {
+    let [m2, n2] = ['akria3', 13];
+    let { ...o2 } = { 'name2': 'akria4', age2: 18 };
+    a2(m2 === 'akria3', 'success');
+    a2(n2 === 13, 'success');
+    a2(o2.name2 === 'akria4', 'success');
+    a2(o2.age2 === 18, 'success');
 }
-j1();
+y1();
 // 新增变量
-let { newName: o1, ...p1 } = { 'newName': 'akria5', newAge: 18 };
-q(o1 === 'akria5', 'success');
-q(p1.newAge === 18, 'success');
-function k1() {
+let { newName: e2, ...f2 } = { 'newName': 'akria5', newAge: 18 };
+a2(e2 === 'akria5', 'success');
+a2(f2.newAge === 18, 'success');
+function z1() {
     return { Propx1: 1, Propy1: 2 };
 }
-const { Propx1: q1, Propy1: r1 } = k1();
-q(q1 === 1, 'success');
-q(r1 === 2, 'success');
-let s1 = 3;
-let t1 = 4;
-const { Propx2: u1, Propy2: v1 } = { Propx2: s1, Propy2: t1 };
-q(u1 === 3, 'success');
-q(v1 === 4, 'success');
+const { Propx1: g2, Propy1: h2 } = z1();
+a2(g2 === 1, 'success');
+a2(h2 === 2, 'success');
+let i2 = 3;
+let j2 = 4;
+const { Propx2: k2, Propy2: l2 } = { Propx2: i2, Propy2: j2 };
+a2(k2 === 3, 'success');
+a2(l2 === 4, 'success');

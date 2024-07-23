@@ -142,6 +142,8 @@ namespace secharmony {
 
     importNames: Set<string>;
     exportNames: Set<string>;
+    fileExportNames?: Set<string>;
+    fileImportNames?: Set<string>;
     mangledNames: Set<string>;
     // location path
     loc: string;
@@ -314,6 +316,7 @@ namespace secharmony {
         // with export identification, special handling.
         if (def.exportSymbol) {
           current.exportNames.add(def.name);
+          root.fileExportNames.add(def.name);
           current.addDefinition(def.exportSymbol, true);
         } else {
           current.addDefinition(def);
@@ -450,6 +453,7 @@ namespace secharmony {
         } else {
           const nameText = propetyNameNode ? propetyNameNode.text : node.name.text;
           current.importNames.add(nameText);
+          root.fileImportNames.add(nameText);
         }
         forEachChild(node, analyzeScope);
       } catch (e) {
@@ -488,6 +492,7 @@ namespace secharmony {
         }
 
         current.importNames.add(bindingElement.name.text);
+        root.fileImportNames.add(bindingElement.name.text);
       });
     }
 
@@ -504,6 +509,7 @@ namespace secharmony {
     function analyzeExportNames(node: ExportSpecifier): void {
       // get export names.
       current.exportNames.add(node.name.text);
+      root.fileExportNames.add(node.name.text);
       addExportSymbolInScope(node);
       const propetyNameNode: Identifier | undefined = node.propertyName;
       if (exportObfuscation && propetyNameNode && isIdentifier(propetyNameNode)) {
@@ -553,6 +559,8 @@ namespace secharmony {
     function analyzeSourceFile(node: SourceFile): void {
       let scopeName: string = '';
       root = new Scope(scopeName, node, ScopeKind.GLOBAL, true);
+      root.fileExportNames = new Set<string>();
+      root.fileImportNames = new Set<string>();
       current = root;
       scopes.push(current);
       // locals of a node(scope) is symbol that defines in current scope(node).
@@ -582,10 +590,12 @@ namespace secharmony {
         if (def.exportSymbol) {
           if (!current.exportNames.has(def.name)) {
             current.exportNames.add(def.name);
+            root.fileExportNames.add(def.name);
           }
           const name: string = def.exportSymbol.name;
           if (!current.exportNames.has(name)) {
             current.exportNames.add(name);
+            root.fileExportNames.add(def.name);
           }
         }
       }

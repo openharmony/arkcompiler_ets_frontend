@@ -12,10 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import w from 'assert';
-const { codes1: { ERR_INVALID_ARG_TYPE1: x, ERR_MISSING_ARGS1: y, ERROR_OUT_OF_RANGE1: z }, AbortError1: a1, } = require('./exportsApi1_toplevel');
-w(x === 'ERR_INVALID_ARG_TYPE', 'success');
-w(y === 'ERR_MISSING_ARGS', 'success');
-w(z === 'ERROR_OUT_OF_RANGE', 'success');
-let b1 = new a1("hello");
-w(b1.message === 'hello', 'success');
+
+/**
+ * we should avoid get an obfuscated name as f2, g2, h2
+ */
+type testType1 = number;
+declare class testClass {}
+declare function foo()
+declare namespace ns{}
+type testType2 = number;
+declare module "testModule" {
+  import { f2, g2, h2 } from "fs";
+  let var1: testType1;
+  let var2: testType2;
+  let var3: testClass;
+}
