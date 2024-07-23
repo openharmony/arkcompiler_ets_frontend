@@ -20,7 +20,10 @@ import { FileUtils } from '../../../src/utils/FileUtils';
 import path from 'path';
 import { IOptions } from '../../../src/configs/IOptions';
 import { TransformerFactory, Node } from 'typescript';
-import { getMangleCompletePath } from '../../../src/transformers/rename/RenameFileNameTransformer';
+import {
+  getMangleCompletePath,
+  handleNormalizedOhmUrl
+} from '../../../src/transformers/rename/RenameFileNameTransformer';
 
 describe('Tester Cases for <RenameFileNameTransformer>.', function () {
   it('Tester: Test initialization of config in api createRenameFileNameFactory', function () {
@@ -33,5 +36,27 @@ describe('Tester Cases for <RenameFileNameTransformer>.', function () {
     const originalPath = 'D:/workplace/src/ets/entryability/EntryAbility.ts'
     const mangledPath = getMangleCompletePath(originalPath);
     assert.strictEqual(mangledPath === 'D:/workplace/src/ets/a/b.ts', true);
+  });
+
+  it('Tester: Test Api handleNormalizedOhmUrl', function () {
+    let ohmUrl1 = '@normalized:N&&&entry/src/main/ets/pages/test&';
+    let ohmUrl2 = '@normalized:N&&&library/Index&1.0.0';
+    let ohmUrl3 = '@normalized:N&&&@abc/a/src/main/ets/pages/test&';
+
+    let pkgname1 = handleNormalizedOhmUrl(ohmUrl1, true);
+    let pkgname2 = handleNormalizedOhmUrl(ohmUrl2, true);
+    let pkgname3 = handleNormalizedOhmUrl(ohmUrl3, true);
+
+    assert.strictEqual(pkgname1, 'entry');
+    assert.strictEqual(pkgname2, 'library');
+    assert.strictEqual(pkgname3, '@abc/a');
+
+    let mangledOhmurl1 = handleNormalizedOhmUrl(ohmUrl1);
+    let mangledOhmurl2 = handleNormalizedOhmUrl(ohmUrl2);
+    let mangledOhmurl3 = handleNormalizedOhmUrl(ohmUrl3);
+
+    assert.strictEqual(mangledOhmurl1, '@normalized:N&&&entry/src/c/ets/d/e&');
+    assert.strictEqual(mangledOhmurl2, '@normalized:N&&&library/f&1.0.0');
+    assert.strictEqual(mangledOhmurl3, '@normalized:N&&&@abc/a/src/c/ets/d/e&');
   });
 });
