@@ -71,7 +71,7 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
 
     handleReservedConfig(config, 'mNameObfuscation', 'mReservedProperties', 'mUniversalReservedProperties');
     handleReservedConfig(config, 'mNameObfuscation', 'mReservedToplevelNames', 'mUniversalReservedToplevelNames');
-    return super.init(config)
+    return super.init(config);
   }
 
   /**
@@ -201,19 +201,17 @@ export class ArkObfuscatorForTest extends ArkObfuscator {
     }
   }
 
-  private getPathAfterTest262SecondLevel(fullPath) {
+  private getPathAfterTest262SecondLevel(fullPath: string): string {
     const pathParts = fullPath.split('/');
     const dataIndex = pathParts.indexOf('test262');
-    // If it is not the directory of test262, return to the original path.
-    if (dataIndex === -1) {
-      return fullPath;
-    }
-
     // 2: Calculate the index of the second-level directory after 'test262'
     const secondLevelIndex = dataIndex + 2;
-    if (secondLevelIndex < pathParts.length) {
+
+    if (dataIndex !== -1 && secondLevelIndex < pathParts.length) {
       return pathParts.slice(secondLevelIndex).join('/');
     }
+  
+    return fullPath;
   }
 
   private produceNameCache(namecache: { [k: string]: string | {} }, resultPath: string): void {
