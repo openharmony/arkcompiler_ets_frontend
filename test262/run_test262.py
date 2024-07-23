@@ -799,7 +799,6 @@ def run_test262_test(args):
 
     run_check(test_cmd)
 
-
 Check = collections.namedtuple('Check', ['enabled', 'runner', 'arg'])
 
 
@@ -813,7 +812,6 @@ def main(args):
         sys.exit(ret)
     endtime = datetime.datetime.now()
     print(f"used time is: {str(endtime - starttime)}")
-
 
 if __name__ == "__main__":
     sys.exit(main(parse_args()))

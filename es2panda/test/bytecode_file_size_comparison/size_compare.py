@@ -5,9 +5,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -120,7 +120,7 @@ def get_args():
                         help='Path to the executable program r8')
     parser.add_argument('--rt-path', dest='rt_path', type=lambda arg : is_file(parser, arg),
                         help='Path to the jre/lib/rt.jar')
-    parser.add_argument('--timeout', type=check_timeout, dest='timeout', default=180, 
+    parser.add_argument('--timeout', type=check_timeout, dest='timeout', default=180,
                         help='Time limits for use case execution (In seconds)')
     return parser.parse_args()
 
@@ -147,10 +147,10 @@ def check_r8_rt_exists(args):
 
 
 def get_rate(abc_size, source_size):
-    if abc_size == None or source_size == None:
+    if abc_size is None or source_size is None:
         return 'N/A'
     return '{:.2%}'.format(abc_size / source_size)
-        
+
 
 def generate_size_comparison_report(js_output, ts_output, java_output, java_r8output,
                                     js_source_output, ts_source_output, java_r8source_output):
@@ -298,6 +298,7 @@ class JavaD8Runner:
             except Exception as e:
                 print(f"[ERROR]: {e}")
 
+
 class JavaR8Runner:
     def __init__(self, args):
         self.args = args
@@ -334,6 +335,7 @@ class JavaR8Runner:
             except Exception as e:
                 print(f"[ERROR]: {e}")
 
+
 class Workload:
     def __init__(self):
         self.workload_root = os.path.join(TEST_ROOT, WORKLOAD_REPO)
@@ -361,7 +363,7 @@ class Workload:
         shutil.copytree(self.workload_js_case_root, self.js_test_root)
         shutil.copytree(self.workload_ts_case_root, self.ts_test_root)
         shutil.copytree(self.workload_java_case_root, self.java_test_root)
-        
+
     def run(self):
         self.download()
         self.removecases()
@@ -375,7 +377,7 @@ def main():
     if not check_r8_rt_exists(args):
         print('[ERROR]: check r8 Failed!')
         return
-    
+
     workload = Workload()
     workload.run()
 
@@ -396,7 +398,7 @@ def main():
     ts_runner.run()
     java_runner.run()
     java_r8runner.run()
-    
+
     generate_size_comparison_report(js_runner.output, ts_runner.output, java_runner.output, java_r8runner.output,
                                     js_runner.source_output, ts_runner.source_output, java_r8runner.source_output)
 
