@@ -1114,35 +1114,8 @@ void ETSChecker::ValidateMainSignature(ir::ScriptFunction *func)
     }
 }
 
-checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
+static void AddSignatureFlags(const ir::ScriptFunction *const func, Signature *const signature)
 {
-    bool isArrow = func->IsArrow();
-    auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
-    auto funcName = nameVar == nullptr ? util::StringView() : nameVar->Name();
-
-    auto *signatureInfo = ComposeSignatureInfo(func);
-
-    if (funcName.Is(compiler::Signatures::MAIN) &&
-        func->Scope()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) != std::string::npos) {
-        func->AddFlag(ir::ScriptFunctionFlags::ENTRY_POINT);
-    }
-    if (func->IsEntryPoint()) {
-        ValidateMainSignature(func);
-    }
-
-    auto *returnType = ComposeReturnType(func);
-    auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
-    if (isConstructSig) {
-        signature->AddSignatureFlag(SignatureFlags::CONSTRUCT);
-    } else {
-        signature->AddSignatureFlag(SignatureFlags::CALL);
-    }
-
-    auto *funcType = CreateETSFunctionType(func, signature, funcName);
-    func->SetSignature(signature);
-    funcType->SetVariable(nameVar);
-    VarBinder()->AsETSBinder()->BuildFunctionName(func);
-
     if (func->IsAbstract()) {
         signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
         signature->AddSignatureFlag(SignatureFlags::VIRTUAL);
@@ -1179,6 +1152,38 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
     } else if (func->IsGetter()) {
         signature->AddSignatureFlag(SignatureFlags::GETTER);
     }
+}
+
+checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction *func, bool isConstructSig)
+{
+    bool isArrow = func->IsArrow();
+    auto *nameVar = isArrow ? nullptr : func->Id()->Variable();
+    auto funcName = nameVar == nullptr ? util::StringView() : nameVar->Name();
+
+    auto *signatureInfo = ComposeSignatureInfo(func);
+
+    if (funcName.Is(compiler::Signatures::MAIN) &&
+        func->Scope()->Name().Utf8().find(compiler::Signatures::ETS_GLOBAL) != std::string::npos) {
+        func->AddFlag(ir::ScriptFunctionFlags::ENTRY_POINT);
+    }
+    if (func->IsEntryPoint()) {
+        ValidateMainSignature(func);
+    }
+
+    auto *returnType = ComposeReturnType(func);
+    auto *signature = ComposeSignature(func, signatureInfo, returnType, nameVar);
+    if (isConstructSig) {
+        signature->AddSignatureFlag(SignatureFlags::CONSTRUCT);
+    } else {
+        signature->AddSignatureFlag(SignatureFlags::CALL);
+    }
+
+    auto *funcType = CreateETSFunctionType(func, signature, funcName);
+    func->SetSignature(signature);
+    funcType->SetVariable(nameVar);
+    VarBinder()->AsETSBinder()->BuildFunctionName(func);
+
+    AddSignatureFlags(func, signature);
 
     if (!isArrow) {
         nameVar->SetTsType(funcType);

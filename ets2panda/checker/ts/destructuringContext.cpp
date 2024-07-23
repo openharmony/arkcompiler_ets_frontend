@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -124,6 +124,28 @@ void DestructuringContext::ValidateObjectLiteralType(ObjectType *objType, ir::Ob
     }
 }
 
+// Helper function to reduce HandleAssignmentPattern and pass code checker
+void DestructuringContext::HandleAssignmentPatternArrayPattern(ir::AssignmentExpression *assignmentPattern,
+                                                               Type *inferredType)
+{
+    ArrayDestructuringContext nextContext = ArrayDestructuringContext(
+        {checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
+    nextContext.SetInferredType(inferredType);
+    nextContext.Start();
+}
+
+// Helper function to reduce HandleAssignmentPattern and pass code checker
+void DestructuringContext::HandleAssignmentPatternIdentifier(ir::AssignmentExpression *assignmentPattern,
+                                                             Type *defaultType, Type *inferredType)
+{
+    if (validateTypeAnnotation_ && !checker_->IsTypeAssignableTo(defaultType, inferredType)) {
+        checker_->ThrowAssignmentError(defaultType, inferredType, assignmentPattern->Left()->Start());
+    }
+
+    SetInferredTypeForVariable(assignmentPattern->Left()->AsIdentifier()->Variable(), inferredType,
+                               assignmentPattern->Start());
+}
+
 void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *assignmentPattern, Type *inferredType,
                                                    bool validateDefault)
 {
@@ -132,7 +154,6 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
     }
 
     Type *defaultType = assignmentPattern->Right()->Check(checker_);
-
     if (!checker_->HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
         defaultType = checker_->GetBaseTypeOfLiteralType(defaultType);
     }
@@ -165,26 +186,18 @@ void DestructuringContext::HandleAssignmentPattern(ir::AssignmentExpression *ass
             return;
         }
 
-        if (validateTypeAnnotation_ && !checker_->IsTypeAssignableTo(defaultType, inferredType)) {
-            checker_->ThrowAssignmentError(defaultType, inferredType, assignmentPattern->Left()->Start());
-        }
-
-        SetInferredTypeForVariable(assignmentPattern->Left()->AsIdentifier()->Variable(), inferredType,
-                                   assignmentPattern->Start());
+        HandleAssignmentPatternIdentifier(assignmentPattern, defaultType, inferredType);
         return;
     }
 
     if (assignmentPattern->Left()->IsArrayPattern()) {
-        ArrayDestructuringContext nextContext = ArrayDestructuringContext(
-            checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
-        nextContext.SetInferredType(inferredType);
-        nextContext.Start();
+        HandleAssignmentPatternArrayPattern(assignmentPattern, inferredType);
         return;
     }
 
     ASSERT(assignmentPattern->Left()->IsObjectPattern());
     ObjectDestructuringContext nextContext = ObjectDestructuringContext(
-        checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
+        {checker_, assignmentPattern->Left(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
     nextContext.SetInferredType(inferredType);
     nextContext.Start();
 }
@@ -383,8 +396,8 @@ void ArrayDestructuringContext::HandleRest(ir::SpreadElement *rest)
     }
 
     if (rest->Argument()->IsArrayPattern()) {
-        ArrayDestructuringContext nextContext = ArrayDestructuringContext(checker_, rest->Argument(), inAssignment_,
-                                                                          convertTupleToArray_, nullptr, nullptr);
+        ArrayDestructuringContext nextContext = ArrayDestructuringContext(
+            {checker_, rest->Argument(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
         nextContext.SetInferredType(inferredRestType);
         nextContext.Start();
         return;
@@ -392,7 +405,7 @@ void ArrayDestructuringContext::HandleRest(ir::SpreadElement *rest)
 
     ASSERT(rest->Argument()->IsObjectPattern());
     ObjectDestructuringContext nextContext =
-        ObjectDestructuringContext(checker_, rest->Argument(), inAssignment_, convertTupleToArray_, nullptr, nullptr);
+        ObjectDestructuringContext({checker_, rest->Argument(), inAssignment_, convertTupleToArray_, nullptr, nullptr});
     nextContext.SetInferredType(inferredRestType);
     nextContext.Start();
 }
@@ -440,6 +453,45 @@ void ArrayDestructuringContext::SetRemainingParameterTypes()
     } while (++index_ != id_->AsArrayPattern()->Elements().size());
 }
 
+void ArrayDestructuringContext::HandleElement(ir::Expression *element, Type *nextInferredType)
+{
+    switch (element->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            if (inAssignment_) {
+                HandleDestructuringAssignment(element->AsIdentifier(), nextInferredType, nullptr);
+                break;
+            }
+
+            SetInferredTypeForVariable(element->AsIdentifier()->Variable(), nextInferredType, element->Start());
+            break;
+        }
+        case ir::AstNodeType::ARRAY_PATTERN: {
+            ArrayDestructuringContext nextContext =
+                ArrayDestructuringContext({checker_, element, inAssignment_, convertTupleToArray_, nullptr, nullptr});
+            nextContext.SetInferredType(nextInferredType);
+            nextContext.Start();
+            break;
+        }
+        case ir::AstNodeType::OBJECT_PATTERN: {
+            ObjectDestructuringContext nextContext =
+                ObjectDestructuringContext({checker_, element, inAssignment_, convertTupleToArray_, nullptr, nullptr});
+            nextContext.SetInferredType(nextInferredType);
+            nextContext.Start();
+            break;
+        }
+        case ir::AstNodeType::ASSIGNMENT_PATTERN: {
+            HandleAssignmentPattern(element->AsAssignmentPattern(), nextInferredType, false);
+            break;
+        }
+        case ir::AstNodeType::OMITTED_EXPRESSION: {
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
 void ArrayDestructuringContext::Start()
 {
     ASSERT(id_->IsArrayPattern());
@@ -472,42 +524,7 @@ void ArrayDestructuringContext::Start()
             }
         }
 
-        switch (it->Type()) {
-            case ir::AstNodeType::IDENTIFIER: {
-                if (inAssignment_) {
-                    HandleDestructuringAssignment(it->AsIdentifier(), nextInferredType, nullptr);
-                    break;
-                }
-
-                SetInferredTypeForVariable(it->AsIdentifier()->Variable(), nextInferredType, it->Start());
-                break;
-            }
-            case ir::AstNodeType::ARRAY_PATTERN: {
-                ArrayDestructuringContext nextContext =
-                    ArrayDestructuringContext(checker_, it, inAssignment_, convertTupleToArray_, nullptr, nullptr);
-                nextContext.SetInferredType(nextInferredType);
-                nextContext.Start();
-                break;
-            }
-            case ir::AstNodeType::OBJECT_PATTERN: {
-                ObjectDestructuringContext nextContext =
-                    ObjectDestructuringContext(checker_, it, inAssignment_, convertTupleToArray_, nullptr, nullptr);
-                nextContext.SetInferredType(nextInferredType);
-                nextContext.Start();
-                break;
-            }
-            case ir::AstNodeType::ASSIGNMENT_PATTERN: {
-                HandleAssignmentPattern(it->AsAssignmentPattern(), nextInferredType, false);
-                break;
-            }
-            case ir::AstNodeType::OMITTED_EXPRESSION: {
-                break;
-            }
-            default: {
-                UNREACHABLE();
-            }
-        }
-
+        HandleElement(it, nextInferredType);
         index_++;
     }
 }
@@ -669,8 +686,8 @@ void ObjectDestructuringContext::Start()
 
                 if (property->Value()->IsArrayPattern()) {
                     ArrayDestructuringContext nextContext =
-                        ArrayDestructuringContext(checker_, property->Value()->AsArrayPattern(), inAssignment_,
-                                                  convertTupleToArray_, nullptr, nullptr);
+                        ArrayDestructuringContext({checker_, property->Value()->AsArrayPattern(), inAssignment_,
+                                                   convertTupleToArray_, nullptr, nullptr});
                     nextContext.SetInferredType(nextInferredType);
                     nextContext.Start();
                     break;
@@ -678,8 +695,8 @@ void ObjectDestructuringContext::Start()
 
                 if (property->Value()->IsObjectPattern()) {
                     ObjectDestructuringContext nextContext =
-                        ObjectDestructuringContext(checker_, property->Value()->AsObjectPattern(), inAssignment_,
-                                                   convertTupleToArray_, nullptr, nullptr);
+                        ObjectDestructuringContext({checker_, property->Value()->AsObjectPattern(), inAssignment_,
+                                                    convertTupleToArray_, nullptr, nullptr});
                     nextContext.SetInferredType(nextInferredType);
                     nextContext.Start();
                     break;

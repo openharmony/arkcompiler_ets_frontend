@@ -57,6 +57,8 @@ public:
 private:
     void AnalyzeNodes(const ir::AstNode *node);
     void AnalyzeNode(const ir::AstNode *node);
+    void AnalyzeNodeHelper1(const ir::AstNode *node);
+    void AnalyzeNodeHelper2(const ir::AstNode *node);
     void AnalyzeDef(const ir::AstNode *node);
     void AnalyzeStat(const ir::AstNode *node);
     void AnalyzeStats(const ArenaVector<ir::Statement *> &stats);

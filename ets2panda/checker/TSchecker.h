@@ -339,11 +339,14 @@ public:
         ir::ArrayExpression *param);
     std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionObjectPatternParameter(
         ir::ObjectExpression *param);
+    void ValidateSubsequentNode(const ir::Statement *const subsequentNode, const ir::ScriptFunction *const func);
+    void CheckOverloadSignatureCompatibility(Signature *bodyCallSignature, Signature *signature);
     void InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *funcVar);
     void CollectTypesFromReturnStatements(ir::AstNode *parent, ArenaVector<Type *> *returnTypes);
     void CheckAllCodePathsInNonVoidFunctionReturnOrThrow(ir::ScriptFunction *func, lexer::SourcePosition lineInfo,
                                                          const char *errMsg);
     void CreatePatternParameterName(ir::AstNode *node, std::stringstream &ss);
+    void HandlePropertyPatternParameterName(ir::Property *prop, std::stringstream &ss);
     void ThrowReturnTypeCircularityError(ir::ScriptFunction *func);
     ArgRange GetArgRange(const ArenaVector<Signature *> &signatures, ArenaVector<Signature *> *potentialSignatures,
                          uint32_t callArgsSize, bool *haveSignatureWithRest);

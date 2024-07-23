@@ -315,8 +315,8 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
                     if (assignmentPattern->Left()->IsArrayPattern()) {
                         auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
                         auto destructuringContext =
-                            checker::ArrayDestructuringContext(checker, assignmentPattern->Left()->AsArrayPattern(),
-                                                               false, true, nullptr, assignmentPattern->Right());
+                            checker::ArrayDestructuringContext({checker, assignmentPattern->Left()->AsArrayPattern(),
+                                                                false, true, nullptr, assignmentPattern->Right()});
 
                         if (foundVar != nullptr) {
                             destructuringContext.SetInferredType(
@@ -332,8 +332,8 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
                     ASSERT(assignmentPattern->Left()->IsObjectPattern());
                     auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
                     auto destructuringContext =
-                        checker::ObjectDestructuringContext(checker, assignmentPattern->Left()->AsObjectPattern(),
-                                                            false, true, nullptr, assignmentPattern->Right());
+                        checker::ObjectDestructuringContext({checker, assignmentPattern->Left()->AsObjectPattern(),
+                                                             false, true, nullptr, assignmentPattern->Right()});
 
                     if (foundVar != nullptr) {
                         destructuringContext.SetInferredType(

@@ -75,14 +75,26 @@ private:
 
     void GenExternalRecord(varbinder::RecordTable *recordTable);
     void GenGlobalArrayRecord(checker::ETSArrayType *arrayType, checker::Signature *signature);
+    std::vector<pandasm::AnnotationData> GenAnnotations(const ir::ClassDefinition *classDef);
     void GenClassRecord(const ir::ClassDefinition *classDef, bool external);
     void GenEnumRecord(const ir::TSEnumDeclaration *enumDecl, bool external);
     void GenAnnotationRecord(std::string_view recordNameView, bool isRuntime = false, bool isType = false);
     void GenInterfaceRecord(const ir::TSInterfaceDeclaration *interfaceDecl, bool external);
     void EmitDefaultFieldValue(pandasm::Field &classField, const ir::Expression *init);
     void GenClassField(const ir::ClassProperty *field, pandasm::Record &classRecord, bool external);
-    void GenField(const checker::Type *tsType, const util::StringView &name, const ir::Expression *value,
-                  uint32_t accesFlags, pandasm::Record &record, bool external);
+
+    // Struct to reduce number of arguments to pass code checker
+    struct GenFieldArguments {
+        const checker::Type *tsType;
+        const util::StringView &name;
+        const ir::Expression *value;
+        uint32_t accesFlags;
+        pandasm::Record &record;
+        bool external;
+    };
+
+    void GenField(const GenFieldArguments &data);
+
     void GenInterfaceMethodDefinition(const ir::MethodDefinition *methodDef, bool external);
     void GenClassInheritedFields(const checker::ETSObjectType *baseType, pandasm::Record &classRecord);
     pandasm::AnnotationData GenAnnotationSignature(const ir::ClassDefinition *classDef);
