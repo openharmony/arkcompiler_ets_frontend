@@ -883,11 +883,9 @@ ArenaVector<ir::TSInterfaceHeritage *> ASParser::ParseInterfaceExtendsClause()
         Lexer()->NextToken();
     }
 
-    ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-        typeParamInst = ParseTypeParameterInstantiation(&options);
-        extendsClause->AsNamedType()->SetTypeParams(typeParamInst);
+        extendsClause->AsNamedType()->SetTypeParams(ParseTypeParameterInstantiation(&options));
         heritageEnd = Lexer()->GetToken().End();
     }
 
@@ -1079,7 +1077,6 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
         }
 
         const lexer::SourcePosition &implementStart = Lexer()->GetToken().Start();
-        lexer::SourcePosition implementsEnd = Lexer()->GetToken().End();
         auto *implementsName = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
         implementsName->SetRange(Lexer()->GetToken().Loc());
         auto *implementsClause = AllocNode<ir::NamedType>(implementsName);
@@ -1100,7 +1097,6 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
             current->SetRange(Lexer()->GetToken().Loc());
             current->SetNext(next);
             current = next;
-            implementsEnd = Lexer()->GetToken().End();
             Lexer()->NextToken();
         }
 
@@ -1123,10 +1119,7 @@ ArenaVector<ir::TSClassImplements *> ASParser::ParseClassImplementClause()
             Lexer()->NextToken();
             continue;
         }
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            ThrowSyntaxError("',' expected");
-        }
+        ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
     }
 
     if (implements.empty()) {
@@ -1586,79 +1579,72 @@ ir::ExportDefaultDeclaration *ASParser::ParseExportDefaultDeclaration(const lexe
     return exportDeclaration;
 }
 
+class ASParser::ParseNamedExportDeclarationHelper {
+    friend ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc);
+
+private:
+    static ir::Statement *GetParsedDeclaration(ASParser *parser, lexer::TokenType type)
+    {
+        ir::ModifierFlags flags = ir::ModifierFlags::NONE;
+        if (parser->Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
+            parser->Lexer()->NextToken();  // eat 'abstract'
+            flags = ir::ModifierFlags::ABSTRACT;
+        }
+
+        switch (type) {
+            case lexer::TokenType::KEYW_VAR: {
+                return parser->ParseVariableDeclaration(VariableParsingFlags::VAR);
+            }
+            case lexer::TokenType::KEYW_CONST: {
+                return parser->ParseVariableDeclaration(VariableParsingFlags::CONST);
+            }
+            case lexer::TokenType::KEYW_LET: {
+                return parser->ParseVariableDeclaration(VariableParsingFlags::LET);
+            }
+            case lexer::TokenType::KEYW_FUNCTION: {
+                return parser->ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
+            }
+            case lexer::TokenType::KEYW_CLASS: {
+                return parser->ParseClassDeclaration(ir::ClassDefinitionModifiers::ID_REQUIRED, flags);
+            }
+            case lexer::TokenType::KEYW_ENUM: {
+                return parser->ParseEnumDeclaration();
+            }
+            case lexer::TokenType::KEYW_INTERFACE: {
+                return parser->ParseInterfaceDeclaration(false);
+            }
+            case lexer::TokenType::KEYW_TYPE: {
+                return parser->ParseTypeAliasDeclaration();
+            }
+            case lexer::TokenType::KEYW_GLOBAL:
+            case lexer::TokenType::KEYW_MODULE:
+            case lexer::TokenType::KEYW_NAMESPACE: {
+                return parser->ParseModuleDeclaration();
+            }
+            default: {
+                parser->ExpectToken(lexer::TokenType::KEYW_ASYNC);
+                return parser->ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
+            }
+        }
+    }
+};
+
 ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc)
 {
-    ir::Statement *decl = nullptr;
-
-    ir::ClassDefinitionModifiers classModifiers = ir::ClassDefinitionModifiers::ID_REQUIRED;
-    ir::ModifierFlags flags = ir::ModifierFlags::NONE;
-
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
         CheckDeclare();
     }
 
-    if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
-        Lexer()->NextToken();  // eat 'abstract'
-        flags |= ir::ModifierFlags::ABSTRACT;
-    }
-
-    switch (Lexer()->GetToken().KeywordType()) {
-        case lexer::TokenType::KEYW_VAR: {
-            decl = ParseVariableDeclaration(VariableParsingFlags::VAR);
-            break;
-        }
-        case lexer::TokenType::KEYW_CONST: {
-            decl = ParseVariableDeclaration(VariableParsingFlags::CONST);
-            break;
-        }
-        case lexer::TokenType::KEYW_LET: {
-            decl = ParseVariableDeclaration(VariableParsingFlags::LET);
-            break;
-        }
-        case lexer::TokenType::KEYW_FUNCTION: {
-            decl = ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
-            break;
-        }
-        case lexer::TokenType::KEYW_CLASS: {
-            decl = ParseClassDeclaration(classModifiers, flags);
-            break;
-        }
-        case lexer::TokenType::KEYW_ENUM: {
-            decl = ParseEnumDeclaration();
-            break;
-        }
-        case lexer::TokenType::KEYW_INTERFACE: {
-            decl = ParseInterfaceDeclaration(false);
-            break;
-        }
-        case lexer::TokenType::KEYW_TYPE: {
-            decl = ParseTypeAliasDeclaration();
-            break;
-        }
-        case lexer::TokenType::KEYW_GLOBAL:
-        case lexer::TokenType::KEYW_MODULE:
-        case lexer::TokenType::KEYW_NAMESPACE: {
-            decl = ParseModuleDeclaration();
-            break;
-        }
-        default: {
-            if (!Lexer()->GetToken().IsAsyncModifier()) {
-                ThrowSyntaxError("Unexpected token");
-            }
-
-            Lexer()->NextToken();  // eat `async` keyword
-            decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
-        }
-    }
+    ir::Statement *decl =
+        ParseNamedExportDeclarationHelper::GetParsedDeclaration(this, Lexer()->GetToken().KeywordType());
 
     if (decl->IsVariableDeclaration()) {
         ConsumeSemicolon(decl);
     }
 
-    lexer::SourcePosition endLoc = decl->End();
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
     auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), decl, std::move(specifiers));
-    exportDeclaration->SetRange({startLoc, endLoc});
+    exportDeclaration->SetRange({startLoc, decl->End()});
 
     return exportDeclaration;
 }
