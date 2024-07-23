@@ -147,6 +147,17 @@ protected:
     {
         return false;
     }
+
+private:
+    ParserStatus ValidateArrowParameterAssignment(ir::AssignmentExpression *assignmentExpr);
+    ParserStatus ValidateArrowParameterArray(ir::ArrayExpression *arrayPattern);
+    ParserStatus ValidateArrowParameterObject(ir::ObjectExpression *objectPattern);
+
+    ir::Expression *ParseLiteralIndent(ir::Expression *typeName, ExpressionParseFlags flags,
+                                       const lexer::SourcePosition &startLoc);
+
+    ir::AstNode *ParseProperty(const ArenaVector<ir::AstNode *> &properties, ClassElementDescriptor &desc,
+                               ir::Expression *propName);
 };
 }  // namespace ark::es2panda::parser
 
