@@ -138,6 +138,9 @@ def parse_args():
                         help="Run test262 with baseline JIT")
     parser.add_argument('--abc2program', action='store_true',
                         help="Use abc2prog to generate abc, aot or pgo is not supported yet under this option")
+    parser.add_argument('--stub-file',
+                        default=DEFAULT_STUB_FILE,
+                        help="stub file")
     parser.add_argument('--disable-force-gc', action='store_true',
                         help="Run test262 with close force-gc")
     parser.add_argument('--enable-arkguard', action='store_true',
@@ -687,10 +690,18 @@ def get_host_args_of_ark_arch(args, host_args):
 
     return host_args
 
+
 def get_disable_force_gc(host_args, args):
     host_args += f"--disable-force-gc "
 
     return host_args
+
+
+def get_host_args_of_stub_file(args, host_args):
+    host_args += f"--stub-file={args.stub_file} "
+
+    return host_args
+
 
 def get_host_args(args, host_type):
     host_args = ""
@@ -700,6 +711,7 @@ def get_host_args(args, host_type):
     ark_frontend = DEFAULT_ARK_FRONTEND
     ark_frontend_binary = DEFAULT_ARK_FRONTEND_BINARY
     ark_arch = DEFAULT_ARK_ARCH
+    stub_file = DEFAULT_STUB_FILE
     opt_level = DEFAULT_OPT_LEVEL
     es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
     merge_abc_binary = DEFAULT_MERGE_ABC_BINARY
@@ -746,6 +758,9 @@ def get_host_args(args, host_type):
 
     if args.ark_arch != ark_arch:
         host_args = get_host_args_of_ark_arch(args, host_args)
+
+    if args.stub_file != stub_file:
+        host_args = get_host_args_of_stub_file(args, host_args)
 
     if args.disable_force_gc:
         host_args = get_disable_force_gc(host_args, args)

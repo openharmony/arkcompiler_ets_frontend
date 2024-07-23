@@ -57,6 +57,22 @@ def output(retcode, msg):
         sys.stderr.write("Unknown Error: " + str(retcode))
 
 
+def filter_arm_specific_errors(errs_str):
+    list_errs = []
+    for err in errs_str.split("\n"):
+        if err:
+            if ("memset will be used instead" not in err and
+                "This is the expected behaviour if you are running under QEMU" not in err and
+                "Can't connect to server" not in err):
+                list_errs.append(err)
+
+    if len(list_errs) != 0:
+        output(1, " ".join(list_errs))
+        return False
+
+    return True
+
+
 def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT, custom_cwd=None):
     proc = subprocess.Popen(cmd_args,
                             stderr=subprocess.PIPE,
@@ -73,8 +89,10 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT, custom_cwd=None):
         (output_res, errs) = proc.communicate(timeout=timeout)
         ret_code = proc.poll()
 
-        if errs.decode(code_format, 'ignore') != '':
-            output(1, errs.decode(code_format, 'ignore'))
+        errs_str = errs.decode(code_format, 'ignore')
+        if filter_arm_specific_errors(errs_str):
+            errs = None
+        else:
             return 1
 
         if ret_code and ret_code != 1:

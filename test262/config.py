@@ -69,6 +69,7 @@ DEFAULT_ZLIB_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/thirdparty/zlib"
 
 DEFAULT_ARK_TOOL = os.path.join(DEFAULT_ARK_JS_RUNTIME_DIR, "ark_js_vm")
 DEFAULT_LIBS_DIR = f"{DEFAULT_ICUI_DIR}:{LLVM_DIR}:{DEFAULT_ARK_JS_RUNTIME_DIR}:{DEFAULT_ZLIB_DIR}"
+DEFAULT_STUB_FILE = f""
 DEFAULT_ARK_AOT_TOOL = os.path.join(DEFAULT_ARK_JS_RUNTIME_DIR, "ark_aot_compiler")
 
 DEFAULT_HOST_TYPE = "panda"

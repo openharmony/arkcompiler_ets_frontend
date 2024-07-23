@@ -52,6 +52,10 @@ def parse_args():
     parser.add_argument("--js-file",
                         required=True,
                         help="js file")
+    parser.add_argument("--stub-file",
+                        default=DEFAULT_STUB_FILE,
+                        required=False,
+                        help="stub file")
     parser.add_argument('--ark-frontend',
                         default=DEFAULT_ARK_FRONTEND,
                         required=False,
@@ -142,6 +146,7 @@ class ArkProgram():
         self.module_list = []
         self.dynamicImport_list = []
         self.js_file = ""
+        self.stub_file = ""
         self.module = False
         self.abc_file = ""
         self.arch = ARK_ARCH
@@ -211,6 +216,8 @@ class ArkProgram():
         self.dynamicImport_list = DYNAMIC_IMPORT_LIST
 
         self.js_file = self.args.js_file
+
+        self.stub_file = self.args.stub_file
 
         self.arch = self.args.ark_arch
 
@@ -562,6 +569,8 @@ class ArkProgram():
             cmd_args.append("--compiler-opt-inlining=true")
             cmd_args.append("--compiler-max-inline-bytecodes=45")
             cmd_args.append("--compiler-opt-level=2")
+            if self.stub_file != "":
+                cmd_args.append(f"--stub-file={self.stub_file}")
             if self.disable_force_gc:
                 cmd_args.append(f"--enable-force-gc=false")
             cmd_args.append(f'--compiler-pgo-profiler-path={file_name_pre}.ap')
@@ -622,6 +631,8 @@ class ArkProgram():
 
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
         cmd_args.insert(-1, f'--entry-point={record_name}')
+        if self.stub_file != "":
+            cmd_args.insert(-1, f'--stub-file={self.stub_file}')
         retcode = exec_command(cmd_args)
         if retcode:
             print_command(cmd_args)
@@ -662,7 +673,6 @@ class ArkProgram():
             if self.run_jit or self.run_baseline_jit:
                 cmd_args.insert(-1, f'--compiler-target-triple=aarch64-unknown-linux-gnu')
             if self.run_baseline_jit:
-                cmd_args.insert(-1, f'--stub-file=../../out/arm64.release/gen/arkcompiler/ets_runtime/stub.an')
                 cmd_args.insert(-1, f'--test-assert=true')
         elif self.arch == ARK_ARCH_LIST[2]:
             qemu_tool = "qemu-arm"
@@ -690,6 +700,8 @@ class ArkProgram():
             cmd_args.insert(-1, f'--compiler-enable-baselinejit=true')
             cmd_args.insert(-1, f'--compiler-try-catch-function=true')
             cmd_args.insert(-1, f'--compiler-force-baselinejit-compile-main=true')
+        if self.stub_file != "":
+            cmd_args.insert(-1, f"--stub-file={self.stub_file}")
         retcode = 0
         if self.abc2program:
             retcode = self.execute_abc2program_outputs(cmd_args)
@@ -723,6 +735,8 @@ class ArkProgram():
                         f'--compiler-pgo-profiler-path={file_name_pre}.ap',
                         "--asm-interpreter=true",
                         f'--entry-point={record_name}']
+        if self.stub_file != "":
+            cmd_args.append(f"--stub-file={self.stub_file}")
         if self.disable_force_gc:
             cmd_args.append(f"--enable-force-gc=false")
         cmd_args.append(f'{file_name_pre}.abc')
