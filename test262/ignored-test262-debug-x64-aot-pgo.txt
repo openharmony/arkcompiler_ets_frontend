@@ -38,6 +38,7 @@ test262/data/test_es2021/intl402/default-locale-is-canonicalized.js
 test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype-dayPeriod.js
 test262/data/test_es2021/intl402/DateTimeFormat/taint-Object-prototype.js
 test262/data/test_es2021/intl402/PluralRules/prototype/resolvedOptions/properties.js
+test262/data/test_es2021/intl402/constructors-string-and-single-element-array.js
 
 #18217
 test262/data/test_es2021/intl402/constructors-taint-Object-prototype.js
