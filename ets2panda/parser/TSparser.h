@@ -39,8 +39,11 @@ private:
     bool IsStartOfAbstractConstructorType() const;
     bool CurrentLiteralIsBasicType() const;
     ir::TypeNode *ParseTypeAnnotationElement(ir::TypeNode *typeAnnotation, TypeAnnotationParsingOptions *options);
+    class ParseTypeAnnotationElementHelper;
+    class ParsePotentialArrowExpressionHelper;
     ir::TypeNode *ParseTypeOperatorOrTypeReference();
     ir::TypeNode *ParseIdentifierReference();
+    class ParseBasicTypeHelper;
     ir::TypeNode *ParseBasicType();
     ir::TSTypeReference *ParseConstExpression();
     ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type, bool inUnion, bool restrictExtends);
@@ -78,6 +81,7 @@ private:
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseStatement(StatementParsingFlags flags = StatementParsingFlags::NONE) override;
+    ir::AnnotatedExpression *ParsePatternElementGetReturnNode(ExpressionParseFlags &flags, bool &isOptional);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePatternElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
                                         bool allowDefault = true) override;
@@ -140,6 +144,7 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,
                                                                 bool isExportEquals = false) override;
+    ir::Statement *GetDeclarationForNamedExport(ir::ClassDefinitionModifiers &classModifiers, ir::ModifierFlags &flags);
     ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc) override;
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *typeAnnotation) override;

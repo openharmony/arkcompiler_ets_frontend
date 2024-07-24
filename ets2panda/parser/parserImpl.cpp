@@ -14,6 +14,7 @@
  */
 
 #include "parserImpl.h"
+#include "parserStatusContext.h"
 
 #include "varbinder/privateBinding.h"
 #include "ir/astNode.h"
@@ -383,11 +384,8 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElementDescriptor *desc)
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
             ThrowIfPrivateIdent(desc, "Unexpected character in private identifier");
-            auto [isComputed, invalidComputedProperty, isIndexSignature] =
+            std::tie(desc->isComputed, desc->invalidComputedProperty, desc->isIndexSignature) =
                 ParseComputedClassFieldOrIndexSignature(&propName);
-            desc->isComputed = isComputed;
-            desc->invalidComputedProperty = invalidComputedProperty;
-            desc->isIndexSignature = isIndexSignature;
             break;
         }
         default: {

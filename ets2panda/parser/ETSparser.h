@@ -268,6 +268,7 @@ private:
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags, ir::MethodDefinitionKind methodKind);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seenStatic);
+    ir::ModifierFlags ParseClassMethodModifierFlag();
     ir::ModifierFlags ParseClassMethodModifiers(bool seenStatic);
     ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *methodName, ir::ModifierFlags modifiers,
                                                      ir::Identifier *className = nullptr);
@@ -289,7 +290,6 @@ private:
     ir::TypeNode *ParseBaseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type);
     ir::TypeNode *ParseUnionType(ir::TypeNode *firstType);
-    ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type);
     ir::TypeNode *GetTypeAnnotationOfPrimitiveType(lexer::TokenType tokenType, TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
@@ -304,6 +304,8 @@ private:
 
     void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
     std::optional<lexer::SourcePosition> GetDefaultParamPosition(ArenaVector<ir::Expression *> params);
+
+    ir::TypeNode *ParsePotentialFunctionalType(TypeAnnotationParsingOptions *options, lexer::SourcePosition startLoc);
     std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseLiteralIdent(TypeAnnotationParsingOptions *options);
     void ParseRightParenthesis(TypeAnnotationParsingOptions *options, ir::TypeNode *&typeAnnotation,
@@ -378,6 +380,7 @@ private:
     ir::Expression *ParseAwaitExpression();
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
 
+    bool IsStringEnum();
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst,
                                             bool isStatic) override;
     void ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
