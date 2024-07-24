@@ -72,6 +72,8 @@ public:
 
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
+    AstNode *Clone(ArenaAllocator *const allocator, AstNode *const parent) override;
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Dump(ir::SrcDumper *dumper) const override;
