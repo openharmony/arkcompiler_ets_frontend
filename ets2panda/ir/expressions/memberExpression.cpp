@@ -333,8 +333,10 @@ checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *che
         (!Parent()->IsUpdateExpression())) {
         // Error never should be thrown by this call, because LUB of types can be converted to any type which
         // LUB was calculated by casting
-        const checker::CastingContext cast(checker->Relation(), this, baseType->AsETSArrayType()->ElementType(),
-                                           tupleTypeAtIdx, Start(), {"Tuple type couldn't be converted "});
+        const checker::CastingContext cast(
+            checker->Relation(), {"Tuple type couldn't be converted "},
+            checker::CastingContext::ConstructorData {this, baseType->AsETSArrayType()->ElementType(), tupleTypeAtIdx,
+                                                      Start()});
     }
 
     return tupleTypeAtIdx;

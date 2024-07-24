@@ -320,44 +320,7 @@ void Lexer::ScanNumber(bool allowBigInt)
         }
     }
 
-    switch (Iterator().Peek()) {
-        case LEX_CHAR_LOWERCASE_E:
-        case LEX_CHAR_UPPERCASE_E: {
-            allowBigInt = false;
-
-            if (!parseExponent) {
-                break;
-            }
-
-            flags |= NumberFlags::EXPONENT;
-
-            Iterator().Forward(1);
-
-            switch (Iterator().Peek()) {
-                case LEX_CHAR_UNDERSCORE: {
-                    break;
-                }
-                case LEX_CHAR_PLUS:
-                case LEX_CHAR_MINUS: {
-                    Iterator().Forward(1);
-                    break;
-                }
-                default: {
-                    exponentSignPos = Iterator().Index() - GetToken().Start().index;
-                    break;
-                }
-            }
-
-            if (!IsDecimalDigit(Iterator().Peek())) {
-                ThrowError("Invalid numeric literal");
-            }
-            ScanDecimalNumbers();
-            break;
-        }
-        default: {
-            break;
-        }
-    }
+    std::tie(exponentSignPos, allowBigInt, flags) = ScanCharLex(allowBigInt, parseExponent, flags);
 
     CheckNumberLiteralEnd();
 
@@ -391,6 +354,57 @@ void Lexer::ScanNumber(bool allowBigInt)
     }
 
     ConvertNumber(utf8, flags);
+}
+
+std::tuple<size_t, bool, NumberFlags> Lexer::ScanCharLex(bool allowBigInt, bool parseExponent, NumberFlags flags)
+{
+    size_t exponentSignPos = std::numeric_limits<size_t>::max();
+    switch (Iterator().Peek()) {
+        case LEX_CHAR_LOWERCASE_E:
+        case LEX_CHAR_UPPERCASE_E: {
+            allowBigInt = false;
+
+            if (!parseExponent) {
+                break;
+            }
+
+            flags |= NumberFlags::EXPONENT;
+
+            Iterator().Forward(1);
+
+            exponentSignPos = ScanSignOfNumber();
+
+            if (!IsDecimalDigit(Iterator().Peek())) {
+                ThrowError("Invalid numeric literal");
+            }
+            ScanDecimalNumbers();
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    return {exponentSignPos, allowBigInt, flags};
+}
+
+size_t Lexer::ScanSignOfNumber()
+{
+    size_t exponentSignPos = std::numeric_limits<size_t>::max();
+    switch (Iterator().Peek()) {
+        case LEX_CHAR_UNDERSCORE: {
+            break;
+        }
+        case LEX_CHAR_PLUS:
+        case LEX_CHAR_MINUS: {
+            Iterator().Forward(1);
+            break;
+        }
+        default: {
+            exponentSignPos = Iterator().Index() - GetToken().Start().index;
+            break;
+        }
+    }
+    return exponentSignPos;
 }
 
 void Lexer::PushTemplateContext(TemplateLiteralParserContext *ctx)

@@ -35,6 +35,8 @@ namespace ark::es2panda::ir {
 inline constexpr char const PREDEFINED_METHOD[] = "The special predefined method '";
 // NOLINTEND(modernize-avoid-c-arrays)
 
+using ENUMBITOPS_OPERATORS;
+
 enum class MemberExpressionKind : uint32_t {
     NONE = 0,
     ELEMENT_ACCESS = 1U << 0U,
@@ -43,7 +45,13 @@ enum class MemberExpressionKind : uint32_t {
     SETTER = 1U << 3U,
 };
 
-DEFINE_BITOPS(MemberExpressionKind)
+}  // namespace ark::es2panda::ir
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::ir::MemberExpressionKind> : std::true_type {
+};
+
+namespace ark::es2panda::ir {
 
 class MemberExpression : public MaybeOptionalExpression {
     friend class checker::ETSAnalyzer;

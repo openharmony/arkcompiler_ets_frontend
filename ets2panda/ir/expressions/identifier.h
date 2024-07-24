@@ -25,6 +25,9 @@ class Variable;
 }  // namespace ark::es2panda::varbinder
 
 namespace ark::es2panda::ir {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class IdentifierFlags : uint32_t {
     NONE = 0U,
     OPTIONAL = 1U << 0U,
@@ -36,7 +39,13 @@ enum class IdentifierFlags : uint32_t {
     IGNORE_BOX = 1U << 6U,
 };
 
-DEFINE_BITOPS(IdentifierFlags)
+}  // namespace ark::es2panda::ir
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::ir::IdentifierFlags> : std::true_type {
+};
+
+namespace ark::es2panda::ir {
 
 class Identifier : public AnnotatedExpression {
 private:

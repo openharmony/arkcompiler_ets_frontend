@@ -16,6 +16,7 @@
 #define ES2PANDA_CHECKER_TSANALYZER_H
 
 #include "checker/SemanticAnalyzer.h"
+#include "checker/TSchecker.h"
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
@@ -39,8 +40,8 @@ public:
     checker::Type *CheckLiteral([[maybe_unused]] checker::TSChecker *checker, ir::UnaryExpression *expr) const;
     checker::Type *CheckAssignmentExprOperatorType(ir::AssignmentExpression *expr, checker::Type *leftType,
                                                    checker::Type *rightType) const;
-    checker::Type *CheckBinaryExprArithmLogical(ir::BinaryExpression *expr, checker::Type *leftType,
-                                                checker::Type *rightType, TSChecker *checker) const;
+    checker::Type *CheckBinaryExprArithmLogical(ir::BinaryExpression *expr, ExpressionTypeInfo *leftRightType,
+                                                TSChecker *checker) const;
     void CheckComputed(ir::MemberExpression *expr, checker::Type *indexType) const;
     void CheckSpread(std::unordered_map<util::StringView, lexer::SourcePosition> &allPropertiesMap,
                      checker::ObjectDescriptor *desc, ir::Expression *it) const;

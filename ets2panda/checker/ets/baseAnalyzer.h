@@ -27,9 +27,9 @@ enum class AstNodeType;
 namespace ark::es2panda::checker {
 class ETSChecker;
 
-enum class LivenessStatus { DEAD, ALIVE };
+using ENUMBITOPS_OPERATORS;
 
-DEFINE_BITOPS(LivenessStatus)
+enum class LivenessStatus { DEAD, ALIVE };
 
 class PendingExit {
 public:
@@ -97,4 +97,9 @@ private:
     PendingExitsVector oldPendingExits_;
 };
 }  // namespace ark::es2panda::checker
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::checker::LivenessStatus> : std::true_type {
+};
+
 #endif

@@ -21,9 +21,18 @@
 #include "util/ustring.h"
 
 namespace ark::es2panda::ir {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class DummyNodeFlag : uint32_t { NONE = 0U, INDEXER = 1U << 0U };
 
-DEFINE_BITOPS(DummyNodeFlag)
+}  // namespace ark::es2panda::ir
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::ir::DummyNodeFlag> : std::true_type {
+};
+
+namespace ark::es2panda::ir {
 
 class DummyNode : public AstNode {
 public:

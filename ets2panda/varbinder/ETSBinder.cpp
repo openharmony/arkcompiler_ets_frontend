@@ -688,6 +688,27 @@ void ETSBinder::ValidateImportVariable(varbinder::Variable *const var, const ir:
     }
 }
 
+static util::StringView ImportLocalName(const ir::ImportSpecifier *importSpecifier, const ir::StringLiteral *importPath,
+                                        util::StringView imported,
+                                        ArenaVector<std::pair<util::StringView, util::StringView>> &importSpecifiers,
+                                        GlobalScope *topScope)
+{
+    if (importSpecifier->Local() != nullptr) {
+        auto fnc = [&importPath, &imported](const auto &savedSpecifier) {
+            return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
+        };
+        if (!std::any_of(importSpecifiers.begin(), importSpecifiers.end(), fnc)) {
+            topScope->EraseBinding(imported);
+        }
+
+        importSpecifiers.push_back(std::make_pair(importPath->Str(), imported));
+
+        return importSpecifier->Local()->Name();
+    }
+
+    return imported;
+}
+
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                  const varbinder::Scope::VariableMap &globalBindings,
                                                  const ir::ETSImportDeclaration *const import,
@@ -717,22 +738,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
     importSpecifier->Imported()->SetVariable(var);
     importSpecifier->Local()->SetVariable(var);
 
-    const auto &localName = [this, importSpecifier, &imported, &importPath]() {
-        if (importSpecifier->Local() != nullptr) {
-            auto fnc = [&importPath, &imported](const auto &savedSpecifier) {
-                return importPath->Str() != savedSpecifier.first && imported == savedSpecifier.second;
-            };
-            if (!std::any_of(importSpecifiers_.begin(), importSpecifiers_.end(), fnc)) {
-                TopScope()->EraseBinding(imported);
-            }
-
-            importSpecifiers_.push_back(std::make_pair(importPath->Str(), imported));
-
-            return importSpecifier->Local()->Name();
-        }
-
-        return imported;
-    }();
+    const auto localName = ImportLocalName(importSpecifier, importPath, imported, importSpecifiers_, TopScope());
 
     if (var == nullptr) {
         ir::ETSImportDeclaration *implDecl = FindImportDeclInReExports(import, viewedReExport, imported, importPath);

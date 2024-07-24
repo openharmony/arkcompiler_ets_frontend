@@ -439,8 +439,8 @@ checker::Type *TSAnalyzer::Check(ir::ArrayExpression *expr) const
             desc->properties.push_back(tupleMember);
         }
 
-        return checker->CreateTupleType(desc, std::move(elementFlags), checker::ElementFlags::REQUIRED, index, index,
-                                        inConstContext);
+        const checker::TupleTypeInfo tupleTypeInfo = {ElementFlags::REQUIRED, index, index, inConstContext};
+        return checker->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo);
     }
 
     checker::Type *arrayElementType = nullptr;
@@ -490,6 +490,9 @@ checker::Type *TSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpress
                                                            checker::Type *rightType) const
 {
     TSChecker *checker = GetTSChecker();
+    ExpressionTypeInfo leftRightType {};
+    leftRightType.leftType = leftType;
+    leftRightType.rightType = rightType;
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
         case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
@@ -502,12 +505,11 @@ checker::Type *TSAnalyzer::CheckAssignmentExprOperatorType(ir::AssignmentExpress
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            return checker->CheckBinaryOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
+            return checker->CheckBinaryOperator(&leftRightType, expr->Left(), expr->Right(), expr,
                                                 expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
-                                              expr->OperatorType());
+            return checker->CheckPlusOperator(&leftRightType, expr->Left(), expr->Right(), expr, expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
             checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
@@ -571,8 +573,8 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AwaitExpression *expr) con
     return checker->GlobalAnyType();
 }
 
-checker::Type *TSAnalyzer::CheckBinaryExprArithmLogical(ir::BinaryExpression *expr, checker::Type *leftType,
-                                                        checker::Type *rightType, TSChecker *checker) const
+checker::Type *TSAnalyzer::CheckBinaryExprArithmLogical(ir::BinaryExpression *expr, ExpressionTypeInfo *leftRightType,
+                                                        TSChecker *checker) const
 {
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MULTIPLY:
@@ -586,18 +588,16 @@ checker::Type *TSAnalyzer::CheckBinaryExprArithmLogical(ir::BinaryExpression *ex
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
-            return checker->CheckBinaryOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
-                                                expr->OperatorType());
+            return checker->CheckBinaryOperator(leftRightType, expr->Left(), expr->Right(), expr, expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_PLUS: {
-            return checker->CheckPlusOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
-                                              expr->OperatorType());
+            return checker->CheckPlusOperator(leftRightType, expr->Left(), expr->Right(), expr, expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            return checker->CheckAndOperator(leftType, rightType, expr->Left());
+            return checker->CheckAndOperator(leftRightType->leftType, leftRightType->rightType, expr->Left());
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            return checker->CheckOrOperator(leftType, rightType, expr->Left());
+            return checker->CheckOrOperator(leftRightType->leftType, leftRightType->rightType, expr->Left());
         }
         default: {
             return nullptr;
@@ -608,10 +608,11 @@ checker::Type *TSAnalyzer::CheckBinaryExprArithmLogical(ir::BinaryExpression *ex
 checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    auto *leftType = expr->Left()->Check(checker);
-    auto *rightType = expr->Right()->Check(checker);
+    ExpressionTypeInfo leftRightType {};
+    leftRightType.leftType = expr->Left()->Check(checker);
+    leftRightType.rightType = expr->Right()->Check(checker);
 
-    auto *checkBinaryExprPunctuator = CheckBinaryExprArithmLogical(expr, leftType, rightType, checker);
+    auto *checkBinaryExprPunctuator = CheckBinaryExprArithmLogical(expr, &leftRightType, checker);
     if (checkBinaryExprPunctuator != nullptr) {
         return checkBinaryExprPunctuator;
     }
@@ -619,33 +620,37 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_LESS_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            return checker->CheckCompareOperator(leftType, rightType, expr->Left(), expr->Right(), expr,
+            return checker->CheckCompareOperator(&leftRightType, expr->Left(), expr->Right(), expr,
                                                  expr->OperatorType());
         }
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            if (checker->IsTypeEqualityComparableTo(leftType, rightType) ||
-                checker->IsTypeEqualityComparableTo(rightType, leftType)) {
+            if (checker->IsTypeEqualityComparableTo(leftRightType.leftType, leftRightType.rightType) ||
+                checker->IsTypeEqualityComparableTo(leftRightType.rightType, leftRightType.leftType)) {
                 return checker->GlobalBooleanType();
             }
 
-            checker->ThrowBinaryLikeError(expr->OperatorType(), leftType, rightType, expr->Start());
+            checker->ThrowBinaryLikeError(expr->OperatorType(), leftRightType.leftType, leftRightType.rightType,
+                                          expr->Start());
         }
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
             // NOTE: Csaba Repasi. Implement checker for nullish coalescing
             return checker->GlobalAnyType();
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftType, rightType);
-            return rightType;
+            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), leftRightType.leftType,
+                                             leftRightType.rightType);
+            return leftRightType.rightType;
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {
-            return checker->CheckInstanceofExpression(leftType, rightType, expr->Right(), expr);
+            return checker->CheckInstanceofExpression(leftRightType.leftType, leftRightType.rightType, expr->Right(),
+                                                      expr);
         }
         case lexer::TokenType::KEYW_IN: {
-            return checker->CheckInExpression(leftType, rightType, expr->Left(), expr->Right(), expr);
+            return checker->CheckInExpression(leftRightType.leftType, leftRightType.rightType, expr->Left(),
+                                              expr->Right(), expr);
         }
         default: {
             UNREACHABLE();

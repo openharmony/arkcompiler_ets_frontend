@@ -20,6 +20,9 @@
 #include "util/enumbitops.h"
 
 namespace ark::es2panda::parser {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class LexicalScopeType {
     BLOCK,
     STRICT_BLOCK,
@@ -27,8 +30,6 @@ enum class LexicalScopeType {
     FUNCTION_PARAM,
     TS_TYPE_LITERAL,
 };
-
-DEFINE_BITOPS(LexicalScopeType)
 
 enum class VariableParsingFlags : uint32_t {
     NO_OPTS = 0U,
@@ -42,8 +43,6 @@ enum class VariableParsingFlags : uint32_t {
     IN_FOR = 1U << 7U,
     FOR_OF = 1U << 8U
 };
-
-DEFINE_BITOPS(VariableParsingFlags)
 
 enum class ExpressionParseFlags : uint32_t {
     NO_OPTS = 0U,
@@ -63,8 +62,6 @@ enum class ExpressionParseFlags : uint32_t {
     INSTANCEOF = 1U << 13U,
 };
 
-DEFINE_BITOPS(ExpressionParseFlags)
-
 enum class StatementParsingFlags : uint32_t {
     NONE = 0U,
     ALLOW_LEXICAL = 1U << 0U,
@@ -76,13 +73,31 @@ enum class StatementParsingFlags : uint32_t {
     STMT_GLOBAL_LEXICAL = GLOBAL | ALLOW_LEXICAL,
 };
 
-DEFINE_BITOPS(StatementParsingFlags)
-
 enum class ForStatementKind {
     UPDATE,
     IN,
     OF,
 };
 }  // namespace ark::es2panda::parser
+
+namespace enumbitops {
+
+template <>
+struct IsAllowedType<ark::es2panda::parser::LexicalScopeType> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::parser::VariableParsingFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::parser::ExpressionParseFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::parser::StatementParsingFlags> : std::true_type {
+};
+
+}  // namespace enumbitops
 
 #endif

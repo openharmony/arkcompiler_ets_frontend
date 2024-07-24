@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_CORE_LEXER_H
 #define ES2PANDA_PARSER_CORE_LEXER_H
 
+#include <ios>
 #include "lexer/regexp/regexp.h"
 #include "lexer/token/letters.h"
 #include "lexer/token/token.h"
@@ -29,14 +30,14 @@ class ETSNolintParser;
 namespace ark::es2panda::lexer {
 class Keywords;
 
+using ENUMBITOPS_OPERATORS;
+
 enum class NextTokenFlags : uint32_t {
     NONE = 0U,
     KEYWORD_TO_IDENT = 1U << 0U,
     NUMERIC_SEPARATOR_ALLOWED = 1U << 1U,
     BIGINT_ALLOWED = 1U << 2U,
 };
-
-DEFINE_BITOPS(NextTokenFlags)
 
 class LexerPosition {
 public:
@@ -283,6 +284,8 @@ protected:
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanNumberRadix(bool allowNumericSeparator = true);
     void ScanNumber(bool allowBigInt = true);
+    std::tuple<size_t, bool, NumberFlags> ScanCharLex(bool allowBigInt, bool parseExponent, NumberFlags flags);
+    size_t ScanSignOfNumber();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanTooLargeNumber(RadixType number);
     virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
@@ -596,5 +599,9 @@ inline bool Lexer::IsOctalDigit(char32_t ch)
     return (ch >= LEX_CHAR_0 && ch <= LEX_CHAR_7);
 }
 }  // namespace ark::es2panda::lexer
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::lexer::NextTokenFlags> : std::true_type {
+};
 
 #endif

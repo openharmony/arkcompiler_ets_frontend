@@ -63,6 +63,8 @@ public:
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
+using ENUMBITOPS_OPERATORS;
+
 enum class SignatureFlags : uint32_t {
     NO_OPTS = 0U,
     VIRTUAL = 1U << 0U,
@@ -91,7 +93,13 @@ enum class SignatureFlags : uint32_t {
     FUNCTIONAL_INTERFACE_SIGNATURE = VIRTUAL | ABSTRACT | CALL | PUBLIC | TYPE
 };
 
-DEFINE_BITOPS(SignatureFlags)
+}  // namespace ark::es2panda::checker
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::checker::SignatureFlags> : std::true_type {
+};
+
+namespace ark::es2panda::checker {
 
 class Signature {
 public:

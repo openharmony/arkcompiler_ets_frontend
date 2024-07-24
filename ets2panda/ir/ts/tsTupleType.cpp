@@ -64,6 +64,19 @@ void TSTupleType::Compile(compiler::ETSGen *etsg) const
     etsg->GetAstCompiler()->Compile(this);
 }
 
+checker::Type *GetNumberIndexType(ArenaVector<checker::Type *> numberIndexTypes, checker::TSChecker *checker)
+{
+    checker::Type *numberIndexType = nullptr;
+    if (numberIndexTypes.empty()) {
+        numberIndexType = checker->GlobalNeverType();
+    } else if (numberIndexTypes.size() == 1) {
+        numberIndexType = numberIndexTypes[0];
+    } else {
+        numberIndexType = checker->CreateUnionType(std::move(numberIndexTypes));
+    }
+    return numberIndexType;
+}
+
 checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
 {
     if (TsType() != nullptr) {
@@ -118,20 +131,11 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
 
     uint32_t fixedLength = desc->properties.size();
 
-    checker::Type *numberIndexType = nullptr;
-
-    if (numberIndexTypes.empty()) {
-        numberIndexType = checker->GlobalNeverType();
-    } else if (numberIndexTypes.size() == 1) {
-        numberIndexType = numberIndexTypes[0];
-    } else {
-        numberIndexType = checker->CreateUnionType(std::move(numberIndexTypes));
-    }
-
+    checker::Type *numberIndexType = GetNumberIndexType(numberIndexTypes, checker);
     desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(numberIndexType, "x", false);
 
-    SetTsType(checker->CreateTupleType(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, false,
-                                       std::move(namedMembers)));
+    const checker::TupleTypeInfo tupleTypeInfo = {combinedFlags, minLength, fixedLength, false};
+    SetTsType(checker->CreateTupleType(desc, std::move(elementFlags), tupleTypeInfo, std::move(namedMembers)));
     return TsType();
 }
 

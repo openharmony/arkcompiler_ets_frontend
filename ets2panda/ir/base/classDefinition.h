@@ -31,6 +31,8 @@ class TSTypeParameterInstantiation;
 class TSClassImplements;
 class TSIndexSignature;
 
+using ENUMBITOPS_OPERATORS;
+
 enum class ClassDefinitionModifiers : uint32_t {
     NONE = 0,
     DECLARATION = 1U << 0U,
@@ -49,7 +51,13 @@ enum class ClassDefinitionModifiers : uint32_t {
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED
 };
 
-DEFINE_BITOPS(ClassDefinitionModifiers)
+}  // namespace ark::es2panda::ir
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::ir::ClassDefinitionModifiers> : std::true_type {
+};
+
+namespace ark::es2panda::ir {
 
 class ClassDefinition : public TypedAstNode {
 public:

@@ -23,6 +23,8 @@
 namespace ark::es2panda::parser {
 class Program;
 
+using ENUMBITOPS_OPERATORS;
+
 enum class ParserStatus : uint64_t {
     NO_OPTS = 0U,
     DIRECT_EVAL = 1U << 0U,
@@ -63,7 +65,13 @@ enum class ParserStatus : uint64_t {
     IN_NAMESPACE = 1ULL << 32ULL,
 };
 
-DEFINE_BITOPS(ParserStatus)
+}  // namespace ark::es2panda::parser
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::parser::ParserStatus> : std::true_type {
+};
+
+namespace ark::es2panda::parser {
 
 class ParserContext {
 public:

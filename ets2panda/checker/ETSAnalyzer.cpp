@@ -2413,8 +2413,10 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
         checker->ThrowTypeError("Cannot cast 'null' or 'undefined' to non-nullish type.", expr->Expr()->Start());
     }
 
-    const checker::CastingContext ctx(checker->Relation(), expr->Expr(), sourceType, targetType, expr->Expr()->Start(),
-                                      {"Cannot cast type '", sourceType, "' to '", targetType, "'"});
+    const checker::CastingContext ctx(
+        checker->Relation(),
+        std::initializer_list<TypeErrorMessageElement> {"Cannot cast type '", sourceType, "' to '", targetType, "'"},
+        checker::CastingContext::ConstructorData {expr->Expr(), sourceType, targetType, expr->Expr()->Start()});
 
     if (sourceType->IsETSDynamicType() && targetType->IsLambdaObject()) {
         // NOTE: itrubachev. change targetType to created lambdaobject type.

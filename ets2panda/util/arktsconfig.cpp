@@ -39,14 +39,18 @@ namespace fs = std::experimental::filesystem;
 #endif
 #endif
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define CHECK(cond, ret, msg)                                   \
-    if (!(cond)) {                                              \
-        std::cerr << "ArkTsConfig error: " << msg << std::endl; \
-        return ret;                                             \
+namespace ark::es2panda {
+
+template <class... Ts>
+static bool Check(bool cond, const Ts &...msgs)
+{
+    if (!cond) {
+        ((std::cerr << "ArkTsConfig error: ") << ... << msgs);
+        return false;
     }
 
-namespace ark::es2panda {
+    return true;
+}
 
 static bool IsAbsolute(const std::string &path)
 {
@@ -131,9 +135,6 @@ bool ArkTsConfig::Pattern::Match(const std::string &path) const
     return res;
 }
 
-#endif  // ARKTSCONFIG_USE_FILESYSTEM
-
-#ifdef ARKTSCONFIG_USE_FILESYSTEM
 static std::string ResolveConfigLocation(const std::string &relPath, const std::string &base)
 {
     auto resolvedPath = MakeAbsolute(relPath, base);
@@ -146,6 +147,22 @@ static std::string ResolveConfigLocation(const std::string &relPath, const std::
         newBase = ParentPath(newBase);
     }
     return resolvedPath;
+}
+
+bool ArkTsConfig::ParseExtends(const std::string &extends, const std::string &configDir)
+{
+    auto basePath = ResolveConfigLocation(extends, configDir);
+    if (!Check(!basePath.empty(), "Can't resolve config path: ", extends)) {
+        return false;
+    }
+
+    auto base = ArkTsConfig(basePath);
+    if (!Check(base.Parse(), "Failed to parse base config: ", extends)) {
+        return false;
+    }
+
+    Inherit(base);
+    return true;
 }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
@@ -160,6 +177,137 @@ static std::string ValidDynamicLanguages()
     return std::move(builder).Build();
 }
 
+template <class PathsMap>
+static bool ParsePaths(const JsonObject::JsonObjPointer *options, PathsMap &pathsMap, const std::string &baseUrl)
+{
+    if (options == nullptr) {
+        return true;
+    }
+
+    auto paths = options->get()->GetValue<JsonObject::JsonObjPointer>("paths");
+    if (paths == nullptr) {
+        return true;
+    }
+
+    for (size_t keyIdx = 0; keyIdx < paths->get()->GetSize(); ++keyIdx) {
+        auto &key = paths->get()->GetKeyByIndex(keyIdx);
+        if (pathsMap.count(key) == 0U) {
+            pathsMap.insert({key, {}});
+        }
+
+        auto values = paths->get()->GetValue<JsonObject::ArrayT>(key);
+        if (!Check(values, "Invalid value for 'path' with key '", key, "'")) {
+            return false;
+        }
+
+        if (!Check(!values->empty(), "Substitutions for pattern '", key, "' shouldn't be an empty array")) {
+            return false;
+        }
+
+        for (auto &v : *values) {
+            auto p = *v.Get<JsonObject::StringT>();
+            pathsMap[key].emplace_back(MakeAbsolute(p, baseUrl));
+        }
+    }
+
+    return true;
+}
+
+template <class PathsMap>
+static bool ParseDynamicPaths(const JsonObject::JsonObjPointer *options, PathsMap &dynamicPathsMap)
+{
+    static const std::string LANGUAGE = "language";
+    static const std::string HAS_DECL = "hasDecl";
+
+    if (options == nullptr) {
+        return true;
+    }
+
+    auto dynamicPaths = options->get()->GetValue<JsonObject::JsonObjPointer>("dynamicPaths");
+    if (dynamicPaths == nullptr) {
+        return true;
+    }
+
+    for (size_t keyIdx = 0; keyIdx < dynamicPaths->get()->GetSize(); ++keyIdx) {
+        auto &key = dynamicPaths->get()->GetKeyByIndex(keyIdx);
+        auto data = dynamicPaths->get()->GetValue<JsonObject::JsonObjPointer>(key);
+        if (!Check(data != nullptr, "Invalid value for for dynamic path with key '", key, "'")) {
+            return false;
+        }
+
+        auto langValue = data->get()->GetValue<JsonObject::StringT>(LANGUAGE);
+        if (!Check(langValue != nullptr, "Invalid '", LANGUAGE, "' value for dynamic path with key '", key, "'")) {
+            return false;
+        }
+
+        auto lang = Language::FromString(*langValue);
+        if (!Check(lang && lang->IsDynamic(), "Invalid '", LANGUAGE, "' value for dynamic path with key '", key,
+                   "'. Should be one of ", ValidDynamicLanguages())) {
+            return false;
+        }
+
+        if (!Check(compiler::Signatures::Dynamic::IsSupported(*lang), "Interoperability with language '",
+                   lang->ToString(), "' is not supported")) {
+            return false;
+        }
+
+        auto hasDeclValue = data->get()->GetValue<JsonObject::BoolT>(HAS_DECL);
+        if (!Check(hasDeclValue != nullptr, "Invalid '", HAS_DECL, "' value for dynamic path with key '", key, "'")) {
+            return false;
+        }
+
+        auto normalizedKey = ark::os::NormalizePath(key);
+        auto res = dynamicPathsMap.insert({normalizedKey, ArkTsConfig::DynamicImportData(*lang, *hasDeclValue)});
+        if (!Check(res.second, "Duplicated dynamic path '", key, "' for key '", key, "'")) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+template <class Collection, class Function>
+static bool ParseCollection(const JsonObject *config, Collection &out, const std::string &target,
+                            Function &&constructor)
+{
+    auto arr = config->GetValue<JsonObject::ArrayT>(target);
+    if (arr != nullptr) {
+        out = {};
+        if (!Check(!arr->empty(), "The '", target, "' list in config file is empty")) {
+            return false;
+        }
+
+        for (auto &i : *arr) {
+            out.emplace_back(constructor(*i.Get<JsonObject::StringT>()));
+        }
+    }
+
+    return true;
+}
+
+static std::optional<std::string> ReadConfig(const std::string &path)
+{
+    std::ifstream inputStream(path);
+    if (!Check(!inputStream.fail(), "Failed to open file: ", path)) {
+        return {};
+    }
+
+    std::stringstream ss;
+    ss << inputStream.rdbuf();
+    return ss.str();
+}
+
+static void ParseRelDir(std::string &dst, const std::string &key, const JsonObject::JsonObjPointer *options,
+                        const std::string &configDir)
+{
+    if (options != nullptr) {
+        auto path = options->get()->GetValue<JsonObject::StringT>(key);
+        dst = ((path != nullptr) ? *path : "");
+    }
+
+    dst = MakeAbsolute(dst, configDir);
+}
+
 bool ArkTsConfig::Parse()
 {
     static const std::string BASE_URL = "baseUrl";
@@ -169,133 +317,58 @@ bool ArkTsConfig::Parse()
     static const std::string FILES = "files";
     static const std::string INCLUDE = "include";
     static const std::string OUT_DIR = "outDir";
-    static const std::string PATHS = "paths";
-    static const std::string DYNAMIC_PATHS = "dynamicPaths";
     static const std::string ROOT_DIR = "rootDir";
-    static const std::string LANGUAGE = "language";
-    static const std::string HAS_DECL = "hasDecl";
 
     ASSERT(!isParsed_);
     isParsed_ = true;
     auto arktsConfigDir = ParentPath(ark::os::GetAbsolutePath(configPath_));
 
     // Read input
-    std::ifstream inputStream(configPath_);
-    CHECK(!inputStream.fail(), false, "Failed to open file: " << configPath_);
-    std::stringstream ss;
-    ss << inputStream.rdbuf();
-    std::string tsConfigSource = ss.str();
-    inputStream.close();
+    auto tsConfigSource = ReadConfig(configPath_);
+    if (!tsConfigSource) {
+        return false;
+    }
 
     // Parse json
-    auto arktsConfig = std::make_unique<JsonObject>(tsConfigSource);
-    CHECK(arktsConfig->IsValid(), false, "ArkTsConfig is not valid json");
+    auto arktsConfig = std::make_unique<JsonObject>(*tsConfigSource);
+    if (!Check(arktsConfig->IsValid(), "ArkTsConfig is not valid json")) {
+        return false;
+    }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
     // Parse "extends"
     auto extends = arktsConfig->GetValue<JsonObject::StringT>(EXTENDS);
-    if (extends != nullptr) {
-        auto basePath = ResolveConfigLocation(*extends, arktsConfigDir);
-        CHECK(!basePath.empty(), false, "Can't resolve config path: " << *extends);
-        auto base = ArkTsConfig(basePath);
-        CHECK(base.Parse(), false, "Failed to parse base config: " << *extends);
-        Inherit(base);
+    if (extends != nullptr && !ParseExtends(*extends, arktsConfigDir)) {
+        return false;
     }
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 
-    // Parse "baseUrl", "outDir", "rootDir"
     auto compilerOptions = arktsConfig->GetValue<JsonObject::JsonObjPointer>(COMPILER_OPTIONS);
-    auto parseRelDir = [&](std::string &dst, const std::string &key) {
-        if (compilerOptions != nullptr) {
-            auto path = compilerOptions->get()->GetValue<JsonObject::StringT>(key);
-            dst = ((path != nullptr) ? *path : "");
-        }
-        dst = MakeAbsolute(dst, arktsConfigDir);
-    };
-    parseRelDir(baseUrl_, BASE_URL);
-    parseRelDir(outDir_, OUT_DIR);
-    parseRelDir(rootDir_, ROOT_DIR);
+
+    // Parse "baseUrl", "outDir", "rootDir"
+    ParseRelDir(baseUrl_, BASE_URL, compilerOptions, arktsConfigDir);
+    ParseRelDir(outDir_, OUT_DIR, compilerOptions, arktsConfigDir);
+    ParseRelDir(rootDir_, ROOT_DIR, compilerOptions, arktsConfigDir);
 
     // Parse "paths"
-    if (compilerOptions != nullptr) {
-        auto paths = compilerOptions->get()->GetValue<JsonObject::JsonObjPointer>(PATHS);
-        if (paths != nullptr) {
-            for (size_t keyIdx = 0; keyIdx < paths->get()->GetSize(); ++keyIdx) {
-                auto &key = paths->get()->GetKeyByIndex(keyIdx);
-                if (paths_.count(key) == 0U) {
-                    paths_.insert({key, {}});
-                }
-
-                auto values = paths->get()->GetValue<JsonObject::ArrayT>(key);
-                CHECK(values, false, "Invalid value for 'path' with key '" << key << "'");
-                CHECK(!values->empty(), false, "Substitutions for pattern '" << key << "' shouldn't be an empty array");
-                for (auto &v : *values) {
-                    auto p = *v.Get<JsonObject::StringT>();
-                    paths_[key].emplace_back(MakeAbsolute(p, baseUrl_));
-                }
-            }
-        }
-
-        auto dynamicPaths = compilerOptions->get()->GetValue<JsonObject::JsonObjPointer>(DYNAMIC_PATHS);
-        if (dynamicPaths != nullptr) {
-            for (size_t keyIdx = 0; keyIdx < dynamicPaths->get()->GetSize(); ++keyIdx) {
-                auto &key = dynamicPaths->get()->GetKeyByIndex(keyIdx);
-                auto data = dynamicPaths->get()->GetValue<JsonObject::JsonObjPointer>(key);
-                CHECK(data, false, "Invalid value for for dynamic path with key '" << key << "'");
-
-                auto langValue = data->get()->GetValue<JsonObject::StringT>(LANGUAGE);
-                CHECK(langValue, false, "Invalid 'language' value for dynamic path with key '" << key << "'");
-
-                auto lang = Language::FromString(*langValue);
-                CHECK((lang && lang->IsDynamic()), false,
-                      "Invalid 'language' value for dynamic path with key '" << key << "'. Should be one of "
-                                                                             << ValidDynamicLanguages());
-
-                CHECK(compiler::Signatures::Dynamic::IsSupported(*lang), false,
-                      "Interoperability with language '" << lang->ToString() << "' is not supported");
-
-                auto hasDeclValue = data->get()->GetValue<JsonObject::BoolT>(HAS_DECL);
-                CHECK(hasDeclValue, false, "Invalid 'hasDecl' value for dynamic path with key '" << key << "'");
-
-                auto normalizedKey = ark::os::NormalizePath(key);
-                auto res = dynamicPaths_.insert({normalizedKey, DynamicImportData(*lang, *hasDeclValue)});
-                CHECK(res.second, false, "Duplicated dynamic path '" << key << "' for key '" << key << "'");
-            }
-        }
+    if (!ParsePaths(compilerOptions, paths_, baseUrl_) || !ParseDynamicPaths(compilerOptions, dynamicPaths_)) {
+        return false;
     }
 
     // Parse "files"
-    auto files = arktsConfig->GetValue<JsonObject::ArrayT>(FILES);
-    if (files != nullptr) {
-        files_ = {};
-        CHECK(!files->empty(), false, "The 'files' list in config file is empty");
-        for (auto &f : *files) {
-            files_.emplace_back(MakeAbsolute(*f.Get<JsonObject::StringT>(), arktsConfigDir));
-        }
+    auto concatPath = [&arktsConfigDir](const auto &val) { return MakeAbsolute(val, arktsConfigDir); };
+    if (!ParseCollection(arktsConfig.get(), files_, FILES, concatPath)) {
+        return false;
     }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM
-    // Parse "include"
-    auto include = arktsConfig->GetValue<JsonObject::ArrayT>(INCLUDE);
-    if (include != nullptr) {
-        include_ = {};
-        CHECK(!include->empty(), false, "The 'include' list in config file is empty");
-        for (auto &i : *include) {
-            include_.emplace_back(*i.Get<JsonObject::StringT>(), arktsConfigDir);
-        }
-    }
-    // Parse "exclude"
-    auto exclude = arktsConfig->GetValue<JsonObject::ArrayT>(EXCLUDE);
-    if (exclude != nullptr) {
-        exclude_ = {};
-        CHECK(!exclude->empty(), false, "The 'exclude' list in config file is empty");
-        for (auto &e : *exclude) {
-            exclude_.emplace_back(*e.Get<JsonObject::StringT>(), arktsConfigDir);
-        }
-    }
-#endif  // ARKTSCONFIG_USE_FILESYSTEM
-
+    // Parse "include" and "exclude"
+    auto consPattern = [&arktsConfigDir](const auto &val) { return Pattern {val, arktsConfigDir}; };
+    return ParseCollection(arktsConfig.get(), include_, INCLUDE, consPattern) &&
+           ParseCollection(arktsConfig.get(), exclude_, EXCLUDE, consPattern);
+#else
     return true;
+#endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
 void ArkTsConfig::Inherit(const ArkTsConfig &base)
@@ -367,7 +440,10 @@ static std::vector<fs::path> GetSourceList(const std::shared_ptr<ArkTsConfig> &a
     // Collect "files"
     std::vector<fs::path> sourceList;
     for (auto &f : files) {
-        CHECK(fs::exists(f) && fs::path(f).has_filename(), {}, "No such file: " << f);
+        if (!Check(fs::exists(f) && fs::path(f).has_filename(), "No such file: ", f)) {
+            return {};
+        }
+
         sourceList.emplace_back(f);
     }
 
@@ -413,7 +489,10 @@ static fs::path Relative(const fs::path &src, const fs::path &base)
 static fs::path ComputeDestination(const fs::path &src, const fs::path &rootDir, const fs::path &outDir)
 {
     auto rel = Relative(src, rootDir);
-    CHECK(!rel.empty(), {}, rootDir << " is not root directory for " << src);
+    if (!Check(!rel.empty(), rootDir, " is not root directory for ", src)) {
+        return {};
+    }
+
     auto dst = outDir / rel;
     fs::create_directories(dst.parent_path());
     return dst.replace_extension("abc");
@@ -425,7 +504,10 @@ std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::s
     std::vector<std::pair<std::string, std::string>> compilationList;
     for (auto &src : sourceFiles) {
         auto dst = ComputeDestination(src, arktsConfig->RootDir(), arktsConfig->OutDir());
-        CHECK(!dst.empty(), {}, "Invalid destination file");
+        if (!Check(!dst.empty(), "Invalid destination file")) {
+            return {};
+        }
+
         compilationList.emplace_back(src.string(), dst.string());
     }
 

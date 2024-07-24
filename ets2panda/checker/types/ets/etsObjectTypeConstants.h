@@ -20,6 +20,8 @@
 
 namespace ark::es2panda::checker {
 
+using ENUMBITOPS_OPERATORS;
+
 enum class ETSObjectFlags : std::uint32_t {
     NO_OPTS = 0U,
     CLASS = 1U << 0U,
@@ -64,8 +66,6 @@ enum class ETSObjectFlags : std::uint32_t {
     RESOLVED_HEADER = RESOLVED_INTERFACES | RESOLVED_SUPER | RESOLVED_TYPE_PARAMS,
 };
 
-DEFINE_BITOPS(ETSObjectFlags)
-
 // NOTE: Do not change the order of the first 7 flags (including NO_OPTS)!
 // Because ETSChecker::ValidateResolvedProperty relies on the order of the flags.
 enum class PropertySearchFlags : std::uint32_t {
@@ -95,8 +95,6 @@ enum class PropertySearchFlags : std::uint32_t {
     SEARCH_ALL = SEARCH_METHOD | SEARCH_FIELD | SEARCH_DECL,
 };
 
-DEFINE_BITOPS(PropertySearchFlags)
-
 enum class PropertyType {
     INSTANCE_METHOD,
     INSTANCE_FIELD,
@@ -112,5 +110,17 @@ constexpr char const *FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME = "invoke0";
 constexpr char const *FUNCTIONAL_INTERFACE_SUBSTITUTED_INVOKE_METHOD_NAME = "invoke";
 
 }  // namespace ark::es2panda::checker
+
+namespace enumbitops {
+
+template <>
+struct IsAllowedType<ark::es2panda::checker::ETSObjectFlags> : std::true_type {
+};
+
+template <>
+struct IsAllowedType<ark::es2panda::checker::PropertySearchFlags> : std::true_type {
+};
+
+}  // namespace enumbitops
 
 #endif /* ES2PANDA_COMPILER_CHECKER_TYPES_ETS_OBJECT_TYPE_CONSTANTS_H */

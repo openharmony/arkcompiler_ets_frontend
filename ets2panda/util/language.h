@@ -16,55 +16,48 @@
 #ifndef ES2PANDA_DYNAMIC_LANGUAGE_H
 #define ES2PANDA_DYNAMIC_LANGUAGE_H
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string_view>
+#include <tuple>
 
 #include "libpandabase/macros.h"
 
 namespace ark::es2panda {
 
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define LANGUAGES(_)   \
-    _(AS, "as", false) \
-    _(JS, "js", true)  \
-    _(TS, "ts", true)  \
-    _(ETS, "ets", false)
-
 class Language {
 public:
     enum class Id {
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TO_ENUM(e, s, d) e,
-        LANGUAGES(TO_ENUM)
-#undef TO_ENUM
-            COUNT
+        AS,
+        JS,
+        TS,
+        ETS,
+        COUNT,
     };
 
     constexpr explicit Language(Id id) : id_(id) {}
 
     constexpr std::string_view ToString() const
     {
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TO_STR(e, s, d) \
-    if (id_ == Id::e) { \
-        return (s);     \
-    }
-        LANGUAGES(TO_STR)
-#undef TO_STR
+        for (auto [id, name, _] : ID_TABLE) {
+            if (id_ == id) {
+                return name;
+            }
+        }
+
         UNREACHABLE();
     }
 
     static std::optional<Language> FromString(std::string_view str)
     {
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FROM_STR(e, s, d)       \
-    if (str == (s)) {           \
-        return Language(Id::e); \
-    }
-        LANGUAGES(FROM_STR)
-#undef FROM_STR
-        return {};
+        for (auto [id, name, _] : ID_TABLE) {
+            if (str == name) {
+                return Language(id);
+            }
+        }
+
+        return std::nullopt;
     }
 
     Id GetId() const
@@ -74,13 +67,12 @@ public:
 
     bool IsDynamic() const
     {
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TO_DYN(e, s, d) \
-    if (id_ == Id::e) { \
-        return (d);     \
-    }
-        LANGUAGES(TO_DYN)
-#undef TO_DYN
+        for (auto [id, _, isDynamic] : ID_TABLE) {
+            if (id_ == id) {
+                return isDynamic;
+            }
+        }
+
         UNREACHABLE();
     }
 
@@ -96,16 +88,22 @@ public:
 
 private:
     static constexpr auto COUNT = static_cast<size_t>(Id::COUNT);
+    static constexpr auto ID_TABLE = {
+        std::tuple {Id::AS, "as", false},
+        {Id::JS, "js", true},
+        {Id::TS, "ts", true},
+        {Id::ETS, "ets", false},
+    };
 
 public:
     static std::array<Language, COUNT> All()
     {
-        return {
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define TO_LANG(e, s, d) Language(Id::e),
-            LANGUAGES(TO_LANG)
-#undef TO_LANG
-        };
+        static_assert(std::size(ID_TABLE) == COUNT);
+
+        std::array<Id, COUNT> arr = {};
+        std::transform(ID_TABLE.begin(), ID_TABLE.end(), arr.begin(), [](const auto &tpl) { return std::get<0>(tpl); });
+
+        return std::apply([](auto... id) { return std::array<Language, COUNT> {Language(id)...}; }, arr);
     }
 
 private:

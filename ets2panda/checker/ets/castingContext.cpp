@@ -17,23 +17,22 @@
 #include "checker/types/type.h"
 
 namespace ark::es2panda::checker {
-CastingContext::CastingContext(TypeRelation *relation, ir::Expression *node, Type *source, Type *target,
-                               const lexer::SourcePosition &pos, std::initializer_list<TypeErrorMessageElement> list,
-                               TypeRelationFlag extraFlags)
+CastingContext::CastingContext(TypeRelation *relation, std::initializer_list<TypeErrorMessageElement> list,
+                               ConstructorData &&data)
 {
-    flags_ |= extraFlags;
+    flags_ |= data.extraFlags;
 
     const SavedTypeRelationFlagsContext savedTypeRelationFlags(relation, flags_);
-    relation->SetNode(node);
+    relation->SetNode(data.node);
     relation->Result(false);
 
-    if (!relation->IsSupertypeOf(target, source)) {
-        relation->IsCastableTo(source, target);
-        if (!relation->IsTrue() && source->ToString() == target->ToString()) {
+    if (!relation->IsSupertypeOf(data.target, data.source)) {
+        relation->IsCastableTo(data.source, data.target);
+        if (!relation->IsTrue() && data.source->ToString() == data.target->ToString()) {
             relation->Result(true);
         }
         if (!relation->IsTrue() && (flags_ & TypeRelationFlag::NO_THROW) == 0) {
-            relation->RaiseError(list, pos);
+            relation->RaiseError(list, data.pos);
         }
     }
 

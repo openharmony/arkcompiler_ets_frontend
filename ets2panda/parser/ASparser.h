@@ -35,13 +35,16 @@ private:
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseStatement(StatementParsingFlags flags = StatementParsingFlags::NONE) override;
-    // NOLINTNEXTLINE(google-default-arguments)
-    ir::Expression *ParsePatternElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
-                                        bool allowDefault = true) override;
+    std::tuple<ir::AnnotatedExpression *, bool> ParsePatternElementToken(ExpressionParseFlags flags);
+    ir::Expression *ParsePatternElement(ExpressionParseFlags flags, bool allowDefault) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePropertyDefinition(
         [[maybe_unused]] ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     bool CurrentIsBasicType() override;
+    ir::TypeNode *ParseTypeAnnotationLiteralIdentHelper(ir::TypeNode *type, TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseTypeAnnotationTokens(ir::TypeNode *type, bool throwError, TypeAnnotationParsingOptions *options);
+    ir::TypeNode *ParseTypeAnnotationTokensBitwiseOr(ir::TypeNode *type, bool throwError, bool isNullable);
+    ir::TypeNode *ParseTypeAnnotationTokenLeftSquareBracket(ir::TypeNode *type, bool throwError, bool isNullable);
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
     ir::ArrowFunctionExpression *ParsePotentialArrowExpression(ir::Expression **returnExpression,
                                                                const lexer::SourcePosition &startLoc) override;
@@ -94,6 +97,8 @@ private:
     void ParseOptionalClassElement(ClassElementDescriptor *desc) override;
     void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *typeAnnotation) override;
     ArrowFunctionDescriptor ConvertToArrowParameter(ir::Expression *expr, bool isAsync) override;
+    ParserStatus ValidateArrowExprIdentifier(ir::Expression *expr, bool *seenOptional);
+    ParserStatus ValidateArrowAssignmentExpr(ir::Expression *expr);
     ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seenOptional) override;
     void ThrowIllegalBreakError() override;
     void ThrowIllegalContinueError() override;

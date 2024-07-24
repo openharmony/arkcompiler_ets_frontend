@@ -25,6 +25,9 @@
 #include <utility>
 
 namespace ark::es2panda::lexer {
+
+using ENUMBITOPS_OPERATORS;
+
 enum class NumberFlags : uint32_t {
     NONE,
     BIGINT = 1U << 0U,
@@ -33,7 +36,13 @@ enum class NumberFlags : uint32_t {
     ERROR = 1U << 3U,
 };
 
-DEFINE_BITOPS(NumberFlags)
+}  // namespace ark::es2panda::lexer
+
+template <>
+struct enumbitops::IsAllowedType<ark::es2panda::lexer::NumberFlags> : std::true_type {
+};
+
+namespace ark::es2panda::lexer {
 
 // NOLINTBEGIN(readability-identifier-naming)
 // NOLINTBEGIN(fuchsia-multiple-inheritance)

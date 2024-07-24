@@ -19,12 +19,9 @@
 #include "checker/TSchecker.h"
 
 namespace ark::es2panda::checker {
-Type *TSChecker::CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr,
-                                     ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
-{
-    CheckNonNullType(leftType, leftExpr->Start());
-    CheckNonNullType(rightType, rightExpr->Start());
 
+void TSChecker::CheckBooleanLikeType(Type *leftType, Type *rightType, ir::AstNode *expr, lexer::TokenType op)
+{
     if (leftType->HasTypeFlag(TypeFlag::BOOLEAN_LIKE) && rightType->HasTypeFlag(TypeFlag::BOOLEAN_LIKE)) {
         lexer::TokenType suggestedOp;
         switch (op) {
@@ -55,8 +52,16 @@ Type *TSChecker::CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expres
                 expr->Start());
         }
     }
+}
+Type *TSChecker::CheckBinaryOperator(ExpressionTypeInfo *leftRightType, ir::Expression *leftExpr,
+                                     ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
+{
+    CheckNonNullType(leftRightType->leftType, leftExpr->Start());
+    CheckNonNullType(leftRightType->rightType, rightExpr->Start());
 
-    if (!leftType->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
+    CheckBooleanLikeType(leftRightType->leftType, leftRightType->rightType, expr, op);
+
+    if (!leftRightType->leftType->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
         ThrowTypeError(
             "The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an "
             "enum "
@@ -64,7 +69,7 @@ Type *TSChecker::CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expres
             expr->Start());
     }
 
-    if (!rightType->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
+    if (!leftRightType->rightType->HasTypeFlag(TypeFlag::VALID_ARITHMETIC_TYPE)) {
         ThrowTypeError(
             "The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an "
             "enum "
@@ -73,67 +78,74 @@ Type *TSChecker::CheckBinaryOperator(Type *leftType, Type *rightType, ir::Expres
     }
 
     Type *resultType = nullptr;
-    if ((leftType->IsAnyType() && rightType->IsAnyType()) ||
-        !(leftType->HasTypeFlag(TypeFlag::BIGINT_LIKE) || rightType->HasTypeFlag(TypeFlag::BIGINT_LIKE))) {
+    if ((leftRightType->leftType->IsAnyType() && leftRightType->rightType->IsAnyType()) ||
+        !(leftRightType->leftType->HasTypeFlag(TypeFlag::BIGINT_LIKE) ||
+          leftRightType->rightType->HasTypeFlag(TypeFlag::BIGINT_LIKE))) {
         resultType = GlobalNumberType();
-    } else if (leftType->HasTypeFlag(TypeFlag::BIGINT_LIKE) && rightType->HasTypeFlag(TypeFlag::BIGINT_LIKE)) {
+    } else if (leftRightType->leftType->HasTypeFlag(TypeFlag::BIGINT_LIKE) &&
+               leftRightType->rightType->HasTypeFlag(TypeFlag::BIGINT_LIKE)) {
         if (op == lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT ||
             op == lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL) {
             ThrowTypeError({"operator ", op, " cannot be applied to types 'bigint' and 'bigint'"}, expr->Start());
         }
         resultType = GlobalBigintType();
     } else {
-        ThrowBinaryLikeError(op, leftType, rightType, expr->Start());
+        ThrowBinaryLikeError(op, leftRightType->leftType, leftRightType->rightType, expr->Start());
     }
 
-    CheckAssignmentOperator(op, leftExpr, leftType, resultType);
+    CheckAssignmentOperator(op, leftExpr, leftRightType->leftType, resultType);
     return resultType;
 }
 
-Type *TSChecker::CheckPlusOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr, ir::Expression *rightExpr,
-                                   ir::AstNode *expr, lexer::TokenType op)
+Type *TSChecker::CheckPlusOperator(ExpressionTypeInfo *leftRightType, ir::Expression *leftExpr,
+                                   ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
 {
-    if (!leftType->HasTypeFlag(TypeFlag::STRING_LIKE) && !rightType->HasTypeFlag(TypeFlag::STRING_LIKE)) {
-        CheckNonNullType(leftType, leftExpr->Start());
-        CheckNonNullType(rightType, rightExpr->Start());
+    if (!leftRightType->leftType->HasTypeFlag(TypeFlag::STRING_LIKE) &&
+        !leftRightType->rightType->HasTypeFlag(TypeFlag::STRING_LIKE)) {
+        CheckNonNullType(leftRightType->leftType, leftExpr->Start());
+        CheckNonNullType(leftRightType->rightType, rightExpr->Start());
     }
 
     Type *resultType = nullptr;
-    if (IsTypeAssignableTo(leftType, GlobalNumberType()) && IsTypeAssignableTo(rightType, GlobalNumberType())) {
+    if (IsTypeAssignableTo(leftRightType->leftType, GlobalNumberType()) &&
+        IsTypeAssignableTo(leftRightType->rightType, GlobalNumberType())) {
         resultType = GlobalNumberType();
-    } else if (IsTypeAssignableTo(leftType, GlobalBigintType()) && IsTypeAssignableTo(rightType, GlobalBigintType())) {
+    } else if (IsTypeAssignableTo(leftRightType->leftType, GlobalBigintType()) &&
+               IsTypeAssignableTo(leftRightType->rightType, GlobalBigintType())) {
         resultType = GlobalBigintType();
-    } else if (IsTypeAssignableTo(leftType, GlobalStringType()) || IsTypeAssignableTo(rightType, GlobalStringType())) {
+    } else if (IsTypeAssignableTo(leftRightType->leftType, GlobalStringType()) ||
+               IsTypeAssignableTo(leftRightType->rightType, GlobalStringType())) {
         resultType = GlobalStringType();
-    } else if (MaybeTypeOfKind(leftType, TypeFlag::UNKNOWN)) {
+    } else if (MaybeTypeOfKind(leftRightType->leftType, TypeFlag::UNKNOWN)) {
         ThrowTypeError("object is of type 'unknown'", leftExpr->Start());
-    } else if (MaybeTypeOfKind(rightType, TypeFlag::UNKNOWN)) {
+    } else if (MaybeTypeOfKind(leftRightType->rightType, TypeFlag::UNKNOWN)) {
         ThrowTypeError("object is of type 'unknown'", rightExpr->Start());
-    } else if (leftType->IsAnyType() || rightType->IsAnyType()) {
+    } else if (leftRightType->leftType->IsAnyType() || leftRightType->rightType->IsAnyType()) {
         resultType = GlobalAnyType();
     } else {
-        ThrowBinaryLikeError(op, leftType, rightType, expr->Start());
+        ThrowBinaryLikeError(op, leftRightType->leftType, leftRightType->rightType, expr->Start());
     }
 
     if (op == lexer::TokenType::PUNCTUATOR_PLUS_EQUAL) {
-        CheckAssignmentOperator(op, leftExpr, leftType, resultType);
+        CheckAssignmentOperator(op, leftExpr, leftRightType->leftType, resultType);
     }
 
     return resultType;
 }
 
-Type *TSChecker::CheckCompareOperator(Type *leftType, Type *rightType, ir::Expression *leftExpr,
+Type *TSChecker::CheckCompareOperator(ExpressionTypeInfo *leftRightType, ir::Expression *leftExpr,
                                       ir::Expression *rightExpr, ir::AstNode *expr, lexer::TokenType op)
 {
-    CheckNonNullType(leftType, leftExpr->Start());
-    CheckNonNullType(rightType, rightExpr->Start());
+    CheckNonNullType(leftRightType->leftType, leftExpr->Start());
+    CheckNonNullType(leftRightType->rightType, rightExpr->Start());
 
-    if (AreTypesComparable(leftType, rightType) || (IsTypeAssignableTo(leftType, GlobalNumberOrBigintType()) &&
-                                                    IsTypeAssignableTo(rightType, GlobalNumberOrBigintType()))) {
+    if (AreTypesComparable(leftRightType->leftType, leftRightType->rightType) ||
+        (IsTypeAssignableTo(leftRightType->leftType, GlobalNumberOrBigintType()) &&
+         IsTypeAssignableTo(leftRightType->rightType, GlobalNumberOrBigintType()))) {
         return GlobalBooleanType();
     }
 
-    ThrowBinaryLikeError(op, leftType, rightType, expr->Start());
+    ThrowBinaryLikeError(op, leftRightType->leftType, leftRightType->rightType, expr->Start());
 
     return GlobalAnyType();
 }
