@@ -222,6 +222,20 @@ export class TsUtils {
     );
   }
 
+  static isPrimitiveLiteralType(type: ts.Type): boolean {
+    return !!(
+      type.flags &
+      (ts.TypeFlags.BooleanLiteral |
+        ts.TypeFlags.NumberLiteral |
+        ts.TypeFlags.StringLiteral |
+        ts.TypeFlags.BigIntLiteral)
+    );
+  }
+
+  static isPurePrimitiveLiteralType(type: ts.Type): boolean {
+    return TsUtils.isPrimitiveLiteralType(type) && !(type.flags & ts.TypeFlags.EnumLiteral);
+  }
+
   static isTypeSymbol(symbol: ts.Symbol | undefined): boolean {
     return (
       !!symbol &&
@@ -1853,7 +1867,7 @@ export class TsUtils {
     return unwrappedTypeNode;
   }
 
-  isSendableTypeNode(typeNode: ts.TypeNode): boolean {
+  isSendableTypeNode(typeNode: ts.TypeNode, isShared: boolean = false): boolean {
 
     /*
      * In order to correctly identify the usage of the enum member or
@@ -1868,7 +1882,7 @@ export class TsUtils {
     // Only a sendable union type is supported
     if (ts.isUnionTypeNode(typeNode)) {
       return typeNode.types.every((elemType) => {
-        return this.isSendableTypeNode(elemType);
+        return this.isSendableTypeNode(elemType, isShared);
       });
     }
 
@@ -1877,7 +1891,7 @@ export class TsUtils {
     if (sym && sym.getFlags() & ts.SymbolFlags.TypeAlias) {
       const typeDecl = TsUtils.getDeclaration(sym);
       if (typeDecl && ts.isTypeAliasDeclaration(typeDecl)) {
-        return this.isSendableTypeNode(typeDecl.type);
+        return this.isSendableTypeNode(typeDecl.type, isShared);
       }
     }
 
@@ -1885,8 +1899,14 @@ export class TsUtils {
     if (TsUtils.isConstEnum(sym)) {
       return true;
     }
+    const type: ts.Type = this.tsTypeChecker.getTypeFromTypeNode(typeNode);
 
-    return this.isSendableType(this.tsTypeChecker.getTypeFromTypeNode(typeNode));
+    // In shared module, literal forms of primitive data types can be exported
+    if (isShared && TsUtils.isPurePrimitiveLiteralType(type)) {
+      return true;
+    }
+
+    return this.isSendableType(type);
   }
 
   isSendableType(type: ts.Type): boolean {
@@ -1923,6 +1943,10 @@ export class TsUtils {
       return tsType.types.every((elemType) => {
         return this.isShareableType(elemType);
       });
+    }
+
+    if (TsUtils.isPurePrimitiveLiteralType(tsType)) {
+      return true;
     }
 
     return this.isSendableType(tsType);
@@ -2458,7 +2482,7 @@ export class TsUtils {
     const decl = this.getDeclarationNode(node);
     const typeNode = (decl as any)?.type;
     return typeNode && !TsUtils.isFunctionLikeDeclaration(decl!) ?
-      this.isSendableTypeNode(typeNode) :
+      this.isSendableTypeNode(typeNode, true) :
       this.isShareableType(this.tsTypeChecker.getTypeAtLocation(decl ? decl : node));
   }
 
