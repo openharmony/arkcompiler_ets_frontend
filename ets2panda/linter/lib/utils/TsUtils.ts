@@ -756,15 +756,18 @@ export class TsUtils {
     let hasDefaultCtor: boolean = false;
 
     type.symbol.members.forEach((value) => {
-      if ((value.flags & ts.SymbolFlags.Constructor) !== 0) {
-        hasCtor = true;
+      if ((value.flags & ts.SymbolFlags.Constructor) === 0) {
+        return;
+      }
+      hasCtor = true;
 
-        if (value.declarations !== undefined && value.declarations.length > 0) {
-          const declCtor = value.declarations[0] as ts.ConstructorDeclaration;
-          if (declCtor.parameters.length === 0) {
-            hasDefaultCtor = true;
-          }
-        }
+      if (value.declarations === undefined || value.declarations.length <= 0) {
+        return;
+      }
+
+      const declCtor = value.declarations[0] as ts.ConstructorDeclaration;
+      if (declCtor.parameters.length === 0) {
+        hasDefaultCtor = true;
       }
     });
 
@@ -2383,27 +2386,29 @@ export class TsUtils {
 
   static declarationNameExists(srcFile: ts.SourceFile, name: string): boolean {
     return srcFile.statements.some((stmt) => {
-      if (ts.isImportDeclaration(stmt)) {
-        if (!stmt.importClause) {
-          return false;
-        }
-        if (stmt.importClause.namedBindings) {
-          if (ts.isNamespaceImport(stmt.importClause.namedBindings)) {
-            return stmt.importClause.namedBindings.name.text === name;
-          }
-          return stmt.importClause.namedBindings.elements.some((x) => {
-            return x.name.text === name;
-          });
-        }
+      if (!ts.isImportDeclaration(stmt)) {
+        return (
+          TsUtils.isDeclarationStatement(stmt) &&
+          stmt.name !== undefined &&
+          ts.isIdentifier(stmt.name) &&
+          stmt.name.text === name
+        );
+      }
+
+      if (!stmt.importClause) {
+        return false;
+      }
+
+      if (!stmt.importClause.namedBindings) {
         return stmt.importClause.name?.text === name;
       }
 
-      return (
-        TsUtils.isDeclarationStatement(stmt) &&
-        stmt.name !== undefined &&
-        ts.isIdentifier(stmt.name) &&
-        stmt.name.text === name
-      );
+      if (ts.isNamespaceImport(stmt.importClause.namedBindings)) {
+        return stmt.importClause.namedBindings.name.text === name;
+      }
+      return stmt.importClause.namedBindings.elements.some((x) => {
+        return x.name.text === name;
+      });
     });
   }
 

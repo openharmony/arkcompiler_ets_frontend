@@ -483,6 +483,36 @@ export class Autofixer {
     return text;
   }
 
+  private getEnumMembers(node: ts.Node, enumDeclsInFile: ts.Declaration[], result: Autofix[] | undefined): void {
+    if (result === undefined || !ts.isEnumDeclaration(node)) {
+      return;
+    }
+
+    if (result.length) {
+      result.push({ start: node.getStart(), end: node.getEnd(), replacementText: '' });
+      return;
+    }
+
+    const members: ts.EnumMember[] = [];
+    for (const decl of enumDeclsInFile) {
+      for (const member of (decl as ts.EnumDeclaration).members) {
+        if (
+          member.initializer &&
+          member.initializer.kind !== ts.SyntaxKind.NumericLiteral &&
+          member.initializer.kind !== ts.SyntaxKind.StringLiteral
+        ) {
+          result = undefined;
+          return;
+        }
+      }
+      members.push(...(decl as ts.EnumDeclaration).members);
+    }
+
+    const fullEnum = ts.factory.createEnumDeclaration(node.modifiers, node.name, members);
+    const fullText = this.printer.printNode(ts.EmitHint.Unspecified, fullEnum, node.getSourceFile());
+    result.push({ start: node.getStart(), end: node.getEnd(), replacementText: fullText });
+  }
+
   fixEnumMerging(enumSymbol: ts.Symbol, enumDeclsInFile: ts.Declaration[]): Autofix[] | undefined {
     if (this.enumMergingCache.has(enumSymbol)) {
       return this.enumMergingCache.get(enumSymbol);
@@ -495,33 +525,7 @@ export class Autofixer {
 
     let result: Autofix[] | undefined = [];
     this.symbolCache.getReferences(enumSymbol).forEach((node) => {
-      if (result === undefined || !ts.isEnumDeclaration(node)) {
-        return;
-      }
-
-      if (result.length) {
-        result.push({ start: node.getStart(), end: node.getEnd(), replacementText: '' });
-        return;
-      }
-
-      const members: ts.EnumMember[] = [];
-      for (const decl of enumDeclsInFile) {
-        for (const member of (decl as ts.EnumDeclaration).members) {
-          if (
-            member.initializer &&
-            member.initializer.kind !== ts.SyntaxKind.NumericLiteral &&
-            member.initializer.kind !== ts.SyntaxKind.StringLiteral
-          ) {
-            result = undefined;
-            return;
-          }
-        }
-        members.push(...(decl as ts.EnumDeclaration).members);
-      }
-
-      const fullEnum = ts.factory.createEnumDeclaration(node.modifiers, node.name, members);
-      const fullText = this.printer.printNode(ts.EmitHint.Unspecified, fullEnum, node.getSourceFile());
-      result.push({ start: node.getStart(), end: node.getEnd(), replacementText: fullText });
+      this.getEnumMembers(node, enumDeclsInFile, result);
     });
     if (!result?.length) {
       result = undefined;

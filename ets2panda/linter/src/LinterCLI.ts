@@ -13,15 +13,16 @@
  * limitations under the License.
  */
 
-import { TypeScriptLinter } from '../lib/TypeScriptLinter';
-import { parseCommandLine } from './CommandLineParser';
-import { Logger } from '../lib/Logger';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
-import * as readline from 'node:readline';
 import * as path from 'node:path';
+import * as readline from 'node:readline';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
 import { lint } from '../lib/LinterRunner';
+import { Logger } from '../lib/Logger';
+import type { ProblemInfo } from '../lib/ProblemInfo';
+import { TypeScriptLinter } from '../lib/TypeScriptLinter';
+import { parseCommandLine } from './CommandLineParser';
 import { compileLintOptions } from './Compiler';
 
 export function run(): void {
@@ -51,6 +52,23 @@ function getTempFileName(): string {
   return path.join(os.tmpdir(), Math.floor(Math.random() * 10000000).toString() + '_linter_tmp_file.ts');
 }
 
+function showJSONMessage(problems: ProblemInfo[][]): void {
+  const jsonMessage = problems[0].map((x) => {
+    return {
+      line: x.line,
+      column: x.column,
+      start: x.start,
+      end: x.end,
+      type: x.type,
+      suggest: x.suggest,
+      rule: x.rule,
+      severity: x.severity,
+      autofix: x.autofix
+    };
+  });
+  Logger.info(`{"linter messages":${JSON.stringify(jsonMessage)}}`);
+}
+
 function runIDEMode(cmdOptions: CommandLineOptions): void {
   TypeScriptLinter.ideMode = true;
   const tmpFileName = getTempFileName();
@@ -75,20 +93,7 @@ function runIDEMode(cmdOptions: CommandLineOptions): void {
     const result = lint(compileLintOptions(cmdOptions));
     const problems = Array.from(result.problemsInfos.values());
     if (problems.length === 1) {
-      const jsonMessage = problems[0].map((x) => {
-        return {
-          line: x.line,
-          column: x.column,
-          start: x.start,
-          end: x.end,
-          type: x.type,
-          suggest: x.suggest,
-          rule: x.rule,
-          severity: x.severity,
-          autofix: x.autofix
-        };
-      });
-      Logger.info(`{"linter messages":${JSON.stringify(jsonMessage)}}`);
+      showJSONMessage(problems);
     } else {
       Logger.error('Unexpected error: could not lint file');
     }
