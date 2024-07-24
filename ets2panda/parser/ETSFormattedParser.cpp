@@ -24,6 +24,7 @@
 #include "ir/statements/expressionStatement.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/ts/tsInterfaceBody.h"
+#include "parser/parserStatusContext.h"
 
 namespace ark::es2panda::parser {
 //================================================================================================//

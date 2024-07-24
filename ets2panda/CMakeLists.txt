@@ -373,16 +373,23 @@ set(ES2PANDA_LIB_SRC
   parser/context/classPrivateContext.cpp
   parser/context/parserContext.cpp
   parser/expressionParser.cpp
+  parser/expressionTSParser.cpp
   parser/ASparser.cpp
   parser/JSparser.cpp
   parser/parserImpl.cpp
   parser/ETSFormattedParser.cpp
   parser/ETSparser.cpp
+  parser/ETSparserClasses.cpp
+  parser/ETSparserEnums.cpp
+  parser/ETSparserExpressions.cpp
+  parser/ETSparserStatements.cpp
+  parser/ETSparserTypes.cpp
   parser/ETSNolintParser.cpp
   parser/TSparser.cpp
   parser/TypedParser.cpp
   parser/program/program.cpp
   parser/statementParser.cpp
+  parser/statementTSParser.cpp
   checker/checker.cpp
   checker/checkerContext.cpp
   checker/ETSAnalyzer.cpp

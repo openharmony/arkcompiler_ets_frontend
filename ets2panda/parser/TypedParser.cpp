@@ -15,6 +15,7 @@
 
 #include "TypedParser.h"
 
+#include "parser/parserStatusContext.h"
 #include "varbinder/privateBinding.h"
 #include "lexer/lexer.h"
 #include "ir/base/classDefinition.h"
