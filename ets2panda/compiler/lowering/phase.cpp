@@ -26,6 +26,7 @@
 #include "compiler/lowering/ets/topLevelStmts/topLevelStmts.h"
 #include "compiler/lowering/ets/expressionLambdaLowering.h"
 #include "compiler/lowering/ets/boxingForLocals.h"
+#include "compiler/lowering/ets/capturedVariables.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/spreadLowering.h"
 #include "compiler/lowering/ets/interfacePropertyDeclarations.h"
@@ -66,6 +67,7 @@ static SpreadConstructionPhase g_spreadConstructionPhase;
 static ExpressionLambdaConstructionPhase g_expressionLambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
 static BoxingForLocals g_boxingForLocals;
+static CapturedVariables g_capturedVariables {};
 static LambdaConversionPhase g_lambdaConversionPhase;
 static ObjectIndexLowering g_objectIndexLowering;
 static ObjectIteratorLowering g_objectIteratorLowering;
@@ -117,6 +119,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_interfacePropDeclPhase,
         &g_enumLoweringPhase,
         &g_resolveIdentifiers,
+        &g_capturedVariables,
         &g_checkerPhase,
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,

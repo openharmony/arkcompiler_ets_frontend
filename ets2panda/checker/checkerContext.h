@@ -172,10 +172,7 @@ public:
         smartCasts_.erase(variable);
     }
 
-    void SetSmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept
-    {
-        smartCasts_.insert_or_assign(variable, smartType);
-    }
+    void SetSmartCast(varbinder::Variable const *const variable, checker::Type *const smartType) noexcept;
 
     [[nodiscard]] checker::Type *GetSmartCast(varbinder::Variable const *const variable) const noexcept;
     [[nodiscard]] SmartCastArray CloneSmartCasts(bool clearData = false) noexcept;
