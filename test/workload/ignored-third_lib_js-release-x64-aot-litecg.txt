@@ -1,0 +1,14 @@
+# Known failures list for third_lib_js - release-x64-aot-litegc
+
+# Issue #18340
+Drools_test
+
+# Issue #18153
+js-joda_test
+jBox2d_test
+
+#18424
+pcx_test
+
+#18425
+gson_test
