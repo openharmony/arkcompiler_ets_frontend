@@ -472,8 +472,9 @@ class RegressionRunner(Runner):
 
 
 class AbcToAsmRunner(Runner):
-    def __init__(self, args):
-        Runner.__init__(self, args, "Abc2asm")
+    def __init__(self, args, is_debug):
+        Runner.__init__(self, args, "Abc2asm" if not is_debug else "Abc2asmDebug")
+        self.is_debug = is_debug
 
     def add_directory(self, directory, extension, flags, func=Test):
         glob_expression = path.join(
@@ -481,46 +482,52 @@ class AbcToAsmRunner(Runner):
         files = glob(glob_expression)
         files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
 
-        self.tests += list(map(lambda f: AbcToAsmTest(f, flags), files))
+        self.tests += list(map(lambda f: AbcToAsmTest(f, flags, self.is_debug), files))
 
     def test_path(self, src):
         return os.path.basename(src)
 
 
 class AbcToAsmTest(Test):
+    def __init__(self, test_path, flags, is_debug):
+        Test.__init__(self, test_path, flags)
+        self.is_debug = is_debug
+
     def run(self, runner):
         output_abc_file = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        # source code compilation, generate an abc file
         gen_abc_cmd = runner.cmd_prefix + [runner.es2panda]
-        gen_abc_cmd.extend(["--dump-normalized-asm-program", "--debug-info", "--output=" + output_abc_file])
+        if (self.is_debug):
+            gen_abc_cmd.extend(["--debug-info"])
+        gen_abc_cmd.extend(["--module", "--dump-normalized-asm-program", "--output=" + output_abc_file])
         gen_abc_cmd.append(self.path)
         process_gen_abc = run_subprocess_with_beta3(self, gen_abc_cmd)
         gen_abc_out, gen_abc_err = process_gen_abc.communicate()
-        gen_abc_output = gen_abc_out.decode("utf-8", errors="ignore") + gen_abc_err.decode("utf-8", errors="ignore")
+        gen_abc_output = gen_abc_out.decode("utf-8", errors="ignore")
+
         # If no abc file is generated, an error occurs during parser, but abc2asm function is normal.
         if not os.path.exists(output_abc_file):
             self.passed = True
             return self
+
+        # abc file compilation
         abc_to_asm_cmd = runner.cmd_prefix + [runner.es2panda]
-        abc_to_asm_cmd.extend(["--dump-normalized-asm-program", "--debug-info", "--enable-abc-input"])
+        if (self.is_debug):
+            abc_to_asm_cmd.extend(["--debug-info"])
+        abc_to_asm_cmd.extend(["--module", "--dump-normalized-asm-program", "--enable-abc-input"])
         abc_to_asm_cmd.append(output_abc_file)
         process_abc_to_asm = run_subprocess_with_beta3(self, abc_to_asm_cmd)
         abc_to_asm_out, abc_to_asm_err = process_abc_to_asm.communicate()
-        abc_to_asm_output = (abc_to_asm_out.decode("utf-8", errors="ignore") +
-                             abc_to_asm_err.decode("utf-8", errors="ignore"))
-        try:
-            self.passed = gen_abc_output == abc_to_asm_output and process_abc_to_asm.returncode in [0, 1]
-        except Exception:
-            self.passed = False
+        abc_to_asm_output = abc_to_asm_out.decode("utf-8", errors="ignore")
 
+        self.passed = gen_abc_output == abc_to_asm_output and process_abc_to_asm.returncode in [0, 1]
         if not self.passed:
-            print("**********Error testcase**********")
-            print(self.path)
-            print("**********Gen abc cmd**********")
-            print(gen_abc_cmd)
-            print(gen_abc_output)
-            print("**********Abc to asm cmd***********")
-            print(abc_to_asm_cmd)
-            print(abc_to_asm_output)
+            self.error = "Comparison of dump results between source code compilation and abc file compilation failed."
+            if gen_abc_err:
+                self.error += "\n" + gen_abc_err.decode("utf-8", errors="ignore")
+            if abc_to_asm_err:
+                self.error += "\n" + abc_to_asm_err.decode("utf-8", errors="ignore")
+
         os.remove(output_abc_file)
         return self
 
@@ -1511,8 +1518,8 @@ def add_directory_for_regression(runners, args):
 
     runners.append(transformer_api_version_10_runner)
 
-def add_directory_for_asm(runners, args):
-    runner = AbcToAsmRunner(args)
+def add_directory_for_asm(runners, args, mode = ""):
+    runner = AbcToAsmRunner(args, True if mode == "debug" else False)
     runner.add_directory("abc2asm/js", "js", [])
     runner.add_directory("abc2asm/ts", "ts", [])
     runner.add_directory("compiler/js", "js", [])
@@ -1667,6 +1674,7 @@ def main():
 
     if args.abc_to_asm:
         add_directory_for_asm(runners, args)
+        add_directory_for_asm(runners, args, "debug")
 
     if args.tsc:
         runners.append(TSCRunner(args))
