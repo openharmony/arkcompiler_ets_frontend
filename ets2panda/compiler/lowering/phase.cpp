@@ -17,6 +17,7 @@
 #include "checker/checker.h"
 #include "ets/ambientLowering.h"
 #include "lexer/token/sourceLocation.h"
+#include "compiler/lowering/resolveIdentifiers.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/constStringToCharLowering.h"
 #include "compiler/lowering/ets/defaultParameterLowering.h"
@@ -52,14 +53,7 @@
 namespace ark::es2panda::compiler {
 
 static CheckerPhase g_checkerPhase;
-
-std::vector<Phase *> GetTrivialPhaseList()
-{
-    return std::vector<Phase *> {
-        &g_checkerPhase,
-    };
-}
-
+static ResolveIdentifiers g_resolveIdentifiers {};
 static AmbientLowering g_ambientLowering;
 static BigIntLowering g_bigintLowering;
 static StringConstructorLowering g_stringConstructorLowering;
@@ -119,6 +113,7 @@ std::vector<Phase *> GetETSPhaseList()
         &g_expressionLambdaConstructionPhase,
         &g_interfacePropDeclPhase,
         &g_enumLoweringPhase,
+        &g_resolveIdentifiers,
         &g_checkerPhase,
         &g_enumPostCheckLoweringPhase,
         &g_spreadConstructionPhase,

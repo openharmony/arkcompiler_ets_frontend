@@ -182,6 +182,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/scopesInit/scopesInitPhase.cpp
   compiler/lowering/phase.cpp
   compiler/lowering/plugin_phase.cpp
+  compiler/lowering/resolveIdentifiers.cpp
   compiler/lowering/util.cpp
   compiler/lowering/ets/topLevelStmts/importExportDecls.cpp
   compiler/lowering/ets/topLevelStmts/globalClassHandler.cpp
