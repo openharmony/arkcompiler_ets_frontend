@@ -97,6 +97,7 @@ struct CompilerOptions {
     bool typeExtractor {false};
     bool typeDtsBuiltin {false};
     bool recordSource {false};
+    bool recordDebugSource {false};
     int fileThreadCount {0};
     int functionThreadCount {0};
     int abcClassThreadCount {0};

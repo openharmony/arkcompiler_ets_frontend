@@ -39,7 +39,7 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    bool isMergeAbc, bool isJsonInputFile, bool isRecordSource,
+                    bool isMergeAbc, bool isJsonInputFile, bool isRecordSource, bool isRecordDebugSource,
                     const std::string &sourceFile, const std::string &pkgName, util::StringView recordName,
                     util::PatchFix *patchFixHelper);
 
@@ -118,6 +118,11 @@ public:
         return isRecordSource_;
     }
 
+    bool IsRecordDebugSource() const
+    {
+        return isRecordDebugSource_;
+    }
+
 private:
     binder::Binder *binder_;
     int32_t literalBufferIdx_ {0};
@@ -128,6 +133,7 @@ private:
     // true when input file is json file
     bool isJsonInputFile_;
     bool isRecordSource_;
+    bool isRecordDebugSource_;
     std::string sourceFile_;
     std::string pkgName_;
     util::StringView recordName_;

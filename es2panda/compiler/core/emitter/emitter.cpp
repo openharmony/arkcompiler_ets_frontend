@@ -256,7 +256,11 @@ void FunctionEmitter::GenSourceFileDebugInfo()
     }
 
     if (pg_->RootNode()->IsProgram()) {
-        func_->source_code = SourceCode().Mutf8();
+        if (pg_->Context()->IsRecordDebugSource()) {
+            func_->source_code = SourceCode().Mutf8();
+        } else {
+            func_->source_code = "not supported";
+        }
     }
 }
 

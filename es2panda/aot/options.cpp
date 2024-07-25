@@ -306,6 +306,8 @@ bool Options::Parse(int argc, const char **argv)
                                                         "Check the AST structure after transform");
     panda::PandArg<bool> opRecordSource("record-source", false, "Record all functions' source codes to support the "\
         "using of [function].toString()");
+    panda::PandArg<bool> opRecordDebugSource("record-debug-source", false, "Record source code to support "\
+        "multi-platform debugger & detailed backtrace in debug mode");
 
     // compiler
     panda::PandArg<bool> opEnableAbcInput("enable-abc-input", false, "Allow abc file as input");
@@ -400,6 +402,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpTransformedAst);
     argparser_->Add(&opCheckTransformedAstStructure);
     argparser_->Add(&opRecordSource);
+    argparser_->Add(&opRecordDebugSource);
     argparser_->Add(&opParseOnly);
     argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opEnableAbcInput);
@@ -611,6 +614,7 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     compilerOptions_.recordSource = opRecordSource.GetValue();
+    compilerOptions_.recordDebugSource = opRecordDebugSource.GetValue();
     compilerOptions_.enableAbcInput = opEnableAbcInput.GetValue();
     compilerOptions_.dumpAsmProgram = opDumpAsmProgram.GetValue();
     compilerOptions_.dumpNormalizedAsmProgram = opDumpNormalizedAsmProgram.GetValue();
