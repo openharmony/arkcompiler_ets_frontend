@@ -609,16 +609,22 @@ public:
         Ra().Emit<CallVirtShort>(node, name, athis, arg0);
     }
 
-    void CallDynamic(const ir::AstNode *node, VReg obj, VReg param2, checker::Signature *signature,
+    struct CallDynamicData {
+        const ir::AstNode *node = nullptr;
+        VReg obj;
+        VReg param2;
+    };
+
+    void CallDynamic(CallDynamicData data, checker::Signature *signature,
                      const ArenaVector<ir::Expression *> &arguments)
     {
-        CallDynamicImpl<CallShort, Call, CallRange>(node, obj, param2, signature, arguments);
+        CallDynamicImpl<CallShort, Call, CallRange>(data, signature, arguments);
     }
 
-    void CallDynamic(const ir::AstNode *node, VReg obj, VReg param2, VReg param3, checker::Signature *signature,
+    void CallDynamic(CallDynamicData data, VReg param3, checker::Signature *signature,
                      const ArenaVector<ir::Expression *> &arguments)
     {
-        CallDynamicImpl<CallShort, Call, CallRange>(node, obj, param2, param3, signature, arguments);
+        CallDynamicImpl<CallShort, Call, CallRange>(data, param3, signature, arguments);
     }
 
 #ifdef PANDA_WITH_ETS
@@ -1079,7 +1085,7 @@ private:
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
-    void CallDynamicImpl(const ir::AstNode *node, VReg &obj, VReg &param2, checker::Signature *signature,
+    void CallDynamicImpl(CallDynamicData data, checker::Signature *signature,
                          const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);
@@ -1087,18 +1093,18 @@ private:
 
         switch (arguments.size()) {
             case 0U: {
-                Ra().Emit<Short>(node, name, obj, param2);
+                Ra().Emit<Short>(data.node, name, data.obj, data.param2);
                 break;
             }
             case 1U: {
                 COMPILE_ARG(0, 2U);
-                Ra().Emit<General, 3U>(node, name, obj, param2, arg0, dummyReg_);
+                Ra().Emit<General, 3U>(data.node, name, data.obj, data.param2, arg0, dummyReg_);
                 break;
             }
             case 2U: {
                 COMPILE_ARG(0, 2U);
                 COMPILE_ARG(1, 2U);
-                Ra().Emit<General>(node, name, obj, param2, arg0, arg1);
+                Ra().Emit<General>(data.node, name, data.obj, data.param2, arg0, arg1);
                 break;
             }
             default: {
@@ -1106,14 +1112,14 @@ private:
                     COMPILE_ARG(idx, 2U);
                 }
 
-                Rra().Emit<Range>(node, obj, arguments.size() + 2U, name, obj);
+                Rra().Emit<Range>(data.node, data.obj, arguments.size() + 2U, name, data.obj);
                 break;
             }
         }
     }
 
     template <typename Short, typename General, typename Range>
-    void CallDynamicImpl(const ir::AstNode *node, VReg obj, VReg param2, VReg param3, checker::Signature *signature,
+    void CallDynamicImpl(CallDynamicData data, VReg param3, checker::Signature *signature,
                          const ArenaVector<ir::Expression *> &arguments)
     {
         RegScope rs(this);
@@ -1121,12 +1127,12 @@ private:
 
         switch (arguments.size()) {
             case 0U: {
-                Ra().Emit<General, 3U>(node, name, obj, param2, param3, dummyReg_);
+                Ra().Emit<General, 3U>(data.node, name, data.obj, data.param2, param3, dummyReg_);
                 break;
             }
             case 1U: {
                 COMPILE_ARG(0, 3U);
-                Ra().Emit<General>(node, name, obj, param2, param3, arg0);
+                Ra().Emit<General>(data.node, name, data.obj, data.param2, param3, arg0);
                 break;
             }
             default: {
@@ -1134,7 +1140,7 @@ private:
                     COMPILE_ARG(idx, 3U);
                 }
 
-                Rra().Emit<Range>(node, obj, arguments.size() + 3U, name, obj);
+                Rra().Emit<Range>(data.node, data.obj, arguments.size() + 3U, name, data.obj);
                 break;
             }
         }
@@ -1147,6 +1153,8 @@ private:
 
     template <typename T>
     void LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType);
+    template <typename T>
+    void SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag typeKind, T number);
     void InitializeContainingClass();
 
     util::StringView FormDynamicModulePropReference(const varbinder::Variable *var);
@@ -1160,13 +1168,8 @@ private:
 };
 
 template <typename T>
-void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
+void ETSGen::SetAccumulatorTargetType(const ir::AstNode *node, checker::TypeFlag typeKind, T number)
 {
-    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
-                                    !targetType_->IsETSArrayType())
-                        ? checker::ETSChecker::TypeKind(targetType_)
-                        : targetType;
-
     switch (typeKind) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {
@@ -1215,6 +1218,17 @@ void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::T
             UNREACHABLE();
         }
     }
+}
+
+template <typename T>
+void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag targetType)
+{
+    auto typeKind = targetType_ && (!targetType_->IsETSObjectType() && !targetType_->IsETSUnionType() &&
+                                    !targetType_->IsETSArrayType())
+                        ? checker::ETSChecker::TypeKind(targetType_)
+                        : targetType;
+
+    SetAccumulatorTargetType(node, typeKind, number);
 
     if (targetType_ && (targetType_->IsETSObjectType() || targetType_->IsETSUnionType())) {
         ApplyConversion(node, targetType_);

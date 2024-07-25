@@ -44,6 +44,7 @@ import {
 } from './utils/consts/NonInitializablePropertyDecorators';
 import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunctionDecorators';
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
+import { SENDABLE_DECORATOR, SENDABLE_DECORATOR_NODES } from './utils/consts/SendableAPI';
 import type { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 import { hasPredecessor } from './utils/functions/HasPredecessor';
@@ -59,7 +60,6 @@ import {
 import { SupportedStdCallApiChecker } from './utils/functions/SupportedStdCallAPI';
 import { identiferUseInValueContext } from './utils/functions/identiferUseInValueContext';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
-import { SENDABLE_DECORATOR, SENDABLE_DECORATOR_NODES } from './utils/consts/SendableAPI';
 
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
@@ -1829,19 +1829,23 @@ export class TypeScriptLinter {
   }
 
   private handleImportCall(tsCallExpr: ts.CallExpression): void {
-    if (tsCallExpr.expression.kind === ts.SyntaxKind.ImportKeyword) {
-      // relax rule#133 "arkts-no-runtime-import"
-      const tsArgs = tsCallExpr.arguments;
-      if (tsArgs.length > 1 && ts.isObjectLiteralExpression(tsArgs[1])) {
-        for (const tsProp of tsArgs[1].properties) {
-          if (
-            (ts.isPropertyAssignment(tsProp) || ts.isShorthandPropertyAssignment(tsProp)) &&
-            tsProp.name.getText() === 'assert'
-          ) {
-            this.incrementCounters(tsProp, FaultID.ImportAssertion);
-            break;
-          }
-        }
+    if (tsCallExpr.expression.kind !== ts.SyntaxKind.ImportKeyword) {
+      return;
+    }
+
+    // relax rule#133 "arkts-no-runtime-import"
+    const tsArgs = tsCallExpr.arguments;
+    if (tsArgs.length <= 1 || !ts.isObjectLiteralExpression(tsArgs[1])) {
+      return;
+    }
+
+    for (const tsProp of tsArgs[1].properties) {
+      if (
+        (ts.isPropertyAssignment(tsProp) || ts.isShorthandPropertyAssignment(tsProp)) &&
+        tsProp.name.getText() === 'assert'
+      ) {
+        this.incrementCounters(tsProp, FaultID.ImportAssertion);
+        break;
       }
     }
   }

@@ -389,6 +389,8 @@ private:
 
     // Binary like expression
     void CheckBooleanLikeType(Type *leftType, Type *rightType, ir::AstNode *expr, lexer::TokenType op);
+
+    void CheckExtendsBases(ObjectType *&baseObj, InterfaceType *&type, varbinder::InterfaceDecl *&decl);
 };
 
 }  // namespace ark::es2panda::checker

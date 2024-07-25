@@ -13,18 +13,18 @@
  * limitations under the License.
  */
 
-import type * as ts from 'typescript';
-import type { ProblemInfo } from './ProblemInfo';
-import { TypeScriptLinter, consoleLog } from './TypeScriptLinter';
-import { InteropTypescriptLinter } from './InteropTypescriptLinter';
-import { FaultID } from './Problems';
-import { faultDesc } from './FaultDesc';
-import { faultsAttrs } from './FaultAttrs';
-import type { LintRunResult } from './LintRunResult';
 import * as path from 'node:path';
-import type { LintOptions } from './LintOptions';
+import type * as ts from 'typescript';
 import type { CommandLineOptions } from './CommandLineOptions';
-import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
+import { faultsAttrs } from './FaultAttrs';
+import { faultDesc } from './FaultDesc';
+import { InteropTypescriptLinter } from './InteropTypescriptLinter';
+import type { LintOptions } from './LintOptions';
+import type { LintRunResult } from './LintRunResult';
+import type { ProblemInfo } from './ProblemInfo';
+import { ProblemSeverity } from './ProblemSeverity';
+import { FaultID } from './Problems';
+import { TypeScriptLinter, consoleLog } from './TypeScriptLinter';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
 import {
@@ -32,32 +32,35 @@ import {
   ARKTS_IGNORE_DIRS_OH_MODULES,
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
+import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { pathContainsDirectory } from './utils/functions/PathHelper';
-import { ProblemSeverity } from './ProblemSeverity';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles;
-  if (cmdOptions.parsedConfigFile) {
-    inputFiles = cmdOptions.parsedConfigFile.fileNames;
-    if (cmdOptions.inputFiles.length > 0) {
-
-      /*
-       * Apply linter only to the project source files that are specified
-       * as a command-line arguments. Other source files will be discarded.
-       */
-      const cmdInputsResolvedPaths = cmdOptions.inputFiles.map((x) => {
-        return path.resolve(x);
-      });
-      const configInputsResolvedPaths = inputFiles.map((x) => {
-        return path.resolve(x);
-      });
-      inputFiles = configInputsResolvedPaths.filter((x) => {
-        return cmdInputsResolvedPaths.some((y) => {
-          return x === y;
-        });
-      });
-    }
+  if (!cmdOptions.parsedConfigFile) {
+    return inputFiles;
   }
+
+  inputFiles = cmdOptions.parsedConfigFile.fileNames;
+  if (cmdOptions.inputFiles.length <= 0) {
+    return inputFiles;
+  }
+
+  /*
+   * Apply linter only to the project source files that are specified
+   * as a command-line arguments. Other source files will be discarded.
+   */
+  const cmdInputsResolvedPaths = cmdOptions.inputFiles.map((x) => {
+    return path.resolve(x);
+  });
+  const configInputsResolvedPaths = inputFiles.map((x) => {
+    return path.resolve(x);
+  });
+  inputFiles = configInputsResolvedPaths.filter((x) => {
+    return cmdInputsResolvedPaths.some((y) => {
+      return x === y;
+    });
+  });
 
   return inputFiles;
 }

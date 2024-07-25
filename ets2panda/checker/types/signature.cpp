@@ -73,12 +73,10 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     }
 
     auto *newReturnType = returnType_->Substitute(relation, substitution);
-    if (newReturnType != returnType_) {
-        anyChange = true;
-    }
-    if (!anyChange) {
+    if (newReturnType == returnType_ && !anyChange) {
         return this;
     }
+
     auto *result = allocator->New<Signature>(newSigInfo, newReturnType);
     result->func_ = func_;
     result->flags_ = flags_;

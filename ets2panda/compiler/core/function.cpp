@@ -143,32 +143,10 @@ void Function::LoadClassContexts(const ir::AstNode *node, PandaGen *pg, VReg cto
     } while (classDef != nullptr);
 }
 
-void Function::CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl)
+void Function::IterateOverElements(const ArenaVector<ir::AstNode *> &elements, PandaGen *pg, VReg &ctor, VReg &thisReg,
+                                   VReg &computedInstanceFieldsArray)
 {
-    const auto klass = util::Helpers::GetClassDefiniton(decl);
-    const auto &elements = klass->Body();
-
-    RegScope rs(pg);
-    auto thisReg = pg->AllocReg();
-    auto ctor = pg->AllocReg();
-    pg->GetThis(decl);
-    pg->StoreAccumulator(decl, thisReg);
-    pg->GetFunctionObject(decl);
-    pg->StoreAccumulator(decl, ctor);
-
-    VReg computedInstanceFieldsArray {};
     uint32_t computedInstanceFieldsIndex = 0;
-
-    if (klass->HasPrivateMethod()) {
-        pg->ClassPrivateMethodOrAccessorAdd(decl, ctor, thisReg);
-    }
-
-    if (klass->HasComputedInstanceField()) {
-        computedInstanceFieldsArray = pg->AllocReg();
-        pg->LoadClassComputedInstanceFields(klass, ctor);
-        pg->StoreAccumulator(klass, computedInstanceFieldsArray);
-    }
-
     for (auto const &element : elements) {
         if (!element->IsClassProperty()) {
             continue;
@@ -214,6 +192,34 @@ void Function::CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *dec
 
         pg->StoreOwnProperty(prop, thisReg, key);
     }
+}
+
+void Function::CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl)
+{
+    const auto klass = util::Helpers::GetClassDefiniton(decl);
+    const auto &elements = klass->Body();
+
+    RegScope rs(pg);
+    auto thisReg = pg->AllocReg();
+    auto ctor = pg->AllocReg();
+    pg->GetThis(decl);
+    pg->StoreAccumulator(decl, thisReg);
+    pg->GetFunctionObject(decl);
+    pg->StoreAccumulator(decl, ctor);
+
+    VReg computedInstanceFieldsArray {};
+
+    if (klass->HasPrivateMethod()) {
+        pg->ClassPrivateMethodOrAccessorAdd(decl, ctor, thisReg);
+    }
+
+    if (klass->HasComputedInstanceField()) {
+        computedInstanceFieldsArray = pg->AllocReg();
+        pg->LoadClassComputedInstanceFields(klass, ctor);
+        pg->StoreAccumulator(klass, computedInstanceFieldsArray);
+    }
+
+    IterateOverElements(elements, pg, ctor, thisReg, computedInstanceFieldsArray);
 }
 
 static void CompileFunction(PandaGen *pg)

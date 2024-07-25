@@ -300,7 +300,7 @@ static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg,
     etsg->StoreAccumulator(node, objReg);
 
     auto [qnameStart, qnameLen] = LoadDynamicName(etsg, node, callInfo.name, true);
-    etsg->CallDynamic(node, objReg, qnameStart, qnameLen, signature, arguments);
+    etsg->CallDynamic(ETSGen::CallDynamicData {node, objReg, qnameStart}, qnameLen, signature, arguments);
 }
 
 static void ConvertRestArguments(checker::ETSChecker *const checker, const ir::ETSNewClassInstanceExpression *expr)
@@ -857,7 +857,8 @@ void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg 
 
     if (!callInfo.name.empty()) {
         auto [qnameStart, qnameLen] = LoadDynamicName(etsg, expr, callInfo.name, false);
-        etsg->CallDynamic(expr, calleeReg, qnameStart, qnameLen, expr->Signature(), expr->Arguments());
+        etsg->CallDynamic(ETSGen::CallDynamicData {expr, calleeReg, qnameStart}, qnameLen, expr->Signature(),
+                          expr->Arguments());
     } else {
         compiler::VReg dynParam2 = etsg->AllocReg();
 
@@ -866,7 +867,7 @@ void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg 
                         : expr->Callee()->TsType()->AsETSDynamicType()->Language();
         etsg->LoadUndefinedDynamic(expr, lang);
         etsg->StoreAccumulator(expr, dynParam2);
-        etsg->CallDynamic(expr, calleeReg, dynParam2, expr->Signature(), expr->Arguments());
+        etsg->CallDynamic(ETSGen::CallDynamicData {expr, calleeReg, dynParam2}, expr->Signature(), expr->Arguments());
     }
     etsg->SetAccumulatorType(expr->Signature()->ReturnType());
 
@@ -1210,7 +1211,7 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
     auto *createObjSig = etsg->Allocator()->New<checker::Signature>(
         signatureInfo, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
     compiler::VReg dummyReg = compiler::VReg::RegStart();
-    etsg->CallDynamic(expr, dummyReg, dummyReg, createObjSig,
+    etsg->CallDynamic(ETSGen::CallDynamicData {expr, dummyReg, dummyReg}, createObjSig,
                       ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
 
     etsg->SetAccumulatorType(expr->TsType());

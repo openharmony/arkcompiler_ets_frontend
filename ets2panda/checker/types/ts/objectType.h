@@ -193,6 +193,7 @@ public:
                                                     const ArenaVector<Signature *> &sourceSignatures,
                                                     const ArenaVector<Signature *> &targetSignatures);
 
+    bool FindPropertyAndCheckIdentical(TypeRelation *relation, ObjectType *otherObj);
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
 
