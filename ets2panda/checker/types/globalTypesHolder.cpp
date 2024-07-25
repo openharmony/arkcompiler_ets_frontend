@@ -50,9 +50,25 @@
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
-GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
+
+void GlobalTypesHolder::AddETSEscompatLayer()
 {
-    // TS specific types
+    // ETS escompat layer
+    builtinNameMappings_.emplace("Array", GlobalTypeId::ETS_ARRAY_BUILTIN);
+    builtinNameMappings_.emplace("Date", GlobalTypeId::ETS_DATE_BUILTIN);
+    builtinNameMappings_.emplace("Error", GlobalTypeId::ETS_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("OutOfMemoryError", GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("NoSuchMethodError", GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("UncaughtExceptionError", GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN);
+    builtinNameMappings_.emplace("Map", GlobalTypeId::ETS_MAP_BUILTIN);
+    builtinNameMappings_.emplace("RegExp", GlobalTypeId::ETS_REGEXP_BUILTIN);
+    builtinNameMappings_.emplace("Set", GlobalTypeId::ETS_SET_BUILTIN);
+}
+
+void GlobalTypesHolder::AddTSSpecificTypes(ArenaAllocator *allocator)
+{
     globalTypes_[static_cast<size_t>(GlobalTypeId::NUMBER)] = allocator->New<NumberType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ANY)] = allocator->New<AnyType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::STRING)] = allocator->New<StringType>();
@@ -81,6 +97,12 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_OBJECT)] = allocator->New<ObjectLiteralType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::RESOLVING_RETURN_TYPE)] = allocator->New<AnyType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ERROR_TYPE)] = allocator->New<AnyType>();
+}
+
+GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMappings_(allocator->Adapter())
+{
+    // TS specific types
+    AddTSSpecificTypes(allocator);
 
     // ETS specific types
     globalTypes_[static_cast<size_t>(GlobalTypeId::BYTE)] = allocator->New<ByteType>();
@@ -137,17 +159,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("never", GlobalTypeId::ETS_NEVER_BUILTIN);
 
     // ETS escompat layer
-    builtinNameMappings_.emplace("Array", GlobalTypeId::ETS_ARRAY_BUILTIN);
-    builtinNameMappings_.emplace("Date", GlobalTypeId::ETS_DATE_BUILTIN);
-    builtinNameMappings_.emplace("Error", GlobalTypeId::ETS_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("OutOfMemoryError", GlobalTypeId::ETS_OUT_OF_MEMORY_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("NoSuchMethodError", GlobalTypeId::ETS_NO_SUCH_METHOD_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("DivideByZeroError", GlobalTypeId::ETS_DIVIDE_BY_ZERO_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("NullPointerError", GlobalTypeId::ETS_NULL_POINTER_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("UncaughtExceptionError", GlobalTypeId::ETS_UNCAUGHT_EXCEPTION_ERROR_BUILTIN);
-    builtinNameMappings_.emplace("Map", GlobalTypeId::ETS_MAP_BUILTIN);
-    builtinNameMappings_.emplace("RegExp", GlobalTypeId::ETS_REGEXP_BUILTIN);
-    builtinNameMappings_.emplace("Set", GlobalTypeId::ETS_SET_BUILTIN);
+    AddETSEscompatLayer();
 
     // ETS functional types
     for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;

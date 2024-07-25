@@ -30,6 +30,8 @@ class Function {
 public:
     Function() = delete;
 
+    static void IterateOverElements(const ArenaVector<ir::AstNode *> &elements, PandaGen *pg, VReg &ctor, VReg &thisReg,
+                                    VReg &computedInstanceFieldsArray);
     static void Compile(PandaGen *pg);
     static void CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl);
 

@@ -141,6 +141,9 @@ public:
     NO_COPY_SEMANTIC(GlobalTypesHolder);
     NO_MOVE_SEMANTIC(GlobalTypesHolder);
 
+    void AddETSEscompatLayer();
+    void AddTSSpecificTypes(ArenaAllocator *allocator);
+
     // TS specific types
     Type *GlobalNumberType();
     Type *GlobalAnyType();

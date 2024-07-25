@@ -130,6 +130,9 @@ public:
 
     void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     TypeFacts GetTypeFacts() const override;
+    void CheckStringInfo(TypeRelation *relation, InterfaceType *otherInterface);
+    bool CheckVarType(TypeRelation *relation, const ArenaVector<varbinder::LocalVariable *> &targetProperties,
+                      const ArenaVector<varbinder::LocalVariable *> &sourceProperties);
     void Identical(TypeRelation *relation, Type *other) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 

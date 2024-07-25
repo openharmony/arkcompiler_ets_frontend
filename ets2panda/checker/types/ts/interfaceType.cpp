@@ -42,6 +42,29 @@ void InterfaceType::ToString(std::stringstream &ss, [[maybe_unused]] bool precis
     }
 }
 
+bool InterfaceType::CheckVarType(TypeRelation *relation,
+                                 const ArenaVector<varbinder::LocalVariable *> &targetProperties,
+                                 const ArenaVector<varbinder::LocalVariable *> &sourceProperties)
+{
+    for (auto *targetProp : targetProperties) {
+        bool foundProp = std::any_of(sourceProperties.begin(), sourceProperties.end(),
+                                     [targetProp, relation](varbinder::LocalVariable *sourceProp) {
+                                         if (targetProp->Name() == sourceProp->Name()) {
+                                             Type *targetType = relation->GetChecker()->GetTypeOfVariable(targetProp);
+                                             Type *sourceType = relation->GetChecker()->GetTypeOfVariable(sourceProp);
+                                             return relation->IsIdenticalTo(targetType, sourceType);
+                                         }
+
+                                         return false;
+                                     });
+        if (!foundProp) {
+            relation->Result(false);
+            return true;
+        }
+    }
+    return false;
+}
+
 void InterfaceType::Identical(TypeRelation *relation, Type *other)
 {
     if (!other->IsObjectType() || !other->AsObjectType()->IsInterfaceType()) {
@@ -58,21 +81,8 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
         return;
     }
 
-    for (auto *targetProp : targetProperties) {
-        bool foundProp = std::any_of(sourceProperties.begin(), sourceProperties.end(),
-                                     [targetProp, relation](varbinder::LocalVariable *sourceProp) {
-                                         if (targetProp->Name() == sourceProp->Name()) {
-                                             Type *targetType = relation->GetChecker()->GetTypeOfVariable(targetProp);
-                                             Type *sourceType = relation->GetChecker()->GetTypeOfVariable(sourceProp);
-                                             return relation->IsIdenticalTo(targetType, sourceType);
-                                         }
-
-                                         return false;
-                                     });
-        if (!foundProp) {
-            relation->Result(false);
-            return;
-        }
+    if (CheckVarType(relation, targetProperties, sourceProperties)) {
+        return;
     }
 
     const ArenaVector<Signature *> &targetCallSignatures = CallSignatures();
@@ -111,6 +121,11 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
 
     relation->IsIdenticalTo(targetNumberInfo, sourceNumberInfo);
 
+    CheckStringInfo(relation, otherInterface);
+}
+
+void InterfaceType::CheckStringInfo(TypeRelation *relation, InterfaceType *otherInterface)
+{
     if (relation->IsTrue()) {
         IndexInfo *targetStringInfo = StringIndexInfo();
         IndexInfo *sourceStringInfo = otherInterface->StringIndexInfo();
