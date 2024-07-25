@@ -14,12 +14,14 @@
  */
 
 import type {
+  ElementAccessExpression,
   EnumDeclaration,
   ExportDeclaration,
   ModifiersArray,
   ModuleDeclaration,
   Node,
   ParameterDeclaration,
+  PropertyAccessExpression,
   SourceFile
 } from 'typescript';
 
@@ -72,6 +74,7 @@ import {
   getClassProperties,
   getElementAccessExpressionProperties,
   getEnumProperties, getInterfaceProperties,
+  getObjectExportNames,
   getObjectProperties,
   getTypeAliasProperties,
   isParameterPropertyModifier,
@@ -297,8 +300,7 @@ export namespace ApiExtractor {
    * - exports.E = function () {}
    * - class F {}
    * - exports.F = F;
-   * - module.exports = {G: {}}
-   * - ...
+   * - module.exports = {G: {}};
    */
   const addCommonJsExports = function (astNode: Node, isRemoteHarOrSystemApi: boolean = false): void {
     if (!isExpressionStatement(astNode) || !astNode.expression) {
@@ -315,24 +317,40 @@ export namespace ApiExtractor {
       return;
     }
 
-    if ((left.expression.getText() !== 'exports' && !isModuleExports(left)) ||
-      expression.operatorToken.kind !== SyntaxKind.EqualsToken) {
+    if (!isModuleExports(left) || expression.operatorToken.kind !== SyntaxKind.EqualsToken) {
       return;
     }
 
     if (isElementAccessExpression(left)) {
       if (isStringLiteral(left.argumentExpression)) {
+        /**
+         * - module.exports['A'] = class {};
+         * - module.exports['a'] = {};
+         * - module.exports['a'] = A;
+         */
         mCurrentExportedPropertySet.add(left.argumentExpression.text);
+        mCurrentExportNameSet.add(left.argumentExpression.text);
       }
     }
 
     if (isPropertyAccessExpression(left)) {
       if (isIdentifier(left.name)) {
+        /**
+         * - module.exports.A = a;
+         * - module.exports.A = {};
+         * - module.exports.A = class {};
+         */
         mCurrentExportedPropertySet.add(left.name.getText());
+        mCurrentExportNameSet.add(left.name.getText());
       }
     }
 
     if (isIdentifier(expression.right)) {
+      /**
+       * module.exports.A = a;
+       * exports.A = a;
+       * module.exports = a;
+       */
       let originalName = expression.right.getText();
       if (isRemoteHarOrSystemApi) {
         // To achieve compatibility changes, originalName is still collected into mCurrentExportNameSet 
@@ -347,27 +365,54 @@ export namespace ApiExtractor {
     }
 
     if (isClassDeclaration(expression.right) || isClassExpression(expression.right)) {
+      /**
+       * module.exports.A = class testClass {}
+       * module.exports = class testClass {}
+       * exports.A = class testClass {}
+       * module.exports.A = class {}
+       */
       getClassProperties(expression.right, mCurrentExportedPropertySet);
       return;
     }
 
     if (isObjectLiteralExpression(expression.right)) {
+      /**
+       * module.exports = {a, b, c};
+       * module.exports.A = {a, b, c};
+       * exports.A = {a, b, c}
+       */
       getObjectProperties(expression.right, mCurrentExportedPropertySet);
+      // module.exports = {a, b, c};
+      let defaultExport = left.expression.getText() === 'module';
+      if (defaultExport) {
+        getObjectExportNames(expression.right, mCurrentExportNameSet);
+      }
+      return;
     }
 
     return;
   };
 
-  // module.exports = { p1: 1 }
-  function isModuleExports(astNode: Node): boolean {
-    if (isPropertyAccessExpression(astNode)) {
-      if (isIdentifier(astNode.expression) && astNode.expression.escapedText.toString() === 'module' &&
-        isIdentifier(astNode.name) && astNode.name.escapedText.toString() === 'exports') {
-        return true;
+  function isModuleExports(leftExpression: ElementAccessExpression | PropertyAccessExpression): boolean {
+    let leftExpressionText = leftExpression.expression.getText();
+    if (isPropertyAccessExpression(leftExpression.expression)) {
+      // module.exports.a = A;
+      // module.exports['a'] = A;
+      return leftExpressionText === 'module.exports';
+    }
+    if (isIdentifier(leftExpression.expression)) {
+      if (leftExpressionText === 'module') {
+        // module.exports = {A};
+        if (isPropertyAccessExpression(leftExpression) && leftExpression.name.getText() === 'exports') {
+          return true;
+        }
       }
+
+      // exports.a = A;
+      return leftExpressionText === 'exports';
     }
     return false;
-  }
+  };
 
   /**
    * extract project export name
