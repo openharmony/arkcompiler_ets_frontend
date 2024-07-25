@@ -48,6 +48,74 @@
             ],
             "suggest": "",
             "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 19,
+            "column": 9,
+            "problem": "ParameterProperties",
+            "autofix": [
+                {
+                    "start": 624,
+                    "end": 624,
+                    "replacementText": "protected ssn: string;\nprivate firstName: string;\nprivate lastName: string;\n"
+                },
+                {
+                    "start": 645,
+                    "end": 666,
+                    "replacementText": "ssn: string"
+                },
+                {
+                    "start": 676,
+                    "end": 701,
+                    "replacementText": "firstName: string"
+                },
+                {
+                    "start": 711,
+                    "end": 735,
+                    "replacementText": "lastName: string"
+                },
+                {
+                    "start": 742,
+                    "end": 840,
+                    "replacementText": "{\n    this.ssn = ssn;\n    this.firstName = firstName;\n    this.lastName = lastName;\n    this.ssn = ssn;\n    this.firstName = firstName;\n    this.lastName = lastName;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 20,
+            "column": 9,
+            "problem": "ParameterProperties",
+            "autofix": [
+                {
+                    "start": 624,
+                    "end": 624,
+                    "replacementText": "protected ssn: string;\nprivate firstName: string;\nprivate lastName: string;\n"
+                },
+                {
+                    "start": 645,
+                    "end": 666,
+                    "replacementText": "ssn: string"
+                },
+                {
+                    "start": 676,
+                    "end": 701,
+                    "replacementText": "firstName: string"
+                },
+                {
+                    "start": 711,
+                    "end": 735,
+                    "replacementText": "lastName: string"
+                },
+                {
+                    "start": 742,
+                    "end": 840,
+                    "replacementText": "{\n    this.ssn = ssn;\n    this.firstName = firstName;\n    this.lastName = lastName;\n    this.ssn = ssn;\n    this.firstName = firstName;\n    this.lastName = lastName;\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
         }
     ]
 }
