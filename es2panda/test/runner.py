@@ -986,6 +986,7 @@ class BcVersionRunner(Runner):
         self.ts2abc = path.join(self.test_root, '..', 'scripts', 'ts2abc.js')
 
     def add_cmd(self):
+        api_sub_version_list = ["beta1", "beta2", "beta3"]
         for api_version in range(8, 14):
             cmd = self.cmd_prefix + [self.es2panda]
             cmd += ["--target-bc-version"]
@@ -997,6 +998,16 @@ class BcVersionRunner(Runner):
             node_cmd += ["--target-api-version"]
             node_cmd += [str(api_version)]
             self.tests += [BcVersionTest(node_cmd, api_version)]
+
+            # Add tests for "--target-api-sub-version" option
+            if api_version == 12:
+                for api_sub_version in api_sub_version_list:
+                    new_cmd = cmd.copy()
+                    new_cmd += ["--target-api-sub-version", api_sub_version]
+                    self.tests += [BcVersionTest(new_cmd, str(api_version) + '_' + api_sub_version)]
+                    new_node_cmd = node_cmd.copy()
+                    new_node_cmd += ["--target-api-sub-version", api_sub_version]
+                    self.tests += [BcVersionTest(new_node_cmd, str(api_version) + '_' + api_sub_version)]
 
     def run(self):
         for test in self.tests:
@@ -1014,6 +1025,9 @@ class BcVersionTest(Test):
             10: "9.0.0.0",
             11: "11.0.2.0",
             12: "12.0.2.0",
+            "12_beta1": "12.0.2.0",
+            "12_beta2": "12.0.2.0",
+            "12_beta3": "12.0.6.0",
             13: "12.0.6.0"
         }
         self.es2abc_script_expect = {
@@ -1022,6 +1036,9 @@ class BcVersionTest(Test):
             10: "9.0.0.0",
             11: "11.0.2.0",
             12: "12.0.2.0",
+            "12_beta1": "12.0.2.0",
+            "12_beta2": "12.0.2.0",
+            "12_beta3": "12.0.6.0",
             13: "12.0.6.0"
         }
 

@@ -66,15 +66,20 @@ if (args.length == 1 && args[0] == "--bc-version") {
     return;
 }
 
-if (args[0] == "--target-api-version") {
-    if (args[1] == "8") {
-        process.stdout.write("0.0.0.2");
-    } else if (args[1] == "9") {
-        process.stdout.write("9.0.0.0");
-    } else if (args[1] == "10") {
-        process.stdout.write("9.0.0.0");
-    } else {
-        args = ["--target-bc-version", "--target-api-version", args[1]];
-        callEs2abc(args);
+let es2abcArgs = [];
+es2abcArgs.push("--target-bc-version")
+
+for (let index = 0 ; index < args.length; index += 2) {
+    if (args[index] == "--target-api-version") {
+        if (args[index + 1] == "8") {
+            process.stdout.write("0.0.0.2");
+            return;
+        } else {
+            es2abcArgs.push("--target-api-version", args[index + 1]);
+        }
+    } else if (args[index] == "--target-api-sub-version") {
+        es2abcArgs.push("--target-api-sub-version", args[index + 1]);
     }
 }
+
+callEs2abc(es2abcArgs);
