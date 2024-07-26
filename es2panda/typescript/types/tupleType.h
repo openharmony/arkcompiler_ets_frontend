@@ -99,6 +99,7 @@ public:
     const util::StringView &FindNamedMemberName(binder::LocalVariable *member) const
     {
         auto res = namedMembers_.find(member);
+        ASSERT(res != namedMembers_.end());
         return res->second;
     }
 
