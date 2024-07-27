@@ -1,4 +1,1 @@
-function () {
-    "show source";
-    print(222);
-}
+Cannot get source code of funtion

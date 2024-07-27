@@ -1510,8 +1510,6 @@ def add_directory_for_asm(runners, args):
     runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
     runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
     runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
-    runner.add_directory("compiler/recordsource/with-on", "js", ["--record-source"])
-    runner.add_directory("compiler/recordsource/with-off", "js", [])
     runner.add_directory("parser/concurrent", "js", ["--module"])
     runner.add_directory("parser/js", "js", [])
     runner.add_directory("parser/script", "ts", [])
@@ -1541,8 +1539,6 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/ts/projects", "ts", ["--module", "--merge-abc"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/dts", "d.ts", ["--module", "--opt-level=0"]))
     compiler_test_infos.append(CompilerTestInfo("compiler/commonjs", "js", ["--commonjs"]))
-    compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-on", "js", ["--record-source"]))
-    compiler_test_infos.append(CompilerTestInfo("compiler/recordsource/with-off", "js", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/interpreter/lexicalEnv", "js", []))
     compiler_test_infos.append(CompilerTestInfo("compiler/sendable", "ts", ["--module", "--target-api-sub-version=beta3"]))
     compiler_test_infos.append(CompilerTestInfo("optimizer/js/branch-elimination", "js",

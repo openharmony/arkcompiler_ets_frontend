@@ -848,11 +848,6 @@ void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &l
 bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
                                         const lexer::LineIndex &lineIndex, bool enableSendableFunc)
 {
-    if (strLit->Str().Is(SHOW_SOURCE)) {
-        func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
-        return true;
-    }
-
     if (strLit->Str().Is(USE_CONCURRENT)) {
         util::Concurrent::SetConcurrent(func, strLit, lineIndex);
         return true;

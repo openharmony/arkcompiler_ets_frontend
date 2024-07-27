@@ -67,7 +67,6 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     GenSourceFileDebugInfo();
     GenFunctionCatchTables();
     GenLiteralBuffers();
-    GenFunctionSource();
     GenConcurrentFunctionModuleRequests();
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
@@ -261,17 +260,6 @@ void FunctionEmitter::GenSourceFileDebugInfo()
         } else {
             func_->source_code = "not supported";
         }
-    }
-}
-
-void FunctionEmitter::GenFunctionSource()
-{
-    if (pg_->RootNode()->IsProgram()) {
-        return;
-    }
-
-    if (pg_->Context()->IsRecordSource() || (static_cast<const ir::ScriptFunction *>(pg_->RootNode()))->ShowSource()) {
-        func_->source_code = SourceCode().Mutf8();
     }
 }
 
