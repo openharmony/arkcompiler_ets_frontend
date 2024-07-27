@@ -106,7 +106,7 @@ void Compiler::CompileAbcFileInParallel(const std::string &fname, const Compiler
         compileAbcClassQueue->Consume();
         compileAbcClassQueue->Wait();
     } catch (const class Error &e) {
-        throw;
+        throw e;
     }
 
     delete compileAbcClassQueue;
@@ -237,6 +237,7 @@ int Compiler::CompileFiles(CompilerOptions &options,
         queue->Consume();
         queue->Wait();
     } catch (const class Error &e) {
+        std::cerr << e.TypeString() << ": " << e.Message();
         failed = true;
     }
 
