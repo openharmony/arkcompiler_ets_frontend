@@ -1,8 +1,16 @@
 # Known failures list for third_lib_js - release-x64-int
 
-# Issue #18153
-Drools_test
-validator_test
+#18330
 dayjs_test
-lodash_test
+
+#18340
+Drools_test
+
+#18372
 js-joda_test
+
+#18387
+pdfview_test
+
+#18331
+validator_test
