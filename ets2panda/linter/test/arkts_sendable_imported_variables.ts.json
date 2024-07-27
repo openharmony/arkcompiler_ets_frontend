@@ -34,6 +34,104 @@
             "problem": "SendableCapturedVars",
             "suggest": "",
             "rule": "Only imported variables can be captured by \"Sendable\" class (arkts-sendable-imported-variables)"
+        },
+        {
+            "line": 135,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 136,
+            "column": 5,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 137,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 138,
+            "column": 5,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 139,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 140,
+            "column": 5,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 141,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 149,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 150,
+            "column": 5,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 151,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 152,
+            "column": 5,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 153,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 154,
+            "column": 5,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
+        },
+        {
+            "line": 155,
+            "column": 9,
+            "problem": "SendableClosureExport",
+            "suggest": "",
+            "rule": "The exported \"Sendable\" class or function cannot be captured by \"Sendable\" class or function in current file (arkts-sendable-closure-export)"
         }
     ]
 }
