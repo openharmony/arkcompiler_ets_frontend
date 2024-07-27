@@ -2560,12 +2560,9 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         bool isTypeOfExportSpecifier = isType;
         if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE) {
-            const auto savedPos = lexer_->Save();
-            lexer_->NextToken();  // eat type
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                lexer_->Rewind(savedPos);
-            } else {
+            auto isTypeUsedAsKeyword = HandleTypeImportOrExportSpecifier();
+            if (isTypeUsedAsKeyword) {
+                lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat type
                 if (isType) {
                     ThrowSyntaxError("The type modifier cannot be used on a named export "
                                      "when 'export type' is used on its export statement.");
@@ -2906,16 +2903,14 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         bool isTypeOfImportSpecifier = isType;
         if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE) {
-            const auto savedPos = lexer_->Save();
-            lexer_->NextToken();  // eat type
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                lexer_->Rewind(savedPos);
-            } else if (isType) {
+            auto isTypeUsedAsKeyword = HandleTypeImportOrExportSpecifier();
+            if (isTypeUsedAsKeyword) {
+                lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat type
+                isTypeOfImportSpecifier = true;
+            }
+            if (isTypeUsedAsKeyword && isType) {
                 ThrowSyntaxError("The type modifier cannot be used on a named import "
                                  "when 'import type' is used on its import statement.");
-            } else {
-                isTypeOfImportSpecifier = true;
             }
         }
 
@@ -2955,6 +2950,45 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
     }
 
     lexer_->NextToken();  // eat right brace
+}
+
+bool ParserImpl::HandleTypeImportOrExportSpecifier()
+{
+    bool isTypeUsedAsKeyword = false;
+    const auto savedPos = lexer_->Save();
+    
+    lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat type
+
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
+        // {type as ...? }
+        lexer_->NextToken(); // eat first as
+        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
+            // { type as as ...? }
+            lexer_->NextToken(); // eat second as
+            if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+                // { type as as something }
+                isTypeUsedAsKeyword = true;
+            } else {
+                // { type as as }
+                isTypeUsedAsKeyword = false;
+            }
+        } else if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+            // { type as something }
+            isTypeUsedAsKeyword = false;
+        } else {
+            // { type as }
+            isTypeUsedAsKeyword = true;
+        }
+    } else if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+        // { type something ...? }
+        isTypeUsedAsKeyword = true;
+    } else {
+        // { type }
+        isTypeUsedAsKeyword = false;
+    }
+
+    lexer_->Rewind(savedPos);
+    return isTypeUsedAsKeyword;
 }
 
 ir::Expression *ParserImpl::ParseModuleReference()
