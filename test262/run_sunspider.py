@@ -205,7 +205,7 @@ class ArkProgram():
 
         if self.args.merge_abc_mode:
             self.merge_abc_mode = self.args.merge_abc_mode
-        
+
         if self.args.abc2program:
             self.abc2program = self.args.abc2program
 
@@ -232,8 +232,7 @@ class ArkProgram():
             module_mode_list = re.findall(module_pattern, content_file)
 
             for module_mode in list(set(module_mode_list)):
-                if len(module_mode[0]) != 0 or len(module_mode[1]) != 0 or \
-                        len(module_mode[2]) != 0:
+                if len(module_mode[0]) != 0 or len(module_mode[1]) != 0 or len(module_mode[2]) != 0:
                     return True
 
         if "flags: [module]" in content_file or "/language/module-code/" in self.js_file:
@@ -505,7 +504,7 @@ class ArkProgram():
         # generate the dependencies' proto when ark_frontend is [es2panda]
         if (file_name in self.module_list or file_name in self.dynamicImport_list):
             compile_as_module, dependencies = self.gen_dependencies_proto(js_file)
-        
+
         if self.abc2program:
             return self.gen_abc_for_mix_compile_mode(dependencies, out_file)
 

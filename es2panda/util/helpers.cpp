@@ -958,8 +958,8 @@ bool Helpers::BelongingToRecords(const std::string &name, const std::unordered_s
 {
     size_t pos = name.rfind(delimiter);
     if (pos == std::string::npos) {
-        std::cerr << "The input name: " << name << " is illegal, it should contain the delimiter character '"
-                  << delimiter << "'" << std::endl;
+        std::cerr << "The input name: " << name << " is illegal, it should contain the delimiter character '" <<
+                     delimiter << "'" << std::endl;
         return false;
     }
 

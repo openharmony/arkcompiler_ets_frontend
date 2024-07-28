@@ -294,6 +294,7 @@ class TSCTest(Test):
 
         return self
 
+
 class TestAop:
     def __init__(self, cmd, compare_str, compare_abc_str, remove_file):
         self.cmd = cmd
@@ -334,6 +335,7 @@ class TestAop:
             os.remove(abc_path)
 
         return self
+
 
 class Runner:
     def __init__(self, args, name):
@@ -465,6 +467,7 @@ class RegressionRunner(Runner):
     def test_path(self, src):
         return src
 
+
 class AbcToAsmRunner(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "Abc2asm")
@@ -479,6 +482,7 @@ class AbcToAsmRunner(Runner):
 
     def test_path(self, src):
         return os.path.basename(src)
+
 
 class AbcToAsmTest(Test):
     def run(self, runner):
@@ -894,7 +898,7 @@ class CompilerProjectTest(Test):
 
         # restore merge-abc flag
         if "merge_abc_consistence_check" in self.path and "--merge-abc" not in self.flags:
-                self.flags.append("--merge-abc")
+            self.flags.append("--merge-abc")
 
         # Check dump-assembly outputs when required
         if "--dump-assembly" in self.flags:
@@ -1469,9 +1473,9 @@ def add_directory_for_regression(runners, args):
     runner.add_directory("parser/js/language/import", "ts",
                          ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class", "ts",
-        ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-sub-version=beta3"])
     runner.add_directory("parser/sendable_class/api12beta2", "ts",
-        ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
+                         ["--dump-assembly", "--dump-literal-buffer", "--module", "--target-api-version=12", "--target-api-sub-version=beta2"])
     runner.add_directory("parser/unicode", "js", ["--parse-only"])
     runner.add_directory("parser/ts/stack_overflow", "ts", ["--parse-only", "--dump-ast"])
 
@@ -1595,7 +1599,7 @@ def add_directory_for_debug(runners, args):
 def add_cmd_for_aop_transform(runners, args):
     runner = AopTransform(args)
 
-    aop_file_path = path.join(runner.test_root + "/aop/")
+    aop_file_path = path.join(runner.test_root, "/aop/")
     lib_suffix = '.so'
     #cpp src, deal type, result compare str, abc compare str
     msg_list = [
