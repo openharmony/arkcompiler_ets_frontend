@@ -91,7 +91,6 @@ private:
 
     void GenLiteralBuffers();
     void GenBufferLiterals(const LiteralBuffer *buff);
-    void GenFunctionSource();
     void GenConcurrentFunctionModuleRequests();
 
     const PandaGen *pg_;

@@ -165,7 +165,6 @@ public:
     static const uint32_t MAX_INT32 = 2147483647;
     static const uint32_t MAX_INT16 = std::numeric_limits<int16_t>::max();
     static const uint32_t MAX_INT8 = std::numeric_limits<int8_t>::max();
-    static constexpr std::string_view SHOW_SOURCE = "show source";
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
     static constexpr std::string_view USE_SENDABLE = "use sendable";
     static constexpr std::string_view USE_SHARED = "use shared";

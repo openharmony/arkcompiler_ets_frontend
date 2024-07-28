@@ -96,33 +96,33 @@ var obj = {
     },
 };
 
-print(obj[2e3]); // call key 2e3
-print(obj[2000]); // call key 2e3
-print(obj[1000]);
+print(obj[2e3]()); // call key 2e3
+print(obj[2000]()); // call key 2e3
+print(obj[1000]());
 // Special testcases
-print(obj[NaN]);
-print(obj[0]); // 0.0 == 0
-print(obj[Infinity]);
+print(obj[NaN]());
+print(obj[0]()); // 0.0 == 0
+print(obj[Infinity]());
 // Boundary value of size : 1e-6
-print(obj[1e-6]);
-print(obj[0.000001]);
-print(obj[0.000002]);
-print(obj[1e-7]);
-print(obj[0.0000001]);
-print(obj[0.0000002]);
+print(obj[1e-6]());
+print(obj[0.000001]());
+print(obj[0.000002]());
+print(obj[1e-7]());
+print(obj[0.0000001]());
+print(obj[0.0000002]());
 // Boundary value of size : 1e0
-print(obj[0.1]);
-print(obj[1.1]);
+print(obj[0.1]());
+print(obj[1.1]());
 // Boundary value of size : 1e21
-print(obj[1e20]);
-print(obj[100000000000000000000]);
-print(obj[200000000000000000000]);
-print(obj[1e21]);
-print(obj[1000000000000000000000]);
-print(obj[2000000000000000000000]);
+print(obj[1e20]());
+print(obj[100000000000000000000]());
+print(obj[200000000000000000000]());
+print(obj[1e21]());
+print(obj[1000000000000000000000]());
+print(obj[2000000000000000000000]());
 // Precision digit : 17
-print(obj[1234567890123456]);
-print(obj[12345678901234567]);
-print(obj[12345678901234568]); // equal to 12345678901234567
-print(obj[123456789012345678]);
-print(obj[123456789012345680]); // equal to 123456789012345678
+print(obj[1234567890123456]());
+print(obj[12345678901234567]());
+print(obj[12345678901234568]()); // equal to 12345678901234567
+print(obj[123456789012345678]());
+print(obj[123456789012345680]()); // equal to 123456789012345678

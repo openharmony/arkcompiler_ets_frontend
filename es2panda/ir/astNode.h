@@ -91,11 +91,10 @@ enum class ScriptFunctionFlags {
     CONSTRUCTOR = 1 << 5,
     METHOD = 1 << 6,
     CONCURRENT = 1 << 7,
-    SHOW_SOURCE = 1 << 8,
-    STATIC_INITIALIZER = 1 << 9,
-    INSTANCE_INITIALIZER = 1 << 10,
-    GENERATED_CONSTRUCTOR = 1 << 11,
-    SENDABLE = 1 << 12,
+    STATIC_INITIALIZER = 1 << 8,
+    INSTANCE_INITIALIZER = 1 << 9,
+    GENERATED_CONSTRUCTOR = 1 << 10,
+    SENDABLE = 1 << 11,
 };
 
 DEFINE_BITOPS(ScriptFunctionFlags)
