@@ -28,5 +28,6 @@ export const cookBookRefToFixTitle: Map<number, string> = new Map([
   [71, 'Split expression around \',\' operator'],
   [79, 'Remove type annotation'],
   [90, 'Annotate return type'],
-  [113, 'Combine enum declarations']
+  [113, 'Combine enum declarations'],
+  [180, 'Remove the decorator']
 ]);

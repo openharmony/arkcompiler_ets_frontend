@@ -1138,6 +1138,11 @@ export class Autofixer {
     return found;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  removeDecorator(decorator: ts.Decorator): Autofix[] {
+    return [{ start: decorator.getStart(), end: decorator.getEnd(), replacementText: '' }];
+  }
+
   private readonly typeLiteralInterfaceNameGenerator = new NameGenerator(
     GENERATED_TYPE_LITERAL_INTERFACE_NAME,
     GENERATED_TYPE_LITERAL_INTERFACE_TRESHOLD

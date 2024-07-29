@@ -2762,7 +2762,8 @@ export class TypeScriptLinter {
     if (TsUtils.getDecoratorName(decorator) === SENDABLE_DECORATOR) {
       const parent: ts.Node = decorator.parent;
       if (!parent || !SENDABLE_DECORATOR_NODES.includes(parent.kind)) {
-        this.incrementCounters(decorator, FaultID.SendableDecoratorLimited);
+        const autofix = this.autofixer?.removeDecorator(decorator);
+        this.incrementCounters(decorator, FaultID.SendableDecoratorLimited, autofix);
       }
     }
   }
