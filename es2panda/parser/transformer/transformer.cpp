@@ -263,7 +263,8 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             }
 
             if (decl->IsTSEnumDeclaration()) {
-                if (decl->AsTSEnumDeclaration()->IsDeclare()) {
+                if (decl->AsTSEnumDeclaration()->IsDeclare() ||
+                    (decl->AsTSEnumDeclaration()->IsConst() && program_->IsShared())) {
                     return childNode;
                 }
                 auto res = VisitTsEnumDeclaration(decl->AsTSEnumDeclaration(), true);

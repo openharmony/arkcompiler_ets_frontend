@@ -817,8 +817,12 @@ class CompilerProjectTest(Test):
             module_kind = 'esm'
             if (os.path.basename(test_path).startswith("commonjs")):
                 module_kind = 'commonjs'
-            file_info = ('%s;%s;%s;%s;%s\n' % (test_path, record_name, module_kind,
-                                               os.path.relpath(test_path, self.projects_path), record_name))
+            is_shared_module = 'false'
+            if (os.path.basename(test_path).startswith("sharedmodule")):
+                is_shared_module = 'true'
+            file_info = ('%s;%s;%s;%s;%s;%s\n' % (test_path, record_name, module_kind,
+                                               os.path.relpath(test_path, self.projects_path), record_name,
+                                               is_shared_module))
             belonging_abc_input = self.get_belonging_abc_input(test_path)
             if belonging_abc_input is not None:
                 if not belonging_abc_input in abc_files_infos:
@@ -1546,6 +1550,9 @@ def add_directory_for_compiler(runners, args):
     compiler_test_infos.append(CompilerTestInfo("compiler/bytecodehar/merge_abc_consistence_check/projects", "js",
                                                 ["--merge-abc", "--dump-assembly", "--enable-abc-input",
                                                  "--abc-class-threads=4"]))
+    
+    compiler_test_infos.append(CompilerTestInfo("compiler/ts/shared_module/projects", "ts",
+                                                ["--module", "--merge-abc", "--dump-assembly"]))
 
     if args.enable_arkguard:
         prepare_for_obfuscation(compiler_test_infos, runner.test_root)
