@@ -46,22 +46,6 @@
         ]
     },
     {
-        "reason": "Dynamic Import failed testcases : empty string",
-        "files": [
-            "language/expressions/dynamic-import/syntax/valid/new-covered-expression-is-valid.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-while-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/top-level-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-if-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-if-braceless-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-else-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-else-braceless-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-do-while-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-block-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/nested-block-labeled-empty-str-is-valid-assign-expr.js",
-            "language/expressions/dynamic-import/syntax/valid/callexpression-arguments.js"
-        ]
-    },
-    {
         "reason": "Dynamic Import failed testcases : lnvalid argument",
         "files": [
             "language/expressions/dynamic-import/assignment-expression/unary-expr.js"

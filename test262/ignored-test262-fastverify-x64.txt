@@ -1,17 +1,4 @@
 # Known failure list for test262 - fastverify-x64
 
-# Issue #18277
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-block-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-do-while-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-block-labeled-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-else-braceless-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-else-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-if-braceless-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-if-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/nested-while-empty-str-is-valid-assign-expr.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/new-covered-expression-is-valid.js
-test262/data/test_es2021/language/expressions/dynamic-import/syntax/valid/top-level-empty-str-is-valid-assign-expr.js
-# --- end of Issue #18277
-
 # Issue #18004
 test262/data/test_es2021/language/module-code/instn-iee-err-circular.js
