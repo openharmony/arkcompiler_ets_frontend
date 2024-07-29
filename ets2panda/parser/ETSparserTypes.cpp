@@ -340,6 +340,9 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             }
 
             typeAnnotation = ParseTypeAnnotation(options);
+            if (typeAnnotation == nullptr) {
+                return std::make_pair(typeAnnotation, true);
+            }
             typeAnnotation->SetStart(startLoc);
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
