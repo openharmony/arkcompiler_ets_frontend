@@ -237,7 +237,9 @@ int Compiler::CompileFiles(CompilerOptions &options,
         queue->Consume();
         queue->Wait();
     } catch (const class Error &e) {
-        std::cerr << e.TypeString() << ": " << e.Message();
+        if (!e.Reported()) {
+            std::cerr << e.TypeString() << ": " << e.Message() << std::endl;
+        }
         failed = true;
     }
 
@@ -274,7 +276,7 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
 {
     auto *program = Compile(*src, options, symbolTable);
     if (!program) {
-        const auto &err = GetError();
+        auto &err = GetError();
         if (err.Message().empty() && options.parseOnly) {
             return nullptr;
         }
@@ -282,6 +284,8 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
         std::cerr << err.TypeString() << ": " << err.Message();
         std::cerr << " [" << util::Helpers::BaseName(src->fileName) << ":"
                   << err.Line() << ":" << err.Col() << "]" << std::endl;
+        err.SetReported(true);
+
         throw err;
     }
     return program;
