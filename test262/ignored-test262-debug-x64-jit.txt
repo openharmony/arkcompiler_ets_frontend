@@ -1,0 +1,12 @@
+# Known failure list for test262 - debug-x64-jit
+
+#17827
+test262/data/test_es2021/language/statements/for/S12.6.3_A10.1_T2.js
+test262/data/test_es2021/language/statements/for/S12.6.3_A10_T2.js
+# --- end of Issue #17827
+
+#18441
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/en-us-style-short.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-narrow.js
+test262/data/test_es2021/intl402/RelativeTimeFormat/prototype/format/pl-pl-style-short.js
+# --- end of Issue #18441
