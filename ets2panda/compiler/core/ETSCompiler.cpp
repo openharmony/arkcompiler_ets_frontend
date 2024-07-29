@@ -1034,7 +1034,7 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
         etsg->LoadVar(expr, expr->Variable());
     }
 
-    if (smartType->IsETSReferenceType() && (expr->Parent() == nullptr || !expr->Parent()->IsTSAsExpression())) {
+    if (smartType->IsETSReferenceType()) {
         //  In case when smart cast type of identifier differs from initial variable type perform cast if required
         if (!etsg->Checker()->AsETSChecker()->Relation()->IsSupertypeOf(smartType, etsg->GetAccumulatorType())) {
             etsg->CastToReftype(expr, smartType, false);
