@@ -693,11 +693,9 @@ class ArkProgram():
         cmd_args.insert(-1, f'--entry-point={record_name}')
         if self.run_jit:
             cmd_args.insert(-1, f'--compiler-enable-litecg=true')
-            cmd_args.insert(-1, f'--compiler-try-catch-function=true')
             cmd_args.insert(-1, f'--compiler-enable-jit=true --log-debug=jit')
         if self.run_baseline_jit:
             cmd_args.insert(-1, f'--compiler-enable-baselinejit=true')
-            cmd_args.insert(-1, f'--compiler-try-catch-function=true')
             cmd_args.insert(-1, f'--compiler-force-baselinejit-compile-main=true')
         if self.stub_file != "":
             cmd_args.insert(-1, f"--stub-file={self.stub_file}")
