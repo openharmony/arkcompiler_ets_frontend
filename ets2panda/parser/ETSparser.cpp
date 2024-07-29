@@ -109,7 +109,10 @@ void ETSParser::ParseProgram(ScriptKind kind)
     auto decl = ParsePackageDeclaration();
     if (decl != nullptr) {
         statements.emplace_back(decl);
+        // If we found a package declaration, then add all files with the same package to the package parse list
+        AddPackageSourcesToParseList();
     }
+
     auto script = ParseETSGlobalScript(startLoc, statements);
 
     AddExternalSource(ParseSources(true));
@@ -137,14 +140,15 @@ ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, A
 
 void ETSParser::AddExternalSource(const std::vector<Program *> &programs)
 {
-    for (auto *newProg : programs) {
-        auto &extSources = globalProgram_->ExternalSources();
+    auto &extSources = globalProgram_->ExternalSources();
 
-        const util::StringView name = newProg->ModuleName();
-        if (extSources.count(name) == 0) {
-            extSources.emplace(name, Allocator()->Adapter());
+    for (auto *newProg : programs) {
+        const util::StringView moduleName = newProg->ModuleName();
+        if (extSources.count(moduleName) == 0) {
+            extSources.try_emplace(moduleName, Allocator()->Adapter());
         }
-        extSources.at(name).emplace_back(newProg);
+
+        extSources.at(moduleName).emplace_back(newProg);
     }
 }
 
@@ -172,6 +176,48 @@ ir::ImportSpecifier *ETSParser::GetTriggeringCCTORSpecifier(util::StringView loc
     return AllocNode<ir::ImportSpecifier>(imported, local);
 }
 
+void ETSParser::AddDirectImportsToDirectExternalSources(
+    const ArenaVector<util::StringView> &directImportsFromMainSource, parser::Program *const newProg) const
+{
+    if (std::find_if(directImportsFromMainSource.begin(), directImportsFromMainSource.end(),
+                     [newProg](const util::StringView &sv) { return sv == newProg->AbsoluteName(); }) ==
+        directImportsFromMainSource.end()) {
+        return;
+    }
+
+    const util::StringView name = newProg->Ast()->Statements().empty() ? newProg->FileName() : newProg->ModuleName();
+    if (GetProgram()->DirectExternalSources().count(name) == 0) {
+        GetProgram()->DirectExternalSources().try_emplace(name, Allocator()->Adapter());
+    }
+    GetProgram()->DirectExternalSources().at(name).emplace_back(newProg);
+}
+
+void ETSParser::TryParseSource(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
+                               const ArenaVector<util::StringView> &directImportsFromMainSource,
+                               std::vector<Program *> &programs)
+{
+    try {
+        parser::Program *newProg =
+            ParseSource({parseListIdx.sourcePath.Utf8(), extSrc->View().Utf8(), parseListIdx.sourcePath.Utf8(), false});
+
+        if (!parseListIdx.isImplicitPackageImported || newProg->IsPackageModule()) {
+            AddDirectImportsToDirectExternalSources(directImportsFromMainSource, newProg);
+            // don't insert the separate modules into the programs, when we collect implicit package imports
+            programs.emplace_back(newProg);
+        }
+    } catch (const Error &) {
+        // Here file is not a valid STS source. Ignore and continue if it's implicit package import, else throw
+        // the syntax error as usual
+
+        if (!parseListIdx.isImplicitPackageImported) {
+            throw;
+        }
+
+        util::Helpers::LogWarning("Error during parse of file '", parseListIdx.sourcePath,
+                                  "' in compiled package. File will be omitted.");
+    }
+}
+
 std::vector<Program *> ETSParser::ParseSources(bool firstSource)
 {
     std::vector<Program *> programs;
@@ -182,52 +228,68 @@ std::vector<Program *> ETSParser::ParseSources(bool firstSource)
 
     if (firstSource) {
         for (auto pl : parseList) {
+            if (pl.isParsed) {
+                // Handle excluded files, which are already set to be parsed before parsing them
+                continue;
+            }
             directImportsFromMainSource.emplace_back(pl.sourcePath);
         }
     }
 
-    // This parse list `paths` can grow in the meantime, so keep this index-based iteration
-    // NOLINTNEXTLINE(modernize-loop-convert)
-    for (size_t idx = 0; idx < parseList.size(); idx++) {
-        // check if already parsed
-        if (parseList[idx].isParsed) {
-            continue;
-        }
-        std::ifstream inputStream(parseList[idx].sourcePath.Mutf8());
-        const auto data = importPathManager_->GetImportData(parseList[idx].sourcePath, Extension());
-        if (!data.hasDecl) {
-            continue;
-        }
+    auto notParsedElement =
+        std::find_if(parseList.begin(), parseList.end(), [](const auto &parseInfo) { return !parseInfo.isParsed; });
 
-        if (GetProgram()->SourceFilePath().Is(parseList[idx].sourcePath.Mutf8())) {
-            break;
-        }
-
-        if (inputStream.fail()) {
-            ThrowSyntaxError({"Failed to open file: ", parseList[idx].sourcePath.Mutf8()});
-        }
-
-        std::stringstream ss;
-        ss << inputStream.rdbuf();
-        auto externalSource = ss.str();
-
-        auto currentLang = GetContext().SetLanguage(data.lang);
-        auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
-        importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
-        auto newProg = ParseSource(
-            {parseList[idx].sourcePath.Utf8(), extSrc->View().Utf8(), parseList[idx].sourcePath.Utf8(), false});
-        if (std::find_if(directImportsFromMainSource.begin(), directImportsFromMainSource.end(),
-                         [newProg](util::StringView sv) { return sv.Compare(newProg->AbsoluteName()) == 0; }) !=
-            directImportsFromMainSource.end()) {
-            const util::StringView name =
-                newProg->Ast()->Statements().empty() ? newProg->FileName() : newProg->ModuleName();
-            if (GetProgram()->DirectExternalSources().count(name) == 0) {
-                GetProgram()->DirectExternalSources().emplace(name, Allocator()->Adapter());
+    // NOTE (mmartin): Need a more optimal solution here
+    // This is needed, as during a parsing of a file, programs can be re-added to the parseList, which needs to be
+    // re-parsed. This won't change the size of the list, so with only the 'for loop', there can be unparsed files
+    // remained.
+    // An example for this, is when a file is added as an implicit package import, but it's erroneous, so we just ignore
+    // the file. But when the same file is also added with an explicit import declaration, then we need to re-parse it,
+    // and throw the syntax error.
+    while (notParsedElement != parseList.end()) {
+        // This parse list `paths` can grow in the meantime, so keep this index-based iteration
+        // NOLINTNEXTLINE(modernize-loop-convert)
+        for (size_t idx = 0; idx < parseList.size(); idx++) {
+            // check if already parsed
+            if (parseList[idx].isParsed) {
+                continue;
             }
-            GetProgram()->DirectExternalSources().at(name).emplace_back(newProg);
+            std::ifstream inputStream(parseList[idx].sourcePath.Mutf8());
+            const auto data = importPathManager_->GetImportData(parseList[idx].sourcePath, Extension());
+            if (!data.hasDecl) {
+                importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
+                continue;
+            }
+
+            if (GetProgram()->SourceFilePath().Is(parseList[idx].sourcePath.Mutf8())) {
+                return programs;
+            }
+
+            if (inputStream.fail()) {
+                ThrowSyntaxError({"Failed to open file: ", parseList[idx].sourcePath.Mutf8()});
+            }
+
+            std::stringstream ss;
+            ss << inputStream.rdbuf();
+            auto externalSource = ss.str();
+
+            auto currentLang = GetContext().SetLanguage(data.lang);
+            auto extSrc = Allocator()->New<util::UString>(externalSource, Allocator());
+            importPathManager_->MarkAsParsed(parseList[idx].sourcePath);
+
+            // In case of implicit package import, if we find a malformed STS file in the package's directory, instead
+            // of aborting compilation we just ignore the file
+
+            // NOTE (mmartin): after the multiple syntax error handling in the parser is implemented, this try-catch
+            // must be changed, as exception throwing will be removed
+
+            TryParseSource(parseList[idx], extSrc, directImportsFromMainSource, programs);
+
+            GetContext().SetLanguage(currentLang);
         }
-        programs.emplace_back(newProg);
-        GetContext().SetLanguage(currentLang);
+
+        notParsedElement =
+            std::find_if(parseList.begin(), parseList.end(), [](const auto &parseInfo) { return !parseInfo.isParsed; });
     }
 
     return programs;
@@ -1003,13 +1065,13 @@ ir::ImportSource *ETSParser::ParseSourceFromClause(bool requireFrom)
     auto resolvedImportPath = importPathManager_->ResolvePath(GetProgram()->AbsoluteName(), importPath);
     if (globalProgram_->AbsoluteName() != resolvedImportPath) {
         importPathManager_->AddToParseList(resolvedImportPath,
-                                           (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U);
-    } else {
-        if (!IsETSModule()) {
-            ThrowSyntaxError("Please compile `" + globalProgram_->FileName().Mutf8() + "." +
-                             globalProgram_->SourceFile().GetExtension().Mutf8() +
-                             "` with `--ets-module` option. It is being imported by another file.");
-        }
+                                           (GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0U
+                                               ? util::ImportFlags::DEFAULT_IMPORT
+                                               : util::ImportFlags::NONE);
+    } else if (!IsETSModule()) {
+        ThrowSyntaxError("Please compile `" + globalProgram_->FileName().Mutf8() + "." +
+                         globalProgram_->SourceFile().GetExtension().Mutf8() +
+                         "` with `--ets-module` option. It is being imported by another file.");
     }
 
     auto *resolvedSource = AllocNode<ir::StringLiteral>(resolvedImportPath);
@@ -1813,6 +1875,14 @@ ir::FunctionDeclaration *ETSParser::ParseFunctionDeclaration(bool canBeAnonymous
     }
 
     return funcDecl;
+}
+
+void ETSParser::AddPackageSourcesToParseList()
+{
+    importPathManager_->AddToParseList(GetProgram()->SourceFileFolder(), util::ImportFlags::IMPLICIT_PACKAGE_IMPORT);
+
+    // Global program file is always in the same folder that we scanned, but we don't need to parse it twice
+    importPathManager_->MarkAsParsed(globalProgram_->SourceFilePath());
 }
 
 //================================================================================================//

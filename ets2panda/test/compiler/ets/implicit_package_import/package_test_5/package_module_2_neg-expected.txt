@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token: 'this'. [package_module_2_neg.sts:20:1]

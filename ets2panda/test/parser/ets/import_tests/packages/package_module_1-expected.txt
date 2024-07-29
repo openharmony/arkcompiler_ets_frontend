@@ -591,6 +591,69 @@
             }
           },
           {
+            "type": "ClassProperty",
+            "key": {
+              "type": "Identifier",
+              "name": "flt",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 14
+                },
+                "end": {
+                  "line": 18,
+                  "column": 17
+                }
+              }
+            },
+            "value": {
+              "type": "NumberLiteral",
+              "value": 1.2345,
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 27
+                },
+                "end": {
+                  "line": 18,
+                  "column": 33
+                }
+              }
+            },
+            "accessibility": "public",
+            "static": true,
+            "readonly": false,
+            "declare": false,
+            "optional": false,
+            "computed": false,
+            "typeAnnotation": {
+              "type": "ETSPrimitiveType",
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 19
+                },
+                "end": {
+                  "line": 18,
+                  "column": 24
+                }
+              }
+            },
+            "definite": false,
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 14
+              },
+              "end": {
+                "line": 18,
+                "column": 33
+              }
+            }
+          },
+          {
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",

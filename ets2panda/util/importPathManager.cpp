@@ -34,7 +34,7 @@ namespace ark::es2panda::util {
 constexpr size_t SUPPORTED_INDEX_FILES_SIZE = 2;
 constexpr size_t SUPPORTED_EXTENSIONS_SIZE = 2;
 
-static bool IsCompitableExtension(const std::string &extension)
+static bool IsCompatibleExtension(const std::string &extension)
 {
     return extension == ".sts" || extension == ".ts";
 }
@@ -95,7 +95,8 @@ StringView ImportPathManager::ResolvePath(const StringView &currentModulePath, c
 }
 
 #ifdef USE_UNIX_SYSCALL
-void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, bool isDefaultImport)
+void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath,
+                                                                  const ImportFlags importFlags)
 {
     DIR *dir = opendir(directoryPath.Mutf8().c_str());
     if (dir == nullptr) {
@@ -110,12 +111,12 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringVi
 
         std::string fileName = entry->d_name;
         std::string::size_type pos = fileName.find_last_of('.');
-        if (pos == std::string::npos || !IsCompitableExtension(fileName.substr(pos))) {
+        if (pos == std::string::npos || !IsCompatibleExtension(fileName.substr(pos))) {
             continue;
         }
 
         std::string filePath = directoryPath.Mutf8() + "/" + entry->d_name;
-        AddToParseList(UString(filePath, allocator_).View(), isDefaultImport);
+        AddToParseList(UString(filePath, allocator_).View(), importFlags);
     }
 
     closedir(dir);
@@ -123,32 +124,52 @@ void ImportPathManager::UnixWalkThroughDirectoryAndAddToParseList(const StringVi
 }
 #endif
 
-void ImportPathManager::AddToParseList(const StringView &resolvedPath, bool isDefaultImport)
+void ImportPathManager::AddToParseList(const StringView &resolvedPath, const ImportFlags importFlags)
 {
+    const bool isDefaultImport = (importFlags & ImportFlags::DEFAULT_IMPORT) != 0;
+    const bool isImplicitPackageImport = (importFlags & ImportFlags::IMPLICIT_PACKAGE_IMPORT) != 0;
+    const auto parseInfo = ParseInfo {resolvedPath, false, isImplicitPackageImport};
+
     if (ark::os::file::File::IsDirectory(resolvedPath.Mutf8())) {
 #ifdef USE_UNIX_SYSCALL
-        UnixWalkThroughDirectoryAndAddToParseList(resolvedPath, isDefaultImport);
+        UnixWalkThroughDirectoryAndAddToParseList(resolvedPath, importFlags);
 #else
         for (auto const &entry : fs::directory_iterator(resolvedPath.Mutf8())) {
-            if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
+            if (!fs::is_regular_file(entry) || !IsCompatibleExtension(entry.path().extension().string())) {
                 continue;
             }
 
-            AddToParseList(UString(entry.path().string(), allocator_).View(), isDefaultImport);
+            AddToParseList(UString(entry.path().string(), allocator_).View(), importFlags);
         }
         return;
 #endif
     }
 
-    for (const auto &parseInfo : parseList_) {
-        if (parseInfo.sourcePath == resolvedPath) {
+    // Check if file has been already added to parse list
+    if (const auto &found =
+            std::find_if(parseList_.begin(), parseList_.end(),
+                         [&resolvedPath](const ParseInfo &info) { return (info.sourcePath == resolvedPath); });
+        found != parseList_.end()) {
+        // The 'parseList_' can contain at most 1 record with the same source file path (else it'll break things).
+        //
+        // If a file is added as implicit package imported before, then we may add it again without the implicit import
+        // directive (and remove the other one), to handle when an implicitly package imported file explicitly imports
+        // it. Re-parsing it is necessary, because if the implicitly package imported file contains a syntax error, then
+        // it'll be ignored, but we must not ignore it if an explicitly imported file contains a parse error. Also this
+        // addition can happen during parsing the files in the parse list, so re-addition is necessary in order to
+        // surely re-parse it.
+        //
+        // If a file was already not implicitly package imported, then it's just a duplicate, return
+        if (!found->isImplicitPackageImported) {
             return;
         }
+
+        parseList_.erase(found);
     }
 
-    auto &dynamicPaths = arktsConfig_->DynamicPaths();
-    if (auto it = dynamicPaths.find(resolvedPath.Mutf8()); it != dynamicPaths.cend()) {
-        parseList_.emplace(parseList_.begin(), ParseInfo {resolvedPath, false});
+    if (const auto &dynamicPaths = arktsConfig_->DynamicPaths();
+        dynamicPaths.find(resolvedPath.Mutf8()) != dynamicPaths.cend()) {
+        parseList_.emplace(parseList_.begin(), parseInfo);
         return;
     }
 
@@ -156,20 +177,14 @@ void ImportPathManager::AddToParseList(const StringView &resolvedPath, bool isDe
         throw Error(ErrorType::GENERIC, "", "Not an available source path: " + resolvedPath.Mutf8());
     }
 
-    if (isDefaultImport) {
-        int position = resolvedPath.Mutf8().find_last_of(pathDelimiter_);
-        if (resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.sts")) {
-            parseList_.emplace(parseList_.begin(), ParseInfo {resolvedPath, false});
-            return;
-        }
+    // 'Object.sts' must be the first in the parse list
+    // NOTE (mmartin): still must be the first?
+    const std::size_t position = resolvedPath.Mutf8().find_last_of(pathDelimiter_);
+    if (isDefaultImport && resolvedPath.Substr(position + 1, resolvedPath.Length()).Is("Object.sts")) {
+        parseList_.emplace(parseList_.begin(), parseInfo);
+    } else {
+        parseList_.emplace_back(parseInfo);
     }
-
-    parseList_.emplace_back(ParseInfo {resolvedPath, false});
-}
-
-const ArenaVector<ImportPathManager::ParseInfo> &ImportPathManager::ParseList()
-{
-    return parseList_;
 }
 
 ImportPathManager::ImportData ImportPathManager::GetImportData(const util::StringView &path,

@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 class array_type  {
     private a : int[] ;
     protected f : float[][][] ;

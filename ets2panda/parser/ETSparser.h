@@ -43,6 +43,8 @@ public:
     [[nodiscard]] bool IsETSParser() const noexcept override;
 
     ir::ImportSpecifier *GetTriggeringCCTORSpecifier(util::StringView localName, util::StringView importedName);
+    void AddDirectImportsToDirectExternalSources(const ArenaVector<util::StringView> &directImportsFromMainSource,
+                                                 parser::Program *newProg) const;
     ArenaVector<ir::ETSImportDeclaration *> ParseDefaultSources(std::string_view srcFile, std::string_view importSrc);
 
 public:
@@ -240,6 +242,7 @@ private:
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &sourceFile) override;
     ir::ETSPackageDeclaration *ParsePackageDeclaration();
+    void AddPackageSourcesToParseList();
     ArenaVector<ir::Statement *> ParseTopLevelStatements();
 
     static bool IsClassMethodModifier(lexer::TokenType type) noexcept;
@@ -251,6 +254,9 @@ private:
     void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool defaultExport);
     void ParseUserSources(std::vector<std::string> userParths);
     ArenaVector<ir::Statement *> ParseTopLevelDeclaration();
+    void TryParseSource(const util::ImportPathManager::ParseInfo &parseListIdx, util::UString *extSrc,
+                        const ArenaVector<util::StringView> &directImportsFromMainSource,
+                        std::vector<Program *> &programs);
     std::vector<Program *> ParseSources(bool firstSource = false);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool requireFrom);
     bool IsDefaultImport();

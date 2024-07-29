@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 class AssignmentsTest {
     a: int;
     b: int;

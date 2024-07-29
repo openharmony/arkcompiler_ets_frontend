@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package com.huawei.migrationtool.test.sts;
-
 //import ets.util.List;
 //import ets.lang.annotation.*;
 class named_types  {

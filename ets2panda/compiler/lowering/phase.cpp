@@ -36,6 +36,7 @@
 #include "compiler/lowering/ets/objectLiteralLowering.h"
 #include "compiler/lowering/ets/interfaceObjectLiteralLowering.h"
 #include "compiler/lowering/ets/optionalLowering.h"
+#include "compiler/lowering/ets/packageImplicitImport.h"
 #include "compiler/lowering/ets/partialExportClassGen.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 #include "compiler/lowering/ets/stringComparison.h"
@@ -82,6 +83,7 @@ static TopLevelStatements g_topLevelStatements;
 static LocalClassConstructionPhase g_localClassLowering;
 static StringComparisonLowering g_stringComparisonLowering;
 static PartialExportClassGen g_partialExportClassGen;
+static PackageImplicitImport g_packageImplicitImport;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
 static PluginPhase g_pluginsAfterLowerings {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
@@ -103,6 +105,7 @@ std::vector<Phase *> GetETSPhaseList()
     // clang-format off
     return {
         &g_pluginsAfterParse,
+        &g_packageImplicitImport,
         &g_topLevelStatements,
         &g_defaultParameterLowering,
         &g_ambientLowering,

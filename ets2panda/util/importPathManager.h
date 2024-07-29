@@ -22,10 +22,19 @@
 
 #include "util/arktsconfig.h"
 #include "util/ustring.h"
+#include "util/enumbitops.h"
+
 #include "es2panda.h"
 
 namespace ark::es2panda::util {
 
+using ENUMBITOPS_OPERATORS;
+
+enum class ImportFlags {
+    NONE = 0U,
+    DEFAULT_IMPORT = 1U << 1U,
+    IMPLICIT_PACKAGE_IMPORT = 1U << 2U,
+};
 class ImportPathManager {
 public:
     struct ImportData {
@@ -37,6 +46,7 @@ public:
     struct ParseInfo {
         StringView sourcePath;
         bool isParsed;
+        bool isImplicitPackageImported = false;
     };
 
     ImportPathManager(ark::ArenaAllocator *allocator, std::shared_ptr<ArkTsConfig> arktsConfig, std::string stdLib)
@@ -52,9 +62,13 @@ public:
     ImportPathManager() = delete;
     ~ImportPathManager() = default;
 
+    [[nodiscard]] const ArenaVector<ParseInfo> &ParseList() const
+    {
+        return parseList_;
+    }
+
     StringView ResolvePath(const StringView &currentModulePath, const StringView &importPath) const;
-    void AddToParseList(const StringView &path, bool isDefaultImport);
-    const ArenaVector<ParseInfo> &ParseList();
+    void AddToParseList(const StringView &resolvedPath, ImportFlags importFlags);
     ImportData GetImportData(const util::StringView &path, const ScriptExtension &extension) const;
     void MarkAsParsed(const StringView &path);
 
@@ -63,7 +77,7 @@ private:
     StringView GetRealPath(const StringView &path) const;
     StringView AppendExtensionOrIndexFileIfOmitted(const StringView &path) const;
 #ifdef USE_UNIX_SYSCALL
-    void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, bool isDefaultImport);
+    void UnixWalkThroughDirectoryAndAddToParseList(const StringView &directoryPath, ImportFlags importFlags);
 #endif
 
     ArenaAllocator *allocator_ {nullptr};
@@ -74,5 +88,12 @@ private:
 };
 
 }  // namespace ark::es2panda::util
+
+namespace enumbitops {
+
+template <>
+struct IsAllowedType<ark::es2panda::util::ImportFlags> : std::true_type {
+};
+}  // namespace enumbitops
 
 #endif  // ES2PANDA_UTIL_IMPORT_PATH_MANAGER_H
