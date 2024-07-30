@@ -184,12 +184,23 @@ public:
         return col_;
     }
 
+    bool Reported() const
+    {
+        return reported_;
+    }
+
+    void SetReported(bool reported)
+    {
+        reported_ = reported;
+    }
+
 private:
     ErrorType type_ {ErrorType::GENERIC};
     std::string message_;
     size_t line_ {};
     size_t col_ {};
     int errorCode_ {1};
+    bool reported_ {false};
 };
 
 class Compiler {
@@ -217,7 +228,7 @@ public:
 
     static void DumpAsm(const panda::pandasm::Program *prog);
 
-    const Error &GetError() const noexcept
+    Error &GetError() noexcept
     {
         return error_;
     }
@@ -227,7 +238,7 @@ public:
     void CompileAbcFileInParallel(const std::string &fname, const CompilerOptions &options,
                                   std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                                   panda::ArenaAllocator *allocator);
-    
+
     static size_t GetExpectedProgsCount()
     {
         return expectedProgsCount_;
