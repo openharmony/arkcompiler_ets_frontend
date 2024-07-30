@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x0
 .function any .#*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -8,6 +9,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -16,6 +18,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#*#^2(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -26,6 +29,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#*#a(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -34,6 +38,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#*#a^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -42,6 +47,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x1
 .function any .#*^2*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -51,6 +57,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x1
 .function any .#*^2*#^1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -60,6 +67,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#*^2**#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -68,6 +76,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#*^2*^1*#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -76,6 +85,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x5
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 

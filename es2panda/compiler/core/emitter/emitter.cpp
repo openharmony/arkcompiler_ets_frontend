@@ -707,6 +707,7 @@ void Emitter::DumpAsm(const panda::pandasm::Program *prog)
     ss << ".language ECMAScript" << std::endl << std::endl;
 
     for (auto &[name, func] : prog->function_table) {
+        ss << "slotNum = 0x" << std::hex << func.GetSlotsNum() << std::dec << std::endl;
         ss << ".function any " << name << '(';
 
         for (uint32_t i = 0; i < func.GetParamsNum(); i++) {

@@ -13,6 +13,7 @@
 
 .language ECMAScript
 
+slotNum = 0x0
 .function any .C(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -21,6 +22,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x3
 .function any .ccc(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -35,6 +37,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x3
 .function any .classTest(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -47,6 +50,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x1
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -56,6 +60,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x3
 .function any .name(any a0, any a1, any a2) {
 label_1: 
 label_0: 

@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x4
 .function any .#%#City(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -16,6 +17,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x1
 .function any .#*#Test(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -27,6 +29,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#*@2~@1=#Pet(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -35,6 +38,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#~@0=#Person(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -43,6 +47,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x7
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 

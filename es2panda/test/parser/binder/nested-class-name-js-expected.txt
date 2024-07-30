@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x2
 .function any .#~C=#C(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -10,6 +11,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0xd
 .function any .#~C>#instance_initializer(any a0, any a1, any a2) {
 	nop
 label_7: 
@@ -54,6 +56,7 @@ label_8:
 
 .catchall label_2, end_label_3, label_9
 
+slotNum = 0x0
 .function any .#~C>@1~@0=#B_withoutPrivateField(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -62,6 +65,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#~C>@1~@0>#method(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -71,6 +75,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#~C>@1~@2=#B_withPrivateField(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -81,6 +86,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#~C>@1~@2>#instance_initializer(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -91,6 +97,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#~C>@1~@2>#method(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -100,6 +107,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x4
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_7: 
