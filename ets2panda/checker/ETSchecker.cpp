@@ -191,6 +191,10 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
     ASSERT(Program()->Ast()->IsProgram());
     Program()->Ast()->Check(this);
 
+    if (ErrorLogger()->IsAnyError()) {
+        return;
+    }
+
     if (runAnalysis) {
         AliveAnalyzer aliveAnalyzer(Program()->Ast(), this);
         AssignAnalyzer(this).Analyze(Program()->Ast());

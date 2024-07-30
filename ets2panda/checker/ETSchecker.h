@@ -161,9 +161,9 @@ public:
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extendsSet,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(const ETSObjectType *type);
-    int32_t GetTupleElementAccessValue(const Type *type, const lexer::SourcePosition &pos);
-    void ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
-    void ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
+    std::optional<int32_t> GetTupleElementAccessValue(const Type *type, const lexer::SourcePosition &pos);
+    bool ValidateArrayIndex(ir::Expression *expr, bool relaxed = false);
+    bool ValidateTupleIndex(const ETSTupleType *tuple, ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *classType, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     ETSTypeParameter *SetUpParameterType(ir::TSTypeParameter *param);
@@ -184,9 +184,9 @@ public:
     void ValidateNonOverriddenFunction(ETSObjectType *classType, ArenaVector<ETSFunctionType *>::iterator &it,
                                        ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
                                        bool &functionOverridden, const Accessor &isGetSet);
-    void MaybeThrowErrorsForOverridingValidation(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
-                                                 ETSObjectType *classType, const lexer::SourcePosition &pos,
-                                                 bool throwError);
+    void MaybeReportErrorsForOverridingValidation(ArenaVector<ETSFunctionType *> &abstractsToBeImplemented,
+                                                  ETSObjectType *classType, const lexer::SourcePosition &pos,
+                                                  bool reportError);
     void ValidateOverriding(ETSObjectType *classType, const lexer::SourcePosition &pos);
     void CheckInterfaceFunctions(ETSObjectType *classType);
     void CollectImplementedMethodsFromInterfaces(ETSObjectType *classType,
@@ -371,7 +371,8 @@ public:
     [[nodiscard]] static bool HasTypeArgsOfObject(Type *argType, Type *paramType);
     [[nodiscard]] bool InsertTypeIntoSubstitution(const ArenaVector<Type *> &typeParams, const Type *typeParam,
                                                   const size_t index, Substitution *substitution, Type *objectParam);
-    ArenaVector<Type *> CreateUnconstrainedTypeParameters(ir::TSTypeParameterDeclaration const *typeParams);
+    std::pair<ArenaVector<Type *>, bool> CreateUnconstrainedTypeParameters(
+        ir::TSTypeParameterDeclaration const *typeParams);
     void AssignTypeParameterConstraints(ir::TSTypeParameterDeclaration const *typeParams);
     Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
                                                 TypeRelationFlag flags);
@@ -559,7 +560,7 @@ public:
     void CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target);
     void CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *relation, Type *source, Type *target);
     void CheckValidGenericTypeParameter(Type *argType, const lexer::SourcePosition &pos);
-    void ValidateResolvedProperty(const varbinder::LocalVariable *property, const ETSObjectType *target,
+    void ValidateResolvedProperty(varbinder::LocalVariable **property, const ETSObjectType *target,
                                   const ir::Identifier *ident, PropertySearchFlags flags);
     bool IsValidSetterLeftSide(const ir::MemberExpression *member);
     bool CheckRethrowingParams(const ir::AstNode *ancestorFunction, const ir::AstNode *node);
@@ -787,8 +788,8 @@ private:
 
     using Type2TypeMap = std::unordered_map<varbinder::Variable *, varbinder::Variable *>;
     using TypeSet = std::unordered_set<varbinder::Variable *>;
-    void CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends);
-    void CheckDefaultTypeParameter(const ir::TSTypeParameter *param, TypeSet &typeParameterDecls);
+    bool CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends);
+    bool CheckDefaultTypeParameter(const ir::TSTypeParameter *param, TypeSet &typeParameterDecls);
 
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
     ETSObjectType *UpdateGlobalType(ETSObjectType *objType, util::StringView name);

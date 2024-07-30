@@ -673,3 +673,4 @@
   }
 }
 TypeError: C is not abstract and does not override abstract method length(): double in A [overrideFuncWithGetter_n.sts:20:22]
+TypeError: Method length(): double in C not overriding any method [overrideFuncWithGetter_n.sts:21:24]

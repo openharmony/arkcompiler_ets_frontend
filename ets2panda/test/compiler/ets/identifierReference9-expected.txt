@@ -588,3 +588,4 @@
   }
 }
 TypeError: Method used in wrong context [identifierReference9.sts:24:10]
+TypeError: Type 'int' cannot be assigned to type '() => void' [identifierReference9.sts:24:16]

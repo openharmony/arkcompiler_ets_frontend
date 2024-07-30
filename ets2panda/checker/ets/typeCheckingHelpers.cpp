@@ -76,7 +76,7 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 
 void ETSChecker::CheckNonNullish(ir::Expression const *expr)
 {
-    if (expr->TsType()->PossiblyETSNullish()) {
+    if (expr->TsTypeOrError()->PossiblyETSNullish()) {
         ThrowTypeError("Value is possibly nullish.", expr->Start());
     }
 }

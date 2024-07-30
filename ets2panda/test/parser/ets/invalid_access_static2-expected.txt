@@ -963,3 +963,4 @@
   }
 }
 TypeError: 'y' is a static property of 'G' [invalid_access_static2.sts:23:3]
+TypeError: No matching call signature [invalid_access_static2.sts:23:1]

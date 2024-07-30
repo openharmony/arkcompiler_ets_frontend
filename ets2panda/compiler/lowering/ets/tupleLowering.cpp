@@ -58,8 +58,10 @@ public:
     void ComputeTypes(checker::Type *const argumentType)
     {
         tupleTypeAtIdx_ = argumentType->AsETSTupleType()->GetTypeAtIndex(
-            checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType(),
-                                                 argument_->AsMemberExpression()->Property()->Start()));
+
+            // After the checker, we are guranteed that the index is correct.
+            *checker_->GetTupleElementAccessValue(argument_->AsMemberExpression()->Property()->TsType(),
+                                                  argument_->AsMemberExpression()->Property()->Start()));
 
         tupleElementTypeNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(argumentType->AsETSTupleType()->ElementType());
         tupleTypeAtIdxNode_ = checker_->AllocNode<ir::OpaqueTypeNode>(tupleTypeAtIdx_);

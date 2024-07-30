@@ -1042,8 +1042,11 @@ SignatureInfo *ETSChecker::ComposeSignatureInfo(ir::ScriptFunction *func)
     }
 
     if (func->TypeParams() != nullptr) {
-        signatureInfo->typeParams = CreateUnconstrainedTypeParameters(func->TypeParams());
-        AssignTypeParameterConstraints(func->TypeParams());
+        auto [typeParamTypes, ok] = CreateUnconstrainedTypeParameters(func->TypeParams());
+        signatureInfo->typeParams = std::move(typeParamTypes);
+        if (ok) {
+            AssignTypeParameterConstraints(func->TypeParams());
+        }
     }
 
     for (auto *const it : func->Params()) {

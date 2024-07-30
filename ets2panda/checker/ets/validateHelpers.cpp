@@ -236,7 +236,7 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
 
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
 {
-    if (IsVariableGetterSetter(variable)) {
+    if (IsVariableGetterSetter(variable) || variable->Declaration() == nullptr) {
         return;
     }
 

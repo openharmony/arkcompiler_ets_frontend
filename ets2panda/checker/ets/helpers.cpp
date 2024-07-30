@@ -1600,8 +1600,8 @@ void ETSChecker::AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxingUnb
 
 Type *ETSChecker::MaybeBoxExpression(ir::Expression *expr)
 {
-    auto *promoted = MaybePromotedBuiltinType(expr->TsType());
-    if (promoted != expr->TsType()) {
+    auto *promoted = MaybePromotedBuiltinType(expr->TsTypeOrError());
+    if (promoted != expr->TsTypeOrError()) {
         expr->AddBoxingUnboxingFlags(GetBoxingFlag(promoted));
     }
     return promoted;
