@@ -58,7 +58,8 @@ uint16_t RegAllocator::GetSpillRegsCount() const
 void RegAllocator::UpdateIcSlot(IRNode *node)
 {
     auto inc = node->SetIcSlot(pg_->GetCurrentSlot());
-    if (node->InlineCacheEnabled() && (inc == 0) && !pg_->IsIcOverFlow()) {
+    constexpr static ICSlot invalid = 0xFF;
+    if (node->InlineCacheEnabled() && (node->GetIcSlot() == invalid) && !pg_->IsIcOverFlow()) {
         pg_->SetIcOverFlow();
     }
     pg_->IncreaseCurrentSlot(inc);

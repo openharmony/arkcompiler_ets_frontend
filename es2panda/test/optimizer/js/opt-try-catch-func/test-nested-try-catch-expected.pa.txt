@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x1e
 .function any .#*#testNestedTryBlock(any a0, any a1, any a2) {
 	nop
 label_45: 
@@ -172,6 +173,7 @@ label_46:
 
 .catchall label_30, end_label_31, label_51
 
+slotNum = 0x58
 .function any .#*#testTryBlockWithLoop(any a0, any a1, any a2) {
 	nop
 label_71: 
@@ -731,6 +733,7 @@ label_72:
 
 .catchall label_59, end_label_60, label_80
 
+slotNum = 0xc
 .function any .func_main_0(any a0, any a1, any a2) {
 	nop
 label_12: 

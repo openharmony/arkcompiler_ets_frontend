@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x6
 .function any .#&#nameB(any a0, any a1, any a2, any a3) {
 label_1: 
 label_0: 
@@ -21,6 +22,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x2
 .function any .#&@0*#foo(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -31,6 +33,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x8
 .function any .func_main_0(any a0, any a1, any a2) {
 label_4: 
 label_0: 

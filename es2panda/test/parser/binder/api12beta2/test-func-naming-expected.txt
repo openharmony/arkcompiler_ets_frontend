@@ -1,5 +1,6 @@
 .language ECMAScript
 
+slotNum = 0x0
 .function any .#1016906796659230483#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -8,6 +9,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#1016906796659230483_1#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -16,6 +18,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#1471473088249306135#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -24,6 +27,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#5496465400387880830#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -32,6 +36,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .#7640569466637989364#aa(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -40,6 +45,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .aa(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -48,6 +54,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x11
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
@@ -80,6 +87,7 @@ label_0:
 label_2: 
 }
 
+slotNum = 0x0
 .function any .name1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
